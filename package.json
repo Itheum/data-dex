@@ -2,9 +2,9 @@
   "name": "data-dex",
   "version": "0.0.1",
   "description": "The DEX where you can package and sell personal data",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx http-server"
   },
   "repository": {
     "type": "git",
