@@ -3,3 +3,11 @@ body {
   background-color: #222;
   color: #FFF;
 }
+
+#full-menu {
+  display: none;
+}
+
+#metamask-logout {
+  display: none;
+}
