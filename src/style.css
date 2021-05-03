@@ -11,3 +11,7 @@ body {
 #metamask-logout {
   display: none;
 }
+
+#sell-panel {
+  display: none;
+}

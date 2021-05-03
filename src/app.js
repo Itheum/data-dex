@@ -1,6 +1,13 @@
 // import secrets (these are exported as like "export const appId = 'xxx';")
 import {appId, serverURL} from './secrets.js'; 
 
+const templates = {
+  dataOrder: {
+    sellerEthAddress: null,
+    data: null
+  }
+}
+
 const btnRefs = {
   metamaskLogin: null,
   fullmenu: null
@@ -18,6 +25,7 @@ const onPageLoad = () => {
   btnRefs.fullmenu = document.getElementById('full-menu');
   btnRefs.sellData = document.getElementById('sell-data');
   btnRefs.buyData = document.getElementById('buy-data');
+  btnRefs.sellPanel = document.getElementById('sell-panel');
 
   // listeners
   btnRefs.metamaskLogin.addEventListener('click', login);
