@@ -12,6 +12,6 @@ body {
   display: none;
 }
 
-#sell-panel {
+#sell-panel, #buy-panel {
   display: none;
 }

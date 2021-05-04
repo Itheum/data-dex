@@ -23,6 +23,7 @@
         <div class="col-4">
           <button id="metamask-login" type="button" class="btn btn-secondary">Login with Meta Mask</button>
           <button id="metamask-logout" type="button" class="btn btn-secondary">Logout</button>
+          <div id="metamask-user">ss</div>
         </div>
       </div>
 
@@ -31,7 +32,6 @@
           <button id="sell-data" type="button" class="btn btn-secondary">Sell Data</button>
           <button id="buy-data" type="button" class="btn btn-secondary">Buy Data</button>
         </div>
-        <div class="col-12" id="metamask-user">Not logged in...</div>
       </div>
 
       <div class="row" id="sell-panel">
@@ -46,6 +46,10 @@
         <div class="col-auto">
           <button type="submit" class="btn btn-primary mb-3" id="sellerOrder">Create Sell Order</button>
         </div>
+      </div>
+
+      <div class="row" id="buy-panel">
+        <div class="col-12" id="dataOrdersView">Loading available data orders....</div>
       </div>
     </div>
 
