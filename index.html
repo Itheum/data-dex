@@ -20,27 +20,33 @@
     <div class="container">
       <div class="row">
         <div class="col-8"><h1>Itheum Data Dex</h1></div>
+
         <div class="col-4">
           <button id="metamask-login" type="button" class="btn btn-secondary">Login with Meta Mask</button>
           <button id="metamask-logout" type="button" class="btn btn-secondary">Logout</button>
-          <div id="metamask-user">ss</div>
+          <div id="metamask-user"></div>
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <div class="col-12" id="full-menu">
           <button id="sell-data" type="button" class="btn btn-secondary">Sell Data</button>
           <button id="buy-data" type="button" class="btn btn-secondary">Buy Data</button>
+          <button id="purchased-data" type="button" class="btn btn-secondary">Purchased Data</button>
         </div>
       </div>
 
-      <div class="row" id="sell-panel">
+      <div class="row p-2" id="alerts">
+        <div class="col-12" id="alerts"></div>
+      </div>
+
+      <div class="row p-2" id="sell-panel">
         <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Seller Eth Address</label>
+          <label for="sellerEthAddress" class="form-label">Seller Eth Address</label>
           <input class="form-control" id="sellerEthAddress" placeholder="" disabled>
         </div>
         <div class="mb-3">
-          <label for="exampleFormControlTextarea1" class="form-label">Data</label>
+          <label for="sellerData" class="form-label">Data</label>
           <textarea class="form-control" id="sellerData" rows="3"></textarea>
         </div>
         <div class="col-auto">
@@ -48,8 +54,15 @@
         </div>
       </div>
 
-      <div class="row" id="buy-panel">
+      <div class="row p-2" id="buy-panel">
         <div class="col-12" id="dataOrdersView">Loading available data orders....</div>
+
+        <div class="col-12" id="buy-panel-reason">
+          <label for="reasonToBuy" class="form-label">Reason to buy</label>
+          <textarea class="form-control" id="reasonToBuy" rows="5"></textarea>
+
+          <button type="submit" class="btn btn-primary mb-3" id="sendBuyOffer">Send Buy Offer</button>
+        </div>
       </div>
     </div>
 

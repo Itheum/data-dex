@@ -3,7 +3,7 @@ import {appId, serverURL} from './secrets.js';
 
 const templates = {
   dataOrder: {
-    ready: true,
+    state: 1,
     sellerEthAddress: null,
     data: null
   }
@@ -16,26 +16,49 @@ const btnRefs = {
 
 window.state = {
   loggedIn: false,
-  user: null
+  user: null,
+  currBuyObjectId: ''
 };
+
+window.requestToBuy = (objectId) => {
+  console.log(objectId);
+
+  window.state.currBuyObjectId = objectId;
+
+  btnRefs.buyPanelReason.style.display = 'block';
+}
+
+const sendBuyOffer = () => {
+  if (btnRefs.reasonToBuy.value.trim() === '') {
+    alert('You need to provide a reason to buy this');
+  } else {
+    console.log('lets buy ', window.state.currBuyObjectId);
+    console.log('reason ', btnRefs.reasonToBuy.value);
+  }
+}
 
 const onPageLoad = () => {
   // elem refs
+  btnRefs.alerts = document.getElementById('alerts');
   btnRefs.metamaskLogin = document.getElementById('metamask-login');
   btnRefs.logout = document.getElementById('metamask-logout');
   btnRefs.metamaskUser = document.getElementById('metamask-user');
   btnRefs.fullmenu = document.getElementById('full-menu');
   btnRefs.sellData = document.getElementById('sell-data');
   btnRefs.buyData = document.getElementById('buy-data');
+  btnRefs.buyPanelReason = document.getElementById('buy-panel-reason');
+  btnRefs.reasonToBuy = document.getElementById('reasonToBuy');
+  btnRefs.sendBuyOffer = document.getElementById('sendBuyOffer');
   btnRefs.sellPanel = document.getElementById('sell-panel');
   btnRefs.buyPanel = document.getElementById('buy-panel');
+  btnRefs.dataOrdersView = document.getElementById('dataOrdersView');
 
   // listeners
   btnRefs.metamaskLogin.addEventListener('click', login);
   btnRefs.logout.addEventListener('click', logout);
   btnRefs.sellData.addEventListener('click', sellView);
   btnRefs.buyData.addEventListener('click', buyView);
-
+  btnRefs.sendBuyOffer.addEventListener('click', sendBuyOffer);
 
   document.getElementById('sellerOrder').addEventListener('click', sellOrderSubmit);
 
@@ -93,26 +116,40 @@ const showUser = user => {
 }
 
 const buyView = async() => {
+  setAlert('');
+  
   btnRefs.buyPanel.style.display = 'block';
   btnRefs.sellPanel.style.display = 'none';
 
   const DataOrder = Moralis.Object.extend("DataOrder");
   const query = new Moralis.Query(DataOrder);
 
-  query.equalTo("ready", true);
+  query.equalTo("state", '1');
 
   const results = await query.find();
 
-  alert("Successfully retrieved " + results.length + " data orders available for sale");
+  setAlert('Successfully retrieved ' + results.length + ' data orders available for sale');
 
-  // Do something with the returned Moralis.Object values
+  let dataorders = '';
+
   for (let i = 0; i < results.length; i++) {
     const object = results[i];
-    alert(object.id + ' - ' + object.get('data'));
+    dataorders += object.id + ' - ' + object.get('sellerEthAddress') + ' - ' + object.get('data');
+
+    // if curr user address is not seller's then show a 'buy' button
+    if (object.get('sellerEthAddress') !== window.state.user.get('ethAddress')) {
+      dataorders += '<button type="button" class="btn btn-secondary" onclick="window.requestToBuy(\''+object.id+'\')">Request to buy</button>';
+    }
+
+    dataorders += '<br /><br />';
   }
+
+  btnRefs.dataOrdersView.innerHTML = dataorders;
 }
 
 const sellView = () => {
+  setAlert('');
+
   btnRefs.buyPanel.style.display = 'none';
   btnRefs.sellPanel.style.display = 'block';
 
@@ -127,7 +164,10 @@ const sellOrderSubmit = async () => {
     alert('You need to provide some data!')
   } else {
     // create the object
-    const newDataOrder = {...templates.dataOrder, data: sellerData};
+    const newDataOrder = {...templates.dataOrder, 
+      data: sellerData,
+      sellerEthAddress: window.state.user.get('ethAddress')
+    };
 
     console.log('🚀 ~ sellOrderSubmit ~ newDataOrder', newDataOrder);
     // encrypt
@@ -150,6 +190,10 @@ const sellOrderSubmit = async () => {
       console.log('🚀 ~ sellOrderSubmit err= ~ message', message);
     }
   }
+}
+
+const setAlert = msg => {
+  btnRefs.alerts.innerHTML = msg;
 }
 
 window.addEventListener('load', onPageLoad);
