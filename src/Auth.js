@@ -69,14 +69,14 @@ export const Auth = () => {
       <Button isLoading={isAuthenticating} onClick={() => authenticate()}>
         Authenticate via Metamask
       </Button>
-      <Text textAlign="center">
+      {/* <Text textAlign="center">
         <em>or</em>
       </Text>
       <SignUp />
       <Text textAlign="center">
         <em>or</em>
       </Text>
-      <Login />
+      <Login /> */}
     </Stack>
   );
 };
