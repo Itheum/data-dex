@@ -4,10 +4,11 @@ import { Container, Heading, Flex, Spacer, Box, Stack } from '@chakra-ui/layout'
 import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
 import SellData from './SellData';
+import BuyData from './BuyData';
 
 const MENU = {
-  SELL: 1,
-  BUY: 2,
+  BUY: 1,
+  SELL: 2,
   PURCHASED: 3
 };
 
@@ -33,13 +34,14 @@ function App() {
           <Flex direction="column">
             <Box>
               <Stack direction="row" spacing={4} align="center">
-                <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
                 <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
+                <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
                 <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
               </Stack>
             </Box>
             <Box>
-              <SellData />
+              {menuItem === MENU.BUY && <BuyData />}
+              {menuItem === MENU.SELL && <SellData />}
             </Box>
           </Flex>
         </Stack>

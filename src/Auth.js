@@ -10,7 +10,6 @@ import {
   AlertDescription,
   CloseButton,
   Input,
-  Text,
 } from '@chakra-ui/react';
 
 const SignUp = () => {

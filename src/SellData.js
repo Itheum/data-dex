@@ -6,9 +6,9 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
   CloseButton,
   Input,
+  useToast
 } from '@chakra-ui/react';
 
 const templates = {
@@ -21,6 +21,7 @@ const templates = {
 
 export default function() {
   const { user } = useMoralis();
+  const toast = useToast()
   const { isSaving, error: errorDataOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
   const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerData, setSellerData] = useState('');
@@ -42,7 +43,16 @@ export default function() {
   
       await saveDataOrder(newDataOrder);
 
-      sellerData('');      
+      if (!errorDataOrderSave) {
+        toast({
+          title: "Data sent for sale",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+
+        setSellerData(''); 
+      }
     }
   }
 
@@ -61,7 +71,7 @@ export default function() {
       <Heading size="sml">Sell Data</Heading>
       <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} />
       <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
-      <Button isLoading={isSaving} onClick={() => sellOrderSubmit(sellerEthAddress, sellerData)}>Login</Button>
+      <Button isLoading={isSaving} onClick={() => sellOrderSubmit(sellerEthAddress, sellerData)}>Save</Button>
     </Stack>
   );
 };
