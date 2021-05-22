@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useMoralis, useMoralisQuery } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useNewMoralisObject } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton,
@@ -23,17 +23,18 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  FormControl, FormLabel, Input, 
+  FormControl, FormLabel, Input, Text,
   useToast,
   useDisclosure
 } from '@chakra-ui/react';
 
+import { dataTemplates } from './util';
+
 export default function() {
   const toast = useToast();
   const { user } = useMoralis();
-  const { data: dataOrders, error: errorDataOrderGet, isLoading } = useMoralisQuery("DataOrder", query =>
-    query.equalTo("state", "1")
-  );
+  const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack");
+  const { isSaving, error: errorOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
   const [reasonToBuy, setReasonToBuy] = useState('');
   const [currBuyObjectId, setCurrBuyObjectId] = useState(null);
 
@@ -49,20 +50,43 @@ export default function() {
     if (reasonToBuy.trim() === '') {
       alert('You need to provide a reason to buy this');
     } else {
-      const order = dataOrders.find(item => item.id === currBuyObjectId);
-      order.set("state", "2");
-      order.set("reasonToBuy", reasonToBuy);
+      const dataPack = dataPacks.find(item => item.id === currBuyObjectId);
 
-      await order.save();
+      // create the object
+      const newDataOrder = {...dataTemplates.dataOrder, 
+        state: '1',
+        reasonToBuy: reasonToBuy,
+        dataPackId: dataPack.id,
+        sellerEthAddress: dataPack.get('sellerEthAddress'),
+        buyerEthAddress: user.get('ethAddress')
+      };
+
+      await saveDataOrder(newDataOrder);
 
       toast({
-        title: "Buy order placed - seller needs to approve",
+        title: "Data order placed - seller needs to approve",
         status: "success",
         duration: 4000,
         isClosable: true,
       });
 
       onCloseCleanUp();
+
+
+      // const order = dataPacks.find(item => item.id === currBuyObjectId);
+      // order.set("state", "2");
+      // order.set("reasonToBuy", reasonToBuy);
+
+      // await order.save();
+
+      // toast({
+      //   title: "Buy order placed - seller needs to approve",
+      //   status: "success",
+      //   duration: 4000,
+      //   isClosable: true,
+      // });
+
+      // onCloseCleanUp();
     }
   }
 
@@ -75,16 +99,25 @@ export default function() {
   return (
     <Stack spacing={5}>
       <Box></Box>
-      {errorDataOrderGet && 
+      {errorDataPackGet && 
         <Alert status="error">
           <Box flex="1">
             <AlertIcon />
-            <AlertTitle>{errorDataOrderGet.message}</AlertTitle>
+            <AlertTitle>{errorDataPackGet.message}</AlertTitle>
           </Box>
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
-      {(isLoading || dataOrders.length === 0) && <Stack>
+      {errorOrderSave && 
+        <Alert status="error">
+          <Box flex="1">
+            <AlertIcon />
+            <AlertTitle>{errorOrderSave.message}</AlertTitle>
+          </Box>
+          <CloseButton position="absolute" right="8px" top="8px" />
+        </Alert>
+      }
+      {(isLoading || dataPacks.length === 0) && <Stack>
         <Skeleton height="20px" />
         <Skeleton height="20px" />
         <Skeleton height="20px" />
@@ -103,13 +136,13 @@ export default function() {
               </Tr>
             </Thead>
             <Tbody>
-              {dataOrders.map((item) => <Tr key={item.id}>
+              {dataPacks.map((item) => <Tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td>{item.get('sellerEthAddress')}</Td>
-                <Td>{item.get('data')}</Td>
+                <Td>{item.get('dataPreview')}</Td>
                 <Td>
                 {(item.get('sellerEthAddress') !== user.get('ethAddress')) && 
-                  <Button isLoading={false} onClick={() => askForReason(item.id)}>Request to buy</Button>}
+                  <Button isLoading={false} onClick={() => askForReason(item.id)}>Request to buy</Button> || <Text fontSize="xs">n/a</Text>}
                 </Td>
               </Tr>)}
             </Tbody>
@@ -140,7 +173,7 @@ export default function() {
               </ModalBody>
 
               <ModalFooter>
-                <Button onClick={requestToBuy}>Send Buy Offer</Button>
+                <Button isLoading={isSaving} onClick={requestToBuy}>Send Buy Offer</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>

@@ -11,18 +11,12 @@ import {
   useToast
 } from '@chakra-ui/react';
 
-const templates = {
-  dataOrder: {
-    state: '1',
-    sellerEthAddress: null,
-    data: null
-  }
-}
+import { dataTemplates } from './util';
 
 export default function() {
   const { user } = useMoralis();
   const toast = useToast()
-  const { isSaving, error: errorDataOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
+  const { isSaving, error: errorDataPackSave, save: saveDataPack } = useNewMoralisObject('DataPack');
   const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerData, setSellerData] = useState('');
 
@@ -31,19 +25,19 @@ export default function() {
 
   const sellOrderSubmit = async () => {
     if (!sellerData || sellerData === '') {
-      alert('You need to provide some data!')
+      alert('You need to provide some dataPreview!')
     } else {
       // create the object
-      const newDataOrder = {...templates.dataOrder, 
-        data: sellerData,
+      const newDataPack = {...dataTemplates.dataPack, 
+        dataPreview: sellerData,
         sellerEthAddress: user.get('ethAddress')
       };
   
-      console.log('🚀 ~ sellOrderSubmit ~ newDataOrder', newDataOrder);
+      console.log('🚀 ~ sellOrderSubmit ~ newDataPack', newDataPack);
   
-      await saveDataOrder(newDataOrder);
+      await saveDataPack(newDataPack);
 
-      if (!errorDataOrderSave) {
+      if (!errorDataPackSave) {
         toast({
           title: "Data sent for sale",
           status: "success",
@@ -59,18 +53,18 @@ export default function() {
   return (
     <Stack spacing={5}>
       <Box></Box>
-      {errorDataOrderSave && 
+      {errorDataPackSave && 
         <Alert status="error">
           <Box flex="1">
             <AlertIcon />
-            <AlertTitle>{errorDataOrderSave.message}</AlertTitle>
+            <AlertTitle>{errorDataPackSave.message}</AlertTitle>
           </Box>
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
       <Heading size="sml">Sell Data</Heading>
       <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} />
-      <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
+      <Input placeholder="Data Preview" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
       <Button isLoading={isSaving} onClick={() => sellOrderSubmit(sellerEthAddress, sellerData)}>Save</Button>
     </Stack>
   );
