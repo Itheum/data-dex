@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
-import { Box, Stack } from '@chakra-ui/layout';
+import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
   Skeleton,
-  Alert,
+  Alert, Text,
   AlertIcon,
   AlertTitle,
   CloseButton,
+  Button,
   Table,
   Thead,
   Tbody,
@@ -17,6 +18,7 @@ import {
   TableCaption,
   useToast,
 } from '@chakra-ui/react';
+import ShortAddress from './ShortAddress';
 
 export default function() {
   const toast = useToast();
@@ -46,7 +48,7 @@ export default function() {
       </Stack> || 
         <Box>
           <Table variant="simple">
-            <TableCaption>THe following data orders need to be actioned</TableCaption>
+            <TableCaption>The following data orders need to be actioned</TableCaption>
             <Thead>
               <Tr>
                 <Th>Data Order ID</Th>
@@ -59,8 +61,14 @@ export default function() {
               {dataOrders.map((item) => <Tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td>{item.get('dataPackId')}</Td>
-                <Td>{item.get('sellerEthAddress')}</Td>
-                <Td>n/a</Td>
+                <Td><ShortAddress address={item.get('sellerEthAddress')}/></Td>
+                <Td>
+                {(item.get('sellerEthAddress') === user.get('ethAddress')) && 
+                  <HStack>
+                    <Button isLoading={false} colorScheme="red" onClick={() => console.log(item.id)}>Reject</Button>
+                    <Button isLoading={false} colorScheme="green" onClick={() => console.log(item.id)}>Approve</Button>
+                  </HStack> || <Text fontSize="xs">n/a</Text>}
+                </Td>
               </Tr>)}
             </Tbody>
             <Tfoot>

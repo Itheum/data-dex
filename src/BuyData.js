@@ -27,6 +27,7 @@ import {
   useToast,
   useDisclosure
 } from '@chakra-ui/react';
+import ShortAddress from './ShortAddress';
 
 import { dataTemplates } from './util';
 
@@ -52,7 +53,6 @@ export default function() {
     } else {
       const dataPack = dataPacks.find(item => item.id === currBuyObjectId);
 
-      // create the object
       const newDataOrder = {...dataTemplates.dataOrder, 
         state: '1',
         reasonToBuy: reasonToBuy,
@@ -71,22 +71,6 @@ export default function() {
       });
 
       onCloseCleanUp();
-
-
-      // const order = dataPacks.find(item => item.id === currBuyObjectId);
-      // order.set("state", "2");
-      // order.set("reasonToBuy", reasonToBuy);
-
-      // await order.save();
-
-      // toast({
-      //   title: "Buy order placed - seller needs to approve",
-      //   status: "success",
-      //   duration: 4000,
-      //   isClosable: true,
-      // });
-
-      // onCloseCleanUp();
     }
   }
 
@@ -126,7 +110,7 @@ export default function() {
       </Stack> || 
         <Box>
           <Table variant="simple">
-            <TableCaption>THe following data packs are available for purchase</TableCaption>
+            <TableCaption>The following data packs are available for purchase</TableCaption>
             <Thead>
               <Tr>
                 <Th>Data Pack ID</Th>
@@ -138,11 +122,11 @@ export default function() {
             <Tbody>
               {dataPacks.map((item) => <Tr key={item.id}>
                 <Td>{item.id}</Td>
-                <Td>{item.get('sellerEthAddress')}</Td>
+                <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
                 <Td>{item.get('dataPreview')}</Td>
                 <Td>
                 {(item.get('sellerEthAddress') !== user.get('ethAddress')) && 
-                  <Button isLoading={false} onClick={() => askForReason(item.id)}>Request to buy</Button> || <Text fontSize="xs">n/a</Text>}
+                  <Button isLoading={false} colorScheme="green" onClick={() => askForReason(item.id)}>Request to buy</Button> || <Text fontSize="xs">n/a</Text>}
                 </Td>
               </Tr>)}
             </Tbody>

@@ -20,9 +20,6 @@ export default function() {
   const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerData, setSellerData] = useState('');
 
-  // const isSaving = false;
-  // const error = true;
-
   const sellOrderSubmit = async () => {
     if (!sellerData || sellerData === '') {
       alert('You need to provide some dataPreview!')
@@ -32,8 +29,6 @@ export default function() {
         dataPreview: sellerData,
         sellerEthAddress: user.get('ethAddress')
       };
-  
-      console.log('🚀 ~ sellOrderSubmit ~ newDataPack', newDataPack);
   
       await saveDataPack(newDataPack);
 
@@ -65,7 +60,7 @@ export default function() {
       <Heading size="sml">Sell Data</Heading>
       <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} />
       <Input placeholder="Data Preview" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
-      <Button isLoading={isSaving} onClick={() => sellOrderSubmit(sellerEthAddress, sellerData)}>Save</Button>
+      <Button isLoading={isSaving} onClick={() => sellOrderSubmit(sellerEthAddress, sellerData)}>Place for Sale</Button>
     </Stack>
   );
 };

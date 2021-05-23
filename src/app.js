@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Text } from '@chakra-ui/react';
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack, Center } from '@chakra-ui/layout';
 import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
 import SellData from './SellData';
@@ -52,8 +52,13 @@ function App() {
 
   return (
     <Container>
-      <Heading size="lg">Itheum Data Dex</Heading>
-      <Auth />
+      <Center h="500px">
+        <Stack>
+          <Box></Box>
+          <Heading size="lg">Itheum Data Dex</Heading>
+          <Auth />
+        </Stack>
+      </Center>
     </Container>
   );
 }
