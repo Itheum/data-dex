@@ -1,7 +1,9 @@
 export const dataTemplates = {
   dataPack: {
     sellerEthAddress: null,
-    dataPreview: null
+    dataPreview: null,
+    dataUrl: null,
+    dataHash: null
   },
   dataOrder: {
     state: null,
