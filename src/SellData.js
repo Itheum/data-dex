@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useMoralis, useNewMoralisObject, useMoralisCloudFunction } from 'react-moralis';
+import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import {
   Button,
@@ -28,6 +28,47 @@ export default function() {
     },
     { autoFetch: false }
   );
+
+  const {
+    error,
+    isUploading,
+    moralisFile,
+    saveFile,
+  } = useMoralisFile();
+
+  useEffect(async () => {
+    console.log('moralisFile');
+    console.log(moralisFile);
+    console.log('error');
+    console.log(error);
+    console.log('isUploading');
+    console.log(isUploading);
+
+    if (moralisFile && !isUploading) {
+      console.log('SAVE HERE....');
+      finalSave(moralisFile);
+    }
+  }, [moralisFile, error, isUploading]);
+
+  const finalSave = async(dataFile) => {
+    // create the datapack object
+    const newDataPack = {...dataTemplates.dataPack, 
+      dataPreview: sellerDataPreview,
+      sellerEthAddress: user.get('ethAddress'),
+      dataFile
+    };
+
+    await saveDataPack(newDataPack);
+
+    toast({
+      title: "Data sent for sale",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
+
+    setSellerDataPreview(''); 
+  }
 
   useEffect(async () => {
     // if 1st time, then these vars come as []
@@ -63,7 +104,14 @@ export default function() {
     if (errCfSaveData) { // there was an error
       console.log('errCfSaveData', errCfSaveData);
     }
-  }, [dataCfSaveData, errCfSaveData])
+  }, [dataCfSaveData, errCfSaveData]);
+
+  const saveRawFile = async (object) => {
+    // const sellerDatafile = new Moralis.File("sellerDatafile.json", {base64 : btoa(JSON.stringify(object))});
+    // await file.saveIPFS();
+
+    await saveFile("sellerDatafile.json", {base64 : btoa(JSON.stringify(object))});
+  }
   
   const sellOrderSubmit = async () => {
     if (!sellerDataPreview || sellerDataPreview === '') {
@@ -76,7 +124,9 @@ export default function() {
       try {
         parsedSellerData = JSON.parse(sellerData);
 
-        await doCfSaveData();      
+        saveRawFile(parsedSellerData);
+
+        // await doCfSaveData();     
         return;
       } catch(e) {
         alert('You need to provide some valid JSON for data!');

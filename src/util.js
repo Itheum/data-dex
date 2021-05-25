@@ -3,7 +3,8 @@ export const dataTemplates = {
     sellerEthAddress: null,
     dataPreview: null,
     dataUrl: null,
-    dataHash: null
+    dataHash: null,
+    dataFile: null
   },
   dataOrder: {
     state: null,
