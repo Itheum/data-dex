@@ -6,6 +6,7 @@ import { Auth } from './Auth';
 import SellData from './SellData';
 import BuyData from './BuyData';
 import PendingDataOrders from './PendingDataOrders';
+import ShortAddress from './ShortAddress';
 import { MENU } from './util';
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
             <Spacer />
             <Box>
               <HStack>
-                <Text fontSize="xs">{user.get('ethAddress')}</Text>
+                <Text fontSize="xs"><ShortAddress address={user.get('ethAddress')} /></Text>
                 <Button onClick={() => logout()}>Logout</Button>
               </HStack>
             </Box>

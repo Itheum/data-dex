@@ -2,33 +2,15 @@ import React, {useState} from 'react';
 import { useMoralis, useMoralisQuery, useNewMoralisObject } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  CloseButton,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Skeleton, CloseButton, Button, Link,
+  Alert, AlertIcon, AlertTitle,
+  Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
   FormControl, FormLabel, Input, Text,
-  useToast,
-  useDisclosure
+  useToast, useDisclosure, 
 } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import ShortAddress from './ShortAddress';
-
 import { dataTemplates } from './util';
 
 export default function() {
@@ -116,6 +98,8 @@ export default function() {
                 <Th>Data Pack ID</Th>
                 <Th>Seller Address</Th>
                 <Th>Data Preview</Th>
+                <Th>Data Hash</Th>
+                <Th>Data File</Th>
                 <Th>Actions</Th>
               </Tr>
             </Thead>
@@ -124,6 +108,9 @@ export default function() {
                 <Td>{item.id}</Td>
                 <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
                 <Td>{item.get('dataPreview')}</Td>
+                <Td><ShortAddress address={item.get('dataHash')} /></Td>
+                <Td>{item.get('dataFile') && <Link href={item.get('dataFile').url()} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link>}
+                </Td>
                 <Td>
                 {(item.get('sellerEthAddress') !== user.get('ethAddress')) && 
                   <Button isLoading={false} colorScheme="green" onClick={() => askForReason(item.id)}>Request to buy</Button> || <Text fontSize="xs">n/a</Text>}

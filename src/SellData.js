@@ -2,12 +2,8 @@ import { useEffect, useState } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import {
-  Button,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  CloseButton,
-  Input,
+  Button, Input,
+  Alert, AlertIcon, AlertTitle, CloseButton,
   useToast
 } from '@chakra-ui/react';
 
@@ -20,75 +16,50 @@ export default function() {
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerData, setSellerData] = useState('');
 
-  const { isSaving, error: errorDataPackSave, save: saveDataPack } = useNewMoralisObject('DataPack');
-  const { fetch: doCfSaveData, data: dataCfSaveData, error: errCfSaveData, isLoading: loadingCfSaveData } = useMoralisCloudFunction(
-    "saveSellerDataToFile",
-    {
-      sellerData
-    },
-    { autoFetch: false }
-  );
+  const { 
+    error: errDataPackSave,
+    isSaving,
+    save: saveDataPack } = useNewMoralisObject('DataPack');
 
   const {
-    error,
-    isUploading,
-    moralisFile,
+    error: errCfHashData,
+    isLoading: loadingCfHashData,
+    fetch: doCfHashData,
+    data: dataCfHashData
+  } = useMoralisCloudFunction("saveSellerDataToFile", { sellerData }, { autoFetch: false });
+
+  const {
+    error: errFileSave,
+    isUploading: loadingFileSave,
+    moralisFile: dataFileSave,
     saveFile,
   } = useMoralisFile();
 
   useEffect(async () => {
-    console.log('moralisFile');
-    console.log(moralisFile);
-    console.log('error');
-    console.log(error);
-    console.log('isUploading');
-    console.log(isUploading);
-
-    if (moralisFile && !isUploading) {
-      console.log('SAVE HERE....');
-      finalSave(moralisFile);
+    if (dataFileSave && !loadingFileSave) {
+      await doCfHashData(); // get the hash of the file
     }
-  }, [moralisFile, error, isUploading]);
-
-  const finalSave = async(dataFile) => {
-    // create the datapack object
-    const newDataPack = {...dataTemplates.dataPack, 
-      dataPreview: sellerDataPreview,
-      sellerEthAddress: user.get('ethAddress'),
-      dataFile
-    };
-
-    await saveDataPack(newDataPack);
-
-    toast({
-      title: "Data sent for sale",
-      status: "success",
-      duration: 4000,
-      isClosable: true,
-    });
-
-    setSellerDataPreview(''); 
-  }
+  }, [dataFileSave, errFileSave, loadingFileSave]);
 
   useEffect(async () => {
     // if 1st time, then these vars come as []
-    if (!Array.isArray(dataCfSaveData)) {
-      console.log('dataCfSaveData', dataCfSaveData);
+    if (!Array.isArray(dataCfHashData)) {
+      const {dataHash} = dataCfHashData;
 
-      const {dataUrl, dataHash} = dataCfSaveData;
-
-      if (dataUrl && dataHash) {
+      if (dataHash) {
         // create the datapack object
         const newDataPack = {...dataTemplates.dataPack, 
           dataPreview: sellerDataPreview,
-          dataUrl,
+          sellerEthAddress: user.get('ethAddress'),
           dataHash,
-          sellerEthAddress: user.get('ethAddress')
+          dataFile: dataFileSave        
         };
     
+        console.log(newDataPack);
+
         await saveDataPack(newDataPack);
 
-        if (!errorDataPackSave) {
+        if (!errDataPackSave) {
           toast({
             title: "Data sent for sale",
             status: "success",
@@ -101,32 +72,29 @@ export default function() {
       }
     }
 
-    if (errCfSaveData) { // there was an error
-      console.log('errCfSaveData', errCfSaveData);
+    if (errCfHashData) { // there was an error
+      console.error('errCfHashData', errCfHashData);
     }
-  }, [dataCfSaveData, errCfSaveData]);
 
-  const saveRawFile = async (object) => {
-    // const sellerDatafile = new Moralis.File("sellerDatafile.json", {base64 : btoa(JSON.stringify(object))});
-    // await file.saveIPFS();
+  }, [dataCfHashData, errCfHashData]);
 
-    await saveFile("sellerDatafile.json", {base64 : btoa(JSON.stringify(object))});
-  }
-  
   const sellOrderSubmit = async () => {
     if (!sellerDataPreview || sellerDataPreview === '') {
       alert('You need to provide some dataPreview!')
     } else {
-      // take the data and save it as a file using a cloud function
-      // ... output will be URL to the file and the hash of the content
-      let parsedSellerData = null;
 
       try {
-        parsedSellerData = JSON.parse(sellerData);
+        JSON.parse(sellerData); // valid JSON check?
+        console.log('🚀 ~ sellOrderSubmit ~ sellerData', sellerData);
 
-        saveRawFile(parsedSellerData);
+        /*
+          1) Save the file and get a Moralis
+          2) Get a sha256 hash for the data
+          3) Save the Data Pack
+        */
 
-        // await doCfSaveData();     
+        await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
+
         return;
       } catch(e) {
         alert('You need to provide some valid JSON for data!');
@@ -138,11 +106,29 @@ export default function() {
   return (
     <Stack spacing={5}>
       <Box></Box>
-      {errorDataPackSave && 
+      {errDataPackSave && 
         <Alert status="error">
           <Box flex="1">
             <AlertIcon />
-            <AlertTitle>{errorDataPackSave.message}</AlertTitle>
+            {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
+          </Box>
+          <CloseButton position="absolute" right="8px" top="8px" />
+        </Alert>
+      }
+      {errCfHashData && 
+        <Alert status="error">
+          <Box flex="1">
+            <AlertIcon />
+            {errCfHashData.message && <AlertTitle>{errCfHashData.message}</AlertTitle>}
+          </Box>
+          <CloseButton position="absolute" right="8px" top="8px" />
+        </Alert>
+      }
+      {errFileSave && 
+        <Alert status="error">
+          <Box flex="1">
+            <AlertIcon />
+            {errFileSave.message && <AlertTitle>{errFileSave.message}</AlertTitle>}
           </Box>
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
@@ -152,7 +138,7 @@ export default function() {
       <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
       <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
       <p>{`{"foo": "bar"}`}</p>
-      <Button isLoading={(loadingCfSaveData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
+      <Button isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
     </Stack>
   );
 };

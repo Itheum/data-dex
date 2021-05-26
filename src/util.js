@@ -2,7 +2,6 @@ export const dataTemplates = {
   dataPack: {
     sellerEthAddress: null,
     dataPreview: null,
-    dataUrl: null,
     dataHash: null,
     dataFile: null
   },

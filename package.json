@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "The DEX where you can package and sell personal data",
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.13",
     "@chakra-ui/react": "^1.5.2",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
