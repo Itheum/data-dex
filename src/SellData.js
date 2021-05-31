@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import {
-  Button, Input,
+  Button, Input, Text,
   Alert, AlertIcon, AlertTitle, CloseButton,
   useToast
 } from '@chakra-ui/react';
@@ -11,6 +11,7 @@ import { dataTemplates } from './util';
 
 export default function() {
   const { user } = useMoralis();
+  const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const toast = useToast();
   const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerDataPreview, setSellerDataPreview] = useState('');
@@ -88,9 +89,10 @@ export default function() {
         console.log('🚀 ~ sellOrderSubmit ~ sellerData', sellerData);
 
         /*
-          1) Save the file and get a Moralis
-          2) Get a sha256 hash for the data
-          3) Save the Data Pack
+          1) Save the file and get a Moralis File Ref - Y
+          2) Get a sha256 hash for the data  - Y
+          3) Save to blockchain and get transactionHash (txHash), wait until 6 confirmations (show in UI)
+          3) Save the Data Pack in Moralis
         */
 
         await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
@@ -101,6 +103,121 @@ export default function() {
         return;
       }      
     }
+  }
+
+  const testContract = async() => {
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lastName",
+            "type": "string"
+          }
+        ],
+        "name": "addPlayer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "playerAddress",
+            "type": "address"
+          }
+        ],
+        "name": "getPlayerLevel",
+        "outputs": [
+          {
+            "internalType": "enum myGame.Level",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "playerCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "players",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "myAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "enum myGame.Level",
+            "name": "playerLevel",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lastName",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+
+    const contract = new web3.eth.Contract(abi, '0x8648db3364225eFaBC10644E6fD76ba9EB921a5B');
+    console.log('🚀 ~ testContract ~ contract', contract);
+    
+    // contract.methods.playerCount().call(function(err, res){
+    //   console.log('res', res);
+    // });
+
+    contract.methods.addPlayer("Alex", "Jones").send({from: user.get('ethAddress')})
+      .on('transactionHash', function(hash){
+          console.log('transactionHash', hash);
+      })
+      .on('receipt', function(receipt){
+        console.log('receipt', receipt);
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
+        console.log('confirmation');
+        console.log(confirmationNumber);
+        console.log(receipt);
+      })
+      .on('error', function(error, receipt) {
+        console.log('error');
+        console.log(receipt);
+        console.log(error);
+      });
   }
 
   return (
@@ -137,8 +254,14 @@ export default function() {
       <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} />
       <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
       <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
-      <p>{`{"foo": "bar"}`}</p>
+      <Text>{`{"foo": "bar"}`}</Text>
       <Button isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
+      
+      <Box>
+        <br />
+        {web3EnableError && <Heading>{web3EnableError}</Heading>}
+        <Button onClick={() => testContract()}>Contract Test</Button>
+      </Box>
     </Stack>
   );
 };

@@ -3,7 +3,8 @@ export const dataTemplates = {
     sellerEthAddress: null,
     dataPreview: null,
     dataHash: null,
-    dataFile: null
+    dataFile: null,
+    txHash: null
   },
   dataOrder: {
     state: null,
@@ -15,6 +16,7 @@ export const dataTemplates = {
 }
 
 export const MENU = {
+  HOME: 0,
   BUY: 1,
   SELL: 2,
   PENDING: 3,
