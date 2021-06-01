@@ -4,6 +4,7 @@ export const dataTemplates = {
     dataPreview: null,
     dataHash: null,
     dataFile: null,
+    termsOfUseId: null,
     txHash: null
   },
   dataOrder: {
@@ -12,7 +13,7 @@ export const dataTemplates = {
     dataPackId: null,
     sellerEthAddress: null,
     buyerEthAddress: null,
-  }
+  },
 }
 
 export const MENU = {
@@ -22,3 +23,9 @@ export const MENU = {
   PENDING: 3,
   PURCHASED: 4,
 };
+
+export const TERMS = [
+  {id: '1', val: "Research Purposes Only", coin: 1},
+  {id: '2', val: "Research or Commercial Purposes Only", coin: 1},
+  {id: '3', val: "Fully License (any use case)", coin: 3}
+];

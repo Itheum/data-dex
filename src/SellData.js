@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
+import { CheckCircleIcon, SpinnerIcon } from '@chakra-ui/icons';
 import {
-  Button, Input, Text,
+  Button, Input, Text, HStack, Radio, RadioGroup, Spinner,
   Alert, AlertIcon, AlertTitle, CloseButton,
-  useToast
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
+  useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { dataTemplates } from './util';
+import { dataTemplates, TERMS } from './util';
 
 export default function() {
   const { user } = useMoralis();
@@ -16,6 +18,9 @@ export default function() {
   const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerData, setSellerData] = useState('');
+  const [termsOfUseId, setTermsOfUseId] = useState('2');
+  const [saveProgress, setSaveProgress] = useState({s1: 1, s2: 0, s3: 0, s4: 0});
+  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const { 
     error: errDataPackSave,
@@ -38,6 +43,7 @@ export default function() {
 
   useEffect(async () => {
     if (dataFileSave && !loadingFileSave) {
+      setSaveProgress({...saveProgress, s2: 1});
       await doCfHashData(); // get the hash of the file
     }
   }, [dataFileSave, errFileSave, loadingFileSave]);
@@ -45,6 +51,8 @@ export default function() {
   useEffect(async () => {
     // if 1st time, then these vars come as []
     if (!Array.isArray(dataCfHashData)) {
+      setSaveProgress({...saveProgress, s3: 1});
+
       const {dataHash} = dataCfHashData;
 
       if (dataHash) {
@@ -53,7 +61,8 @@ export default function() {
           dataPreview: sellerDataPreview,
           sellerEthAddress: user.get('ethAddress'),
           dataHash,
-          dataFile: dataFileSave        
+          dataFile: dataFileSave,
+          termsOfUseId       
         };
     
         console.log(newDataPack);
@@ -61,6 +70,8 @@ export default function() {
         await saveDataPack(newDataPack);
 
         if (!errDataPackSave) {
+          // setSaveProgress({...saveProgress, s4: 1});
+
           toast({
             title: "Data sent for sale",
             status: "success",
@@ -83,16 +94,17 @@ export default function() {
     if (!sellerDataPreview || sellerDataPreview === '') {
       alert('You need to provide some dataPreview!')
     } else {
-
       try {
+        onProgressModalOpen();
+
         JSON.parse(sellerData); // valid JSON check?
         console.log('🚀 ~ sellOrderSubmit ~ sellerData', sellerData);
 
         /*
           1) Save the file and get a Moralis File Ref - Y
           2) Get a sha256 hash for the data  - Y
-          3) Save to blockchain and get transactionHash (txHash), wait until 6 confirmations (show in UI)
           3) Save the Data Pack in Moralis
+          4) Save to blockchain and get transactionHash (txHash), wait until 6 confirmations (show in UI)
         */
 
         await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
@@ -220,6 +232,10 @@ export default function() {
       });
   }
 
+  function onCloseCleanUp() {
+    onProgressModalClose();
+  }
+
   return (
     <Stack spacing={5}>
       <Box></Box>
@@ -250,18 +266,68 @@ export default function() {
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
-      <Heading size="sml">Sell Data</Heading>
       <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} />
       <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
       <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
       <Text>{`{"foo": "bar"}`}</Text>
-      <Button isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
       
+      <Stack>
+        <Text>Terms of Use</Text>
+        <HStack>
+          <RadioGroup value={termsOfUseId} onChange={setTermsOfUseId}>
+            <Stack spacing={5} direction="row">
+              {TERMS.map((term) => {
+                return (<Radio colorScheme="red" value={term.id}>
+                  {term.val}
+                </Radio>)
+              })}
+            </Stack>
+          </RadioGroup>
+        </HStack>
+      </Stack>
+
+      <Button isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
+
       <Box>
         <br />
         {web3EnableError && <Heading>{web3EnableError}</Heading>}
         <Button onClick={() => testContract()}>Contract Test</Button>
       </Box>
+
+      <Modal
+        isOpen={isProgressModalOpen}
+        onClose={onCloseCleanUp}
+        closeOnEsc={false} closeOnOverlayClick={true}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Progress</ModalHeader>
+          <ModalBody pb={6}>
+            <Stack spacing={5}>
+              <HStack>
+                {!saveProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Storing data file</Text>
+              </HStack>
+
+              <HStack>
+                {!saveProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Generating tamper-proof data signature</Text>
+              </HStack>
+
+              <HStack>
+                {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Saving to storage</Text>
+              </HStack>
+
+              <HStack>
+                {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Advertising for sale on blockchain</Text>
+              </HStack>
+            </Stack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 };
+

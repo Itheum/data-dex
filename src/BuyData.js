@@ -22,7 +22,7 @@ export default function() {
   const [currBuyObjectId, setCurrBuyObjectId] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const initialRef = React.useRef()
+  const initialRef = React.useRef();
 
   function askForReason(objectId) {
     setCurrBuyObjectId(objectId);
