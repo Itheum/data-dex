@@ -5,41 +5,21 @@ import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
 import SellData from './SellData';
 import BuyData from './BuyData';
-import PendingDataOrders from './PendingDataOrders';
+import PurchasedData from './PurchasedData';
 import ShortAddress from './ShortAddress';
-import { MENU } from './util';
+import { MENU, ABIS } from './util';
 import { mydaContractAddress } from './secrets.js'; 
 
 function App() {
   const { isAuthenticated, logout, user } = useMoralis();
   const { web3 } = useMoralis();
-  const [menuItem, setMenuItem] = useState(2);
+  const [menuItem, setMenuItem] = useState(1);
   const [myMydaBal, setMydaBal] = useState(0);
 
   useEffect(async () => {
     if (user && web3) {
-      const minABI = [
-        // balanceOf
-        {
-          "constant":true,
-          "inputs":[{"name":"_owner","type":"address"}],
-          "name":"balanceOf",
-          "outputs":[{"name":"balance","type":"uint256"}],
-          "type":"function"
-        },
-        // decimals
-        {
-          "constant":true,
-          "inputs":[],
-          "name":"decimals",
-          "outputs":[{"name":"","type":"uint8"}],
-          "type":"function"
-        }
-      ];
-
-      const tokenAddress = mydaContractAddress;
       const walletAddress = user.get('ethAddress');
-      const contract = new web3.eth.Contract(minABI, tokenAddress);
+      const contract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
       
       const decimals = await contract.methods.decimals().call();
       const balance = await contract.methods.balanceOf(walletAddress).call();
@@ -52,7 +32,7 @@ function App() {
       const divisor = new BN(10).pow(decimalsBN);
 
       const beforeDecimal = balanceWeiBN.div(divisor)
-      console.log(beforeDecimal.toString())    // >> 31
+      // console.log(beforeDecimal.toString())    // >> 31
       
       // const afterDecimal  = balanceWeiBN.mod(divisor)
       // console.log(afterDecimal.toString())     // >> 415926500000000000
@@ -93,14 +73,13 @@ function App() {
                 <Button colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
                 <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
                 <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
-                <Button colorScheme="teal" isDisabled={menuItem === MENU.PENDING} variant="solid" onClick={() => (setMenuItem(MENU.PENDING))}>Pending Data Orders</Button>
                 <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
               </Stack>
             </Box>
             <Box>
               {menuItem === MENU.BUY && <BuyData />}
               {menuItem === MENU.SELL && <SellData />}
-              {menuItem === MENU.PENDING && <PendingDataOrders />}
+              {menuItem === MENU.PURCHASED && <PurchasedData />}
             </Box>
           </Flex>
         </Stack>

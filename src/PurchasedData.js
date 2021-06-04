@@ -1,23 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
-  Skeleton,
-  Alert, Text,
-  AlertIcon,
-  AlertTitle,
-  CloseButton,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
+  Skeleton, Alert, Text, Link,
+  AlertIcon, AlertTitle, CloseButton,
+  Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   useToast,
 } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import ShortAddress from './ShortAddress';
 
 export default function() {
@@ -48,12 +38,13 @@ export default function() {
       </Stack> || 
         <Box>
           <Table variant="simple">
-            <TableCaption>The following data orders need to be actioned</TableCaption>
+            <TableCaption>The following data was purchased by you</TableCaption>
             <Thead>
               <Tr>
                 <Th>Data Order ID</Th>
                 <Th>Data Pack ID</Th>
                 <Th>Seller Address</Th>
+                <Th>Data File</Th>
                 <Th>Actions</Th>
               </Tr>
             </Thead>
@@ -62,13 +53,8 @@ export default function() {
                 <Td>{item.id}</Td>
                 <Td>{item.get('dataPackId')}</Td>
                 <Td><ShortAddress address={item.get('sellerEthAddress')}/></Td>
-                <Td>
-                {(item.get('sellerEthAddress') === user.get('ethAddress')) && 
-                  <HStack>
-                    <Button isLoading={false} colorScheme="red" onClick={() => console.log(item.id)}>Reject</Button>
-                    <Button isLoading={false} colorScheme="green" onClick={() => console.log(item.id)}>Approve</Button>
-                  </HStack> || <Text fontSize="xs">n/a</Text>}
-                </Td>
+                <Td>{item.get('dataFile') && <Link href={item.get('dataFile').url()} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link>}</Td>
+                <Td><Text fontSize="xs">n/a</Text></Td>
               </Tr>)}
             </Tbody>
             <Tfoot>
@@ -76,6 +62,7 @@ export default function() {
                 <Th>Data Order ID</Th>
                 <Th>Data Pack ID</Th>
                 <Th>Seller Address</Th>
+                <Th>Data File</Th>
                 <Th>Actions</Th>
               </Tr>
             </Tfoot>

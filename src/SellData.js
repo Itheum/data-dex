@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
-import { CheckCircleIcon, SpinnerIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Button, Input, Text, HStack, Radio, RadioGroup, Spinner,
-  Alert, AlertIcon, AlertTitle, CloseButton,
+  Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
+  Alert, AlertIcon, AlertTitle, CloseButton, Link,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { dataTemplates, TERMS } from './util';
+import { dataTemplates, TERMS, ABIS } from './util';
+import { ddexContractAddress } from './secrets';
+import ShortAddress from './ShortAddress';
+
+const txConfirmationsNeeded = 4;
 
 export default function() {
   const { user } = useMoralis();
@@ -22,10 +26,17 @@ export default function() {
   const [saveProgress, setSaveProgress] = useState({s1: 1, s2: 0, s3: 0, s4: 0});
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
+  // eth tx state
+  const [txConfirmation, setTxConfirmation] = useState(0);
+  const [txHash, setTxHash] = useState(null);
+  const [txError, setTxError] = useState(null);
+
   const { 
     error: errDataPackSave,
     isSaving,
     save: saveDataPack } = useNewMoralisObject('DataPack');
+
+  const [savedDataPackMoralis, setSavedDataPackMoralis] = useState(null);
 
   const {
     error: errCfHashData,
@@ -64,23 +75,12 @@ export default function() {
           dataFile: dataFileSave,
           termsOfUseId       
         };
-    
-        console.log(newDataPack);
 
-        await saveDataPack(newDataPack);
+        const newPack = await saveDataPack(newDataPack);
 
-        if (!errDataPackSave) {
-          // setSaveProgress({...saveProgress, s4: 1});
+        setSavedDataPackMoralis(newPack);
 
-          toast({
-            title: "Data sent for sale",
-            status: "success",
-            duration: 4000,
-            isClosable: true,
-          });
-
-          setSellerDataPreview(''); 
-        }
+        if (!errDataPackSave) {}
       }
     }
 
@@ -90,21 +90,42 @@ export default function() {
 
   }, [dataCfHashData, errCfHashData]);
 
+  useEffect(async () => {
+    if (savedDataPackMoralis && savedDataPackMoralis.id && savedDataPackMoralis.get('dataHash')) {
+      ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
+    }
+  }, [savedDataPackMoralis]);
+
+  useEffect(async () => {
+    if (txError) {
+      console.error(txError);
+    }
+
+    if (txHash && txConfirmation === txConfirmationsNeeded) {
+      savedDataPackMoralis.set('txHash', txHash);
+
+      await savedDataPackMoralis.save();
+      
+      closeProgressModal();
+    }
+    
+  }, [txConfirmation, txHash, txError]);
+
   const sellOrderSubmit = async () => {
     if (!sellerDataPreview || sellerDataPreview === '') {
-      alert('You need to provide some dataPreview!')
+      alert('You need to provide some dataPreview!');      
     } else {
       try {
         onProgressModalOpen();
 
         JSON.parse(sellerData); // valid JSON check?
-        console.log('🚀 ~ sellOrderSubmit ~ sellerData', sellerData);
 
         /*
           1) Save the file and get a Moralis File Ref - Y
           2) Get a sha256 hash for the data  - Y
-          3) Save the Data Pack in Moralis
+          3) Save the Data Pack in Moralis and get the new datapackID
           4) Save to blockchain and get transactionHash (txHash), wait until 6 confirmations (show in UI)
+          5) Update the Data Pack in Moralis with the transactionHash - DONE
         */
 
         await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
@@ -117,104 +138,14 @@ export default function() {
     }
   }
 
-  const testContract = async() => {
-    const abi = [
-      {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "firstName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "lastName",
-            "type": "string"
-          }
-        ],
-        "name": "addPlayer",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "playerAddress",
-            "type": "address"
-          }
-        ],
-        "name": "getPlayerLevel",
-        "outputs": [
-          {
-            "internalType": "enum myGame.Level",
-            "name": "",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "playerCount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "players",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "myAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "enum myGame.Level",
-            "name": "playerLevel",
-            "type": "uint8"
-          },
-          {
-            "internalType": "string",
-            "name": "firstName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "lastName",
-            "type": "string"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }
-    ];
+  const ddexAdvertiseForSale = async(dataPackId, dataHash) => {
+    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
 
-    const contract = new web3.eth.Contract(abi, '0x8648db3364225eFaBC10644E6fD76ba9EB921a5B');
-    console.log('🚀 ~ testContract ~ contract', contract);
-    
-    // contract.methods.playerCount().call(function(err, res){
-    //   console.log('res', res);
-    // });
-
-    contract.methods.addPlayer("Alex", "Jones").send({from: user.get('ethAddress')})
+    ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash){
-          console.log('transactionHash', hash);
+        console.log('transactionHash', hash);
+
+        setTxHash(hash);
       })
       .on('receipt', function(receipt){
         console.log('receipt', receipt);
@@ -223,16 +154,27 @@ export default function() {
         // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
         console.log('confirmation');
         console.log(confirmationNumber);
-        console.log(receipt);
+
+        setTxConfirmation(confirmationNumber);
       })
       .on('error', function(error, receipt) {
         console.log('error');
         console.log(receipt);
         console.log(error);
+
+        setTxError(error);
       });
   }
 
-  function onCloseCleanUp() {
+  function closeProgressModal() {
+    toast({
+      title: "Data sent for sale",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
+
+    setSellerDataPreview('');
     onProgressModalClose();
   }
 
@@ -291,22 +233,22 @@ export default function() {
       <Box>
         <br />
         {web3EnableError && <Heading>{web3EnableError}</Heading>}
-        <Button onClick={() => testContract()}>Contract Test</Button>
+        <Button onClick={() => ddexAdvertiseForSale('foo', 'bar')}>Contract Test</Button>
       </Box>
 
       <Modal
         isOpen={isProgressModalOpen}
-        onClose={onCloseCleanUp}
-        closeOnEsc={false} closeOnOverlayClick={true}
+        onClose={closeProgressModal}
+        closeOnEsc={false} closeOnOverlayClick={false} isCentered
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Progress</ModalHeader>
+          <ModalHeader>Sell Progress</ModalHeader>
           <ModalBody pb={6}>
             <Stack spacing={5}>
               <HStack>
                 {!saveProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                <Text>Storing data file</Text>
+                <Text>Building data file</Text>
               </HStack>
 
               <HStack>
@@ -323,6 +265,26 @@ export default function() {
                 {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                 <Text>Advertising for sale on blockchain</Text>
               </HStack>
+
+              {txHash && <Stack>
+                <Progress colorScheme="green" size="sm" value={(100 / txConfirmationsNeeded) * txConfirmation} />
+
+                <HStack>
+                  <Text>Transaction </Text>
+                  <ShortAddress address={txHash} />
+                  <Link href={`https://ropsten.etherscan.io/tx/${txHash}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                </HStack>
+
+                {txError && 
+                  <Alert status="error">
+                    <Box flex="1">
+                      <AlertIcon />
+                      {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
+                    </Box>
+                    <CloseButton position="absolute" right="8px" top="8px" />
+                  </Alert>
+                }
+              </Stack>}
             </Stack>
           </ModalBody>
         </ModalContent>
