@@ -11,10 +11,8 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { TERMS, ABIS } from './util';
+import { config, dataTemplates, TERMS, ABIS } from './util';
 import { ddexContractAddress, mydaContractAddress } from './secrets';
-
-const txConfirmationsNeeded = 4;
 
 export default function() {
   const toast = useToast();
@@ -24,141 +22,254 @@ export default function() {
     query.ascending("createdAt")
   );
   const { isSaving, error: errorOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
-  const [reasonToBuy, setReasonToBuy] = useState('');
   const [currBuyObject, setCurrBuyObject] = useState(null);
-  const [buyProgress, setbuyProgress] = useState({s1: 1, s2: 0, s3: 0, s4: 0});
+  const [buyProgress, setbuyProgress] = useState({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
+  const [buyProgressErr, setbuyProgressErr] = useState(null);
 
   // eth tx state
-  const [txConfirmation, setTxConfirmation] = useState(0);
-  const [txHash, setTxHash] = useState(null);
-  const [txError, setTxError] = useState(null);
-
+  const [txConfirmationAllowance, setTxConfirmationAllowance] = useState(0);
+  const [txHashAllowance, setTxHashAllowance] = useState(null);
+  const [txErrorAllowance, setTxErrorAllowance] = useState(null);
+  const [txConfirmationTransfer, setTxConfirmationTransfer] = useState(0);
+  const [txHashTransfer, setTxHashTransfer] = useState(null);
+  const [txErrorTransfer, setTxErrorTransfer] = useState(null);
+  
+  
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   useEffect(async () => {
-    if (txError) {
-      console.error(txError);
+    if (txErrorAllowance) {
+      console.error(txErrorAllowance);
+    } else {
+      if (txHashAllowance && txConfirmationAllowance === config.txConfirmationsNeeded) {
+        console.log('AUTHORISED');
+  
+        setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
+  
+        web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
+      }
     }
+  }, [txConfirmationAllowance, txHashAllowance, txErrorAllowance]);
 
-    if (txHash && txConfirmation === txConfirmationsNeeded) {
-      alert('AUTHORISED');
+  useEffect(async () => {
+    if (txErrorTransfer) {
+      console.error(txErrorTransfer);
+    } else {
+      if (txHashTransfer && txConfirmationTransfer === config.txConfirmationsNeeded) {
+        console.log('TRANSFERRED');
+  
+        setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
+  
+        finaliseSale();
+      }
     }
     
-  }, [txConfirmation, txHash, txError]);
+  }, [txConfirmationTransfer, txHashTransfer, txErrorTransfer]);
+
+  useEffect(async() => {
+    if (currBuyObject) {
+      onProgressModalOpen();
+
+      const isVerified = await web3_ddexVerifyData(currBuyObject.dataPackId, currBuyObject.dataHash);
+
+      if (isVerified) {
+        console.log('🚀 ~ useEffect ~ buyProgress s1', buyProgress);
+        setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s0: 1}));
+
+        handleMinRequirementsCheck();
+      } else {
+        setbuyProgressErr('The data your are trying to purchase seems compromised (based on blockchain check)');
+      }
+    }
+  }, [currBuyObject]);
 
   const buyOrderSubmit = objectId => {
     const dataPack = dataPacks.find(i => i.id === objectId);
     console.log('🚀 ~ buyOrderSubmit ~ dataPack', dataPack);
 
+    /*
+      0) check if user has enough MYDA
+      1) set the currBuyObject to state, "monitor" useEffect[currBuyObject] for next step
+        2) web3_ddexVerifyData: call dex contract to verify data. if verified then call handleAllowanceCheck for next step
+      3) handleAllowanceCheck checks if allowance will cover cost of transaction
+        3.1) if NOT allowed then it web3_tokenApprove, "monitor" useEffect[txConfirmationAllowance] for next step, which is web3_ddexBuyDataPack
+        3.2) if allowed then goes to next step, which is web3_ddexBuyDataPack
+      4) "monitor" useEffect[txConfirmationTransfer] for next step, which is finaliseSale
+      5) done... close off
+    */
+
     setCurrBuyObject({
       dataPackId: objectId,
       dataHash: dataPack.get('dataHash'),
+      dataFileUrl: dataPack.get('dataFile').url(),
       cost: TERMS.find(i => i.id === dataPack.get('termsOfUseId')).coin
     });
   }
 
-  useEffect(() => {
-    if (currBuyObject) {
-      onProgressModalOpen();
+  const web3_ddexVerifyData = async(dataPackId, dataHash) => {
+    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
+    let isVerified = false;
 
-      ddexVerifyData(currBuyObject.dataPackId, currBuyObject.dataHash);
+    try {
+      isVerified = await ddexContract.methods.verifyData(dataPackId, dataHash).call();
+      console.log('🚀 ~ web3_ddexVerifyData ~ val', isVerified);
+    } catch(e) {
+      console.log('🚀 ~ web3_ddexVerifyData ~ e', e);
     }
-  }, [currBuyObject]);
 
-  function onCloseCleanUp() {
-    setCurrBuyObject(null);
-    setReasonToBuy('');
-    onProgressModalClose();
+    return isVerified;
   }
+  
+  const handleMinRequirementsCheck = async() => {
+    const isEligible = await web3_tokenBalanceOf();
+    console.log('🚀 ~ handleMinRequirementsCheck ~ isEligible', isEligible);
 
-  const handleAllowanceCoodination = async() => {
-    const isAllowed = await tokenCheckAllowance();
+    if (isEligible) {
+      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s1: 1}));
+      handleAllowanceCheck();
+    } else {
+      setbuyProgressErr('Do you have enough MYDA for this?');
+    }
+  }
+  
+  const handleAllowanceCheck = async() => {
+    const isAllowed = await web3_tokenCheckAllowance();
     console.log('🚀 ~ ddexContract.methods.verifyData ~ isAllowed', isAllowed);
 
     if (isAllowed) {
-      setbuyProgress({...buyProgress, s3: 1});
+      console.log('🚀 ~ useEffect ~ buyProgress s2', buyProgress);
+      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
+
+      web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
     } else {
-      tokenAuthorise(currBuyObject.cost);
+      web3_tokenApprove(currBuyObject.cost);
     }
   }
 
-  const ddexVerifyData = async(dataPackId, dataHash) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
-
-    ddexContract.methods.verifyData(dataPackId, dataHash).call(function(err, res){
-      console.log('res', res);
-      setbuyProgress({...buyProgress, s2: 1});
-
-      handleAllowanceCoodination();
-    });
-  }
-
-  const ddexBuyDataPack = async(dataPackId, dataHash) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
+  const web3_tokenBalanceOf = async() => {
+    const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
+    let isEligible = false;
     
-    ddexContract.methods.buyDataPack(dataPackId, dataHash).send({from: user.get('ethAddress')})
-      .on('transactionHash', function(hash) {
-        console.log('transactionHash', hash);
+    try {
+      const mydaBalance = await tokenContract.methods.balanceOf(user.get('ethAddress')).call();
+      console.log('🚀 ~ web3_tokenBalanceOf ~ val', mydaBalance);
 
-        setTxHash(hash);
-      })
-      .on('receipt', function(receipt){
-        console.log('receipt', receipt);
-      })
-      .on('confirmation', function(confirmationNumber, receipt){
-        console.log('confirmation');
-        console.log(confirmationNumber);
+      if (parseInt(mydaBalance, 10) >= currBuyObject.cost) {
+        isEligible = true;
+      }
+    } catch(e) {
+      console.log('🚀 ~ web3_tokenBalanceOf ~ e', e);
+    }
 
-        setTxConfirmation(confirmationNumber);
-      })
-      .on('error', function(error, receipt) {
-        console.log('error');
-        console.log(receipt);
-        console.log(error);
-
-        setTxError(error);
-      });
+    return isEligible;
   }
 
-  const tokenCheckAllowance = async() => {
+  const web3_tokenCheckAllowance = async() => {
     const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
     let isAllowed = false;
-
+    
     try {
-      isAllowed = await tokenContract.methods.allowance(user.get('ethAddress'), '1').call();
-      console.log('🚀 ~ tokenCheckAllowance ~ val', isAllowed);
+      const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), ddexContractAddress).call();
+      console.log('🚀 ~ web3_tokenCheckAllowance ~ val', allowedAmount);
+
+      if (parseInt(allowedAmount, 10) >= currBuyObject.cost) {
+        isAllowed = true;
+      }
     } catch(e) {
-      console.log('🚀 ~ tokenCheckAllowance ~ e', e);
+      console.log('🚀 ~ web3_tokenCheckAllowance ~ e', e);
     }
 
     return isAllowed;
   }
 
-  const tokenAuthorise = async(amount) => {
+  const web3_ddexBuyDataPack = async(dataPackId, feeInMyda) => {
+    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
+
+    // var amountToSend = 2;
+    // var weiAmout = amountToSend * 1e18;
+    var weiAmount2 = web3.toWei(feeInMyda);
+    console.log('🚀 ~ constweb3_ddexBuyDataPack=async ~ weiAmount2', weiAmount2);
+    return;
+    
+    ddexContract.methods.buyDataPack(dataPackId, feeInMyda).send({from: user.get('ethAddress')})
+      .on('transactionHash', function(hash) {
+        console.log('Transfer transactionHash', hash);
+
+        setTxHashTransfer(hash);
+      })
+      .on('receipt', function(receipt){
+        console.log('Transfer receipt', receipt);
+      })
+      .on('confirmation', function(confirmationNumber, receipt){
+        console.log('Transfer confirmation');
+        console.log(confirmationNumber);
+
+        setTxConfirmationTransfer(confirmationNumber);
+      })
+      .on('error', function(error, receipt) {
+        console.log('Transfer error');
+        console.log(receipt);
+        console.log(error);
+
+        setTxErrorTransfer(error);
+      });
+  }
+  
+  const web3_tokenApprove = async(amount) => {
     const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
 
     tokenContract.methods.approve(ddexContractAddress, amount).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash) {
-        console.log('transactionHash', hash);
+        console.log('Allowance transactionHash', hash);
 
-        setTxHash(hash);
+        setTxHashAllowance(hash);
       })
       .on('receipt', function(receipt){
-        console.log('receipt', receipt);
+        console.log('Allowance receipt', receipt);
       })
       .on('confirmation', function(confirmationNumber, receipt){
-        console.log('confirmation');
+        console.log('Allowance confirmation');
         console.log(confirmationNumber);
 
-        setTxConfirmation(confirmationNumber);
+        setTxConfirmationAllowance(confirmationNumber);
       })
       .on('error', function(error, receipt) {
-        console.log('error');
+        console.log('Allowance error');
         console.log(receipt);
         console.log(error);
 
-        setTxError(error);
+        setTxErrorAllowance(error);
       });
+  }
+
+  const finaliseSale = async() => {
+    const newDataOrder = {...dataTemplates.dataOrder,
+      dataPackId: currBuyObject.dataPackId,
+      buyerEthAddress: user.get('ethAddress'),
+      pricePaid: currBuyObject.cost,
+      dataFileUrl: currBuyObject.dataFileUrl,
+      dataHash: currBuyObject.dataHash,
+      txHash: txHashTransfer
+    };
+
+    await saveDataOrder(newDataOrder);
+
+    setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s4: 1}));
+
+    toast({
+      title: "Congrats! you have purchased rights to use the data pack",
+      description: "Head over to the 'Purchased Data' tab to access the data",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
+
+    onCloseCleanUp();
+  }
+
+  function onCloseCleanUp() {
+    setCurrBuyObject(null);
+    onProgressModalClose();
   }
 
   return (
@@ -237,6 +348,11 @@ export default function() {
               <ModalBody pb={6}>
                 <Stack spacing={5}>
                   <HStack>
+                    {!buyProgress.s0 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                    <Text>Checking purchase requirements</Text>
+                  </HStack>
+
+                  <HStack>
                     {!buyProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                     <Text>Verifying data on blockchain</Text>
                   </HStack>
@@ -246,33 +362,54 @@ export default function() {
                     <Text>Authorising purchase for {currBuyObject && currBuyObject.cost} MYDA</Text>
                   </HStack>
 
+                  {txHashAllowance && <Stack>
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeeded) * txConfirmationAllowance} />
+
+                    <HStack>
+                      <Text>Transaction </Text>
+                      <ShortAddress address={txHashAllowance} />
+                      <Link href={`https://ropsten.etherscan.io/tx/${txHashAllowance}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                    </HStack>                    
+                  </Stack>}
+
                   <HStack>
                     {!buyProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                     <Text>Making purchase</Text>
                   </HStack>
 
-                  <HStack>
-                    {!buyProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Finalising sale</Text>
-                  </HStack>
-
-                  {txHash && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / txConfirmationsNeeded) * txConfirmation} />
+                  {txHashTransfer && <Stack>
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeeded) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text>Transaction </Text>
-                      <ShortAddress address={txHash} />
-                      <Link href={`https://ropsten.etherscan.io/tx/${txHash}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                      <ShortAddress address={txHashTransfer} />
+                      <Link href={`https://ropsten.etherscan.io/tx/${txHashTransfer}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 
-                  {txError && 
+                  <HStack>
+                    {!buyProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                    <Text>Finalising sale</Text>
+                  </HStack>                  
+
+                  {txErrorAllowance && 
                     <Alert status="error">
-                      <Box flex="1">
-                        <AlertIcon />
-                        {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
-                      </Box>
-                      <CloseButton position="absolute" right="8px" top="8px" />
+                      <AlertIcon />
+                      {txErrorAllowance.message && <AlertTitle>{txErrorAllowance.message}</AlertTitle>}
+                    </Alert>
+                  }
+
+                  {txErrorTransfer && 
+                    <Alert status="error">
+                      <AlertIcon />
+                      {txErrorTransfer.message && <AlertTitle>{txErrorTransfer.message}</AlertTitle>}
+                    </Alert>
+                  }
+
+                  {buyProgressErr && 
+                    <Alert status="error">
+                      <AlertIcon />
+                      <AlertTitle>{buyProgressErr}</AlertTitle>
                     </Alert>
                   }
                 </Stack>

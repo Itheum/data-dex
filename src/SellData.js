@@ -9,11 +9,9 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { dataTemplates, TERMS, ABIS } from './util';
+import { config, dataTemplates, TERMS, ABIS } from './util';
 import { ddexContractAddress } from './secrets';
 import ShortAddress from './ShortAddress';
-
-const txConfirmationsNeeded = 4;
 
 export default function() {
   const { user } = useMoralis();
@@ -92,7 +90,7 @@ export default function() {
 
   useEffect(async () => {
     if (savedDataPackMoralis && savedDataPackMoralis.id && savedDataPackMoralis.get('dataHash')) {
-      ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
+      web3_ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
     }
   }, [savedDataPackMoralis]);
 
@@ -101,7 +99,7 @@ export default function() {
       console.error(txError);
     }
 
-    if (txHash && txConfirmation === txConfirmationsNeeded) {
+    if (txHash && txConfirmation === config.txConfirmationsNeeded) {
       savedDataPackMoralis.set('txHash', txHash);
 
       await savedDataPackMoralis.save();
@@ -138,7 +136,7 @@ export default function() {
     }
   }
 
-  const ddexAdvertiseForSale = async(dataPackId, dataHash) => {
+  const web3_ddexAdvertiseForSale = async(dataPackId, dataHash) => {
     const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
 
     ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
@@ -187,7 +185,6 @@ export default function() {
             <AlertIcon />
             {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
           </Box>
-          <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
       {errCfHashData && 
@@ -196,7 +193,6 @@ export default function() {
             <AlertIcon />
             {errCfHashData.message && <AlertTitle>{errCfHashData.message}</AlertTitle>}
           </Box>
-          <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
       {errFileSave && 
@@ -205,7 +201,6 @@ export default function() {
             <AlertIcon />
             {errFileSave.message && <AlertTitle>{errFileSave.message}</AlertTitle>}
           </Box>
-          <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
       <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} />
@@ -233,7 +228,7 @@ export default function() {
       <Box>
         <br />
         {web3EnableError && <Heading>{web3EnableError}</Heading>}
-        <Button onClick={() => ddexAdvertiseForSale('foo', 'bar')}>Contract Test</Button>
+        <Button onClick={() => web3_ddexAdvertiseForSale('foo', 'bar')}>Contract Test</Button>
       </Box>
 
       <Modal
@@ -267,7 +262,7 @@ export default function() {
               </HStack>
 
               {txHash && <Stack>
-                <Progress colorScheme="green" size="sm" value={(100 / txConfirmationsNeeded) * txConfirmation} />
+                <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeeded) * txConfirmation} />
 
                 <HStack>
                   <Text>Transaction </Text>
@@ -277,11 +272,8 @@ export default function() {
 
                 {txError && 
                   <Alert status="error">
-                    <Box flex="1">
-                      <AlertIcon />
-                      {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
-                    </Box>
-                    <CloseButton position="absolute" right="8px" top="8px" />
+                    <AlertIcon />
+                    {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
                   </Alert>
                 }
               </Stack>}

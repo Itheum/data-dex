@@ -1,3 +1,7 @@
+export const config = {
+  txConfirmationsNeeded: 1
+}
+
 export const dataTemplates = {
   dataPack: {
     sellerEthAddress: null,
@@ -8,11 +12,12 @@ export const dataTemplates = {
     txHash: null
   },
   dataOrder: {
-    state: null,
-    reasonToBuy: null,
     dataPackId: null,
-    sellerEthAddress: null,
     buyerEthAddress: null,
+    pricePaid: null,
+    dataFileUrl: null,
+    dataHash: null,
+    txHash: null
   },
 }
 

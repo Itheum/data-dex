@@ -14,7 +14,7 @@ export default function() {
   const toast = useToast();
   const { user } = useMoralis();
   const { data: dataOrders, error: errorDataOrderGet, isLoading } = useMoralisQuery("DataOrder", query =>
-    query.equalTo("state", "1")
+    query.ascending("createdAt")
   );
 
   return (
@@ -43,27 +43,27 @@ export default function() {
               <Tr>
                 <Th>Data Order ID</Th>
                 <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
                 <Th>Data File</Th>
-                <Th>Actions</Th>
+                <Th>Price Paid</Th>
+                <Th>TX Hash</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {dataOrders.map((item) => <Tr key={item.id}>
+              {dataOrders.filter(i => (i.get('buyerEthAddress') === user.get('ethAddress'))).map((item) => <Tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td>{item.get('dataPackId')}</Td>
-                <Td><ShortAddress address={item.get('sellerEthAddress')}/></Td>
-                <Td>{item.get('dataFile') && <Link href={item.get('dataFile').url()} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link>}</Td>
-                <Td><Text fontSize="xs">n/a</Text></Td>
+                <Td><Link href={item.get('dataFileUrl')} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link></Td>
+                <Td>{item.get('pricePaid')}</Td>
+                <Td><Link href={`https://ropsten.etherscan.io/tx/${item.get('txHash')}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link></Td>
               </Tr>)}
             </Tbody>
             <Tfoot>
               <Tr>
                 <Th>Data Order ID</Th>
                 <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
                 <Th>Data File</Th>
-                <Th>Actions</Th>
+                <Th>Price Paid</Th>
+                <Th>TX Hash</Th>
               </Tr>
             </Tfoot>
           </Table>
