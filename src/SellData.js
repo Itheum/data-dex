@@ -99,7 +99,7 @@ export default function() {
       console.error(txError);
     }
 
-    if (txHash && txConfirmation === config.txConfirmationsNeeded) {
+    if (txHash && txConfirmation === config.txConfirmationsNeededSml) {
       savedDataPackMoralis.set('txHash', txHash);
 
       await savedDataPackMoralis.save();
@@ -225,12 +225,6 @@ export default function() {
 
       <Button isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
 
-      <Box>
-        <br />
-        {web3EnableError && <Heading>{web3EnableError}</Heading>}
-        <Button onClick={() => web3_ddexAdvertiseForSale('foo', 'bar')}>Contract Test</Button>
-      </Box>
-
       <Modal
         isOpen={isProgressModalOpen}
         onClose={closeProgressModal}
@@ -262,7 +256,7 @@ export default function() {
               </HStack>
 
               {txHash && <Stack>
-                <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeeded) * txConfirmation} />
+                <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmation} />
 
                 <HStack>
                   <Text>Transaction </Text>

@@ -11,15 +11,16 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, dataTemplates, TERMS, ABIS } from './util';
+import { config, sleep, dataTemplates, TERMS, ABIS } from './util';
 import { ddexContractAddress, mydaContractAddress } from './secrets';
 
-export default function() {
+export default function({onRefreshBalance}) {
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
-    query.ascending("createdAt")
+    query.ascending("createdAt") &&
+    query.notEqualTo("txHash", null)
   );
   const { isSaving, error: errorOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
   const [currBuyObject, setCurrBuyObject] = useState(null);
@@ -41,7 +42,7 @@ export default function() {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
     } else {
-      if (txHashAllowance && txConfirmationAllowance === config.txConfirmationsNeeded) {
+      if (txHashAllowance && txConfirmationAllowance === config.txConfirmationsNeededSml) {
         console.log('AUTHORISED');
   
         setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
@@ -55,7 +56,7 @@ export default function() {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
     } else {
-      if (txHashTransfer && txConfirmationTransfer === config.txConfirmationsNeeded) {
+      if (txHashTransfer && txConfirmationTransfer === config.txConfirmationsNeededLrg) {
         console.log('TRANSFERRED');
   
         setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
@@ -168,11 +169,16 @@ export default function() {
     const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
     let isAllowed = false;
     
+    const decimals = 18;
+    const feeInMyda = currBuyObject.cost;
+    const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    console.log('🚀 ~ 1 mydaInPrecision', mydaInPrecision.toString());
+
     try {
       const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), ddexContractAddress).call();
-      console.log('🚀 ~ web3_tokenCheckAllowance ~ val', allowedAmount);
+      console.log('🚀 ~ 2 allowedAmount', allowedAmount);
 
-      if (parseInt(allowedAmount, 10) >= currBuyObject.cost) {
+      if (allowedAmount >= mydaInPrecision) {
         isAllowed = true;
       }
     } catch(e) {
@@ -185,13 +191,11 @@ export default function() {
   const web3_ddexBuyDataPack = async(dataPackId, feeInMyda) => {
     const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
 
-    // var amountToSend = 2;
-    // var weiAmout = amountToSend * 1e18;
-    var weiAmount2 = web3.toWei(feeInMyda);
-    console.log('🚀 ~ constweb3_ddexBuyDataPack=async ~ weiAmount2', weiAmount2);
-    return;
+    const decimals = 18;
+    const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    console.log('🚀 ~ mydaInPrecision', mydaInPrecision.toString());
     
-    ddexContract.methods.buyDataPack(dataPackId, feeInMyda).send({from: user.get('ethAddress')})
+    ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash) {
         console.log('Transfer transactionHash', hash);
 
@@ -215,10 +219,14 @@ export default function() {
       });
   }
   
-  const web3_tokenApprove = async(amount) => {
+  const web3_tokenApprove = async(feeInMyda) => {
     const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
 
-    tokenContract.methods.approve(ddexContractAddress, amount).send({from: user.get('ethAddress')})
+    const decimals = 18;
+    const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    console.log('🚀 ~ web3_tokenApprove - mydaInPrecision', mydaInPrecision.toString());
+
+    tokenContract.methods.approve(ddexContractAddress, mydaInPrecision).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash) {
         console.log('Allowance transactionHash', hash);
 
@@ -270,6 +278,7 @@ export default function() {
   function onCloseCleanUp() {
     setCurrBuyObject(null);
     onProgressModalClose();
+    onRefreshBalance();
   }
 
   return (
@@ -363,7 +372,7 @@ export default function() {
                   </HStack>
 
                   {txHashAllowance && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeeded) * txConfirmationAllowance} />
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmationAllowance} />
 
                     <HStack>
                       <Text>Transaction </Text>
@@ -378,7 +387,7 @@ export default function() {
                   </HStack>
 
                   {txHashTransfer && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeeded) * txConfirmationTransfer} />
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text>Transaction </Text>

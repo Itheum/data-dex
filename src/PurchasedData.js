@@ -53,7 +53,7 @@ export default function() {
                 <Td>{item.id}</Td>
                 <Td>{item.get('dataPackId')}</Td>
                 <Td><Link href={item.get('dataFileUrl')} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link></Td>
-                <Td>{item.get('pricePaid')}</Td>
+                <Td>{item.get('pricePaid')} MYDA</Td>
                 <Td><Link href={`https://ropsten.etherscan.io/tx/${item.get('txHash')}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link></Td>
               </Tr>)}
             </Tbody>
