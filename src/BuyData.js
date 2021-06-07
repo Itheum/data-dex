@@ -4,7 +4,7 @@ import { Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Skeleton, CloseButton, Button, Link, Spinner, Progress,
-  Alert, AlertIcon, AlertTitle,
+  Alert, AlertIcon, AlertTitle, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Text, HStack, 
@@ -283,7 +283,8 @@ export default function({onRefreshBalance}) {
 
   return (
     <Stack spacing={5}>
-      <Box></Box>
+      <Heading size="lg">Buy Data</Heading>
+
       {errorDataPackGet && 
         <Alert status="error">
           <Box flex="1">
@@ -302,7 +303,13 @@ export default function({onRefreshBalance}) {
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
-      {(isLoading || dataPacks.length === 0) && <Stack>
+      {isLoading && <Stack>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Box />
         <Skeleton height="20px" />
         <Skeleton height="20px" />
         <Skeleton height="20px" />
@@ -310,20 +317,21 @@ export default function({onRefreshBalance}) {
         <Skeleton height="20px" />
       </Stack> || 
         <Box>
-          <Table variant="simple">
-            <TableCaption>The following data packs are available for purchase</TableCaption>
-            <Thead>
-              <Tr>
-                <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
-                <Th>Data Preview</Th>
-                <Th>Data Hash</Th>
-                <Th>Terms of use</Th>
-                <Th>Cost</Th>
-                <Th>Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
+          {dataPacks.length === 0 && <Text>No data packs yet...</Text> ||
+            <Table variant="simple">
+              <TableCaption>The following data packs are available for purchase</TableCaption>
+              <Thead>
+                <Tr>
+                  <Th>Data Pack ID</Th>
+                  <Th>Seller Address</Th>
+                  <Th>Data Preview</Th>
+                  <Th>Data Hash</Th>
+                  <Th>Terms of use</Th>
+                  <Th>Cost</Th>
+                  <Th>Actions</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
               {dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))).map((item) => <Tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
@@ -334,7 +342,7 @@ export default function({onRefreshBalance}) {
                 <Td><Button isLoading={false} colorScheme="green" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
               </Tr>)}
             </Tbody>
-            <Tfoot>
+              <Tfoot>
               <Tr>
               <Th>Data Pack ID</Th>
               <Th>Seller Address</Th>
@@ -345,9 +353,11 @@ export default function({onRefreshBalance}) {
               <Th>Actions</Th>
               </Tr>
             </Tfoot>
-          </Table>
-        
-          <Modal
+            </Table>        
+          }
+        </Box>}
+
+        <Modal
             isOpen={isProgressModalOpen}
             onClose={onCloseCleanUp} isCentered
           >
@@ -425,7 +435,6 @@ export default function({onRefreshBalance}) {
               </ModalBody>
             </ModalContent>
           </Modal>
-        </Box>}
     </Stack>
   );
 };

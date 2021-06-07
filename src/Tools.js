@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useMoralis, useMoralisQuery, useNewMoralisObject } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useNewMoralisObject, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Skeleton, CloseButton, Button, Link, Spinner, Progress,
-  Alert, AlertIcon, AlertTitle,
+  Alert, AlertIcon, AlertTitle, AlertDescription,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Text, HStack, Input, Heading,
@@ -14,10 +14,17 @@ import ShortAddress from './ShortAddress';
 import { config, sleep, dataTemplates, TERMS, ABIS } from './util';
 import { ddexContractAddress, mydaContractAddress } from './secrets';
 
-export default function({onRefreshBalance}) {
+export default function({onRefreshBalance, onItheumAccount, itheumAccount}) {
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
+
+  const {
+    error: errCfTestData,
+    isLoading: loadingCfTestData,
+    fetch: doCfTestData,
+    data: dataCfTestData
+  } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
 
@@ -26,6 +33,26 @@ export default function({onRefreshBalance}) {
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
 
+
+  // test data
+  useEffect(() => {
+    if (dataCfTestData && dataCfTestData.length > 0) {
+      console.log('🚀 ~ function ~ dataCfTestData', dataCfTestData);
+
+      const response = JSON.parse(decodeURIComponent((atob(dataCfTestData))));
+
+      toast({
+        title: "Congrats! an itheum test account has been linked",          
+        status: "success",
+        duration: 6000,
+        isClosable: true,
+      });
+
+      onItheumAccount(response);
+    }
+  }, [dataCfTestData]);
+
+  // Faucet
   useEffect(async () => {
     if (txErrorFaucet) {
       console.error(txErrorFaucet);
@@ -35,7 +62,8 @@ export default function({onRefreshBalance}) {
         console.log('FAUCETTED');
         
         toast({
-          title: "Congrats! the faucet has sent you some MYDA",          
+          title: "Congrats! the faucet has sent you some MYDA",
+          description: "You can now sell your data on the DEX",         
           status: "success",
           duration: 6000,
           isClosable: true,
@@ -88,9 +116,29 @@ export default function({onRefreshBalance}) {
 
   return (
     <Stack spacing={5}>
-      <Box></Box>
+      <Heading size="lg">Home</Heading>
 
-      <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+      <HStack align="top" spacing={10}>
+        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+        <Stack p={5}>
+          <Heading size="md">Your Linked Itheum Account</Heading>
+            {!itheumAccount && <Alert status="error">
+              <Stack>
+                <AlertIcon />
+                <AlertTitle mr={2}>Sorry! You don't seem to have a live platform account</AlertTitle>
+                <AlertDescription>But dont fret; you can still test the Data Dex by temporarily linking to a test data account below.</AlertDescription>
+              </Stack>
+            </Alert>}
+
+            {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="green" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
+
+            {itheumAccount && <Stack>
+              <Text>Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+            </Stack>}
+        </Stack>
+        
+      </Box>
+        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
         <Stack p={5}>
           <Heading size="md">MYDA Faucet</Heading>
           <Text>Get some free MYDA tokens to try DEX features</Text>
@@ -119,6 +167,7 @@ export default function({onRefreshBalance}) {
           </Alert>
         }
       </Box>
+      </HStack>
     </Stack>
   );
 };

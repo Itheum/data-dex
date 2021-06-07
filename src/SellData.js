@@ -178,7 +178,8 @@ export default function() {
 
   return (
     <Stack spacing={5}>
-      <Box></Box>
+      <Heading size="lg">Sell Data</Heading>
+
       {errDataPackSave && 
         <Alert status="error">
           <Box flex="1">
