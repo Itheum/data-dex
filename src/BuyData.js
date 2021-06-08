@@ -35,7 +35,6 @@ export default function({onRefreshBalance}) {
   const [txHashTransfer, setTxHashTransfer] = useState(null);
   const [txErrorTransfer, setTxErrorTransfer] = useState(null);
   
-  
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   useEffect(async () => {

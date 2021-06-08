@@ -14,7 +14,7 @@ import ShortAddress from './ShortAddress';
 import { config, sleep, dataTemplates, TERMS, ABIS } from './util';
 import { ddexContractAddress, mydaContractAddress } from './secrets';
 
-export default function({onRefreshBalance, onItheumAccount, itheumAccount}) {
+export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
@@ -37,9 +37,10 @@ export default function({onRefreshBalance, onItheumAccount, itheumAccount}) {
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {
-      console.log('🚀 ~ function ~ dataCfTestData', dataCfTestData);
+      // console.log('🚀 ~ function ~ dataCfTestData', dataCfTestData);
 
       const response = JSON.parse(decodeURIComponent((atob(dataCfTestData))));
+      console.log('🚀 ~ useEffect ~ response', response);
 
       toast({
         title: "Congrats! an itheum test account has been linked",          
@@ -120,8 +121,8 @@ export default function({onRefreshBalance, onItheumAccount, itheumAccount}) {
 
       <HStack align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-        <Stack p={5}>
-          <Heading size="md">Your Linked Itheum Account</Heading>
+          <Stack p={5}>
+            <Heading size="md">Your Linked Itheum Account</Heading>
             {!itheumAccount && <Alert status="error">
               <Stack>
                 <AlertIcon />
@@ -134,39 +135,40 @@ export default function({onRefreshBalance, onItheumAccount, itheumAccount}) {
 
             {itheumAccount && <Stack>
               <Text>Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+              <Button colorScheme="green" variant="outline" onClick={() => setMenuItem(2)}>Sell My Data</Button>
             </Stack>}
-        </Stack>
+          </Stack>
+        </Box>
         
-      </Box>
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-        <Stack p={5}>
-          <Heading size="md">MYDA Faucet</Heading>
-          <Text>Get some free MYDA tokens to try DEX features</Text>
-        </Stack>
+          <Stack p={5}>
+            <Heading size="md">MYDA Faucet</Heading>
+            <Text>Get some free MYDA tokens to try DEX features</Text>
+          </Stack>
         
-        <Stack p={5}>
-          <Text mb="8px">Your Eth Address</Text>
-          <Input isDisabled value={user.get('ethAddress')} />
-          <Button isLoading={faucetWorking} colorScheme="green" variant="outline" onClick={web3_tokenFaucet}>Send me 50 MYDA</Button>
-        </Stack>
+          <Stack p={5}>
+            <Text mb="8px">Your Eth Address</Text>
+            <Input isDisabled value={user.get('ethAddress')} />
+            <Button isLoading={faucetWorking} colorScheme="green" variant="outline" onClick={web3_tokenFaucet}>Send me 50 MYDA</Button>
+          </Stack>
 
-        {txHashFaucet && <Stack p={5}>
-          <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
+          {txHashFaucet && <Stack p={5}>
+            <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
-          <HStack>
-            <Text>Transaction </Text>
-            <ShortAddress address={txHashFaucet} />
-            <Link href={`https://ropsten.etherscan.io/tx/${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
-          </HStack>                    
-        </Stack>}
+            <HStack>
+              <Text>Transaction </Text>
+              <ShortAddress address={txHashFaucet} />
+              <Link href={`https://ropsten.etherscan.io/tx/${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+            </HStack>                    
+          </Stack>}
 
-        {txErrorFaucet && 
-          <Alert status="error">
-            <AlertIcon />
-            {txErrorFaucet.message && <AlertTitle>{txErrorFaucet.message}</AlertTitle>}
-          </Alert>
-        }
-      </Box>
+          {txErrorFaucet && 
+            <Alert status="error">
+              <AlertIcon />
+              {txErrorFaucet.message && <AlertTitle>{txErrorFaucet.message}</AlertTitle>}
+            </Alert>
+          }
+        </Box>
       </HStack>
     </Stack>
   );

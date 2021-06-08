@@ -107,9 +107,9 @@ function App() {
               </Box>
 
               <Box ml="10" mt={5}>
-                {menuItem === MENU.HOME && <Tools itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
+                {menuItem === MENU.HOME && <Tools setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
                 {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
-                {menuItem === MENU.SELL && <SellData />}
+                {menuItem === MENU.SELL && <SellData itheumAccount={itheumAccount} />}
                 {menuItem === MENU.PURCHASED && <PurchasedData />}
               </Box>
             </Flex>
