@@ -358,7 +358,8 @@ export default function({onRefreshBalance}) {
 
         <Modal
             isOpen={isProgressModalOpen}
-            onClose={onCloseCleanUp} isCentered
+            onClose={onCloseCleanUp}
+            closeOnEsc={false} closeOnOverlayClick={false} isCentered
           >
             <ModalOverlay />
             <ModalContent>
@@ -372,7 +373,7 @@ export default function({onRefreshBalance}) {
 
                   <HStack>
                     {!buyProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Verifying data on blockchain</Text>
+                    <Text>Verifying data integrity on blockchain</Text>
                   </HStack>
 
                   <HStack>

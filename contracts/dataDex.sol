@@ -17,6 +17,9 @@ contract ItheumDataDex {
     constructor(ERC20 _mydaToken) {
         mydaToken = _mydaToken;
     }
+
+    event AdvertiseEvent(string dataPackId, address seller);
+    event PurchaseEvent(string dataPackId, address buyer, address seller, uint256 feeInMyda);
     
     function advertiseForSale(string calldata dataPackId, string calldata dataHashStr) external {
         bytes32 dataHash = stringToBytes32(dataHashStr);
@@ -25,6 +28,8 @@ contract ItheumDataDex {
             seller: msg.sender,
             dataHash: dataHash
         });
+
+        emit AdvertiseEvent(dataPackId, msg.sender);
     }
     
     function buyDataPack(string calldata dataPackId,  uint256 feeInMyda) external payable {
@@ -43,6 +48,8 @@ contract ItheumDataDex {
         mydaToken.transferFrom(msg.sender, targetPack.seller, feeInMyda);
         
         accessAllocations[dataPackId].push(msg.sender);
+
+        emit PurchaseEvent(dataPackId, msg.sender, targetPack.seller, feeInMyda);
         
         // payable(targetPack.seller).transfer(1 ether);
     }

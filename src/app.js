@@ -11,6 +11,7 @@ import Tools from './Tools';
 import { MENU, ABIS, sleep } from './util';
 import { mydaContractAddress } from './secrets.js';
 import logo from './img/logo.png';
+import logoSml from './img/logo-sml.png';
 import chainEth from './img/eth-chain-logo.png';
 import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
@@ -66,18 +67,18 @@ function App() {
           <Stack spacing={5} mt={5}>
             <Flex>
               <Image
-                boxSize="75px"
+                boxSize="45px"
                 height="auto"
-                src={logo}
+                src={logoSml}
                 alt="Itheum Data Dex"
               />
               <Box p="2">
-                <Heading>Itheum Data Dex</Heading>
+                <Heading size="md">Itheum Data Dex</Heading>
               </Box>
               <Spacer />
               <Box>
                 <HStack>
-                  <SlideFade in={isOpen} reverse={!isOpen} offsetY="20px">
+                  <SlideFade in={isOpen} offsetY="20px">
                     <Box
                       as="text"
                       p={4}
@@ -87,12 +88,18 @@ function App() {
                       bgGradient="linear(to-l, #7928CA, #FF0080)">MYDA {myMydaBal}
                     </Box>
                   </SlideFade>
-                  <Text fontSize="xs"><ShortAddress address={user.get('ethAddress')} /></Text>
-                  {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
-                  <Button onClick={() => logout()}>Logout</Button>
+
+                  <Text fontSize="xs" align="right">
+                    {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
+                    <ShortAddress address={user.get('ethAddress')} />
+                  </Text>
+                  
+                  <Button onClick={() => logout()} ml="10">Logout</Button>
                 </HStack>
               </Box>
             </Flex>            
+
+            <Box></Box>
 
             <Flex direction="row">
               <Box mt={5} ml={5}>
@@ -101,6 +108,10 @@ function App() {
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
+                  
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
                 </Stack>
               </Box>
 
@@ -116,7 +127,7 @@ function App() {
               </Box>
             </Flex>
           </Stack>
-          <Box></Box>
+          
         </Flex>
       </Container>
     );

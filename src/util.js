@@ -28,6 +28,9 @@ export const MENU = {
   BUY: 1,
   SELL: 2,
   PURCHASED: 3,
+  TX: 4,
+  VAULT: 5,
+  NFT: 6,
 };
 
 export const TERMS = [
@@ -48,6 +51,25 @@ export const ABIS = {
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "dataPackId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
+        }
+      ],
+      "name": "AdvertiseEvent",
+      "type": "event"
     },
     {
       "inputs": [
@@ -84,6 +106,37 @@ export const ABIS = {
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "dataPackId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "feeInMyda",
+          "type": "uint256"
+        }
+      ],
+      "name": "PurchaseEvent",
+      "type": "event"
     },
     {
       "inputs": [

@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useMoralis, useMoralisQuery, useNewMoralisObject, useMoralisCloudFunction } from 'react-moralis';
+import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
-import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Skeleton, CloseButton, Button, Link, Spinner, Progress,
+  Button, Link, Progress, Badge,
   Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
-  Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
-  Text, HStack, Input, Heading,
-  useToast, useDisclosure, 
+  Text, HStack, Heading,
+  useToast
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, sleep, dataTemplates, TERMS, ABIS } from './util';
-import { ddexContractAddress, mydaContractAddress } from './secrets';
+import { config, ABIS } from './util';
+import { mydaContractAddress } from './secrets';
 
 export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const toast = useToast();
@@ -37,10 +35,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {
-      // console.log('🚀 ~ function ~ dataCfTestData', dataCfTestData);
-
       const response = JSON.parse(decodeURIComponent((atob(dataCfTestData))));
-      console.log('🚀 ~ useEffect ~ response', response);
 
       toast({
         title: "Congrats! an itheum test account has been linked",          
@@ -121,8 +116,8 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
 
       <HStack align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-          <Stack p="5" h="320">
-            <Heading size="md">Your Linked Itheum Account</Heading>
+          <Stack p="5" h="360">
+            {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
             {!itheumAccount && <Alert status="error" variant="solid">
               <Stack>
                 <AlertIcon />
@@ -132,7 +127,15 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
             </Alert>}
             
             {itheumAccount && 
-              <Text>Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+              <Stack>
+                <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+                <Text fontSize="sm">You have data available to sell from the following programs you are participating in... </Text>
+                {itheumAccount.programsAllocation.map(item => (
+                  <Stack direction="row" key={item.program}>
+                    <Badge borderRadius="full" px="2" colorScheme="teal">{itheumAccount._lookups.programs[item.program].programName}</Badge>
+                  </Stack>
+                  ))}
+              </Stack>
             }
 
             <Spacer />
@@ -146,7 +149,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
         </Box>
         
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-          <Stack p="5" h="320">
+          <Stack p="5" h="360">
             <Heading size="md">MYDA Faucet</Heading>
             <Text>Get some free MYDA tokens to try DEX features</Text>
           
