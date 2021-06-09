@@ -1,6 +1,7 @@
 export const config = {
   txConfirmationsNeededSml: 1,
-  txConfirmationsNeededLrg: 3
+  txConfirmationsNeededLrg: 1,
+  dateStr: 'MMM Do YY'
 }
 
 export const dataTemplates = {

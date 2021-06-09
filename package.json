@@ -2,6 +2,7 @@
   "name": "data-dex",
   "version": "0.0.1",
   "description": "The DEX where you can package and sell personal data",
+  "homepage": "https://itheum.github.io/data-dex",
   "dependencies": {
     "@chakra-ui/icons": "^1.0.13",
     "@chakra-ui/react": "^1.5.2",
@@ -11,6 +12,8 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "framer-motion": "^4.1.6",
+    "gh-pages": "^3.2.0",
+    "moment": "^2.29.1",
     "moralis": "^0.0.15",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -23,7 +26,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-flat": "npx http-server -o /flat"
+    "start-flat": "npx http-server -o /flat",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "repository": {
     "type": "git",

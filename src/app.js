@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Text, Image, Divider, SlideFade, useDisclosure } from '@chakra-ui/react';
+import { Button, Text, Image, Divider, SlideFade, Tooltip, useDisclosure } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, Center } from '@chakra-ui/layout';
 import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
@@ -10,7 +10,10 @@ import ShortAddress from './ShortAddress';
 import Tools from './Tools';
 import { MENU, ABIS, sleep } from './util';
 import { mydaContractAddress } from './secrets.js';
-import logo from './img/logo-1.png';
+import logo from './img/logo.png';
+import chainEth from './img/eth-chain-logo.png';
+import chainPol from './img/polygon-chain-logo.png';
+import chainBsc from './img/bsc-chain-logo.png';
 
 function App() {
   const { isAuthenticated, logout, user } = useMoralis();
@@ -74,7 +77,6 @@ function App() {
               <Spacer />
               <Box>
                 <HStack>
-                  
                   <SlideFade in={isOpen} reverse={!isOpen} offsetY="20px">
                     <Box
                       as="text"
@@ -90,7 +92,7 @@ function App() {
                   <Button onClick={() => logout()}>Logout</Button>
                 </HStack>
               </Box>
-            </Flex>
+            </Flex>            
 
             <Flex direction="row">
               <Box mt={5} ml={5}>
@@ -122,9 +124,9 @@ function App() {
 
   return (
     <Container>
-      <Center h="500px">
+      <Center mt="100">
         <Box p="10" borderWidth="2px" borderRadius="lg" overflow="hidden">
-          <Stack>
+          <Stack >
               <Image
                 boxSize="150px"
                 height="auto"
@@ -132,8 +134,22 @@ function App() {
                 alt="Itheum Data Dex"
                 margin="auto"
               />
-            <Heading size="lg">Itheum Data Dex</Heading>
+            <Heading size="lg" textAlign="center">Itheum Data Dex</Heading>
+            <Text>Sell your personal data via secure on-chain exchange</Text>
+            <Spacer />
             <Auth />
+            <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
+            <Flex direction="row" justify="space-around">
+              <Tooltip label="Live on Ropsten Test Network">
+                <Image src={chainEth} boxSize="50px" />
+              </Tooltip>
+              <Tooltip label="Coming soon...">
+                <Image src={chainPol} boxSize="50px" opacity=".6" />
+              </Tooltip>
+              <Tooltip label="Coming soon...">
+                <Image src={chainBsc} boxSize="50px" opacity=".6" />
+              </Tooltip>
+            </Flex>
           </Stack>
         </Box>
       </Center>

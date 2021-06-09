@@ -302,59 +302,59 @@ export default function({onRefreshBalance}) {
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
-      {isLoading && <Stack>
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Box />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-      </Stack> || 
+      {dataPacks.length === 0 &&
+        <Stack w="1000px">
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Box />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+          <Skeleton height="20px" />
+        </Stack> || 
         <Box>
-          {dataPacks.length === 0 && <Text>No data packs yet...</Text> ||
-            <Table variant="simple">
-              <TableCaption>The following data packs are available for purchase</TableCaption>
-              <Thead>
-                <Tr>
-                  <Th>Data Pack ID</Th>
-                  <Th>Seller Address</Th>
-                  <Th>Data Preview</Th>
-                  <Th>Data Hash</Th>
-                  <Th>Terms of use</Th>
-                  <Th>Cost</Th>
-                  <Th>Actions</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-              {dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))).map((item) => <Tr key={item.id}>
-                <Td>{item.id}</Td>
-                <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
-                <Td>{item.get('dataPreview')}</Td>
-                <Td><ShortAddress address={item.get('dataHash')} /></Td>
-                <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
-                <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} MYDA</Td>
-                <Td><Button isLoading={false} colorScheme="green" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
-              </Tr>)}
-            </Tbody>
-              <Tfoot>
+          <Table variant="simple">
+            <TableCaption>The following data packs are available for purchase</TableCaption>
+            <Thead>
               <Tr>
-              <Th>Data Pack ID</Th>
-              <Th>Seller Address</Th>
-              <Th>Data Preview</Th>
-              <Th>Data Hash</Th>
-              <Th>Terms of use</Th>
-              <Th>Cost</Th>
-              <Th>Actions</Th>
+                <Th>Data Pack ID</Th>
+                <Th>Seller Address</Th>
+                <Th>Data Preview</Th>
+                <Th>Data Hash</Th>
+                <Th>Terms of use</Th>
+                <Th>Cost</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+            {dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))).map((item) => <Tr key={item.id}>
+              <Td>{item.id}</Td>
+              <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
+              <Td>{item.get('dataPreview')}</Td>
+              <Td><ShortAddress address={item.get('dataHash')} /></Td>
+              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
+              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} MYDA</Td>
+              <Td><Button isLoading={false} colorScheme="green" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
+            </Tr>)}
+          </Tbody>
+            <Tfoot>
+              <Tr>
+                <Th>Data Pack ID</Th>
+                <Th>Seller Address</Th>
+                <Th>Data Preview</Th>
+                <Th>Data Hash</Th>
+                <Th>Terms of use</Th>
+                <Th>Cost</Th>
+                <Th>Actions</Th>
               </Tr>
             </Tfoot>
-            </Table>        
-          }
-        </Box>}
+          </Table>        
+        </Box>
+      }
 
         <Modal
             isOpen={isProgressModalOpen}

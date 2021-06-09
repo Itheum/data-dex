@@ -4,7 +4,7 @@ import { Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Skeleton, CloseButton, Button, Link, Spinner, Progress,
-  Alert, AlertIcon, AlertTitle, AlertDescription,
+  Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Text, HStack, Input, Heading,
@@ -121,54 +121,57 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
 
       <HStack align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-          <Stack p={5}>
+          <Stack p="5" h="320">
             <Heading size="md">Your Linked Itheum Account</Heading>
-            {!itheumAccount && <Alert status="error">
+            {!itheumAccount && <Alert status="error" variant="solid">
               <Stack>
                 <AlertIcon />
-                <AlertTitle mr={2}>Sorry! You don't seem to have a live platform account</AlertTitle>
+                <AlertTitle>Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
                 <AlertDescription>But dont fret; you can still test the Data Dex by temporarily linking to a test data account below.</AlertDescription>
               </Stack>
             </Alert>}
+            
+            {itheumAccount && 
+              <Text>Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+            }
 
+            <Spacer />
+            
             {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="green" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
 
-            {itheumAccount && <Stack>
-              <Text>Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+            {itheumAccount && 
               <Button colorScheme="green" variant="outline" onClick={() => setMenuItem(2)}>Sell My Data</Button>
-            </Stack>}
+            }
           </Stack>
         </Box>
         
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-          <Stack p={5}>
+          <Stack p="5" h="320">
             <Heading size="md">MYDA Faucet</Heading>
             <Text>Get some free MYDA tokens to try DEX features</Text>
-          </Stack>
-        
-          <Stack p={5}>
-            <Text mb="8px">Your Eth Address</Text>
-            <Input isDisabled value={user.get('ethAddress')} />
+          
+            {txHashFaucet && <Stack>
+              <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
+
+              <HStack>
+                <Text>Transaction </Text>
+                <ShortAddress address={txHashFaucet} />
+                <Link href={`https://ropsten.etherscan.io/tx/${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+              </HStack>                    
+            </Stack>}
+
+            {txErrorFaucet && 
+              <Alert status="error">
+                <AlertIcon />
+                {txErrorFaucet.message && <AlertTitle>{txErrorFaucet.message}</AlertTitle>}
+              </Alert>
+            }
+
+            <Spacer />
             <Button isLoading={faucetWorking} colorScheme="green" variant="outline" onClick={web3_tokenFaucet}>Send me 50 MYDA</Button>
           </Stack>
-
-          {txHashFaucet && <Stack p={5}>
-            <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
-
-            <HStack>
-              <Text>Transaction </Text>
-              <ShortAddress address={txHashFaucet} />
-              <Link href={`https://ropsten.etherscan.io/tx/${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
-            </HStack>                    
-          </Stack>}
-
-          {txErrorFaucet && 
-            <Alert status="error">
-              <AlertIcon />
-              {txErrorFaucet.message && <AlertTitle>{txErrorFaucet.message}</AlertTitle>}
-            </Alert>
-          }
         </Box>
+
       </HStack>
     </Stack>
   );

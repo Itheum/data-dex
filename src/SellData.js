@@ -1,10 +1,12 @@
+import moment from 'moment';
+
 import { useEffect, useState } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
-  Alert, AlertIcon, AlertTitle, CloseButton, Link, Code,
+  Alert, AlertIcon, AlertTitle, CloseButton, Link, Code, CircularProgress,
   Image, Badge, AlertDescription, Wrap, WrapItem, Collapse,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, 
@@ -28,6 +30,8 @@ export default function({itheumAccount}) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpen, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
+  const [fetchDataLoading, setFetchDataLoading] = useState(true);
+  const [showCode, setShowCode] = useState(false);
 
   // eth tx state
   const [txConfirmation, setTxConfirmation] = useState(0);
@@ -48,7 +52,6 @@ export default function({itheumAccount}) {
   }
 
   const fetchData = async selObj => {
-  console.log('🚀 ~ function ~ selObj', selObj);
     const myHeaders = new Headers();
     myHeaders.append("authorization", tempCloudApiKey);
 
@@ -59,12 +62,14 @@ export default function({itheumAccount}) {
 
     const res = await fetch(`https://itheumapi.com/readings/${selObj.shortId}/${selObj.type}/range?fromTs=${selObj.fromTs}&toTs=${selObj.toTs}`, requestOptions);
     const data = await res.json();
-    console.log('🚀 ~ function ~ data', data);
 
     if (data && data.length > 0) {
-      setSellerDataPreview(`${data.length} datapoints from the ${selObj.programName} program collected from ${selObj.fromTs} to ${selObj.toTs}`);
+      setSellerDataPreview(`${data.length} datapoints from the ${selObj.programName} 
+program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${moment(selObj.toTs).format(config.dateStr)}`);
       setSellerData(JSON.stringify(data));
     }
+
+    setFetchDataLoading(false);
   }
 
   const { 
@@ -214,9 +219,14 @@ export default function({itheumAccount}) {
     onProgressModalClose();
   }
 
-  const [show, setShow] = useState(false);
+  function closeDrawer() {
+    setCurrSellObject(null);
+    setFetchDataLoading(true);
+    onCloseDrawer();
+  }
 
-  const handleToggle = () => setShow(!show);
+
+  const handleCodeShowToggle = () => setShowCode(!showCode);
 
   return (
     <Stack spacing={5}>
@@ -226,7 +236,7 @@ export default function({itheumAccount}) {
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
           {itheumAccount.programsAllocation.map(item => (
             <Box key={item.program} maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src="https://itheum.com/dist/83ca39f6bc2d36ced900a8be791e2f86.jpg" alt="" />
+              <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
               <Box p="6">
                 <Box d="flex" alignItems="baseline">
@@ -246,33 +256,36 @@ export default function({itheumAccount}) {
             
             </Box>
           ))}          
-        </Wrap>
-       || <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-            <Image src="https://itheum.com/dist/83ca39f6bc2d36ced900a8be791e2f86.jpg" alt="" />
+        </Wrap>}
+       
+       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Image src="https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-any.png" alt="" />
 
-            <Box p="6">
-              <Box d="flex" alignItems="baseline">
-                <Badge borderRadius="full" px="2" colorScheme="teal"> New</Badge>
-                <Box
-                  mt="1"
-                  ml="2"
-                  fontWeight="semibold"
-                  as="h4"
-                  lineHeight="tight"
-                  isTruncated>
-                  Sell any Arbitrary Data Set
-                </Box>
+          <Box p="6">
+            <Box d="flex" alignItems="baseline">
+              <Box
+                mt="1"
+                fontWeight="semibold"
+                as="h4"
+                lineHeight="tight"
+                isTruncated>
+                Sell Any Arbitrary Data Set
               </Box>
-              <Button mt="3" colorScheme="green" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
+            </Box>
+            <Button mt="3" colorScheme="green" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
           </Box>     
-     </Box>}
+     </Box>
 
-      <Drawer onClose={onCloseDrawer} isOpen={isDrawerOpen} size="xl">
+      <Drawer onClose={closeDrawer} isOpen={isDrawerOpen} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader>{currSellObject && `Sell data from your ${currSellObject.programName} program`}</DrawerHeader>
+          <DrawerHeader>
+            <HStack spacing="5">
+              <CloseButton size="lg" onClick={closeDrawer} />
+              {currSellObject && <Stack><Text fontSize="2xl">Sell data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
+            </HStack>
+          </DrawerHeader>
           <DrawerBody>
-
             {errDataPackSave && 
               <Alert status="error">
                 <Box flex="1">
@@ -297,37 +310,50 @@ export default function({itheumAccount}) {
                 </Box>
               </Alert>
             }
-            <Stack spacing={5}>
-            {/* <Input isDisabled placeholder="Seller Eth Address" value={sellerEthAddress} onChange={(event) => setSellerEthAddress(event.currentTarget.value)} /> */}
-            <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
-            {isArbirData && <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />}
             
-            <Collapse startingHeight={150} in={show}>
-              <Code>{sellerData}</Code>
-            </Collapse>
-            <Button size="sm" onClick={handleToggle} mt="1rem">
-              Show {show ? "Less" : "More"}
-            </Button>
+            {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
             
-            {isArbirData && <Text>{`{"foo": "bar"}`}</Text>}
-            
-            <Stack>
-              <Text>Terms of Use</Text>
-              <HStack>
-                <RadioGroup value={termsOfUseId} onChange={setTermsOfUseId}>
-                  <Stack spacing={5} direction="row">
-                    {TERMS.map((term) => {
-                      return (<Radio colorScheme="red" value={term.id}>
-                        {term.val}
-                      </Radio>)
-                    })}
-                  </Stack>
-                </RadioGroup>
-              </HStack>
-            </Stack>
+              <Stack spacing={5} mt="5">
+                <Text fontWeight="bold">Data Payload Preview/Summary:</Text>                                         
+                <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
+                
+                <Text fontWeight="bold">Data Payload for Sale:</Text>
+                {isArbirData && <>
+                  <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
+                </>}
+              
+                {!isArbirData && <>
+                <Collapse startingHeight={150} in={showCode}>
+                  <Code>{sellerData}</Code>
+                </Collapse>
 
-            <Button isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
-            </Stack>
+                <Button onClick={handleCodeShowToggle} mt="1rem">
+                  Show {showCode ? "Less" : "More"}
+                </Button></>}
+              
+                {isArbirData && <Text fontSize="sm">e.g. Enter any JSON payload that represents your data. e.g. {`{"foo": "bar"}`}</Text>}
+              
+                <Stack mt="10" spacing="5">
+                  <Text fontWeight="bold">Terms of Use:</Text>
+                  <Stack>
+                    <RadioGroup value={termsOfUseId} onChange={setTermsOfUseId}>
+                      <Stack spacing={5}>
+                        {TERMS.map((term) => {
+                          return (<Radio colorScheme="red" value={term.id}>
+                            {term.val}
+                          </Radio>)
+                        })}
+                      </Stack>
+                    </RadioGroup>
+                  </Stack>
+                </Stack>
+
+                <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
+                  <Badge ml="1" fontSize="0.8em" colorScheme="green">2 MYDA</Badge>
+                </Text>
+
+                <Button mt="5"colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
+              </Stack>}
 
             <Modal
               isOpen={isProgressModalOpen}
@@ -360,7 +386,7 @@ export default function({itheumAccount}) {
                     </HStack>
 
                     {txHash && <Stack>
-                      <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmation} />
+                      <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmation} />
 
                       <HStack>
                         <Text>Transaction </Text>

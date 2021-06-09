@@ -61,11 +61,10 @@ export const Auth = () => {
           <Box flex="1">
             <AlertTitle>Authentication has failed</AlertTitle>
             <AlertDescription display="block">{authError.message}</AlertDescription>
-          </Box>
-          <CloseButton position="absolute" right="8px" top="8px" />
+          </Box>         
         </Alert>
       )}
-      <Button isLoading={isAuthenticating} onClick={() => authenticate()}>
+      <Button isLoading={isAuthenticating} mb="10" onClick={() => authenticate()}>
         Authenticate via Metamask
       </Button>
       {/* <Text textAlign="center">
