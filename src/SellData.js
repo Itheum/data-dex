@@ -1,5 +1,4 @@
 import moment from 'moment';
-
 import { useEffect, useState } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
@@ -7,7 +6,7 @@ import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
   Alert, AlertIcon, AlertTitle, CloseButton, Link, Code, CircularProgress,
-  Image, Badge, AlertDescription, Wrap, WrapItem, Collapse,
+  Image, Badge, AlertDescription, Wrap, WrapItem, Collapse, Textarea,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, 
   useToast, useDisclosure
@@ -35,6 +34,7 @@ export default function({itheumAccount}) {
 
   // eth tx state
   const [txConfirmation, setTxConfirmation] = useState(0);
+  const [txReceipt, setTxReceipt] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [txError, setTxError] = useState(null);
 
@@ -140,9 +140,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
   useEffect(async () => {
     if (txError) {
       console.error(txError);
-    }
-
-    if (txHash && txConfirmation === config.txConfirmationsNeededSml) {
+    } else if (txHash && (txReceipt && txReceipt.status) || (txConfirmation === config.txConfirmationsNeededSml)) {
       savedDataPackMoralis.set('txHash', txHash);
 
       await savedDataPackMoralis.save();
@@ -150,7 +148,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
       closeProgressModal();
     }
     
-  }, [txConfirmation, txHash, txError]);
+  }, [txConfirmation, txHash, txReceipt, txError]);
 
   const sellOrderSubmit = async () => {
     if (!sellerDataPreview || sellerDataPreview === '') {
@@ -190,6 +188,8 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
       })
       .on('receipt', function(receipt){
         console.log('receipt', receipt);
+
+        setTxReceipt(receipt);
       })
       .on('confirmation', function(confirmationNumber, receipt){
         // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
@@ -319,7 +319,12 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                 
                 <Text fontWeight="bold">Data Payload for Sale:</Text>
                 {isArbirData && <>
-                  <Input placeholder="Data" value={sellerData} onChange={(event) => setSellerData(event.currentTarget.value)} />
+                  <Textarea
+                    value={sellerData}
+                    onChange={(event) => setSellerData(event.currentTarget.value)}
+                    placeholder="JSON Data"
+                    size="sm"
+                  />
                 </>}
               
                 {!isArbirData && <>
@@ -339,7 +344,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                     <RadioGroup value={termsOfUseId} onChange={setTermsOfUseId}>
                       <Stack spacing={5}>
                         {TERMS.map((term) => {
-                          return (<Radio colorScheme="red" value={term.id}>
+                          return (<Radio key={term.id} colorScheme="red" value={term.id}>
                             {term.val}
                           </Radio>)
                         })}
@@ -358,7 +363,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
             <Modal
               isOpen={isProgressModalOpen}
               onClose={closeProgressModal}
-              closeOnEsc={false} closeOnOverlayClick={false} isCentered
+              closeOnEsc={false} closeOnOverlayClick={false}
             >
               <ModalOverlay />
               <ModalContent>
@@ -386,7 +391,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                     </HStack>
 
                     {txHash && <Stack>
-                      <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmation} />
+                      <Progress colorScheme="green" fontSize="sm" value={(txReceipt && txReceipt.status) ? 100 : (100 / config.txConfirmationsNeededSml) * txConfirmation} />
 
                       <HStack>
                         <Text>Transaction </Text>
@@ -398,6 +403,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                         <Alert status="error">
                           <AlertIcon />
                           {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
                         </Alert>
                       }
                     </Stack>}

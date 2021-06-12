@@ -38,7 +38,8 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
       const response = JSON.parse(decodeURIComponent((atob(dataCfTestData))));
 
       toast({
-        title: "Congrats! an itheum test account has been linked",          
+        title: "Congrats! an itheum test account has been linked",
+        description: "You can now sell your data on the DEX",
         status: "success",
         duration: 6000,
         isClosable: true,
@@ -58,8 +59,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
         console.log('FAUCETTED');
         
         toast({
-          title: "Congrats! the faucet has sent you some MYDA",
-          description: "You can now sell your data on the DEX",         
+          title: "Congrats! the faucet has sent you some MYDA",          
           status: "success",
           duration: 6000,
           isClosable: true,

@@ -30,9 +30,11 @@ export default function({onRefreshBalance}) {
   // eth tx state
   const [txConfirmationAllowance, setTxConfirmationAllowance] = useState(0);
   const [txHashAllowance, setTxHashAllowance] = useState(null);
+  const [txReceiptAllowance, setTxReceiptAllowance] = useState(null);
   const [txErrorAllowance, setTxErrorAllowance] = useState(null);
   const [txConfirmationTransfer, setTxConfirmationTransfer] = useState(0);
   const [txHashTransfer, setTxHashTransfer] = useState(null);
+  const [txReceiptTransfer, setTxReceiptTransfer] = useState(null);
   const [txErrorTransfer, setTxErrorTransfer] = useState(null);
   
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
@@ -40,31 +42,27 @@ export default function({onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
-    } else {
-      if (txHashAllowance && txConfirmationAllowance === config.txConfirmationsNeededSml) {
-        console.log('AUTHORISED');
-  
-        setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
-  
-        web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
-      }
+    } else  if (txHashAllowance && (txReceiptAllowance && txReceiptAllowance.status) || (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
+      console.log('AUTHORISED');
+
+      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
+
+      web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
     }
-  }, [txConfirmationAllowance, txHashAllowance, txErrorAllowance]);
+  }, [txConfirmationAllowance, txHashAllowance, txReceiptAllowance, txErrorAllowance]);
 
   useEffect(async () => {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
-    } else {
-      if (txHashTransfer && txConfirmationTransfer === config.txConfirmationsNeededLrg) {
-        console.log('TRANSFERRED');
-  
-        setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
-  
-        finaliseSale();
-      }
+    } else if (txHashTransfer && (txReceiptTransfer && txReceiptTransfer.status) || (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
+      console.log('TRANSFERRED');
+
+      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
+
+      finaliseSale();
     }
     
-  }, [txConfirmationTransfer, txHashTransfer, txErrorTransfer]);
+  }, [txConfirmationTransfer, txHashTransfer, txReceiptTransfer, txErrorTransfer]);
 
   useEffect(async() => {
     if (currBuyObject) {
@@ -73,7 +71,6 @@ export default function({onRefreshBalance}) {
       const isVerified = await web3_ddexVerifyData(currBuyObject.dataPackId, currBuyObject.dataHash);
 
       if (isVerified) {
-        console.log('🚀 ~ useEffect ~ buyProgress s1', buyProgress);
         setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s0: 1}));
 
         handleMinRequirementsCheck();
@@ -85,7 +82,6 @@ export default function({onRefreshBalance}) {
 
   const buyOrderSubmit = objectId => {
     const dataPack = dataPacks.find(i => i.id === objectId);
-    console.log('🚀 ~ buyOrderSubmit ~ dataPack', dataPack);
 
     /*
       0) check if user has enough MYDA
@@ -152,7 +148,6 @@ export default function({onRefreshBalance}) {
     
     try {
       const mydaBalance = await tokenContract.methods.balanceOf(user.get('ethAddress')).call();
-      console.log('🚀 ~ web3_tokenBalanceOf ~ val', mydaBalance);
 
       if (parseInt(mydaBalance, 10) >= currBuyObject.cost) {
         isEligible = true;
@@ -202,6 +197,8 @@ export default function({onRefreshBalance}) {
       })
       .on('receipt', function(receipt){
         console.log('Transfer receipt', receipt);
+
+        setTxReceiptTransfer(receipt);
       })
       .on('confirmation', function(confirmationNumber, receipt){
         console.log('Transfer confirmation');
@@ -233,6 +230,8 @@ export default function({onRefreshBalance}) {
       })
       .on('receipt', function(receipt){
         console.log('Allowance receipt', receipt);
+
+        setTxReceiptAllowance(receipt);
       })
       .on('confirmation', function(confirmationNumber, receipt){
         console.log('Allowance confirmation');
@@ -332,7 +331,7 @@ export default function({onRefreshBalance}) {
             </Thead>
             <Tbody>
             {dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))).map((item) => <Tr key={item.id}>
-              <Td>{item.id}</Td>
+              <Td><ShortAddress address={item.id} /></Td>
               <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
               <Td>{item.get('dataPreview')}</Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
@@ -359,7 +358,7 @@ export default function({onRefreshBalance}) {
         <Modal
             isOpen={isProgressModalOpen}
             onClose={onCloseCleanUp}
-            closeOnEsc={false} closeOnOverlayClick={false} isCentered
+            closeOnEsc={false} closeOnOverlayClick={false}
           >
             <ModalOverlay />
             <ModalContent>
@@ -368,12 +367,12 @@ export default function({onRefreshBalance}) {
                 <Stack spacing={5}>
                   <HStack>
                     {!buyProgress.s0 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Checking purchase requirements</Text>
+                    <Text>Verifying data integrity on blockchain</Text>
                   </HStack>
 
                   <HStack>
                     {!buyProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Verifying data integrity on blockchain</Text>
+                    <Text>Checking purchase requirements</Text>
                   </HStack>
 
                   <HStack>
@@ -415,6 +414,7 @@ export default function({onRefreshBalance}) {
                     <Alert status="error">
                       <AlertIcon />
                       {txErrorAllowance.message && <AlertTitle>{txErrorAllowance.message}</AlertTitle>}
+                      <CloseButton position="absolute" right="8px" top="8px" onClick={onCloseCleanUp} />
                     </Alert>
                   }
 
@@ -422,6 +422,7 @@ export default function({onRefreshBalance}) {
                     <Alert status="error">
                       <AlertIcon />
                       {txErrorTransfer.message && <AlertTitle>{txErrorTransfer.message}</AlertTitle>}
+                      <CloseButton position="absolute" right="8px" top="8px" onClick={onCloseCleanUp} />
                     </Alert>
                   }
 
@@ -429,6 +430,7 @@ export default function({onRefreshBalance}) {
                     <Alert status="error">
                       <AlertIcon />
                       <AlertTitle>{buyProgressErr}</AlertTitle>
+                      <CloseButton position="absolute" right="8px" top="8px" onClick={onCloseCleanUp} />
                     </Alert>
                   }
                 </Stack>

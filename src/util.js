@@ -1,7 +1,7 @@
 export const config = {
   txConfirmationsNeededSml: 1,
   txConfirmationsNeededLrg: 1,
-  dateStr: 'MMM Do YY'
+  dateStr: 'MMM Do YYYY'
 }
 
 export const dataTemplates = {
@@ -21,6 +21,18 @@ export const dataTemplates = {
     dataHash: null,
     txHash: null
   },
+};
+
+export const mydaRoundUtil = (balance, decimals, BN) => {
+  const balanceWeiString = balance.toString();
+  const balanceWeiBN = new BN(balanceWeiString);
+
+  const decimalsBN = new BN(decimals);
+  const divisor = new BN(10).pow(decimalsBN);
+
+  const beforeDecimal = balanceWeiBN.div(divisor);
+
+  return beforeDecimal.toString();
 }
 
 export const MENU = {
@@ -31,6 +43,8 @@ export const MENU = {
   TX: 4,
   VAULT: 5,
   NFT: 6,
+  COALITION: 7,
+  STREAM: 8,
 };
 
 export const TERMS = [

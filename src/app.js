@@ -6,8 +6,10 @@ import { Auth } from './Auth';
 import SellData from './SellData';
 import BuyData from './BuyData';
 import PurchasedData from './PurchasedData';
+import AdvertisedData from './AdvertisedData';
 import ShortAddress from './ShortAddress';
 import Tools from './Tools';
+import ChainTransactions from './ChainTransactions';
 import { MENU, ABIS, sleep } from './util';
 import { mydaContractAddress } from './secrets.js';
 import logo from './img/logo.png';
@@ -41,7 +43,6 @@ function App() {
     const contract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
     
     const decimals = await contract.methods.decimals().call();
-    console.log('🚀 ~ useEffect ~ decimals', decimals);
     const balance = await contract.methods.balanceOf(walletAddress).call();
 
     const BN = web3.utils.BN;
@@ -107,11 +108,14 @@ function App() {
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} variant="solid" onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
                   
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Sell Streams</Button>
                 </Stack>
               </Box>
 
@@ -123,7 +127,9 @@ function App() {
                 {menuItem === MENU.HOME && <Tools setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
                 {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
                 {menuItem === MENU.SELL && <SellData itheumAccount={itheumAccount} />}
+                {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                 {menuItem === MENU.PURCHASED && <PurchasedData />}
+                {menuItem === MENU.TX && <ChainTransactions />}
               </Box>
             </Flex>
           </Stack>
