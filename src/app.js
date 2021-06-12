@@ -10,6 +10,10 @@ import AdvertisedData from './AdvertisedData';
 import ShortAddress from './ShortAddress';
 import Tools from './Tools';
 import ChainTransactions from './ChainTransactions';
+import DataVault from './DataVault';
+import DataNFTs from './DataNFTs';
+import DataStreams from './DataStreams';
+import DataCoalitions from './DataCoalitions';
 import { MENU, ABIS, sleep } from './util';
 import { mydaContractAddress } from './secrets.js';
 import logo from './img/logo.png';
@@ -115,7 +119,7 @@ function App() {
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Sell Streams</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
                 </Stack>
               </Box>
 
@@ -123,13 +127,17 @@ function App() {
                 <Divider orientation="vertical" />
               </Box>
 
-              <Box ml="10" mt={5}>
+              <Box ml="10" mt={5} flex="auto">
                 {menuItem === MENU.HOME && <Tools setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
                 {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
                 {menuItem === MENU.SELL && <SellData itheumAccount={itheumAccount} />}
                 {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                 {menuItem === MENU.PURCHASED && <PurchasedData />}
                 {menuItem === MENU.TX && <ChainTransactions />}
+                {menuItem === MENU.VAULT && <DataVault />}
+                {menuItem === MENU.NFT && <DataNFTs />}
+                {menuItem === MENU.STREAM && <DataStreams />}
+                {menuItem === MENU.COALITION && <DataCoalitions />}
               </Box>
             </Flex>
           </Stack>

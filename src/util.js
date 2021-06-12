@@ -45,6 +45,7 @@ export const MENU = {
   NFT: 6,
   COALITION: 7,
   STREAM: 8,
+  ADVERTISED: 9,
 };
 
 export const TERMS = [
