@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
@@ -9,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
 import { TERMS } from './util';
+import { config } from './util';
 
 export default function() {
   const toast = useToast();
@@ -59,8 +61,8 @@ export default function() {
             <TableCaption>The following data packs have been advertised for purchase by you</TableCaption>
             <Thead>
               <Tr>
+                <Th>When</Th>
                 <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
                 <Th>Data Preview</Th>
                 <Th>Data Hash</Th>
                 <Th>Terms of use</Th>
@@ -69,8 +71,8 @@ export default function() {
             </Thead>
             <Tbody>
             {userAdvertisedData.map((item) => <Tr key={item.id}>
+              <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
               <Td><ShortAddress address={item.id} /></Td>
-              <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
               <Td>{item.get('dataPreview')}</Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
               <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
@@ -79,8 +81,8 @@ export default function() {
           </Tbody>
             <Tfoot>
               <Tr>
+                <Th>When</Th>
                 <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
                 <Th>Data Preview</Th>
                 <Th>Data Hash</Th>
                 <Th>Terms of use</Th>

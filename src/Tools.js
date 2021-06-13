@@ -122,7 +122,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
               <Stack>
                 <AlertIcon />
                 <AlertTitle>Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
-                <AlertDescription>But dont fret; you can still test the Data Dex by temporarily linking to a test data account below.</AlertDescription>
+                <AlertDescription>But dont fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
               </Stack>
             </Alert>}
             

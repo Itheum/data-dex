@@ -119,7 +119,7 @@ export default function() {
                     {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Sale'}
                   </Badge>
                 </Td>
-                <Td>{moment(item.createdAt).format(config.dateStr)}</Td>
+                <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
                 <Td>{item.get('seller') && <ShortAddress address={item.get('seller')} />}</Td>
                 <Td>{item.get('buyer') && <ShortAddress address={item.get('buyer')} />}</Td>
                 <Td>{item.get('feeInMyda') && `${mydaRound(item.get('feeInMyda'))} MYDA` }</Td>

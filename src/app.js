@@ -14,6 +14,7 @@ import DataVault from './DataVault';
 import DataNFTs from './DataNFTs';
 import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
+import TrustedComputation from './TrustedComputation';
 import { MENU, ABIS, sleep } from './util';
 import { mydaContractAddress } from './secrets.js';
 import logo from './img/logo.png';
@@ -21,6 +22,7 @@ import logoSml from './img/logo-sml.png';
 import chainEth from './img/eth-chain-logo.png';
 import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
+import moralisIcon from './img/moralis-logo.png';
 
 function App() {
   const { isAuthenticated, logout, user } = useMoralis();
@@ -75,10 +77,10 @@ function App() {
                 boxSize="45px"
                 height="auto"
                 src={logoSml}
-                alt="Itheum Data Dex"
+                alt="Itheum Data DEX"
               />
               <Box p="2">
-                <Heading size="md">Itheum Data Dex</Heading>
+                <Heading size="md">Itheum Data DEX</Heading>
               </Box>
               <Spacer />
               <Box>
@@ -120,6 +122,7 @@ function App() {
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} variant="solid" onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
                 </Stack>
               </Box>
 
@@ -138,9 +141,20 @@ function App() {
                 {menuItem === MENU.NFT && <DataNFTs />}
                 {menuItem === MENU.STREAM && <DataStreams />}
                 {menuItem === MENU.COALITION && <DataCoalitions />}
+                {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
               </Box>
             </Flex>
           </Stack>
+
+          <Flex direction="column" alignItems="flex-end"> 
+            <Text fontSize="xs">Built with</Text>
+            <Image
+              boxSize="65px"
+              height="auto"
+              src={moralisIcon}
+              alt="Built with Moralis web3"
+            />
+          </Flex>
           
         </Flex>
       </Container>
@@ -152,14 +166,14 @@ function App() {
       <Center mt="100">
         <Box p="10" borderWidth="2px" borderRadius="lg" overflow="hidden">
           <Stack >
-              <Image
-                boxSize="150px"
-                height="auto"
-                src={logo}
-                alt="Itheum Data Dex"
-                margin="auto"
-              />
-            <Heading size="lg" textAlign="center">Itheum Data Dex</Heading>
+            <Image
+              boxSize="150px"
+              height="auto"
+              src={logo}
+              alt="Itheum Data DEX"
+              margin="auto"
+            />
+            <Heading size="lg" textAlign="center">Itheum Data DEX</Heading>
             <Text>Sell your personal data via secure on-chain exchange</Text>
             <Spacer />
             <Auth />
@@ -175,9 +189,19 @@ function App() {
                 <Image src={chainBsc} boxSize="50px" opacity=".6" />
               </Tooltip>
             </Flex>
+            
+            <Flex direction="column" alignItems="center"> 
+              <Text mt="10" fontSize="xs">Built with</Text>
+              <Image
+                boxSize="65px"
+                height="auto"
+                src={moralisIcon}
+                alt="Built with Moralis web3"
+              />
+            </Flex> 
           </Stack>
         </Box>
-      </Center>
+      </Center>      
     </Container>
   );
 }

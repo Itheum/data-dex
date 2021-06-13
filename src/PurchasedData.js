@@ -17,7 +17,7 @@ export default function() {
   const { user } = useMoralis();
   const [userDataOrders, setUserDataOrders] = useState([]);
   const { data: dataOrders, error: errorDataOrderGet, isLoading } = useMoralisQuery("DataOrder", query =>
-    query.ascending("createdAt")
+    query.descending("createdAt")
   );
   
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function() {
             </Thead>
             <Tbody>
               {userDataOrders.map((item) => <Tr key={item.id}>
-                <Td>{moment(item.createdAt).format(config.dateStr)}</Td>
+                <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
                 <Td><ShortAddress address={item.id} /></Td>
                 <Td><ShortAddress address={item.get('dataPackId')} /></Td>
                 <Td><Link href={item.get('dataFileUrl')} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link></Td>

@@ -42,19 +42,21 @@ export default function({onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
-    } else  if (txHashAllowance && (txReceiptAllowance && txReceiptAllowance.status) || (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
+    // } else if (txHashAllowance && (txReceiptAllowance && txReceiptAllowance.status) || (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
+    } else if (txHashAllowance && (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
       console.log('AUTHORISED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
 
       web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
     }
-  }, [txConfirmationAllowance, txHashAllowance, txReceiptAllowance, txErrorAllowance]);
+  }, [txConfirmationAllowance, txHashAllowance, txErrorAllowance]);
 
   useEffect(async () => {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
-    } else if (txHashTransfer && (txReceiptTransfer && txReceiptTransfer.status) || (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
+    // } else if (txHashTransfer && (txReceiptTransfer && txReceiptTransfer.status) || (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
+    } else if (txHashTransfer && (txConfirmationTransfer === config.txConfirmationsNeededSml)) {
       console.log('TRANSFERRED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
@@ -62,7 +64,7 @@ export default function({onRefreshBalance}) {
       finaliseSale();
     }
     
-  }, [txConfirmationTransfer, txHashTransfer, txReceiptTransfer, txErrorTransfer]);
+  }, [txConfirmationTransfer, txHashTransfer, txErrorTransfer]);
 
   useEffect(async() => {
     if (currBuyObject) {
@@ -274,7 +276,19 @@ export default function({onRefreshBalance}) {
   }
 
   function onCloseCleanUp() {
+    // reset data state
     setCurrBuyObject(null);
+    setbuyProgress({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
+    setbuyProgressErr(null);
+    setTxConfirmationAllowance(0);
+    setTxHashAllowance(null);
+    setTxReceiptAllowance(null);
+    setTxErrorAllowance(null);
+    setTxConfirmationTransfer(0);
+    setTxHashTransfer(null);
+    setTxReceiptTransfer(null);
+    setTxErrorTransfer(null);
+
     onProgressModalClose();
     onRefreshBalance();
   }
@@ -326,7 +340,7 @@ export default function({onRefreshBalance}) {
                 <Th>Data Hash</Th>
                 <Th>Terms of use</Th>
                 <Th>Cost</Th>
-                <Th>Actions</Th>
+                <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -348,7 +362,7 @@ export default function({onRefreshBalance}) {
                 <Th>Data Hash</Th>
                 <Th>Terms of use</Th>
                 <Th>Cost</Th>
-                <Th>Actions</Th>
+                <Th></Th>
               </Tr>
             </Tfoot>
           </Table>        
@@ -396,7 +410,7 @@ export default function({onRefreshBalance}) {
                   </HStack>
 
                   {txHashTransfer && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text>Transaction </Text>
