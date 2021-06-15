@@ -49,6 +49,18 @@ export const MENU = {
   ADVERTISED: 9,
 };
 
+export const CHAINS = {
+  1: "Mainnet",
+  3: "Ropsten",
+  4: "Rinkeby",
+  42: "Kovan",
+  420: "Goerli",
+  137: "Matic - Mainnet",
+  80001: "Matic - Mumbai",
+  97: "BSC - Chapel",
+  56: "BSC - Mainnet",
+}
+
 export const TERMS = [
   {id: '1', val: "Research Purposes Only", coin: 2},
   {id: '2', val: "Research or Commercial Purposes Only", coin: 2},

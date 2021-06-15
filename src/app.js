@@ -15,7 +15,7 @@ import DataNFTs from './DataNFTs';
 import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import TrustedComputation from './TrustedComputation';
-import { MENU, ABIS, sleep } from './util';
+import { MENU, ABIS, CHAINS, sleep } from './util';
 import { mydaContractAddress } from './secrets.js';
 import logo from './img/logo.png';
 import logoSml from './img/logo-sml.png';
@@ -29,6 +29,7 @@ function App() {
   const { web3 } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [myMydaBal, setMydaBal] = useState(0);
+  const [chain, setChain] = useState(0);
   const { isOpen, onToggle } = useDisclosure();
   const [itheumAccount, setItheumAccount] = useState(null);
 
@@ -37,6 +38,9 @@ function App() {
       await showMydaBalance();
       await sleep(1);
       onToggle();
+
+      const networkId = await web3.eth.net.getId();
+      setChain(CHAINS[networkId] || 'Unknown chain');
     }
   }, [user, web3]);
 
@@ -84,17 +88,25 @@ function App() {
               </Box>
               <Spacer />
               <Box>
-                <HStack>
+                <HStack>                    
                   <SlideFade in={isOpen} offsetY="20px">
                     <Box
                       as="text"
-                      p={4}
+                      p={3}
                       color="white"
                       fontWeight="bold"
                       borderRadius="md"
                       bgGradient="linear(to-l, #7928CA, #FF0080)">MYDA {myMydaBal}
                     </Box>
                   </SlideFade>
+
+                  <Box
+                    p={2.5}
+                    color="rgb(243, 183, 30)"
+                    fontWeight="bold"
+                    bg="rgba(243, 132, 30, 0.05)"
+                    borderRadius="md">{chain || '...'}
+                  </Box>
 
                   <Text fontSize="xs" align="right">
                     {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
