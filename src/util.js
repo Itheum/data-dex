@@ -1,3 +1,25 @@
+import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress, ddexContractAddress_Matic} from './secrets.js';
+
+export const contractsForChain = networkId => {
+  const contracts = {
+    myda: null,
+    ddex: null
+  };
+
+  switch (networkId) {
+    case 3:
+      contracts.myda = mydaContractAddress;
+      contracts.ddex = ddexContractAddress;
+      break;
+    case 80001:
+      contracts.myda = mydaContractAddress_Matic;
+      contracts.ddex = ddexContractAddress_Matic;
+      break;
+  }
+
+  return contracts;
+}
+
 export const config = {
   txConfirmationsNeededSml: 1,
   txConfirmationsNeededLrg: 1,
@@ -12,7 +34,8 @@ export const dataTemplates = {
     dataHash: null,
     dataFile: null,
     termsOfUseId: null,
-    txHash: null
+    txHash: null,
+    txNetworkId: null
   },
   dataOrder: {
     dataPackId: null,
@@ -20,7 +43,8 @@ export const dataTemplates = {
     pricePaid: null,
     dataFileUrl: null,
     dataHash: null,
-    txHash: null
+    txHash: null,
+    txNetworkId: null
   },
 };
 
@@ -59,6 +83,44 @@ export const CHAINS = {
   80001: "Matic - Mumbai",
   97: "BSC - Chapel",
   56: "BSC - Mainnet",
+}
+
+export const SUPPORTED_CHAINS = [3, 80001];
+
+export const CHAIN_TX_VIEWER = {
+  3: 'https://ropsten.etherscan.io/tx/',
+  80001: 'https://explorer-mumbai.maticvigil.com/tx/'
+}
+
+export const CHAIN_TX_LIST = {
+  3: {
+    advertiseEvents: 'AdvertiseEventsA',
+    purchaseEvents: 'PurchaseEvents'
+  },
+  80001: {
+    advertiseEvents: 'AdvertiseEventsPA',
+    purchaseEvents: 'PurchaseEventsPA'
+  }
+}
+
+export const CHAIN_TOKEN_SYMBOL = networkId => {
+  const mapping = {
+    'MYDA' : [3, 1],
+    'mMYDA': [80001, 137],
+    'bMYDA': [97, 56]
+  };
+
+  let sym = null;
+        
+  Object.keys(mapping).some(i => {
+    if (mapping[i].includes(networkId)) {
+      sym = i;
+    }
+
+    return mapping[i].includes(networkId);
+  });
+
+  return sym;
 }
 
 export const TERMS = [

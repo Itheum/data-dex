@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
@@ -9,22 +9,25 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { TERMS } from './util';
+import { TERMS, CHAIN_TOKEN_SYMBOL } from './util';
 import { config } from './util';
+import { ChainMetaContext } from './App';
 
 export default function() {
+  const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
-  const [userAdvertisedData, setSserAdvertisedData] = useState([]);
+  const [userAdvertisedData, setUserAdvertisedData] = useState([]);
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
-    query.ascending("createdAt") &&
-    query.notEqualTo("txHash", null)
+    query.descending("createdAt") &&
+    query.notEqualTo("txHash", null) &&
+    query.equalTo("txNetworkId", chainMeta.networkId)
   );
 
   useEffect(() => {
     if (user && user.get('ethAddress') && dataPacks.length > 0) {
-      setSserAdvertisedData(dataPacks.filter(i => (i.get('sellerEthAddress') === user.get('ethAddress'))));
+      setUserAdvertisedData(dataPacks.filter(i => (i.get('sellerEthAddress') === user.get('ethAddress'))));
     }
   }, [dataPacks]);
 
@@ -76,7 +79,7 @@ export default function() {
               <Td>{item.get('dataPreview')}</Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
               <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
-              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} MYDA</Td>
+              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Td>
             </Tr>)}
           </Tbody>
             <Tfoot>

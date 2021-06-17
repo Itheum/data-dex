@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
@@ -9,10 +9,12 @@ import {
   useToast
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, ABIS } from './util';
-import { mydaContractAddress } from './secrets';
+import { config } from './util';
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
+import { ChainMetaContext } from './App';
 
 export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
+  const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
@@ -30,7 +32,6 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
-
 
   // test data
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
         console.log('FAUCETTED');
         
         toast({
-          title: "Congrats! the faucet has sent you some MYDA",          
+          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`,          
           status: "success",
           duration: 6000,
           isClosable: true,
@@ -74,7 +75,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
   const web3_tokenFaucet = async() => {
     setFaucetWorking(true);
 
-    const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
+    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
 
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(50*10**decimals).toString(16));
@@ -122,7 +123,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
               <Stack>
                 <AlertIcon />
                 <AlertTitle>Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
-                <AlertDescription>But dont fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
+                <AlertDescription>But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
               </Stack>
             </Alert>}
             
@@ -150,8 +151,8 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
         
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
           <Stack p="5" h="360">
-            <Heading size="md">MYDA Faucet</Heading>
-            <Text>Get some free MYDA tokens to try DEX features</Text>
+            <Heading size="md">{CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} Faucet</Heading>
+            <Text>Get some free {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} tokens to try DEX features</Text>
           
             {txHashFaucet && <Stack>
               <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
@@ -159,7 +160,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
               <HStack>
                 <Text>Transaction </Text>
                 <ShortAddress address={txHashFaucet} />
-                <Link href={`https://ropsten.etherscan.io/tx/${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
               </HStack>                    
             </Stack>}
 
@@ -171,7 +172,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
             }
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="green" variant="outline" onClick={web3_tokenFaucet}>Send me 50 MYDA</Button>
+            <Button isLoading={faucetWorking} colorScheme="green" variant="outline" onClick={web3_tokenFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Button>
           </Stack>
         </Box>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
@@ -7,11 +7,12 @@ import {
   Text, HStack, Heading, Center,
   useToast
 } from '@chakra-ui/react';
-import ShortAddress from './ShortAddress';
-import { config, ABIS } from './util';
+import { CHAIN_TOKEN_SYMBOL } from './util';
+import { ChainMetaContext } from './App';
 import dataVaultIcon from './img/data-vault-icon.png';
 
 export default function() {
+  const chainMeta = useContext(ChainMetaContext);
 
   return (
     <Stack spacing={5}>      
@@ -23,7 +24,7 @@ export default function() {
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Store highly sensitive personal data in your data vault. For example: details about your gender, race, sexual preference, prior health conditions, financial history etc</Box>
               <Box align="center" flex="1">Data is encrypted using your own private key (no one else can unlock and view it) and stored in IPFS (no one else can destroy it)</Box>
-              <Box align="center" flex="1">Append data from your vault to the regular data you sell on the data dex. As this gives the "dataset" more context, it becomes more valuable to the buyer  -  so you will earn more MYDA</Box>
+              <Box align="center" flex="1">Append data from your vault to the regular data you sell on the data dex. As this gives the "dataset" more context, it becomes more valuable to the buyer  -  so you will earn more {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Box>
             </HStack>
             <Link mt="10" href="https://itheum.medium.com/itheum-data-dex-whitepaper-fc6b205636b6#60cc" isExternal>
               <Button colorScheme="teal" variant="outline">Read about Data Vaults in our Whitepaper</Button>

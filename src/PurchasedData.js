@@ -1,23 +1,27 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
-  Skeleton, Alert, Text, Link,
+  Skeleton, Alert, Link,
   AlertIcon, AlertTitle, CloseButton, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   useToast,
 } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './ShortAddress';
 import { config } from './util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
+import { ChainMetaContext } from './App';
 
 export default function() {
+  const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { user } = useMoralis();
   const [userDataOrders, setUserDataOrders] = useState([]);
   const { data: dataOrders, error: errorDataOrderGet, isLoading } = useMoralisQuery("DataOrder", query =>
-    query.descending("createdAt")
+    query.descending("createdAt") &&
+    query.equalTo("txNetworkId", chainMeta.networkId)
   );
   
   useEffect(() => {
@@ -71,12 +75,12 @@ export default function() {
                 <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
                 <Td><ShortAddress address={item.id} /></Td>
                 <Td><ShortAddress address={item.get('dataPackId')} /></Td>
-                <Td><Link href={item.get('dataFileUrl')} isExternal> View Data File <ExternalLinkIcon mx="2px" /></Link></Td>
-                <Td>{item.get('pricePaid')} MYDA</Td>
+                <Td><Link href={item.get('dataFileUrl')} isExternal> Download Data File <ExternalLinkIcon mx="2px" /></Link></Td>
+                <Td>{item.get('pricePaid')} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Td>
                 <Td>
                   <HStack>
                     <ShortAddress address={item.get('txHash')} />
-                    <Link href={`https://ropsten.etherscan.io/tx/${item.get('txHash')}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                    <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.get('txHash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                   </HStack>
                 </Td>
               </Tr>)}

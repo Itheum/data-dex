@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
@@ -11,23 +11,22 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import ShortAddress from './ShortAddress';
 import { config, mydaRoundUtil } from './util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from './util';
+import { ChainMetaContext } from './App';
 
 export default function() {
+  const chainMeta = useContext(ChainMetaContext);
   const { user } = useMoralis();
   const { web3 } = useMoralis();
 
   const [allTx, setAllTx] = useState([]);
 
-  const { data: advertiseEvents, error: errorAdvertiseEvents } = useMoralisQuery("AdvertiseEventsA", query =>
+  const { data: advertiseEvents, error: errorAdvertiseEvents } = useMoralisQuery(CHAIN_TX_LIST[chainMeta.networkId].advertiseEvents, query =>
     query.descending("createdAt")
   );
 
-  // const { fetch: fetchPurchaseEvents, data: purchaseEvents, error: errorPurchaseEvents } = useMoralisQuery("PurchaseEvents", query =>
-  //   query.ascending("createdAt")
-  // , { autoFetch: false });
-
   const { fetch: fetchPurchaseEvents, data: purchaseEvents, error: errorPurchaseEvents, isLoading } = useMoralisQuery(
-    "PurchaseEvents",
+    CHAIN_TX_LIST[chainMeta.networkId].purchaseEvents,
     query =>
       query
         .descending("createdAt"),
@@ -37,8 +36,6 @@ export default function() {
   
   useEffect(() => {
     if (user && user.get('ethAddress') && advertiseEvents.length > 0) {
-      console.log('advertiseEvents', advertiseEvents);
-
       setAllTx(prev => [...prev, ...advertiseEvents]);
 
       fetchPurchaseEvents();
@@ -47,14 +44,12 @@ export default function() {
 
   useEffect(() => {
     if (user && user.get('ethAddress') && advertiseEvents.length > 0) {
-      console.log('purchaseEvents', purchaseEvents);
-
       setAllTx(prev => [...prev, ...purchaseEvents]);
     }
   }, [purchaseEvents]);
 
   function isPurchasedEvent(className) {
-    return className.includes('PurchaseEvent');
+    return className.includes(CHAIN_TX_LIST[chainMeta.networkId].purchaseEvents);
   }
 
   function mydaRound(val) {
@@ -106,6 +101,7 @@ export default function() {
               <Tr>
                 <Th>Event</Th>
                 <Th>When</Th>
+                <Th>Data Pack ID</Th>
                 <Th>Seller</Th>
                 <Th>Buyer</Th>
                 <Th>Price Paid</Th>
@@ -120,13 +116,14 @@ export default function() {
                   </Badge>
                 </Td>
                 <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
+                <Td><ShortAddress address={item.get('dataPackId')} /></Td>
                 <Td>{item.get('seller') && <ShortAddress address={item.get('seller')} />}</Td>
                 <Td>{item.get('buyer') && <ShortAddress address={item.get('buyer')} />}</Td>
-                <Td>{item.get('feeInMyda') && `${mydaRound(item.get('feeInMyda'))} MYDA` }</Td>
+                <Td>{item.get('feeInMyda') && `${mydaRound(item.get('feeInMyda'))} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}` }</Td>
                 <Td>
                   <HStack>
                     <ShortAddress address={item.get('transaction_hash')} />
-                    <Link href={`https://ropsten.etherscan.io/tx/${item.get('transaction_hash')}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                    <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.get('transaction_hash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                   </HStack>
                 </Td> 
               </Tr>)}
@@ -135,6 +132,7 @@ export default function() {
               <Tr>
                 <Th>Event</Th>
                 <Th>When</Th>
+                <Th>Data Pack ID</Th>
                 <Th>Seller</Th>
                 <Th>Buyer</Th>
                 <Th>Price Paid</Th>

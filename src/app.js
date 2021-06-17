@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Button, Text, Image, Divider, SlideFade, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { createContext, useEffect, useState, useRef } from 'react';
+import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, Center } from '@chakra-ui/layout';
 import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
@@ -15,8 +20,8 @@ import DataNFTs from './DataNFTs';
 import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import TrustedComputation from './TrustedComputation';
-import { MENU, ABIS, CHAINS, sleep } from './util';
-import { mydaContractAddress } from './secrets.js';
+import { sleep, contractsForChain } from './util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './util';
 import logo from './img/logo.png';
 import logoSml from './img/logo-sml.png';
 import chainEth from './img/eth-chain-logo.png';
@@ -24,23 +29,37 @@ import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
 import moralisIcon from './img/moralis-logo.png';
 
+const chainMeta = {
+  networkId: null,
+  contract: null
+};
+
+export const ChainMetaContext = createContext(chainMeta);
+
 function App() {
-  const { isAuthenticated, logout, user } = useMoralis();
+  const {isAuthenticated, logout, user} = useMoralis();
   const { web3 } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [myMydaBal, setMydaBal] = useState(0);
   const [chain, setChain] = useState(0);
-  const { isOpen, onToggle } = useDisclosure();
   const [itheumAccount, setItheumAccount] = useState(null);
+  const [isAlertOpen, setAlertIsOpen] = useState(false);
+  const cancelRef = useRef();
 
   useEffect(async () => {
     if (user && web3) {
-      await showMydaBalance();
-      await sleep(1);
-      onToggle();
-
       const networkId = await web3.eth.net.getId();
       setChain(CHAINS[networkId] || 'Unknown chain');
+
+      if (!SUPPORTED_CHAINS.includes(networkId)) {
+        setAlertIsOpen(true);
+      } else {
+        chainMeta.networkId = networkId;
+        chainMeta.contracts = contractsForChain(networkId);
+        
+        await showMydaBalance();
+        await sleep(1);
+      }      
     }
   }, [user, web3]);
 
@@ -50,7 +69,7 @@ function App() {
 
   const showMydaBalance = async () => {
     const walletAddress = user.get('ethAddress');
-    const contract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
+    const contract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
     
     const decimals = await contract.methods.decimals().call();
     const balance = await contract.methods.balanceOf(walletAddress).call();
@@ -89,19 +108,17 @@ function App() {
               <Spacer />
               <Box>
                 <HStack>                    
-                  <SlideFade in={isOpen} offsetY="20px">
-                    <Box
-                      as="text"
-                      p={3}
-                      color="white"
-                      fontWeight="bold"
-                      borderRadius="md"
-                      bgGradient="linear(to-l, #7928CA, #FF0080)">MYDA {myMydaBal}
-                    </Box>
-                  </SlideFade>
+                  <Box
+                    as="text"
+                    p={2}
+                    color="white"
+                    fontWeight="bold"
+                    borderRadius="md"
+                    bgGradient="linear(to-l, #7928CA, #FF0080)">{CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} {myMydaBal}
+                  </Box>
 
                   <Box
-                    p={2.5}
+                    p={2}
                     color="rgb(243, 183, 30)"
                     fontWeight="bold"
                     bg="rgba(243, 132, 30, 0.05)"
@@ -143,17 +160,19 @@ function App() {
               </Box>
 
               <Box ml="10" mt={5} flex="auto">
-                {menuItem === MENU.HOME && <Tools setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
-                {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
-                {menuItem === MENU.SELL && <SellData itheumAccount={itheumAccount} />}
-                {menuItem === MENU.ADVERTISED && <AdvertisedData />}
-                {menuItem === MENU.PURCHASED && <PurchasedData />}
-                {menuItem === MENU.TX && <ChainTransactions />}
-                {menuItem === MENU.VAULT && <DataVault />}
-                {menuItem === MENU.NFT && <DataNFTs />}
-                {menuItem === MENU.STREAM && <DataStreams />}
-                {menuItem === MENU.COALITION && <DataCoalitions />}
-                {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
+                <ChainMetaContext.Provider value={chainMeta}>
+                  {menuItem === MENU.HOME && <Tools setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
+                  {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
+                  {menuItem === MENU.SELL && <SellData itheumAccount={itheumAccount} />}
+                  {menuItem === MENU.ADVERTISED && <AdvertisedData />}
+                  {menuItem === MENU.PURCHASED && <PurchasedData />}
+                  {menuItem === MENU.TX && <ChainTransactions />}
+                  {menuItem === MENU.VAULT && <DataVault />}
+                  {menuItem === MENU.NFT && <DataNFTs />}
+                  {menuItem === MENU.STREAM && <DataStreams />}
+                  {menuItem === MENU.COALITION && <DataCoalitions />}
+                  {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
+                </ChainMetaContext.Provider>
               </Box>
             </Flex>
           </Stack>
@@ -169,6 +188,27 @@ function App() {
           </Flex>
           
         </Flex>
+
+        <AlertDialog
+          isOpen={isAlertOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={() => setAlertIsOpen(false)}>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">Alert</AlertDialogHeader>
+
+              <AlertDialogBody>
+                Sorry the {chain} chain is currently not supported. We are working on it. You need to be on { SUPPORTED_CHAINS.map(i => <Badge key={i} borderRadius="full" px="2" colorScheme="teal">{CHAINS[i]}</Badge>) }
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={() => setAlertIsOpen(false)}>
+                  Cancel
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
       </Container>
     );
   }
@@ -194,11 +234,11 @@ function App() {
               <Tooltip label="Live on Ropsten Test Network">
                 <Image src={chainEth} boxSize="50px" />
               </Tooltip>
-              <Tooltip label="Coming soon...">
-                <Image src={chainPol} boxSize="50px" opacity=".6" />
+              <Tooltip label="Live on Mumbai Test Network">
+                <Image src={chainPol} boxSize="50px" />
               </Tooltip>
               <Tooltip label="Coming soon...">
-                <Image src={chainBsc} boxSize="50px" opacity=".6" />
+                <Image src={chainBsc} boxSize="50px" opacity=".3" />
               </Tooltip>
             </Flex>
             

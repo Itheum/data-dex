@@ -1,6 +1,6 @@
 import moment from 'moment';
-import {useDropzone} from 'react-dropzone';
-import { useMemo, useEffect, useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useContext, useMemo, useEffect, useState, useCallback } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
@@ -13,9 +13,11 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { config, dataTemplates, TERMS, ABIS } from './util';
-import { ddexContractAddress, tempCloudApiKey } from './secrets';
+import { config, dataTemplates } from './util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
+import { tempCloudApiKey } from './secrets';
 import ShortAddress from './ShortAddress';
+import { ChainMetaContext } from './App';
 
 const baseStyle = {
   flex: 1,
@@ -46,6 +48,7 @@ const rejectStyle = {
 };
 
 export default function({itheumAccount}) {
+  const chainMeta = useContext(ChainMetaContext);
   const { user } = useMoralis();
   const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const toast = useToast();
@@ -143,14 +146,13 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
           sellerEthAddress: user.get('ethAddress'),
           dataHash,
           dataFile: dataFileSave,
-          termsOfUseId       
+          termsOfUseId,
+          txNetworkId: chainMeta.networkId
         };
 
         const newPack = await saveDataPack(newDataPack);
 
         setSavedDataPackMoralis(newPack);
-
-        if (!errDataPackSave) {}
       }
     }
 
@@ -171,7 +173,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
       console.error(txError);
     // } else if (txHash && (txReceipt && txReceipt.status) || (txConfirmation === config.txConfirmationsNeededSml)) {
     } else if (txHash && txConfirmation === config.txConfirmationsNeededSml) {
-      savedDataPackMoralis.set('txHash', txHash);
+      savedDataPackMoralis.set('txHash', txHash);      
 
       await savedDataPackMoralis.save();
       
@@ -208,7 +210,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
   }
 
   const web3_ddexAdvertiseForSale = async(dataPackId, dataHash) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
+    const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
 
     ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash){
@@ -375,32 +377,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
               {currSellObject && <Stack><Text fontSize="2xl">Sell data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
             </HStack>
           </DrawerHeader>
-          <DrawerBody>
-            {errDataPackSave && 
-              <Alert status="error">
-                <Box flex="1">
-                  <AlertIcon />
-                  {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
-                </Box>
-              </Alert>
-            }
-            {errCfHashData && 
-              <Alert status="error">
-                <Box flex="1">
-                  <AlertIcon />
-                  {errCfHashData.message && <AlertTitle>{errCfHashData.message}</AlertTitle>}
-                </Box>
-              </Alert>
-            }
-            {errFileSave && 
-              <Alert status="error">
-                <Box flex="1">
-                  <AlertIcon />
-                  {errFileSave.message && <AlertTitle>{errFileSave.message}</AlertTitle>}
-                </Box>
-              </Alert>
-            }
-            
+          <DrawerBody>                        
             {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
             
             <Stack spacing={5} mt="5">
@@ -441,7 +418,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                 </Stack>
 
               <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
-                <Badge ml="1" fontSize="0.8em" colorScheme="green">2 MYDA</Badge>
+                <Badge ml="1" fontSize="0.8em" colorScheme="green">2 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Badge>
               </Text>
 
               <Button mt="5"colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
@@ -484,7 +461,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                       <HStack>
                         <Text>Transaction </Text>
                         <ShortAddress address={txHash} />
-                        <Link href={`https://ropsten.etherscan.io/tx/${txHash}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                        <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHash}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
                       </HStack>
 
                       {txError && 
@@ -493,8 +470,35 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                           {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
                           <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
                         </Alert>
-                      }
+                      }                      
                     </Stack>}
+                  
+                    {errDataPackSave && 
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+
+                    {errCfHashData && 
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errCfHashData.message && <AlertTitle>{errCfHashData.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+
+                    {errFileSave && 
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errFileSave.message && <AlertTitle>{errFileSave.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
                   </Stack>
                 </ModalBody>
               </ModalContent>

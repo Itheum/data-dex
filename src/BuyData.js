@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useMoralis, useMoralisQuery, useNewMoralisObject } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
@@ -11,21 +11,25 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, sleep, dataTemplates, TERMS, ABIS } from './util';
-import { ddexContractAddress, mydaContractAddress } from './secrets';
+import { config, dataTemplates } from './util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
+import { ChainMetaContext } from './App';
 
 export default function({onRefreshBalance}) {
+  const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
-    query.ascending("createdAt") &&
-    query.notEqualTo("txHash", null)
+    query.descending("createdAt") &&
+    query.notEqualTo("txHash", null) &&
+    query.equalTo("txNetworkId", chainMeta.networkId)
   );
   const { isSaving, error: errorOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
   const [currBuyObject, setCurrBuyObject] = useState(null);
   const [buyProgress, setbuyProgress] = useState({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
   const [buyProgressErr, setbuyProgressErr] = useState(null);
+  const [otherUserDataSets, setOtherUserDataSets] = useState([]);
 
   // eth tx state
   const [txConfirmationAllowance, setTxConfirmationAllowance] = useState(0);
@@ -36,13 +40,17 @@ export default function({onRefreshBalance}) {
   const [txHashTransfer, setTxHashTransfer] = useState(null);
   const [txReceiptTransfer, setTxReceiptTransfer] = useState(null);
   const [txErrorTransfer, setTxErrorTransfer] = useState(null);
-  
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
+
+  useEffect(() => {
+    if (user && user.get('ethAddress') && dataPacks.length > 0) {
+      setOtherUserDataSets(dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))));
+    }
+  }, [dataPacks]);
 
   useEffect(async () => {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
-    // } else if (txHashAllowance && (txReceiptAllowance && txReceiptAllowance.status) || (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
     } else if (txHashAllowance && (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
       console.log('AUTHORISED');
 
@@ -55,7 +63,6 @@ export default function({onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
-    // } else if (txHashTransfer && (txReceiptTransfer && txReceiptTransfer.status) || (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
     } else if (txHashTransfer && (txConfirmationTransfer === config.txConfirmationsNeededSml)) {
       console.log('TRANSFERRED');
 
@@ -105,7 +112,7 @@ export default function({onRefreshBalance}) {
   }
 
   const web3_ddexVerifyData = async(dataPackId, dataHash) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
+    const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
     let isVerified = false;
 
     try {
@@ -126,7 +133,7 @@ export default function({onRefreshBalance}) {
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s1: 1}));
       handleAllowanceCheck();
     } else {
-      setbuyProgressErr('Do you have enough MYDA for this?');
+      setbuyProgressErr(`Do you have enough ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} for this?`);
     }
   }
   
@@ -145,7 +152,7 @@ export default function({onRefreshBalance}) {
   }
 
   const web3_tokenBalanceOf = async() => {
-    const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
+    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
     let isEligible = false;
     
     try {
@@ -162,17 +169,15 @@ export default function({onRefreshBalance}) {
   }
 
   const web3_tokenCheckAllowance = async() => {
-    const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
+    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
     let isAllowed = false;
     
     const decimals = 18;
     const feeInMyda = currBuyObject.cost;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
-    console.log('🚀 ~ 1 mydaInPrecision', mydaInPrecision.toString());
 
     try {
-      const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), ddexContractAddress).call();
-      console.log('🚀 ~ 2 allowedAmount', allowedAmount);
+      const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), chainMeta.contracts.ddex).call();
 
       if (allowedAmount >= mydaInPrecision) {
         isAllowed = true;
@@ -185,7 +190,7 @@ export default function({onRefreshBalance}) {
   }
 
   const web3_ddexBuyDataPack = async(dataPackId, feeInMyda) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, ddexContractAddress);
+    const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
 
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
@@ -218,13 +223,13 @@ export default function({onRefreshBalance}) {
   }
   
   const web3_tokenApprove = async(feeInMyda) => {
-    const tokenContract = new web3.eth.Contract(ABIS.token, mydaContractAddress);
+    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
 
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
     console.log('🚀 ~ web3_tokenApprove - mydaInPrecision', mydaInPrecision.toString());
 
-    tokenContract.methods.approve(ddexContractAddress, mydaInPrecision).send({from: user.get('ethAddress')})
+    tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash) {
         console.log('Allowance transactionHash', hash);
 
@@ -257,7 +262,8 @@ export default function({onRefreshBalance}) {
       pricePaid: currBuyObject.cost,
       dataFileUrl: currBuyObject.dataFileUrl,
       dataHash: currBuyObject.dataHash,
-      txHash: txHashTransfer
+      txHash: txHashTransfer,
+      txNetworkId: chainMeta.networkId
     };
 
     await saveDataOrder(newDataOrder);
@@ -315,7 +321,7 @@ export default function({onRefreshBalance}) {
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
-      {dataPacks.length === 0 &&
+      {otherUserDataSets.length === 0 &&
         <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -344,13 +350,13 @@ export default function({onRefreshBalance}) {
               </Tr>
             </Thead>
             <Tbody>
-            {dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))).map((item) => <Tr key={item.id}>
+            {otherUserDataSets.map((item) => <Tr key={item.id}>
               <Td><ShortAddress address={item.id} /></Td>
               <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
               <Td>{item.get('dataPreview')}</Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
               <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
-              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} MYDA</Td>
+              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Td>
               <Td><Button isLoading={false} colorScheme="green" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
             </Tr>)}
           </Tbody>
@@ -391,7 +397,7 @@ export default function({onRefreshBalance}) {
 
                   <HStack>
                     {!buyProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Authorising purchase for {currBuyObject && currBuyObject.cost} MYDA</Text>
+                    <Text>Authorising purchase for {currBuyObject && currBuyObject.cost} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text>
                   </HStack>
 
                   {txHashAllowance && <Stack>
@@ -400,7 +406,7 @@ export default function({onRefreshBalance}) {
                     <HStack>
                       <Text>Transaction </Text>
                       <ShortAddress address={txHashAllowance} />
-                      <Link href={`https://ropsten.etherscan.io/tx/${txHashAllowance}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashAllowance}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 
@@ -415,7 +421,7 @@ export default function({onRefreshBalance}) {
                     <HStack>
                       <Text>Transaction </Text>
                       <ShortAddress address={txHashTransfer} />
-                      <Link href={`https://ropsten.etherscan.io/tx/${txHashTransfer}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashTransfer}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 
