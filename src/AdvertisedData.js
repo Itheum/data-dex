@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, 
+  Skeleton, CloseButton, Text,
   Alert, AlertIcon, AlertTitle, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   useToast, useDisclosure, 
@@ -74,12 +74,12 @@ export default function() {
             </Thead>
             <Tbody>
             {userAdvertisedData.map((item) => <Tr key={item.id}>
-              <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
+              <Td><Text fontSize="sm">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
               <Td><ShortAddress address={item.id} /></Td>
-              <Td>{item.get('dataPreview')}</Td>
+              <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
-              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
-              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Td>
+              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Text></Td>
+              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
             </Tr>)}
           </Tbody>
             <Tfoot>

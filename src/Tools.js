@@ -160,7 +160,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
               <HStack>
                 <Text>Transaction </Text>
                 <ShortAddress address={txHashFaucet} />
-                <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
               </HStack>                    
             </Stack>}
 

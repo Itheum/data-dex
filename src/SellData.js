@@ -461,7 +461,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                       <HStack>
                         <Text>Transaction </Text>
                         <ShortAddress address={txHash} />
-                        <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHash}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                        <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                       </HStack>
 
                       {txError && 

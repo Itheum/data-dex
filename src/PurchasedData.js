@@ -1,9 +1,9 @@
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
-import { useMoralis, useMoralisQuery } from 'react-moralis';
+import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
-  Skeleton, Alert, Link,
+  Skeleton, Alert, Link, Text,
   AlertIcon, AlertTitle, CloseButton, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   useToast,
@@ -11,7 +11,7 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './ShortAddress';
 import { config } from './util';
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './util';
 import { ChainMetaContext } from './App';
 
 export default function() {
@@ -19,26 +19,40 @@ export default function() {
   const toast = useToast();
   const { user } = useMoralis();
   const [userDataOrders, setUserDataOrders] = useState([]);
-  const { data: dataOrders, error: errorDataOrderGet, isLoading } = useMoralisQuery("DataOrder", query =>
-    query.descending("createdAt") &&
-    query.equalTo("txNetworkId", chainMeta.networkId)
-  );
-  
+
+  const {
+    error: errCfUsrPurOrders,
+    isLoading: loadingUsrPurOrders,
+    fetch: doUsrPurOrders,
+    data: dataUsrPurOrders
+  } = useMoralisCloudFunction("getUserPurchaseDataOrders", {
+    userAddress: user.get('ethAddress'),
+    networkId: chainMeta.networkId
+  }, { autoFetch: false });  
+
   useEffect(() => {
-    if (user && user.get('ethAddress') && dataOrders.length > 0) {
-      setUserDataOrders(dataOrders.filter(i => (i.get('buyerEthAddress') === user.get('ethAddress'))));
+    if (user && user.get('ethAddress')) {
+      console.log('Page loaded');
+      doUsrPurOrders();
     }
-  }, [dataOrders]);
+  }, []);
+
+
+  useEffect(() => {
+    if (!errCfUsrPurOrders && dataUsrPurOrders && dataUsrPurOrders.length > 0) {
+      setUserDataOrders(dataUsrPurOrders);
+    }
+  }, [errCfUsrPurOrders, dataUsrPurOrders]);
 
   return (
     <Stack spacing={5}>
       <Heading size="lg">Purchased Data</Heading>
 
-      {errorDataOrderGet && 
+      {errCfUsrPurOrders && 
         <Alert status="error">
           <Box flex="1">
             <AlertIcon />
-            <AlertTitle>{errorDataOrderGet.message}</AlertTitle>
+            <AlertTitle>{errCfUsrPurOrders.message}</AlertTitle>
           </Box>
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
@@ -65,22 +79,28 @@ export default function() {
                 <Th>When</Th>
                 <Th>Data Order ID</Th>
                 <Th>Data Pack ID</Th>
+                <Th>Seller Address</Th>
+                <Th>Data Preview</Th>
+                <Th>Terms of use</Th>
                 <Th>Data File</Th>
                 <Th>Price Paid</Th>
                 <Th>TX Hash</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {userDataOrders.map((item) => <Tr key={item.id}>
-                <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
-                <Td><ShortAddress address={item.id} /></Td>
-                <Td><ShortAddress address={item.get('dataPackId')} /></Td>
-                <Td><Link href={item.get('dataFileUrl')} isExternal> Download Data File <ExternalLinkIcon mx="2px" /></Link></Td>
-                <Td>{item.get('pricePaid')} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Td>
+              {userDataOrders.map((item) => <Tr key={item.objectId}>
+                <Td><Text fontSize="sm">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+                <Td><ShortAddress address={item.objectId} /></Td>
+                <Td><ShortAddress address={item.dataPackId} /></Td>
+                <Td><ShortAddress address={item.dataPack[0].sellerEthAddress} /></Td>
+                <Td><Text fontSize="sm">{item.dataPack[0].dataPreview}</Text></Td>
+                <Td><Text fontSize="sm">{TERMS.find(i => i.id === item.dataPack[0].termsOfUseId).val}</Text></Td>
+                <Td><Link href={item.dataFileUrl} isExternal><Text fontSize="sm">Download Data File <ExternalLinkIcon mx="2px" /></Text></Link></Td>
+                <Td><Text fontSize="sm">{item.pricePaid} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
                 <Td>
                   <HStack>
-                    <ShortAddress address={item.get('txHash')} />
-                    <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.get('txHash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                    <ShortAddress address={item.txHash} />
+                    <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                   </HStack>
                 </Td>
               </Tr>)}
@@ -90,6 +110,9 @@ export default function() {
                 <Th>When</Th>
                 <Th>Data Order ID</Th>
                 <Th>Data Pack ID</Th>
+                <Th>Seller Address</Th>
+                <Th>Data Preview</Th>
+                <Th>Terms of use</Th>
                 <Th>Data File</Th>
                 <Th>Price Paid</Th>
                 <Th>TX Hash</Th>

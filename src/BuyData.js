@@ -117,7 +117,6 @@ export default function({onRefreshBalance}) {
 
     try {
       isVerified = await ddexContract.methods.verifyData(dataPackId, dataHash).call();
-      console.log('🚀 ~ web3_ddexVerifyData ~ val', isVerified);
     } catch(e) {
       console.log('🚀 ~ web3_ddexVerifyData ~ e', e);
     }
@@ -127,7 +126,6 @@ export default function({onRefreshBalance}) {
   
   const handleMinRequirementsCheck = async() => {
     const isEligible = await web3_tokenBalanceOf();
-    console.log('🚀 ~ handleMinRequirementsCheck ~ isEligible', isEligible);
 
     if (isEligible) {
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s1: 1}));
@@ -139,10 +137,8 @@ export default function({onRefreshBalance}) {
   
   const handleAllowanceCheck = async() => {
     const isAllowed = await web3_tokenCheckAllowance();
-    console.log('🚀 ~ ddexContract.methods.verifyData ~ isAllowed', isAllowed);
 
     if (isAllowed) {
-      console.log('🚀 ~ useEffect ~ buyProgress s2', buyProgress);
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
 
       web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
@@ -194,7 +190,6 @@ export default function({onRefreshBalance}) {
 
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
-    console.log('🚀 ~ mydaInPrecision', mydaInPrecision.toString());
     
     ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash) {
@@ -227,7 +222,6 @@ export default function({onRefreshBalance}) {
 
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
-    console.log('🚀 ~ web3_tokenApprove - mydaInPrecision', mydaInPrecision.toString());
 
     tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')})
       .on('transactionHash', function(hash) {
@@ -353,10 +347,10 @@ export default function({onRefreshBalance}) {
             {otherUserDataSets.map((item) => <Tr key={item.id}>
               <Td><ShortAddress address={item.id} /></Td>
               <Td><ShortAddress address={item.get('sellerEthAddress')} /></Td>
-              <Td>{item.get('dataPreview')}</Td>
+              <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
-              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Td>
-              <Td>{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Td>
+              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Text></Td>
+              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
               <Td><Button isLoading={false} colorScheme="green" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
             </Tr>)}
           </Tbody>
@@ -406,7 +400,7 @@ export default function({onRefreshBalance}) {
                     <HStack>
                       <Text>Transaction </Text>
                       <ShortAddress address={txHashAllowance} />
-                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashAllowance}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashAllowance}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 
@@ -421,7 +415,7 @@ export default function({onRefreshBalance}) {
                     <HStack>
                       <Text>Transaction </Text>
                       <ShortAddress address={txHashTransfer} />
-                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashTransfer}`} isExternal> View <ExternalLinkIcon mx="2px" /></Link>
+                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashTransfer}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 

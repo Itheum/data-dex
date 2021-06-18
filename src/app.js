@@ -97,13 +97,13 @@ function App() {
           <Stack spacing={5} mt={5}>
             <Flex>
               <Image
-                boxSize="45px"
+                boxSize="42px"
                 height="auto"
                 src={logoSml}
                 alt="Itheum Data DEX"
               />
               <Box p="2">
-                <Heading size="md">Itheum Data DEX</Heading>
+                <Heading size="sm">Itheum Data DEX</Heading>
               </Box>
               <Spacer />
               <Box>
