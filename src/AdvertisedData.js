@@ -11,7 +11,7 @@ import {
 import ShortAddress from './ShortAddress';
 import { TERMS, CHAIN_TOKEN_SYMBOL } from './util';
 import { config } from './util';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);

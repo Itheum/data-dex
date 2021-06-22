@@ -12,7 +12,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './ShortAddress';
 import { config } from './util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './util';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);

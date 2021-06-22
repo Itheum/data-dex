@@ -22,19 +22,13 @@ import DataCoalitions from './DataCoalitions';
 import TrustedComputation from './TrustedComputation';
 import { sleep, contractsForChain } from './util';
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './util';
+import { chainMeta, ChainMetaContext } from './contexts';
 import logo from './img/logo.png';
 import logoSml from './img/logo-sml.png';
 import chainEth from './img/eth-chain-logo.png';
 import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
 import moralisIcon from './img/moralis-logo.png';
-
-const chainMeta = {
-  networkId: null,
-  contract: null
-};
-
-export const ChainMetaContext = createContext(chainMeta);
 
 function App() {
   const {isAuthenticated, logout, user} = useMoralis();

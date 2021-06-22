@@ -8,7 +8,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 import dataVaultIcon from './img/data-vault-icon.png';
 
 export default function() {

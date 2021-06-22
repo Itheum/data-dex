@@ -11,7 +11,7 @@ import {
 import ShortAddress from './ShortAddress';
 import { config } from './util';
 import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 
 export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);

@@ -13,7 +13,7 @@ import {
 import ShortAddress from './ShortAddress';
 import { config, dataTemplates } from './util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 
 export default function({onRefreshBalance}) {
   const chainMeta = useContext(ChainMetaContext);

@@ -5,7 +5,7 @@ import {
   HStack, Heading, Center,
 } from '@chakra-ui/react';
 import { CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 import dataCoalitionsIcon from './img/data-coalitions-icon.png';
 
 export default function() {

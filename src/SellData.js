@@ -7,7 +7,7 @@ import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
   Alert, AlertIcon, AlertTitle, CloseButton, Link, Code, CircularProgress,
-  Image, Badge, Wrap, Collapse,
+  Image, Badge, Wrap, Collapse, Flex,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, 
   useToast, useDisclosure
@@ -17,7 +17,7 @@ import { config, dataTemplates } from './util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { tempCloudApiKey } from './secrets';
 import ShortAddress from './ShortAddress';
-import { ChainMetaContext } from './App';
+import { ChainMetaContext } from './contexts';
 
 const baseStyle = {
   flex: 1,
@@ -421,7 +421,10 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                 <Badge ml="1" fontSize="0.8em" colorScheme="green">2 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Badge>
               </Text>
 
-              <Button mt="5"colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale</Button>
+              <Flex>
+                <Button mt="5" mr="5" colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale as DataPack</Button>
+                <Button mt="5" disabled colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Mint and Sell as NFT</Button>
+              </Flex>
             </Stack>}
 
             <Modal
