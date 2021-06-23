@@ -18,6 +18,7 @@ import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { tempCloudApiKey } from './secrets';
 import ShortAddress from './ShortAddress';
 import { ChainMetaContext } from './contexts';
+import { log } from 'async';
 
 const baseStyle = {
   flex: 1,
@@ -57,12 +58,15 @@ export default function({itheumAccount}) {
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
   const [termsOfUseId, setTermsOfUseId] = useState('2');
-  const [saveProgress, setSaveProgress] = useState({s1: 1, s2: 0, s3: 0, s4: 0});
+  const [saveProgress, setSaveProgress] = useState({s1: 0, s2: 0, s3: 0, s4: 0});
+  const [saveProgressNFT, setSaveProgressNFT] = useState({a1: 0, a2: 0, a3: 0});
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpen, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const [showCode, setShowCode] = useState(false);
+  const [drawerInMintNFT, setDrawerInMintNFT] = useState(false);
+  const [dataNFTImg, setDataNFTImg] = useState(null);
 
   // eth tx state
   const [txConfirmation, setTxConfirmation] = useState(0);
@@ -109,7 +113,12 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
     isSaving,
     save: saveDataPack } = useNewMoralisObject('DataPack');
 
+  const { 
+    error: errDataNFTSave,
+    save: saveDataNFT } = useNewMoralisObject('DataNFT');
+
   const [savedDataPackMoralis, setSavedDataPackMoralis] = useState(null);
+  const [savedDataNFTMoralis, setSavedDataNFTMoralis] = useState(null);
 
   const {
     error: errCfHashData,
@@ -125,9 +134,16 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
     saveFile,
   } = useMoralisFile();
 
+  useEffect(() => {
+    if (drawerInMintNFT) {
+      sellOrderSubmit();
+    }
+  }, [drawerInMintNFT]);
+
   useEffect(async () => {
     if (dataFileSave && !loadingFileSave) {
-      setSaveProgress({...saveProgress, s2: 1});
+      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s1: 1}));
+
       await doCfHashData(); // get the hash of the file
     }
   }, [dataFileSave, errFileSave, loadingFileSave]);
@@ -135,24 +151,40 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
   useEffect(async () => {
     // if 1st time, then these vars come as []
     if (!Array.isArray(dataCfHashData)) {
-      setSaveProgress({...saveProgress, s3: 1});
+      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s2: 1}));
 
       const {dataHash} = dataCfHashData;
 
       if (dataHash) {
-        // create the datapack object
-        const newDataPack = {...dataTemplates.dataPack, 
-          dataPreview: sellerDataPreview,
-          sellerEthAddress: user.get('ethAddress'),
-          dataHash,
-          dataFile: dataFileSave,
-          termsOfUseId,
-          txNetworkId: chainMeta.networkId
-        };
+        if (!drawerInMintNFT) {
+          // create the datapack object
+          const newDataPack = {...dataTemplates.dataPack, 
+            dataPreview: sellerDataPreview,
+            sellerEthAddress: user.get('ethAddress'),
+            dataHash,
+            dataFile: dataFileSave,
+            termsOfUseId,
+            txNetworkId: chainMeta.networkId
+          };
 
-        const newPack = await saveDataPack(newDataPack);
+          const newPack = await saveDataPack(newDataPack);
 
-        setSavedDataPackMoralis(newPack);
+          setSavedDataPackMoralis(newPack);
+        } else {
+          // create the dataNFT object
+          const newDataNFT = {...dataTemplates.dataNFT, 
+            dataPreview: sellerDataPreview,
+            sellerEthAddress: user.get('ethAddress'),
+            dataHash,
+            dataFile: dataFileSave,
+            termsOfUseId,
+            txNetworkId: chainMeta.networkId
+          };
+
+          const newMoralisNFT = await saveDataNFT(newDataNFT);
+
+          setSavedDataNFTMoralis(newMoralisNFT);
+        }        
       }
     }
 
@@ -164,9 +196,19 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
 
   useEffect(async () => {
     if (savedDataPackMoralis && savedDataPackMoralis.id && savedDataPackMoralis.get('dataHash')) {
+      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s3: 1}));
+
       web3_ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
     }
   }, [savedDataPackMoralis]);
+
+  // data NFT object saved to moralis
+  useEffect(async () => {
+    if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
+      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, a1: 1}));
+      setDataNFTImg(`https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`);      
+    }
+  }, [savedDataNFTMoralis]);
 
   useEffect(async () => {
     if (txError) {
@@ -177,6 +219,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
 
       await savedDataPackMoralis.save();
       
+      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s4: 1}));
       closeProgressModal();
     }
     
@@ -187,16 +230,17 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
       alert('You need to provide some dataPreview!');      
     } else {
       try {
+        JSON.parse(sellerData); // valid JSON check?
+        
         onProgressModalOpen();
 
-        JSON.parse(sellerData); // valid JSON check?
-
         /*
-          1) Save the file and get a Moralis File Ref - Y
-          2) Get a sha256 hash for the data  - Y
-          3) Save the Data Pack in Moralis and get the new datapackID
-          4) Save to blockchain and get transactionHash (txHash), wait until 6 confirmations (show in UI)
-          5) Update the Data Pack in Moralis with the transactionHash - DONE
+          1) Save the file and get a Moralis File Ref (s1)
+          2) Get a sha256 hash for the data (s2)
+
+          3) IF NOT NFT - Save the Data Pack in Moralis and get the new datapackID (s3)
+          4) IF NOT NFT - Save to blockchain and get transactionHash (txHash), wait until 1 confirmations (show in UI)
+          5) IF NOT NFT - Update the Data Pack in Moralis with the transactionHash
         */
 
         await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
@@ -253,6 +297,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
     setIsArbirData(false);
     setTermsOfUseId('2');
     setSaveProgress({s1: 1, s2: 0, s3: 0, s4: 0});
+    setSaveProgressNFT({a1: 0, a2: 0, a3: 0});
 
     onProgressModalClose();
     closeDrawer();
@@ -261,6 +306,7 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
   function closeDrawer() {
     setCurrSellObject(null);
     setFetchDataLoading(true);
+    setDrawerInMintNFT(false);
     onCloseDrawer();
   }
 
@@ -377,9 +423,9 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
               {currSellObject && <Stack><Text fontSize="2xl">Sell data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
             </HStack>
           </DrawerHeader>
-          <DrawerBody>                        
+          <DrawerBody>
             {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
-            
+          
             <Stack spacing={5} mt="5">
               <Text fontWeight="bold">Data Payload Preview/Summary:</Text>                                         
               <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
@@ -422,8 +468,8 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
               </Text>
 
               <Flex>
-                <Button mt="5" mr="5" colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Place for Sale as DataPack</Button>
-                <Button mt="5" disabled colorScheme="teal" isLoading={(loadingFileSave || loadingCfHashData || isSaving)} onClick={() => sellOrderSubmit(sellerEthAddress, sellerDataPreview)}>Mint and Sell as NFT</Button>
+                <Button mt="5" mr="5" colorScheme="teal" isLoading={!drawerInMintNFT && isProgressModalOpen} onClick={sellOrderSubmit}>Place for Sale as DataPack</Button>
+                <Button mt="5" colorScheme="teal" isLoading={drawerInMintNFT && isProgressModalOpen} onClick={() => setDrawerInMintNFT(true)}>Mint and Sell as NFT</Button>
               </Flex>
             </Stack>}
 
@@ -447,15 +493,17 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                       <Text>Generating tamper-proof data signature</Text>
                     </HStack>
 
-                    <HStack>
-                      {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Saving to storage</Text>
-                    </HStack>
-
-                    <HStack>
-                      {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Advertising for sale on blockchain</Text>
-                    </HStack>
+                    {!drawerInMintNFT && <>
+                      <HStack>
+                        {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Saving to storage</Text>
+                      </HStack>
+                    
+                      <HStack>
+                        {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Advertising for sale on blockchain</Text>
+                      </HStack>
+                    </>}
 
                     {txHash && <Stack>
                       {/* <Progress colorScheme="green" fontSize="sm" value={(txReceipt && txReceipt.status) ? 100 : (100 / config.txConfirmationsNeededSml) * txConfirmation} /> */}
@@ -475,12 +523,41 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                         </Alert>
                       }                      
                     </Stack>}
+
+                    {drawerInMintNFT && <>
+                      <HStack>
+                        {!saveProgressNFT.a1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Generating your unique NFT visual character</Text>
+                      </HStack>
+
+                      {dataNFTImg && 
+                        <Image
+                          boxSize="200px"
+                          height="auto"
+                          src={dataNFTImg}
+                        />
+                      }
+
+                      <HStack>
+                        {!saveProgress.a2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Minting NFT and publishing to Data NFT Marketplace</Text>
+                      </HStack>
+                    </>}
                   
                     {errDataPackSave && 
                       <Alert status="error">
                         <Box flex="1">
                           <AlertIcon />
                           {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+
+                    {errDataNFTSave && 
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errDataNFTSave.message && <AlertTitle>{errDataNFTSave.message}</AlertTitle>}
                         </Box>
                       </Alert>
                     }

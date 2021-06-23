@@ -14,10 +14,10 @@ export default function() {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data NFTs <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
+            <Heading size="lg">Data NFT Marketplace <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
-              <Box align="center" flex="1">Convert highly personal or sensitive datasets into NFTs - allowing for uniqueness and limited availability to prevent overuse or oversharing</Box>
+              <Box align="center" flex="1">Convert highly personal or sensitive datasets into NFTs - allowing for uniqueness and limited availability to prevent over sharing of data. If re-sales happen, the original NFT minter (you!) earn royalties on it</Box>
               <Box align="center" flex="1">For example, your might want to share your DNA data under the "research only" terms -  but you want to limit how many buyers can purchase it -  data NFTs allow you to do this</Box>
               <Box align="center" flex="1">To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.
                 <HStack>

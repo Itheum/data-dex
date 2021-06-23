@@ -37,6 +37,15 @@ export const dataTemplates = {
     txHash: null,
     txNetworkId: null
   },
+  dataNFT: {
+    sellerEthAddress: null,
+    dataPreview: null,
+    dataHash: null,
+    dataFile: null,
+    termsOfUseId: null,
+    txHash: null,
+    txNetworkId: null
+  },
   dataOrder: {
     dataPackId: null,
     buyerEthAddress: null,

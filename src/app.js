@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
   AlertDialogBody,
   AlertDialogFooter,
@@ -141,8 +141,8 @@ function App() {
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
                   
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Marketplace</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} variant="solid" onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
