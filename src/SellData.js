@@ -7,9 +7,10 @@ import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
   Alert, AlertIcon, AlertTitle, CloseButton, Link, Code, CircularProgress,
-  Image, Badge, Wrap, Collapse, Flex,
+  Image, Badge, Wrap, Collapse, Flex, Textarea,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
-  Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, 
+  Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
+  NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
@@ -55,11 +56,14 @@ export default function({itheumAccount}) {
   const toast = useToast();
   const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerDataPreview, setSellerDataPreview] = useState('');
+  const [sellerDataNFTDesc, setSellerDataNFTDesc] = useState('');
+  const [dataNFTCopies, setDataNFTCopies] = useState(1);
+  const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
   const [termsOfUseId, setTermsOfUseId] = useState('2');
   const [saveProgress, setSaveProgress] = useState({s1: 0, s2: 0, s3: 0, s4: 0});
-  const [saveProgressNFT, setSaveProgressNFT] = useState({a1: 0, a2: 0, a3: 0});
+  const [saveProgressNFT, setSaveProgressNFT] = useState({n1: 0, n2: 0, n3: 0});
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpen, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
@@ -73,6 +77,8 @@ export default function({itheumAccount}) {
   const [txReceipt, setTxReceipt] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [txError, setTxError] = useState(null);
+
+  const [newNFTId, setNewNFTId] = useState(null);
 
   const getDataForSale = programId => {
     onOpenDrawer();
@@ -100,8 +106,10 @@ export default function({itheumAccount}) {
     const data = await res.json();
 
     if (data && data.length > 0) {
-      setSellerDataPreview(`${data.length} datapoints from the ${selObj.programName} 
-program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${moment(selObj.toTs).format(config.dateStr)}`);
+      const previewStr = `${data.length} datapoints from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${moment(selObj.toTs).format(config.dateStr)}`;
+      
+      setSellerDataPreview(previewStr);
+      setSellerDataNFTDesc(previewStr)
       setSellerData(JSON.stringify(data));
     }
 
@@ -134,11 +142,12 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
     saveFile,
   } = useMoralisFile();
 
-  useEffect(() => {
-    if (drawerInMintNFT) {
-      sellOrderSubmit();
-    }
-  }, [drawerInMintNFT]);
+  const {
+    error: errNFTMetaDataFile,
+    isUploading: loadingNFTMetaDataFile,
+    moralisFile: NFTMetaDataFile,
+    saveFile: saveNFTMetaDataFile,
+  } = useMoralisFile();
 
   useEffect(async () => {
     if (dataFileSave && !loadingFileSave) {
@@ -147,6 +156,35 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
       await doCfHashData(); // get the hash of the file
     }
   }, [dataFileSave, errFileSave, loadingFileSave]);
+
+  useEffect(async () => {
+    if (NFTMetaDataFile && !loadingNFTMetaDataFile) {
+      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n1: 1}));
+
+      console.log('NFTMetaDataFile.url()');
+      console.log(NFTMetaDataFile.url());
+
+      await web3_dnftCreateNFT(NFTMetaDataFile.url());
+    }
+  }, [NFTMetaDataFile, loadingNFTMetaDataFile]);
+
+  useEffect(() => {
+    async function updateNFTMoralisObject() {
+      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 2}));
+
+      savedDataNFTMoralis.set('metaDataFile', NFTMetaDataFile.url());
+      savedDataNFTMoralis.set('txNFTId', newNFTId);
+
+      await savedDataNFTMoralis.save();
+      
+      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, n3: 1}));
+      closeProgressModal();
+    }
+
+    if (newNFTId) {
+      updateNFTMoralisObject();
+    }
+  }, [newNFTId]);
 
   useEffect(async () => {
     // if 1st time, then these vars come as []
@@ -205,8 +243,20 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
   // data NFT object saved to moralis
   useEffect(async () => {
     if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
-      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, a1: 1}));
-      setDataNFTImg(`https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`);      
+      const nftImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+
+      setDataNFTImg(nftImg);
+
+      const newNFTMetaDataFile = {...dataTemplates.dataNFTMetaDataFile, 
+        name: sellerDataPreview,
+        description: sellerDataNFTDesc,
+        image: nftImg,
+        external_url: `nftmarketplace/${savedDataNFTMoralis.id}`
+      };
+
+      newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
+
+      await saveNFTMetaDataFile("nftmetadata.json", {base64 : btoa(newNFTMetaDataFile)});
     }
   }, [savedDataNFTMoralis]);
 
@@ -225,7 +275,22 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
     
   }, [txConfirmation, txHash, txError]);
 
-  const sellOrderSubmit = async () => {
+  function validateBaseInput() {
+    if (!sellerDataPreview || sellerDataPreview === '') {
+      alert('You need to provide some data preview or NFT title!');
+      return false;
+    } else {
+      try {
+        JSON.parse(sellerData); // valid JSON check?
+        return true;
+      } catch(e) {
+        alert('You need to provide some valid JSON for data!');
+        return false;
+      }
+    }    
+  }
+
+  const dataPackSellSubmit = async () => {
     if (!sellerDataPreview || sellerDataPreview === '') {
       alert('You need to provide some dataPreview!');      
     } else {
@@ -237,10 +302,9 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
         /*
           1) Save the file and get a Moralis File Ref (s1)
           2) Get a sha256 hash for the data (s2)
-
-          3) IF NOT NFT - Save the Data Pack in Moralis and get the new datapackID (s3)
-          4) IF NOT NFT - Save to blockchain and get transactionHash (txHash), wait until 1 confirmations (show in UI)
-          5) IF NOT NFT - Update the Data Pack in Moralis with the transactionHash
+          3) Save the Data Pack in Moralis and get the new datapackID (s3)
+          4) Save to blockchain and get transactionHash (txHash), wait until 1 confirmations (show in UI)
+          5) Update the Data Pack in Moralis with the transactionHash (s4)
         */
 
         await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
@@ -250,6 +314,28 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
         alert('You need to provide some valid JSON for data!');
         return;
       }      
+    }
+  }
+
+  const dataNFTSellSubmit = async () => {
+    if (validateBaseInput()) {
+      if (!sellerDataNFTDesc) {
+        alert('You need to provide some NFT Description!');
+        return;
+      }
+
+      /*
+        1) Save the file and get a Moralis File Ref (s1)
+        2) Get a sha256 hash for the data and generate the robot img URL (s2)
+        2.1) Save the Data NFT in Moralis and get the new moralis dataNFTId
+        3) Save the NFT Meta file to IPFS (use moralis file for now) and get the uri (n1)
+        3) Call the NFT contract with meta file URI and get the new NFT ID (n2)
+        4) Save a new Data NFT object in Moralis with all details of Data Pack + NFTId, Meta file URI and NFT contract address and NFT mint hash (n3)
+      */
+
+      onProgressModalOpen();
+
+      await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
     }
   }
 
@@ -283,6 +369,16 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
       });
   }
 
+  const web3_dnftCreateNFT = async(metaDataFileUri) => {
+    const dnftContract = new web3.eth.Contract(ABIS.dNFT, chainMeta.contracts.dnft);
+
+    const receipt = await dnftContract.methods.createDataNFT(metaDataFileUri).send({from: user.get('ethAddress')});
+    console.log('receipt');
+    console.log(receipt);
+
+    setNewNFTId(receipt.events.Transfer.returnValues.tokenId);
+  }
+
   function closeProgressModal() {
     toast({
       title: "Data sent for sale",
@@ -296,8 +392,8 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
     setSellerData('');
     setIsArbirData(false);
     setTermsOfUseId('2');
-    setSaveProgress({s1: 1, s2: 0, s3: 0, s4: 0});
-    setSaveProgressNFT({a1: 0, a2: 0, a3: 0});
+    setSaveProgress({s1: 0, s2: 0, s3: 0, s4: 0});
+    setSaveProgressNFT({n1: 0, n2: 0, n3: 0});
 
     onProgressModalClose();
     closeDrawer();
@@ -427,9 +523,45 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
             {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
           
             <Stack spacing={5} mt="5">
-              <Text fontWeight="bold">Data Payload Preview/Summary:</Text>                                         
+
+              <Text fontWeight="bold">Sale Type</Text>
+              
+              <RadioGroup value={drawerInMintNFT} onChange={() => setDrawerInMintNFT(!drawerInMintNFT)}>
+                <Stack>
+                  <Radio value={false}>Data Pack (Unlimited Supply / No Resale / No Royalty)</Radio>
+                  <Radio value={true}>Data NFT (Limited Edition / Resale allowed with Royalty)</Radio>
+                </Stack>
+              </RadioGroup>
+
+              <Text fontWeight="bold">{!drawerInMintNFT && 'Data Payload Preview/Summary:' || 'NFT Title'}</Text>
               <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
-                
+
+              {drawerInMintNFT && <>
+                <Text fontWeight="bold">NFT Description</Text>
+                <Textarea placeholder="Enter a detailed NFT description here" value={sellerDataNFTDesc} onChange={(event) => setSellerDataNFTDesc(event.currentTarget.value)} />
+              
+                <Text fontWeight="bold">Number of copies (Coming soon...)</Text>
+                <NumberInput isDisabled={true} size="md"  maxW={24} step={1} defaultValue={1} min={1} max={20} value={dataNFTCopies} onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <Text colorScheme="gray" fontSize="sm">Limit the quality to increase value (rarity) - suggested: less than 10</Text>
+
+                <Text fontWeight="bold">Royalties (Coming soon...)</Text>
+                <NumberInput isDisabled={true} size="md"  maxW={24} step={10} defaultValue={0} min={0} max={30} value={dataNFTRoyalty} onChange={(valueString) => setDataNFTRoyalty(parseInt(valueString))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <Text colorScheme="gray" fontSize="sm">Suggested: 0%, 10%, 20%, 30%</Text>
+
+              </>}
+
               <Text fontWeight="bold">Data Payload for Sale:</Text>
               
               {isArbirData && <>
@@ -463,13 +595,13 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
                   </Stack>
                 </Stack>
 
-              <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
+              {!drawerInMintNFT && <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
                 <Badge ml="1" fontSize="0.8em" colorScheme="green">2 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Badge>
-              </Text>
+              </Text>}              
 
               <Flex>
-                <Button mt="5" mr="5" colorScheme="teal" isLoading={!drawerInMintNFT && isProgressModalOpen} onClick={sellOrderSubmit}>Place for Sale as DataPack</Button>
-                <Button mt="5" colorScheme="teal" isLoading={drawerInMintNFT && isProgressModalOpen} onClick={() => setDrawerInMintNFT(true)}>Mint and Sell as NFT</Button>
+                {!drawerInMintNFT && <Button mt="5" mr="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataPackSellSubmit}>Place for Sale as Data Pack</Button>}
+                {drawerInMintNFT && <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Sell as NFT</Button>}
               </Flex>
             </Stack>}
 
@@ -490,8 +622,17 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
 
                     <HStack>
                       {!saveProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Generating tamper-proof data signature</Text>
+                      <Text>Generating unique tamper-proof data signature {drawerInMintNFT && 'and your unique NFT character'}</Text>
                     </HStack>
+
+                    {dataNFTImg && <>
+                      <Image
+                        boxSize="200px"
+                        height="auto"
+                        src={dataNFTImg}
+                      />
+                      <Text fontSize="xs">This character was created using the unique data signature (it's one of a kind!) </Text>
+                    </>}
 
                     {!drawerInMintNFT && <>
                       <HStack>
@@ -526,24 +667,21 @@ program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${mome
 
                     {drawerInMintNFT && <>
                       <HStack>
-                        {!saveProgressNFT.a1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Generating your unique NFT visual character</Text>
+                        {!saveProgressNFT.n1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Generating and saving NFT metadata file to IPFS</Text>
                       </HStack>
-
-                      {dataNFTImg && 
-                        <Image
-                          boxSize="200px"
-                          height="auto"
-                          src={dataNFTImg}
-                        />
-                      }
 
                       <HStack>
-                        {!saveProgress.a2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Minting NFT and publishing to Data NFT Marketplace</Text>
+                        {!saveProgress.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Minting your new data NFT on blockchain</Text>
+                      </HStack>
+
+                      <HStack>
+                        {!saveProgress.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Advertising for sale on the Data NFT Marketplace</Text>
                       </HStack>
                     </>}
-                  
+
                     {errDataPackSave && 
                       <Alert status="error">
                         <Box flex="1">
