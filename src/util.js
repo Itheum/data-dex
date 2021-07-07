@@ -48,6 +48,7 @@ export const dataTemplates = {
     priceInMyda: null,
     termsOfUseId: null,
     metaDataFile: null,
+    txNFTContract: null,
     txNFTId: null,
     txHash: null,
     txNetworkId: null

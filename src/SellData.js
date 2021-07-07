@@ -14,7 +14,7 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { config, dataTemplates } from './util';
+import { config, dataTemplates, sleep } from './util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { tempCloudApiKey } from './secrets';
 import ShortAddress from './ShortAddress';
@@ -54,7 +54,6 @@ export default function({itheumAccount}) {
   const { user } = useMoralis();
   const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const toast = useToast();
-  const [sellerEthAddress, setSellerEthAddress] = useState(user.get('ethAddress'));
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerDataNFTDesc, setSellerDataNFTDesc] = useState('');
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
@@ -71,14 +70,16 @@ export default function({itheumAccount}) {
   const [showCode, setShowCode] = useState(false);
   const [drawerInMintNFT, setDrawerInMintNFT] = useState(false);
   const [dataNFTImg, setDataNFTImg] = useState(null);
+  const [newNFTId, setNewNFTId] = useState(null);
 
   // eth tx state
   const [txConfirmation, setTxConfirmation] = useState(0);
-  const [txReceipt, setTxReceipt] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [txError, setTxError] = useState(null);
+  const [txNFTConfirmation, setTxNFTConfirmation] = useState(0);
+  const [txNFTHash, setTxNFTHash] = useState(null);
+  const [txNFTError, setTxNFTError] = useState(null);
 
-  const [newNFTId, setNewNFTId] = useState(null);
 
   const getDataForSale = programId => {
     onOpenDrawer();
@@ -161,23 +162,22 @@ export default function({itheumAccount}) {
     if (NFTMetaDataFile && !loadingNFTMetaDataFile) {
       setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n1: 1}));
 
-      console.log('NFTMetaDataFile.url()');
-      console.log(NFTMetaDataFile.url());
-
       await web3_dnftCreateNFT(NFTMetaDataFile.url());
     }
   }, [NFTMetaDataFile, loadingNFTMetaDataFile]);
 
   useEffect(() => {
-    async function updateNFTMoralisObject() {
-      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 2}));
-
+    async function updateNFTMoralisObject() {      
       savedDataNFTMoralis.set('metaDataFile', NFTMetaDataFile.url());
       savedDataNFTMoralis.set('txNFTId', newNFTId);
+      savedDataNFTMoralis.set('txHash', txNFTHash);
 
       await savedDataNFTMoralis.save();
       
-      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, n3: 1}));
+      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n3: 1}));
+
+      sleep(3);
+
       closeProgressModal();
     }
 
@@ -216,7 +216,8 @@ export default function({itheumAccount}) {
             dataHash,
             dataFile: dataFileSave,
             termsOfUseId,
-            txNetworkId: chainMeta.networkId
+            txNetworkId: chainMeta.networkId,
+            txNFTContract: chainMeta.contracts.dnft
           };
 
           const newMoralisNFT = await saveDataNFT(newDataNFT);
@@ -243,20 +244,20 @@ export default function({itheumAccount}) {
   // data NFT object saved to moralis
   useEffect(async () => {
     if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
-      const nftImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+      const NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
 
-      setDataNFTImg(nftImg);
+      setDataNFTImg(NFTImgUrl);
 
       const newNFTMetaDataFile = {...dataTemplates.dataNFTMetaDataFile, 
         name: sellerDataPreview,
         description: sellerDataNFTDesc,
-        image: nftImg,
+        image: NFTImgUrl,
         external_url: `nftmarketplace/${savedDataNFTMoralis.id}`
       };
 
       newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
 
-      await saveNFTMetaDataFile("nftmetadata.json", {base64 : btoa(newNFTMetaDataFile)});
+      await saveNFTMetaDataFile("metadata.json", {base64 : btoa(JSON.stringify(newNFTMetaDataFile))});
     }
   }, [savedDataNFTMoralis]);
 
@@ -351,7 +352,7 @@ export default function({itheumAccount}) {
       .on('receipt', function(receipt){
         console.log('receipt', receipt);
 
-        setTxReceipt(receipt);
+        // setTxReceipt(receipt);
       })
       .on('confirmation', function(confirmationNumber, receipt){
         // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
@@ -376,7 +377,24 @@ export default function({itheumAccount}) {
     console.log('receipt');
     console.log(receipt);
 
-    setNewNFTId(receipt.events.Transfer.returnValues.tokenId);
+    setTxNFTHash(receipt.transactionHash);
+
+    await sleep(5);
+
+    if (receipt.status) {
+      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 1}));
+
+      setTxNFTConfirmation(1);
+
+      await sleep(5);
+
+      setNewNFTId(receipt.events.Transfer.returnValues.tokenId);
+    } else {
+      const txErr = new Error('NFT Contract Error on method createDataNFT');
+      console.error(txErr);
+      
+      setTxNFTError(txErr);
+    }
   }
 
   function closeProgressModal() {
@@ -393,13 +411,26 @@ export default function({itheumAccount}) {
     setIsArbirData(false);
     setTermsOfUseId('2');
     setSaveProgress({s1: 0, s2: 0, s3: 0, s4: 0});
+
     setSaveProgressNFT({n1: 0, n2: 0, n3: 0});
+    setTxNFTConfirmation(0);
+    setTxNFTHash(null);
+    setTxNFTError(null);
+
+    setTxConfirmation(0);
+    setTxHash(null);
+    setTxError(null);
 
     onProgressModalClose();
     closeDrawer();
   }
 
   function closeDrawer() {
+    setNewNFTId(null);
+    setDataNFTImg(null);
+    setSavedDataNFTMoralis(null);
+    setSavedDataPackMoralis(null);
+
     setCurrSellObject(null);
     setFetchDataLoading(true);
     setDrawerInMintNFT(false);
@@ -672,12 +703,31 @@ export default function({itheumAccount}) {
                       </HStack>
 
                       <HStack>
-                        {!saveProgress.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                         <Text>Minting your new data NFT on blockchain</Text>
                       </HStack>
 
+                      {txNFTHash && 
+                        <Stack>
+                          <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededSml) * txNFTConfirmation} />
+
+                          <HStack>
+                            <Text>Transaction </Text>
+                            <ShortAddress address={txNFTHash} />
+                            <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                          </HStack>
+
+                          {txNFTError && 
+                            <Alert status="error">
+                              <AlertIcon />
+                              {txNFTError.message && <AlertTitle>{txNFTError.message}</AlertTitle>}
+                              <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
+                            </Alert>
+                          }                      
+                        </Stack>}
+
                       <HStack>
-                        {!saveProgress.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        {!saveProgressNFT.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                         <Text>Advertising for sale on the Data NFT Marketplace</Text>
                       </HStack>
                     </>}
