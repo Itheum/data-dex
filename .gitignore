@@ -105,6 +105,7 @@ dist
 
 # other
 secrets.js
+_secrets.js
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -131,3 +132,5 @@ yarn-debug.log*
 yarn-error.log*
 
 NOTES.md
+
+/bin

@@ -66,8 +66,8 @@ const onPageLoad = () => {
 }
 
 const initMoralis = async () => {
-  Moralis.initialize(appId);
-  Moralis.serverURL = serverURL;
+  Moralis.initialize(process.env.ENV_MORALIS_APPID);
+  Moralis.serverURL = process.env.ENV_MORALIS_SERVER;
   
   window.web3 = await Moralis.Web3.enable();
   
