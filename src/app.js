@@ -4,8 +4,9 @@ import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay } from '@chakra-ui/react';
+  AlertDialogOverlay, useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, Center } from '@chakra-ui/layout';
+import { SunIcon, MoonIcon } from '@chakra-ui/icons';
 import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
 import SellData from './SellData';
@@ -39,6 +40,7 @@ function App() {
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const cancelRef = useRef();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(async () => {
     if (user && web3) {
@@ -124,6 +126,10 @@ function App() {
                     <ShortAddress address={user.get('ethAddress')} />
                   </Text>
                   
+                  <Button onClick={toggleColorMode}>
+                    {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+                  </Button>
+
                   <Button onClick={() => logout()} ml="10">Logout</Button>
                 </HStack>
               </Box>
