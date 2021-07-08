@@ -1,4 +1,4 @@
-import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress, ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic} from './secrets.js';
+import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress, ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
   const contracts = {

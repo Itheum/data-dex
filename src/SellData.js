@@ -16,7 +16,7 @@ import {
 
 import { config, dataTemplates, sleep } from './util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import { tempCloudApiKey } from './secrets';
+// import { tempCloudApiKey } from './secrets';
 import ShortAddress from './ShortAddress';
 import { ChainMetaContext } from './contexts';
 import { log } from 'async';
@@ -96,7 +96,7 @@ export default function({itheumAccount}) {
 
   const fetchData = async selObj => {
     const myHeaders = new Headers();
-    myHeaders.append("authorization", tempCloudApiKey);
+    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY);
 
     const requestOptions = {
       method: 'GET',
