@@ -29,6 +29,7 @@ import logoSml from './img/logo-sml.png';
 import chainEth from './img/eth-chain-logo.png';
 import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
+import chainAvln from './img/avalanche-chain-logo.png';
 import moralisIcon from './img/moralis-logo.png';
 
 function App() {
@@ -232,13 +233,16 @@ function App() {
             <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
             <Flex direction="row" justify="space-around">
               <Tooltip label="Live on Ropsten Test Network">
-                <Image src={chainEth} boxSize="50px" />
+                <Image src={chainEth} boxSize="50px" width="40px" />
               </Tooltip>
               <Tooltip label="Live on Mumbai Test Network">
                 <Image src={chainPol} boxSize="50px" />
               </Tooltip>
-              <Tooltip label="Coming soon...">
+              <Tooltip label="Binance Smart Chain - Coming soon...">
                 <Image src={chainBsc} boxSize="50px" opacity=".3" />
+              </Tooltip>
+              <Tooltip label="Avalanche - Coming soon...">
+                <Image src={chainAvln} boxSize="50px" opacity=".3" />
               </Tooltip>
             </Flex>
             
