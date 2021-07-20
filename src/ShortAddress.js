@@ -2,8 +2,12 @@ import {Text, Tooltip} from '@chakra-ui/react';
 
 export default function ShortAddress({address}) {
   return (
-    <Tooltip label={address} aria-label={address}>
-      <Text fontSize="sm">...{address.slice(-6)}</Text>
+    <Tooltip label="click to copy" aria-label="click to copy" fontSize="xs">
+      <Text fontSize="xs" 
+        onClick={() => {navigator.clipboard.writeText(address);}} style={{cursor: 'pointer'}}>
+          {`${address.substring(0, 6)}...${address.slice(-4)}`}
+      </Text>
     </Tooltip>
   );
 }
+
