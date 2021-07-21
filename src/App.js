@@ -40,6 +40,10 @@ function App() {
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
+  const [rfKeys, setRfKeys] = useState({
+    tools: 0,
+    sellData: 0
+  });
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -85,6 +89,12 @@ function App() {
     // console.log(afterDecimal.toString())     // >> 415926500000000000
     
     setMydaBal(beforeDecimal.toString());
+  }
+
+  // utility that will reload a component and reset it's state
+  const handleRfMount = key => {
+    const reRf = {...rfKeys, [key]: Date.now()}
+    setRfKeys(reRf);
   }
 
   if (isAuthenticated) {
@@ -162,9 +172,9 @@ function App() {
 
               <Box ml="10" mt={5} flex="auto">
                 <ChainMetaContext.Provider value={chainMeta}>
-                  {menuItem === MENU.HOME && <Tools setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
+                  {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
                   {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
-                  {menuItem === MENU.SELL && <SellData itheumAccount={itheumAccount} />}
+                  {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
                   {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                   {menuItem === MENU.PURCHASED && <PurchasedData />}
                   {menuItem === MENU.TX && <ChainTransactions />}
