@@ -25,7 +25,7 @@ export const contractsForChain = networkId => {
 
 export const config = {
   txConfirmationsNeededSml: 1,
-  txConfirmationsNeededLrg: 1,
+  txConfirmationsNeededLrg: 2,
   dateStr: 'MMM Do YYYY',
   dateStrTm: 'MMM Do YYYY LT'
 }

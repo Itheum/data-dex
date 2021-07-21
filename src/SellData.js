@@ -16,7 +16,6 @@ import {
 
 import { config, dataTemplates, sleep } from './util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-// import { tempCloudApiKey } from './secrets';
 import ShortAddress from './ShortAddress';
 import { ChainMetaContext } from './contexts';
 import { log } from 'async';
@@ -49,7 +48,7 @@ const rejectStyle = {
   borderColor: '#ff1744'
 };
 
-export default function({itheumAccount}) {
+export default function({onRfMount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
   const { user } = useMoralis();
   const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
@@ -150,6 +149,10 @@ export default function({itheumAccount}) {
     saveFile: saveNFTMetaDataFile,
   } = useMoralisFile();
 
+  useEffect(() => {
+    console.log('MOUNT Sell');
+  }, []);
+
   useEffect(async () => {
     if (dataFileSave && !loadingFileSave) {
       setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s1: 1}));
@@ -177,7 +180,6 @@ export default function({itheumAccount}) {
       setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n3: 1}));
 
       sleep(3);
-
       closeProgressModal();
     }
 
@@ -264,13 +266,14 @@ export default function({itheumAccount}) {
   useEffect(async () => {
     if (txError) {
       console.error(txError);
-    // } else if (txHash && (txReceipt && txReceipt.status) || (txConfirmation === config.txConfirmationsNeededSml)) {
-    } else if (txHash && txConfirmation === config.txConfirmationsNeededSml) {
+    } else if (txHash && txConfirmation === config.txConfirmationsNeededLrg) {
       savedDataPackMoralis.set('txHash', txHash);      
 
       await savedDataPackMoralis.save();
       
       setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s4: 1}));
+
+      sleep(3);
       closeProgressModal();
     }
     
@@ -343,48 +346,69 @@ export default function({itheumAccount}) {
   const web3_ddexAdvertiseForSale = async(dataPackId, dataHash) => {
     const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
 
-    ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
-      .on('transactionHash', function(hash){
-        console.log('transactionHash', hash);
+    const receipt = await ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')});
 
-        setTxHash(hash);
-      })
-      .on('receipt', function(receipt){
-        console.log('receipt', receipt);
+    // show a nice loading animation to user
+    setTxHash(receipt.transactionHash);
+    await sleep(2);
+    setTxConfirmation(0.5);
+    await sleep(2);
+    setTxConfirmation(1);
+    await sleep(2);
 
-        // setTxReceipt(receipt);
-      })
-      .on('confirmation', function(confirmationNumber, receipt){
-        // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
-        console.log('confirmation');
-        console.log(confirmationNumber);
+    if (receipt.status === true) {
+      setTxConfirmation(2);
+    } else {
+      const txErr = new Error('Contract Error on method advertiseForSale');
+      console.error(txErr);
+      
+      setTxError(txErr);
+    }
 
-        setTxConfirmation(confirmationNumber);
-      })
-      .on('error', function(error, receipt) {
-        console.log('error');
-        console.log(receipt);
-        console.log(error);
+    // ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
+    //   .on('transactionHash', function(hash){
+    //     console.log('transactionHash', hash);
 
-        setTxError(error);
-      });
+    //     setTxHash(hash);
+    //   })
+    //   .on('receipt', function(receipt){
+    //     console.log('receipt', receipt);
+
+    //     // setTxReceipt(receipt);
+    //   })
+    //   .on('confirmation', function(confirmationNumber, receipt){
+    //     // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
+    //     console.log('confirmation');
+    //     console.log(confirmationNumber);
+
+    //     setTxConfirmation(confirmationNumber);
+    //   })
+    //   .on('error', function(error, receipt) {
+    //     console.log('error');
+    //     console.log(receipt);
+    //     console.log(error);
+
+    //     setTxError(error);
+    //   });
   }
 
   const web3_dnftCreateNFT = async(metaDataFileUri) => {
     const dnftContract = new web3.eth.Contract(ABIS.dNFT, chainMeta.contracts.dnft);
 
     const receipt = await dnftContract.methods.createDataNFT(metaDataFileUri).send({from: user.get('ethAddress')});
-    console.log('receipt');
-    console.log(receipt);
 
+    // show a nice loading animation to user
     setTxNFTHash(receipt.transactionHash);
+    await sleep(2);
+    setTxNFTConfirmation(0.5);
+    await sleep(2);
+    setTxNFTConfirmation(1);
+    await sleep(2);
 
-    await sleep(5);
-
-    if (receipt.status) {
+    if (receipt.status === true) {
       setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 1}));
 
-      setTxNFTConfirmation(1);
+      setTxNFTConfirmation(2);
 
       await sleep(5);
 
@@ -405,36 +429,11 @@ export default function({itheumAccount}) {
       isClosable: true,
     });
 
-    // reset data state
-    setSellerDataPreview('');
-    setSellerData('');
-    setIsArbirData(false);
-    setTermsOfUseId('2');
-    setSaveProgress({s1: 0, s2: 0, s3: 0, s4: 0});
-
-    setSaveProgressNFT({n1: 0, n2: 0, n3: 0});
-    setTxNFTConfirmation(0);
-    setTxNFTHash(null);
-    setTxNFTError(null);
-
-    setTxConfirmation(0);
-    setTxHash(null);
-    setTxError(null);
-
     onProgressModalClose();
-    closeDrawer();
-  }
-
-  function closeDrawer() {
-    setNewNFTId(null);
-    setDataNFTImg(null);
-    setSavedDataNFTMoralis(null);
-    setSavedDataPackMoralis(null);
-
-    setCurrSellObject(null);
-    setFetchDataLoading(true);
-    setDrawerInMintNFT(false);
     onCloseDrawer();
+
+    // remount the component
+    onRfMount();
   }
 
   const handleCodeShowToggle = () => setShowCode(!showCode);
@@ -541,12 +540,12 @@ export default function({itheumAccount}) {
         </Box>
       </Wrap>
 
-      <Drawer onClose={closeDrawer} isOpen={isDrawerOpen} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+      <Drawer onClose={onRfMount} isOpen={isDrawerOpen} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader>
             <HStack spacing="5">
-              <CloseButton size="lg" onClick={closeDrawer} />
+              <CloseButton size="lg" onClick={onRfMount} />
               {currSellObject && <Stack><Text fontSize="2xl">Sell data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
             </HStack>
           </DrawerHeader>
@@ -677,9 +676,8 @@ export default function({itheumAccount}) {
                       </HStack>
                     </>}
 
-                    {txHash && <Stack>
-                      {/* <Progress colorScheme="green" fontSize="sm" value={(txReceipt && txReceipt.status) ? 100 : (100 / config.txConfirmationsNeededSml) * txConfirmation} /> */}
-                      <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmation} />
+                    {txHash && <Stack>                      
+                      <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmation} />
 
                       <HStack>
                         <Text>Transaction </Text>
@@ -709,7 +707,7 @@ export default function({itheumAccount}) {
 
                       {txNFTHash && 
                         <Stack>
-                          <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededSml) * txNFTConfirmation} />
+                          <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txNFTConfirmation} />
 
                           <HStack>
                             <Text>Transaction </Text>

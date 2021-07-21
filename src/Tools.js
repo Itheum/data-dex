@@ -9,11 +9,11 @@ import {
   useToast
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config } from './util';
+import { config, sleep } from './util';
 import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { ChainMetaContext } from './contexts';
 
-export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
+export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { web3 } = useMoralis();
@@ -33,6 +33,10 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
 
+  useEffect(() => {
+    console.log('MOUNT Tools');
+  }, []);
+
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {
@@ -51,14 +55,12 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
   }, [dataCfTestData]);
 
   // Faucet
-  useEffect(async () => {
+  useEffect(() => {
     if (txErrorFaucet) {
       console.error(txErrorFaucet);
       setFaucetWorking(false);
     } else {
       if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
-        console.log('FAUCETTED');
-        
         toast({
           title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`,          
           status: "success",
@@ -66,7 +68,7 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
           isClosable: true,
         });
 
-        resetFaucetUiState();
+        onRfMount();
         onRefreshBalance();
       }
     }
@@ -80,35 +82,47 @@ export default function({setMenuItem, onRefreshBalance, onItheumAccount, itheumA
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(50*10**decimals).toString(16));
 
-    tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')})
-      .on('transactionHash', function(hash) {
-        console.log('Faucet transactionHash', hash);
+    const receipt = await tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')});
+    
+    // show a nice loading animation to user
+    setTxHashFaucet(receipt.transactionHash);
+    await sleep(2);
+    setTxConfirmationFaucet(0.5);
+    await sleep(2);
+    setTxConfirmationFaucet(1);
+    await sleep(2);
 
-        setTxHashFaucet(hash);
-      })
-      .on('receipt', function(receipt){
-        console.log('Faucet receipt', receipt);
-      })
-      .on('confirmation', function(confirmationNumber, receipt){
-        console.log('Faucet confirmation');
-        console.log(confirmationNumber);
+    if (receipt.status === true) {
+      setTxConfirmationFaucet(2);
+    } else {
+      const txErr = new Error('NFT Contract Error on method createDataNFT');
+      console.error(txErr);
+      
+      setTxErrorFaucet(txErr);
+    }
 
-        setTxConfirmationFaucet(confirmationNumber);
-      })
-      .on('error', function(error, receipt) {
-        console.log('Faucet error');
-        console.log(receipt);
-        console.log(error);
+    // tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')})
+    //   .on('transactionHash', function(hash) {
+    //     console.log('Faucet transactionHash', hash);
 
-        setTxErrorFaucet(error);
-      });
-  }
+    //     setTxHashFaucet(hash);
+    //   })
+    //   .on('receipt', function(receipt){
+    //     console.log('Faucet receipt', receipt);
+    //   })
+    //   .on('confirmation', function(confirmationNumber, receipt){
+    //     console.log('Faucet confirmation');
+    //     console.log(confirmationNumber);
 
-  const resetFaucetUiState = () => {
-    setFaucetWorking(false);
-    setTxConfirmationFaucet(0);
-    setTxHashFaucet(null);
-    setTxErrorFaucet(null);
+    //     setTxConfirmationFaucet(confirmationNumber);
+    //   })
+    //   .on('error', function(error, receipt) {
+    //     console.log('Faucet error');
+    //     console.log(receipt);
+    //     console.log(error);
+
+    //     setTxErrorFaucet(error);
+    //   });
   }
 
   return (
