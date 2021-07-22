@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Link, Progress, Badge,
   Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
-  Text, HStack, Heading,
+  Text, HStack, Heading, CloseButton,
   useToast
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
@@ -57,7 +57,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   // Faucet
   useEffect(() => {
     if (txErrorFaucet) {
-      console.error(txErrorFaucet);
       setFaucetWorking(false);
     } else {
       if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
@@ -68,7 +67,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
           isClosable: true,
         });
 
-        onRfMount();
+        resetFauceState();
         onRefreshBalance();
       }
     }
@@ -82,25 +81,29 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(50*10**decimals).toString(16));
 
-    const receipt = await tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')});
-    
-    // show a nice loading animation to user
-    setTxHashFaucet(receipt.transactionHash);
-    await sleep(2);
-    setTxConfirmationFaucet(0.5);
-    await sleep(2);
-    setTxConfirmationFaucet(1);
-    await sleep(2);
-
-    if (receipt.status === true) {
-      setTxConfirmationFaucet(2);
-    } else {
-      const txErr = new Error('NFT Contract Error on method createDataNFT');
-      console.error(txErr);
+    try {
+      const receipt = await tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')});
       
-      setTxErrorFaucet(txErr);
-    }
+      // show a nice loading animation to user
+      setTxHashFaucet(receipt.transactionHash);
+      await sleep(2);
+      setTxConfirmationFaucet(0.5);
+      await sleep(2);
+      setTxConfirmationFaucet(1);
+      await sleep(2);
 
+      if (receipt.status === true) {
+        setTxConfirmationFaucet(2);
+      } else {
+        const txErr = new Error('NFT Contract Error on method createDataNFT');
+        console.error(txErr);
+        
+        setTxErrorFaucet(txErr);
+      }
+    } catch(e) {
+      setTxErrorFaucet(e);
+    }
+    
     // tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')})
     //   .on('transactionHash', function(hash) {
     //     console.log('Faucet transactionHash', hash);
@@ -123,6 +126,13 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
     //     setTxErrorFaucet(error);
     //   });
+  }
+
+  function resetFauceState() {
+    setFaucetWorking(false);
+    setTxConfirmationFaucet(0);
+    setTxHashFaucet(null);
+    setTxErrorFaucet(null);
   }
 
   return (
@@ -182,6 +192,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
               <Alert status="error">
                 <AlertIcon />
                 {txErrorFaucet.message && <AlertTitle>{txErrorFaucet.message}</AlertTitle>}
+                <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
               </Alert>
             }
 
