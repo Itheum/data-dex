@@ -24,8 +24,8 @@ export default function() {
               <Box align="center" flex="1">Your individual data is also not very valuable "when viewed in isolation" -  but when your data is "grouped" into clusters of similar people, it grows significantly in value</Box>
               <Box align="center" flex="1">Coalitions are DAOs. Stake your {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} and align to the Coalition who best suits your interests. Delegate the ownership of your personal data and have the Coalition trade your data on your behalf</Box>
             </HStack>
-            <Link mt="10" href="https://itheum.medium.com/itheum-data-dex-whitepaper-fc6b205636b6#6117" isExternal>
-              <Button colorScheme="teal" variant="outline">Read about Data Coalitions in our Whitepaper</Button>
+            <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-coalitions-1" isExternal>
+              <Button size="xs" colorScheme="teal" variant="outline">Read about Data Coalitions in our Whitepaper</Button>
             </Link>
           </Center>
         </Box>        

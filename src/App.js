@@ -44,7 +44,8 @@ function App() {
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
-    sellData: 0
+    sellData: 0,
+    buyData: 0
   });
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
@@ -161,7 +162,7 @@ function App() {
                   
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
 
-                  <Accordion defaultIndex={[-1]} allowMultiple>
+                  <Accordion defaultIndex={[-1]}>
                     <AccordionItem>
                       <AccordionButton>
                         <Button flex="1" colorScheme="teal" w="100%" variant="outline">Data Packs</Button>
@@ -183,7 +184,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2">
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Wallet</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -227,7 +228,7 @@ function App() {
               <Box ml="10" mt={5} flex="auto">
                 <ChainMetaContext.Provider value={chainMeta}>
                   {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
-                  {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
+                  {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />}
                   {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
                   {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                   {menuItem === MENU.PURCHASED && <PurchasedData />}

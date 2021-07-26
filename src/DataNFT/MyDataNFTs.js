@@ -19,6 +19,7 @@ export default function() {
   
   const { isInitialized, Moralis } = useMoralis();
   const [onChainNFTs, setOnChainNFTs] = useState([]);
+  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
 
   const [userDataNFTs, setUserDataNFTs] = useState([]);
   const { data: dataNFTs, error: errorDataNFTsGet, isLoading } = useMoralisQuery("DataNFT", query =>
@@ -86,7 +87,9 @@ export default function() {
 
           {userDataNFTs.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" ml="1rem" w="250px">
             <Flex justifyContent="center">
-              <Image src={item.get('nftImgUrl')} alt={item.get('dataPreview')} pt="1rem" />
+              <Skeleton isLoaded={oneNFTImgLoaded}>
+                <Image src={item.get('nftImgUrl')} alt={item.get('dataPreview')} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} />
+              </Skeleton>
             </Flex>
 
             <Box p="3">

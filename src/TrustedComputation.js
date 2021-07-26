@@ -26,8 +26,8 @@ export default function() {
                 </HStack>
               </Box>
             </HStack>
-            <Link mt="10" href="https://itheum.medium.com/itheum-data-dex-whitepaper-fc6b205636b6#9d44" isExternal>
-              <Button colorScheme="teal" variant="outline">Read about the Trusted Computation Framework in our Whitepaper</Button>
+            <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#trusted-1" isExternal>
+              <Button size="xs" colorScheme="teal" variant="outline">Read about the Trusted Computation Framework in our Whitepaper</Button>
             </Link>
           </Center>
         </Box>        
