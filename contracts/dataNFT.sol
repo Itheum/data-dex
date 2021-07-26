@@ -8,7 +8,7 @@ contract ItheumDataNFT is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     
-    constructor() ERC721("Itheum Data NFT Token", "DAFT") {}
+    constructor() ERC721("Itheum Data NFT", "DAFT") {}
     
     struct DataNFT {
         uint256 id;

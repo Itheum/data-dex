@@ -4,30 +4,34 @@ import {
   Button, Link, Badge, Flex, Image, StackDivider,
   HStack, Heading, Center, Text
 } from '@chakra-ui/react';
+import { MENU } from './util';
+import openSeaLogoIcon from './img/opensea-logo.png';
 import dataNFTIcon from './img/data-nft-icon.png';
-import chainlinkLogoIcon from './img/chainlink-logo.png';
 
-export default function() {
-
+export default function({setMenuItem}) {
   return (
     <Stack spacing={5}>      
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data NFT Marketplace <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
+            <Heading size="lg">Data NFTs <Badge colorScheme="green" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
-              <Box align="center" flex="1">Convert highly personal or sensitive datasets into NFTs - allowing for uniqueness and limited availability to prevent over sharing of data. If re-sales happen, the original NFT minter (you!) earn royalties on it</Box>
-              <Box align="center" flex="1">For example, your might want to share your DNA data under the "research only" terms -  but you want to limit how many buyers can purchase it -  data NFTs allow you to do this</Box>
-              <Box align="center" flex="1">To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.
-                <HStack>
-                  <Image src={chainlinkLogoIcon} boxSize="75px" objectFit="contain"></Image>
-                  <Text fontSize="sm" opacity=".7">Powered by Chainlink VRF</Text>
-                </HStack>
+              <Box align="center" flex="1">Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability</Box>
+              <Box align="center" flex="1">Allow for resale in secondary markets (like OpenSea) and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn a % as royalty</Box>
+              <Box align="center" flex="1">To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.                
               </Box>
             </HStack>
-            <Link mt="10" href="https://itheum.medium.com/itheum-data-dex-whitepaper-fc6b205636b6#c91e" isExternal>
-              <Button colorScheme="teal" variant="outline">Read about Data NFTs in our Whitepaper</Button>
+            
+            <Button colorScheme="teal" mt="10" onClick={() => setMenuItem(MENU.NFTMINE)}>Enter Data NFT Portal</Button>
+
+            <Stack mt="10" align="center">
+              <Text>Our NFT Marketplace is Powered by OpenSea</Text>
+              <Image src={openSeaLogoIcon} w="150px" />
+            </Stack>
+            
+            <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-nfts-1" isExternal>
+              <Button size="xs" colorScheme="teal" variant="outline">Read about Data NFTs in our Whitepaper</Button>
             </Link>
           </Center>
         </Box>        
