@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
@@ -154,20 +155,68 @@ function App() {
             <Box></Box>
 
             <Flex direction="row">
-              <Box mt={5} ml={5}>
+              <Box mt={5} ml={5} minW="30vh">
                 <Stack direction="column" spacing={4} align="left">
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} variant="solid" onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
                   
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} variant="solid" onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+
+                  <Accordion defaultIndex={[-1]} allowMultiple>
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">Data Packs</Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel pb={4}>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} variant="solid" onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">Data NFTs</Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel pb={4}>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">Utils</Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel pb={4}>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">Labs</Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel pb={4}>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} variant="solid" onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+                    
+                  </Accordion>
+
                 </Stack>
               </Box>
 
