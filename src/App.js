@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
@@ -43,7 +44,8 @@ function App() {
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
-    sellData: 0
+    sellData: 0,
+    buyData: 0
   });
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
@@ -154,20 +156,68 @@ function App() {
             <Box></Box>
 
             <Flex direction="row">
-              <Box mt={5} ml={5}>
+              <Box mt={5} ml={5} minW="30vh">
                 <Stack direction="column" spacing={4} align="left">
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} variant="solid" onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} variant="solid" onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
                   
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} variant="solid" onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+
+                  <Accordion defaultIndex={[-1]}>
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Data Packs</Button>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Data NFTs</Button>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Wallet</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Utils</Button>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Labs</Button>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Stack direction="column" spacing={4} align="left" mt="2">
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+                    
+                  </Accordion>
+
                 </Stack>
               </Box>
 
@@ -178,7 +228,7 @@ function App() {
               <Box ml="10" mt={5} flex="auto">
                 <ChainMetaContext.Provider value={chainMeta}>
                   {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
-                  {menuItem === MENU.BUY && <BuyData onRefreshBalance={handleRefreshBalance} />}
+                  {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />}
                   {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
                   {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                   {menuItem === MENU.PURCHASED && <PurchasedData />}

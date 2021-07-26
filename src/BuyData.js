@@ -11,11 +11,11 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, dataTemplates } from './util';
+import { config, dataTemplates, sleep } from './util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { ChainMetaContext } from './contexts';
 
-export default function({onRefreshBalance}) {
+export default function({onRfMount, onRefreshBalance}) {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { web3 } = useMoralis();
@@ -51,7 +51,7 @@ export default function({onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
-    } else if (txHashAllowance && (txConfirmationAllowance === config.txConfirmationsNeededSml)) {
+    } else if (txHashAllowance && (txConfirmationAllowance === config.txConfirmationsNeededLrg)) {
       console.log('AUTHORISED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
@@ -63,7 +63,7 @@ export default function({onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
-    } else if (txHashTransfer && (txConfirmationTransfer === config.txConfirmationsNeededSml)) {
+    } else if (txHashTransfer && (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
       console.log('TRANSFERRED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
@@ -190,31 +190,50 @@ export default function({onRefreshBalance}) {
 
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+
+    const receipt = await ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')});
+
+    // show a nice loading animation to user
+    setTxHashTransfer(receipt.transactionHash);
+    await sleep(2);
+    setTxConfirmationTransfer(0.5);
+    await sleep(2);
+    setTxConfirmationTransfer(1);
+    await sleep(2);
+
+    if (receipt.status === true) {
+      setTxConfirmationTransfer(2);
+    } else {
+      const txErr = new Error('Contract Error on method buyDataPack');
+      console.error(txErr);
+      
+      setTxErrorTransfer(txErr);
+    }
     
-    ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')})
-      .on('transactionHash', function(hash) {
-        console.log('Transfer transactionHash', hash);
+    // ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')})
+    //   .on('transactionHash', function(hash) {
+    //     console.log('Transfer transactionHash', hash);
 
-        setTxHashTransfer(hash);
-      })
-      .on('receipt', function(receipt){
-        console.log('Transfer receipt', receipt);
+    //     setTxHashTransfer(hash);
+    //   })
+    //   .on('receipt', function(receipt){
+    //     console.log('Transfer receipt', receipt);
 
-        setTxReceiptTransfer(receipt);
-      })
-      .on('confirmation', function(confirmationNumber, receipt){
-        console.log('Transfer confirmation');
-        console.log(confirmationNumber);
+    //     setTxReceiptTransfer(receipt);
+    //   })
+    //   .on('confirmation', function(confirmationNumber, receipt){
+    //     console.log('Transfer confirmation');
+    //     console.log(confirmationNumber);
 
-        setTxConfirmationTransfer(confirmationNumber);
-      })
-      .on('error', function(error, receipt) {
-        console.log('Transfer error');
-        console.log(receipt);
-        console.log(error);
+    //     setTxConfirmationTransfer(confirmationNumber);
+    //   })
+    //   .on('error', function(error, receipt) {
+    //     console.log('Transfer error');
+    //     console.log(receipt);
+    //     console.log(error);
 
-        setTxErrorTransfer(error);
-      });
+    //     setTxErrorTransfer(error);
+    //   });
   }
   
   const web3_tokenApprove = async(feeInMyda) => {
@@ -223,30 +242,49 @@ export default function({onRefreshBalance}) {
     const decimals = 18;
     const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
 
-    tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')})
-      .on('transactionHash', function(hash) {
-        console.log('Allowance transactionHash', hash);
+    const receipt = await tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')});
 
-        setTxHashAllowance(hash);
-      })
-      .on('receipt', function(receipt){
-        console.log('Allowance receipt', receipt);
+    // show a nice loading animation to user
+    setTxHashAllowance(receipt.transactionHash);
+    await sleep(2);
+    setTxConfirmationAllowance(0.5);
+    await sleep(2);
+    setTxConfirmationAllowance(1);
+    await sleep(2);
 
-        setTxReceiptAllowance(receipt);
-      })
-      .on('confirmation', function(confirmationNumber, receipt){
-        console.log('Allowance confirmation');
-        console.log(confirmationNumber);
+    if (receipt.status === true) {
+      setTxConfirmationAllowance(2);
+    } else {
+      const txErr = new Error('Contract Error on method approve');
+      console.error(txErr);
+      
+      setTxErrorAllowance(txErr);
+    }
 
-        setTxConfirmationAllowance(confirmationNumber);
-      })
-      .on('error', function(error, receipt) {
-        console.log('Allowance error');
-        console.log(receipt);
-        console.log(error);
+    // tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')})
+    //   .on('transactionHash', function(hash) {
+    //     console.log('Allowance transactionHash', hash);
 
-        setTxErrorAllowance(error);
-      });
+    //     setTxHashAllowance(hash);
+    //   })
+    //   .on('receipt', function(receipt){
+    //     console.log('Allowance receipt', receipt);
+
+    //     setTxReceiptAllowance(receipt);
+    //   })
+    //   .on('confirmation', function(confirmationNumber, receipt){
+    //     console.log('Allowance confirmation');
+    //     console.log(confirmationNumber);
+
+    //     setTxConfirmationAllowance(confirmationNumber);
+    //   })
+    //   .on('error', function(error, receipt) {
+    //     console.log('Allowance error');
+    //     console.log(receipt);
+    //     console.log(error);
+
+    //     setTxErrorAllowance(error);
+    //   });
   }
 
   const finaliseSale = async() => {
@@ -276,21 +314,23 @@ export default function({onRefreshBalance}) {
   }
 
   function onCloseCleanUp() {
-    // reset data state
-    setCurrBuyObject(null);
-    setbuyProgress({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
-    setbuyProgressErr(null);
-    setTxConfirmationAllowance(0);
-    setTxHashAllowance(null);
-    setTxReceiptAllowance(null);
-    setTxErrorAllowance(null);
-    setTxConfirmationTransfer(0);
-    setTxHashTransfer(null);
-    setTxReceiptTransfer(null);
-    setTxErrorTransfer(null);
+    onRfMount();
+    
+    // // reset data state
+    // setCurrBuyObject(null);
+    // setbuyProgress({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
+    // setbuyProgressErr(null);
+    // setTxConfirmationAllowance(0);
+    // setTxHashAllowance(null);
+    // setTxReceiptAllowance(null);
+    // setTxErrorAllowance(null);
+    // setTxConfirmationTransfer(0);
+    // setTxHashTransfer(null);
+    // setTxReceiptTransfer(null);
+    // setTxErrorTransfer(null);
 
-    onProgressModalClose();
-    onRefreshBalance();
+    // onProgressModalClose();
+    // onRefreshBalance();
   }
 
   return (
@@ -395,7 +435,7 @@ export default function({onRefreshBalance}) {
                   </HStack>
 
                   {txHashAllowance && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmationAllowance} />
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationAllowance} />
 
                     <HStack>
                       <Text>Transaction </Text>
@@ -410,7 +450,7 @@ export default function({onRefreshBalance}) {
                   </HStack>
 
                   {txHashTransfer && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededSml) * txConfirmationTransfer} />
+                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text>Transaction </Text>

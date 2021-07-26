@@ -26,8 +26,8 @@ export default function() {
               <Box align="center" flex="1">Data is encrypted using your own private key (no one else can unlock and view it) and stored in IPFS (no one else can destroy it)</Box>
               <Box align="center" flex="1">Append data from your vault to the regular data you sell on the data dex. As this gives the "dataset" more context, it becomes more valuable to the buyer  -  so you will earn more {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Box>
             </HStack>
-            <Link mt="10" href="https://itheum.medium.com/itheum-data-dex-whitepaper-fc6b205636b6#60cc" isExternal>
-              <Button colorScheme="teal" variant="outline">Read about Data Vaults in our Whitepaper</Button>
+            <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-vault-1" isExternal>
+              <Button size="xs" colorScheme="teal" variant="outline">Read about Data Vaults in our Whitepaper</Button>
             </Link>
           </Center>
         </Box>        
