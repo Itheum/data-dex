@@ -174,6 +174,7 @@ export default function({onRfMount, itheumAccount}) {
       savedDataNFTMoralis.set('metaDataFile', NFTMetaDataFile.url());
       savedDataNFTMoralis.set('txNFTId', newNFTId);
       savedDataNFTMoralis.set('txHash', txNFTHash);
+      savedDataNFTMoralis.set('nftImgUrl', dataNFTImg);
 
       await savedDataNFTMoralis.save();
       
@@ -213,7 +214,8 @@ export default function({onRfMount, itheumAccount}) {
         } else {
           // create the dataNFT object
           const newDataNFT = {...dataTemplates.dataNFT, 
-            dataPreview: sellerDataPreview,
+            dataPreview: sellerDataNFTDesc,
+            nftName: sellerDataPreview,
             sellerEthAddress: user.get('ethAddress'),
             dataHash,
             dataFile: dataFileSave,
@@ -254,7 +256,7 @@ export default function({onRfMount, itheumAccount}) {
         name: sellerDataPreview,
         description: sellerDataNFTDesc,
         image: NFTImgUrl,
-        external_url: `nftmarketplace/${savedDataNFTMoralis.id}`
+        external_url: `https://datadex.itheum.com/datanfts/marketplace/${savedDataNFTMoralis.id}`
       };
 
       newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
@@ -726,7 +728,7 @@ export default function({onRfMount, itheumAccount}) {
 
                       <HStack>
                         {!saveProgressNFT.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Advertising for sale on the Data NFT Marketplace</Text>
+                        <Text>Advertising for sale as a Data NFT</Text>
                       </HStack>
                     </>}
 

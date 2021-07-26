@@ -18,6 +18,7 @@ import Tools from './Tools';
 import ChainTransactions from './ChainTransactions';
 import DataVault from './DataVault';
 import DataNFTs from './DataNFTs';
+import MyDataNFTs from './DataNFT/MyDataNFTs';
 import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import TrustedComputation from './TrustedComputation';
@@ -34,7 +35,7 @@ import moralisIcon from './img/moralis-logo.png';
 
 function App() {
   const {isAuthenticated, logout, user} = useMoralis();
-  const { web3 } = useMoralis();
+  const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [myMydaBal, setMydaBal] = useState(0);
   const [chain, setChain] = useState(0);
@@ -47,8 +48,12 @@ function App() {
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
 
+  useEffect(() => {
+    enableWeb3();
+  }, []);
+
   useEffect(async () => {
-    if (user && web3) {
+    if (user && isWeb3Enabled) {
       const networkId = await web3.eth.net.getId();
       setChain(CHAINS[networkId] || 'Unknown chain');
 
@@ -62,7 +67,7 @@ function App() {
         await sleep(1);
       }      
     }
-  }, [user, web3]);
+  }, [user, isWeb3Enabled]);
 
   const handleRefreshBalance = async () => {
     await showMydaBalance();
@@ -158,7 +163,7 @@ function App() {
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} variant="solid" onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
                   
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} variant="solid" onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Marketplace</Button>
+                  <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} variant="solid" onClick={() => (setMenuItem(MENU.NFT))}>Data NFTs</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} variant="solid" onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} variant="solid" onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions (Stake)</Button>
                   <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} variant="solid" onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
@@ -179,7 +184,10 @@ function App() {
                   {menuItem === MENU.PURCHASED && <PurchasedData />}
                   {menuItem === MENU.TX && <ChainTransactions />}
                   {menuItem === MENU.VAULT && <DataVault />}
-                  {menuItem === MENU.NFT && <DataNFTs />}
+                  
+                  {menuItem === MENU.NFT && <DataNFTs setMenuItem={setMenuItem} />}
+                  {menuItem === MENU.NFTMINE && <MyDataNFTs />}
+                  
                   {menuItem === MENU.STREAM && <DataStreams />}
                   {menuItem === MENU.COALITION && <DataCoalitions />}
                   {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
@@ -188,7 +196,7 @@ function App() {
             </Flex>
           </Stack>
 
-          <Flex direction="column" alignItems="flex-end"> 
+          <Flex direction="column" alignItems="flex-end" display="none"> 
             <Text fontSize="xs">Built with</Text>
             <Image
               boxSize="65px"
@@ -256,7 +264,7 @@ function App() {
               </Tooltip>
             </Flex>
             
-            <Flex direction="column" alignItems="center"> 
+            <Flex direction="column" alignItems="center" display="none"> 
               <Text mt="10" fontSize="xs">Built with</Text>
               <Image
                 boxSize="65px"

@@ -61,7 +61,7 @@ export default function() {
         </Stack> || 
         <Box>
           <Table variant="simple">
-            <TableCaption>The following data packs have been advertised for purchase by you</TableCaption>
+            <TableCaption>The following data packs have been advertised for sale by you</TableCaption>
             <Thead>
               <Tr>
                 <Th>When</Th>

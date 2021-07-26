@@ -1,4 +1,6 @@
-import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress, ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic} from './contactAddresses.js';
+import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
+  ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic,
+  mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
   const contracts = {
@@ -12,6 +14,11 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress;
       contracts.ddex = ddexContractAddress;
       contracts.dnft = dNFTContractAddress;
+      break;
+    case 4:
+      contracts.myda = mydaContractAddress_Rink;
+      contracts.ddex = ddexContractAddress_Rink;
+      contracts.dnft = dNFTContractAddress_Rink;
       break;
     case 80001:
       contracts.myda = mydaContractAddress_Matic;
@@ -48,6 +55,7 @@ export const dataTemplates = {
     priceInMyda: null,
     termsOfUseId: null,
     metaDataFile: null,
+    nftName: null,
     txNFTContract: null,
     txNFTId: null,
     txHash: null,
@@ -96,6 +104,7 @@ export const MENU = {
   COALITION: 7,
   STREAM: 8,
   ADVERTISED: 9,
+  NFTMINE: 10,
 };
 
 export const CHAINS = {
@@ -110,10 +119,30 @@ export const CHAINS = {
   56: "BSC - Mainnet",
 }
 
-export const SUPPORTED_CHAINS = [3, 80001];
+export const CHAIN_NAMES = {
+  1: "eth",
+  3: "ropsten",
+  4: "rinkeby",
+  42: "kovan",
+  420: "goerli",
+  137: "matic",
+  80001: "mumbai",
+  97: "bsc testnet",
+  56: "bsc",
+}
+
+export const OPENSEA_CHAIN_NAMES = {
+  1: "eth",
+  4: "rinkeby",
+  137: "matic",
+  80001: "mumbai"
+}
+
+export const SUPPORTED_CHAINS = [3, 4, 80001];
 
 export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',
+  4: 'https://rinkeby.etherscan.io/tx/',
   80001: 'https://explorer-mumbai.maticvigil.com/tx/'
 }
 
@@ -130,7 +159,7 @@ export const CHAIN_TX_LIST = {
 
 export const CHAIN_TOKEN_SYMBOL = networkId => {
   const mapping = {
-    'MYDA' : [3, 1],
+    'MYDA' : [3, 4, 1],
     'mMYDA': [80001, 137],
     'bMYDA': [97, 56]
   };
