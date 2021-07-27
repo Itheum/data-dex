@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, HStack,
+  Skeleton, CloseButton, HStack, Badge,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
@@ -30,6 +30,9 @@ export default function() {
 
   useEffect(() => {
     async function getOnChainNFTs () {
+      console.log(CHAIN_NAMES[chainMeta.networkId]);
+      console.log(user.get('ethAddress'));
+
       const myNFTs = await Moralis.Web3.getNFTs({
         chain: CHAIN_NAMES[chainMeta.networkId],
         address: user.get('ethAddress')
@@ -57,7 +60,7 @@ export default function() {
 
   return (
     <Stack spacing={5}>
-      <Heading size="lg">My Data NFTs</Heading>
+      <Heading size="lg">Data NFT Catalog</Heading>
 
       {errorDataNFTsGet && 
         <Alert status="error">
@@ -101,7 +104,11 @@ export default function() {
                 {item.get('nftName')}
               </Box>
 
-              <Box mt="5">            
+              <Box mt="5">  
+                <Badge borderRadius="full" px="2" colorScheme="teal">
+                  you are the owner
+                </Badge>
+
                 <HStack>
                   <Text fontSize="xs">Mint TX: </Text>
                   <ShortAddress address={item.get('txHash')} />
