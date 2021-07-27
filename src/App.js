@@ -184,7 +184,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2">
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Wallet</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Catalog</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -300,10 +300,10 @@ function App() {
             <Auth />
             <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
             <Flex direction="row" justify="space-around">
-              <Tooltip label="Live on Ropsten Test Network">
+              <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                 <Image src={chainEth} boxSize="50px" width="40px" />
               </Tooltip>
-              <Tooltip label="Live on Mumbai Test Network">
+              <Tooltip label="Live on Mumbai Testnets">
                 <Image src={chainPol} boxSize="50px" />
               </Tooltip>
               <Tooltip label="Binance Smart Chain - Coming soon...">

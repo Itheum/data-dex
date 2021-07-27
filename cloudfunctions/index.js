@@ -43,3 +43,36 @@ Moralis.Cloud.define("getUserPurchaseDataOrders", function(request) {
   return query.aggregate(pipeline);
 });
 
+Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
+  logger.info("getUserDataNFTCatalog called...");
+
+  const currentUser = Moralis.User.current();
+
+  logger.info("currentUser");
+  logger.info(currentUser);
+
+  const {networkId, ethAddress} = request.params;
+  
+  const myOnChainNFTs = await Moralis.Web3.getNFTs({
+    chain: networkId,
+    address: ethAddress
+  });
+
+  const query = new Moralis.Query("DataNFT");
+  query.descending("createdAt");
+  query.notEqualTo("txHash", null);
+  query.equalTo("txNetworkId", networkId);
+
+  const pipeline = [
+    {match: {$expr: {$or: [
+      {$eq: ["$sellerEthAddress", ethAddress]},
+    ]}}},
+  ];
+
+  const myDDEXNFTs = query.aggregate(pipeline);
+  
+  return {
+    myOnChainNFTs,
+    myDDEXNFTs
+  };
+});
