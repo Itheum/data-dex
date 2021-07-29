@@ -32,6 +32,7 @@ import chainEth from './img/eth-chain-logo.png';
 import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
 import chainAvln from './img/avalanche-chain-logo.png';
+import chainHrmy from './img/harmony-chain-logo.png';
 import moralisIcon from './img/moralis-logo.png';
 
 function App() {
@@ -301,16 +302,19 @@ function App() {
             <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
             <Flex direction="row" justify="space-around">
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
-                <Image src={chainEth} boxSize="50px" width="40px" />
+                <Image src={chainEth} boxSize="40px" width="30px" />
               </Tooltip>
               <Tooltip label="Live on Mumbai Testnets">
-                <Image src={chainPol} boxSize="50px" />
+                <Image src={chainPol} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Harmony Chain - Coming soon...">
+                <Image src={chainHrmy} boxSize="40px" opacity=".3" />
               </Tooltip>
               <Tooltip label="Binance Smart Chain - Coming soon...">
-                <Image src={chainBsc} boxSize="50px" opacity=".3" />
+                <Image src={chainBsc} boxSize="40px" opacity=".3" />
               </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
-                <Image src={chainAvln} boxSize="50px" opacity=".3" />
+                <Image src={chainAvln} boxSize="40px" opacity=".3" />
               </Tooltip>
             </Flex>
             

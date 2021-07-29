@@ -44,35 +44,29 @@ Moralis.Cloud.define("getUserPurchaseDataOrders", function(request) {
 });
 
 Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
-  logger.info("getUserDataNFTCatalog called...");
+  logger.info("6 getUserDataNFTCatalog called...");
 
-  const currentUser = Moralis.User.current();
-
-  logger.info("currentUser");
-  logger.info(currentUser);
-
-  const {networkId, ethAddress} = request.params;
-  
-  const myOnChainNFTs = await Moralis.Web3.getNFTs({
-    chain: networkId,
-    address: ethAddress
-  });
+  const {myOnChainNFTs, networkId, ethAddress} = request.params;
 
   const query = new Moralis.Query("DataNFT");
   query.descending("createdAt");
   query.notEqualTo("txHash", null);
   query.equalTo("txNetworkId", networkId);
+  query.equalTo("sellerEthAddress", ethAddress);
 
-  const pipeline = [
-    {match: {$expr: {$or: [
-      {$eq: ["$sellerEthAddress", ethAddress]},
-    ]}}},
-  ];
+  const allUserDataNFTs = await query.find();
 
-  const myDDEXNFTs = query.aggregate(pipeline);
-  
-  return {
-    myOnChainNFTs,
-    myDDEXNFTs
-  };
+  // we no need iterate and tag the ones the user still owns vs sold
+  if (myOnChainNFTs.length > 0) {
+    for (let i = 0; i < allUserDataNFTs.length; ++i) {
+      if (myOnChainNFTs.includes(allUserDataNFTs[i].get("txNFTId"))) {
+        allUserDataNFTs[i].set("stillOwns", true);
+      }
+    }
+  }
+
+  logger.info("allUserDataNFTs");
+  logger.info(allUserDataNFTs.length);
+
+  return allUserDataNFTs;
 });

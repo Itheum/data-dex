@@ -23,7 +23,7 @@ export default function({setMenuItem}) {
               </Box>
             </HStack>
             
-            <Button colorScheme="teal" mt="10" onClick={() => setMenuItem(MENU.NFTMINE)}>Data NFT Wallet</Button>
+            <Button colorScheme="teal" mt="10" onClick={() => setMenuItem(MENU.NFTMINE)}>Visit Data NFT Catalog</Button>
 
             <Stack mt="10" align="center">
               <Text>Our NFT Marketplace is Powered by OpenSea</Text>
