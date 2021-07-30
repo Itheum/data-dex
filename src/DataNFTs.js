@@ -12,7 +12,7 @@ export default function({setMenuItem}) {
   return (
     <Stack spacing={5}>      
       <Flex align="top" spacing={10}>
-        <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
+        <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">Data NFTs <Badge colorScheme="green" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" />

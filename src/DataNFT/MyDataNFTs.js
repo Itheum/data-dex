@@ -18,7 +18,7 @@ export default function() {
   const { web3 } = useMoralis();
   
   const { isInitialized, Moralis } = useMoralis();
-  const [onChainNFTs, setOnChainNFTs] = useState([]);
+  const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
 
   const {
@@ -30,6 +30,10 @@ export default function() {
     networkId: chainMeta.networkId,
     myOnChainNFTs: onChainNFTs
   }, { autoFetch: false });  
+
+  useEffect(() => {
+    console.log('MOUNT MyDataNFTs');
+  }, []);
 
   useEffect(() => {
     async function getOnChainNFTs () {
@@ -50,8 +54,10 @@ export default function() {
     console.log('onChainNFTs');
     console.log(onChainNFTs);
 
-    // we now have all data to call the CF
-    cf_getUserDataNFTCatalog();
+    if (onChainNFTs !== null) {
+      // we now have all data to call the CF
+      cf_getUserDataNFTCatalog();
+    }
   }, [onChainNFTs]);
 
   useEffect(() => {
@@ -92,7 +98,7 @@ export default function() {
           {usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" ml="1rem" w="250px">
             <Flex justifyContent="center">
               <Skeleton isLoaded={oneNFTImgLoaded}>
-                <Image src={item.get('nftImgUrl')} alt={item.get('dataPreview')} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} />
+                <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} />
               </Skeleton>
             </Flex>
 
@@ -102,25 +108,30 @@ export default function() {
                 fontWeight="semibold"
                 as="h4"
                 lineHeight="tight">
-                {item.get('nftName')}
+                {item.nftName}
               </Box>
 
               <Box mt="5">  
-                {item.get('stillOwns') && <Badge borderRadius="full" px="2" colorScheme="teal">
-                  you are the owner
+                {item.stillOwns && <Badge borderRadius="full" px="2" colorScheme="teal">
+                  {item.originalOwner && 'you are the owner' || 'you are the creator & owner' }
                 </Badge> || <Badge borderRadius="full" px="2" colorScheme="red">
                   sold
                 </Badge>}
 
-                <HStack mt="3">
+                <HStack mt="5">
                   <Text fontSize="xs">Mint TX: </Text>
-                  <ShortAddress address={item.get('txHash')} />
-                  <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.get('txHash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <ShortAddress address={item.txHash} />
+                  <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
 
                 <HStack mt=".5">
                   <Text fontSize="xs">OpenSea Listing: </Text>
-                  <Link href={`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainMeta.networkId]}/${chainMeta.contracts.dnft}/${item.get('txNFTId')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <Link href={`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainMeta.networkId]}/${chainMeta.contracts.dnft}/${item.txNFTId}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                </HStack>
+
+                <HStack mt=".5">
+                  <Text fontSize="xs">Download Data File</Text>
+                  <Link href={item.dataFileUrl} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
               </Box>              
             </Box>

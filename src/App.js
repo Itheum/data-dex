@@ -105,6 +105,8 @@ function App() {
     setRfKeys(reRf);
   }
 
+  const menuButtonW = '180px';
+
   if (isAuthenticated) {
     return (
       <Container maxW="container.xxl">
@@ -157,20 +159,21 @@ function App() {
             <Box></Box>
 
             <Flex direction="row">
-              <Box mt={5} ml={5} minW="30vh">
-                <Stack direction="column" spacing={4} align="left">
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                  
-                  <Button colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+              <Box mt={5} ml={5}>
+                <Stack direction="column" spacing={4}>
+                  <Stack ml="15px" spacing={4}>
+                    <Button w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
+                    <Button w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+                  </Stack>
 
-                  <Accordion defaultIndex={[-1]}>
+                  <Accordion defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
                     <AccordionItem>
                       <AccordionButton>
-                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Data Packs</Button>
+                        <Button flex="1" colorScheme="teal" variant="outline">Data Packs</Button>
                         <AccordionIcon />
                       </AccordionButton>
                       <AccordionPanel>
-                        <Stack direction="column" spacing={4} align="left" mt="2">
+                        <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
@@ -180,11 +183,11 @@ function App() {
 
                     <AccordionItem>
                       <AccordionButton>
-                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Data NFTs</Button>
+                        <Button flex="1" colorScheme="teal" variant="outline">Data NFTs</Button>
                         <AccordionIcon />
                       </AccordionButton>
                       <AccordionPanel>
-                        <Stack direction="column" spacing={4} align="left" mt="2">
+                        <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Catalog</Button>
                         </Stack>
                       </AccordionPanel>
@@ -192,11 +195,11 @@ function App() {
 
                     <AccordionItem>
                       <AccordionButton>
-                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Utils</Button>
+                        <Button flex="1" colorScheme="teal" variant="outline">Utils</Button>
                         <AccordionIcon />
                       </AccordionButton>
                       <AccordionPanel>
-                        <Stack direction="column" spacing={4} align="left" mt="2">
+                        <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
                         </Stack>
                       </AccordionPanel>
@@ -204,11 +207,11 @@ function App() {
 
                     <AccordionItem>
                       <AccordionButton>
-                        <Button flex="1" colorScheme="teal" w="100%" variant="outline">Labs</Button>
+                        <Button flex="1" colorScheme="teal" variant="outline">Labs</Button>
                         <AccordionIcon />
                       </AccordionButton>
                       <AccordionPanel>
-                        <Stack direction="column" spacing={4} align="left" mt="2">
+                        <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
@@ -222,7 +225,7 @@ function App() {
                 </Stack>
               </Box>
 
-              <Box minH="80vh" ml={10}>
+              <Box minH="80vh" ml={5}>
                 <Divider orientation="vertical" />
               </Box>
 
@@ -245,18 +248,7 @@ function App() {
                 </ChainMetaContext.Provider>
               </Box>
             </Flex>
-          </Stack>
-
-          <Flex direction="column" alignItems="flex-end" display="none"> 
-            <Text fontSize="xs">Built with</Text>
-            <Image
-              boxSize="65px"
-              height="auto"
-              src={moralisIcon}
-              alt="Built with Moralis web3"
-            />
-          </Flex>
-          
+          </Stack>          
         </Flex>
 
         <AlertDialog

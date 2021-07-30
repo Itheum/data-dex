@@ -151,6 +151,10 @@ export const CHAIN_TX_LIST = {
     advertiseEvents: 'AdvertiseEventsA',
     purchaseEvents: 'PurchaseEvents'
   },
+  4: {
+    advertiseEvents: 'AdvertiseEventsA',
+    purchaseEvents: 'PurchaseEvents'
+  },
   80001: {
     advertiseEvents: 'AdvertiseEventsPA',
     purchaseEvents: 'PurchaseEventsPA'
