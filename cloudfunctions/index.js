@@ -44,7 +44,7 @@ Moralis.Cloud.define("getUserPurchaseDataOrders", function(request) {
 });
 
 Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
-  logger.info("6 getUserDataNFTCatalog called...");
+  logger.info("getUserDataNFTCatalog called...");
 
   const {myOnChainNFTs, networkId, ethAddress} = request.params;
 
@@ -52,21 +52,59 @@ Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
   query.descending("createdAt");
   query.notEqualTo("txHash", null);
   query.equalTo("txNetworkId", networkId);
-  query.equalTo("sellerEthAddress", ethAddress);
 
-  const allUserDataNFTs = await query.find();
+  const allDataNFTs = await query.find();
 
-  // we no need iterate and tag the ones the user still owns vs sold
-  if (myOnChainNFTs.length > 0) {
-    for (let i = 0; i < allUserDataNFTs.length; ++i) {
-      if (myOnChainNFTs.includes(allUserDataNFTs[i].get("txNFTId"))) {
-        allUserDataNFTs[i].set("stillOwns", true);
+  myOnChainNFTIds = myOnChainNFTs.map(i => i.token_id);
+
+  const allUserDataNFTs = [];
+
+  function generateDataNFTUiObject(currDataNFT) {
+    const dataNFT = {};
+    dataNFT.id = currDataNFT.id;
+    dataNFT.nftImgUrl = currDataNFT.get('nftImgUrl');
+    dataNFT.dataPreview = currDataNFT.get('dataPreview');
+    dataNFT.nftName = currDataNFT.get('nftName');
+    dataNFT.txHash = currDataNFT.get('txHash');
+    dataNFT.txNFTId = currDataNFT.get('txNFTId');
+    dataNFT.dataFileUrl = currDataNFT.get('dataFile').url();
+
+    return dataNFT;
+  }
+
+  for (let i = 0; i < allDataNFTs.length; ++i) {
+    if (myOnChainNFTIds.includes(allDataNFTs[i].get("txNFTId"))) {
+      /*
+        covers case of:
+        1) original minter still owning it
+        2) original being sold and someone else owning it
+      */
+
+      const newUserDataNFT = generateDataNFTUiObject(allDataNFTs[i]);
+
+      if (allDataNFTs[i].get("sellerEthAddress") === ethAddress) { //(1)
+        // i still own it...
+        newUserDataNFT.stillOwns = true;
+      } else if (allDataNFTs[i].get("sellerEthAddress") !== ethAddress) { //(2)
+        // i purchased it from someone else...
+        newUserDataNFT.stillOwns = true;
+        newUserDataNFT.currentOwner = ethAddress;
+        newUserDataNFT.originalOwner = allDataNFTs[i].get('sellerEthAddress');
+      }
+    
+      allUserDataNFTs.push(newUserDataNFT);
+    } else {
+      /*
+        covers case of:
+        1) current logged in user not owning anything
+        2) current logged in user not owning it anymore
+      */
+
+      if (allDataNFTs[i].get("sellerEthAddress") === ethAddress) { //(2)
+        allUserDataNFTs.push(generateDataNFTUiObject(allDataNFTs[i]));
       }
     }
   }
-
-  logger.info("allUserDataNFTs");
-  logger.info(allUserDataNFTs.length);
 
   return allUserDataNFTs;
 });
