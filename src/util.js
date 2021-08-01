@@ -105,6 +105,7 @@ export const MENU = {
   STREAM: 8,
   ADVERTISED: 9,
   NFTMINE: 10,
+  NFTALL: 11,
 };
 
 export const CHAINS = {

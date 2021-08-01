@@ -34,6 +34,7 @@ export default function() {
   return (
     <Stack spacing={5}>
       <Heading size="lg">Advertised Data</Heading>
+      <Heading size="xs" opacity=".7">These are the Data Packs you have put up for direct peer-to-peer sale</Heading>
 
       {errorDataPackGet && 
         <Alert status="error">
@@ -60,7 +61,7 @@ export default function() {
           <Skeleton height="20px" />
         </Stack> || 
         <Box>
-          <Table variant="simple">
+          <Table variant="simple" mt="3">
             <TableCaption>The following data packs have been advertised for sale by you</TableCaption>
             <Thead>
               <Tr>

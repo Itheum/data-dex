@@ -59,6 +59,7 @@ export default function() {
   return (
     <Stack spacing={5}>
       <Heading size="lg">Chain Transactions</Heading>
+      <Heading size="xs" opacity=".7">Transparently monitor on-chain Data DEX trade activity</Heading>
 
       {errorAdvertiseEvents && 
         <Alert status="error">
@@ -95,7 +96,7 @@ export default function() {
           <Skeleton height="20px" />
         </Stack> || 
         <Box>
-          <Table variant="simple">
+          <Table variant="simple" mt="3">
             <TableCaption>The following data dex transactions have happened on-chain</TableCaption>
             <Thead>
               <Tr>

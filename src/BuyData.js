@@ -315,27 +315,12 @@ export default function({onRfMount, onRefreshBalance}) {
 
   function onCloseCleanUp() {
     onRfMount();
-    
-    // // reset data state
-    // setCurrBuyObject(null);
-    // setbuyProgress({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
-    // setbuyProgressErr(null);
-    // setTxConfirmationAllowance(0);
-    // setTxHashAllowance(null);
-    // setTxReceiptAllowance(null);
-    // setTxErrorAllowance(null);
-    // setTxConfirmationTransfer(0);
-    // setTxHashTransfer(null);
-    // setTxReceiptTransfer(null);
-    // setTxErrorTransfer(null);
-
-    // onProgressModalClose();
-    // onRefreshBalance();
   }
 
   return (
     <Stack spacing={5}>
       <Heading size="lg">Buy Data</Heading>
+      <Heading size="xs" opacity=".7">Browse, View and Buy Data Packs direct from your peers</Heading>
 
       {errorDataPackGet && 
         <Alert status="error">
@@ -370,7 +355,7 @@ export default function({onRfMount, onRefreshBalance}) {
           <Skeleton height="20px" />
         </Stack> || 
         <Box>
-          <Table variant="simple">
+          <Table variant="simple" mt="3">
             <TableCaption>The following data packs are available for purchase</TableCaption>
             <Thead>
               <Tr>

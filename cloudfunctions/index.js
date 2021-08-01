@@ -43,6 +43,28 @@ Moralis.Cloud.define("getUserPurchaseDataOrders", function(request) {
   return query.aggregate(pipeline);
 });
 
+function generateDataNFTUiObject(currDataNFT, options = {}) {
+  const { hideFileUrl } = options;
+
+  const dataNFT = {};
+  dataNFT.id = currDataNFT.id;
+  dataNFT.nftImgUrl = currDataNFT.get('nftImgUrl');
+  dataNFT.dataPreview = currDataNFT.get('dataPreview');
+  dataNFT.nftName = currDataNFT.get('nftName');
+  dataNFT.txHash = currDataNFT.get('txHash');
+  dataNFT.txNFTId = currDataNFT.get('txNFTId');
+  dataNFT.termsOfUseId = currDataNFT.get('termsOfUseId');
+  dataNFT.txNetworkId = currDataNFT.get('txNetworkId');
+  dataNFT.sellerEthAddress = currDataNFT.get('sellerEthAddress');
+  dataNFT.feeInMyda = currDataNFT.get('feeInMyda');
+
+  if (!hideFileUrl) {
+    dataNFT.dataFileUrl = currDataNFT.get('dataFile').url();
+  }
+
+  return dataNFT;
+}
+
 Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
   logger.info("getUserDataNFTCatalog called...");
 
@@ -55,22 +77,9 @@ Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
 
   const allDataNFTs = await query.find();
 
-  myOnChainNFTIds = myOnChainNFTs.map(i => i.token_id);
+  const myOnChainNFTIds = myOnChainNFTs.map(i => i.token_id);
 
   const allUserDataNFTs = [];
-
-  function generateDataNFTUiObject(currDataNFT) {
-    const dataNFT = {};
-    dataNFT.id = currDataNFT.id;
-    dataNFT.nftImgUrl = currDataNFT.get('nftImgUrl');
-    dataNFT.dataPreview = currDataNFT.get('dataPreview');
-    dataNFT.nftName = currDataNFT.get('nftName');
-    dataNFT.txHash = currDataNFT.get('txHash');
-    dataNFT.txNFTId = currDataNFT.get('txNFTId');
-    dataNFT.dataFileUrl = currDataNFT.get('dataFile').url();
-
-    return dataNFT;
-  }
 
   for (let i = 0; i < allDataNFTs.length; ++i) {
     if (myOnChainNFTIds.includes(allDataNFTs[i].get("txNFTId"))) {
@@ -107,4 +116,29 @@ Moralis.Cloud.define("getUserDataNFTCatalog", async (request) => {
   }
 
   return allUserDataNFTs;
+});
+
+Moralis.Cloud.define("getAllDataNFTs", async (request) => {
+  logger.info("getAllDataNFTs called...");
+
+  const {ethAddress} = request.params;
+
+  const query = new Moralis.Query("DataNFT");
+  query.descending("createdAt");
+  query.notEqualTo("txHash", null);
+  query.notEqualTo("sellerEthAddress", ethAddress);
+
+  const allDataNFTs = await query.find();
+
+  const allMarketplaceDataNFTs = [];
+
+  for (let i = 0; i < allDataNFTs.length; ++i) {
+    const newUserDataNFT = generateDataNFTUiObject(allDataNFTs[i], {
+      hideFileUrl: true
+    });
+
+    allMarketplaceDataNFTs.push(newUserDataNFT);
+  }
+
+  return allMarketplaceDataNFTs;
 });
