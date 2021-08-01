@@ -3,13 +3,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, HStack, Badge,
+  Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../ShortAddress';
-import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from '../util';
-import { mydaRoundUtil } from '../util';
+import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../util';
+import { config, mydaRoundUtil } from '../util';
 import { ChainMetaContext } from '../contexts';
 
 export default function() {
@@ -25,7 +25,7 @@ export default function() {
     error: cfErr_getUserDataNFTCatalog,
     fetch: cf_getUserDataNFTCatalog,
     data: usersDataNFTCatalog,
-  } = useMoralisCloudFunction("getUserDataNFTCatalog", {
+  } = useMoralisCloudFunction("getAllDataNFTs", {
     ethAddress: user.get('ethAddress'),
     networkId: chainMeta.networkId,
     myOnChainNFTs: onChainNFTs
@@ -65,10 +65,18 @@ export default function() {
     console.log(usersDataNFTCatalog);
   }, [usersDataNFTCatalog]);
 
+  function buyOnOpenSea(txNFTId) {
+    window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainMeta.networkId]}/${chainMeta.contracts.dnft}/${txNFTId}`);
+  }
+
+  const buyOrderSubmit = () => {
+    console.log('buyOrderSubmit');
+  }
+
   return (
     <Stack spacing={5}>
-      <Heading size="lg">Data NFT Catalog</Heading>
-      <Heading size="xs" opacity=".7">Below are the Data NFTs you created and/or purchased on the current chain</Heading>
+      <Heading size="lg">Data NFT Marketplace</Heading>
+      <Heading size="xs" opacity=".7">Browse, View and Buy Cross-Chain Data NFTs</Heading>
 
       {cfErr_getUserDataNFTCatalog && 
         <Alert status="error">
@@ -95,7 +103,8 @@ export default function() {
           <Skeleton height="20px" />
         </Stack> || 
         <Flex wrap="wrap" spacing={5}>
-          {usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
+
+          {usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center">
               <Skeleton isLoaded={oneNFTImgLoaded}>
                 <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} />
@@ -111,32 +120,30 @@ export default function() {
                 {item.nftName}
               </Box>
 
-              <Box as="span" color="gray.600" fontSize="sm">
-                {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}
+              <Box>
+                <Box as="span" color="gray.600" fontSize="sm">
+                  {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}
+                </Box>
               </Box>
 
               <Box mt="5">  
-                {item.stillOwns && <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {item.originalOwner && 'you are the owner' || 'you are the creator & owner' }
-                </Badge> || <Badge borderRadius="full" px="2" colorScheme="red">
-                  sold
-                </Badge>}
+                <Text>For Sale on <Badge borderRadius="full" px="2" colorScheme="teal">{CHAINS[item.txNetworkId]}</Badge></Text>
 
                 <HStack mt="5">
+                  <Text fontSize="xs">Seller: </Text>
+                  <ShortAddress address={item.sellerEthAddress} />
+                </HStack>
+
+                <HStack mt=".5">
                   <Text fontSize="xs">Mint TX: </Text>
                   <ShortAddress address={item.txHash} />
                   <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
 
-                <HStack mt=".5">
-                  <Text fontSize="xs">OpenSea Listing: </Text>
-                  <Link href={`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainMeta.networkId]}/${chainMeta.contracts.dnft}/${item.txNFTId}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
-                </HStack>
-
-                <HStack mt=".5">
-                  <Text fontSize="xs">Download Data File</Text>
-                  <Link href={item.dataFileUrl} isExternal><ExternalLinkIcon mx="2px" /></Link>
-                </HStack>
+                <ButtonGroup colorScheme="green" spacing="3" size="sm" mt="5">
+                  <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId)}>Buy on OpenSea</Button>
+                  {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
+                </ButtonGroup>
               </Box>              
             </Box>
           </Box>)}

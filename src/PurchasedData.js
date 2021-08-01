@@ -47,6 +47,7 @@ export default function() {
   return (
     <Stack spacing={5}>
       <Heading size="lg">Purchased Data</Heading>
+      <Heading size="xs" opacity=".7">View Data Packs you have purchased direct from your peers</Heading>
 
       {errCfUsrPurOrders && 
         <Alert status="error">
@@ -72,7 +73,7 @@ export default function() {
           <Skeleton height="20px" />
         </Stack> || 
         <Box>
-          <Table variant="simple">
+          <Table variant="simple" mt="3">
             <TableCaption>The following data was purchased by you</TableCaption>
             <Thead>
               <Tr>

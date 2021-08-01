@@ -12,7 +12,7 @@ export default function({setMenuItem}) {
   return (
     <Stack spacing={5}>      
       <Flex align="top" spacing={10}>
-        <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
+        <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">Data NFTs <Badge colorScheme="green" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" />
@@ -23,10 +23,13 @@ export default function({setMenuItem}) {
               </Box>
             </HStack>
             
-            <Button colorScheme="teal" mt="10" onClick={() => setMenuItem(MENU.NFTMINE)}>Visit Data NFT Catalog</Button>
+            <HStack spacing="5" mt="10">
+              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.NFTMINE)}>Enter - Data NFT Catalog</Button>
+              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.NFTALL)}>Enter - Data NFT Marketplace</Button>
+            </HStack>
 
             <Stack mt="10" align="center">
-              <Text>Our NFT Marketplace is Powered by OpenSea</Text>
+              <Text>Our Cross-Chain NFT Marketplace is Powered by OpenSea</Text>
               <Image src={openSeaLogoIcon} w="150px" />
             </Stack>
             

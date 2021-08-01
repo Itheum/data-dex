@@ -7,7 +7,7 @@ import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
   Alert, AlertIcon, AlertTitle, CloseButton, Link, Code, CircularProgress,
-  Image, Badge, Wrap, Collapse, Flex, Textarea,
+  Image, Badge, Wrap, Collapse, Flex, Textarea, Tooltip,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
@@ -57,6 +57,7 @@ export default function({onRfMount, itheumAccount}) {
   const [sellerDataNFTDesc, setSellerDataNFTDesc] = useState('');
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
+  const [dataNFTFeeInMyda, setDataNFTFeeInMyda] = useState(0);
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
   const [termsOfUseId, setTermsOfUseId] = useState('2');
@@ -216,6 +217,7 @@ export default function({onRfMount, itheumAccount}) {
           const newDataNFT = {...dataTemplates.dataNFT, 
             dataPreview: sellerDataNFTDesc,
             nftName: sellerDataPreview,
+            feeInMyda: dataNFTFeeInMyda,
             sellerEthAddress: user.get('ethAddress'),
             dataHash,
             dataFile: dataFileSave,
@@ -477,6 +479,7 @@ export default function({onRfMount, itheumAccount}) {
   return (
     <Stack spacing={5}>
       <Heading size="lg">Sell Data</Heading>
+      <Heading size="xs" opacity=".7">Sell your personal data direct-to-buyer (peer-to-peer) or as Data NFTs across many NFT Marketplaces</Heading>
 
       {(itheumAccount && itheumAccount.programsAllocation.length > 0) && 
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
@@ -572,6 +575,19 @@ export default function({onRfMount, itheumAccount}) {
                 <Text fontWeight="bold">NFT Description</Text>
                 <Textarea placeholder="Enter a detailed NFT description here" value={sellerDataNFTDesc} onChange={(event) => setSellerDataNFTDesc(event.currentTarget.value)} />
               
+                <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)})</Text>
+                <NumberInput size="md"  maxW={24} step={1} defaultValue={0} min={0} max={10} value={dataNFTFeeInMyda} onChange={(valueString) => setDataNFTFeeInMyda(parseInt(valueString))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <Text colorScheme="gray" fontSize="sm">Data NFTs can be sold in {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} or ETH -  
+                  <Tooltip label={`If you sell your Data NFT in the Itheum Data NFT marketplace you can sell it in ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}. You can also sell it in ETH by using the OpenSea marketplace. Unsure what to do? Set a ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} price for now.`} aria-label="A tooltip"> [Tell me more]
+                  </Tooltip>
+                </Text>
+
                 <Text fontWeight="bold">Number of copies (Coming soon...)</Text>
                 <NumberInput isDisabled={true} size="md"  maxW={24} step={1} defaultValue={1} min={1} max={20} value={dataNFTCopies} onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}>
                   <NumberInputField />

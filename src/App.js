@@ -8,6 +8,8 @@ import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
   AlertDialogOverlay, useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, Center } from '@chakra-ui/layout';
 import { SunIcon, MoonIcon } from '@chakra-ui/icons';
+import { GiReceiveMoney } from "react-icons/gi";
+import { AiFillHome } from "react-icons/ai";
 import { useMoralis } from 'react-moralis';
 import { Auth } from './Auth';
 import SellData from './SellData';
@@ -20,6 +22,7 @@ import ChainTransactions from './ChainTransactions';
 import DataVault from './DataVault';
 import DataNFTs from './DataNFTs';
 import MyDataNFTs from './DataNFT/MyDataNFTs';
+import DataNFTMarketplace from './DataNFT/DataNFTMarketplace';
 import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import TrustedComputation from './TrustedComputation';
@@ -48,6 +51,7 @@ function App() {
     sellData: 0,
     buyData: 0
   });
+  const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -103,6 +107,10 @@ function App() {
   const handleRfMount = key => {
     const reRf = {...rfKeys, [key]: Date.now()}
     setRfKeys(reRf);
+  }
+
+  const doSplashScreenShown = menuItem => {
+    setSplashScreenShown({...splashScreenShown, [menuItem]: true})
   }
 
   const menuButtonW = '180px';
@@ -162,8 +170,8 @@ function App() {
               <Box mt={5} ml={5}>
                 <Stack direction="column" spacing={4}>
                   <Stack ml="15px" spacing={4}>
-                    <Button w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                    <Button w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+                    <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
+                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
                   </Stack>
 
                   <Accordion defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
@@ -188,7 +196,15 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFT || menuItem === MENU.NFTMINE} onClick={() => (setMenuItem(MENU.NFT))}>Data NFT Catalog</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE} onClick={() => {
+                            if(splashScreenShown[MENU.NFT]) {
+                              setMenuItem(MENU.NFTMINE);
+                            } else {
+                              doSplashScreenShown(MENU.NFT);
+                              setMenuItem(MENU.NFT);
+                            }
+                          }}>Catalog</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL} onClick={() => (setMenuItem(MENU.NFTALL))}>Marketplace</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -241,6 +257,7 @@ function App() {
                   
                   {menuItem === MENU.NFT && <DataNFTs setMenuItem={setMenuItem} />}
                   {menuItem === MENU.NFTMINE && <MyDataNFTs />}
+                  {menuItem === MENU.NFTALL && <DataNFTMarketplace />}
                   
                   {menuItem === MENU.STREAM && <DataStreams />}
                   {menuItem === MENU.COALITION && <DataCoalitions />}
