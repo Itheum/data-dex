@@ -5,19 +5,23 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   Button, Link, Progress, Badge,
   Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
-  Text, HStack, Heading, CloseButton,
-  useToast
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter,
+  Text, HStack, Heading, CloseButton, Wrap, Image, 
+  useToast, useDisclosure
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, sleep } from './util';
+import { progInfoMeta, config, sleep } from './util';
 import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { ChainMetaContext } from './contexts';
+import imgProgDefi from './img/prog-defi.png';
+import imgProgRhc from './img/prog-rhc.png';
 
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
+  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const {
     error: errCfTestData,
@@ -27,6 +31,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
+  const [learnMoreProd, setLearnMoreProg] = useState(null);
 
   // eth tx state
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
@@ -135,11 +140,16 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     setTxErrorFaucet(null);
   }
 
+  const handleLearnMoreProg = progCode => {
+    setLearnMoreProg(progCode);
+    onProgressModalOpen()
+  }
+
   return (
     <Stack spacing={5}>
       <Heading size="lg">Home</Heading>
 
-      <HStack align="top" spacing={10}>
+      <Wrap shouldWrapChildren={true} wrap="wrap" spacing={3}>
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
           <Stack p="5" h="360">
             {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
@@ -201,7 +211,80 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
           </Stack>
         </Box>
 
-      </HStack>
+        <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Stack p="5" h="360">
+            <Heading size="md">Join a Itheum App</Heading>
+            <Text>Join a community built personal data collection app and earn {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} when you sell your data</Text>
+            <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+              <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+                <Image src={imgProgRhc} />
+
+                <Box p="3">
+                  <Box d="flex" alignItems="baseline">
+                    <Box
+                      mt="1"
+                      mr="1"
+                      fontWeight="semibold"
+                      as="h4"
+                      lineHeight="tight"
+                      isTruncated>
+                      Red Heart Challenge
+                    </Box>
+                    <Badge borderRadius="full" px="2" colorScheme="teal"> Live</Badge>
+                  </Box>
+                  <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
+                  <Button size="sm" mt="3" colorScheme="green" onClick={() => (window.open(`https://itheum.com/redheartchallenge?web3Uid=${user.id}`))}>Join Now</Button>
+                </Box>
+              </Box>
+
+              <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+                <Image src={imgProgDefi} />
+
+                <Box p="3">
+                  <Box d="flex" alignItems="baseline">
+                    <Box
+                      mt="1"
+                      mr="1"
+                      fontWeight="semibold"
+                      as="h4"
+                      lineHeight="tight"
+                      isTruncated>
+                      Global DeFi Census
+                    </Box>
+                    <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
+                  </Box>
+                  <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
+                  <Button size="sm" disabled="true" mt="3" colorScheme="green" onClick={() => (window.open(''))}>Join Now</Button>
+                </Box>
+              </Box>
+            </Wrap>
+          </Stack>
+        </Box>        
+      </Wrap>
+
+      {learnMoreProd && <Modal size="xl"
+        isOpen={isProgressModalOpen}
+        onClose={onProgressModalClose}
+        closeOnEsc={false} closeOnOverlayClick={false}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <Stack spacing="5">
+            <Text>{progInfoMeta[learnMoreProd].desc}</Text>
+              <Stack><Text color="gray" as="b">Delivered Via:</Text> <p>{progInfoMeta[learnMoreProd].medium}</p></Stack>
+              <Stack><Text color="gray" as="b">Data Collected:</Text> <p>{progInfoMeta[learnMoreProd].data}</p></Stack>
+              <Stack><Text color="gray" as="b">App Outcome:</Text> <p>{progInfoMeta[learnMoreProd].outcome}</p></Stack>
+              <Stack><Text color="gray" as="b">Target Buyers:</Text> <p>{progInfoMeta[learnMoreProd].targetBuyer}</p></Stack>
+            </Stack>
+          </ModalBody>
+          <ModalFooter>
+            <Button size="sm" mr={3} colorScheme="green" variant="outline" onClick={onProgressModalClose}>Close</Button>
+            <Button size="sm" colorScheme="green" onClick={() => (window.open(`${progInfoMeta[learnMoreProd].url}?web3Uid=${user.id}`))}>Join Now</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>}
     </Stack>
   );
 };

@@ -37,6 +37,29 @@ export const config = {
   dateStrTm: 'MMM Do YYYY LT'
 }
 
+export const progInfoMeta = {
+  rhc: {
+    name: 'Red Heart Challenge',
+    desc: 'Take this 3 week program and get unique insights into the health of your heart. This app uses a first of it’s kind technology to coach you through every step and to puts you in the center of the entire process.',
+    medium: 'Telegram App',
+    outcome: 'Data produced from this program can be used to assess the impact blood pressure, stress, diet and activity has on overall cardiovascular health.',
+    targetBuyer: 'Research Institutes, Drug Manufacturers, Health "Care Teams", Private Health Insurance',
+    data: 'Blood Pressure (single arm and both arms), Stress Levels, Activity Levels, Diet Assessment',
+    url: 'https://itheum.com/redheartchallenge',
+    dc: 'Cardiovascular Health Data'
+  },
+  gdc: {
+    name: 'Global DeFI Census',
+    desc: 'This 2 week program collects insights about your exposure to the blockchain DeFI ecosystem. People globally and from all ages, skills levels and experience use DeFI tools today and we need to understand current usage trends to design better for mass adoption.',
+    medium: 'Telegram App',
+    outcome: 'Data produced from this program can be used to better design DeFI user experiences, DApps and tooling.',
+    targetBuyer: 'Blockchain Research Institutes, DApp developers, Blockchain Protocol Developers, CeFI/DeFI Organisations',
+    data: 'DeFI Apps Exposure, DeFI Pain Points, Investment Preferences, Barriers to Entry, DeFI DApp Sentiment',
+    url: 'https://itheum.com/program',
+    dc: 'Blockchain Research Data'
+  }
+};
+
 export const dataTemplates = {
   dataPack: {
     sellerEthAddress: null,
