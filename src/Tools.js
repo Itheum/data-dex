@@ -213,7 +213,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
         <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
           <Stack p="5" h="360">
-            <Heading size="md">Join a Itheum App</Heading>
+            <Heading size="md">Join an Itheum App</Heading>
             <Text>Join a community built personal data collection app and earn {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} when you sell your data</Text>
             <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
               <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">

@@ -129,6 +129,7 @@ export const MENU = {
   ADVERTISED: 9,
   NFTMINE: 10,
   NFTALL: 11,
+  COALITIONALL: 12,
 };
 
 export const CHAINS = {
