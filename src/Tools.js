@@ -15,6 +15,7 @@ import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
 import { ChainMetaContext } from './contexts';
 import imgProgDefi from './img/prog-defi.png';
 import imgProgRhc from './img/prog-rhc.png';
+import imgProgWfh from './img/prog-wfh.png';
 
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
@@ -254,6 +255,27 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                     <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
                   </Box>
                   <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
+                  <Button size="sm" disabled="true" mt="3" colorScheme="green" onClick={() => (window.open(''))}>Join Now</Button>
+                </Box>
+              </Box>
+
+              <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" w="300px">
+                <Image src={imgProgWfh} />
+
+                <Box p="3">
+                  <Box d="flex" alignItems="baseline">
+                    <Box
+                      mt="1"
+                      mr="1"
+                      fontWeight="semibold"
+                      as="h4"
+                      lineHeight="tight"
+                      isTruncated>
+                      Wearables Fitness and Activity
+                    </Box>
+                    <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
+                  </Box>
+                  <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('wfa'))}>Learn More</Button>
                   <Button size="sm" disabled="true" mt="3" colorScheme="green" onClick={() => (window.open(''))}>Join Now</Button>
                 </Box>
               </Box>

@@ -46,7 +46,9 @@ export const progInfoMeta = {
     targetBuyer: 'Research Institutes, Drug Manufacturers, Health "Care Teams", Private Health Insurance',
     data: 'Blood Pressure (single arm and both arms), Stress Levels, Activity Levels, Diet Assessment',
     url: 'https://itheum.com/redheartchallenge',
-    dc: 'Cardiovascular Health Data'
+    dc: 'Cardiovascular Health Data',
+    id: '70dc6bd0-59b0-11e8-8d54-2d562f6cba54',
+    canJoin: 1
   },
   gdc: {
     name: 'Global DeFI Census',
@@ -56,7 +58,21 @@ export const progInfoMeta = {
     targetBuyer: 'Blockchain Research Institutes, DApp developers, Blockchain Protocol Developers, CeFI/DeFI Organisations',
     data: 'DeFI Apps Exposure, DeFI Pain Points, Investment Preferences, Barriers to Entry, DeFI DApp Sentiment',
     url: 'https://itheum.com/program',
-    dc: 'Blockchain Research Data'
+    dc: 'Blockchain Research Data',
+    id: 'foo',
+    canJoin: 0
+  },
+  wfa: {
+    name: 'Wearables Fitness and Activity',
+    desc: 'This ongoing program will automatically connect to your Strava account and will download your latest activity from wearables like FitBit, Garmin, TomTom. Strava has a large global user base (76 million users) so dataset will be large and uniform and be worth a lot.',
+    medium: 'Telegram App + Strava API',
+    outcome: 'Data produced from this program is fully "normalised" and will be very valuable',
+    targetBuyer: 'Researchers',
+    data: 'Activity, Workouts',
+    url: 'https://itheum.com/program',
+    dc: 'Wearables Fitness and Activity Data',
+    id: 'foo',
+    canJoin: 1
   }
 };
 

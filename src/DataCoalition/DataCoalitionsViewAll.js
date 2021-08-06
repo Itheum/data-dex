@@ -9,8 +9,10 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../ShortAddress';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../util';
-import { config, mydaRoundUtil } from '../util';
+import { progInfoMeta, config, mydaRoundUtil } from '../util';
 import { ChainMetaContext } from '../contexts';
+
+let progToIdMapping = {};
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);
@@ -18,6 +20,15 @@ export default function() {
   const { web3 } = useMoralis();
   
   const { isInitialized, Moralis } = useMoralis();
+
+  useEffect(() => {
+    progToIdMapping = Object.keys(progInfoMeta).reduce((t,i) => {
+      const prog = progInfoMeta[i];
+      t[prog.id] = prog;
+
+      return t;
+    }, {});
+  }, []);
 
   const { data: dataCoalitions, error: errorDataCoalitionGet } = useMoralisQuery("DataCoalition", query =>
     query.descending("createdAt")
@@ -64,16 +75,16 @@ export default function() {
               <Text mt="2" mb="2">I'm interested in:</Text>
 
               {item.get('dataHoldingMapping').map(i => (
-                <Badge borderRadius="full" px="2" colorScheme="teal">{i.progId && i.progId || "Any Arbitrary Data"}</Badge>
+                <Badge borderRadius="full" px="2" mr="2" colorScheme="teal">{i.progId && progToIdMapping[i.progId].name || "Any Arbitrary Data"}</Badge>
               ))} 
             </Box>
 
             <Box p="3">
-              <Text mb="2">You are eligible to join:</Text>
+              {item.get('canJoin') && <Text mb="2">You are eligible to join:</Text>}
 
               <ButtonGroup colorScheme="green" spacing="3" size="sm">
-                <Button>Attach Data & Join</Button>
-                <Button>Bond Myda & Join</Button>
+              {item.get('canJoin') && <><Button colorScheme="teal">Add Data & Join</Button>
+                <Button colorScheme="teal" variant="outline">Bond Myda & Join</Button></> || <Button colorScheme="teal" variant="outline">Stake Myda</Button>}
               </ButtonGroup>
             </Box>
             
