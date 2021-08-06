@@ -4,11 +4,11 @@ import {
   Button, Link, Badge, Flex, Image, StackDivider,  
   HStack, Heading, Center,
 } from '@chakra-ui/react';
-import { CHAIN_TOKEN_SYMBOL } from './util';
+import { CHAIN_TOKEN_SYMBOL, MENU } from './util';
 import { ChainMetaContext } from './contexts';
 import dataCoalitionsIcon from './img/data-coalitions-icon.png';
 
-export default function() {
+export default function({setMenuItem}) {
   const chainMeta = useContext(ChainMetaContext);
 
   return (
@@ -16,7 +16,7 @@ export default function() {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data Coalitions <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
+            <Heading size="lg">Data Coalitions <Badge colorScheme="green" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataCoalitionsIcon} boxSize="150px" />
             <Heading size="mb" mb="5">A glimpse into the future of how data will be sourced on the blockchain for AI</Heading>
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
@@ -24,6 +24,11 @@ export default function() {
               <Box align="center" flex="1">Your individual data is also not very valuable "when viewed in isolation" -  but when your data is "grouped" into clusters of similar people, it grows significantly in value</Box>
               <Box align="center" flex="1">Coalitions are DAOs. Stake your {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} and align to the Coalition who best suits your interests. Delegate the ownership of your personal data and have the Coalition trade your data on your behalf</Box>
             </HStack>
+
+            <HStack spacing="5" mt="10">
+              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.COALITIONALL)}>Enter - Data Coalitions</Button>
+            </HStack>
+
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-coalitions-1" isExternal>
               <Button size="xs" colorScheme="teal" variant="outline">Read about Data Coalitions in our Whitepaper</Button>
             </Link>
