@@ -76,6 +76,17 @@ export const progInfoMeta = {
   }
 };
 
+export const tmpProgIdMapping = {
+  '70dc6bd0-59b0-11e8-8d54-2d562f6cba54': 'Red Heart Challenge',
+  'bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42': 'Hypertension Insights Intense',
+  '476ab840-1cb7-11e9-84fe-e935b365220a': 'Blood Pressure OnDemand',
+  '2553c3b0-51b0-11e7-9bd2-2f33680a66b6': 'Pregnancy Condition Monitoring',
+  '70dc6bd0-59b0-11e8-8d54-2d562f6cba54': 'Red Heart Challenge',
+  '183f0290-f726-11e7-9186-3bcb5c5d22db': 'Chronic Wounds Healing Progress Tracker',
+  'ef62c220-50e1-11e7-9bd2-2f33680a66b6': 'Blood Pressure Tracker',
+  '48d7b020-eab0-11ea-a466-0334ff0e8bf2': 'OkPulse',
+};
+
 export const dataTemplates = {
   dataPack: {
     sellerEthAddress: null,
@@ -146,6 +157,7 @@ export const MENU = {
   NFTMINE: 10,
   NFTALL: 11,
   COALITIONALL: 12,
+  DATAPROOFS: 13,
 };
 
 export const CHAINS = {
