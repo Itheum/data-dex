@@ -16,6 +16,7 @@ import SellData from './SellData';
 import BuyData from './BuyData';
 import PurchasedData from './PurchasedData';
 import AdvertisedData from './AdvertisedData';
+import PersonalDataProofs from './PersonalDataProofs';
 import ShortAddress from './ShortAddress';
 import Tools from './Tools';
 import ChainTransactions from './ChainTransactions';
@@ -186,6 +187,7 @@ function App() {
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => (setMenuItem(MENU.DATAPROOFS))}>Personal Data Proofs</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -280,6 +282,7 @@ function App() {
                   {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
                   {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                   {menuItem === MENU.PURCHASED && <PurchasedData />}
+                  {menuItem === MENU.DATAPROOFS && <PersonalDataProofs />}
                   {menuItem === MENU.TX && <ChainTransactions />}
                   {menuItem === MENU.VAULT && <DataVault />}
                   
