@@ -16,6 +16,7 @@ import SellData from './SellData';
 import BuyData from './BuyData';
 import PurchasedData from './PurchasedData';
 import AdvertisedData from './AdvertisedData';
+import PersonalDataProofs from './PersonalDataProofs';
 import ShortAddress from './ShortAddress';
 import Tools from './Tools';
 import ChainTransactions from './ChainTransactions';
@@ -25,6 +26,7 @@ import MyDataNFTs from './DataNFT/MyDataNFTs';
 import DataNFTMarketplace from './DataNFT/DataNFTMarketplace';
 import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
+import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
 import { sleep, contractsForChain } from './util';
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './util';
@@ -185,6 +187,7 @@ function App() {
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => (setMenuItem(MENU.DATAPROOFS))}>Personal Data Proofs</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -197,14 +200,41 @@ function App() {
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE} onClick={() => {
-                            if(splashScreenShown[MENU.NFT]) {
+                            if (splashScreenShown[MENU.NFT]) {
                               setMenuItem(MENU.NFTMINE);
                             } else {
                               doSplashScreenShown(MENU.NFT);
                               setMenuItem(MENU.NFT);
                             }
                           }}>Catalog</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL} onClick={() => (setMenuItem(MENU.NFTALL))}>Marketplace</Button>
+                          
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL} onClick={() => {
+                            if (splashScreenShown[MENU.NFT]) {
+                              setMenuItem(MENU.NFTALL);
+                            } else {
+                              doSplashScreenShown(MENU.NFT);
+                              setMenuItem(MENU.NFT);
+                            }
+                          }}>Marketplace</Button>
+                        </Stack>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Button flex="1" colorScheme="teal" variant="outline">Data Coalitions</Button>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel>
+                        <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITIONALL} onClick={() => {
+                            if(splashScreenShown[MENU.COALITION]) {
+                              setMenuItem(MENU.COALITIONALL);
+                            } else {
+                              doSplashScreenShown(MENU.COALITION);
+                              setMenuItem(MENU.COALITION);
+                            }
+                          }}>View Coalitions</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -252,6 +282,7 @@ function App() {
                   {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
                   {menuItem === MENU.ADVERTISED && <AdvertisedData />}
                   {menuItem === MENU.PURCHASED && <PurchasedData />}
+                  {menuItem === MENU.DATAPROOFS && <PersonalDataProofs />}
                   {menuItem === MENU.TX && <ChainTransactions />}
                   {menuItem === MENU.VAULT && <DataVault />}
                   
@@ -259,8 +290,10 @@ function App() {
                   {menuItem === MENU.NFTMINE && <MyDataNFTs />}
                   {menuItem === MENU.NFTALL && <DataNFTMarketplace />}
                   
+                  {menuItem === MENU.COALITION && <DataCoalitions setMenuItem={setMenuItem} />}
+                  {menuItem === MENU.COALITIONALL && <DataCoalitionsViewAll />}
+
                   {menuItem === MENU.STREAM && <DataStreams />}
-                  {menuItem === MENU.COALITION && <DataCoalitions />}
                   {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
                 </ChainMetaContext.Provider>
               </Box>

@@ -46,7 +46,9 @@ export const progInfoMeta = {
     targetBuyer: 'Research Institutes, Drug Manufacturers, Health "Care Teams", Private Health Insurance',
     data: 'Blood Pressure (single arm and both arms), Stress Levels, Activity Levels, Diet Assessment',
     url: 'https://itheum.com/redheartchallenge',
-    dc: 'Cardiovascular Health Data'
+    dc: 'Cardiovascular Health Data',
+    id: '70dc6bd0-59b0-11e8-8d54-2d562f6cba54',
+    canJoin: 1
   },
   gdc: {
     name: 'Global DeFI Census',
@@ -56,8 +58,33 @@ export const progInfoMeta = {
     targetBuyer: 'Blockchain Research Institutes, DApp developers, Blockchain Protocol Developers, CeFI/DeFI Organisations',
     data: 'DeFI Apps Exposure, DeFI Pain Points, Investment Preferences, Barriers to Entry, DeFI DApp Sentiment',
     url: 'https://itheum.com/program',
-    dc: 'Blockchain Research Data'
+    dc: 'Blockchain Research Data',
+    id: 'foo',
+    canJoin: 0
+  },
+  wfa: {
+    name: 'Wearables Fitness and Activity',
+    desc: 'This ongoing program will automatically connect to your Strava account and will download your latest activity from wearables like FitBit, Garmin, TomTom. Strava has a large global user base (76 million users) so dataset will be large and uniform and be worth a lot.',
+    medium: 'Telegram App + Strava API',
+    outcome: 'Data produced from this program is fully "normalised" and will be very valuable',
+    targetBuyer: 'Researchers',
+    data: 'Activity, Workouts',
+    url: 'https://itheum.com/program',
+    dc: 'Wearables Fitness and Activity Data',
+    id: 'foo',
+    canJoin: 1
   }
+};
+
+export const tmpProgIdMapping = {
+  '70dc6bd0-59b0-11e8-8d54-2d562f6cba54': 'Red Heart Challenge',
+  'bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42': 'Hypertension Insights Intense',
+  '476ab840-1cb7-11e9-84fe-e935b365220a': 'Blood Pressure OnDemand',
+  '2553c3b0-51b0-11e7-9bd2-2f33680a66b6': 'Pregnancy Condition Monitoring',
+  '70dc6bd0-59b0-11e8-8d54-2d562f6cba54': 'Red Heart Challenge',
+  '183f0290-f726-11e7-9186-3bcb5c5d22db': 'Chronic Wounds Healing Progress Tracker',
+  'ef62c220-50e1-11e7-9bd2-2f33680a66b6': 'Blood Pressure Tracker',
+  '48d7b020-eab0-11ea-a466-0334ff0e8bf2': 'OkPulse',
 };
 
 export const dataTemplates = {
@@ -129,6 +156,8 @@ export const MENU = {
   ADVERTISED: 9,
   NFTMINE: 10,
   NFTALL: 11,
+  COALITIONALL: 12,
+  DATAPROOFS: 13,
 };
 
 export const CHAINS = {

@@ -209,6 +209,11 @@ export default function({onRfMount, itheumAccount}) {
             txNetworkId: chainMeta.networkId
           };
 
+          // if core programID is available then link it
+          if (currSellObject) {
+            newDataPack.fromProgramId = currSellObject.program;
+          }
+
           const newPack = await saveDataPack(newDataPack);
 
           setSavedDataPackMoralis(newPack);
@@ -225,6 +230,11 @@ export default function({onRfMount, itheumAccount}) {
             txNetworkId: chainMeta.networkId,
             txNFTContract: chainMeta.contracts.dnft
           };
+
+          // if core programID is available then link it
+          if (currSellObject) {
+            newDataNFT.fromProgramId = currSellObject.program;
+          }
 
           const newMoralisNFT = await saveDataNFT(newDataNFT);
 
