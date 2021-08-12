@@ -28,7 +28,7 @@ import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
-import { sleep, contractsForChain } from './util';
+import { sleep, contractsForChain, noChainSupport } from './util';
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './util';
 import { chainMeta, ChainMetaContext } from './contexts';
 import logo from './img/logo.png';
@@ -199,7 +199,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE} onClick={() => {
+                          <Button disabled={noChainSupport(MENU.NFTMINE, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {
                               setMenuItem(MENU.NFTMINE);
                             } else {
@@ -208,7 +208,7 @@ function App() {
                             }
                           }}>Catalog</Button>
                           
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL} onClick={() => {
+                          <Button disabled={noChainSupport(MENU.NFTALL, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.NFTALL} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {
                               setMenuItem(MENU.NFTALL);
                             } else {
@@ -246,7 +246,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                          <Button disabled={noChainSupport(MENU.TX, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
