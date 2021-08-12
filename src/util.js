@@ -1,6 +1,7 @@
 import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic,
-  mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink} from './contactAddresses.js';
+  mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
+  mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
   const contracts = {
@@ -10,6 +11,11 @@ export const contractsForChain = networkId => {
   };
 
   switch (networkId) {
+    case 31337:
+      contracts.myda = mydaContractAddress_Local;
+      contracts.ddex = ddexContractAddress_Local;
+      contracts.dnft = dNFTContractAddress_Local;
+      break;
     case 3:
       contracts.myda = mydaContractAddress;
       contracts.ddex = ddexContractAddress;
@@ -161,6 +167,7 @@ export const MENU = {
 };
 
 export const CHAINS = {
+  31337: "Localhost",
   1: "Mainnet",
   3: "Ropsten",
   4: "Rinkeby",
@@ -173,6 +180,7 @@ export const CHAINS = {
 }
 
 export const CHAIN_NAMES = {
+  31337: "localhost",
   1: "eth",
   3: "ropsten",
   4: "rinkeby",
@@ -191,7 +199,20 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [3, 4, 80001];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001];
+
+export function noChainSupport(menuItem, networkId) {
+  const UNSUPPORTED_CHAIN_FEATURES = {
+    31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX]
+  };
+
+  if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
+    return UNSUPPORTED_CHAIN_FEATURES[networkId].includes(menuItem);
+  }
+  else {
+    return false;
+  }
+}
 
 export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',

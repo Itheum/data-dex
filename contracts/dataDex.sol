@@ -12,7 +12,14 @@ contract ItheumDataDex {
     }
     
     mapping(string => DataPack) public dataPacks;
+    
+    // list of addresses that has access to a dataPackId
     mapping(string => address[]) private accessAllocations;
+
+    // address[dataPackId] will give you the dataHash (i.e. the proof for the progId reponse)
+    // in web2, the dataPackId can link to a web2 storage of related meta (programId + program onbaording link etc)
+    // ... this is not an issue, as if web2 was compromised in the end we will compare the result to the dataHash for integrity of the proof
+    mapping(address => mapping(string => bytes32)) private personalDataProofs;
     
     constructor(ERC20 _mydaToken) {
         mydaToken = _mydaToken;
@@ -21,6 +28,7 @@ contract ItheumDataDex {
     event AdvertiseEvent(string dataPackId, address seller);
     event PurchaseEvent(string dataPackId, address buyer, address seller, uint256 feeInMyda);
     
+    // Data Owner advertising a data pack for sale
     function advertiseForSale(string calldata dataPackId, string calldata dataHashStr) external {
         bytes32 dataHash = stringToBytes32(dataHashStr);
         
@@ -29,9 +37,13 @@ contract ItheumDataDex {
             dataHash: dataHash
         });
 
+        // add the personal data proof for quick lookup as well
+        personalDataProofs[msg.sender][dataPackId] = dataHash;
+
         emit AdvertiseEvent(dataPackId, msg.sender);
     }
     
+    // A buyer, buying access to a advertised data pack
     function buyDataPack(string calldata dataPackId,  uint256 feeInMyda) external payable {
         // require(msg.value == 1 ether, "Amount should be equal to 1 Ether");
         
@@ -54,6 +66,7 @@ contract ItheumDataDex {
         // payable(targetPack.seller).transfer(1 ether);
     }
     
+    // Verifies on-chain hash with off-chain hash as part of datapack purchase or to verify PDP
     function verifyData(string calldata dataPackId, string calldata dataHashStr) external view returns(bool) {
         bytes32 dataHash = stringToBytes32(dataHashStr);
          
@@ -64,6 +77,7 @@ contract ItheumDataDex {
         }
     }
     
+    // is an address as owner of a datapack?
     function checkAccess(string calldata dataPackId) public view returns(bool) {
         address[] memory matchedAllocation = accessAllocations[dataPackId];
         bool hasAccess = false;
@@ -77,6 +91,22 @@ contract ItheumDataDex {
         }
         
         return hasAccess;
+    }
+
+    // get a personal data proof (PDP)
+    function getPersonalDataProof(address calldata proofOwner, string calldata dataPackId) external view returns (bytes32) {
+        return personalDataProofs[proofOwner][dataPackId];
+    }
+
+    // remove a personal data proof (PDP)
+    function removePersonalDataProof(string calldata dataPackId) external returns (bool) {
+        address callerOwnedProof = personalDataProofs[msg.sender][dataPackId];
+
+        require(bytes(callerOwnedProof).length > 0, "You do not own that personal data proof");
+
+        delete personalDataProofs[msg.sender][dataPackId];
+
+        return true;
     }
     
     function stringToBytes32(string memory source) internal pure returns (bytes32 result) {
