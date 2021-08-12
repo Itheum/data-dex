@@ -199,7 +199,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button disabled={noChainSupport(MENU.NFTMINE, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE} onClick={() => {
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, chainMeta.networkId)} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {
                               setMenuItem(MENU.NFTMINE);
                             } else {
@@ -208,7 +208,7 @@ function App() {
                             }
                           }}>Catalog</Button>
                           
-                          <Button disabled={noChainSupport(MENU.NFTALL, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.NFTALL} onClick={() => {
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, chainMeta.networkId)} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {
                               setMenuItem(MENU.NFTALL);
                             } else {
