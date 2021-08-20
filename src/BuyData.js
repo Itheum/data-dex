@@ -11,9 +11,9 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { config, dataTemplates, sleep } from './util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './contexts';
+import { config, dataTemplates, sleep } from './libs/util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 
 export default function({onRfMount, onRefreshBalance}) {
   const chainMeta = useContext(ChainMetaContext);

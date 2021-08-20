@@ -10,9 +10,9 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './ShortAddress';
-import { CHAIN_TX_VIEWER, sleep } from './util';
-import { tmpProgIdMapping } from './util';
-import { ChainMetaContext } from './contexts';
+import { CHAIN_TX_VIEWER, sleep } from './libs/util';
+import { tmpProgIdMapping } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);

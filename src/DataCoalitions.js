@@ -4,8 +4,8 @@ import {
   Button, Link, Badge, Flex, Image, StackDivider,  
   HStack, Heading, Center,
 } from '@chakra-ui/react';
-import { CHAIN_TOKEN_SYMBOL, MENU } from './util';
-import { ChainMetaContext } from './contexts';
+import { CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 import dataCoalitionsIcon from './img/data-coalitions-icon.png';
 
 export default function({setMenuItem}) {

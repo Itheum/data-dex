@@ -7,10 +7,8 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ShortAddress from '../ShortAddress';
-import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../util';
-import { progInfoMeta, config, mydaRoundUtil } from '../util';
-import { ChainMetaContext } from '../contexts';
+import { progInfoMeta, config, mydaRoundUtil } from '../libs/util';
+import { ChainMetaContext } from '../libs/contexts';
 
 let progToIdMapping = {};
 

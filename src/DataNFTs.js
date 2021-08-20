@@ -4,7 +4,7 @@ import {
   Button, Link, Badge, Flex, Image, StackDivider,
   HStack, Heading, Center, Text
 } from '@chakra-ui/react';
-import { MENU } from './util';
+import { MENU } from './libs/util';
 import openSeaLogoIcon from './img/opensea-logo.png';
 import dataNFTIcon from './img/data-nft-icon.png';
 

@@ -14,10 +14,10 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { config, dataTemplates, sleep } from './util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
+import { config, dataTemplates, sleep } from './libs/util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import ShortAddress from './ShortAddress';
-import { ChainMetaContext } from './contexts';
+import { ChainMetaContext } from './libs/contexts';
 import { log } from 'async';
 
 const baseStyle = {

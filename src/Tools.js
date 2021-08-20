@@ -10,9 +10,9 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 import ShortAddress from './ShortAddress';
-import { progInfoMeta, config, sleep } from './util';
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './contexts';
+import { progInfoMeta, config, sleep } from './libs/util';
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 import imgProgDefi from './img/prog-defi.png';
 import imgProgRhc from './img/prog-rhc.png';
 import imgProgWfh from './img/prog-wfh.png';
