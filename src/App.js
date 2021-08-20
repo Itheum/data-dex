@@ -258,7 +258,6 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
