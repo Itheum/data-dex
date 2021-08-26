@@ -8,7 +8,7 @@ import {
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
-import ShortAddress from './ShortAddress';
+import ShortAddress from './UtilComps/ShortAddress';
 import { TERMS, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { config } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';

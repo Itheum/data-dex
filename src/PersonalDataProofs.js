@@ -9,7 +9,7 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ShortAddress from './ShortAddress';
+import ShortAddress from './UtilComps/ShortAddress';
 import { CHAIN_TX_VIEWER, sleep } from './libs/util';
 import { tmpProgIdMapping } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';

@@ -10,7 +10,7 @@ import {
   Text, HStack, 
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
-import ShortAddress from './ShortAddress';
+import ShortAddress from './UtilComps/ShortAddress';
 import { config, dataTemplates, sleep } from './libs/util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';

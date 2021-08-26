@@ -17,7 +17,7 @@ import BuyData from './BuyData';
 import PurchasedData from './PurchasedData';
 import AdvertisedData from './AdvertisedData';
 import PersonalDataProofs from './PersonalDataProofs';
-import ShortAddress from './ShortAddress';
+import ShortAddress from './UtilComps/ShortAddress';
 import Tools from './Tools';
 import ChainTransactions from './ChainTransactions';
 import DataVault from './DataVault';
