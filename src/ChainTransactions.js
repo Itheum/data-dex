@@ -116,7 +116,7 @@ export default function() {
                     {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Sale'}
                   </Badge>
                 </Td>
-                <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
+                <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
                 <Td><ShortAddress address={item.get('dataPackId')} /></Td>
                 <Td>{item.get('seller') && <ShortAddress address={item.get('seller')} />}</Td>
                 <Td>{item.get('buyer') && <ShortAddress address={item.get('buyer')} />}</Td>

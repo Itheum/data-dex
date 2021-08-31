@@ -75,7 +75,7 @@ export default function() {
             </Thead>
             <Tbody>
             {userAdvertisedData.map((item) => <Tr key={item.id}>
-              <Td><Text fontSize="sm">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+              <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
               <Td><ShortAddress address={item.id} /></Td>
               <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
