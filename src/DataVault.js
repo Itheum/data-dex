@@ -19,7 +19,7 @@ export default function() {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data Vault <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
+            <Heading size="lg">Data Vault <Badge variant="outline" colorScheme="teal">Coming Soon</Badge></Heading>
             <Image src={dataVaultIcon} boxSize="150px" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Store highly sensitive personal data in your data vault. For example: details about your gender, race, sexual preference, prior health conditions, financial history etc</Box>

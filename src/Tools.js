@@ -176,10 +176,10 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
             <Spacer />
             
-            {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="green" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
+            {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
 
             {itheumAccount && 
-              <Button colorScheme="green" variant="outline" onClick={() => setMenuItem(2)}>Sell My Data</Button>
+              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>Sell My Data</Button>
             }
           </Stack>
         </Box>
@@ -190,7 +190,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             <Text>Get some free {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} tokens to try DEX features</Text>
           
             {txHashFaucet && <Stack>
-              <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
+              <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
               <HStack>
                 <Text>Transaction </Text>
@@ -208,7 +208,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             }
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="green" variant="outline" onClick={web3_tokenFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Button>
+            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={web3_tokenFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Button>
           </Stack>
         </Box>
 
@@ -233,8 +233,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                     </Box>
                     <Badge borderRadius="full" px="2" colorScheme="teal"> Live</Badge>
                   </Box>
-                  <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
-                  <Button size="sm" mt="3" colorScheme="green" onClick={() => (window.open(`https://itheum.com/redheartchallenge?web3Uid=${user.id}`))}>Join Now</Button>
+                  <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
+                  <Button size="sm" mt="3" colorScheme="teal" onClick={() => (window.open(`https://itheum.com/redheartchallenge?web3Uid=${user.id}`))}>Join Now</Button>
                 </Box>
               </Box>
 
@@ -254,8 +254,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                     </Box>
                     <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
                   </Box>
-                  <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
-                  <Button size="sm" disabled="true" mt="3" colorScheme="green" onClick={() => (window.open(''))}>Join Now</Button>
+                  <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
+                  <Button size="sm" disabled="true" mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
                 </Box>
               </Box>
 
@@ -275,8 +275,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                     </Box>
                     <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
                   </Box>
-                  <Button size="sm" mt="3" mr="3" colorScheme="green" variant="outline" onClick={() => (handleLearnMoreProg('wfa'))}>Learn More</Button>
-                  <Button size="sm" disabled="true" mt="3" colorScheme="green" onClick={() => (window.open(''))}>Join Now</Button>
+                  <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('wfa'))}>Learn More</Button>
+                  <Button size="sm" disabled="true" mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
                 </Box>
               </Box>
             </Wrap>
@@ -302,8 +302,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button size="sm" mr={3} colorScheme="green" variant="outline" onClick={onProgressModalClose}>Close</Button>
-            <Button size="sm" colorScheme="green" onClick={() => (window.open(`${progInfoMeta[learnMoreProd].url}?web3Uid=${user.id}`))}>Join Now</Button>
+            <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>Close</Button>
+            <Button size="sm" colorScheme="teal" onClick={() => (window.open(`${progInfoMeta[learnMoreProd].url}?web3Uid=${user.id}`))}>Join Now</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>}

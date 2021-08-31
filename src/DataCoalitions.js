@@ -16,7 +16,7 @@ export default function({setMenuItem}) {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data Coalitions <Badge colorScheme="green" fontSize="0.5em">Preview</Badge></Heading>
+            <Heading size="lg">Data Coalitions <Badge colorScheme="teal" fontSize="0.5em">Preview</Badge></Heading>
             <Image src={dataCoalitionsIcon} boxSize="150px" />
             <Heading size="mb" mb="5">A glimpse into the future of how data will be sourced on the blockchain for AI</Heading>
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">

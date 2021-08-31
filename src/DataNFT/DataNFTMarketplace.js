@@ -139,7 +139,7 @@ export default function() {
                   <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
 
-                <ButtonGroup colorScheme="green" spacing="3" size="sm" mt="5">
+                <ButtonGroup colorScheme="teal" spacing="3" size="sm" mt="5">
                   <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId)}>Buy on OpenSea</Button>
                   {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
                 </ButtonGroup>

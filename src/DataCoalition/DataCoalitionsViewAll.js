@@ -80,7 +80,7 @@ export default function() {
             <Box p="3">
               {item.get('canJoin') && <Text mb="2">You are eligible to join:</Text>}
 
-              <ButtonGroup colorScheme="green" spacing="3" size="sm">
+              <ButtonGroup colorScheme="teal" spacing="3" size="sm">
               {item.get('canJoin') && <><Button disabled="true" colorScheme="teal">Add Data & Join</Button>
                 <Button disabled="true" colorScheme="teal" variant="outline">Bond Myda & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake Myda</Button>}
               </ButtonGroup>
