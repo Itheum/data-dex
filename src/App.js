@@ -345,14 +345,14 @@ function App() {
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                 <Image src={chainEth} boxSize="40px" width="30px" />
               </Tooltip>
-              <Tooltip label="Live on Mumbai Testnets">
+              <Tooltip label="Live on Mumbai Testnet">
                 <Image src={chainPol} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on Binance Smart Chain Testnet">
+                <Image src={chainBsc} boxSize="40px" />
               </Tooltip>
               <Tooltip label="Harmony Chain - Coming soon...">
                 <Image src={chainHrmy} boxSize="40px" opacity=".3" />
-              </Tooltip>
-              <Tooltip label="Binance Smart Chain - Coming soon...">
-                <Image src={chainBsc} boxSize="40px" opacity=".3" />
               </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
                 <Image src={chainAvln} boxSize="40px" opacity=".3" />

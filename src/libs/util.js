@@ -1,6 +1,7 @@
 import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic,
   mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
+  mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
   mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
@@ -30,6 +31,11 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
+      break;
+    case 97:
+      contracts.myda = mydaContractAddress_testnetBSC;
+      contracts.ddex = ddexContractAddress_testnetBSC;
+      contracts.dnft = dNFTContractAddress_testnetBSC;
       break;
   }
 
@@ -199,7 +205,7 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97];
 
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
@@ -217,7 +223,8 @@ export function noChainSupport(menuItem, networkId) {
 export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',
   4: 'https://rinkeby.etherscan.io/tx/',
-  80001: 'https://explorer-mumbai.maticvigil.com/tx/'
+  80001: 'https://explorer-mumbai.maticvigil.com/tx/',
+  97: 'https://testnet.bscscan.com/'
 }
 
 export const CHAIN_TX_LIST = {
