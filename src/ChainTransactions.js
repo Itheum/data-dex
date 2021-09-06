@@ -9,10 +9,10 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import ShortAddress from './ShortAddress';
-import { config, mydaRoundUtil } from './util';
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from './util';
-import { ChainMetaContext } from './contexts';
+import ShortAddress from './UtilComps/ShortAddress';
+import { config, mydaRoundUtil } from './libs/util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);
@@ -116,7 +116,7 @@ export default function() {
                     {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Sale'}
                   </Badge>
                 </Td>
-                <Td>{moment(item.createdAt).format(config.dateStrTm)}</Td>
+                <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
                 <Td><ShortAddress address={item.get('dataPackId')} /></Td>
                 <Td>{item.get('seller') && <ShortAddress address={item.get('seller')} />}</Td>
                 <Td>{item.get('buyer') && <ShortAddress address={item.get('buyer')} />}</Td>

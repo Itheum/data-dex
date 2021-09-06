@@ -14,10 +14,10 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 
-import { config, dataTemplates, sleep } from './util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import ShortAddress from './ShortAddress';
-import { ChainMetaContext } from './contexts';
+import { config, dataTemplates, sleep } from './libs/util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import ShortAddress from './UtilComps/ShortAddress';
+import { ChainMetaContext } from './libs/contexts';
 import { log } from 'async';
 
 const baseStyle = {
@@ -510,7 +510,7 @@ export default function({onRfMount, itheumAccount}) {
                     {itheumAccount._lookups.programs[item.program].programName}
                   </Box>
                 </Box>
-                <Button mt="3" colorScheme="green" variant="outline" onClick={() => getDataForSale(item.program)}>Sell Program Data</Button>
+                <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>Sell Program Data</Button>
             </Box>
             
             </Box>
@@ -532,7 +532,7 @@ export default function({onRfMount, itheumAccount}) {
                   Sell Any Arbitrary Data Set
                 </Box>
               </Box>
-              <Button mt="3" colorScheme="green" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
+              <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
             </Box>     
         </Box>
 
@@ -550,7 +550,7 @@ export default function({onRfMount, itheumAccount}) {
                   Sell My Facebook Data
                 </Box>
               </Box>
-              <Button mt="3" colorScheme="green" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
+              <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
             </Box>     
         </Box>
       </Wrap>
@@ -654,7 +654,7 @@ export default function({onRfMount, itheumAccount}) {
                 </Stack>
 
               {!drawerInMintNFT && <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
-                <Badge ml="1" fontSize="0.8em" colorScheme="green">2 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Badge>
+                <Badge ml="1" fontSize="0.8em" colorScheme="teal">2 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Badge>
               </Text>}              
 
               <Flex>
@@ -705,7 +705,7 @@ export default function({onRfMount, itheumAccount}) {
                     </>}
 
                     {txHash && <Stack>                      
-                      <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmation} />
+                      <Progress colorScheme="teal" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmation} />
 
                       <HStack>
                         <Text>Transaction </Text>
@@ -735,7 +735,7 @@ export default function({onRfMount, itheumAccount}) {
 
                       {txNFTHash && 
                         <Stack>
-                          <Progress colorScheme="green" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txNFTConfirmation} />
+                          <Progress colorScheme="teal" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txNFTConfirmation} />
 
                           <HStack>
                             <Text>Transaction </Text>

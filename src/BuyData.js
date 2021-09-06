@@ -10,10 +10,10 @@ import {
   Text, HStack, 
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
-import ShortAddress from './ShortAddress';
-import { config, dataTemplates, sleep } from './util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './util';
-import { ChainMetaContext } from './contexts';
+import ShortAddress from './UtilComps/ShortAddress';
+import { config, dataTemplates, sleep } from './libs/util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 
 export default function({onRfMount, onRefreshBalance}) {
   const chainMeta = useContext(ChainMetaContext);
@@ -376,7 +376,7 @@ export default function({onRfMount, onRefreshBalance}) {
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
               <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Text></Td>
               <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
-              <Td><Button isLoading={false} colorScheme="green" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
+              <Td><Button isLoading={false} colorScheme="teal" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
             </Tr>)}
           </Tbody>
             <Tfoot>
@@ -420,7 +420,7 @@ export default function({onRfMount, onRefreshBalance}) {
                   </HStack>
 
                   {txHashAllowance && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationAllowance} />
+                    <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationAllowance} />
 
                     <HStack>
                       <Text>Transaction </Text>
@@ -435,7 +435,7 @@ export default function({onRfMount, onRefreshBalance}) {
                   </HStack>
 
                   {txHashTransfer && <Stack>
-                    <Progress colorScheme="green" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
+                    <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text>Transaction </Text>

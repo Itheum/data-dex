@@ -8,10 +8,10 @@ import {
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
-import ShortAddress from './ShortAddress';
-import { TERMS, CHAIN_TOKEN_SYMBOL } from './util';
-import { config } from './util';
-import { ChainMetaContext } from './contexts';
+import ShortAddress from './UtilComps/ShortAddress';
+import { TERMS, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { config } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);
@@ -75,7 +75,7 @@ export default function() {
             </Thead>
             <Tbody>
             {userAdvertisedData.map((item) => <Tr key={item.id}>
-              <Td><Text fontSize="sm">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+              <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
               <Td><ShortAddress address={item.id} /></Td>
               <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>

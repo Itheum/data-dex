@@ -14,7 +14,7 @@ export default function() {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Trusted Computation Framework <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
+            <Heading size="lg">Trusted Computation Framework <Badge variant="outline" colorScheme="teal">Coming Soon</Badge></Heading>
             <Image src={TrustedComputationFrameworkIcon} boxSize="150px" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Large personal datasets managed on-chain by Data Coalitions will become too difficult to monitor over time - with the possibility of sensitive data being accidently leaked during the exchange between multiple buyers</Box>

@@ -7,10 +7,8 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ShortAddress from '../ShortAddress';
-import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../util';
-import { progInfoMeta, config, mydaRoundUtil } from '../util';
-import { ChainMetaContext } from '../contexts';
+import { progInfoMeta, config, mydaRoundUtil } from '../libs/util';
+import { ChainMetaContext } from '../libs/contexts';
 
 let progToIdMapping = {};
 
@@ -65,29 +63,34 @@ export default function() {
         </Stack> || 
         <Flex wrap="wrap" spacing={5}>
           {dataCoalitions.map((item) => <Box key={item.id} borderWidth="1px" borderRadius="lg" overflow="hidden" maxW="sm" mr="1rem" mb="1rem">
-            <Box><Heading size="md" p="5">{item.get('name')}</Heading></Box>
-            <Divider />
-            <Box p="3">
-              <Text>{item.get('description')}</Text>
-            </Box>
+            <Flex direction="column" justify="space-between" height="100%">
+              <Box>
+                <Heading size="md" p="5">{item.get('name')}</Heading>
+              </Box>
+              
+              <Divider />
+              
+              <Box p="3">
+                <Text>{item.get('description')}</Text>
+              </Box>
 
-            <Box p="3">
-              <Text mt="2" mb="2">I'm interested in:</Text>
+              <Box p="3" flexGrow="1">
+                <Text mt="2" mb="2">I'm interested in:</Text>
 
-              {item.get('dataHoldingMapping').map(i => (
-                <Badge borderRadius="full" px="2" mr="2" colorScheme="teal">{i.progId && progToIdMapping[i.progId].name || "Any Arbitrary Data"}</Badge>
-              ))} 
-            </Box>
+                {item.get('dataHoldingMapping').map(i => (
+                  <Badge borderRadius="full" px="2" mr="2" colorScheme="teal">{i.progId && progToIdMapping[i.progId].name || "Any Arbitrary Data"}</Badge>
+                ))} 
+              </Box>
 
-            <Box p="3">
+              <Box p="3">
               {item.get('canJoin') && <Text mb="2">You are eligible to join:</Text>}
 
-              <ButtonGroup colorScheme="green" spacing="3" size="sm">
+              <ButtonGroup colorScheme="teal" spacing="3" size="sm">
               {item.get('canJoin') && <><Button disabled="true" colorScheme="teal">Add Data & Join</Button>
                 <Button disabled="true" colorScheme="teal" variant="outline">Bond Myda & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake Myda</Button>}
               </ButtonGroup>
             </Box>
-            
+            </Flex>
           </Box>)}
           
         </Flex>

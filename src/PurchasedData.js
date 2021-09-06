@@ -9,10 +9,10 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ShortAddress from './ShortAddress';
-import { config } from './util';
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './util';
-import { ChainMetaContext } from './contexts';
+import ShortAddress from './UtilComps/ShortAddress';
+import { config } from './libs/util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './libs/util';
+import { ChainMetaContext } from './libs/contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);
@@ -90,7 +90,7 @@ export default function() {
             </Thead>
             <Tbody>
               {userDataOrders.map((item) => <Tr key={item.objectId}>
-                <Td><Text fontSize="sm">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+                <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
                 <Td><ShortAddress address={item.objectId} /></Td>
                 <Td><ShortAddress address={item.dataPackId} /></Td>
                 <Td><ShortAddress address={item.dataPack[0].sellerEthAddress} /></Td>

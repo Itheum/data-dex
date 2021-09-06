@@ -4,7 +4,7 @@ import {
   Button, Link, Badge, Flex, Image, StackDivider,
   HStack, Heading, Center, Text
 } from '@chakra-ui/react';
-import { MENU } from './util';
+import { MENU } from './libs/util';
 import openSeaLogoIcon from './img/opensea-logo.png';
 import dataNFTIcon from './img/data-nft-icon.png';
 
@@ -14,7 +14,7 @@ export default function({setMenuItem}) {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data NFTs <Badge colorScheme="green" fontSize="0.5em">Beta</Badge></Heading>
+            <Heading size="lg">Data NFTs <Badge colorScheme="teal" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability</Box>

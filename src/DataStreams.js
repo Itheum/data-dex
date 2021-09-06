@@ -13,7 +13,7 @@ export default function() {
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data Streams <Badge variant="outline" colorScheme="green">Coming Soon</Badge></Heading>
+            <Heading size="lg">Data Streams <Badge variant="outline" colorScheme="teal">Coming Soon</Badge></Heading>
             <Image src={dataStreamIcon} boxSize="150px" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Let buyers subscribe to "personal data streams" -  unlike the one-off datasets, data streams will continue to feed data as new data is generated</Box>

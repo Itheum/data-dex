@@ -17,7 +17,7 @@ import BuyData from './BuyData';
 import PurchasedData from './PurchasedData';
 import AdvertisedData from './AdvertisedData';
 import PersonalDataProofs from './PersonalDataProofs';
-import ShortAddress from './ShortAddress';
+import ShortAddress from './UtilComps/ShortAddress';
 import Tools from './Tools';
 import ChainTransactions from './ChainTransactions';
 import DataVault from './DataVault';
@@ -28,9 +28,9 @@ import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
-import { sleep, contractsForChain, noChainSupport } from './util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './util';
-import { chainMeta, ChainMetaContext } from './contexts';
+import { sleep, contractsForChain, noChainSupport } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { chainMeta, ChainMetaContext } from './libs/contexts';
 import logo from './img/logo.png';
 import logoSml from './img/logo-sml.png';
 import chainEth from './img/eth-chain-logo.png';
@@ -258,7 +258,6 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITION} onClick={() => (setMenuItem(MENU.COALITION))}>Data Coalitions</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
@@ -346,14 +345,14 @@ function App() {
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                 <Image src={chainEth} boxSize="40px" width="30px" />
               </Tooltip>
-              <Tooltip label="Live on Mumbai Testnets">
+              <Tooltip label="Live on Mumbai Testnet">
                 <Image src={chainPol} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on Binance Smart Chain Testnet">
+                <Image src={chainBsc} boxSize="40px" />
               </Tooltip>
               <Tooltip label="Harmony Chain - Coming soon...">
                 <Image src={chainHrmy} boxSize="40px" opacity=".3" />
-              </Tooltip>
-              <Tooltip label="Binance Smart Chain - Coming soon...">
-                <Image src={chainBsc} boxSize="40px" opacity=".3" />
               </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
                 <Image src={chainAvln} boxSize="40px" opacity=".3" />
