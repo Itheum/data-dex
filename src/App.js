@@ -351,8 +351,8 @@ function App() {
               <Tooltip label="Live on Binance Smart Chain Testnet">
                 <Image src={chainBsc} boxSize="40px" />
               </Tooltip>
-              <Tooltip label="Harmony Chain - Coming soon...">
-                <Image src={chainHrmy} boxSize="40px" opacity=".3" />
+              <Tooltip label="Live on Harmony Testnet">
+                <Image src={chainHrmy} boxSize="40px" />
               </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
                 <Image src={chainAvln} boxSize="40px" opacity=".3" />

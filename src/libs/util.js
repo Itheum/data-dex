@@ -2,6 +2,7 @@ import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic,
   mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
   mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
+  mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
   mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
@@ -36,6 +37,11 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress_testnetBSC;
       contracts.ddex = ddexContractAddress_testnetBSC;
       contracts.dnft = dNFTContractAddress_testnetBSC;
+      break;
+    case 1666700000:
+      contracts.myda = mydaContractAddress_testnetHarmony;
+      contracts.ddex = ddexContractAddress_testnetHarmony;
+      contracts.dnft = dNFTContractAddress_testnetHarmony;
       break;
   }
 
@@ -183,6 +189,7 @@ export const CHAINS = {
   80001: "Matic - Mumbai",
   97: "BSC - Chapel",
   56: "BSC - Mainnet",
+  1666700000: "Harmony - Testnet",
 }
 
 export const CHAIN_NAMES = {
@@ -196,6 +203,7 @@ export const CHAIN_NAMES = {
   80001: "mumbai",
   97: "bsc testnet",
   56: "bsc",
+  1666700000: "harmony testnet",
 }
 
 export const OPENSEA_CHAIN_NAMES = {
@@ -205,11 +213,13 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000];
 
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
-    31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX]
+    31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
+    97: [MENU.TX],
+    1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX]
   };
 
   if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -224,7 +234,8 @@ export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',
   4: 'https://rinkeby.etherscan.io/tx/',
   80001: 'https://explorer-mumbai.maticvigil.com/tx/',
-  97: 'https://testnet.bscscan.com/'
+  97: 'https://testnet.bscscan.com/',
+  1666700000: 'https://explorer.pops.one/#/',
 }
 
 export const CHAIN_TX_LIST = {
@@ -246,7 +257,8 @@ export const CHAIN_TOKEN_SYMBOL = networkId => {
   const mapping = {
     'MYDA' : [3, 4, 1],
     'mMYDA': [80001, 137],
-    'bMYDA': [97, 56]
+    'bMYDA': [97, 56],
+    'hMYDA': [1666700000],
   };
 
   let sym = null;
