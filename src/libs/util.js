@@ -218,6 +218,7 @@ export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000];
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
     31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
+    97: [MENU.TX],
     1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX]
   };
 
