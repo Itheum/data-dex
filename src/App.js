@@ -38,7 +38,7 @@ import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
 import chainAvln from './img/avalanche-chain-logo.png';
 import chainHrmy from './img/harmony-chain-logo.png';
-import moralisIcon from './img/moralis-logo.png';
+import moralisIcon from './img/powered-moralis.png';
 
 function App() {
   const {isAuthenticated, logout, user} = useMoralis();
@@ -171,12 +171,14 @@ function App() {
             <Flex direction="row">
               <Box mt={5} ml={5}>
                 <Stack direction="column" spacing={4}>
+                  <Flex direction="column" justify="space-between" minH="80vh">
+
                   <Stack ml="15px" spacing={4}>
                     <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
                     <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
                   </Stack>
 
-                  <Accordion defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
+                  <Accordion flexGrow="1" defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
                     <AccordionItem>
                       <AccordionButton>
                         <Button flex="1" colorScheme="teal" variant="outline">Data Packs</Button>
@@ -267,6 +269,9 @@ function App() {
                     
                   </Accordion>
 
+                  <ByMoralisLogo />
+                
+                  </Flex>
                 </Stack>
               </Box>
 
@@ -342,11 +347,11 @@ function App() {
             <Auth />
             <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
             <Flex direction="row" justify="space-around">
-              <Tooltip label="Live on Ropsten & Rinkeby Testnets">
-                <Image src={chainEth} boxSize="40px" width="30px" />
-              </Tooltip>
               <Tooltip label="Live on Mumbai Testnet">
                 <Image src={chainPol} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on Ropsten & Rinkeby Testnets">
+                <Image src={chainEth} boxSize="40px" width="30px" />
               </Tooltip>
               <Tooltip label="Live on Binance Smart Chain Testnet">
                 <Image src={chainBsc} boxSize="40px" />
@@ -359,19 +364,26 @@ function App() {
               </Tooltip>
             </Flex>
             
-            <Flex direction="column" alignItems="center" display="none"> 
-              <Text mt="10" fontSize="xs">Built with</Text>
-              <Image
-                boxSize="65px"
-                height="auto"
-                src={moralisIcon}
-                alt="Built with Moralis web3"
-              />
-            </Flex> 
+            <ByMoralisLogo />
           </Stack>
         </Box>
       </Center>      
     </Container>
+  );
+}
+
+function ByMoralisLogo() {
+  return (
+    <Flex direction="column" alignItems="center">
+      <Image
+        mt="10"
+        borderRadius="lg"
+        boxSize="180px"
+        height="auto"
+        src={moralisIcon}
+        alt="Built with Moralis web3"
+      />
+    </Flex>
   );
 }
 
