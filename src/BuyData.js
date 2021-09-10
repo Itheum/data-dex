@@ -20,6 +20,7 @@ export default function({onRfMount, onRefreshBalance}) {
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
+  const [noData, setNoData] = useState(false);
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
     query.descending("createdAt") &&
     query.notEqualTo("txHash", null) &&
@@ -43,9 +44,16 @@ export default function({onRfMount, onRefreshBalance}) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   useEffect(() => {
-    if (user && user.get('ethAddress') && dataPacks.length > 0) {
-      setOtherUserDataSets(dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))));
-    }
+    (async() => {
+      if (dataPacks.length === 0) {
+        await sleep(5);
+        setNoData(true);
+      } else {
+        if (user && user.get('ethAddress')) {
+          setOtherUserDataSets(dataPacks.filter(i => (i.get('sellerEthAddress') !== user.get('ethAddress'))));
+        }
+      }
+    })();
   }, [dataPacks]);
 
   useEffect(async () => {
@@ -341,7 +349,7 @@ export default function({onRfMount, onRefreshBalance}) {
         </Alert>
       }
       {otherUserDataSets.length === 0 &&
-        <Stack w="1000px">
+        <>{!noData && <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -353,7 +361,7 @@ export default function({onRfMount, onRefreshBalance}) {
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
-        </Stack> || 
+        </Stack> || <Text>No data yet...</Text>}</> || 
         <Box>
           <Table variant="simple" mt="3">
             <TableCaption>The following data packs are available for purchase</TableCaption>
