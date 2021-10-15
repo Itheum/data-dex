@@ -143,7 +143,7 @@ export default function() {
 
                 <ButtonGroup colorScheme="teal" spacing="3" size="sm" mt="5">
                   <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId)}>Buy on OpenSea</Button>
-                  {(item.txNetworkId === chainMeta.networkId) && <Button isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
+                  {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
                 </ButtonGroup>
               </Box>              
             </Flex>

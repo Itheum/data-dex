@@ -129,7 +129,7 @@ export default function() {
               <Box mt="5">  
                 {item.stillOwns && <Badge borderRadius="full" px="2" colorScheme="teal">
                   {item.originalOwner && 'you are the owner' || 'you are the creator & owner' }
-                </Badge> || <Badge borderRadius="full" px="2" colorScheme="red">
+                </Badge> || <Badge borderRadius="full" px="2" colorScheme="red" display="none">
                   sold
                 </Badge>}
 
