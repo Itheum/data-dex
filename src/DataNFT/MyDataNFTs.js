@@ -1,6 +1,6 @@
 import moment from 'moment';
 import React, { useContext, useState, useEffect } from 'react';
-import { useMoralis, useMoralisQuery, useMoralisCloudFunction } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useMoralisCloudFunction, useMoralisWeb3Api } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge,
@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../UtilComps/ShortAddress';
+import { sleep } from '../libs/util';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from '../libs/util';
 import { ChainMetaContext } from '../libs/contexts';
 
@@ -15,10 +16,12 @@ export default function() {
   const chainMeta = useContext(ChainMetaContext);
   const { user } = useMoralis();
   const { web3 } = useMoralis();
+  const Web3Api = useMoralisWeb3Api();
   
   const { isInitialized, Moralis } = useMoralis();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+  const [noData, setNoData] = useState(false);
 
   const {
     error: cfErr_getUserDataNFTCatalog,
@@ -28,7 +31,7 @@ export default function() {
     ethAddress: user.get('ethAddress'),
     networkId: chainMeta.networkId,
     myOnChainNFTs: onChainNFTs
-  }, { autoFetch: false });  
+  }, { autoFetch: false });
 
   useEffect(() => {
     console.log('MOUNT MyDataNFTs');
@@ -36,12 +39,13 @@ export default function() {
 
   useEffect(() => {
     async function getOnChainNFTs () {
-      const myNFTs = await Moralis.Web3.getNFTs({
-        chain: CHAIN_NAMES[chainMeta.networkId],
-        address: user.get('ethAddress')
+      const myNFTs = await Web3Api.account.getNFTs({
+        chain: CHAIN_NAMES[chainMeta.networkId]
       });
 
-      setOnChainNFTs(myNFTs);
+      console.log('🚀 ~ getOnChainNFTs ~ myNFTs', myNFTs);
+
+      setOnChainNFTs(myNFTs.result);
     }
 
     if (isInitialized) {
@@ -60,8 +64,16 @@ export default function() {
   }, [onChainNFTs]);
 
   useEffect(() => {
-    console.log('usersDataNFTCatalog');
-    console.log(usersDataNFTCatalog);
+    (async() => {
+      console.log('usersDataNFTCatalog');
+      console.log(usersDataNFTCatalog);
+      console.log(user.get('ethAddress'));
+
+      if (usersDataNFTCatalog && usersDataNFTCatalog.length === 0) {
+        await sleep(5);
+        setNoData(true);
+      }
+    })();
   }, [usersDataNFTCatalog]);
 
   return (
@@ -79,8 +91,8 @@ export default function() {
         </Alert>
       }
 
-      {usersDataNFTCatalog.length === 0 &&
-        <Stack w="1000px">
+      {usersDataNFTCatalog && usersDataNFTCatalog.length === 0 &&
+        <>{!noData && <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -92,16 +104,16 @@ export default function() {
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
-        </Stack> || 
+        </Stack> || <Text>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
-          {usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
+          {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center">
               <Skeleton isLoaded={oneNFTImgLoaded}>
-                <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} />
+                <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} w={200} />
               </Skeleton>
             </Flex>
 
-            <Box p="3">
+            <Flex p="3" direction="column" justify="space-between" height="250px">
               <Box
                 mt="1"
                 fontWeight="semibold"
@@ -110,7 +122,7 @@ export default function() {
                 {item.nftName}
               </Box>
 
-              <Box as="span" color="gray.600" fontSize="sm">
+              <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                 {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}
               </Box>
 
@@ -137,7 +149,7 @@ export default function() {
                   <Link href={item.dataFileUrl} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
               </Box>              
-            </Box>
+            </Flex>
           </Box>)}
           
         </Flex>

@@ -13,10 +13,15 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure
 } from '@chakra-ui/react';
+import { FaUncharted } from "react-icons/fa";
+import { AiOutlinePicture } from "react-icons/ai";
+import { GiVintageRobot } from "react-icons/gi";
+import { MdOutlinePattern } from "react-icons/md";
 
 import { config, dataTemplates, sleep } from './libs/util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import ShortAddress from './UtilComps/ShortAddress';
+import IconButton from './UtilComps/IconButton';
 import { ChainMetaContext } from './libs/contexts';
 import { log } from 'async';
 
@@ -69,6 +74,7 @@ export default function({onRfMount, itheumAccount}) {
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const [showCode, setShowCode] = useState(false);
   const [drawerInMintNFT, setDrawerInMintNFT] = useState(false);
+  const [NFTArtStyle, setNFTArtStyle] = useState(1);
   const [dataNFTImg, setDataNFTImg] = useState(null);
   const [newNFTId, setNewNFTId] = useState(null);
 
@@ -191,8 +197,8 @@ export default function({onRfMount, itheumAccount}) {
   }, [newNFTId]);
 
   useEffect(async () => {
-    // if 1st time, then these vars come as []
-    if (!Array.isArray(dataCfHashData)) {
+    // if 1st time, then these vars come as [] or null
+    if (dataCfHashData && !Array.isArray(dataCfHashData)) {
       setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s2: 1}));
 
       const {dataHash} = dataCfHashData;
@@ -259,8 +265,14 @@ export default function({onRfMount, itheumAccount}) {
 
   // data NFT object saved to moralis
   useEffect(async () => {
-    if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
-      const NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+    if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {      
+      // gen art demo
+      let NFTImgUrl = 'https://drive.google.com/uc?export=view&id=114eTkKdArNbp0wNJpuKS4j0m0AYENej4';
+
+      // ... or robot
+      if (NFTArtStyle === 1) {
+        NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+      }
 
       setDataNFTImg(NFTImgUrl);
 
@@ -571,12 +583,28 @@ export default function({onRfMount, itheumAccount}) {
 
               <Text fontWeight="bold">Sale Type</Text>
               
-              <RadioGroup value={drawerInMintNFT} onChange={() => setDrawerInMintNFT(!drawerInMintNFT)}>
+              {/* <RadioGroup value={drawerInMintNFT} onChange={() => setDrawerInMintNFT(!drawerInMintNFT)}>
                 <Stack>
                   <Radio value={false}>Data Pack (Unlimited Supply / No Resale / No Royalty)</Radio>
                   <Radio value={true}>Data NFT (Limited Edition / Resale allowed with Royalty)</Radio>
                 </Stack>
-              </RadioGroup>
+              </RadioGroup> */}
+
+              <HStack>
+                <IconButton
+                  icon={<FaUncharted size="2.5rem" />}
+                  l1="Data Pack"
+                  l2="(Unlimited Supply / No Resale / No Royalty)"
+                  selected={!drawerInMintNFT}
+                  onclickFunc={() => setDrawerInMintNFT(false)} />
+
+                <IconButton
+                  icon={<AiOutlinePicture size="2.5rem" />}
+                  l1="Data NFT"
+                  l2="(Limited Edition / Resale allowed with Royalty)"
+                  selected={drawerInMintNFT}
+                  onclickFunc={() => setDrawerInMintNFT(true)} />
+              </HStack>
 
               <Text fontWeight="bold">{!drawerInMintNFT && 'Data Payload Preview/Summary:' || 'NFT Title'}</Text>
               <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
@@ -618,6 +646,22 @@ export default function({onRfMount, itheumAccount}) {
                 </NumberInput>
                 <Text colorScheme="gray" fontSize="sm">Suggested: 0%, 10%, 20%, 30%</Text>
 
+                <Text fontWeight="bold">Generative Art Style</Text>
+                <HStack>
+                  <IconButton
+                    icon={<GiVintageRobot size="2.5rem" />}
+                    l1="Character Collectible"
+                    l2="(Algorithmic character generation)"
+                    selected={NFTArtStyle === 1}
+                    onclickFunc={() => setNFTArtStyle(1)} />
+
+                  <IconButton
+                    icon={<MdOutlinePattern size="2.5rem" />}
+                    l1="Art Collectible"
+                    l2="(Algorithmic artistic generation)"
+                    selected={NFTArtStyle === 2}
+                    onclickFunc={() => setNFTArtStyle(2)} />
+                </HStack>
               </>}
 
               <Text fontWeight="bold">Data Payload for Sale:</Text>

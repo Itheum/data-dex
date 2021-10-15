@@ -1,6 +1,6 @@
 import moment from 'moment';
 import React, { useContext, useState, useEffect } from 'react';
-import { useMoralis, useMoralisQuery, useMoralisCloudFunction } from 'react-moralis';
+import { useMoralis, useMoralisQuery, useMoralisCloudFunction, useMoralisWeb3Api } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button,
@@ -15,6 +15,7 @@ export default function() {
   const chainMeta = useContext(ChainMetaContext);
   const { user } = useMoralis();
   const { web3 } = useMoralis();
+  const Web3Api = useMoralisWeb3Api();
   
   const { isInitialized, Moralis } = useMoralis();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
@@ -36,12 +37,13 @@ export default function() {
 
   useEffect(() => {
     async function getOnChainNFTs () {
-      const myNFTs = await Moralis.Web3.getNFTs({
-        chain: CHAIN_NAMES[chainMeta.networkId],
-        address: user.get('ethAddress')
+      const myNFTs = await Web3Api.account.getNFTs({
+        chain: CHAIN_NAMES[chainMeta.networkId]
       });
 
-      setOnChainNFTs(myNFTs);
+      console.log('🚀 ~ getOnChainNFTs ~ myNFTs', myNFTs);
+
+      setOnChainNFTs(myNFTs.result);
     }
 
     if (isInitialized) {
@@ -87,7 +89,7 @@ export default function() {
         </Alert>
       }
 
-      {usersDataNFTCatalog.length === 0 &&
+      {usersDataNFTCatalog && usersDataNFTCatalog.length === 0 &&
         <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -103,14 +105,14 @@ export default function() {
         </Stack> || 
         <Flex wrap="wrap" spacing={5}>
 
-          {usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">
+          {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center">
               <Skeleton isLoaded={oneNFTImgLoaded}>
-                <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} />
+                <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} w={200} />
               </Skeleton>
             </Flex>
 
-            <Box p="3">
+            <Flex p="3" direction="column" justify="space-between" height="360px">
               <Box
                 mt="1"
                 fontWeight="semibold"
@@ -119,7 +121,7 @@ export default function() {
                 {item.nftName}
               </Box>
 
-              <Box>
+              <Box flexGrow="1">
                 <Box as="span" color="gray.600" fontSize="sm">
                   {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}
                 </Box>
@@ -141,10 +143,10 @@ export default function() {
 
                 <ButtonGroup colorScheme="teal" spacing="3" size="sm" mt="5">
                   <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId)}>Buy on OpenSea</Button>
-                  {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
+                  {(item.txNetworkId === chainMeta.networkId) && <Button isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
                 </ButtonGroup>
               </Box>              
-            </Box>
+            </Flex>
           </Box>)}
           
         </Flex>
