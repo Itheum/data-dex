@@ -24,8 +24,8 @@ export default function({setMenuItem}) {
             </HStack>
             
             <HStack spacing="5" mt="10">
-              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.NFTMINE)}>Enter - Data NFT Catalog</Button>
-              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.NFTALL)}>Enter - Data NFT Marketplace</Button>
+              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.NFTMINE)}>Data NFT Wallet</Button>
+              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.NFTALL)}>Data NFT Marketplace</Button>
             </HStack>
 
             <Stack mt="10" align="center">

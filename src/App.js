@@ -208,7 +208,7 @@ function App() {
                               doSplashScreenShown(MENU.NFT);
                               setMenuItem(MENU.NFT);
                             }
-                          }}>Catalog</Button>
+                          }}>Wallet</Button>
                           
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, chainMeta.networkId)} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {

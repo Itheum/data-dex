@@ -9,6 +9,7 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../UtilComps/ShortAddress';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../libs/util';
+import { sleep } from '../libs/util';
 import { ChainMetaContext } from '../libs/contexts';
 
 export default function() {
@@ -20,6 +21,7 @@ export default function() {
   const { isInitialized, Moralis } = useMoralis();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+  const [noData, setNoData] = useState(false);
 
   const {
     error: cfErr_getUserDataNFTCatalog,
@@ -62,8 +64,15 @@ export default function() {
   }, [onChainNFTs]);
 
   useEffect(() => {
-    console.log('usersDataNFTCatalog');
-    console.log(usersDataNFTCatalog);
+    (async() => {
+      console.log('usersDataNFTCatalog');
+      console.log(usersDataNFTCatalog);
+
+      if (usersDataNFTCatalog && usersDataNFTCatalog.length === 0) {
+        await sleep(5);
+        setNoData(true);
+      }
+    })();
   }, [usersDataNFTCatalog]);
 
   function buyOnOpenSea(txNFTId) {
@@ -73,6 +82,8 @@ export default function() {
   const buyOrderSubmit = () => {
     console.log('buyOrderSubmit');
   }
+
+  console.log('usersDataNFTCatalog', usersDataNFTCatalog);
 
   return (
     <Stack spacing={5}>
@@ -90,7 +101,7 @@ export default function() {
       }
 
       {usersDataNFTCatalog && usersDataNFTCatalog.length === 0 &&
-        <Stack w="1000px">
+        <>{!noData && <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -102,8 +113,8 @@ export default function() {
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
-        </Stack> || 
-        <Flex wrap="wrap" spacing={5}>
+        </Stack> || <Text>No data yet...</Text>}</> ||
+          <Flex wrap="wrap" spacing={5}>
 
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center">

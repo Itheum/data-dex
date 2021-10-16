@@ -67,7 +67,6 @@ export default function() {
     (async() => {
       console.log('usersDataNFTCatalog');
       console.log(usersDataNFTCatalog);
-      console.log(user.get('ethAddress'));
 
       if (usersDataNFTCatalog && usersDataNFTCatalog.length === 0) {
         await sleep(5);
@@ -78,7 +77,7 @@ export default function() {
 
   return (
     <Stack spacing={5}>
-      <Heading size="lg">Data NFT Catalog</Heading>
+      <Heading size="lg">Data NFT Wallet</Heading>
       <Heading size="xs" opacity=".7">Below are the Data NFTs you created and/or purchased on the current chain</Heading>
 
       {cfErr_getUserDataNFTCatalog && 
