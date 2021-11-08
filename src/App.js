@@ -28,7 +28,7 @@ import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
-import { sleep, contractsForChain, noChainSupport } from './libs/util';
+import { sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from './libs/util';
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { chainMeta, ChainMetaContext } from './libs/contexts';
 import logo from './img/logo.png';
@@ -38,6 +38,7 @@ import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
 import chainAvln from './img/avalanche-chain-logo.png';
 import chainHrmy from './img/harmony-chain-logo.png';
+import chainPlaton from './img/platon-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
 function App() {
@@ -59,11 +60,23 @@ function App() {
 
   useEffect(() => {
     enableWeb3();
+
+    console.log(consoleNotice);
   }, []);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
-      const networkId = await web3.eth.net.getId();
+      let networkId = await web3.eth.net.getId();
+
+      // S: some boundary conditions for network
+      const qsFlags = qsParams();
+
+      // platON testnet reports network ID as 1 on web3/metamask - https://github.com/Itheum/data-dex/issues/51
+      if (qsFlags.platon) {
+        networkId = parseInt(Object.keys(CHAINS).find(i => CHAINS[i] === 'PlatON - Testnet'), 10);
+      }
+      // E: some boundary conditions...
+
       setChain(CHAINS[networkId] || 'Unknown chain');
 
       if (!SUPPORTED_CHAINS.includes(networkId)) {
@@ -314,7 +327,7 @@ function App() {
               <AlertDialogHeader fontSize="lg" fontWeight="bold">Alert</AlertDialogHeader>
 
               <AlertDialogBody>
-                Sorry the {chain} chain is currently not supported. We are working on it. You need to be on { SUPPORTED_CHAINS.map(i => <Badge key={i} borderRadius="full" px="2" colorScheme="teal">{CHAINS[i]}</Badge>) }
+                Sorry the {chain} chain is currently not supported. We are working on it. You need to be on { SUPPORTED_CHAINS.map(i => <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">{CHAINS[i]}</Badge>) }
               </AlertDialogBody>
 
               <AlertDialogFooter>
@@ -358,6 +371,9 @@ function App() {
               </Tooltip>
               <Tooltip label="Live on Harmony Testnet">
                 <Image src={chainHrmy} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on PlatON Testnet">
+                <Image src={chainPlaton} boxSize="40px" />
               </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
                 <Image src={chainAvln} boxSize="40px" opacity=".3" />

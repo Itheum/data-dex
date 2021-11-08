@@ -3,6 +3,7 @@ import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
   mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
   mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
+  mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
   mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
@@ -42,6 +43,11 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress_testnetHarmony;
       contracts.ddex = ddexContractAddress_testnetHarmony;
       contracts.dnft = dNFTContractAddress_testnetHarmony;
+      break;
+    case 210309:
+      contracts.myda = mydaContractAddress_testnetPlatON;
+      contracts.ddex = ddexContractAddress_testnetPlatON;
+      contracts.dnft = dNFTContractAddress_testnetPlatON;
       break;
   }
 
@@ -149,6 +155,13 @@ export const dataTemplates = {
   }
 };
 
+export const qsParams = () => {
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+
+  return params;
+}
+
 export const mydaRoundUtil = (balance, decimals, BN) => {
   const balanceWeiString = balance.toString();
   const balanceWeiBN = new BN(balanceWeiString);
@@ -190,6 +203,7 @@ export const CHAINS = {
   97: "BSC - Chapel",
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
+  210309: "PlatON - Testnet",
 }
 
 export const CHAIN_NAMES = {
@@ -204,6 +218,7 @@ export const CHAIN_NAMES = {
   97: "bsc testnet",
   56: "bsc",
   1666700000: "harmony testnet",
+  210309: "platON testnet",
 }
 
 export const OPENSEA_CHAIN_NAMES = {
@@ -213,13 +228,18 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309];
+
+export const consoleNotice = `DATA DEX NOTES --------------------------\n
+1) If you are using PlatON testnet then use platon=1 as a querystring param or it wont work.\n
+-----------------------------------------`;
 
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
     31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX],
-    1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX]
+    1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
+    210309: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
   };
 
   if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -236,6 +256,7 @@ export const CHAIN_TX_VIEWER = {
   80001: 'https://explorer-mumbai.maticvigil.com/tx/',
   97: 'https://testnet.bscscan.com/',
   1666700000: 'https://explorer.pops.one/#/',
+  210309: 'https://devnetscan.platon.network/trade-detail?txHash=',
 }
 
 export const CHAIN_TX_LIST = {
@@ -259,6 +280,7 @@ export const CHAIN_TOKEN_SYMBOL = networkId => {
     'mMYDA': [80001, 137],
     'bMYDA': [97, 56],
     'hMYDA': [1666700000],
+    'pMYDA': [210309],
   };
 
   let sym = null;
