@@ -66,16 +66,8 @@ function App() {
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
-      let networkId = await web3.eth.net.getId();
-
-      // S: some boundary conditions for network
-      const qsFlags = qsParams();
-
-      // platON testnet reports network ID as 1 on web3/metamask - https://github.com/Itheum/data-dex/issues/51
-      if (qsFlags.platon) {
-        networkId = parseInt(Object.keys(CHAINS).find(i => CHAINS[i] === 'PlatON - Testnet'), 10);
-      }
-      // E: some boundary conditions...
+      // note: using getChainId instead of web3.eth.net.getId() as before (due to some EVM chains not keeping them in sync)
+      const networkId = await web3.eth.getChainId(); 
 
       setChain(CHAINS[networkId] || 'Unknown chain');
 
