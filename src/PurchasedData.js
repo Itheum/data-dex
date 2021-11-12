@@ -1,11 +1,19 @@
 import moment from 'moment';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
   Skeleton, Alert, Link, Text,
   AlertIcon, AlertTitle, CloseButton, Heading,
-  Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
+  Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
   useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
@@ -14,7 +22,36 @@ import { config } from './libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
 
+const useContainerDimensions = myRef => {
+  const getDimensions = () => ({
+    width: myRef.current.offsetWidth,
+    height: myRef.current.offsetHeight
+  })
+
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions(getDimensions())
+    }
+
+    if (myRef.current) {
+      setDimensions(getDimensions())
+    }
+
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [myRef])
+
+  return dimensions;
+};
+
 export default function() {
+  const componentRef = useRef();
+  const { width, height } = useContainerDimensions(componentRef);
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { user } = useMoralis();
@@ -31,12 +68,16 @@ export default function() {
   }, { autoFetch: false });  
 
   useEffect(() => {
+    console.log('width', width);
+    console.log('height', height);
+  }, [width, height]);
+
+  useEffect(() => {
     if (user && user.get('ethAddress')) {
       console.log('Page loaded');
       doUsrPurOrders();
     }
   }, []);
-
 
   useEffect(() => {
     if (!errCfUsrPurOrders && dataUsrPurOrders && dataUsrPurOrders.length > 0) {
@@ -45,7 +86,7 @@ export default function() {
   }, [errCfUsrPurOrders, dataUsrPurOrders]);
 
   return (
-    <Stack spacing={5}>
+    <Stack spacing={5} ref={componentRef}>
       <Heading size="lg">Purchased Data</Heading>
       <Heading size="xs" opacity=".7">View Data Packs you have purchased direct from your peers</Heading>
 
@@ -72,15 +113,13 @@ export default function() {
           <Skeleton height="20px" />
           <Skeleton height="20px" />
         </Stack> || 
-        <Box>
-          <Table variant="simple" mt="3">
+        <Box overflowX="auto">
+          <Table overflowX="auto">
             <TableCaption>The following data was purchased by you</TableCaption>
             <Thead>
               <Tr>
-                <Th>When</Th>
-                <Th>Data Order ID</Th>
-                <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
+                <Th><Text w="160px">When</Text></Th>
+                <Th>Identifiers</Th>
                 <Th>Data Preview</Th>
                 <Th>Terms of use</Th>
                 <Th>Data File</Th>
@@ -91,9 +130,25 @@ export default function() {
             <Tbody>
               {userDataOrders.map((item) => <Tr key={item.objectId}>
                 <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
-                <Td><ShortAddress address={item.objectId} /></Td>
-                <Td><ShortAddress address={item.dataPackId} /></Td>
-                <Td><ShortAddress address={item.dataPack[0].sellerEthAddress} /></Td>
+                <Td>
+                  <Popover>
+                    <PopoverTrigger>
+                      <Button fontSize="sm">Show</Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverHeader>Identifiers</PopoverHeader>
+                      <PopoverBody>
+                        <Text fontSize="sm" >
+                          Data Pack ID: <ShortAddress address={item.objectId} /> <br />
+                          Seller Address: <ShortAddress address={item.dataPackId} /> <br />
+                          Seller Address: <ShortAddress address={item.dataPack[0].sellerEthAddress} />
+                        </Text>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                </Td>
                 <Td><Text fontSize="sm">{item.dataPack[0].dataPreview}</Text></Td>
                 <Td><Text fontSize="sm">{TERMS.find(i => i.id === item.dataPack[0].termsOfUseId).val}</Text></Td>
                 <Td><Link href={item.dataFileUrl} isExternal><Text fontSize="sm">Download Data File <ExternalLinkIcon mx="2px" /></Text></Link></Td>
@@ -109,9 +164,7 @@ export default function() {
             <Tfoot>
               <Tr>
                 <Th>When</Th>
-                <Th>Data Order ID</Th>
-                <Th>Data Pack ID</Th>
-                <Th>Seller Address</Th>
+                <Th>Identifiers</Th>
                 <Th>Data Preview</Th>
                 <Th>Terms of use</Th>
                 <Th>Data File</Th>
