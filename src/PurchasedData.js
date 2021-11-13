@@ -141,8 +141,8 @@ export default function() {
                       <PopoverHeader>Identifiers</PopoverHeader>
                       <PopoverBody>
                         <Text fontSize="sm" >
-                          Data Pack ID: <ShortAddress address={item.objectId} /> <br />
-                          Seller Address: <ShortAddress address={item.dataPackId} /> <br />
+                          Data Order ID: <ShortAddress address={item.objectId} /> <br />
+                          Data Pack ID: <ShortAddress address={item.dataPackId} /> <br />
                           Seller Address: <ShortAddress address={item.dataPack[0].sellerEthAddress} />
                         </Text>
                       </PopoverBody>
