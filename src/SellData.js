@@ -708,7 +708,12 @@ export default function({onRfMount, itheumAccount}) {
                 </HStack>
               </>}
 
-              <Text fontWeight="bold">Data Payload for Sale:</Text>
+              <HStack>
+                <Text fontWeight="bold">Data Payload for Sale:</Text>
+                <Tooltip label="Only a JSON file with a '.json' extension that is larger than 100 bytes and smaller than 1.5 megabytes is allowed" aria-label="Upload Requirements">
+                  <Text fontSize="sm">[Upload Requirements]</Text>
+                </Tooltip>
+              </HStack>
               
               {isArbirData && <>
               <Box {...getRootProps({style})}>
