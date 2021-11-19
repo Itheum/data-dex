@@ -464,12 +464,49 @@ export default function({onRfMount, itheumAccount}) {
 
   const handleCodeShowToggle = () => setShowCode(!showCode);
 
+  // S: File upload plugin
+  function uploadedFileValidator(file) {
+    console.log('file.size');
+    console.log(file.size);
+
+    if (file.size < 100) {
+      return {
+        code: 'file-too-small',
+        message: `file size needs to be larger than 100 bytes`
+      };
+    } else if (file.size > 1572864) {
+      return {
+        code: 'file-too-big',
+        message: `file size needs to be smaller than 1.5MB (megabyte)`
+      };
+    }
+  
+    return null
+  }
+
+  function fileValidatorUiError(fileRejections) {
+    let errMsg = '';
+
+    if (fileRejections && fileRejections.length > 0) {
+      const errors = fileRejections[0].errors;
+
+      errors.map(e => errMsg += `${e.message}, `);
+    }
+
+    // remove last , if needed
+    if (errMsg.length > 1) {
+      errMsg = errMsg.slice(0, -2);
+    }
+
+    return errMsg;
+  }
+
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader()
 
-      reader.onabort = () => console.log('file reading was aborted')
-      reader.onerror = () => console.log('file reading has failed')
+      reader.onabort = () => console.log('File reading was aborted')
+      reader.onerror = () => console.log('File reading has failed')
       reader.onload = (e) => {
         const resStr = reader.result
         setSellerData(resStr);
@@ -480,6 +517,7 @@ export default function({onRfMount, itheumAccount}) {
   }, [])
 
   const {
+    fileRejections,
     getRootProps,
     getInputProps,
     isDragActive,
@@ -488,8 +526,10 @@ export default function({onRfMount, itheumAccount}) {
   } = useDropzone({
     onDrop,
     accept: '.json, application/json',
-    multiple: false
+    multiple: false,
+    validator: uploadedFileValidator
   });
+  // E: File upload plugin
 
   const style = useMemo(() => ({
     ...baseStyle,
@@ -676,6 +716,11 @@ export default function({onRfMount, itheumAccount}) {
                 <Text>Drag 'n' drop a .json file here, or click to select a file</Text>
               </Box>
               </>}
+
+              {(fileRejections && fileRejections.length > 0) && <Alert status="error">
+                <AlertIcon />
+                {fileValidatorUiError(fileRejections)}               
+              </Alert>}
               
               {sellerData && <>
               <Collapse startingHeight={150} in={showCode}>
