@@ -485,7 +485,11 @@ export default function({onRfMount, itheumAccount}) {
     isDragActive,
     isDragAccept,
     isDragReject
-  } = useDropzone({onDrop});
+  } = useDropzone({
+    onDrop,
+    accept: '.json, application/json',
+    multiple: false
+  });
 
   const style = useMemo(() => ({
     ...baseStyle,
