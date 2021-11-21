@@ -231,7 +231,7 @@ export const OPENSEA_CHAIN_NAMES = {
 export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309];
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
-1) If you are using PlatON testnet then use platon=1 as a querystring param or it wont work.\n
+1) Nothing to report for now...\n
 -----------------------------------------`;
 
 export function noChainSupport(menuItem, networkId) {

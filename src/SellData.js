@@ -466,9 +466,6 @@ export default function({onRfMount, itheumAccount}) {
 
   // S: File upload plugin
   function uploadedFileValidator(file) {
-    console.log('file.size');
-    console.log(file.size);
-
     if (file.size < 100) {
       return {
         code: 'file-too-small',
