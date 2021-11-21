@@ -699,12 +699,14 @@ export default function({onRfMount, itheumAccount}) {
                     selected={NFTArtStyle === 1}
                     onclickFunc={() => setNFTArtStyle(1)} />
 
-                  <IconButton
-                    icon={<MdOutlinePattern size="2.5rem" />}
-                    l1="Art Collectible"
-                    l2="(Algorithmic artistic generation)"
-                    selected={NFTArtStyle === 2}
-                    onclickFunc={() => setNFTArtStyle(2)} />
+                  <Tooltip label="Coming soon...">
+                    <IconButton
+                      disabled="true"
+                      icon={<MdOutlinePattern size="2.5rem" />}
+                      l1="Art Collectible"
+                      l2="(Algorithmic artistic generation)"
+                      selected={NFTArtStyle === 2} />
+                      </Tooltip>
                 </HStack>
               </>}
 

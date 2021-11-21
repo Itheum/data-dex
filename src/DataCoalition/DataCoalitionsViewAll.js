@@ -1,24 +1,15 @@
-import moment from 'moment';
-import React, { useContext, useState, useEffect } from 'react';
-import { useMoralis, useMoralisQuery, useMoralisCloudFunction } from 'react-moralis';
+import React, { useContext, useEffect } from 'react';
+import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button, Divider,
-  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
+  Skeleton, CloseButton, Badge, ButtonGroup, Button, Divider,
+  Alert, AlertIcon, AlertTitle, Heading, Flex, Text, Tooltip
 } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { progInfoMeta, config, mydaRoundUtil } from '../libs/util';
-import { ChainMetaContext } from '../libs/contexts';
+import { progInfoMeta } from '../libs/util';
 
 let progToIdMapping = {};
 
 export default function() {
-  const chainMeta = useContext(ChainMetaContext);
-  const { user } = useMoralis();
-  const { web3 } = useMoralis();
-  
-  const { isInitialized, Moralis } = useMoralis();
-
   useEffect(() => {
     progToIdMapping = Object.keys(progInfoMeta).reduce((t,i) => {
       const prog = progInfoMeta[i];
@@ -85,10 +76,12 @@ export default function() {
               <Box p="3">
               {item.get('canJoin') && <Text mb="2">You are eligible to join:</Text>}
 
-              <ButtonGroup colorScheme="teal" spacing="3" size="sm">
-              {item.get('canJoin') && <><Button disabled="true" colorScheme="teal">Add Data & Join</Button>
-                <Button disabled="true" colorScheme="teal" variant="outline">Bond Myda & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake Myda</Button>}
-              </ButtonGroup>
+              <Tooltip label="Coming soon...">
+                <ButtonGroup colorScheme="teal" spacing="3" size="sm">
+                {item.get('canJoin') && <><Button disabled="true" colorScheme="teal">Add Data & Join</Button>
+                  <Button disabled="true" colorScheme="teal" variant="outline">Bond Myda & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake Myda</Button>}
+                </ButtonGroup>
+              </Tooltip>
             </Box>
             </Flex>
           </Box>)}
