@@ -267,7 +267,7 @@ export default function({onRfMount, itheumAccount}) {
   useEffect(async () => {
     if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {      
       // gen art demo
-      let NFTImgUrl = 'https://drive.google.com/uc?export=view&id=114eTkKdArNbp0wNJpuKS4j0m0AYENej4';
+      let NFTImgUrl = 'https://itheum.com/resources/gen-art.jpg';
 
       // ... or robot
       if (NFTArtStyle === 1) {
