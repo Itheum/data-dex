@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import ShortAddress from './UtilComps/ShortAddress';
 import { TERMS, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { sleep } from './libs/util';
 import { config } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
 
@@ -18,6 +19,7 @@ export default function() {
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
+  const [noData, setNoData] = useState(false);
   const [userAdvertisedData, setUserAdvertisedData] = useState([]);
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
     query.descending("createdAt") &&
@@ -26,9 +28,16 @@ export default function() {
   );
 
   useEffect(() => {
-    if (user && user.get('ethAddress') && dataPacks.length > 0) {
-      setUserAdvertisedData(dataPacks.filter(i => (i.get('sellerEthAddress') === user.get('ethAddress'))));
-    }
+    (async() => {
+      if (dataPacks.length === 0) {
+        await sleep(5);
+        setNoData(true);
+      } else {
+        if (user && user.get('ethAddress')) {
+          setUserAdvertisedData(dataPacks.filter(i => (i.get('sellerEthAddress') === user.get('ethAddress'))));
+        }
+      }
+    })();
   }, [dataPacks]);
 
   return (
@@ -47,7 +56,7 @@ export default function() {
       }
 
       {userAdvertisedData.length === 0 &&
-        <Stack w="1000px">
+        <>{!noData && <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -59,7 +68,7 @@ export default function() {
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
-        </Stack> || 
+        </Stack> || <Text>No data yet...</Text>}</> ||
         <Box>
           <Table variant="simple" mt="3">
             <TableCaption>The following data packs have been advertised for sale by you</TableCaption>

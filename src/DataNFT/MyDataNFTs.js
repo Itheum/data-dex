@@ -90,7 +90,7 @@ export default function() {
         </Alert>
       }
 
-      {usersDataNFTCatalog && usersDataNFTCatalog.length === 0 &&
+      {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
         <>{!noData && <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />

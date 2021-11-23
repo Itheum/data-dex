@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './UtilComps/ShortAddress';
-import { config } from './libs/util';
+import { config, sleep } from './libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
 
@@ -55,6 +55,7 @@ export default function() {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { user } = useMoralis();
+  const [noData, setNoData] = useState(false);
   const [userDataOrders, setUserDataOrders] = useState([]);
 
   const {
@@ -79,10 +80,23 @@ export default function() {
     }
   }, []);
 
+  // useEffect(() => {
+  //   if (!errCfUsrPurOrders && dataUsrPurOrders && dataUsrPurOrders.length > 0) {
+  //     setUserDataOrders(dataUsrPurOrders);
+  //   }
+  // }, [errCfUsrPurOrders, dataUsrPurOrders]);
+
   useEffect(() => {
-    if (!errCfUsrPurOrders && dataUsrPurOrders && dataUsrPurOrders.length > 0) {
-      setUserDataOrders(dataUsrPurOrders);
-    }
+    (async() => {
+      if (dataUsrPurOrders && dataUsrPurOrders.length === 0) {
+        await sleep(5);
+        setNoData(true);
+      } else {
+        if (!errCfUsrPurOrders && dataUsrPurOrders) {
+          setUserDataOrders(dataUsrPurOrders);
+        }
+      }
+    })();
   }, [errCfUsrPurOrders, dataUsrPurOrders]);
 
   return (
@@ -99,8 +113,8 @@ export default function() {
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
-      {userDataOrders.length === 0 && 
-        <Stack w="1000px">
+      {userDataOrders.length === 0 &&
+        <>{!noData && <Stack w="1000px">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
@@ -112,7 +126,7 @@ export default function() {
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
-        </Stack> || 
+        </Stack> || <Text>No data yet...</Text>}</> || 
         <Box overflowX="auto">
           <Table overflowX="auto">
             <TableCaption>The following data was purchased by you</TableCaption>
