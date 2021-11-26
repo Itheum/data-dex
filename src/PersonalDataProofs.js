@@ -60,7 +60,7 @@ export default function() {
       }
 
       {dataProofs.length === 0 &&
-        <>{!noData && <Stack w="1000px">
+        <>{!noData && <Stack>
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />

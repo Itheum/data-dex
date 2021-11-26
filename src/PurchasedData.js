@@ -80,12 +80,6 @@ export default function() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (!errCfUsrPurOrders && dataUsrPurOrders && dataUsrPurOrders.length > 0) {
-  //     setUserDataOrders(dataUsrPurOrders);
-  //   }
-  // }, [errCfUsrPurOrders, dataUsrPurOrders]);
-
   useEffect(() => {
     (async() => {
       if (dataUsrPurOrders && dataUsrPurOrders.length === 0) {
@@ -113,8 +107,9 @@ export default function() {
           <CloseButton position="absolute" right="8px" top="8px" />
         </Alert>
       }
+
       {userDataOrders.length === 0 &&
-        <>{!noData && <Stack w="1000px">
+        <>{!noData && <Stack>
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />

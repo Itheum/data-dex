@@ -39,7 +39,7 @@ export default function() {
       }
 
       {dataCoalitions.length === 0 &&
-        <Stack w="1000px">
+        <Stack>
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />

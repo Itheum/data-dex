@@ -347,7 +347,7 @@ function App() {
               margin="auto"
             />
             <Heading size="lg" textAlign="center">Itheum Data DEX</Heading>
-            <Text>Sell your personal data via secure on-chain exchange</Text>
+            <Text>Trade your personal data via secure on-chain exchange</Text>
             <Spacer />
             <Auth />
             <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
