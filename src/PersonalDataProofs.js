@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './UtilComps/ShortAddress';
+import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { CHAIN_TX_VIEWER, sleep } from './libs/util';
 import { tmpProgIdMapping } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
@@ -60,19 +61,7 @@ export default function() {
       }
 
       {dataProofs.length === 0 &&
-        <>{!noData && <Stack>
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || <Text>No data yet...</Text>}</> || 
+        <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
         <Box>
           <Table variant="simple" mt="3">
             <TableCaption>The following personal data proofs have been made available by you</TableCaption>

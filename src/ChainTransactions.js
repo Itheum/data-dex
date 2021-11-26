@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import ShortAddress from './UtilComps/ShortAddress';
+import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { config, mydaRoundUtil } from './libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
@@ -82,19 +83,7 @@ export default function() {
       }
 
       {advertiseEvents.length === 0 && 
-        <Stack w="1000px">
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || 
+        <SkeletonLoadingList /> || 
         <Box>
           <Table variant="simple" mt="3">
             <TableCaption>The following data dex transactions have happened on-chain</TableCaption>

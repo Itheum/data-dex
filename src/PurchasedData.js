@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from './UtilComps/ShortAddress';
+import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { config, sleep } from './libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
@@ -109,19 +110,7 @@ export default function() {
       }
 
       {userDataOrders.length === 0 &&
-        <>{!noData && <Stack>
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || <Text>No data yet...</Text>}</> || 
+        <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
         <Box overflowX="auto">
           <Table overflowX="auto">
             <TableCaption>The following data was purchased by you</TableCaption>

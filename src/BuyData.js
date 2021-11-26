@@ -11,6 +11,7 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './UtilComps/ShortAddress';
+import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { config, dataTemplates, sleep } from './libs/util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
@@ -349,19 +350,7 @@ export default function({onRfMount, onRefreshBalance}) {
         </Alert>
       }
       {otherUserDataSets.length === 0 &&
-        <>{!noData && <Stack>
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || <Text>No data yet...</Text>}</> || 
+        <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
         <Box>
           <Table variant="simple" mt="3">
             <TableCaption>The following data packs are available for purchase</TableCaption>

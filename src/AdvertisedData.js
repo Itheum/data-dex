@@ -9,6 +9,7 @@ import {
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
 import ShortAddress from './UtilComps/ShortAddress';
+import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { TERMS, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { sleep } from './libs/util';
 import { config } from './libs/util';
@@ -56,19 +57,7 @@ export default function() {
       }
 
       {userAdvertisedData.length === 0 &&
-        <>{!noData && <Stack>
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || <Text>No data yet...</Text>}</> ||
+        <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> ||
         <Box>
           <Table variant="simple" mt="3">
             <TableCaption>The following data packs have been advertised for sale by you</TableCaption>

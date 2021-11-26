@@ -1,4 +1,4 @@
-import { Stack } from '@chakra-ui/layout';
+import { Stack, Box } from '@chakra-ui/layout';
 import { Skeleton } from '@chakra-ui/react';
 
 export default function SkeletonLoadingList() {

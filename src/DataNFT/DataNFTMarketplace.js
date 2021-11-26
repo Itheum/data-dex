@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../UtilComps/ShortAddress';
+import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../libs/util';
 import { sleep } from '../libs/util';
 import { ChainMetaContext } from '../libs/contexts';
@@ -101,19 +102,7 @@ export default function() {
       }
 
       {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
-        <>{!noData && <Stack>
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || <Text>No data yet...</Text>}</> ||
+        <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> ||
           <Flex wrap="wrap" spacing={5}>
 
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">

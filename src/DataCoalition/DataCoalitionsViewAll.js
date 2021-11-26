@@ -5,6 +5,7 @@ import {
   Skeleton, CloseButton, Badge, ButtonGroup, Button, Divider,
   Alert, AlertIcon, AlertTitle, Heading, Flex, Text, Tooltip
 } from '@chakra-ui/react';
+import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
 import { progInfoMeta } from '../libs/util';
 
 let progToIdMapping = {};
@@ -39,19 +40,7 @@ export default function() {
       }
 
       {dataCoalitions.length === 0 &&
-        <Stack>
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Box />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-          <Skeleton height="20px" />
-        </Stack> || 
+        <SkeletonLoadingList /> || 
         <Flex wrap="wrap" spacing={5}>
           {dataCoalitions.map((item) => <Box key={item.id} borderWidth="1px" borderRadius="lg" overflow="hidden" maxW="sm" mr="1rem" mb="1rem">
             <Flex direction="column" justify="space-between" height="100%">
