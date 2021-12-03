@@ -39,6 +39,7 @@ import chainBsc from './img/bsc-chain-logo.png';
 import chainAvln from './img/avalanche-chain-logo.png';
 import chainHrmy from './img/harmony-chain-logo.png';
 import chainPlaton from './img/platon-chain-logo.png';
+import chainParastate from './img/parastate-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
 function App() {
@@ -361,11 +362,14 @@ function App() {
               <Tooltip label="Live on Binance Smart Chain Testnet">
                 <Image src={chainBsc} boxSize="40px" />
               </Tooltip>
-              <Tooltip label="Live on Harmony Testnet">
-                <Image src={chainHrmy} boxSize="40px" />
+              <Tooltip label="Live on Parastate Testnet">
+                <Image src={chainParastate} boxSize="40px" width="30px" />
               </Tooltip>
               <Tooltip label="Live on PlatON Testnet">
                 <Image src={chainPlaton} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on Harmony Testnet">
+                <Image src={chainHrmy} boxSize="40px" />
               </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
                 <Image src={chainAvln} boxSize="40px" opacity=".3" />
