@@ -4,6 +4,7 @@ import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
   mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
   mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
+  mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
   mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
@@ -48,6 +49,11 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress_testnetPlatON;
       contracts.ddex = ddexContractAddress_testnetPlatON;
       contracts.dnft = dNFTContractAddress_testnetPlatON;
+      break;
+    case 123:
+      contracts.myda = mydaContractAddress_testnetParastate;
+      contracts.ddex = ddexContractAddress_testnetParastate;
+      contracts.dnft = dNFTContractAddress_testnetParastate;
       break;
   }
 
@@ -204,6 +210,7 @@ export const CHAINS = {
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
   210309: "PlatON - Testnet",
+  123: "Parastate - Testnet",
 }
 
 export const CHAIN_NAMES = {
@@ -219,6 +226,7 @@ export const CHAIN_NAMES = {
   56: "bsc",
   1666700000: "harmony testnet",
   210309: "platON testnet",
+  123: "Parastate - Testnet"
 }
 
 export const OPENSEA_CHAIN_NAMES = {
@@ -228,7 +236,7 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123];
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
@@ -240,6 +248,7 @@ export function noChainSupport(menuItem, networkId) {
     97: [MENU.TX],
     1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     210309: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
+    123: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
   };
 
   if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -281,6 +290,7 @@ export const CHAIN_TOKEN_SYMBOL = networkId => {
     'bMYDA': [97, 56],
     'hMYDA': [1666700000],
     'pMYDA': [210309],
+    'psMYDA': [123],
   };
 
   let sym = null;
