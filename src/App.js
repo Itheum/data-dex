@@ -341,7 +341,7 @@ function App() {
     <Container>
       <Center mt="100">
         <Box p="10" borderWidth="2px" borderRadius="lg" overflow="hidden" w="100%">
-          <Stack >
+          <Stack>
             <Image
               boxSize="150px"
               height="auto"
@@ -350,7 +350,7 @@ function App() {
               margin="auto"
             />
             <Heading size="lg" textAlign="center">Itheum Data DEX</Heading>
-            <Text>Trade your personal data via secure on-chain exchange</Text>
+            <Text textAlign="center">Trade your personal data via secure on-chain exchange</Text>
             <Spacer />
             <Auth />
             <Text textAlign="center" fontSize="sm" mb="50">Supported Chains</Text>
