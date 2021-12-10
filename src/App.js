@@ -40,6 +40,8 @@ import chainAvln from './img/avalanche-chain-logo.png';
 import chainHrmy from './img/harmony-chain-logo.png';
 import chainPlaton from './img/platon-chain-logo.png';
 import chainParastate from './img/parastate-chain-logo.png';
+import chainElrond from './img/elrond-chain-logo.png';
+import chainHedera from './img/hedera-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
 function App() {
@@ -338,7 +340,7 @@ function App() {
   return (
     <Container>
       <Center mt="100">
-        <Box p="10" borderWidth="2px" borderRadius="lg" overflow="hidden">
+        <Box p="10" borderWidth="2px" borderRadius="lg" overflow="hidden" w="100%">
           <Stack >
             <Image
               boxSize="150px"
@@ -351,10 +353,13 @@ function App() {
             <Text>Trade your personal data via secure on-chain exchange</Text>
             <Spacer />
             <Auth />
-            <Text textAlign="center" fontSize="sm"  mb="50">Supported Chains</Text>
+            <Text textAlign="center" fontSize="sm" mb="50">Supported Chains</Text>
             <Flex direction="row" justify="space-around">
+              <Tooltip label="Elrond - Coming soon...">
+                <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" />
+              </Tooltip>
               <Tooltip label="Live on Mumbai Testnet">
-                <Image src={chainPol} boxSize="40px" />
+                <Image src={chainPol} boxSize="40px" borderRadius="lg" />
               </Tooltip>
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                 <Image src={chainEth} boxSize="40px" width="30px" />
@@ -371,6 +376,9 @@ function App() {
               <Tooltip label="Live on Harmony Testnet">
                 <Image src={chainHrmy} boxSize="40px" />
               </Tooltip>
+              <Tooltip label="Hedera - Coming soon...">
+                <Image src={chainHedera} boxSize="40px" opacity=".3" />
+              </Tooltip>
               <Tooltip label="Avalanche - Coming soon...">
                 <Image src={chainAvln} boxSize="40px" opacity=".3" />
               </Tooltip>
@@ -386,7 +394,7 @@ function App() {
 
 function ByMoralisLogo() {
   return (
-    <Flex direction="column" alignItems="center">
+    <Flex direction="column" alignItems="center" display="none">
       <Image
         mt="10"
         borderRadius="lg"
