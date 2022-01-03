@@ -132,7 +132,7 @@ function App() {
           <Stack spacing={5} mt={5}>
             <Flex>
               <Image
-                boxSize="42px"
+                boxSize="50px"
                 height="auto"
                 src={logoSml}
                 alt="Itheum Data DEX"
