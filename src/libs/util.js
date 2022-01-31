@@ -5,6 +5,7 @@ import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
   mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
   mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
+  mydaContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche,
   mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
@@ -54,6 +55,11 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress_testnetParastate;
       contracts.ddex = ddexContractAddress_testnetParastate;
       contracts.dnft = dNFTContractAddress_testnetParastate;
+      break;
+    case 43113:
+      contracts.myda = mydaContractAddress_testnetAvalanche;
+      contracts.ddex = ddexContractAddress_testnetAvalanche;
+      contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
   }
 
@@ -211,8 +217,10 @@ export const CHAINS = {
   1666700000: "Harmony - Testnet",
   210309: "PlatON - Testnet",
   123: "Parastate - Testnet",
+  43113: "Avalanche - Testnet",
 }
 
+// these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)
 export const CHAIN_NAMES = {
   31337: "localhost",
   1: "eth",
@@ -226,7 +234,8 @@ export const CHAIN_NAMES = {
   56: "bsc",
   1666700000: "harmony testnet",
   210309: "platON testnet",
-  123: "Parastate - Testnet"
+  123: "Parastate - Testnet",
+  43113: "avalanche testnet"
 }
 
 export const OPENSEA_CHAIN_NAMES = {
@@ -236,7 +245,7 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123, 43113];
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
@@ -249,6 +258,7 @@ export function noChainSupport(menuItem, networkId) {
     1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     210309: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     123: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
+    43113: [MENU.TX],
   };
 
   if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -266,6 +276,7 @@ export const CHAIN_TX_VIEWER = {
   97: 'https://testnet.bscscan.com/',
   1666700000: 'https://explorer.pops.one/#/',
   210309: 'https://devnetscan.platon.network/trade-detail?txHash=',
+  43113: 'https://testnet.snowtrace.io/tx/',
 }
 
 export const CHAIN_TX_LIST = {
@@ -291,6 +302,7 @@ export const CHAIN_TOKEN_SYMBOL = networkId => {
     'hMYDA': [1666700000],
     'pMYDA': [210309],
     'psMYDA': [123],
+    'aMYDA': [43113],
   };
 
   let sym = null;

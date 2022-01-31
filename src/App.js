@@ -358,14 +358,17 @@ function App() {
               <Tooltip label="Elrond - Coming soon...">
                 <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" />
               </Tooltip>
-              <Tooltip label="Live on Mumbai Testnet">
-                <Image src={chainPol} boxSize="40px" borderRadius="lg" />
-              </Tooltip>
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                 <Image src={chainEth} boxSize="40px" width="30px" />
               </Tooltip>
               <Tooltip label="Live on Binance Smart Chain Testnet">
                 <Image src={chainBsc} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on Avalanche C-Chain Testnet">
+                <Image src={chainAvln} boxSize="40px" />
+              </Tooltip>
+              <Tooltip label="Live on Mumbai Testnet">
+                <Image src={chainPol} boxSize="40px" borderRadius="lg" />
               </Tooltip>
               <Tooltip label="Live on Parastate Testnet">
                 <Image src={chainParastate} boxSize="40px" width="30px" />
@@ -378,10 +381,7 @@ function App() {
               </Tooltip>
               <Tooltip label="Hedera - Coming soon...">
                 <Image src={chainHedera} boxSize="40px" opacity=".3" />
-              </Tooltip>
-              <Tooltip label="Avalanche - Coming soon...">
-                <Image src={chainAvln} boxSize="40px" opacity=".3" />
-              </Tooltip>
+              </Tooltip>              
             </Flex>
             
             <ByMoralisLogo />
