@@ -11,3 +11,8 @@ Read Here - https://itheum.com/whitepaper
 
 ## Use the DEX Testnet here
 Try the Data DEX Testnet here - https://datadex.itheum.com
+
+## Development
+
+### Dev env
+- requires > node 16x
