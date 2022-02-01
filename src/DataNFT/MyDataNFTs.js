@@ -3,13 +3,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery, useMoralisCloudFunction, useMoralisWeb3Api } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, HStack, Badge,
+  Skeleton, CloseButton, HStack, Badge, Button,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../UtilComps/ShortAddress';
 import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
-import { sleep } from '../libs/util';
+import { sleep, buyOnOpenSea, contractsForChain } from '../libs/util';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from '../libs/util';
 import { ChainMetaContext } from '../libs/contexts';
 
@@ -124,13 +124,14 @@ export default function() {
                 <HStack mt="5">
                   <Text fontSize="xs">Mint TX: </Text>
                   <ShortAddress address={item.txHash} />
-                  <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <Link href={`${CHAIN_TX_VIEWER[item.txNetworkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
 
-                <HStack mt=".5">
-                  <Text fontSize="xs">OpenSea Listing: </Text>
-                  <Link href={`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainMeta.networkId]}/${chainMeta.contracts.dnft}/${item.txNFTId}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
-                </HStack>
+                {OPENSEA_CHAIN_NAMES[item.txNetworkId] &&
+                  <HStack mt=".5">
+                    <Text fontSize="xs">OpenSea Listing: </Text>
+                    <Link onClick={() => buyOnOpenSea(item.txNFTId, contractsForChain(item.txNetworkId).dnft, item.txNetworkId)}><ExternalLinkIcon mx="2px" /></Link>
+                  </HStack>}
 
                 <HStack mt=".5">
                   <Text fontSize="xs">Download Data File</Text>

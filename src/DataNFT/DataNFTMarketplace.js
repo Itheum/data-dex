@@ -10,7 +10,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../UtilComps/ShortAddress';
 import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../libs/util';
-import { sleep } from '../libs/util';
+import { sleep, buyOnOpenSea, contractsForChain } from '../libs/util';
 import { ChainMetaContext } from '../libs/contexts';
 
 export default function() {
@@ -76,10 +76,6 @@ export default function() {
     })();
   }, [usersDataNFTCatalog]);
 
-  function buyOnOpenSea(txNFTId) {
-    window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainMeta.networkId]}/${chainMeta.contracts.dnft}/${txNFTId}`);
-  }
-
   const buyOrderSubmit = () => {
     console.log('buyOrderSubmit');
   }
@@ -138,13 +134,14 @@ export default function() {
                 <HStack mt=".5">
                   <Text fontSize="xs">Mint TX: </Text>
                   <ShortAddress address={item.txHash} />
-                  <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <Link href={`${CHAIN_TX_VIEWER[item.txNetworkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
 
-                <ButtonGroup colorScheme="teal" spacing="3" size="sm" mt="5">
-                  <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId)}>Buy on OpenSea</Button>
-                  {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
-                </ButtonGroup>
+                {OPENSEA_CHAIN_NAMES[item.txNetworkId] &&
+                  <ButtonGroup colorScheme="teal" spacing="3" size="sm" mt="5">
+                    <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId, contractsForChain(item.txNetworkId).dnft, item.txNetworkId)}>Buy on OpenSea</Button>
+                    {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
+                  </ButtonGroup>}
               </Box>              
             </Flex>
           </Box>)}

@@ -1319,3 +1319,9 @@ export const sleep = (sec) => {
     }, sec * 1000);
   });
 }
+
+export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => { 
+  console.log('txNetworkId');
+  console.log(txNetworkId);
+  window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
+}
