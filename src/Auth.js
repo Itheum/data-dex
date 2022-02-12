@@ -8,9 +8,11 @@ import {
   Box,
   AlertTitle,
   AlertDescription,
-  CloseButton,
+  Text,
   Input,
+  Link
 } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const SignUp = () => {
   const { signup } = useMoralis();
@@ -54,7 +56,7 @@ export const Auth = () => {
   const { authenticate, isAuthenticating, authError } = useMoralis();
 
   return (
-    <Stack spacing={6}>
+    <Stack spacing={6} pb="10">
       {authError && (
         <Alert status="error">
           <AlertIcon />
@@ -64,9 +66,12 @@ export const Auth = () => {
           </Box>         
         </Alert>
       )}
-      <Button isLoading={isAuthenticating} mb="10" onClick={() => authenticate()}>
+      <Button isLoading={isAuthenticating} onClick={() => authenticate()}>
         Login via Metamask
       </Button>
+
+      <Text fontSize="sm" textAlign="center">By logging in, you are agreeing to the <Link href="https://itheum.com/termsofuse" isExternal>Terms of Use <ExternalLinkIcon mx="2px" /></Link> & <Link href="https://itheum.com/privacypolicy" isExternal>Privacy Policy <ExternalLinkIcon mx="2px" /></Link></Text>
+
       {/* <Text textAlign="center">
         <em>or</em>
       </Text>
