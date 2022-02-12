@@ -4,7 +4,7 @@ import { useMoralis, useMoralisQuery, useMoralisCloudFunction, useMoralisWeb3Api
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge, Button,
-  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text,
+  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from '../UtilComps/ShortAddress';
@@ -149,7 +149,11 @@ export default function() {
         </Flex>
       }
 
-      {showRoboHashTnk && <Text fontSize="xs" textAlign="center" opacity=".2" pb="10">Robots lovingly delivered by Robohash.org</Text>}
+      {showRoboHashTnk && <Text fontSize="xs" textAlign="center" opacity=".2" pb="10">
+        <Tooltip fontSize="xs" label="Itheum will launch our own generative art engine shortly; in the interim, we use the open-source Robohash imageset">
+          Robots lovingly delivered by Robohash.org
+        </Tooltip>
+      </Text>}
     </Stack>
   );
 };
