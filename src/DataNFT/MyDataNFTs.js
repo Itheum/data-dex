@@ -23,6 +23,7 @@ export default function() {
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [showRoboHashTnk, setShowRoboHashTnk] = useState(false);
 
   const {
     error: cfErr_getUserDataNFTCatalog,
@@ -72,6 +73,10 @@ export default function() {
       if (usersDataNFTCatalog && usersDataNFTCatalog.length === 0) {
         await sleep(5);
         setNoData(true);
+      } else {
+        if (usersDataNFTCatalog) {
+          setShowRoboHashTnk(true);
+        }
       }
     })();
   }, [usersDataNFTCatalog]);
@@ -143,6 +148,8 @@ export default function() {
           
         </Flex>
       }
+
+      {showRoboHashTnk && <Text fontSize="xs" textAlign="center" opacity=".2" pb="10">Robots lovingly delivered by Robohash.org</Text>}
     </Stack>
   );
 };
