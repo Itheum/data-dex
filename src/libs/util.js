@@ -296,13 +296,13 @@ export const CHAIN_TX_LIST = {
 
 export const CHAIN_TOKEN_SYMBOL = networkId => {
   const mapping = {
-    'MYDA' : [3, 4, 1],
-    'mMYDA': [80001, 137],
-    'bMYDA': [97, 56],
-    'hMYDA': [1666700000],
-    'pMYDA': [210309],
-    'psMYDA': [123],
-    'aMYDA': [43113],
+    'ITHEUM' : [3, 4, 1],
+    'mITHEUM': [80001, 137],
+    'bITHEUM': [97, 56],
+    'hITHEUM': [1666700000],
+    'pITHEUM': [210309],
+    'psITHEUM': [123],
+    'aITHEUM': [43113],
   };
 
   let sym = null;

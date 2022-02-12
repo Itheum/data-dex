@@ -6,11 +6,15 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Flex, Text, Tooltip
 } from '@chakra-ui/react';
 import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
+import { CHAIN_TOKEN_SYMBOL } from '../libs/util';
 import { progInfoMeta } from '../libs/util';
+import { ChainMetaContext } from '../libs/contexts';
 
 let progToIdMapping = {};
 
 export default function() {
+  const chainMeta = useContext(ChainMetaContext);
+
   useEffect(() => {
     progToIdMapping = Object.keys(progInfoMeta).reduce((t,i) => {
       const prog = progInfoMeta[i];
@@ -68,7 +72,7 @@ export default function() {
               <Tooltip label="Coming soon...">
                 <ButtonGroup colorScheme="teal" spacing="3" size="sm">
                 {item.get('canJoin') && <><Button disabled="true" colorScheme="teal">Add Data & Join</Button>
-                  <Button disabled="true" colorScheme="teal" variant="outline">Bond Myda & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake Myda</Button>}
+                  <Button disabled="true" colorScheme="teal" variant="outline">Bond {`${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`} & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake {`${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}</Button>}
                 </ButtonGroup>
               </Tooltip>
             </Box>

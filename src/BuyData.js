@@ -102,7 +102,7 @@ export default function({onRfMount, onRefreshBalance}) {
     const dataPack = dataPacks.find(i => i.id === objectId);
 
     /*
-      0) check if user has enough MYDA
+      0) check if user has enough UTILITY TOKENS
       1) set the currBuyObject to state, "monitor" useEffect[currBuyObject] for next step
         2) web3_ddexVerifyData: call dex contract to verify data. if verified then call handleAllowanceCheck for next step
       3) handleAllowanceCheck checks if allowance will cover cost of transaction
