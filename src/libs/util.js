@@ -174,13 +174,11 @@ export const qsParams = () => {
   return params;
 }
 
-export const mydaRoundUtil = (balance, decimals, BN) => {
+export const mydaRoundUtil = (balance, decimals, BigNumber) => {
   const balanceWeiString = balance.toString();
-  const balanceWeiBN = new BN(balanceWeiString);
-
-  const decimalsBN = new BN(decimals);
-  const divisor = new BN(10).pow(decimalsBN);
-
+  const balanceWeiBN = BigNumber.from(balanceWeiString);
+  const decimalsBN = BigNumber.from(decimals);
+  const divisor = BigNumber.from(10).pow(decimalsBN);
   const beforeDecimal = balanceWeiBN.div(divisor);
 
   return beforeDecimal.toString();

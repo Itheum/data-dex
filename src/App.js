@@ -10,7 +10,7 @@ import { Container, Heading, Flex, Spacer, Box, Stack, HStack, Center } from '@c
 import { SunIcon, MoonIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
-import { useMoralis } from 'react-moralis';
+import { useMoralis, useMoralisWeb3Api } from 'react-moralis';
 import { Auth } from './Auth';
 import SellData from './SellData';
 import BuyData from './BuyData';
@@ -28,8 +28,8 @@ import DataStreams from './DataStreams';
 import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
-import { sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from './libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { mydaRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES } from './libs/util';
 import { chainMeta, ChainMetaContext } from './libs/contexts';
 import logo from './img/logo.png';
 import logoSml from './img/logo-sml.png';
@@ -45,8 +45,8 @@ import chainHedera from './img/hedera-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
 function App() {
-  const {isAuthenticated, logout, user} = useMoralis();
-  const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
+  const {isAuthenticated, logout, user, Moralis: {web3Library: ethers}} = useMoralis();
+  const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [myMydaBal, setMydaBal] = useState(0);
   const [chain, setChain] = useState(0);
@@ -59,7 +59,7 @@ function App() {
   });
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode } = useColorMode();  
 
   useEffect(() => {
     enableWeb3();
@@ -70,7 +70,7 @@ function App() {
   useEffect(async () => {
     if (user && isWeb3Enabled) {
       // note: using getChainId instead of web3.eth.net.getId() as before (due to some EVM chains not keeping them in sync)
-      const networkId = await web3.eth.getChainId(); 
+      const networkId = web3Provider.network.chainId; 
 
       setChain(CHAINS[networkId] || 'Unknown chain');
 
@@ -92,25 +92,37 @@ function App() {
 
   const showMydaBalance = async () => {
     const walletAddress = user.get('ethAddress');
-    const contract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
     
-    const decimals = await contract.methods.decimals().call();
-    const balance = await contract.methods.balanceOf(walletAddress).call();
+    /*
+    // Example of running a contract via moralis's runContractFunction (for reference)
+    // you will need const Web3Api = useMoralisWeb3Api();
 
-    const BN = web3.utils.BN;
-    const balanceWeiString = balance.toString();
-    const balanceWeiBN = new BN(balanceWeiString);
-
-    const decimalsBN = new BN(decimals);
-    const divisor = new BN(10).pow(decimalsBN);
-
-    const beforeDecimal = balanceWeiBN.div(divisor)
-    // console.log(beforeDecimal.toString())    // >> 31
+    let options = {
+      chain: CHAIN_NAMES[chainMeta.networkId],
+      address: chainMeta.contracts.myda,
+      function_name: "decimals",
+      abi: ABIS.token,
+    };
     
-    // const afterDecimal  = balanceWeiBN.mod(divisor)
-    // console.log(afterDecimal.toString())     // >> 415926500000000000
-    
-    setMydaBal(beforeDecimal.toString());
+    const decimals = await Web3Api.native.runContractFunction(options);
+
+    options = {...options, function_name: 'balanceOf', params: {account: walletAddress}};
+    const balance = await Web3Api.native.runContractFunction(options);
+    */
+
+    // const mydaInPrecision = web3.utils.toBN("0x"+(50*10**decimals).toString(16));
+    // formatUnits(oneGwei, 0);
+    console.log(ethers.utils.parseUnits('50.0', 18).toHexString());
+    // const mydaInPrecision = ethers.BigNumber.from(ethers.utils.formatUnits(50, 18)).toHexString();
+    // console.log('🚀 ~ showMydaBalance ~ mydaInPrecision', mydaInPrecision);
+
+    // call contract via ethers
+    const contract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
+    const balance = await contract.balanceOf(walletAddress);
+    const decimals = await contract.decimals();
+
+    // show the token balance in readable format
+    setMydaBal(mydaRoundUtil(balance, decimals, ethers.BigNumber));
   }
 
   // utility that will reload a component and reset it's state
