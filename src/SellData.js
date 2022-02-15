@@ -56,7 +56,7 @@ const rejectStyle = {
 export default function({onRfMount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
   const { user } = useMoralis();
-  const { web3, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
+  const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
   const toast = useToast();
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerDataNFTDesc, setSellerDataNFTDesc] = useState('');
@@ -370,25 +370,36 @@ export default function({onRfMount, itheumAccount}) {
   }
 
   const web3_ddexAdvertiseForSale = async(dataPackId, dataHash) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
+    const web3Signer = web3Provider.getSigner();
+    const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
-    const receipt = await ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')});
+    // const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
 
-    // show a nice loading animation to user
-    setTxHash(receipt.transactionHash);
-    await sleep(2);
-    setTxConfirmation(0.5);
-    await sleep(2);
-    setTxConfirmation(1);
-    await sleep(2);
+    try {
+      // const receipt = await ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')});
+      const txResponse = await ddexContract.advertiseForSale(dataPackId, dataHash);
 
-    if (receipt.status === true) {
-      setTxConfirmation(2);
-    } else {
-      const txErr = new Error('Contract Error on method advertiseForSale');
-      console.error(txErr);
-      
-      setTxError(txErr);
+      // show a nice loading animation to user
+      setTxHash(txResponse.hash);
+
+      await sleep(2);
+      setTxConfirmation(0.5);
+
+      // wait for 1 confirmation from ethers
+      const txReceipt = await txResponse.wait();
+      setTxConfirmation(1);
+      await sleep(2);
+
+      if (txReceipt.status) {
+        setTxConfirmation(2);
+      } else {
+        const txErr = new Error('DataDEX Contract Error on method advertiseForSale');
+        console.error(txErr);
+        
+        setTxError(txErr);
+      }
+    } catch(e) {
+      setTxError(e);
     }
 
     // ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
@@ -419,31 +430,55 @@ export default function({onRfMount, itheumAccount}) {
   }
 
   const web3_dnftCreateNFT = async(metaDataFileUri) => {
-    const dnftContract = new web3.eth.Contract(ABIS.dNFT, chainMeta.contracts.dnft);
+    const web3Signer = web3Provider.getSigner();
+    const dnftContract = new ethers.Contract(chainMeta.contracts.dnft, ABIS.dNFT, web3Signer);
+    
+    // const dnftContract = new web3.eth.Contract(ABIS.dNFT, chainMeta.contracts.dnft);
 
-    const receipt = await dnftContract.methods.createDataNFT(metaDataFileUri).send({from: user.get('ethAddress')});
+    // const receipt = await dnftContract.methods.createDataNFT(metaDataFileUri).send({from: user.get('ethAddress')});
 
-    // show a nice loading animation to user
-    setTxNFTHash(receipt.transactionHash);
-    await sleep(2);
-    setTxNFTConfirmation(0.5);
-    await sleep(2);
-    setTxNFTConfirmation(1);
-    await sleep(2);
+    try {
+      const txResponse = await dnftContract.createDataNFT(metaDataFileUri);
 
-    if (receipt.status === true) {
-      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 1}));
-
-      setTxNFTConfirmation(2);
-
-      await sleep(5);
-
-      setNewNFTId(receipt.events.Transfer.returnValues.tokenId);
-    } else {
-      const txErr = new Error('NFT Contract Error on method createDataNFT');
-      console.error(txErr);
+      // show a nice loading animation to user
+      setTxNFTHash(txResponse.hash);
       
-      setTxNFTError(txErr);
+      await sleep(2);    
+      setTxNFTConfirmation(0.5);
+
+      // wait for 1 confirmation from ethers
+      const txReceipt = await txResponse.wait();
+      console.log('🚀 ~ constweb3_dnftCreateNFT=async ~ txReceipt', txReceipt);
+      console.log(txReceipt.events);
+      setTxConfirmation(1);
+      await sleep(2);
+
+      if (txReceipt.status) {
+        setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 1}));
+
+        setTxNFTConfirmation(2);
+
+        await sleep(5);
+
+        const event = txReceipt.events.find(event => event.event === 'Transfer');
+        console.log('***********');
+        console.log(event);
+        console.log('***********');
+        console.log(JSON.stringify(event));
+        console.log('***********');
+
+        const [, , tokenId] = event.args;
+        setNewNFTId(tokenId.toString());
+
+        // setNewNFTId(receipt.events.Transfer.returnValues.tokenId);
+      } else {
+        const txErr = new Error('NFT Contract Error on method createDataNFT');
+        console.error(txErr);
+        
+        setTxNFTError(txErr);
+      }
+    } catch(e) {
+      setTxNFTError(e);
     }
   }
 

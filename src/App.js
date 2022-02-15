@@ -110,12 +110,6 @@ function App() {
     const balance = await Web3Api.native.runContractFunction(options);
     */
 
-    // const mydaInPrecision = web3.utils.toBN("0x"+(50*10**decimals).toString(16));
-    // formatUnits(oneGwei, 0);
-    console.log(ethers.utils.parseUnits('50.0', 18).toHexString());
-    // const mydaInPrecision = ethers.BigNumber.from(ethers.utils.formatUnits(50, 18)).toHexString();
-    // console.log('🚀 ~ showMydaBalance ~ mydaInPrecision', mydaInPrecision);
-
     // call contract via ethers
     const contract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
     const balance = await contract.balanceOf(walletAddress);
