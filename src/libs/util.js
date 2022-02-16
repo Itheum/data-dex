@@ -271,7 +271,7 @@ export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',
   4: 'https://rinkeby.etherscan.io/tx/',
   80001: 'https://explorer-mumbai.maticvigil.com/tx/',
-  97: 'https://testnet.bscscan.com/',
+  97: 'https://testnet.bscscan.com/tx/',
   1666700000: 'https://explorer.pops.one/#/',
   210309: 'https://devnetscan.platon.network/trade-detail?txHash=',
   43113: 'https://testnet.snowtrace.io/tx/',

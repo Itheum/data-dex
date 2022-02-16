@@ -19,7 +19,7 @@ import { ChainMetaContext } from './libs/contexts';
 export default function({onRfMount, onRefreshBalance}) {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
-  const { web3 } = useMoralis();
+  const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
   const { user } = useMoralis();
   const [noData, setNoData] = useState(false);
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
@@ -42,6 +42,7 @@ export default function({onRfMount, onRefreshBalance}) {
   const [txHashTransfer, setTxHashTransfer] = useState(null);
   const [txReceiptTransfer, setTxReceiptTransfer] = useState(null);
   const [txErrorTransfer, setTxErrorTransfer] = useState(null);
+  const [workflowError, setWorkflowError] = useState(null);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   useEffect(() => {
@@ -121,11 +122,14 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_ddexVerifyData = async(dataPackId, dataHash) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
+    // const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
+    const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Provider);
+
     let isVerified = false;
 
     try {
-      isVerified = await ddexContract.methods.verifyData(dataPackId, dataHash).call();
+      // isVerified = await ddexContract.methods.verifyData(dataPackId, dataHash).call();
+      isVerified = await ddexContract.verifyData(dataPackId, dataHash);
     } catch(e) {
       console.log('🚀 ~ web3_ddexVerifyData ~ e', e);
     }
@@ -157,16 +161,19 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_tokenBalanceOf = async() => {
-    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
+    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
+    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
     let isEligible = false;
     
     try {
-      const mydaBalance = await tokenContract.methods.balanceOf(user.get('ethAddress')).call();
+      // const mydaBalance = await tokenContract.methods.balanceOf(user.get('ethAddress')).call();
+      const mydaBalance = await tokenContract.balanceOf(user.get('ethAddress'));
 
       if (parseInt(mydaBalance, 10) >= currBuyObject.cost) {
         isEligible = true;
       }
     } catch(e) {
+      setWorkflowError(e);
       console.log('🚀 ~ web3_tokenBalanceOf ~ e', e);
     }
 
@@ -174,20 +181,27 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_tokenCheckAllowance = async() => {
-    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
+    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
+
+    const web3Signer = web3Provider.getSigner();
+    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
+
     let isAllowed = false;
     
     const decimals = 18;
     const feeInMyda = currBuyObject.cost;
-    const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    // const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
 
     try {
-      const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), chainMeta.contracts.ddex).call();
+      // const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), chainMeta.contracts.ddex).call();
+      const allowedAmount = await tokenContract.allowance(user.get('ethAddress'), chainMeta.contracts.ddex);
 
       if (allowedAmount >= mydaInPrecision) {
         isAllowed = true;
       }
     } catch(e) {
+      setWorkflowError(e);
       console.log('🚀 ~ web3_tokenCheckAllowance ~ e', e);
     }
 
@@ -195,105 +209,87 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_ddexBuyDataPack = async(dataPackId, feeInMyda) => {
-    const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
+    const web3Signer = web3Provider.getSigner();
+    const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
-    const decimals = 18;
-    const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    // const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
 
-    const receipt = await ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')});
+    try {
+      const decimals = 18;
+      // const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+      const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
 
-    // show a nice loading animation to user
-    setTxHashTransfer(receipt.transactionHash);
-    await sleep(2);
-    setTxConfirmationTransfer(0.5);
-    await sleep(2);
-    setTxConfirmationTransfer(1);
-    await sleep(2);
+      // const receipt = await ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')});
+      const txResponse = await ddexContract.buyDataPack(dataPackId, mydaInPrecision);
 
-    if (receipt.status === true) {
-      setTxConfirmationTransfer(2);
-    } else {
-      const txErr = new Error('Contract Error on method buyDataPack');
-      console.error(txErr);
-      
-      setTxErrorTransfer(txErr);
+      // show a nice loading animation to user
+      // setTxHashTransfer(receipt.transactionHash);
+      setTxHashTransfer(txResponse.hash);
+
+      await sleep(2);
+      setTxConfirmationTransfer(0.5);
+
+      // wait for 1 confirmation from ethers
+      const txReceipt = await txResponse.wait();
+      setTxConfirmationTransfer(1);
+      await sleep(2);
+
+      // await sleep(2);
+      // setTxConfirmationTransfer(1);
+      // await sleep(2);
+
+      if (txReceipt.status) {
+        setTxConfirmationTransfer(2);
+      } else {
+        const txErr = new Error('Contract Error on method buyDataPack');
+        console.error(txErr);
+        
+        setTxErrorTransfer(txErr);
+      }
+    } catch(e) {
+      setTxErrorTransfer(e);
     }
-    
-    // ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')})
-    //   .on('transactionHash', function(hash) {
-    //     console.log('Transfer transactionHash', hash);
-
-    //     setTxHashTransfer(hash);
-    //   })
-    //   .on('receipt', function(receipt){
-    //     console.log('Transfer receipt', receipt);
-
-    //     setTxReceiptTransfer(receipt);
-    //   })
-    //   .on('confirmation', function(confirmationNumber, receipt){
-    //     console.log('Transfer confirmation');
-    //     console.log(confirmationNumber);
-
-    //     setTxConfirmationTransfer(confirmationNumber);
-    //   })
-    //   .on('error', function(error, receipt) {
-    //     console.log('Transfer error');
-    //     console.log(receipt);
-    //     console.log(error);
-
-    //     setTxErrorTransfer(error);
-    //   });
   }
   
   const web3_tokenApprove = async(feeInMyda) => {
-    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
+    const web3Signer = web3Provider.getSigner();
+    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
+
+    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
 
     const decimals = 18;
-    const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
+    const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
 
-    const receipt = await tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')});
+    // const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
 
-    // show a nice loading animation to user
-    setTxHashAllowance(receipt.transactionHash);
-    await sleep(2);
-    setTxConfirmationAllowance(0.5);
-    await sleep(2);
-    setTxConfirmationAllowance(1);
-    await sleep(2);
+    try {
+      const txResponse = await tokenContract.approve(chainMeta.contracts.ddex, mydaInPrecision);
+      // const receipt = await tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')});
 
-    if (receipt.status === true) {
-      setTxConfirmationAllowance(2);
-    } else {
-      const txErr = new Error('Contract Error on method approve');
-      console.error(txErr);
-      
-      setTxErrorAllowance(txErr);
+      // show a nice loading animation to user
+      // setTxHashAllowance(receipt.transactionHash);
+      setTxHashAllowance(txResponse.hash);
+      await sleep(2);
+
+      setTxConfirmationAllowance(0.5);
+      await sleep(2);
+
+      // wait for 1 confirmation from ethers
+      const txReceipt = await txResponse.wait();
+      setTxConfirmationAllowance(1);
+      await sleep(2);
+
+      if (txReceipt.status) {
+        setTxConfirmationAllowance(2);
+      } else {
+        const txErr = new Error('Contract Error on method approve');
+        console.error(txErr);
+        
+        setTxErrorAllowance(txErr);
+      }
+    } catch(e) {
+      setTxErrorAllowance(e);
     }
-
-    // tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')})
-    //   .on('transactionHash', function(hash) {
-    //     console.log('Allowance transactionHash', hash);
-
-    //     setTxHashAllowance(hash);
-    //   })
-    //   .on('receipt', function(receipt){
-    //     console.log('Allowance receipt', receipt);
-
-    //     setTxReceiptAllowance(receipt);
-    //   })
-    //   .on('confirmation', function(confirmationNumber, receipt){
-    //     console.log('Allowance confirmation');
-    //     console.log(confirmationNumber);
-
-    //     setTxConfirmationAllowance(confirmationNumber);
-    //   })
-    //   .on('error', function(error, receipt) {
-    //     console.log('Allowance error');
-    //     console.log(receipt);
-    //     console.log(error);
-
-    //     setTxErrorAllowance(error);
-    //   });
   }
 
   const finaliseSale = async() => {
@@ -323,6 +319,7 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   function onCloseCleanUp() {
+    onRefreshBalance();
     onRfMount();
   }
 
@@ -466,6 +463,14 @@ export default function({onRfMount, onRefreshBalance}) {
                     <Alert status="error">
                       <AlertIcon />
                       <AlertTitle>{buyProgressErr}</AlertTitle>
+                      <CloseButton position="absolute" right="8px" top="8px" onClick={onCloseCleanUp} />
+                    </Alert>
+                  }
+
+                  {workflowError && 
+                    <Alert status="error">
+                      <AlertIcon />
+                      <AlertTitle>{workflowError}</AlertTitle>
                       <CloseButton position="absolute" right="8px" top="8px" onClick={onCloseCleanUp} />
                     </Alert>
                   }

@@ -460,13 +460,8 @@ export default function({onRfMount, itheumAccount}) {
 
         await sleep(5);
 
+        // get tokenId
         const event = txReceipt.events.find(event => event.event === 'Transfer');
-        console.log('***********');
-        console.log(event);
-        console.log('***********');
-        console.log(JSON.stringify(event));
-        console.log('***********');
-
         const [, , tokenId] = event.args;
         setNewNFTId(tokenId.toString());
 
