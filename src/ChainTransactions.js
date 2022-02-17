@@ -17,7 +17,7 @@ import { ChainMetaContext } from './libs/contexts';
 
 export default function() {
   const chainMeta = useContext(ChainMetaContext);
-  const { user } = useMoralis();
+  const { user, Moralis: {web3Library: ethers} } = useMoralis();
   const { web3 } = useMoralis();
 
   const [allTx, setAllTx] = useState([]);
@@ -54,7 +54,7 @@ export default function() {
   }
 
   function mydaRound(val) {
-    return mydaRoundUtil(val, 18, web3.utils.BN);
+    return mydaRoundUtil(val, 18, ethers.BigNumber);
   }
 
   return (

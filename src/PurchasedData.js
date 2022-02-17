@@ -88,7 +88,8 @@ export default function() {
         setNoData(true);
       } else {
         if (!errCfUsrPurOrders && dataUsrPurOrders) {
-          setUserDataOrders(dataUsrPurOrders);
+          const descOrderedBy = [...dataUsrPurOrders].reverse();
+          setUserDataOrders(descOrderedBy);
         }
       }
     })();

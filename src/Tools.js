@@ -20,7 +20,7 @@ import imgProgWfh from './img/prog-wfh.png';
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
-  const { web3 } = useMoralis();
+  const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
   const { user } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
@@ -82,26 +82,30 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   const web3_tokenFaucet = async() => {
     setFaucetWorking(true);
 
-    const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
+    const web3Signer = web3Provider.getSigner();
+    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const mydaInPrecision = web3.utils.toBN("0x"+(50*10**decimals).toString(16));
+    const mydaInPrecision = ethers.utils.parseUnits('50.0', decimals).toHexString();
 
     try {
-      const receipt = await tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')});
+      const txResponse = await tokenContract.faucet(user.get('ethAddress'), mydaInPrecision);
       
       // show a nice loading animation to user
-      setTxHashFaucet(receipt.transactionHash);
+      setTxHashFaucet(txResponse.hash);
+
       await sleep(2);
       setTxConfirmationFaucet(0.5);
-      await sleep(2);
+      
+      // wait for 1 confirmation from ethers
+      const txReceipt = await txResponse.wait();
       setTxConfirmationFaucet(1);
       await sleep(2);
 
-      if (receipt.status === true) {
+      if (txReceipt.status) {
         setTxConfirmationFaucet(2);
       } else {
-        const txErr = new Error('NFT Contract Error on method createDataNFT');
+        const txErr = new Error('Token Contract Error on method faucet');
         console.error(txErr);
         
         setTxErrorFaucet(txErr);
@@ -109,29 +113,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     } catch(e) {
       setTxErrorFaucet(e);
     }
-    
-    // tokenContract.methods.faucet(user.get('ethAddress'), mydaInPrecision).send({from: user.get('ethAddress')})
-    //   .on('transactionHash', function(hash) {
-    //     console.log('Faucet transactionHash', hash);
-
-    //     setTxHashFaucet(hash);
-    //   })
-    //   .on('receipt', function(receipt){
-    //     console.log('Faucet receipt', receipt);
-    //   })
-    //   .on('confirmation', function(confirmationNumber, receipt){
-    //     console.log('Faucet confirmation');
-    //     console.log(confirmationNumber);
-
-    //     setTxConfirmationFaucet(confirmationNumber);
-    //   })
-    //   .on('error', function(error, receipt) {
-    //     console.log('Faucet error');
-    //     console.log(receipt);
-    //     console.log(error);
-
-    //     setTxErrorFaucet(error);
-    //   });
   }
 
   function resetFauceState() {

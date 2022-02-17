@@ -174,13 +174,11 @@ export const qsParams = () => {
   return params;
 }
 
-export const mydaRoundUtil = (balance, decimals, BN) => {
+export const mydaRoundUtil = (balance, decimals, BigNumber) => {
   const balanceWeiString = balance.toString();
-  const balanceWeiBN = new BN(balanceWeiString);
-
-  const decimalsBN = new BN(decimals);
-  const divisor = new BN(10).pow(decimalsBN);
-
+  const balanceWeiBN = BigNumber.from(balanceWeiString);
+  const decimalsBN = BigNumber.from(decimals);
+  const divisor = BigNumber.from(10).pow(decimalsBN);
   const beforeDecimal = balanceWeiBN.div(divisor);
 
   return beforeDecimal.toString();
@@ -273,7 +271,7 @@ export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',
   4: 'https://rinkeby.etherscan.io/tx/',
   80001: 'https://explorer-mumbai.maticvigil.com/tx/',
-  97: 'https://testnet.bscscan.com/',
+  97: 'https://testnet.bscscan.com/tx/',
   1666700000: 'https://explorer.pops.one/#/',
   210309: 'https://devnetscan.platon.network/trade-detail?txHash=',
   43113: 'https://testnet.snowtrace.io/tx/',
