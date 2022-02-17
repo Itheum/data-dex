@@ -374,7 +374,6 @@ export default function({onRfMount, itheumAccount}) {
     const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
     try {
-      // const receipt = await ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')});
       const txResponse = await ddexContract.advertiseForSale(dataPackId, dataHash);
 
       // show a nice loading animation to user

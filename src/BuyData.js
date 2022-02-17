@@ -127,7 +127,6 @@ export default function({onRfMount, onRefreshBalance}) {
     let isVerified = false;
 
     try {
-      // isVerified = await ddexContract.methods.verifyData(dataPackId, dataHash).call();
       isVerified = await ddexContract.verifyData(dataPackId, dataHash);
     } catch(e) {
       console.log('🚀 ~ web3_ddexVerifyData ~ e', e);
@@ -164,7 +163,6 @@ export default function({onRfMount, onRefreshBalance}) {
     let isEligible = false;
     
     try {
-      // const mydaBalance = await tokenContract.methods.balanceOf(user.get('ethAddress')).call();
       const mydaBalance = await tokenContract.balanceOf(user.get('ethAddress'));
 
       if (parseInt(mydaBalance, 10) >= currBuyObject.cost) {
@@ -189,7 +187,6 @@ export default function({onRfMount, onRefreshBalance}) {
     const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
 
     try {
-      // const allowedAmount = await tokenContract.methods.allowance(user.get('ethAddress'), chainMeta.contracts.ddex).call();
       const allowedAmount = await tokenContract.allowance(user.get('ethAddress'), chainMeta.contracts.ddex);
 
       if (allowedAmount >= mydaInPrecision) {
@@ -251,10 +248,8 @@ export default function({onRfMount, onRefreshBalance}) {
 
     try {
       const txResponse = await tokenContract.approve(chainMeta.contracts.ddex, mydaInPrecision);
-      // const receipt = await tokenContract.methods.approve(chainMeta.contracts.ddex, mydaInPrecision).send({from: user.get('ethAddress')});
 
       // show a nice loading animation to user
-      // setTxHashAllowance(receipt.transactionHash);
       setTxHashAllowance(txResponse.hash);
       await sleep(2);
 
