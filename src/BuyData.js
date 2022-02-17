@@ -122,7 +122,6 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_ddexVerifyData = async(dataPackId, dataHash) => {
-    // const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
     const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Provider);
 
     let isVerified = false;
@@ -161,7 +160,6 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_tokenBalanceOf = async() => {
-    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
     const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
     let isEligible = false;
     
@@ -181,8 +179,6 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_tokenCheckAllowance = async() => {
-    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
-
     const web3Signer = web3Provider.getSigner();
     const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
 
@@ -190,7 +186,6 @@ export default function({onRfMount, onRefreshBalance}) {
     
     const decimals = 18;
     const feeInMyda = currBuyObject.cost;
-    // const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
     const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
 
     try {
@@ -212,14 +207,10 @@ export default function({onRfMount, onRefreshBalance}) {
     const web3Signer = web3Provider.getSigner();
     const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
-    // const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
-
     try {
       const decimals = 18;
-      // const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
       const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
 
-      // const receipt = await ddexContract.methods.buyDataPack(dataPackId, mydaInPrecision).send({from: user.get('ethAddress')});
       const txResponse = await ddexContract.buyDataPack(dataPackId, mydaInPrecision);
 
       // show a nice loading animation to user
@@ -255,12 +246,8 @@ export default function({onRfMount, onRefreshBalance}) {
     const web3Signer = web3Provider.getSigner();
     const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
 
-    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
-
     const decimals = 18;
     const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
-
-    // const mydaInPrecision = web3.utils.toBN("0x"+(feeInMyda*10**decimals).toString(16));
 
     try {
       const txResponse = await tokenContract.approve(chainMeta.contracts.ddex, mydaInPrecision);

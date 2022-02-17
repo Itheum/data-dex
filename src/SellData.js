@@ -373,8 +373,6 @@ export default function({onRfMount, itheumAccount}) {
     const web3Signer = web3Provider.getSigner();
     const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
-    // const ddexContract = new web3.eth.Contract(ABIS.ddex, chainMeta.contracts.ddex);
-
     try {
       // const receipt = await ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')});
       const txResponse = await ddexContract.advertiseForSale(dataPackId, dataHash);
@@ -401,42 +399,12 @@ export default function({onRfMount, itheumAccount}) {
     } catch(e) {
       setTxError(e);
     }
-
-    // ddexContract.methods.advertiseForSale(dataPackId, dataHash).send({from: user.get('ethAddress')})
-    //   .on('transactionHash', function(hash){
-    //     console.log('transactionHash', hash);
-
-    //     setTxHash(hash);
-    //   })
-    //   .on('receipt', function(receipt){
-    //     console.log('receipt', receipt);
-
-    //     // setTxReceipt(receipt);
-    //   })
-    //   .on('confirmation', function(confirmationNumber, receipt){
-    //     // https://ethereum.stackexchange.com/questions/51492/why-does-a-transaction-trigger-12-or-24-confirmation-events
-    //     console.log('confirmation');
-    //     console.log(confirmationNumber);
-
-    //     setTxConfirmation(confirmationNumber);
-    //   })
-    //   .on('error', function(error, receipt) {
-    //     console.log('error');
-    //     console.log(receipt);
-    //     console.log(error);
-
-    //     setTxError(error);
-    //   });
   }
 
   const web3_dnftCreateNFT = async(metaDataFileUri) => {
     const web3Signer = web3Provider.getSigner();
     const dnftContract = new ethers.Contract(chainMeta.contracts.dnft, ABIS.dNFT, web3Signer);
     
-    // const dnftContract = new web3.eth.Contract(ABIS.dNFT, chainMeta.contracts.dnft);
-
-    // const receipt = await dnftContract.methods.createDataNFT(metaDataFileUri).send({from: user.get('ethAddress')});
-
     try {
       const txResponse = await dnftContract.createDataNFT(metaDataFileUri);
 

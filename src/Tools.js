@@ -82,7 +82,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   const web3_tokenFaucet = async() => {
     setFaucetWorking(true);
 
-    // const tokenContract = new web3.eth.Contract(ABIS.token, chainMeta.contracts.myda);
     const web3Signer = web3Provider.getSigner();
     const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
 

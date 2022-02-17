@@ -69,7 +69,6 @@ function App() {
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
-      // note: using getChainId instead of web3.eth.net.getId() as before (due to some EVM chains not keeping them in sync)
       const networkId = web3Provider.network.chainId; 
 
       setChain(CHAINS[networkId] || 'Unknown chain');

@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Itheum Data DEX lets you trade in personal data",
   "dependencies": {
     "@chakra-ui/icons": "^1.1.5",

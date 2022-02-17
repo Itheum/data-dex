@@ -54,7 +54,6 @@ export default function() {
   }
 
   function mydaRound(val) {
-    // return mydaRoundUtil(val, 18, web3.utils.BN);
     return mydaRoundUtil(val, 18, ethers.BigNumber);
   }
 
