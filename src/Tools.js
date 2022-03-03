@@ -124,7 +124,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
   const handleLearnMoreProg = progCode => {
     setLearnMoreProg(progCode);
-    onProgressModalOpen()
+    onProgressModalOpen();
   }
 
   return (

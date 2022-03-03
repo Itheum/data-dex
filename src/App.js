@@ -55,7 +55,8 @@ function App() {
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
     sellData: 0,
-    buyData: 0
+    buyData: 0,
+    auth: 0
   });
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
@@ -362,7 +363,7 @@ function App() {
             <Heading size="lg" textAlign="center">Itheum Data DEX</Heading>
             <Text textAlign="center">Trade your personal data via secure on-chain exchange</Text>
             <Spacer />
-            <Auth />
+            <Auth key={rfKeys.auth} />
             <Text textAlign="center" fontSize="sm">Supported Chains</Text>
             <Flex direction="row" justify="space-around">
               <Tooltip label="Elrond - Coming soon...">
