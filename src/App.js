@@ -349,56 +349,58 @@ function App() {
   }
 
   return (
-    <Container>
-      <Center mt="100">
-        <Box p="10" borderWidth="2px" borderRadius="lg" overflow="hidden" w="100%">
+    <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
+      <Flex justify="center" direction="column">
+        <Box p={["5px", "10px", "30px"]} borderWidth="2px" borderRadius="lg">
           <Stack>
             <Image
-              boxSize="150px"
-              height="auto"
+              w={["70px", null, "90px"]}
+              h={["60px", null, "80px"]}
               src={logo}
               alt="Itheum Data DEX"
               margin="auto"
             />
-            <Heading size="lg" textAlign="center">Itheum Data DEX</Heading>
+            <Heading size="md" textAlign="center">Itheum Data DEX</Heading>
             <Text textAlign="center">Trade your personal data via secure on-chain exchange</Text>
             <Spacer />
             <Auth key={rfKeys.auth} />
-            <Text textAlign="center" fontSize="sm">Supported Chains</Text>
-            <Flex direction="row" justify="space-around">
+
+            <Text textAlign="center" fontSize="sm" m="15px">Supported Chains</Text>
+            
+            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]} w={["100%"]}>
               <Tooltip label="Elrond - Coming soon...">
-                <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" />
+                <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
-                <Image src={chainEth} boxSize="40px" width="30px" />
+                <Image src={chainEth} boxSize="40px" width="30px" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Binance Smart Chain Testnet">
-                <Image src={chainBsc} boxSize="40px" />
+                <Image src={chainBsc} boxSize="40px" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Avalanche C-Chain Testnet">
-                <Image src={chainAvln} boxSize="40px" />
+                <Image src={chainAvln} boxSize="40px" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Mumbai Testnet">
-                <Image src={chainPol} boxSize="40px" borderRadius="lg" />
+                <Image src={chainPol} boxSize="40px" borderRadius="lg" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Parastate Testnet">
-                <Image src={chainParastate} boxSize="40px" width="30px" />
+                <Image src={chainParastate} boxSize="40px" width="30px" m="5px" />
               </Tooltip>
               <Tooltip label="Live on PlatON Testnet">
-                <Image src={chainPlaton} boxSize="40px" />
+                <Image src={chainPlaton} boxSize="40px" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Harmony Testnet">
-                <Image src={chainHrmy} boxSize="40px" />
+                <Image src={chainHrmy} boxSize="40px" m="5px" />
               </Tooltip>
               <Tooltip label="Hedera - Coming soon...">
-                <Image src={chainHedera} boxSize="40px" opacity=".3" />
+                <Image src={chainHedera} boxSize="40px" opacity=".3" m="5px" />
               </Tooltip>              
             </Flex>
             
             <ByMoralisLogo />
           </Stack>
         </Box>
-      </Center>      
+      </Flex>      
     </Container>
   );
 }

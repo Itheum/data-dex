@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/react';
 import { MoralisProvider } from 'react-moralis';
 // import { appId, serverURL } from './secrets.js'; 
 
@@ -23,3 +23,12 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root'),
 );
+
+
+{/* <Container maxW="container.xl" p={0} m={0}>
+  <Flex h="100vh" w="100vw" direction={{'base': 'column', md:"column"}}>
+      <Box h="10vh" bgColor={"red"}>Header</Box>
+      <Box h="800vh" bgColor={"blue"}>Body</Box>
+      <Box h="10vh" bgColor={"green"}>Footer</Box>
+  </Flex>
+</Container> */}
