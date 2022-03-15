@@ -90,8 +90,8 @@ export const Auth = () => {
   }
 
   return (
-    <Stack spacing={6} pb="10">     
-      <Button onClick={onProgressModalOpen}>
+    <Stack spacing={6} p="5">     
+      <Button onClick={onProgressModalOpen} m="auto">
        Connect a Wallet
       </Button>      
 
