@@ -331,7 +331,7 @@ export default function({onRfMount, onRefreshBalance}) {
       {otherUserDataSets.length === 0 &&
         <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
         <Box>
-          <Table variant="simple" mt="3">
+          <Table variant="striped" mt="3" size="sm">
             <TableCaption>The following data packs are available for purchase</TableCaption>
             <Thead>
               <Tr>

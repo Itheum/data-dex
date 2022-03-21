@@ -85,7 +85,7 @@ export default function() {
       {advertiseEvents.length === 0 && 
         <SkeletonLoadingList /> || 
         <Box>
-          <Table variant="simple" mt="3">
+          <Table variant="striped" mt="3" size="sm">
             <TableCaption>The following data dex transactions have happened on-chain</TableCaption>
             <Thead>
               <Tr>

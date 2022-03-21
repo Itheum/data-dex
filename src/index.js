@@ -2,13 +2,32 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/react';
+import { createBreakpoints } from '@chakra-ui/theme-tools'
 import { MoralisProvider } from 'react-moralis';
 // import { appId, serverURL } from './secrets.js'; 
 
+const breakpoints = createBreakpoints({
+  sm: '30em',
+  md: '48em',
+  lg: '62em',
+  xl: '80em',
+  '2xl': '96em',
+});
+
+
 const theme = extendTheme({
+  breakpoints,
   config: {
     initialColorMode: 'dark',
   },
+  fontSizes: {
+    xs: "0.65rem",
+    sm: "0.75rem",
+    md: "0.85rem",
+    lg: "0.95rem",
+    xl: "1.05rem",
+    "2xl": "1.15rem",
+  }
 });
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;

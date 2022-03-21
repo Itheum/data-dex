@@ -213,14 +213,14 @@ function App() {
             </Menu>
           </HStack>
 
-          <HStack h="90vh" alignItems="flex-start" flexDirection={["column", , "row"]} backgroundColor={"blues"} pt={5}>
-            <Box w="16vw" backgroundColor={"greens"}>
-              
+          <HStack alignItems={["center",,"flex-start"]} flexDirection={["column",,"row"]} backgroundColor={"blue1"} pt={5}>
+            
+            <Box backgroundColor={"green1"}>
               <Button display={["block", null, "none"]} 
-                rightIcon={<AiFillHome />}
                 colorScheme="teal" 
                 variant="solid"
-                mb={8}
+                m="auto"
+                mb={5}
                 onClick={() => setShowMobileMenu(!showMobileMenu)}>Main menu</Button>
               
               <Stack direction="column" spacing={4} display={[showMobileMenu && "block" || "none", , "block"]}>
@@ -333,7 +333,7 @@ function App() {
               </Stack>
             </Box>
 
-            <Box w="84vw" backgroundColor={"reds"}>
+            <Box backgroundColor={"red1"} pl={5} w="full">
               <ChainMetaContext.Provider value={chainMeta}>
                 {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
                 {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />}
@@ -356,195 +356,7 @@ function App() {
               </ChainMetaContext.Provider>
             </Box>
           </HStack>
-
-          
-          <Stack display="none" spacing={5} mt={5}>
-            <Flex>
-              <Image
-                boxSize="50px"
-                height="auto"
-                src={logoSml}
-                alt="Itheum Data DEX"
-              />
-              <Box p="2">
-                <Heading size="sm">Itheum Data DEX</Heading>
-              </Box>
-              <Spacer />
-              <Box>
-                <HStack>                    
-                  <Box
-                    as="text"
-                    p={2}
-                    color="white"
-                    fontWeight="bold"
-                    borderRadius="md"
-                    bgGradient="linear(to-l, #7928CA, #FF0080)">{CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} {myMydaBal}
-                  </Box>
-
-                  <Box
-                    p={2}
-                    color="rgb(243, 183, 30)"
-                    fontWeight="bold"
-                    bg="rgba(243, 132, 30, 0.05)"
-                    borderRadius="md">{chain || '...'}
-                  </Box>
-
-                  <Text fontSize="xs" align="right">
-                    {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
-                    <ShortAddress address={user.get('ethAddress')} />
-                  </Text>
-                  
-                  <Button onClick={toggleColorMode}>
-                    {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-                  </Button>
-
-                  <Button onClick={() => logout()} ml="10">Logout</Button>
-                </HStack>
-              </Box>
-            </Flex>            
-
-            <Box></Box>
-
-            <Flex direction="row">
-              <Box mt={5} ml={5}>
-                <Stack direction="column" spacing={4}>
-                  <HStack pl="3">
-                      <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>Terms of Use <ExternalLinkIcon mx="2px" /></Link>
-                      <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>Privacy Policy <ExternalLinkIcon mx="2px" /></Link>
-                  </HStack>
-
-                  <Flex direction="column" justify="space-between" minH="80vh">
-
-                    <Stack ml="15px" spacing={4}>
-                      <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                      <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
-                    </Stack>
-
-                    <Accordion flexGrow="1" defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">Data Packs</Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => (setMenuItem(MENU.DATAPROOFS))}>Personal Data Proofs</Button>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">Data NFTs</Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, chainMeta.networkId)} onClick={() => {
-                              if (splashScreenShown[MENU.NFT]) {
-                                setMenuItem(MENU.NFTMINE);
-                              } else {
-                                doSplashScreenShown(MENU.NFT);
-                                setMenuItem(MENU.NFT);
-                              }
-                            }}>Wallet</Button>
-                            
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, chainMeta.networkId)} onClick={() => {
-                              if (splashScreenShown[MENU.NFT]) {
-                                setMenuItem(MENU.NFTALL);
-                              } else {
-                                doSplashScreenShown(MENU.NFT);
-                                setMenuItem(MENU.NFT);
-                              }
-                            }}>Marketplace</Button>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">Data Coalitions</Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITIONALL} onClick={() => {
-                              if(splashScreenShown[MENU.COALITION]) {
-                                setMenuItem(MENU.COALITIONALL);
-                              } else {
-                                doSplashScreenShown(MENU.COALITION);
-                                setMenuItem(MENU.COALITION);
-                              }
-                            }}>View Coalitions</Button>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">Utils</Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <Button disabled={noChainSupport(MENU.TX, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">Labs</Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
-                            <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-                      
-                    </Accordion>
-
-                    <ByMoralisLogo />
-                
-                  </Flex>
-                </Stack>
-              </Box>
-
-              <Box minH="80vh" ml={5}>
-                <Divider orientation="vertical" />
-              </Box>
-
-              <Box ml="10" mt={5} flex="auto">
-                <ChainMetaContext.Provider value={chainMeta}>
-                  {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
-                  {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />}
-                  {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
-                  {menuItem === MENU.ADVERTISED && <AdvertisedData />}
-                  {menuItem === MENU.PURCHASED && <PurchasedData />}
-                  {menuItem === MENU.DATAPROOFS && <PersonalDataProofs />}
-                  {menuItem === MENU.TX && <ChainTransactions />}
-                  {menuItem === MENU.VAULT && <DataVault />}
-                  
-                  {menuItem === MENU.NFT && <DataNFTs setMenuItem={setMenuItem} />}
-                  {menuItem === MENU.NFTMINE && <MyDataNFTs />}
-                  {menuItem === MENU.NFTALL && <DataNFTMarketplace />}
-                  
-                  {menuItem === MENU.COALITION && <DataCoalitions setMenuItem={setMenuItem} />}
-                  {menuItem === MENU.COALITIONALL && <DataCoalitionsViewAll />}
-
-                  {menuItem === MENU.STREAM && <DataStreams />}
-                  {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
-                </ChainMetaContext.Provider>
-              </Box>
-            </Flex>
-          </Stack>          
+         
         </Flex>
 
         <AlertDialog
