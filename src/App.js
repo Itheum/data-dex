@@ -33,7 +33,8 @@ import { mydaRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, cons
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES } from './libs/util';
 import { chainMeta, ChainMetaContext } from './libs/contexts';
 import logo from './img/logo.png';
-import logoSml from './img/logo-sml.png';
+import logoSmlD from './img/logo-sml-d.png';
+import logoSmlL from './img/logo-sml-l.png';
 import chainEth from './img/eth-chain-logo.png';
 import chainPol from './img/polygon-chain-logo.png';
 import chainBsc from './img/bsc-chain-logo.png';
@@ -141,17 +142,19 @@ function App() {
             
             <Image boxSize="50px"
               height="auto"
-              src={logoSml}
+              src={colorMode === "light" ? logoSmlL : logoSmlD}
               alt="Itheum Data DEX" />
             
-            <Heading size="sm">Itheum Data DEX</Heading>
+            <Heading><Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text></Heading>
             
             <Spacer />
 
             <HStack>
               <Box
                 as="text"
-                fontSize="sm"
+                fontSize={["xs", "sm"]}
+                minWidth={"5.5rem"}
+                align="center"
                 p={2}
                 color="white"
                 fontWeight="bold"
@@ -161,7 +164,8 @@ function App() {
 
               <Box
                 display={['none', null, 'block']}
-                fontSize="sm"
+                fontSize={["xs", "sm"]}
+                align="center"
                 p={2}
                 color="rgb(243, 183, 30)"
                 fontWeight="bold"
@@ -200,6 +204,8 @@ function App() {
                 <MenuGroup>
                   <MenuItem closeOnSelect={false} display={['block', null, 'none']}>
                     <Box
+                      fontSize={["xs", "sm"]}
+                      align="center"
                       p={2}
                       color="rgb(243, 183, 30)"
                       fontWeight="bold"

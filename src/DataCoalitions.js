@@ -17,7 +17,7 @@ export default function({setMenuItem}) {
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">Data Coalitions <Badge colorScheme="teal" fontSize="0.5em">Preview</Badge></Heading>
-            <Image src={dataCoalitionsIcon} boxSize="150px" />
+            <Image src={dataCoalitionsIcon} boxSize="150px" m={5} borderRadius="md" />
             <Heading size="mb" mb="5">A glimpse into the future of how data will be sourced on the blockchain for AI</Heading>
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Independently "cherry-picking" and selling personal data is inefficient and time consuming. Curating data and monitoring the terms and conditions for each sale will quickly become overwhelming</Box>

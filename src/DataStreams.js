@@ -14,7 +14,7 @@ export default function() {
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">Data Streams <Badge variant="outline" colorScheme="teal">Coming Soon</Badge></Heading>
-            <Image src={dataStreamIcon} boxSize="150px" />
+            <Image src={dataStreamIcon} boxSize="150px" m={5} borderRadius="md" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Let buyers subscribe to "personal data streams" -  unlike the one-off datasets, data streams will continue to feed data as new data is generated</Box>
               <Box align="center" flex="1">Streams are a more powerful way for buyers to subscribe to longitudinal datasets that grow over time. For e.g. health and wellness data like physical activity, sleep quality, blood pressure or financial activity like spend habits etc.</Box>

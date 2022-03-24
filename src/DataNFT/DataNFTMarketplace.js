@@ -109,7 +109,7 @@ export default function() {
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center">
               <Skeleton isLoaded={oneNFTImgLoaded}>
-                <Image src={item.nftImgUrl} alt={item.dataPreview} pt="1rem" onLoad={() => setOneNFTImgLoaded(true)} w={200} />
+                <Image src={item.nftImgUrl} alt={item.dataPreview} mt="1rem" onLoad={() => setOneNFTImgLoaded(true)} w={200} borderRadius="md" />
               </Skeleton>
             </Flex>
 

@@ -137,8 +137,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
             {!itheumAccount && <Alert status="warning" variant="solid">
               <Stack>
-                <AlertIcon />
-                <AlertTitle fontSize="md">Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
+                <AlertTitle fontSize="md"><AlertIcon mb={2} /> Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
                 <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
               </Stack>
             </Alert>}
@@ -174,7 +173,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
               <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
               <HStack>
-                <Text>Transaction </Text>
+                <Text fontSize="sm">Transaction </Text>
                 <ShortAddress address={txHashFaucet} />
                 <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
               </HStack>                    

@@ -330,7 +330,7 @@ export default function({onRfMount, onRefreshBalance}) {
       }
       {otherUserDataSets.length === 0 &&
         <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
-        <Box>
+        <Box overflowX="auto">
           <Table variant="striped" mt="3" size="sm">
             <TableCaption>The following data packs are available for purchase</TableCaption>
             <Thead>
@@ -399,7 +399,7 @@ export default function({onRfMount, onRefreshBalance}) {
                     <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationAllowance} />
 
                     <HStack>
-                      <Text>Transaction </Text>
+                      <Text fontSize="sm">Transaction </Text>
                       <ShortAddress address={txHashAllowance} />
                       <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashAllowance}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
@@ -414,7 +414,7 @@ export default function({onRfMount, onRefreshBalance}) {
                     <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
 
                     <HStack>
-                      <Text>Transaction </Text>
+                      <Text fontSize="sm">Transaction </Text>
                       <ShortAddress address={txHashTransfer} />
                       <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashTransfer}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
