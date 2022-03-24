@@ -802,7 +802,7 @@ export default function({onRfMount, itheumAccount}) {
                       <Progress colorScheme="teal" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmation} />
 
                       <HStack>
-                        <Text>Transaction </Text>
+                        <Text fontSize="sm">Transaction </Text>
                         <ShortAddress address={txHash} />
                         <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                       </HStack>
@@ -832,7 +832,7 @@ export default function({onRfMount, itheumAccount}) {
                           <Progress colorScheme="teal" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txNFTConfirmation} />
 
                           <HStack>
-                            <Text>Transaction </Text>
+                            <Text fontSize="sm">Transaction </Text>
                             <ShortAddress address={txNFTHash} />
                             <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                           </HStack>

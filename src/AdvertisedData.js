@@ -58,8 +58,8 @@ export default function() {
 
       {userAdvertisedData.length === 0 &&
         <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> ||
-        <Box>
-          <Table variant="simple" mt="3">
+        <Box overflowX="auto">
+          <Table variant="striped" mt="3" size="sm">
             <TableCaption>The following data packs have been advertised for sale by you</TableCaption>
             <Thead>
               <Tr>

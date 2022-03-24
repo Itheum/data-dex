@@ -113,7 +113,7 @@ export default function() {
       {userDataOrders.length === 0 &&
         <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
         <Box overflowX="auto">
-          <Table overflowX="auto">
+          <Table overflowX="auto" variant="striped" mt="3" size="sm">
             <TableCaption>The following data was purchased by you</TableCaption>
             <Thead>
               <Tr>

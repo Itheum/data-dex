@@ -15,7 +15,7 @@ export default function() {
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">Trusted Computation Framework <Badge variant="outline" colorScheme="teal">Coming Soon</Badge></Heading>
-            <Image src={TrustedComputationFrameworkIcon} boxSize="150px" />
+            <Image src={TrustedComputationFrameworkIcon} boxSize="150px" m={5} borderRadius="md" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Large personal datasets managed on-chain by Data Coalitions will become too difficult to monitor over time - with the possibility of sensitive data being accidently leaked during the exchange between multiple buyers</Box>
               <Box align="center" flex="1">There will also be cases where personal data cannot be put on-chain even when encrypted due to privacy regulations and data sovereignty regulations</Box>

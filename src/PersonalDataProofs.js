@@ -62,8 +62,8 @@ export default function() {
 
       {dataProofs.length === 0 &&
         <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> || 
-        <Box>
-          <Table variant="simple" mt="3">
+        <Box overflowX="auto">
+          <Table variant="striped" mt="3" size="sm">
             <TableCaption>The following personal data proofs have been made available by you</TableCaption>
             <Thead>
               <Tr>

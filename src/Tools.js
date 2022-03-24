@@ -6,7 +6,7 @@ import {
   Button, Link, Progress, Badge,
   Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter,
-  Text, HStack, Heading, CloseButton, Wrap, Image, 
+  Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem,
   useToast, useDisclosure
 } from '@chakra-ui/react';
 import ShortAddress from './UtilComps/ShortAddress';
@@ -128,18 +128,17 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   }
 
   return (
-    <Stack spacing={5}>
+    <Stack>
       <Heading size="lg">Home</Heading>
 
-      <Wrap shouldWrapChildren={true} wrap="wrap" spacing={3}>
-        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+      <Wrap>
+        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
             {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
-            {!itheumAccount && <Alert status="error" variant="solid">
+            {!itheumAccount && <Alert status="warning" variant="solid">
               <Stack>
-                <AlertIcon />
-                <AlertTitle>Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
-                <AlertDescription>But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
+                <AlertTitle fontSize="md"><AlertIcon mb={2} /> Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
+                <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
               </Stack>
             </Alert>}
             
@@ -160,21 +159,21 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
 
             {itheumAccount && 
-              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>Sell My Data</Button>
+              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>Trade My Data</Button>
             }
           </Stack>
-        </Box>
-        
-        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+        </WrapItem>
+
+        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
             <Heading size="md">{CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} Faucet</Heading>
-            <Text>Get some free {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} tokens to try DEX features</Text>
+            <Text fontSize="sm">Get some free {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} tokens to try DEX features</Text>
           
             {txHashFaucet && <Stack>
               <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
               <HStack>
-                <Text>Transaction </Text>
+                <Text fontSize="sm">Transaction </Text>
                 <ShortAddress address={txHashFaucet} />
                 <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
               </HStack>                    
@@ -191,79 +190,77 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             <Spacer />
             <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={web3_tokenFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Button>
           </Stack>
-        </Box>
-
-        <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
-          <Stack p="5" h="360">
-            <Heading size="md">Join an Itheum App</Heading>
-            <Text>Join a community built personal data collection app and earn {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} when you sell your data</Text>
-            <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-              <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-                <Image src={imgProgRhc} />
-
-                <Box p="3">
-                  <Box d="flex" alignItems="baseline">
-                    <Box
-                      mt="1"
-                      mr="1"
-                      fontWeight="semibold"
-                      as="h4"
-                      lineHeight="tight"
-                      isTruncated>
-                      Red Heart Challenge
-                    </Box>
-                    <Badge borderRadius="full" px="2" colorScheme="teal"> Live</Badge>
-                  </Box>
-                  <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
-                  <Button size="sm" mt="3" colorScheme="teal" onClick={() => (window.open(`https://itheum.com/redheartchallenge?web3Uid=${user.id}`))}>Join Now</Button>
-                </Box>
-              </Box>
-
-              <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-                <Image src={imgProgDefi} />
-
-                <Box p="3">
-                  <Box d="flex" alignItems="baseline">
-                    <Box
-                      mt="1"
-                      mr="1"
-                      fontWeight="semibold"
-                      as="h4"
-                      lineHeight="tight"
-                      isTruncated>
-                      Global DeFi Census
-                    </Box>
-                    <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
-                  </Box>
-                  <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
-                  <Button size="sm" disabled="true" mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
-                </Box>
-              </Box>
-
-              <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" w="300px">
-                <Image src={imgProgWfh} />
-
-                <Box p="3">
-                  <Box d="flex" alignItems="baseline">
-                    <Box
-                      mt="1"
-                      mr="1"
-                      fontWeight="semibold"
-                      as="h4"
-                      lineHeight="tight"
-                      isTruncated>
-                      Wearables Fitness and Activity
-                    </Box>
-                    <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
-                  </Box>
-                  <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('wfa'))}>Learn More</Button>
-                  <Button size="sm" disabled="true" mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
-                </Box>
-              </Box>
-            </Wrap>
-          </Stack>
-        </Box>        
+        </WrapItem>
       </Wrap>
+
+      <Stack p="5" h="360">
+        <Heading size="md">App Marketplace</Heading>
+        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} when you trade your data</Text>
+        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+          <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+            <Image src={imgProgRhc} />
+
+            <Box p="3">
+              <Box d="flex" alignItems="baseline">
+                <Box
+                  mt="1"
+                  mr="1"
+                  fontWeight="semibold"
+                  as="h4"
+                  lineHeight="tight"
+                  isTruncated>
+                  Red Heart Challenge
+                </Box>
+                <Badge borderRadius="full" px="2" colorScheme="teal"> Live</Badge>
+              </Box>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => (window.open(`https://itheum.com/redheartchallenge?web3Uid=${user.id}`))}>Join Now</Button>
+            </Box>
+          </Box>
+
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+            <Image src={imgProgDefi} />
+
+            <Box p="3">
+              <Box d="flex" alignItems="baseline">
+                <Box
+                  mt="1"
+                  mr="1"
+                  fontWeight="semibold"
+                  as="h4"
+                  lineHeight="tight"
+                  isTruncated>
+                  Global DeFi Census
+                </Box>
+                <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
+              </Box>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
+              <Button size="sm" disabled="true" mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
+            </Box>
+          </Box>
+
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" w="300px">
+            <Image src={imgProgWfh} />
+
+            <Box p="3">
+              <Box d="flex" alignItems="baseline">
+                <Box
+                  mt="1"
+                  mr="1"
+                  fontWeight="semibold"
+                  as="h4"
+                  lineHeight="tight"
+                  isTruncated>
+                  Wearables Fitness and Activity
+                </Box>
+                <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
+              </Box>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('wfa'))}>Learn More</Button>
+              <Button size="sm" disabled="true" mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
+            </Box>
+          </Box>
+        </Wrap>
+      </Stack>
 
       {learnMoreProd && <Modal size="xl"
         isOpen={isProgressModalOpen}

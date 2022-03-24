@@ -15,7 +15,7 @@ export default function({setMenuItem}) {
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">Data NFTs <Badge colorScheme="teal" fontSize="0.5em">Beta</Badge></Heading>
-            <Image src={dataNFTIcon} boxSize="150px" />
+            <Image src={dataNFTIcon} boxSize="150px" m={5} borderRadius="md" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability</Box>
               <Box align="center" flex="1">Allow for resale in secondary markets (like OpenSea) and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn a % as royalty</Box>
