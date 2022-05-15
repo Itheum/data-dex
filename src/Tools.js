@@ -13,7 +13,7 @@ import ShortAddress from './UtilComps/ShortAddress';
 import { progInfoMeta, config, sleep } from './libs/util';
 import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { ChainMetaContext } from './libs/contexts';
-import imgProgDefi from './img/prog-defi.png';
+import imgProgGaPa from './img/prog-gaming.jpg';
 import imgProgRhc from './img/prog-rhc.png';
 import imgProgWfh from './img/prog-wfh.png';
 
@@ -214,12 +214,12 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                 <Badge borderRadius="full" px="2" colorScheme="teal"> Live</Badge>
               </Box>
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => (window.open(`https://itheum.com/redheartchallenge?web3Uid=${user.id}`))}>Join Now</Button>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => (window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`))}>Join Now</Button>
             </Box>
           </Box>
 
           <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-            <Image src={imgProgDefi} />
+            <Image src={imgProgGaPa} />
 
             <Box p="3">
               <Box d="flex" alignItems="baseline">
@@ -230,7 +230,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                   as="h4"
                   lineHeight="tight"
                   isTruncated>
-                  Global DeFi Census
+                  Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
               </Box>
@@ -281,7 +281,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
           </ModalBody>
           <ModalFooter>
             <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>Close</Button>
-            <Button size="sm" colorScheme="teal" onClick={() => (window.open(`${progInfoMeta[learnMoreProd].url}?web3Uid=${user.id}`))}>Join Now</Button>
+            <Button size="sm" colorScheme="teal" onClick={() => (window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`))}>Join Now</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>}

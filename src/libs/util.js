@@ -87,14 +87,14 @@ export const progInfoMeta = {
     canJoin: 1
   },
   gdc: {
-    name: 'Global DeFI Census',
-    desc: 'This 2 week program collects insights about your exposure to the blockchain DeFI ecosystem. People globally and from all ages, skills levels and experience use DeFI tools today and we need to understand current usage trends to design better for mass adoption.',
+    name: 'Gamer Passport',
+    desc: 'Calling all web3 gamers! The Gamer Passport app will empower you to claim and own your web3 gaming data as you move between games and guilds. You will then be able to attach it to your NFMe ID Avatar and trade your data with participants in the gaming industry.',
     medium: 'Telegram App',
-    outcome: 'Data produced from this program can be used to better design DeFI user experiences, DApps and tooling.',
-    targetBuyer: 'Blockchain Research Institutes, DApp developers, Blockchain Protocol Developers, CeFI/DeFI Organisations',
-    data: 'DeFI Apps Exposure, DeFI Pain Points, Investment Preferences, Barriers to Entry, DeFI DApp Sentiment',
+    outcome: 'Data produced from this app can be used to unlock valuable data; direct-from-gamers.',
+    targetBuyer: 'Games, Game Platforms, Guilds, Guild Hubs, GameFi Platforms',
+    data: 'Discord community score, on-chain gaming performance, on-chain game earnings, game earnings and spending patterns, HOLDing ability, game assets composition to earning patterns',
     url: 'https://itheum.com/program',
-    dc: 'Blockchain Research Data',
+    dc: 'Gamer Passport Data',
     id: 'foo',
     canJoin: 0
   },
