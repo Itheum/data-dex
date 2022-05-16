@@ -7,7 +7,7 @@ The Itheum Data DEX enables you to sell your personal data in the open market us
 The Itheum Data DEX is a core product that is part of the Itheum Platform - **Itheum is the world's 1st decentralised Data Brokarage.** - https://itheum.com
 
 ## Whitepaper
-Read Here - https://itheum.com/whitepaper
+Read Here - https://itheum.io/whitepaper
 
 ## Use the DEX Testnet here
 Try the Data DEX Testnet here - https://datadex.itheum.com
@@ -16,3 +16,4 @@ Try the Data DEX Testnet here - https://datadex.itheum.com
 
 ### Dev env
 - requires > node 16x
+- needs a .env file
