@@ -25,7 +25,13 @@ export const dNFTContractAddress_testnetPlatON = '0x9fE46736679d2D9a65F0992F2272
 export const dNFTContractAddress_testnetParastate = '0x360570F7D60Df8BC670C2899002C44a2C382270E';
 export const dNFTContractAddress_testnetAvalanche = '0xCb0254502D84242f8ad477eb41723e99fdC6e847';
 
-
 export const mydaContractAddress_Local = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9';
 export const ddexContractAddress_Local = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9';
 export const dNFTContractAddress_Local = '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707';
+
+export const claimsContractAddress = '';
+export const claimsContractAddress_Rink = '';
+export const claimsContractAddress_Matic = '0xD77E137B6483bC8d392b73D02E733e3DE13Dd72d';
+export const claimsContractAddress_testnetBSC = '0xD77E137B6483bC8d392b73D02E733e3DE13Dd72d';
+export const claimsContractAddress_testnetAvalanche = '0xb38731CEC66340ff1c9F58B8ceCDEdb9B4Cb8f38';
+
