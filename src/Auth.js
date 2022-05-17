@@ -33,7 +33,7 @@ export const Auth = () => {
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
       setIsAuthenticatingElrond(0);
-      setAuthErrorUi(authError);
+      setAuthErrorUi(authError);      
     }
   }, [authError]);
 

@@ -4,6 +4,7 @@ import App from './App';
 import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/react';
 import { createBreakpoints } from '@chakra-ui/theme-tools'
 import { MoralisProvider } from 'react-moralis';
+import ErrorBoundary from './ErrorBoundary';
 // import { appId, serverURL } from './secrets.js'; 
 
 const breakpoints = createBreakpoints({
@@ -32,13 +33,19 @@ const theme = extendTheme({
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
+if (!process.env.REACT_APP_ENV_MORALIS_APPID || !process.env.REACT_APP_ENV_MORALIS_SERVER) {
+  
+}
+
 ReactDOM.render(
   <React.StrictMode>
-    <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
-      <ChakraProvider theme={theme}>
-        <App />
-      </ChakraProvider>
-    </MoralisProvider>
+    <ErrorBoundary>
+      <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
+        <ChakraProvider theme={theme}>
+          <App />
+        </ChakraProvider>
+      </MoralisProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root'),
 );
