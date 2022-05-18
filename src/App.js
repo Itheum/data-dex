@@ -408,7 +408,7 @@ function App() {
 
             <Text textAlign="center" fontSize="sm">Supported Chains</Text>
             
-            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]} w={["100%"]}>
+            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
               <Tooltip label="Elrond - Coming soon...">
                 <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
               </Tooltip>
