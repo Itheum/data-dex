@@ -6,13 +6,14 @@ import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
   mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
   mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
   mydaContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche,
-  mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
+  mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local, claimsContractAddress_Matic} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
   const contracts = {
     myda: null,
     ddex: null,
-    dnft: null
+    dnft: null,
+    claim: null
   };
 
   switch (networkId) {
@@ -35,6 +36,7 @@ export const contractsForChain = networkId => {
       contracts.myda = mydaContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
+      contracts.claim = claimsContractAddress_Matic;
       break;
     case 97:
       contracts.myda = mydaContractAddress_testnetBSC;
