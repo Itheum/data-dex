@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "Itheum Data DEX lets you trade in personal data",
   "dependencies": {
+    "@elrondnetwork/dapp-core": "1.2.0",
+    "@elrondnetwork/erdjs": "10.2.5",
+    "@elrondnetwork/erdjs-network-providers": "0.1.5",
     "@chakra-ui/icons": "^1.1.5",
     "@chakra-ui/react": "^1.8.3",
     "@emotion/react": "^11.7.1",
