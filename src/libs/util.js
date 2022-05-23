@@ -1,12 +1,12 @@
-import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
-  ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic,
-  mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
-  mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
-  mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
-  mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
-  mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
-  mydaContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche,
-  mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
+import {tokenContractAddress_Rop, tokenContractAddress_Matic, ddexContractAddress_Rop,
+  ddexContractAddress_Matic, dNFTContractAddress_Rop, dNFTContractAddress_Matic,
+  tokenContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
+  tokenContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
+  tokenContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
+  tokenContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
+  tokenContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
+  tokenContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche,
+  tokenContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
 
 export const contractsForChain = networkId => {
   const contracts = {
@@ -17,47 +17,47 @@ export const contractsForChain = networkId => {
 
   switch (networkId) {
     case 31337:
-      contracts.myda = mydaContractAddress_Local;
+      contracts.myda = tokenContractAddress_Local;
       contracts.ddex = ddexContractAddress_Local;
       contracts.dnft = dNFTContractAddress_Local;
       break;
     case 3:
-      contracts.myda = mydaContractAddress;
-      contracts.ddex = ddexContractAddress;
-      contracts.dnft = dNFTContractAddress;
+      contracts.myda = tokenContractAddress_Rop;
+      contracts.ddex = ddexContractAddress_Rop;
+      contracts.dnft = dNFTContractAddress_Rop;
       break;
     case 4:
-      contracts.myda = mydaContractAddress_Rink;
+      contracts.myda = tokenContractAddress_Rink;
       contracts.ddex = ddexContractAddress_Rink;
       contracts.dnft = dNFTContractAddress_Rink;
       break;
     case 80001:
-      contracts.myda = mydaContractAddress_Matic;
+      contracts.myda = tokenContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
       break;
     case 97:
-      contracts.myda = mydaContractAddress_testnetBSC;
+      contracts.myda = tokenContractAddress_testnetBSC;
       contracts.ddex = ddexContractAddress_testnetBSC;
       contracts.dnft = dNFTContractAddress_testnetBSC;
       break;
     case 1666700000:
-      contracts.myda = mydaContractAddress_testnetHarmony;
+      contracts.myda = tokenContractAddress_testnetHarmony;
       contracts.ddex = ddexContractAddress_testnetHarmony;
       contracts.dnft = dNFTContractAddress_testnetHarmony;
       break;
     case 210309:
-      contracts.myda = mydaContractAddress_testnetPlatON;
+      contracts.myda = tokenContractAddress_testnetPlatON;
       contracts.ddex = ddexContractAddress_testnetPlatON;
       contracts.dnft = dNFTContractAddress_testnetPlatON;
       break;
     case 123:
-      contracts.myda = mydaContractAddress_testnetParastate;
+      contracts.myda = tokenContractAddress_testnetParastate;
       contracts.ddex = ddexContractAddress_testnetParastate;
       contracts.dnft = dNFTContractAddress_testnetParastate;
       break;
     case 43113:
-      contracts.myda = mydaContractAddress_testnetAvalanche;
+      contracts.myda = tokenContractAddress_testnetAvalanche;
       contracts.ddex = ddexContractAddress_testnetAvalanche;
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
