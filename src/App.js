@@ -124,7 +124,9 @@ function App() {
       isWeb3Enabled: isWeb3Enabled,
       isWeb3EnableLoading: isWeb3EnableLoading,
       web3EnableError: web3EnableError,
-      claimBalance: ["...", "...", "..."]
+      claimBalanceValues: ["a", "a", "a"],
+      claimBalanceDates: [0, 0, 0],
+      
     });
 
   },[]);
@@ -167,7 +169,8 @@ function App() {
 
         await showMydaBalance();
         await claimBalance();
-        await sleep(1);
+        
+        await sleep(2);
       }
     }
   }, [user, isWeb3Enabled]);
@@ -179,30 +182,54 @@ function App() {
   };
 
 
-  const claimBalance = async () => {
+ const claimBalance = async () => {
 
     const walletAddress = user.get("ethAddress");
 
     const contract = new ethers.Contract(
-      chainMeta?.contracts?.claim,
+      chainMeta.contracts.claim,
       ABIS.claims,
       web3Provider
       );
       
-    const uints = [1, 2, 3]
+    const claimUints = {
+      rewards: 1,
+      airdrops: 2,
+      allocations: 3
+    }
+
+
+    let keys = Object.keys(claimUints);
+    let values = keys.map((el) => {
+      return claimUints[el]
+    })
     
-    let somethig =  uints.map(async (el) => {
+    let something =  values.map(async (el) => {
+
       let a = await contract.deposits(walletAddress,el)
       return a
+
     })
 
-    let claimBalance = (await Promise.all(somethig)).map((el) => {
-      return parseInt(el,16)
+    let claimBalance = (await Promise.all(something)).map((el) => {
+     const dates =new  Date( 
+      (parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US")
+      let value = parseInt(el.amount._hex.toString(),16)
+      return { values : value , dates: dates}
+
     })
 
+    const valuess = claimBalance.map((el) => {
+      return el["values"]
+    })
+    const dates = claimBalance.map((el) => {
+      return el["dates"]
+    })
+   
     await setUser({
       ..._user,
-      claimBalance: claimBalance
+      claimBalanceValues: valuess,
+      claimBalanceDates: dates
     })
 
   
@@ -230,6 +257,7 @@ function App() {
     const balance = await Web3Api.native.runContractFunction(options);
     */
 
+   console.log("🚀 ~ file: App.js ~ line 267 ~ showMydaBalance ~ chainMeta.contracts.myda,", chainMeta.contracts.myda,)
     // call contract via ethers
     const contract = new ethers.Contract(
       chainMeta.contracts.myda,
@@ -832,5 +860,7 @@ function ByMoralisLogo() {
     </Flex>
   );
 }
+
+
 
 export default App;
