@@ -309,8 +309,6 @@ export default function ({
 
  
 
-
-
   return (
 <>
     <button onClick={handleClick}>Claim</button>
