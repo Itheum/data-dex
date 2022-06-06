@@ -214,7 +214,7 @@ function App() {
     let claimBalance = (await Promise.all(something)).map((el) => {
      const dates =new  Date( 
       (parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US")
-      let value = parseInt(el.amount._hex.toString(),16)
+      let value = mydaRoundUtil(el.amount, 18, ethers.BigNumber);
       return { values : value , dates: dates}
 
     })
