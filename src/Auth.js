@@ -38,7 +38,8 @@ export const Auth = () => {
     LedgerLoginButton,
     WalletConnectLoginButton,
   } = DappUI;
-  const { address } = useGetAccountInfo();
+  
+  const { address: elrondAddress } = useGetAccountInfo();
 
   const WALLETS = {
     METAMASK: 1,
@@ -76,7 +77,7 @@ export const Auth = () => {
   }, [authError]);
 
   useEffect(() => {
-    if (address) {
+    if (elrondAddress) {
       setWalletUsed(WALLETS.ELROND);
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
@@ -87,7 +88,7 @@ export const Auth = () => {
       setIsAuthenticatingWc(0);
       setIsAuthenticatingElrond(0);
     }
-  }, [address]);
+  }, [elrondAddress]);
 
   useEffect(() => {
     if (isAuthenticating) {
@@ -229,13 +230,17 @@ export const Auth = () => {
                     </Button>
                   </Box>
                   <Box>
-                    <Button>
+                    <Button
+                      isLoading={Boolean(isAuthenticatingElrond)}
+                    >
                       <ExtensionLoginButton
                         callbackRoute={"/"}
                         loginButtonText={"Extension"}
                       ></ExtensionLoginButton>
                     </Button>
-                    <Button>
+                    <Button
+                      isLoading={Boolean(isAuthenticatingElrond)}
+                    >
                       <WalletConnectLoginButton
                         callbackRoute={"/"}
                         loginButtonText={"Maiar"}
