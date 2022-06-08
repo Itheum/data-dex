@@ -151,12 +151,16 @@ export const Auth = () => {
                     </Button>
                   </Box>
                   <Box>
-                    <Button isLoading={Boolean(isAuthenticatingElrond)}>
-                      <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Extension"}></ExtensionLoginButton>
-                    </Button>
-                    <Button isLoading={Boolean(isAuthenticatingElrond)}>
-                      <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar"}></WalletConnectLoginButton>
-                    </Button>
+                    <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"}></WalletConnectLoginButton>
+                  </Box>
+                  <Box>
+                    <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"}></ExtensionLoginButton>
+                  </Box>
+                  <Box>
+                    <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"}></WebWalletLoginButton>
+                  </Box>
+                  <Box>
+                    <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"}></LedgerLoginButton>
                   </Box>
                 </Wrap>
               </Box>

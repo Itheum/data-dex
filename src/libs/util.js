@@ -216,6 +216,8 @@ export const CHAINS = {
   210309: "PlatON - Testnet",
   123: "Parastate - Testnet",
   43113: "Avalanche - Testnet",
+  "E1": "Elrond - Mainnet",
+  "ED": "Elrond - Devnet"
 }
 
 // these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)
