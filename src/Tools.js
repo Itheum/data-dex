@@ -456,26 +456,26 @@ export default function ({
 
 
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="10" pt="5" h="360">
-            <Heading size="md" alignSelf={"center"}>My Claims</Heading>
+          <Stack p="5" h="360">
+            <Heading size="md">My Claims</Heading>
             <VStack spacing={20} ></VStack>
             <Spacer />
             <HStack spacing={50}>
-              <Text fontSize={"2xl"}>Rewards</Text>
-              <Button colorScheme="teal" variant="outline" onClick={onRewardsOpen}>{_user?.claimBalanceValues[0] !== "a" ? _user?.claimBalanceValues[0] : <Spinner size='xs' /> }</Button>
+              <Text fontSize={"xl"} align={"left"} >Rewards</Text>
+              <Button colorScheme="teal" variant="outline" w="70px" h="40px" align={"right"} onClick={onRewardsOpen}>{_user?.claimBalanceValues[0] !== "a" ? _user?.claimBalanceValues[0] : <Spinner size='xs' /> }</Button>
               <ClaimModal {...rewardsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={50}>
-              <Text fontSize={"2xl"}>Airdrops</Text>
+              <Text fontSize={"xl"} align={"left"}>Airdrops</Text>
 
-              <Button colorScheme="teal" variant="outline" onClick={onAirdropsOpen} >{_user?.claimBalanceValues[1] !== "a" ? _user?.claimBalanceValues[1] : <Spinner size='xs' />}</Button>
+              <Button colorScheme="teal" variant="outline" w="70px" h="40px" align={"right"} onClick={onAirdropsOpen} >{_user?.claimBalanceValues[1] !== "a" ? _user?.claimBalanceValues[1] : <Spinner size='xs' />}</Button>
               <ClaimModal {...airdropsModalData}/>
             </HStack>
             <Spacer />
             <HStack spacing={30}>
-              <Text fontSize={"2xl"}>Allocations</Text>
-              <Button colorScheme="teal" variant="outline" onClick={onAllocationsOpen} >{_user?.claimBalanceValues[2] !== "a" ? _user?.claimBalanceValues[2] : <Spinner size='xs' /> }</Button>
+              <Text fontSize={"xl"} align={"left"}>Allocations</Text>
+              <Button colorScheme="teal" variant="outline" w="70px" h="40px" align={"right"} onClick={onAllocationsOpen} >{_user?.claimBalanceValues[2] !== "a" ? _user?.claimBalanceValues[2] : <Spinner size='xs' /> }</Button>
               <ClaimModal {...allocationsModalData}/>
             </HStack>
 

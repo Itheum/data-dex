@@ -113,23 +113,7 @@ function App() {
 
   const { user: _user,setUser } = useUser();
 
-  useEffect(() => {
-    setUser({
-      isAuthenticated: isAuthenticated,
-      logout: logout,
-      user: user,
-      ethers: ethers,
-      web3Provider: web3Provider,
-      enableWeb3: enableWeb3,
-      isWeb3Enabled: isWeb3Enabled,
-      isWeb3EnableLoading: isWeb3EnableLoading,
-      web3EnableError: web3EnableError,
-      claimBalanceValues: ["a", "a", "a"],
-      claimBalanceDates: [0, 0, 0],
-      
-    });
-
-  },[]);
+ 
   
 
 
@@ -150,6 +134,28 @@ function App() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
+    setUser({
+      isAuthenticated: isAuthenticated,
+      logout: logout,
+      user: user,
+      ethers: ethers,
+      web3Provider: web3Provider,
+      enableWeb3: enableWeb3,
+      isWeb3Enabled: isWeb3Enabled,
+      isWeb3EnableLoading: isWeb3EnableLoading,
+      web3EnableError: web3EnableError,
+      claimBalanceValues: ["a", "a", "a"],
+      claimBalanceDates: [0, 0, 0],
+      showMydaBalance: showMydaBalance,
+      myMydaBal:myMydaBal,
+      setMydaBal:setMydaBal,
+      handleRefreshBalance:handleRefreshBalance
+
+    });
+
+  },[]);
+
+  useEffect(() => {
     enableWeb3();
 
     console.log(consoleNotice);
@@ -168,7 +174,7 @@ function App() {
         chainMeta.contracts = contractsForChain(networkId);
 
         await showMydaBalance();
-        await claimBalance();
+        await showClaimBalance();
         
         await sleep(2);
       }
@@ -182,60 +188,48 @@ function App() {
   };
 
 
- const claimBalance = async () => {
-
+ const showClaimBalance = async () => {
     const walletAddress = user.get("ethAddress");
-
     const contract = new ethers.Contract(
       chainMeta.contracts.claim,
       ABIS.claims,
       web3Provider
       );
-      
     const claimUints = {
       rewards: 1,
       airdrops: 2,
       allocations: 3
     }
-
-
     let keys = Object.keys(claimUints);
     let values = keys.map((el) => {
       return claimUints[el]
     })
-    
-    let something =  values.map(async (el) => {
-
+    let hexDataPromiseArray =  values.map(async (el) => {
       let a = await contract.deposits(walletAddress,el)
       return a
-
     })
-
-    let claimBalance = (await Promise.all(something)).map((el) => {
+    let claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
      const dates =new  Date( 
       (parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US")
-      let value = parseInt(el.amount._hex.toString(),16)
+      let value = (parseInt(el.amount._hex.toString(),16))/(10**18)
       return { values : value , dates: dates}
-
     })
-
-    const valuess = claimBalance.map((el) => {
+    const valuesArray = claimBalanceResponse.map((el) => {
       return el["values"]
     })
-    const dates = claimBalance.map((el) => {
+    const dates = claimBalanceResponse.map((el) => {
       return el["dates"]
     })
-   
     await setUser({
       ..._user,
-      claimBalanceValues: valuess,
+      claimBalanceValues: valuesArray,
       claimBalanceDates: dates
     })
-
-  
   };
 
-
+useEffect(() => {
+  showMydaBalance()
+},[_user.claimBalanceValues])
 
   const showMydaBalance = async () => {
     const walletAddress = user.get("ethAddress");
