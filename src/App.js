@@ -30,7 +30,7 @@ import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
 import { mydaRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from './libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, WALLETS_MORALIS_PROVIDER_KEY } from './libs/util';
 import { chainMeta, ChainMetaContext } from './libs/contexts';
 import logo from './img/logo.png';
 import logoSmlD from './img/logo-sml-d.png';
@@ -47,7 +47,7 @@ import chainHedera from './img/hedera-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
 function App() {
-  const {isAuthenticated, logout, user, Moralis: {web3Library: ethers}} = useMoralis();
+  const {isAuthenticated, logout, user, Moralis: {link}, Moralis: {web3Library: ethers}} = useMoralis();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [myMydaBal, setMydaBal] = useState(0);
@@ -63,13 +63,29 @@ function App() {
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode(); 
-  const [showMobileMenu, setShowMobileMenu] = useState(false); 
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [loggedInWalletProvider, setLoggedInWalletProvider] = useState(null);
 
   useEffect(() => {
-    enableWeb3();
+    // this ensure that if the user reloads the page when logged in, we restore their web3Session to ethers.js
+    if (user && isAuthenticated) {
+      console.log('GOT USER SESSION +++');
+      console.log('loggedInWalletProvider ---', loggedInWalletProvider, WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]);
+      console.log(WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]);
+      if (WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]) {
+        enableWeb3({ provider: WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider] });
+      } else {
+        enableWeb3(); // default to metamask
+      }
 
-    console.log(consoleNotice);
-  }, []);
+    } else {
+      console.log('NO USER SESSION ---');
+    }
+  }, [user, isAuthenticated]);
+
+  useEffect(() => {
+    console.log('loggedInWalletProvider ---', loggedInWalletProvider);
+  }, [loggedInWalletProvider]);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
@@ -371,10 +387,10 @@ function App() {
           onClose={() => setAlertIsOpen(false)}>
           <AlertDialogOverlay>
             <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">Alert</AlertDialogHeader>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">Opps, there was an issue</AlertDialogHeader>
 
               <AlertDialogBody>
-                Sorry the {chain} chain is currently not supported. We are working on it. You need to be on { SUPPORTED_CHAINS.map(i => <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">{CHAINS[i]}</Badge>) }
+                Sorry the {chain} chain is currently not supported. We are working on it. You need to be on <Text mt="5">{ SUPPORTED_CHAINS.map(i => <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">{CHAINS[i]}</Badge>) }</Text>
               </AlertDialogBody>
 
               <AlertDialogFooter>
@@ -390,7 +406,7 @@ function App() {
   }
 
   return (
-    <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
+    <Container maxW="container.xxl" h="90vh" d="flex" justifyContent="center" alignItems="center">
       <Flex justify="center" direction="column">
         <Box p={["20px", null, "30px"]} borderWidth="2px" borderRadius="lg">
           <Stack>
@@ -402,39 +418,39 @@ function App() {
               margin="auto"
             />
             <Heading size="md" textAlign="center">Itheum Data DEX</Heading>
-            <Text fontSize="sm" textAlign="center">Trade your personal data via secure on-chain exchange</Text>
+            <Text fontSize="sm" textAlign="center">Tokenize and trade your data via a fully peer-to-peer protocol</Text>
             <Spacer />
-            <Auth key={rfKeys.auth} />
-
-            <Text textAlign="center" fontSize="sm">Supported Chains</Text>
+            <Auth key={rfKeys.auth} handleSetLoggedInWalletProvider={(v) => setLoggedInWalletProvider(v)} />
+            <Spacer />
+            <Text textAlign="center" fontSize="sm" >Supported Chains</Text>
             
-            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]} w={["100%"]}>
+            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
               <Tooltip label="Elrond - Coming soon...">
-                <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
+                <Image src={chainElrond} boxSize="30px" opacity=".3" borderRadius="lg" m="3px" />
               </Tooltip>
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
-                <Image src={chainEth} boxSize="40px" width="30px" m="5px" />
+                <Image src={chainEth} boxSize="30px" width="30px" m="3px" />
               </Tooltip>
               <Tooltip label="Live on Binance Smart Chain Testnet">
-                <Image src={chainBsc} boxSize="40px" m="5px" />
+                <Image src={chainBsc} boxSize="30px" m="3px" />
               </Tooltip>
               <Tooltip label="Live on Avalanche C-Chain Testnet">
-                <Image src={chainAvln} boxSize="40px" m="5px" />
+                <Image src={chainAvln} boxSize="30px" m="3px" />
               </Tooltip>
               <Tooltip label="Live on Mumbai Testnet">
-                <Image src={chainPol} boxSize="40px" borderRadius="lg" m="5px" />
+                <Image src={chainPol} boxSize="30px" borderRadius="lg" m="3px" />
               </Tooltip>
               <Tooltip label="Live on Parastate Testnet">
-                <Image src={chainParastate} boxSize="40px" width="30px" m="5px" />
+                <Image src={chainParastate} boxSize="30px" width="30px" m="3px" />
               </Tooltip>
               <Tooltip label="Live on PlatON Testnet">
-                <Image src={chainPlaton} boxSize="40px" m="5px" />
+                <Image src={chainPlaton} boxSize="30px" m="3px" />
               </Tooltip>
               <Tooltip label="Live on Harmony Testnet">
-                <Image src={chainHrmy} boxSize="40px" m="5px" />
+                <Image src={chainHrmy} boxSize="30px" m="3px" />
               </Tooltip>
               <Tooltip label="Hedera - Coming soon...">
-                <Image src={chainHedera} boxSize="40px" opacity=".3" m="5px" />
+                <Image src={chainHedera} boxSize="30px" opacity=".3" m="3px" />
               </Tooltip>              
             </Flex>
             

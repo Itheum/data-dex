@@ -10,6 +10,8 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@walletconnect/web3-provider": "^1.7.8",
+    "@web3auth/web3auth": "^1.0.0",
     "dotenv": "^16.0.1",
     "framer-motion": "^4.1.6",
     "moment": "^2.29.1",

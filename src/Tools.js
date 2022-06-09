@@ -80,6 +80,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   }, [txConfirmationFaucet, txHashFaucet, txErrorFaucet]);
 
   const web3_tokenFaucet = async() => {
+    resetFauceState();
     setFaucetWorking(true);
 
     const web3Signer = web3Provider.getSigner();
@@ -111,6 +112,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
         setTxErrorFaucet(txErr);
       }
     } catch(e) {
+      console.error(e);
       setTxErrorFaucet(e);
     }
   }
@@ -182,7 +184,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             {txErrorFaucet && 
               <Alert status="error">
                 <AlertIcon />
-                {txErrorFaucet.message && <AlertTitle>{txErrorFaucet.message}</AlertTitle>}
+                {txErrorFaucet.message && <AlertTitle fontSize="sm">{txErrorFaucet.message}</AlertTitle>}
                 <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
               </Alert>
             }

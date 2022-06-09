@@ -244,6 +244,20 @@ export const OPENSEA_CHAIN_NAMES = {
 }
 
 export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123, 43113];
+export const WEB3_AUTH_SUPPORTED_CHAINS = SUPPORTED_CHAINS.filter(i => ![31337, 1666700000, 210309, 123, 43113].includes(i)); // filter out chains web3auth + moralis does not support
+
+export const WALLETS = {
+  'METAMASK': 1,
+  'WC': 2,
+  'ELROND': 3,
+  'WEB3AUTH': 4,
+};
+
+export const WALLETS_MORALIS_PROVIDER_KEY = {
+  [WALLETS.METAMASK]: '',
+  [WALLETS.WC]: 'walletconnect',
+  [WALLETS.WEB3AUTH]: 'web3Auth',
+};
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
@@ -1322,4 +1336,8 @@ export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => {
   console.log('txNetworkId');
   console.log(txNetworkId);
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
+}
+
+export const hardReload = () => {
+  window?.location.reload();
 }
