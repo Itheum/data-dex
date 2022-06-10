@@ -243,7 +243,7 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai"
 }
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123, 43113];
+export const SUPPORTED_CHAINS = [97, 3, 80001, 31337, 4, 1666700000, 210309, 123, 43113];
 export const WEB3_AUTH_SUPPORTED_CHAINS = SUPPORTED_CHAINS.filter(i => ![31337, 1666700000, 210309, 123, 43113].includes(i)); // filter out chains web3auth + moralis does not support
 
 export const WALLETS = {

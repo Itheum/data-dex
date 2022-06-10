@@ -69,23 +69,22 @@ function App() {
   useEffect(() => {
     // this ensure that if the user reloads the page when logged in, we restore their web3Session to ethers.js
     if (user && isAuthenticated) {
-      console.log('GOT USER SESSION +++');
-      console.log('loggedInWalletProvider ---', loggedInWalletProvider, WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]);
-      console.log(WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]);
+      console.group();
+      console.log('GOT USER SESSION --- aim to recover the correct provider for enableWeb3');
+      console.log('user =', JSON.stringify(user));
+      console.log('loggedInWalletProvider =', WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]);
+      console.groupEnd();
+
       if (WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider]) {
         enableWeb3({ provider: WALLETS_MORALIS_PROVIDER_KEY[loggedInWalletProvider] });
       } else {
+        console.log('set provider to metamask (Unable to recover the provider for enableWeb3 OR provider is actually metamask)')
         enableWeb3(); // default to metamask
       }
-
     } else {
       console.log('NO USER SESSION ---');
     }
   }, [user, isAuthenticated]);
-
-  useEffect(() => {
-    console.log('loggedInWalletProvider ---', loggedInWalletProvider);
-  }, [loggedInWalletProvider]);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
@@ -418,7 +417,7 @@ function App() {
               margin="auto"
             />
             <Heading size="md" textAlign="center">Itheum Data DEX</Heading>
-            <Text fontSize="sm" textAlign="center">Tokenize and trade your data via a fully peer-to-peer protocol</Text>
+            <Text fontSize="sm" textAlign="center">Tokenize and trade your data via a decentralized peer-to-peer protocol</Text>
             <Spacer />
             <Auth key={rfKeys.auth} handleSetLoggedInWalletProvider={(v) => setLoggedInWalletProvider(v)} />
             <Spacer />
