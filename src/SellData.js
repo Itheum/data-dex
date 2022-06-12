@@ -695,7 +695,7 @@ export default function({onRfMount, itheumAccount}) {
 
                   <Tooltip label="Coming soon...">
                     <IconButton
-                      disabled="true"
+                      disabled={true}
                       icon={<MdOutlinePattern size="2.5rem" />}
                       l1="Art Collectible"
                       l2="(Algorithmic artistic generation)"

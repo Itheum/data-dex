@@ -71,8 +71,8 @@ export default function() {
 
               <Tooltip label="Coming soon...">
                 <ButtonGroup colorScheme="teal" spacing="3" size="sm">
-                {item.get('canJoin') && <><Button disabled="true" colorScheme="teal">Add Data & Join</Button>
-                  <Button disabled="true" colorScheme="teal" variant="outline">Bond {`${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`} & Join</Button></> || <Button disabled="true" colorScheme="teal" variant="outline">Stake {`${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}</Button>}
+                {item.get('canJoin') && <><Button disabled={true} colorScheme="teal">Add Data & Join</Button>
+                  <Button disabled={true} colorScheme="teal" variant="outline">Bond {`${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`} & Join</Button></> || <Button disabled={true} colorScheme="teal" variant="outline">Stake {`${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}</Button>}
                 </ButtonGroup>
               </Tooltip>
             </Box>

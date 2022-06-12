@@ -30,7 +30,7 @@ import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
 import { mydaRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from './libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES } from './libs/util';
 import { chainMeta, ChainMetaContext } from './libs/contexts';
 import logo from './img/logo.png';
 import logoSmlD from './img/logo-sml-d.png';
@@ -45,6 +45,7 @@ import chainParastate from './img/parastate-chain-logo.png';
 import chainElrond from './img/elrond-chain-logo.png';
 import chainHedera from './img/hedera-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
+import { useUser } from './store/UserContext';
 
 function App() {
   const {isAuthenticated, logout, user, Moralis: {web3Library: ethers}} = useMoralis();
@@ -63,7 +64,16 @@ function App() {
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode(); 
-  const [showMobileMenu, setShowMobileMenu] = useState(false); 
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { user: _user, setUser } = useUser();
+
+  useEffect(() => {
+    setUser({
+      isAuthenticated,
+      claimBalanceValues: ['-1', '-1', '-1'],
+      claimBalanceDates: [0, 0, 0],
+    });
+  },[]);
 
   useEffect(() => {
     enableWeb3();
@@ -83,17 +93,64 @@ function App() {
         chainMeta.networkId = networkId;
         chainMeta.contracts = contractsForChain(networkId);
         
-        await showMydaBalance();
+        await web3_getTokenBalance();
+        await sleep(1);
+
+        await web_getClaimBalance();
         await sleep(1);
       }      
     }
   }, [user, isWeb3Enabled]);
 
   const handleRefreshBalance = async () => {
-    await showMydaBalance();
+    await web3_getTokenBalance();
+    await web_getClaimBalance();
   };
 
-  const showMydaBalance = async () => {
+  const web_getClaimBalance = async () => {
+    const walletAddress = user.get('ethAddress');
+    const contract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Provider);
+
+    const keys = Object.keys(CLAIM_TYPES);
+    
+    const values = keys.map((el) => {
+      return CLAIM_TYPES[el]
+    });
+    
+    // queue all smart contract calls
+    const hexDataPromiseArray =  values.map(async (el) => {
+      let a = await contract.deposits(walletAddress, el);
+      return a;
+    });
+
+    const claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
+      const dates = new Date((parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US");
+      let value = (parseInt(el.amount._hex.toString(),16))/(10**18);
+      return { values: value , dates: dates}
+    });
+
+    const valuesArray = claimBalanceResponse.map((el) => {
+      return el['values'];
+    });
+
+    const dates = claimBalanceResponse.map((el) => {
+      return el['dates'];
+    });
+
+    await setUser({
+      ..._user,
+      claimBalanceValues: valuesArray,
+      claimBalanceDates: dates
+    });
+  };
+
+  useEffect(() => {
+    if (_user && _user.isAuthenticated) {
+      web3_getTokenBalance();
+    }
+  },[_user.claimBalanceValues]);
+
+  const web3_getTokenBalance = async () => {
     const walletAddress = user.get('ethAddress');
     
     /*

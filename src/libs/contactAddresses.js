@@ -43,14 +43,13 @@ export const claimsContractAddress_Matic = contracts.matic[contractsMode].claims
 
 // Ethereum Contracts
 export const tokenContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.itheumTokenContractAddress;
-export const ddexContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.itheumTokenContractAddress;
-export const dNFTContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.itheumTokenContractAddress;
-export const claimsContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.itheumTokenContractAddress;
+export const ddexContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.ddexContractAddress;
+export const dNFTContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.dNFTContractAddress;
+export const claimsContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.claimsContractAddress;
 
 export const tokenContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
 export const ddexContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
 export const dNFTContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
-export const claimsContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
 
 // BSC contracts
 export const tokenContractAddress_testnetBSC = contracts.bsc[contractsMode].itheumTokenContractAddress;

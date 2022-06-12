@@ -1,18 +1,42 @@
-import {tokenContractAddress_Rop, tokenContractAddress_Matic, ddexContractAddress_Rop,
-  ddexContractAddress_Matic, dNFTContractAddress_Rop, dNFTContractAddress_Matic,
-  tokenContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
-  tokenContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
-  tokenContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
-  tokenContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
-  tokenContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
-  tokenContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche,
-  tokenContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
+import {
+  tokenContractAddress_Rop,
+  tokenContractAddress_Matic,
+  ddexContractAddress_Rop,
+  ddexContractAddress_Matic,
+  dNFTContractAddress_Rop,
+  claimsContractAddress_Rop,
+  dNFTContractAddress_Matic,
+  tokenContractAddress_Rink,
+  ddexContractAddress_Rink,
+  dNFTContractAddress_Rink,
+  tokenContractAddress_testnetBSC,
+  ddexContractAddress_testnetBSC,
+  dNFTContractAddress_testnetBSC,
+  tokenContractAddress_testnetHarmony,
+  ddexContractAddress_testnetHarmony,
+  dNFTContractAddress_testnetHarmony,
+  tokenContractAddress_testnetPlatON,
+  ddexContractAddress_testnetPlatON,
+  dNFTContractAddress_testnetPlatON,
+  tokenContractAddress_testnetParastate,
+  ddexContractAddress_testnetParastate,
+  dNFTContractAddress_testnetParastate,
+  tokenContractAddress_testnetAvalanche,
+  ddexContractAddress_testnetAvalanche,
+  dNFTContractAddress_testnetAvalanche,
+  tokenContractAddress_Local,
+  ddexContractAddress_Local,
+  dNFTContractAddress_Local,
+  claimsContractAddress_Matic,
+  claimsContractAddress_testnetBSC
+} from "./contactAddresses.js";
 
 export const contractsForChain = networkId => {
   const contracts = {
     myda: null,
     ddex: null,
-    dnft: null
+    dnft: null,
+    claims: null,
   };
 
   switch (networkId) {
@@ -25,6 +49,7 @@ export const contractsForChain = networkId => {
       contracts.myda = tokenContractAddress_Rop;
       contracts.ddex = ddexContractAddress_Rop;
       contracts.dnft = dNFTContractAddress_Rop;
+      contracts.claims = claimsContractAddress_Rop
       break;
     case 4:
       contracts.myda = tokenContractAddress_Rink;
@@ -35,11 +60,13 @@ export const contractsForChain = networkId => {
       contracts.myda = tokenContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
+      contracts.claims = claimsContractAddress_Matic;
       break;
     case 97:
       contracts.myda = tokenContractAddress_testnetBSC;
       contracts.ddex = ddexContractAddress_testnetBSC;
       contracts.dnft = dNFTContractAddress_testnetBSC;
+      contracts.claims = claimsContractAddress_testnetBSC;
       break;
     case 1666700000:
       contracts.myda = tokenContractAddress_testnetHarmony;
@@ -183,6 +210,12 @@ export const mydaRoundUtil = (balance, decimals, BigNumber) => {
 
   return beforeDecimal.toString();
 }
+
+export const CLAIM_TYPES = {
+  REWARDS: 1,
+  AIRDROPS: 2,
+  ALLOCATIONS: 3
+};
 
 export const MENU = {
   HOME: 0,

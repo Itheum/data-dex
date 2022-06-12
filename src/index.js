@@ -5,6 +5,7 @@ import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/re
 import { createBreakpoints } from '@chakra-ui/theme-tools'
 import { MoralisProvider } from 'react-moralis';
 import ErrorBoundary from './ErrorBoundary';
+import { UserContextProvider } from './store/UserContext';
 // import { appId, serverURL } from './secrets.js'; 
 
 const breakpoints = createBreakpoints({
@@ -42,7 +43,9 @@ ReactDOM.render(
     <ErrorBoundary>
       <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
         <ChakraProvider theme={theme}>
-          <App />
+          <UserContextProvider>
+            <App />
+          </UserContextProvider>
         </ChakraProvider>
       </MoralisProvider>
     </ErrorBoundary>
