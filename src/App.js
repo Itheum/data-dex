@@ -69,21 +69,9 @@ function App() {
 
   useEffect(() => {
     setUser({
-      isAuthenticated: isAuthenticated,
-      logout: logout,
-      user: user,
-      ethers: ethers,
-      web3Provider: web3Provider,
-      enableWeb3: enableWeb3,
-      isWeb3Enabled: isWeb3Enabled,
-      isWeb3EnableLoading: isWeb3EnableLoading,
-      web3EnableError: web3EnableError,
-      claimBalanceValues: ["a", "a", "a"],
+      isAuthenticated,
+      claimBalanceValues: ["-1", "-1", "-1"],
       claimBalanceDates: [0, 0, 0],
-      showMydaBalance: showMydaBalance,
-      myMydaBal: myMydaBal,
-      setMydaBal: setMydaBal,
-      handleRefreshBalance: handleRefreshBalance
     });
   },[]);
 
@@ -105,19 +93,21 @@ function App() {
         chainMeta.networkId = networkId;
         chainMeta.contracts = contractsForChain(networkId);
 
-        await showMydaBalance();
-        await showClaimBalance();
-        
-        await sleep(2);
+        await web3_getTokenBalance();
+        await sleep(1);
+
+        await web_getClaimBalance();
+        await sleep(1);
       }
     }
   }, [user, isWeb3Enabled]);
 
   const handleRefreshBalance = async () => {
-    await showMydaBalance();
+    await web3_getTokenBalance();
+    await web_getClaimBalance();
   };
 
- const showClaimBalance = async () => {
+ const web_getClaimBalance = async () => {
     const walletAddress = user.get("ethAddress");
     const contract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Provider);
     const claimUints = {
@@ -138,7 +128,7 @@ function App() {
 
     let claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
       const dates = new Date((parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US");
-      let value = (parseInt(el.amount._hex.toString(),16))/(10**18)
+      let value = (parseInt(el.amount._hex.toString(),16))/(10**18);
       return { values: value , dates: dates}
     });
 
@@ -159,11 +149,11 @@ function App() {
 
   useEffect(() => {
     if (_user && _user.isAuthenticated) {
-      showMydaBalance();
+      web3_getTokenBalance();
     }
   },[_user.claimBalanceValues]);
 
-  const showMydaBalance = async () => {
+  const web3_getTokenBalance = async () => {
     const walletAddress = user.get("ethAddress");
 
     /*

@@ -9,6 +9,7 @@ import {
   Text, HStack, VStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner,
   useToast, useDisclosure
 } from "@chakra-ui/react";
+import moment from 'moment';
 import ShortAddress from "./UtilComps/ShortAddress";
 import { progInfoMeta, config, sleep } from "./libs/util";
 import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from "./libs/util";
@@ -36,17 +37,11 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
-  const [claimWorking, setClaimWorking] = useState(false);
 
   // eth tx state (faucet)
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
-  
-  // eth tx state (claims)
-  // const [txConfirmationClaim, setTxConfirmationClaim] = useState(0);
-  // const [txHashClaim, setTxHashClaim] = useState(null);
-  // const [txErrorClaim, setTxErrorClaim] = useState(null);
 
   useEffect(() => {
     console.log("MOUNT Tools");
@@ -68,25 +63,6 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
       onItheumAccount(response);
     }
   }, [dataCfTestData]);
-
-  // // Claim
-  // useEffect(() => {
-  //   if (txErrorClaim) {
-  //     setClaimWorking(false);
-  //   } else {
-  //     if (txHashClaim && txConfirmationClaim === config.txConfirmationsNeededLrg) {
-  //       toast({
-  //         title: `Congrats! your selected claims have been sent to your wallet`,
-  //         status: "success",
-  //         duration: 6000,
-  //         isClosable: true,
-  //       });
-
-  //       resetClaimState();
-  //       onRefreshBalance();
-  //     }
-  //   }
-  // }, [txConfirmationClaim, txHashClaim, txErrorClaim]);
   
   // Faucet
   useEffect(() => {
@@ -143,50 +119,6 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
     }
   };
 
-  // const web3_claims = async(ntype) => {
-  //   setClaimWorking(true);
-
-  //   const web3Signer = web3Provider.getSigner();
-  //   const walletAddress = user.get("ethAddress");
-
-  //   const tokenContract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Signer);
-
-  //   try {
-  //     const txResponse = await tokenContract.claimDeposit(ntype);
-
-  //     // show a nice loading animation to user
-  //     setTxHashClaim(txResponse.hash);
-  //     console.log("🚀 ~ file: Tools.js ~ line 224 ~ constweb3_claims= ~ txResponse.hash", txResponse.hash)
-
-  //     await sleep(2);
-  //     setTxConfirmationClaim(0.5);
-
-  //     // wait for 1 confirmation from ethers
-  //     const txReceipt = await txResponse.wait();
-  //     console.log("🚀 ~ file: Tools.js ~ line 231 ~ constweb3_claims= ~ txReceipt", txReceipt)
-  //     setTxConfirmationClaim(1);
-  //     await sleep(2);
-
-  //     if (txReceipt.status) {
-  //       setTxConfirmationClaim(2);
-  //     } else {
-  //       const txErr = new Error("Token Contract Error on method faucet");
-  //       console.error(txErr)
-
-  //       setTxErrorClaim(txErr);
-  //     }
-  //   } catch (e) {
-  //     setTxErrorClaim(e);
-  //   }
-  // };
-  
-  // function resetClaimState() {
-  //   setClaimWorking(false);
-  //   setTxConfirmationClaim(0);
-  //   setTxHashClaim(null);
-  //   setTxErrorClaim(null);
-  // }
-
   function resetFauceState() {
     setFaucetWorking(false);
     setTxConfirmationFaucet(0);
@@ -204,12 +136,17 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   
   const rewardsModalData = {
     isOpen: isRewardsOpen,
-    onClose: onRewardsClose,
-    title: "My Claimable Rewards",
+    onClose: refreshTokenBalances => {
+      onRewardsClose();
+      if (refreshTokenBalances) {
+        onRefreshBalance();
+      }
+    },
+    title: "Rewards",
     tag1: "Total Available",
     value1: _user?.claimBalanceValues[0],
     tag2: "Deposited On",
-    value2: _user?.claimBalanceDates[0].toString(),
+    value2: moment(_user?.claimBalanceDates[0]).format(config.dateStrTm),
     n: 1
   }
 
@@ -217,12 +154,17 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   
   const airdropsModalData = {
     isOpen: isAirdropsOpen,
-    onClose: onAirdropClose,
-    title: "My Claimable Airdrops",
+    onClose: refreshTokenBalances => {
+      onAirdropClose();
+      if (refreshTokenBalances) {
+        onRefreshBalance();
+      }
+    },
+    title: "Airdrops",
     tag1: "Total Available",
     value1: _user?.claimBalanceValues[1],
     tag2: "Deposited On",
-    value2: _user?.claimBalanceDates[1].toString(),
+    value2: moment(_user?.claimBalanceDates[1]).format(config.dateStrTm),
     n: 2
   }
   
@@ -230,12 +172,17 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   
   const allocationsModalData = {
     isOpen: isAllocationsOpen,
-    onClose: onAllocationsClose,
-    title: "My Claimable Allocations",
-    tag1:"Total Available",
-    value1:_user?.claimBalanceValues[2],
+    onClose: refreshTokenBalances => {
+      onAllocationsClose();
+      if (refreshTokenBalances) {
+        onRefreshBalance();
+      }
+    },
+    title: "Allocations",
+    tag1: "Total Available",
+    value1: _user?.claimBalanceValues[2],
     tag2: "Deposited On",
-    value2: _user?.claimBalanceDates[2].toString(),
+    value2: moment(_user?.claimBalanceDates[2]).format(config.dateStrTm),
     n: 3   
   }
   // E: claims related logic
@@ -331,24 +278,12 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                 <Progress
                   colorScheme="teal"
                   size="sm"
-                  value={
-                    (100 / config.txConfirmationsNeededLrg) *
-                    txConfirmationFaucet
-                  }
-                />
+                  value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
                 <HStack>
                   <Text fontSize="sm">Transaction </Text>
                   <ShortAddress address={txHashFaucet} />
-                  <Link
-                    href={`${
-                      CHAIN_TX_VIEWER[chainMeta.networkId]
-                    }${txHashFaucet}`}
-                    isExternal
-                  >
-                    {" "}
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
+                  <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal>{" "}<ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
               </Stack>
             )}
@@ -383,68 +318,25 @@ export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
             <Heading size="md">My Claims</Heading>
-            <VStack spacing={20} ></VStack>
             <Spacer />
             <HStack spacing={50}>
-              <Text fontSize={"xl"} align={"left"} >Rewards</Text>
-              <Button colorScheme="teal" variant="outline" w="70px" h="40px" align={"right"} onClick={onRewardsOpen}>{_user?.claimBalanceValues[0] !== "a" ? _user?.claimBalanceValues[0] : <Spinner size='xs' /> }</Button>
+              <Text>Rewards</Text>
+              <Button disabled={_user?.claimBalanceValues[0] === "-1" || !_user?.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>{_user?.claimBalanceValues[0] !== "-1" ? _user?.claimBalanceValues[0] : <Spinner size='xs' /> }</Button>
               <ClaimModal {...rewardsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={50}>
-              <Text fontSize={"xl"} align={"left"}>Airdrops</Text>
-
-              <Button colorScheme="teal" variant="outline" w="70px" h="40px" align={"right"} onClick={onAirdropsOpen} >{_user?.claimBalanceValues[1] !== "a" ? _user?.claimBalanceValues[1] : <Spinner size='xs' />}</Button>
+              <Text>Airdrops</Text>
+              <Button disabled={_user?.claimBalanceValues[1] === "-1" || !_user?.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen} >{_user?.claimBalanceValues[1] !== "-1" ? _user?.claimBalanceValues[1] : <Spinner size='xs' />}</Button>
               <ClaimModal {...airdropsModalData}/>
             </HStack>
             <Spacer />
             <HStack spacing={30}>
-              <Text fontSize={"xl"} align={"left"}>Allocations</Text>
-              <Button colorScheme="teal" variant="outline" w="70px" h="40px" align={"right"} onClick={onAllocationsOpen} >{_user?.claimBalanceValues[2] !== "a" ? _user?.claimBalanceValues[2] : <Spinner size='xs' /> }</Button>
+              <Text>Allocations</Text>
+              <Button disabled={_user?.claimBalanceValues[2] === "-1" || !_user?.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen} >{_user?.claimBalanceValues[2] !== "-1" ? _user?.claimBalanceValues[2] : <Spinner size='xs' /> }</Button>
               <ClaimModal {...allocationsModalData}/>
             </HStack>
 
-            {/* {txHashClaim && (
-              <Stack>
-                <Progress
-                  colorScheme="teal"
-                  size="sm"
-                  value={
-                    (100 / config.txConfirmationsNeededLrg) *
-                    txConfirmationClaim
-                  }
-                />
-
-                <HStack>
-                  <Text fontSize="sm">Transaction </Text>
-                  <ShortAddress address={txHashClaim} />
-                  <Link
-                    href={`${
-                      CHAIN_TX_VIEWER[chainMeta.networkId]
-                    }${txHashClaim}`}
-                    isExternal
-                  >
-                    {" "}
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </HStack>
-              </Stack>
-            )} */}
-
-            {/* {txErrorFaucet && (
-              <Alert status="error">
-                <AlertIcon />
-                {txErrorFaucet.message && (
-                  <AlertTitle>{txErrorClaim.message}</AlertTitle>
-                )}
-                <CloseButton
-                  position="absolute"
-                  right="8px"
-                  top="8px"
-                  onClick={resetClaimState}
-                />
-              </Alert>
-            )} */}
             <Spacer />
           </Stack>
         </WrapItem>

@@ -1,7 +1,7 @@
 import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
   VStack, HStack, Text, Spacer, Button,
-  Link, Progress, CloseButton, Stack, Spinner,
+  Link, Progress, CloseButton, Stack,
   Alert, AlertIcon, AlertTitle,
   useToast,  
 } from "@chakra-ui/react";
@@ -28,7 +28,6 @@ const ClaimModal = ({
   const toast = useToast();
 
   const { web3: web3Provider, Moralis: { web3Library: ethers } } = useMoralis();
-  const { user } = useMoralis();
   const [txConfirmationClaim, setTxConfirmationClaim] = useState(0);
   const [txHashClaim, setTxHashClaim] = useState(null);
   const [txErrorClaim, setTxErrorClaim] = useState(null);
@@ -37,27 +36,25 @@ const ClaimModal = ({
 
   useEffect(() => {
     if (txErrorClaim) {
-      setClaimWorking(false);
+      resetClaimState({clearError: false, keepOpen: true});
     } else {
       if (txHashClaim && txConfirmationClaim === config.txConfirmationsNeededLrg) {
         toast({
-          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL( chainMeta.networkId)}`,
+          title: `Congrats! you have claimed your ${title} tokens`,
           status: "success",
           duration: 6000,
           isClosable: true,
         });
 
-        resetClaimState();
+        resetClaimState({refreshTokenBalances: true});
       }
     }
   }, [txConfirmationClaim, txHashClaim, txErrorClaim]);
 
-  const web3_claims = async(ntype) => {
+  const web3_claims = async ntype => {
     setClaimWorking(true);
 
     const web3Signer = web3Provider.getSigner();
-    const walletAddress = user.get("ethAddress");
-    
     const tokenContract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Signer);
 
     try {
@@ -74,7 +71,7 @@ const ClaimModal = ({
       if (txReceipt.status) {
         setTxConfirmationClaim(2);
       } else {
-        const txErr = new Error("Token Contract Error on method faucet");
+        const txErr = new Error("Claim Contract Error on method claimDeposit");
         console.error(txErr);
         setTxErrorClaim(txErr);
       }
@@ -83,146 +80,86 @@ const ClaimModal = ({
     }
   };
 
-  const [clicked, setClicked] = useState(false);
-
-  function resetClaimState() {
+  const resetClaimState = ({refreshTokenBalances = false, clearError = true, keepOpen = false}) => {
     setClaimWorking(false);
     setTxConfirmationClaim(0);
     setTxHashClaim(null);
-    setTxErrorClaim(null);
-    setClicked(false);
-    onClose();
-    setUser({
-      ..._user,
-      claimBalanceValues: ["a", "a", "a"],
-    });
-    showClaimBalance();
+
+    if (clearError) {
+      setTxErrorClaim(null);
+    }
+
+    if (!keepOpen) {
+      if (refreshTokenBalances) {
+        setUser({
+          ..._user,
+          claimBalanceValues: ["-1", "-1", "-1"],
+        });
+  
+        onClose(true);
+      } else {
+        onClose();
+      }
+    }
   }
 
-  const showClaimBalance = async () => {
-    const walletAddress = user.get("ethAddress");
-
-    const contract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Provider);
-    const claimUints = {
-      rewards: 1,
-      airdrops: 2,
-      allocations: 3,
-    };
-
-    let keys = Object.keys(claimUints);
-
-    let values = keys.map((el) => {
-      return claimUints[el];
-    });
-
-    let hexDataPromiseArray = values.map(async (el) => {
-      let a = await contract.deposits(walletAddress, el);
-      return a;
-    });
-
-    let claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map(
-      (el) => {
-        const dates = new Date(
-          parseInt(el.lastDeposited._hex.toString(), 16) * 1000
-        ).toLocaleDateString("en-US");
-        let value = parseInt(el.amount._hex.toString(), 16)/(10**18);
-        return { values: value, dates: dates };
-      }
-    );
-
-    const valuesArray = claimBalanceResponse.map((el) => {
-      return el["values"];
-    });
-    
-    const dates = claimBalanceResponse.map((el) => {
-      return el["dates"];
-    });
-
-    await setUser({
-      ..._user,
-      claimBalanceValues: valuesArray,
-      claimBalanceDates: dates,
-    });
-  };
-
-  const handleClick = () => {
+  const handleOnChainClaim = () => {
+    setTxErrorClaim(null);
     web3_claims(n);
-    setClicked(!clicked);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size={"xl"}>
+    <Modal isOpen={isOpen} onClose={() => resetClaimState({})} isCentered size={"xl"}>
       <ModalOverlay />
 
       <ModalContent h="400px" w="400px">
-        <ModalHeader>{title}</ModalHeader>
+        <ModalHeader>My Claimable {title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
-          <VStack spacing={10} align={"left"}>
-            <Spacer />
+          <Stack spacing="5" mb="5">
+            <Stack>
+              <Text color="gray" as="b" fontSize={"md"}>
+                {tag1}:
+              </Text>{" "}
+              <Text fontSize={"md"}>{value1} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text>
+            </Stack>
+            <Stack>
+              <Text color="gray" as="b" fontSize={"md"}>
+                {tag2}:
+              </Text>{" "}
+              <Text fontSize={"md"}>{value2}</Text>
+            </Stack>
+          </Stack>
 
-            <HStack spacing={100}>
-              <Text color="gray" as="b">
-                {tag1}
-              </Text>
-              <Text>{value1}</Text>
+          {txHashClaim && (
+          <Stack>
+            <Progress
+              colorScheme="teal"
+              size="sm"
+              value={(100 / config.txConfirmationsNeededLrg) * txConfirmationClaim} />
+
+            <HStack>
+              <Text fontSize="sm">Transaction </Text>
+              <ShortAddress address={txHashClaim} />
+              <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashClaim}`} isExternal>{" "}<ExternalLinkIcon mx="2px" /></Link>
             </HStack>
-            <HStack spacing={100}>
-              <Text color="gray" as="b">
-                {tag2}
-              </Text>
-              <Text>{value2}</Text>
-            </HStack>
-            <Spacer />
-          </VStack>
-
-          {clicked && (
-            <>
-              {txHashClaim && (
-                <Stack>
-                  <Progress
-                    colorScheme="teal"
-                    size="sm"
-                    value={
-                      (100 / config.txConfirmationsNeededLrg) *
-                      txConfirmationClaim
-                    }
-                  />
-
-                  <HStack>
-                    <Text fontSize="sm">Transaction </Text>
-                    <ShortAddress address={txHashClaim} />
-                    <Link
-                      href={`${
-                        CHAIN_TX_VIEWER[chainMeta.networkId]
-                      }${txHashClaim}`}
-                      isExternal
-                    >
-                      {" "}
-                      <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  </HStack>
-                </Stack>
-              )}
-
-              {txErrorClaim && (
-                <Alert status="error">
-                  <AlertIcon />
-                  {txErrorClaim.message && (
-                    <AlertTitle>{txErrorClaim.message}</AlertTitle>
-                  )}
-                  <CloseButton
-                    position="absolute"
-                    right="8px"
-                    top="8px"
-                    onClick={resetClaimState}
-                  />
-                </Alert>
-              )}
-              <Spacer />
-              <Spacer />
-            </>
+          </Stack>
           )}
+
+          {txErrorClaim && (
+          <Alert status="error">
+            <AlertIcon />
+            {txErrorClaim.message && (<AlertTitle fontSize="md">{txErrorClaim.message}</AlertTitle>)}
+            <CloseButton
+              position="absolute"
+              right="8px"
+              top="8px"
+              onClick={() => resetClaimState({keepOpen: true})}
+            />
+          </Alert>
+          )}
+          <Spacer />
+          <Spacer />
         </ModalBody>
         <Spacer />
         <ModalFooter>
@@ -230,24 +167,14 @@ const ClaimModal = ({
             <Button
               size="sm"
               mr={3}
-              h="35px"
-              w="75px"
               colorScheme="teal"
               variant="outline"
-              onClick={onClose}
-            >
-              Close
-            </Button>
+              onClick={resetClaimState}>Close</Button>
             <Button
+              isLoading={claimWorking}
               size="sm"
-              h="35px"
-              w="75px"
               colorScheme="teal"
-              onClick={handleClick}
-              disabled={clicked}
-            >
-              {!clicked ? "Claim Now" : <Spinner size="xs" />}
-            </Button>
+              onClick={handleOnChainClaim}>Claim Now</Button>
           </HStack>
         </ModalFooter>
       </ModalContent>
