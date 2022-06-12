@@ -44,7 +44,7 @@ ReactDOM.render(
       <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
         <ChakraProvider theme={theme}>
           <UserContextProvider>
-          <App />
+            <App />
           </UserContextProvider>
         </ChakraProvider>
       </MoralisProvider>

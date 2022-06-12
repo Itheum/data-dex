@@ -4,6 +4,7 @@ import {
   ddexContractAddress_Rop,
   ddexContractAddress_Matic,
   dNFTContractAddress_Rop,
+  claimsContractAddress_Rop,
   dNFTContractAddress_Matic,
   tokenContractAddress_Rink,
   ddexContractAddress_Rink,
@@ -35,7 +36,7 @@ export const contractsForChain = (networkId) => {
     myda: null,
     ddex: null,
     dnft: null,
-    claim: null,
+    claims: null,
   };
 
   switch (networkId) {
@@ -48,6 +49,7 @@ export const contractsForChain = (networkId) => {
       contracts.myda = tokenContractAddress_Rop;
       contracts.ddex = ddexContractAddress_Rop;
       contracts.dnft = dNFTContractAddress_Rop;
+      contracts.claims = claimsContractAddress_Rop
       break;
     case 4:
       contracts.myda = tokenContractAddress_Rink;
@@ -58,14 +60,13 @@ export const contractsForChain = (networkId) => {
       contracts.myda = tokenContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
-      contracts.claim = claimsContractAddress_Matic;
+      contracts.claims = claimsContractAddress_Matic;
       break;
     case 97:
       contracts.myda = tokenContractAddress_testnetBSC;
       contracts.ddex = ddexContractAddress_testnetBSC;
       contracts.dnft = dNFTContractAddress_testnetBSC;
-      contracts.claim = claimsContractAddress_testnetBSC;
-
+      contracts.claims = claimsContractAddress_testnetBSC;
       break;
     case 1666700000:
       contracts.myda = tokenContractAddress_testnetHarmony;

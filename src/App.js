@@ -1,48 +1,14 @@
 import { useEffect, useState, useRef } from "react";
-import {
-  Button,
-  Text,
-  Image,
-  Divider,
-  Tooltip,
-  AlertDialog,
-  Badge,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
+import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay,
-  useColorMode,
-  Link,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  IconButton,
-  MenuGroup,
-  MenuDivider,
-} from "@chakra-ui/react";
-import {
-  Container,
-  Heading,
-  Flex,
-  Spacer,
-  Box,
-  Stack,
-  HStack,
-  VStack,
-} from "@chakra-ui/layout";
-import {
-  SunIcon,
-  MoonIcon,
-  ExternalLinkIcon,
-  HamburgerIcon,
-} from "@chakra-ui/icons";
+  AlertDialogOverlay, useColorMode, Link,
+  Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
+import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
@@ -63,22 +29,8 @@ import DataStreams from "./DataStreams";
 import DataCoalitions from "./DataCoalitions";
 import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
 import TrustedComputation from "./TrustedComputation";
-import {
-  mydaRoundUtil,
-  sleep,
-  contractsForChain,
-  noChainSupport,
-  qsParams,
-  consoleNotice,
-} from "./libs/util";
-import {
-  MENU,
-  ABIS,
-  CHAINS,
-  SUPPORTED_CHAINS,
-  CHAIN_TOKEN_SYMBOL,
-  CHAIN_NAMES,
-} from "./libs/util";
+import { mydaRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from "./libs/util";
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES } from "./libs/util";
 import { chainMeta, ChainMetaContext } from "./libs/contexts";
 import logo from "./img/logo.png";
 import logoSmlD from "./img/logo-sml-d.png";
@@ -96,27 +48,8 @@ import moralisIcon from "./img/powered-moralis.png";
 import { useUser } from "./store/UserContext";
 
 function App() {
-  const {
-    isAuthenticated,
-    logout,
-    user,
-    Moralis: { web3Library: ethers },
-  } = useMoralis();
-
-  const {
-    web3: web3Provider,
-    enableWeb3,
-    isWeb3Enabled,
-    isWeb3EnableLoading,
-    web3EnableError,
-  } = useMoralis();
-
-  const { user: _user,setUser } = useUser();
-
- 
-  
-
-
+  const { isAuthenticated, logout, user, Moralis: { web3Library: ethers }} = useMoralis();
+  const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [myMydaBal, setMydaBal] = useState(0);
   const [chain, setChain] = useState(0);
@@ -132,6 +65,7 @@ function App() {
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { user: _user, setUser } = useUser();
 
   useEffect(() => {
     setUser({
@@ -147,12 +81,10 @@ function App() {
       claimBalanceValues: ["a", "a", "a"],
       claimBalanceDates: [0, 0, 0],
       showMydaBalance: showMydaBalance,
-      myMydaBal:myMydaBal,
-      setMydaBal:setMydaBal,
-      handleRefreshBalance:handleRefreshBalance
-
+      myMydaBal: myMydaBal,
+      setMydaBal: setMydaBal,
+      handleRefreshBalance: handleRefreshBalance
     });
-
   },[]);
 
   useEffect(() => {
@@ -181,55 +113,55 @@ function App() {
     }
   }, [user, isWeb3Enabled]);
 
-
-
   const handleRefreshBalance = async () => {
     await showMydaBalance();
   };
 
-
  const showClaimBalance = async () => {
     const walletAddress = user.get("ethAddress");
-    const contract = new ethers.Contract(
-      chainMeta.contracts.claim,
-      ABIS.claims,
-      web3Provider
-      );
+    const contract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Provider);
     const claimUints = {
       rewards: 1,
       airdrops: 2,
       allocations: 3
-    }
+    };
     let keys = Object.keys(claimUints);
+    
     let values = keys.map((el) => {
       return claimUints[el]
-    })
+    });
+    
     let hexDataPromiseArray =  values.map(async (el) => {
-      let a = await contract.deposits(walletAddress,el)
-      return a
-    })
+      let a = await contract.deposits(walletAddress, el);
+      return a;
+    });
+
     let claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
-     const dates =new  Date( 
-      (parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US")
+      const dates = new Date((parseInt((el.lastDeposited._hex.toString()),16))*1000).toLocaleDateString("en-US");
       let value = (parseInt(el.amount._hex.toString(),16))/(10**18)
-      return { values : value , dates: dates}
-    })
+      return { values: value , dates: dates}
+    });
+
     const valuesArray = claimBalanceResponse.map((el) => {
-      return el["values"]
-    })
+      return el["values"];
+    });
+
     const dates = claimBalanceResponse.map((el) => {
-      return el["dates"]
-    })
+      return el["dates"];
+    });
+
     await setUser({
       ..._user,
       claimBalanceValues: valuesArray,
       claimBalanceDates: dates
-    })
+    });
   };
 
-useEffect(() => {
-  showMydaBalance()
-},[_user.claimBalanceValues])
+  useEffect(() => {
+    if (_user && _user.isAuthenticated) {
+      showMydaBalance();
+    }
+  },[_user.claimBalanceValues]);
 
   const showMydaBalance = async () => {
     const walletAddress = user.get("ethAddress");
@@ -251,13 +183,8 @@ useEffect(() => {
     const balance = await Web3Api.native.runContractFunction(options);
     */
 
-   console.log("🚀 ~ file: App.js ~ line 267 ~ showMydaBalance ~ chainMeta.contracts.myda,", chainMeta.contracts.myda,)
     // call contract via ethers
-    const contract = new ethers.Contract(
-      chainMeta.contracts.myda,
-      ABIS.token,
-      web3Provider
-    );
+    const contract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
     const balance = await contract.balanceOf(walletAddress);
     const decimals = await contract.decimals();
 
@@ -279,25 +206,17 @@ useEffect(() => {
 
   if (isAuthenticated) {
     return (
-      <Container
-        maxW="container.xxl"
-        h="100vh"
-        d="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
+      <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
         <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
           <HStack h="10vh" p="5">
-            <Image
-              boxSize="50px"
+            
+            <Image boxSize="50px"
               height="auto"
               src={colorMode === "light" ? logoSmlL : logoSmlD}
               alt="Itheum Data DEX"
             />
 
-            <Heading>
-              <Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text>
-            </Heading>
+            <Heading> <Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text> </Heading>
 
             <Spacer />
 
@@ -311,9 +230,7 @@ useEffect(() => {
                 color="white"
                 fontWeight="bold"
                 borderRadius="md"
-                bgGradient="linear(to-l, #7928CA, #FF0080)"
-              >
-                {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} {myMydaBal}
+                bgGradient="linear(to-l, #7928CA, #FF0080)"> {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} {myMydaBal}
               </Box>
 
               <Box
@@ -324,14 +241,13 @@ useEffect(() => {
                 color="rgb(243, 183, 30)"
                 fontWeight="bold"
                 bg="rgba(243, 132, 30, 0.05)"
-                borderRadius="md"
-              >
-                {chain || "..."}
+                borderRadius="md">{chain || "..."}
               </Box>
 
               <Button onClick={toggleColorMode}>
                 {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
               </Button>
+
             </HStack>
 
             <Menu>
@@ -345,9 +261,7 @@ useEffect(() => {
                 <MenuGroup>
                   <MenuItem closeOnSelect={false}>
                     <Text fontSize="xs">
-                      {itheumAccount && (
-                        <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                      )}
+                      {itheumAccount && (<Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>)}
                       <ShortAddress address={user.get("ethAddress")} />
                     </Text>
                   </MenuItem>
@@ -359,10 +273,7 @@ useEffect(() => {
                 <MenuDivider display={["block", null, "none"]} />
 
                 <MenuGroup>
-                  <MenuItem
-                    closeOnSelect={false}
-                    display={["block", null, "none"]}
-                  >
+                  <MenuItem closeOnSelect={false} display={["block", null, "none"]}>
                     <Box
                       fontSize={["xs", "sm"]}
                       align="center"
@@ -370,57 +281,33 @@ useEffect(() => {
                       color="rgb(243, 183, 30)"
                       fontWeight="bold"
                       bg="rgba(243, 132, 30, 0.05)"
-                      borderRadius="md"
-                    >
-                      {chain || "..."}
+                      borderRadius="md">{chain || "..."}
                     </Box>
                   </MenuItem>
+
                 </MenuGroup>
               </MenuList>
             </Menu>
           </HStack>
 
-          <HStack
-            alignItems={["center", , "flex-start"]}
-            flexDirection={["column", , "row"]}
-            backgroundColor={"blue1"}
-            pt={5}
-          >
+          <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} backgroundColor={"blue1"} pt={5}>
+            
             <Box backgroundColor={"green1"}>
-              <Button
-                display={["block", null, "none"]}
+              <Button display={["block", null, "none"]}
                 colorScheme="teal"
                 variant="solid"
                 m="auto"
                 mb={5}
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-              >
-                Main menu
-              </Button>
+                onClick={() => setShowMobileMenu(!showMobileMenu)}>Main menu</Button>
 
-              <Stack
-                direction="column"
-                spacing={4}
-                display={[(showMobileMenu && "block") || "none", , "block"]}
-              >
+              <Stack direction="column" spacing={4} display={[(showMobileMenu && "block") || "none", , "block"]}>
                 <HStack pl="3">
-                  <Link
-                    fontSize="xs"
-                    href="https://itheum.com/termsofuse"
-                    isExternal
-                  >
-                    Terms of Use <ExternalLinkIcon mx="2px" />
-                  </Link>
-                  <Link
-                    fontSize="xs"
-                    href="https://itheum.com/privacypolicy"
-                    isExternal
-                  >
-                    Privacy Policy <ExternalLinkIcon mx="2px" />
-                  </Link>
+                  <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>Terms of Use <ExternalLinkIcon mx="2px" /></Link>
+                  <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>Privacy Policy <ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
 
                 <Flex direction="column" justify="space-between" minH="80vh">
+
                   <Stack ml="15px" spacing={4}>
                     <Button
                       rightIcon={<AiFillHome />}

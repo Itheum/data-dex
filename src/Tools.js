@@ -3,32 +3,11 @@ import { useMoralis, useMoralisCloudFunction } from "react-moralis";
 import { Box, Stack } from "@chakra-ui/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Button,
-  Link,
-  Progress,
-  Badge,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Spacer,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  Text,
-  HStack,
-  VStack,
-  Heading,
-  CloseButton,
-  Wrap,
-  Image,
-  WrapItem,
-  useToast,
-  useDisclosure,Spinner
+  Button, Link, Progress, Badge,
+  Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter,
+  Text, HStack, VStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner,
+  useToast, useDisclosure
 } from "@chakra-ui/react";
 import ShortAddress from "./UtilComps/ShortAddress";
 import { progInfoMeta, config, sleep } from "./libs/util";
@@ -38,30 +17,15 @@ import imgProgGaPa from "./img/prog-gaming.jpg";
 import imgProgRhc from "./img/prog-rhc.png";
 import imgProgWfh from "./img/prog-wfh.png";
 import ClaimModal from "./UtilComps/ClaimModal";
-import {claimsContractAddress_Matic} from "./libs/contactAddresses"
 import { useUser } from "./store/UserContext";
 
-export default function ({
-  onRfMount,
-  setMenuItem,
-  onRefreshBalance,
-  onItheumAccount,
-  itheumAccount,
-}) {
+export default function ({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
-  const {
-    web3: web3Provider,
-    Moralis: { web3Library: ethers },
-  } = useMoralis();
-
+  const { web3: web3Provider, Moralis: { web3Library: ethers }} = useMoralis();
   const { user } = useMoralis();
-
-  const {
-    isOpen: isProgressModalOpen,
-    onOpen: onProgressModalOpen,
-    onClose: onProgressModalClose,
-  } = useDisclosure();
+  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose} = useDisclosure();
+  const {user: _user} = useUser();
 
   const {
     error: errCfTestData,
@@ -71,16 +35,18 @@ export default function ({
   } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
-  const [claimWorking, setClaimWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
+  const [claimWorking, setClaimWorking] = useState(false);
 
-  // eth tx state
+  // eth tx state (faucet)
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
-  const [txConfirmationClaim, setTxConfirmationClaim] = useState(0);
-  const [txHashClaim, setTxHashClaim] = useState(null);
-  const [txErrorClaim, setTxErrorClaim] = useState(null);
+  
+  // eth tx state (claims)
+  // const [txConfirmationClaim, setTxConfirmationClaim] = useState(0);
+  // const [txHashClaim, setTxHashClaim] = useState(null);
+  // const [txErrorClaim, setTxErrorClaim] = useState(null);
 
   useEffect(() => {
     console.log("MOUNT Tools");
@@ -103,43 +69,33 @@ export default function ({
     }
   }, [dataCfTestData]);
 
-  // Claim
-  useEffect(() => {
-    if (txErrorClaim) {
-      setClaimWorking(false);
-    } else {
-      if (
-        txHashClaim &&
-        txConfirmationClaim === config.txConfirmationsNeededLrg
-      ) {
-        toast({
-          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(
-            chainMeta.networkId
-          )}`,
-          status: "success",
-          duration: 6000,
-          isClosable: true,
-        });
+  // // Claim
+  // useEffect(() => {
+  //   if (txErrorClaim) {
+  //     setClaimWorking(false);
+  //   } else {
+  //     if (txHashClaim && txConfirmationClaim === config.txConfirmationsNeededLrg) {
+  //       toast({
+  //         title: `Congrats! your selected claims have been sent to your wallet`,
+  //         status: "success",
+  //         duration: 6000,
+  //         isClosable: true,
+  //       });
 
-        resetClaimState();
-        onRefreshBalance();
-      }
-    }
-  }, [txConfirmationClaim, txHashClaim, txErrorClaim]);
+  //       resetClaimState();
+  //       onRefreshBalance();
+  //     }
+  //   }
+  // }, [txConfirmationClaim, txHashClaim, txErrorClaim]);
   
   // Faucet
   useEffect(() => {
     if (txErrorFaucet) {
       setFaucetWorking(false);
     } else {
-      if (
-        txHashFaucet &&
-        txConfirmationFaucet === config.txConfirmationsNeededLrg
-      ) {
+      if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
         toast({
-          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(
-            chainMeta.networkId
-          )}`,
+          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`,
           status: "success",
           duration: 6000,
           isClosable: true,
@@ -151,31 +107,17 @@ export default function ({
     }
   }, [txConfirmationFaucet, txHashFaucet, txErrorFaucet]);
 
-  const handleClick =() => {
-     web3_claims()}
-
-
   const web3_tokenFaucet = async () => {
     setFaucetWorking(true);
 
     const web3Signer = web3Provider.getSigner();
-
-    const tokenContract = new ethers.Contract(
-      chainMeta.contracts.myda,
-      ABIS.token,
-      web3Signer
-    );
+    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const mydaInPrecision = ethers.utils
-      .parseUnits("50.0", decimals)
-      .toHexString();
+    const mydaInPrecision = ethers.utils.parseUnits("50.0", decimals).toHexString();
 
     try {
-      const txResponse = await tokenContract.faucet(
-        user.get("ethAddress"),
-        mydaInPrecision
-      );
+      const txResponse = await tokenContract.faucet(user.get("ethAddress"), mydaInPrecision);
 
       // show a nice loading animation to user
       setTxHashFaucet(txResponse.hash);
@@ -201,53 +143,50 @@ export default function ({
     }
   };
 
-  const web3_claims = async (ntype) => {
-    setClaimWorking(true);
+  // const web3_claims = async(ntype) => {
+  //   setClaimWorking(true);
 
-    const web3Signer = web3Provider.getSigner();
-    const walletAddress = user.get("ethAddress");
+  //   const web3Signer = web3Provider.getSigner();
+  //   const walletAddress = user.get("ethAddress");
 
-    const tokenContract = new ethers.Contract(
-      "0x985A5c96663C9c44d46Ea061f4b7E50118180F8d",
-      ABIS.claims,
-      web3Signer
-    );
+  //   const tokenContract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Signer);
 
-    try {
+  //   try {
+  //     const txResponse = await tokenContract.claimDeposit(ntype);
 
-      const txResponse = await tokenContract.claimDeposit(ntype)
+  //     // show a nice loading animation to user
+  //     setTxHashClaim(txResponse.hash);
+  //     console.log("🚀 ~ file: Tools.js ~ line 224 ~ constweb3_claims= ~ txResponse.hash", txResponse.hash)
 
-      // show a nice loading animation to user
-      setTxHashClaim(txResponse.hash);
-      console.log("🚀 ~ file: Tools.js ~ line 224 ~ constweb3_claims= ~ txResponse.hash", txResponse.hash)
+  //     await sleep(2);
+  //     setTxConfirmationClaim(0.5);
 
-      await sleep(2);
-      setTxConfirmationClaim(0.5);
+  //     // wait for 1 confirmation from ethers
+  //     const txReceipt = await txResponse.wait();
+  //     console.log("🚀 ~ file: Tools.js ~ line 231 ~ constweb3_claims= ~ txReceipt", txReceipt)
+  //     setTxConfirmationClaim(1);
+  //     await sleep(2);
 
-      // wait for 1 confirmation from ethers
-      const txReceipt = await txResponse.wait();
-      console.log("🚀 ~ file: Tools.js ~ line 231 ~ constweb3_claims= ~ txReceipt", txReceipt)
-      setTxConfirmationClaim(1);
-      await sleep(2);
+  //     if (txReceipt.status) {
+  //       setTxConfirmationClaim(2);
+  //     } else {
+  //       const txErr = new Error("Token Contract Error on method faucet");
+  //       console.error(txErr)
 
-      if (txReceipt.status) {
-        setTxConfirmationClaim(2);
-      } else {
-        const txErr = new Error("Token Contract Error on method faucet");
-        console.error(txErr)
-        setTxErrorClaim(txErr);
-      }
-    } catch (e) {
-      setTxErrorClaim(e);
-    }
-  };
+  //       setTxErrorClaim(txErr);
+  //     }
+  //   } catch (e) {
+  //     setTxErrorClaim(e);
+  //   }
+  // };
   
-  function resetClaimState() {
-    setClaimWorking(false);
-    setTxConfirmationClaim(0);
-    setTxHashClaim(null);
-    setTxErrorClaim(null);
-  }
+  // function resetClaimState() {
+  //   setClaimWorking(false);
+  //   setTxConfirmationClaim(0);
+  //   setTxHashClaim(null);
+  //   setTxErrorClaim(null);
+  // }
+
   function resetFauceState() {
     setFaucetWorking(false);
     setTxConfirmationFaucet(0);
@@ -260,39 +199,34 @@ export default function ({
     onProgressModalOpen();
   };
   
-  // useEffect(() => {
-  //   const __ =web3_claims();
-  // },[])
-  
-  const {user:_user} = useUser();
-
-  const {isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose}=useDisclosure()
+  // S: claims related logic
+  const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
   
   const rewardsModalData = {
     isOpen: isRewardsOpen,
     onClose: onRewardsClose,
     title: "My Claimable Rewards",
-    tag1:"Total Available",
-    value1:_user?.claimBalanceValues[0],
+    tag1: "Total Available",
+    value1: _user?.claimBalanceValues[0],
     tag2: "Deposited On",
     value2: _user?.claimBalanceDates[0].toString(),
-    n: 1,
-
-    
+    n: 1
   }
-  const {isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose}=useDisclosure()
+
+  const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
   
   const airdropsModalData = {
     isOpen: isAirdropsOpen,
     onClose: onAirdropClose,
     title: "My Claimable Airdrops",
-    tag1:"Total Available",
-    value1:_user?.claimBalanceValues[1],
+    tag1: "Total Available",
+    value1: _user?.claimBalanceValues[1],
     tag2: "Deposited On",
-    value2:  _user?.claimBalanceDates[1].toString(),
-    n:2
+    value2: _user?.claimBalanceDates[1].toString(),
+    n: 2
   }
-  const {isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose}=useDisclosure()
+  
+  const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
   
   const allocationsModalData = {
     isOpen: isAllocationsOpen,
@@ -301,17 +235,12 @@ export default function ({
     tag1:"Total Available",
     value1:_user?.claimBalanceValues[2],
     tag2: "Deposited On",
-    value2:  _user?.claimBalanceDates[2].toString(),
-    n:3
-   
+    value2: _user?.claimBalanceDates[2].toString(),
+    n: 3   
   }
-
-
- 
+  // E: claims related logic
 
   return (
-<>
-    <button onClick={handleClick}>Claim</button>
     <Stack>
       <Heading size="lg">Home</Heading>
 
@@ -451,10 +380,6 @@ export default function ({
           </Stack>
         </WrapItem>
 
-
-{/* //ClaimModal */}
-
-
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
             <Heading size="md">My Claims</Heading>
@@ -479,7 +404,7 @@ export default function ({
               <ClaimModal {...allocationsModalData}/>
             </HStack>
 
-{txHashClaim && (
+            {/* {txHashClaim && (
               <Stack>
                 <Progress
                   colorScheme="teal"
@@ -504,9 +429,9 @@ export default function ({
                   </Link>
                 </HStack>
               </Stack>
-            )}
+            )} */}
 
-            {txErrorFaucet && (
+            {/* {txErrorFaucet && (
               <Alert status="error">
                 <AlertIcon />
                 {txErrorFaucet.message && (
@@ -519,7 +444,7 @@ export default function ({
                   onClick={resetClaimState}
                 />
               </Alert>
-            )}
+            )} */}
             <Spacer />
           </Stack>
         </WrapItem>
@@ -741,6 +666,5 @@ export default function ({
         </Modal>
       )}
     </Stack>
-    </>
   );
 }
