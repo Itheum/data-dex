@@ -39,6 +39,7 @@ import chainElrond from "./img/elrond-chain-logo.png";
 import chainHedera from "./img/hedera-chain-logo.png";
 import moralisIcon from "./img/powered-moralis.png";
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./ElrondApi";
 
 const elrondLogout = logout;
 function App() {
@@ -71,6 +72,14 @@ function App() {
 
     console.log(consoleNotice);
   }, []);
+
+  useEffect(async () => {
+    if (elrondAddress) {
+      setChain(CHAINS["ED"]);
+      const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS["ED"])) / Math.pow(10, 18);
+      setMydaBal(balance);
+    }
+  }, [elrondAddress]);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
@@ -167,7 +176,7 @@ function App() {
                     <MenuItem closeOnSelect={false}>
                       <Text fontSize="xs">
                         {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
-                        <ShortAddress address={user ? user.get("ethAddress") : ""} />
+                        <ShortAddress address={user ? user.get("ethAddress") : elrondAddress} />
                       </Text>
                     </MenuItem>
                     <MenuItem
