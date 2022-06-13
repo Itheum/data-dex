@@ -75,9 +75,12 @@ function App() {
 
   useEffect(async () => {
     if (elrondAddress) {
-      setChain(CHAINS["ED"]);
-      const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS["ED"])) / Math.pow(10, 18);
+      const networkId = "ED";
+      setChain(CHAINS[networkId]);
+      const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
       setMydaBal(balance);
+      chainMeta.networkId = networkId;
+      chainMeta.contracts = contractsForChain(networkId);
     }
   }, [elrondAddress]);
 

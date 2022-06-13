@@ -1,4 +1,4 @@
-import { mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress, ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic, mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink, mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC, mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony, mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON, mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate, mydaContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche, mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local } from "./contactAddresses.js";
+import { mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress, ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic, mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink, mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC, mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony, mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON, mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate, mydaContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche, mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local, mydaContractAddress_devnetElrond } from "./contactAddresses.js";
 
 export const contractsForChain = (networkId) => {
   const contracts = {
@@ -53,6 +53,8 @@ export const contractsForChain = (networkId) => {
       contracts.ddex = ddexContractAddress_testnetAvalanche;
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
+    case "ED":
+      contracts.myda = mydaContractAddress_devnetElrond;
   }
 
   return contracts;
