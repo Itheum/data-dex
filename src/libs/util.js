@@ -33,7 +33,7 @@ import {
 
 export const contractsForChain = networkId => {
   const contracts = {
-    myda: null,
+    itheumToken: null,
     ddex: null,
     dnft: null,
     claims: null,
@@ -41,50 +41,50 @@ export const contractsForChain = networkId => {
 
   switch (networkId) {
     case 31337:
-      contracts.myda = tokenContractAddress_Local;
+      contracts.itheumToken = tokenContractAddress_Local;
       contracts.ddex = ddexContractAddress_Local;
       contracts.dnft = dNFTContractAddress_Local;
       break;
     case 3:
-      contracts.myda = tokenContractAddress_Rop;
+      contracts.itheumToken = tokenContractAddress_Rop;
       contracts.ddex = ddexContractAddress_Rop;
       contracts.dnft = dNFTContractAddress_Rop;
       contracts.claims = claimsContractAddress_Rop
       break;
     case 4:
-      contracts.myda = tokenContractAddress_Rink;
+      contracts.itheumToken = tokenContractAddress_Rink;
       contracts.ddex = ddexContractAddress_Rink;
       contracts.dnft = dNFTContractAddress_Rink;
       break;
     case 80001:
-      contracts.myda = tokenContractAddress_Matic;
+      contracts.itheumToken = tokenContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
       contracts.claims = claimsContractAddress_Matic;
       break;
     case 97:
-      contracts.myda = tokenContractAddress_testnetBSC;
+      contracts.itheumToken = tokenContractAddress_testnetBSC;
       contracts.ddex = ddexContractAddress_testnetBSC;
       contracts.dnft = dNFTContractAddress_testnetBSC;
       contracts.claims = claimsContractAddress_testnetBSC;
       break;
     case 1666700000:
-      contracts.myda = tokenContractAddress_testnetHarmony;
+      contracts.itheumToken = tokenContractAddress_testnetHarmony;
       contracts.ddex = ddexContractAddress_testnetHarmony;
       contracts.dnft = dNFTContractAddress_testnetHarmony;
       break;
     case 210309:
-      contracts.myda = tokenContractAddress_testnetPlatON;
+      contracts.itheumToken = tokenContractAddress_testnetPlatON;
       contracts.ddex = ddexContractAddress_testnetPlatON;
       contracts.dnft = dNFTContractAddress_testnetPlatON;
       break;
     case 123:
-      contracts.myda = tokenContractAddress_testnetParastate;
+      contracts.itheumToken = tokenContractAddress_testnetParastate;
       contracts.ddex = ddexContractAddress_testnetParastate;
       contracts.dnft = dNFTContractAddress_testnetParastate;
       break;
     case 43113:
-      contracts.myda = tokenContractAddress_testnetAvalanche;
+      contracts.itheumToken = tokenContractAddress_testnetAvalanche;
       contracts.ddex = ddexContractAddress_testnetAvalanche;
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
@@ -201,7 +201,7 @@ export const qsParams = () => {
   return params;
 }
 
-export const mydaRoundUtil = (balance, decimals, BigNumber) => {
+export const itheumTokenRoundUtil = (balance, decimals, BigNumber) => {
   const balanceWeiString = balance.toString();
   const balanceWeiBN = BigNumber.from(balanceWeiString);
   const decimalsBN = BigNumber.from(decimals);
@@ -1692,7 +1692,5 @@ export const sleep = (sec) => {
 }
 
 export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => { 
-  console.log('txNetworkId');
-  console.log(txNetworkId);
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
 }

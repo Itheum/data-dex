@@ -6,7 +6,7 @@ import { createBreakpoints } from '@chakra-ui/theme-tools'
 import { MoralisProvider } from 'react-moralis';
 import ErrorBoundary from './ErrorBoundary';
 import { UserContextProvider } from './store/UserContext';
-// import { appId, serverURL } from './secrets.js'; 
+import { ChainMetaContextProvider } from './store/ChainMetaContext';
 
 const breakpoints = createBreakpoints({
   sm: '30em',
@@ -34,18 +34,16 @@ const theme = extendTheme({
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
-if (!process.env.REACT_APP_ENV_MORALIS_APPID || !process.env.REACT_APP_ENV_MORALIS_SERVER) {
-  
-}
-
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
       <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
         <ChakraProvider theme={theme}>
-          <UserContextProvider>
-            <App />
-          </UserContextProvider>
+          <ChainMetaContextProvider>
+            <UserContextProvider>
+              <App />
+            </UserContextProvider>
+          </ChainMetaContextProvider>
         </ChakraProvider>
       </MoralisProvider>
     </ErrorBoundary>

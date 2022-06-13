@@ -22,7 +22,7 @@ import { config, dataTemplates, sleep } from './libs/util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import ShortAddress from './UtilComps/ShortAddress';
 import IconButton from './UtilComps/IconButton';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 import { log } from 'async';
 
 const baseStyle = {
@@ -54,7 +54,7 @@ const rejectStyle = {
 };
 
 export default function({onRfMount, itheumAccount}) {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { user } = useMoralis();
   const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
   const toast = useToast();
@@ -212,7 +212,7 @@ export default function({onRfMount, itheumAccount}) {
             dataHash,
             dataFile: dataFileSave,
             termsOfUseId,
-            txNetworkId: chainMeta.networkId
+            txNetworkId: _chainMeta.networkId
           };
 
           // if core programID is available then link it
@@ -233,8 +233,8 @@ export default function({onRfMount, itheumAccount}) {
             dataHash,
             dataFile: dataFileSave,
             termsOfUseId,
-            txNetworkId: chainMeta.networkId,
-            txNFTContract: chainMeta.contracts.dnft
+            txNetworkId: _chainMeta.networkId,
+            txNFTContract: _chainMeta.contracts.dnft
           };
 
           // if core programID is available then link it
@@ -371,7 +371,7 @@ export default function({onRfMount, itheumAccount}) {
 
   const web3_ddexAdvertiseForSale = async(dataPackId, dataHash) => {
     const web3Signer = web3Provider.getSigner();
-    const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
+    const ddexContract = new ethers.Contract(_chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
     try {
       const txResponse = await ddexContract.advertiseForSale(dataPackId, dataHash);
@@ -402,7 +402,7 @@ export default function({onRfMount, itheumAccount}) {
 
   const web3_dnftCreateNFT = async(metaDataFileUri) => {
     const web3Signer = web3Provider.getSigner();
-    const dnftContract = new ethers.Contract(chainMeta.contracts.dnft, ABIS.dNFT, web3Signer);
+    const dnftContract = new ethers.Contract(_chainMeta.contracts.dnft, ABIS.dNFT, web3Signer);
     
     try {
       const txResponse = await dnftContract.createDataNFT(metaDataFileUri);
@@ -415,7 +415,6 @@ export default function({onRfMount, itheumAccount}) {
 
       // wait for 1 confirmation from ethers
       const txReceipt = await txResponse.wait();
-      console.log('🚀 ~ constweb3_dnftCreateNFT=async ~ txReceipt', txReceipt);
       console.log(txReceipt.events);
       setTxConfirmation(1);
       await sleep(2);
@@ -651,7 +650,7 @@ export default function({onRfMount, itheumAccount}) {
                 <Text fontWeight="bold">NFT Description</Text>
                 <Textarea placeholder="Enter a detailed NFT description here" value={sellerDataNFTDesc} onChange={(event) => setSellerDataNFTDesc(event.currentTarget.value)} />
               
-                <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)})</Text>
+                <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
                 <NumberInput size="md"  maxW={24} step={1} defaultValue={0} min={0} max={10} value={dataNFTFeeInMyda} onChange={(valueString) => setDataNFTFeeInMyda(parseInt(valueString))}>
                   <NumberInputField />
                   <NumberInputStepper>
@@ -659,8 +658,8 @@ export default function({onRfMount, itheumAccount}) {
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <Text colorScheme="gray" fontSize="sm">Data NFTs can be sold in {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} or ETH -  
-                  <Tooltip label={`If you sell your Data NFT in the Itheum Data NFT marketplace you can sell it in ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}. You can also sell it in ETH by using the OpenSea marketplace. Unsure what to do? Set a ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} price for now.`} aria-label="A tooltip"> [Tell me more]
+                <Text colorScheme="gray" fontSize="sm">Data NFTs can be sold in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} or ETH -  
+                  <Tooltip label={`If you sell your Data NFT in the Itheum Data NFT marketplace you can sell it in ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}. You can also sell it in ETH by using the OpenSea marketplace. Unsure what to do? Set a ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} price for now.`} aria-label="A tooltip"> [Tell me more]
                   </Tooltip>
                 </Text>
 
@@ -748,7 +747,7 @@ export default function({onRfMount, itheumAccount}) {
                 </Stack>
 
               {!drawerInMintNFT && <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
-                <Badge ml="1" fontSize="0.8em" colorScheme="teal">2 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Badge>
+                <Badge ml="1" fontSize="0.8em" colorScheme="teal">2 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Badge>
               </Text>}              
 
               <Flex>
@@ -804,7 +803,7 @@ export default function({onRfMount, itheumAccount}) {
                       <HStack>
                         <Text fontSize="sm">Transaction </Text>
                         <ShortAddress address={txHash} />
-                        <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                       </HStack>
 
                       {txError && 
@@ -834,7 +833,7 @@ export default function({onRfMount, itheumAccount}) {
                           <HStack>
                             <Text fontSize="sm">Transaction </Text>
                             <ShortAddress address={txNFTHash} />
-                            <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                           </HStack>
 
                           {txNFTError && 

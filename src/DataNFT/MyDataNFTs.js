@@ -11,10 +11,10 @@ import ShortAddress from '../UtilComps/ShortAddress';
 import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
 import { sleep, buyOnOpenSea, contractsForChain } from '../libs/util';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from '../libs/util';
-import { ChainMetaContext } from '../libs/contexts';
+import { useChainMeta } from '../store/ChainMetaContext';
 
 export default function() {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { user } = useMoralis();
   const { web3 } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
@@ -31,7 +31,7 @@ export default function() {
     data: usersDataNFTCatalog,
   } = useMoralisCloudFunction("getUserDataNFTCatalog", {
     ethAddress: user.get('ethAddress'),
-    networkId: chainMeta.networkId,
+    networkId: _chainMeta.networkId,
     myOnChainNFTs: onChainNFTs
   }, { autoFetch: false });
 
@@ -42,7 +42,7 @@ export default function() {
   useEffect(() => {
     async function getOnChainNFTs () {
       const myNFTs = await Web3Api.account.getNFTs({
-        chain: CHAIN_NAMES[chainMeta.networkId]
+        chain: CHAIN_NAMES[_chainMeta.networkId]
       });
 
       console.log('🚀 ~ getOnChainNFTs ~ myNFTs', myNFTs);
@@ -116,7 +116,7 @@ export default function() {
               </Box>
 
               <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
-                {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}
+                {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`}
               </Box>
 
               <Box mt="5">  

@@ -5,11 +5,11 @@ import {
   HStack, Heading, Center,
 } from '@chakra-ui/react';
 import { CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 import dataCoalitionsIcon from './img/data-coalitions-icon.png';
 
 export default function({setMenuItem}) {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
 
   return (
     <Stack spacing={5}>      
@@ -22,7 +22,7 @@ export default function({setMenuItem}) {
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
               <Box align="center" flex="1">Independently "cherry-picking" and selling personal data is inefficient and time consuming. Curating data and monitoring the terms and conditions for each sale will quickly become overwhelming</Box>
               <Box align="center" flex="1">Your individual data is also not very valuable "when viewed in isolation" -  but when your data is "grouped" into clusters of similar people, it grows significantly in value</Box>
-              <Box align="center" flex="1">Coalitions are DAOs. Stake your {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} and align to the Coalition who best suits your interests. Delegate the ownership of your personal data and have the Coalition trade your data on your behalf</Box>
+              <Box align="center" flex="1">Coalitions are DAOs. Stake your {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} and align to the Coalition who best suits your interests. Delegate the ownership of your personal data and have the Coalition trade your data on your behalf</Box>
             </HStack>
 
             <HStack spacing="5" mt="10">

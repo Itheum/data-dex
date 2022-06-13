@@ -14,10 +14,10 @@ import ShortAddress from './UtilComps/ShortAddress';
 import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { config, dataTemplates, sleep } from './libs/util';
 import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 
 export default function({onRfMount, onRefreshBalance}) {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
   const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
   const { user } = useMoralis();
@@ -25,7 +25,7 @@ export default function({onRfMount, onRefreshBalance}) {
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
     query.descending("createdAt") &&
     query.notEqualTo("txHash", null) &&
-    query.equalTo("txNetworkId", chainMeta.networkId)
+    query.equalTo("txNetworkId", _chainMeta.networkId)
   );
   const { isSaving, error: errorOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
   const [currBuyObject, setCurrBuyObject] = useState(null);
@@ -122,7 +122,7 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_ddexVerifyData = async(dataPackId, dataHash) => {
-    const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Provider);
+    const ddexContract = new ethers.Contract(_chainMeta.contracts.ddex, ABIS.ddex, web3Provider);
 
     let isVerified = false;
 
@@ -142,7 +142,7 @@ export default function({onRfMount, onRefreshBalance}) {
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s1: 1}));
       handleAllowanceCheck();
     } else {
-      setbuyProgressErr(`Do you have enough ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} for this?`);
+      setbuyProgressErr(`Do you have enough ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} for this?`);
     }
   }
   
@@ -159,13 +159,13 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const web3_tokenBalanceOf = async() => {
-    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
+    const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Provider);
     let isEligible = false;
     
     try {
-      const mydaBalance = await tokenContract.balanceOf(user.get('ethAddress'));
+      const tokenBalance = await tokenContract.balanceOf(user.get('ethAddress'));
 
-      if (parseInt(mydaBalance, 10) >= currBuyObject.cost) {
+      if (parseInt(tokenBalance, 10) >= currBuyObject.cost) {
         isEligible = true;
       }
     } catch(e) {
@@ -178,18 +178,18 @@ export default function({onRfMount, onRefreshBalance}) {
 
   const web3_tokenCheckAllowance = async() => {
     const web3Signer = web3Provider.getSigner();
-    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
+    const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
 
     let isAllowed = false;
     
     const decimals = 18;
-    const feeInMyda = currBuyObject.cost;
-    const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
+    const feeInTokens = currBuyObject.cost;
+    const tokenInPrecision = ethers.utils.parseUnits(`${feeInTokens}.0`, decimals).toHexString();
 
     try {
-      const allowedAmount = await tokenContract.allowance(user.get('ethAddress'), chainMeta.contracts.ddex);
+      const allowedAmount = await tokenContract.allowance(user.get('ethAddress'), _chainMeta.contracts.ddex);
 
-      if (allowedAmount >= mydaInPrecision) {
+      if (allowedAmount >= tokenInPrecision) {
         isAllowed = true;
       }
     } catch(e) {
@@ -200,15 +200,15 @@ export default function({onRfMount, onRefreshBalance}) {
     return isAllowed;
   }
 
-  const web3_ddexBuyDataPack = async(dataPackId, feeInMyda) => {
+  const web3_ddexBuyDataPack = async(dataPackId, feeInTokens) => {
     const web3Signer = web3Provider.getSigner();
-    const ddexContract = new ethers.Contract(chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
+    const ddexContract = new ethers.Contract(_chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
     try {
       const decimals = 18;
-      const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
+      const tokenInPrecision = ethers.utils.parseUnits(`${feeInTokens}.0`, decimals).toHexString();
 
-      const txResponse = await ddexContract.buyDataPack(dataPackId, mydaInPrecision);
+      const txResponse = await ddexContract.buyDataPack(dataPackId, tokenInPrecision);
 
       // show a nice loading animation to user
       // setTxHashTransfer(receipt.transactionHash);
@@ -239,15 +239,15 @@ export default function({onRfMount, onRefreshBalance}) {
     }
   }
   
-  const web3_tokenApprove = async(feeInMyda) => {
+  const web3_tokenApprove = async(feeInTokens) => {
     const web3Signer = web3Provider.getSigner();
-    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
+    const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const mydaInPrecision = ethers.utils.parseUnits(`${feeInMyda}.0`, decimals).toHexString();
+    const tokenInPrecision = ethers.utils.parseUnits(`${feeInTokens}.0`, decimals).toHexString();
 
     try {
-      const txResponse = await tokenContract.approve(chainMeta.contracts.ddex, mydaInPrecision);
+      const txResponse = await tokenContract.approve(_chainMeta.contracts.ddex, tokenInPrecision);
 
       // show a nice loading animation to user
       setTxHashAllowance(txResponse.hash);
@@ -282,7 +282,7 @@ export default function({onRfMount, onRefreshBalance}) {
       dataFileUrl: currBuyObject.dataFileUrl,
       dataHash: currBuyObject.dataHash,
       txHash: txHashTransfer,
-      txNetworkId: chainMeta.networkId
+      txNetworkId: _chainMeta.networkId
     };
 
     await saveDataOrder(newDataOrder);
@@ -351,7 +351,7 @@ export default function({onRfMount, onRefreshBalance}) {
               <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
               <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Text></Td>
-              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
+              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text></Td>
               <Td><Button isLoading={false} colorScheme="teal" onClick={() => buyOrderSubmit(item.id)}>Buy</Button></Td>
             </Tr>)}
           </Tbody>
@@ -392,7 +392,7 @@ export default function({onRfMount, onRefreshBalance}) {
 
                   <HStack>
                     {!buyProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Authorising purchase for {currBuyObject && currBuyObject.cost} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text>
+                    <Text>Authorising purchase for {currBuyObject && currBuyObject.cost} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
                   </HStack>
 
                   {txHashAllowance && <Stack>
@@ -401,7 +401,7 @@ export default function({onRfMount, onRefreshBalance}) {
                     <HStack>
                       <Text fontSize="sm">Transaction </Text>
                       <ShortAddress address={txHashAllowance} />
-                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashAllowance}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                      <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashAllowance}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 
@@ -416,7 +416,7 @@ export default function({onRfMount, onRefreshBalance}) {
                     <HStack>
                       <Text fontSize="sm">Transaction </Text>
                       <ShortAddress address={txHashTransfer} />
-                      <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashTransfer}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                      <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashTransfer}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
                     </HStack>                    
                   </Stack>}
 

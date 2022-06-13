@@ -11,10 +11,10 @@ import ShortAddress from '../UtilComps/ShortAddress';
 import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
 import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../libs/util';
 import { sleep, buyOnOpenSea, contractsForChain } from '../libs/util';
-import { ChainMetaContext } from '../libs/contexts';
+import { useChainMeta } from '../store/ChainMetaContext';
 
 export default function() {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { user } = useMoralis();
   const { web3 } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
@@ -31,7 +31,7 @@ export default function() {
     data: usersDataNFTCatalog,
   } = useMoralisCloudFunction("getAllDataNFTs", {
     ethAddress: user.get('ethAddress'),
-    networkId: chainMeta.networkId,
+    networkId: _chainMeta.networkId,
     myOnChainNFTs: onChainNFTs
   }, { autoFetch: false });  
 
@@ -42,7 +42,7 @@ export default function() {
   useEffect(() => {
     async function getOnChainNFTs () {
       const myNFTs = await Web3Api.account.getNFTs({
-        chain: CHAIN_NAMES[chainMeta.networkId]
+        chain: CHAIN_NAMES[_chainMeta.networkId]
       });
 
       console.log('🚀 ~ getOnChainNFTs ~ myNFTs', myNFTs);
@@ -124,7 +124,7 @@ export default function() {
 
               <Box flexGrow="1">
                 <Box as="span" color="gray.600" fontSize="sm">
-                  {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`}
+                  {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`}
                 </Box>
               </Box>
 
@@ -145,7 +145,7 @@ export default function() {
                 {OPENSEA_CHAIN_NAMES[item.txNetworkId] &&
                   <ButtonGroup colorScheme="teal" spacing="3" size="sm" mt="5">
                     <Button isLoading={false} onClick={() => buyOnOpenSea(item.txNFTId, contractsForChain(item.txNetworkId).dnft, item.txNetworkId)}>Buy on OpenSea</Button>
-                    {(item.txNetworkId === chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
+                    {(item.txNetworkId === _chainMeta.networkId) && <Button display="none" isLoading={false}  onClick={() => buyOrderSubmit(item.id)}>Buy Now</Button>}
                   </ButtonGroup>}
               </Box>              
             </Flex>

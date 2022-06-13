@@ -13,7 +13,7 @@ import moment from 'moment';
 import ShortAddress from './UtilComps/ShortAddress';
 import { progInfoMeta, config, sleep } from './libs/util';
 import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 import imgProgGaPa from './img/prog-gaming.jpg';
 import imgProgRhc from './img/prog-rhc.png';
 import imgProgWfh from './img/prog-wfh.png';
@@ -21,7 +21,7 @@ import ClaimModal from './UtilComps/ClaimModal';
 import { useUser } from './store/UserContext';
 
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
   const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
   const { user } = useMoralis();
@@ -71,7 +71,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     } else {
       if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
         toast({
-          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}`,          
+          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,          
           status: "success",
           duration: 6000,
           isClosable: true,
@@ -87,13 +87,13 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     setFaucetWorking(true);
 
     const web3Signer = web3Provider.getSigner();
-    const tokenContract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Signer);
+    const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const mydaInPrecision = ethers.utils.parseUnits('50.0', decimals).toHexString();
+    const tokenInPrecision = ethers.utils.parseUnits('50.0', decimals).toHexString();
 
     try {
-      const txResponse = await tokenContract.faucet(user.get('ethAddress'), mydaInPrecision);
+      const txResponse = await tokenContract.faucet(user.get('ethAddress'), tokenInPrecision);
       
       // show a nice loading animation to user
       setTxHashFaucet(txResponse.hash);
@@ -231,8 +231,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
-            <Heading size="md">{CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} Faucet</Heading>
-            <Text fontSize="sm" pb={5}>Get some free {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} tokens to try DEX features</Text>
+            <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
+            <Text fontSize="sm" pb={5}>Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features</Text>
           
             {txHashFaucet && <Stack>
               <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
@@ -240,7 +240,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
               <HStack>
                 <Text fontSize="sm">Transaction </Text>
                 <ShortAddress address={txHashFaucet} />
-                <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashFaucet}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
               </HStack>                    
             </Stack>}
 
@@ -251,7 +251,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             </Alert>}
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Button>
+            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Button>
           </Stack>
         </WrapItem>
 
@@ -284,7 +284,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
       <Stack p="5" h="360">
         <Heading size="md">App Marketplace</Heading>
-        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} when you trade your data</Text>
+        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
           <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
             <Image src={imgProgRhc} />

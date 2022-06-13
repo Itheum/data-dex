@@ -11,8 +11,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useMoralis } from 'react-moralis';
 import { config, sleep } from '../libs/util';
 import { ABIS, CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from '../libs/util';
-import { ChainMetaContext } from '../libs/contexts';
 import { useUser } from '../store/UserContext';
+import { useChainMeta } from '../store/ChainMetaContext';
 
 const ClaimModal = ({
   isOpen,
@@ -24,7 +24,6 @@ const ClaimModal = ({
   value2,
   n,
 }) => {
-  const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
 
   const { web3: web3Provider, Moralis: { web3Library: ethers } } = useMoralis();
@@ -33,6 +32,7 @@ const ClaimModal = ({
   const [txErrorClaim, setTxErrorClaim] = useState(null);
   const [claimWorking, setClaimWorking] = useState(false);
   const { user: _user, setUser } = useUser();
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
 
   useEffect(() => {
     if (txErrorClaim) {
@@ -55,7 +55,7 @@ const ClaimModal = ({
     setClaimWorking(true);
 
     const web3Signer = web3Provider.getSigner();
-    const tokenContract = new ethers.Contract(chainMeta.contracts.claims, ABIS.claims, web3Signer);
+    const tokenContract = new ethers.Contract(_chainMeta.contracts.claims, ABIS.claims, web3Signer);
 
     try {
       const txResponse = await tokenContract.claimDeposit(ntype);
@@ -121,7 +121,7 @@ const ClaimModal = ({
               <Text color="gray" as="b" fontSize={"md"}>
                 {tag1}:
               </Text>{" "}
-              <Text fontSize={"md"}>{value1} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text>
+              <Text fontSize={"md"}>{value1} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
             </Stack>
             <Stack>
               <Text color="gray" as="b" fontSize={"md"}>
@@ -140,7 +140,7 @@ const ClaimModal = ({
             <HStack>
               <Text fontSize="sm">Transaction </Text>
               <ShortAddress address={txHashClaim} />
-              <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${txHashClaim}`} isExternal>{" "}<ExternalLinkIcon mx="2px" /></Link>
+              <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashClaim}`} isExternal>{" "}<ExternalLinkIcon mx="2px" /></Link>
             </HStack>
           </Stack>)}
 
