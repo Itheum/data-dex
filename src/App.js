@@ -46,7 +46,8 @@ import chainElrond from './img/elrond-chain-logo.png';
 import chainHedera from './img/hedera-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version unknown';
+const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
+const dataDexBuildVersion = process.env.BUILD_ID || 'build id unknown';
 
 function App() {
   const {isAuthenticated, logout, user, Moralis: {web3Library: ethers}} = useMoralis();
@@ -443,7 +444,7 @@ function App() {
               </Tooltip>              
             </Flex>
 
-            <Text textAlign="center" fontSize="xx-small">{dataDexVersion}</Text>
+            <Text textAlign="center" fontSize="xx-small">{dataDexVersion} : {dataDexBuildVersion}</Text>
             
             <ByMoralisLogo />
           </Stack>
