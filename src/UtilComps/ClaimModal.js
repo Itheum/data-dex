@@ -40,7 +40,7 @@ const ClaimModal = ({
     } else {
       if (txHashClaim && txConfirmationClaim === config.txConfirmationsNeededLrg) {
         toast({
-          title: `Congrats! you have claimed your ${title} tokens`,
+          title: `Congrats! you have claimed your tokens for ${title}`,
           status: 'success',
           duration: 6000,
           isClosable: true,
