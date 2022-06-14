@@ -5,7 +5,6 @@ import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/re
 import { createBreakpoints } from '@chakra-ui/theme-tools'
 import { MoralisProvider } from 'react-moralis';
 import ErrorBoundary from './ErrorBoundary';
-// import { appId, serverURL } from './secrets.js'; 
 
 const breakpoints = createBreakpoints({
   sm: '30em',
@@ -32,10 +31,6 @@ const theme = extendTheme({
 });
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
-
-if (!process.env.REACT_APP_ENV_MORALIS_APPID || !process.env.REACT_APP_ENV_MORALIS_SERVER) {
-  
-}
 
 ReactDOM.render(
   <React.StrictMode>

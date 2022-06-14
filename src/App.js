@@ -46,6 +46,8 @@ import chainElrond from './img/elrond-chain-logo.png';
 import chainHedera from './img/hedera-chain-logo.png';
 import moralisIcon from './img/powered-moralis.png';
 
+const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version unknown';
+
 function App() {
   const {isAuthenticated, logout, user, Moralis: {web3Library: ethers}} = useMoralis();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
@@ -145,7 +147,10 @@ function App() {
               src={colorMode === "light" ? logoSmlL : logoSmlD}
               alt="Itheum Data DEX" />
             
-            <Heading><Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text></Heading>
+            <Heading>
+              <Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text>
+              <Text fontSize="xx-small">{dataDexVersion}</Text>
+            </Heading>
             
             <Spacer />
 
@@ -230,7 +235,7 @@ function App() {
                 onClick={() => setShowMobileMenu(!showMobileMenu)}>Main menu</Button>
               
               <Stack direction="column" spacing={4} display={[showMobileMenu && "block" || "none", , "block"]}>
-                <HStack pl="3">
+                <HStack pl="3">                    
                     <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>Terms of Use <ExternalLinkIcon mx="2px" /></Link>
                     <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>Privacy Policy <ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
@@ -401,14 +406,14 @@ function App() {
               alt="Itheum Data DEX"
               margin="auto"
             />
-            <Heading size="md" textAlign="center">Itheum Data DEX</Heading>
+            <Heading size="md" textAlign="center">Itheum Data DEX</Heading>            
             <Text fontSize="sm" textAlign="center">Trade your personal data via secure on-chain exchange</Text>
             <Spacer />
             <Auth key={rfKeys.auth} />
 
             <Text textAlign="center" fontSize="sm">Supported Chains</Text>
             
-            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]} w={["100%"]}>
+            <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
               <Tooltip label="Elrond - Coming soon...">
                 <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
               </Tooltip>
@@ -437,6 +442,8 @@ function App() {
                 <Image src={chainHedera} boxSize="40px" opacity=".3" m="5px" />
               </Tooltip>              
             </Flex>
+
+            <Text textAlign="center" fontSize="xx-small">{dataDexVersion}</Text>
             
             <ByMoralisLogo />
           </Stack>
