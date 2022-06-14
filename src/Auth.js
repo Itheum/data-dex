@@ -106,7 +106,7 @@ export const Auth = () => {
   return (
     <Stack spacing={6} p="5">
       <Button onClick={onProgressModalOpen} m="auto">
-        Connect a Wallet
+        Connect my Wallet
       </Button>
 
       <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>

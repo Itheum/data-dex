@@ -559,13 +559,15 @@ function App() {
           <Flex justify="center" direction="column">
             <Box p={["20px", null, "30px"]} borderWidth="2px" borderRadius="lg">
               <Stack>
-                <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={logo} alt="Itheum Data DEX" margin="auto" />
-                <Heading size="md" textAlign="center">
-                  Itheum Data DEX
-                </Heading>
-                <Text fontSize="sm" textAlign="center">
-                  Trade your personal data via secure on-chain exchange
-                </Text>
+                <Image
+                  w={["70px", null, "90px"]}
+                  h={["60px", null, "80px"]}
+                  src={logo}
+                  alt="Itheum Data DEX"
+                  margin="auto"
+                />
+                <Heading size="md" textAlign="center">Itheum Data DEX</Heading>            
+                <Text fontSize="sm" textAlign="center">Trade your personal data via secure on-chain exchange</Text>
                 <Spacer />
                 <Auth key={rfKeys.auth} />
 
@@ -573,7 +575,7 @@ function App() {
                   Supported Chains
                 </Text>
 
-                <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["100%"]}>
+                <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
                   <Tooltip label="Elrond - Coming soon...">
                     <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
                   </Tooltip>
@@ -600,8 +602,10 @@ function App() {
                   </Tooltip>
                   <Tooltip label="Hedera - Coming soon...">
                     <Image src={chainHedera} boxSize="40px" opacity=".3" m="5px" />
-                  </Tooltip>
+                  </Tooltip>              
                 </Flex>
+
+                <Text textAlign="center" fontSize="xx-small">{dataDexVersion}</Text>
 
                 <ByMoralisLogo />
               </Stack>
