@@ -13,10 +13,10 @@ import ShortAddress from './UtilComps/ShortAddress';
 import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { CHAIN_TX_VIEWER, sleep } from './libs/util';
 import { tmpProgIdMapping } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 
 export default function() {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
   const [dataProofs, setDataProofs] = useState([]);
@@ -25,7 +25,7 @@ export default function() {
     query.descending("createdAt") &&
     query.notEqualTo("txHash", null) &&
     query.notEqualTo("fromProgramId", null) &&
-    query.equalTo("txNetworkId", chainMeta.networkId)
+    query.equalTo("txNetworkId", _chainMeta.networkId)
   );
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function() {
               <Td>
                 <HStack>
                   <ShortAddress address={item.get('txHash')} />
-                  <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.get('txHash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${item.get('txHash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
               </Td>
             </Tr>)}

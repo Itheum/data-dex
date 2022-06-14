@@ -1,63 +1,90 @@
-import {mydaContractAddress, mydaContractAddress_Matic, ddexContractAddress,
-  ddexContractAddress_Matic, dNFTContractAddress, dNFTContractAddress_Matic,
-  mydaContractAddress_Rink, ddexContractAddress_Rink, dNFTContractAddress_Rink,
-  mydaContractAddress_testnetBSC, ddexContractAddress_testnetBSC, dNFTContractAddress_testnetBSC,
-  mydaContractAddress_testnetHarmony, ddexContractAddress_testnetHarmony, dNFTContractAddress_testnetHarmony,
-  mydaContractAddress_testnetPlatON, ddexContractAddress_testnetPlatON, dNFTContractAddress_testnetPlatON,
-  mydaContractAddress_testnetParastate, ddexContractAddress_testnetParastate, dNFTContractAddress_testnetParastate,
-  mydaContractAddress_testnetAvalanche, ddexContractAddress_testnetAvalanche, dNFTContractAddress_testnetAvalanche,
-  mydaContractAddress_Local, ddexContractAddress_Local, dNFTContractAddress_Local} from './contactAddresses.js';
+import {
+  tokenContractAddress_Rop,
+  tokenContractAddress_Matic,
+  ddexContractAddress_Rop,
+  ddexContractAddress_Matic,
+  dNFTContractAddress_Rop,
+  claimsContractAddress_Rop,
+  dNFTContractAddress_Matic,
+  tokenContractAddress_Rink,
+  ddexContractAddress_Rink,
+  dNFTContractAddress_Rink,
+  tokenContractAddress_testnetBSC,
+  ddexContractAddress_testnetBSC,
+  dNFTContractAddress_testnetBSC,
+  tokenContractAddress_testnetHarmony,
+  ddexContractAddress_testnetHarmony,
+  dNFTContractAddress_testnetHarmony,
+  tokenContractAddress_testnetPlatON,
+  ddexContractAddress_testnetPlatON,
+  dNFTContractAddress_testnetPlatON,
+  tokenContractAddress_testnetParastate,
+  ddexContractAddress_testnetParastate,
+  dNFTContractAddress_testnetParastate,
+  tokenContractAddress_testnetAvalanche,
+  ddexContractAddress_testnetAvalanche,
+  dNFTContractAddress_testnetAvalanche,
+  tokenContractAddress_Local,
+  ddexContractAddress_Local,
+  dNFTContractAddress_Local,
+  claimsContractAddress_Matic,
+  claimsContractAddress_testnetBSC
+} from "./contactAddresses.js";
 
 export const contractsForChain = networkId => {
   const contracts = {
-    myda: null,
+    itheumToken: null,
     ddex: null,
-    dnft: null
+    dnft: null,
+    claims: null,
   };
 
   switch (networkId) {
     case 31337:
-      contracts.myda = mydaContractAddress_Local;
+      contracts.itheumToken = tokenContractAddress_Local;
       contracts.ddex = ddexContractAddress_Local;
       contracts.dnft = dNFTContractAddress_Local;
       break;
     case 3:
-      contracts.myda = mydaContractAddress;
-      contracts.ddex = ddexContractAddress;
-      contracts.dnft = dNFTContractAddress;
+      contracts.itheumToken = tokenContractAddress_Rop;
+      contracts.ddex = ddexContractAddress_Rop;
+      contracts.dnft = dNFTContractAddress_Rop;
+      contracts.claims = claimsContractAddress_Rop
       break;
     case 4:
-      contracts.myda = mydaContractAddress_Rink;
+      contracts.itheumToken = tokenContractAddress_Rink;
       contracts.ddex = ddexContractAddress_Rink;
       contracts.dnft = dNFTContractAddress_Rink;
       break;
     case 80001:
-      contracts.myda = mydaContractAddress_Matic;
+      contracts.itheumToken = tokenContractAddress_Matic;
       contracts.ddex = ddexContractAddress_Matic;
       contracts.dnft = dNFTContractAddress_Matic;
+      contracts.claims = claimsContractAddress_Matic;
       break;
     case 97:
-      contracts.myda = mydaContractAddress_testnetBSC;
+      contracts.itheumToken = tokenContractAddress_testnetBSC;
       contracts.ddex = ddexContractAddress_testnetBSC;
       contracts.dnft = dNFTContractAddress_testnetBSC;
+      contracts.claims = claimsContractAddress_testnetBSC;
       break;
     case 1666700000:
-      contracts.myda = mydaContractAddress_testnetHarmony;
+      contracts.itheumToken = tokenContractAddress_testnetHarmony;
       contracts.ddex = ddexContractAddress_testnetHarmony;
       contracts.dnft = dNFTContractAddress_testnetHarmony;
       break;
     case 210309:
-      contracts.myda = mydaContractAddress_testnetPlatON;
+      contracts.itheumToken = tokenContractAddress_testnetPlatON;
       contracts.ddex = ddexContractAddress_testnetPlatON;
       contracts.dnft = dNFTContractAddress_testnetPlatON;
       break;
     case 123:
-      contracts.myda = mydaContractAddress_testnetParastate;
+      contracts.itheumToken = tokenContractAddress_testnetParastate;
       contracts.ddex = ddexContractAddress_testnetParastate;
       contracts.dnft = dNFTContractAddress_testnetParastate;
       break;
     case 43113:
-      contracts.myda = mydaContractAddress_testnetAvalanche;
+      contracts.itheumToken = tokenContractAddress_testnetAvalanche;
       contracts.ddex = ddexContractAddress_testnetAvalanche;
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
@@ -174,7 +201,7 @@ export const qsParams = () => {
   return params;
 }
 
-export const mydaRoundUtil = (balance, decimals, BigNumber) => {
+export const itheumTokenRoundUtil = (balance, decimals, BigNumber) => {
   const balanceWeiString = balance.toString();
   const balanceWeiBN = BigNumber.from(balanceWeiString);
   const decimalsBN = BigNumber.from(decimals);
@@ -183,6 +210,12 @@ export const mydaRoundUtil = (balance, decimals, BigNumber) => {
 
   return beforeDecimal.toString();
 }
+
+export const CLAIM_TYPES = {
+  REWARDS: 1,
+  AIRDROPS: 2,
+  ALLOCATIONS: 3
+};
 
 export const MENU = {
   HOME: 0,
@@ -1307,6 +1340,346 @@ export const ABIS = {
       "stateMutability": "nonpayable",
       "type": "function"
     }
+  ],
+  claims: [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "DepositClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "DepositDecreased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "DepositIncreased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        }
+      ],
+      "name": "claimDeposit",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "decreaseDeposit",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "name": "deposits",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastDeposited",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "increaseDeposit",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_itheumTokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "itheumTokenAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalDeposits",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
   ]
 }
 
@@ -1319,7 +1692,5 @@ export const sleep = (sec) => {
 }
 
 export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => { 
-  console.log('txNetworkId');
-  console.log(txNetworkId);
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
 }

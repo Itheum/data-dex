@@ -13,10 +13,10 @@ import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { TERMS, CHAIN_TOKEN_SYMBOL } from './libs/util';
 import { sleep } from './libs/util';
 import { config } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 
 export default function() {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
   const { web3 } = useMoralis();
   const { user } = useMoralis();
@@ -25,7 +25,7 @@ export default function() {
   const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
     query.descending("createdAt") &&
     query.notEqualTo("txHash", null) &&
-    query.equalTo("txNetworkId", chainMeta.networkId)
+    query.equalTo("txNetworkId", _chainMeta.networkId)
   );
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function() {
               <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>
               <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).val}</Text></Td>
-              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
+              <Td><Text fontSize="sm">{item.get('termsOfUseId') && TERMS.find(i => i.id === item.get('termsOfUseId')).coin} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text></Td>
             </Tr>)}
           </Tbody>
             <Tfoot>
