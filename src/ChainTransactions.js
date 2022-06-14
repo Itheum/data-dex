@@ -11,23 +11,23 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import ShortAddress from './UtilComps/ShortAddress';
 import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
-import { config, mydaRoundUtil } from './libs/util';
+import { config, itheumTokenRoundUtil } from './libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 
 export default function() {
-  const chainMeta = useContext(ChainMetaContext);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { user, Moralis: {web3Library: ethers} } = useMoralis();
   const { web3 } = useMoralis();
 
   const [allTx, setAllTx] = useState([]);
 
-  const { data: advertiseEvents, error: errorAdvertiseEvents } = useMoralisQuery(CHAIN_TX_LIST[chainMeta.networkId].advertiseEvents, query =>
+  const { data: advertiseEvents, error: errorAdvertiseEvents } = useMoralisQuery(CHAIN_TX_LIST[_chainMeta.networkId].advertiseEvents, query =>
     query.descending("createdAt")
   );
 
   const { fetch: fetchPurchaseEvents, data: purchaseEvents, error: errorPurchaseEvents, isLoading } = useMoralisQuery(
-    CHAIN_TX_LIST[chainMeta.networkId].purchaseEvents,
+    CHAIN_TX_LIST[_chainMeta.networkId].purchaseEvents,
     query =>
       query
         .descending("createdAt"),
@@ -50,11 +50,11 @@ export default function() {
   }, [purchaseEvents]);
 
   function isPurchasedEvent(className) {
-    return className.includes(CHAIN_TX_LIST[chainMeta.networkId].purchaseEvents);
+    return className.includes(CHAIN_TX_LIST[_chainMeta.networkId].purchaseEvents);
   }
 
-  function mydaRound(val) {
-    return mydaRoundUtil(val, 18, ethers.BigNumber);
+  function tokenRound(val) {
+    return itheumTokenRoundUtil(val, 18, ethers.BigNumber);
   }
 
   return (
@@ -109,11 +109,11 @@ export default function() {
                 <Td><ShortAddress address={item.get('dataPackId')} /></Td>
                 <Td>{item.get('seller') && <ShortAddress address={item.get('seller')} />}</Td>
                 <Td>{item.get('buyer') && <ShortAddress address={item.get('buyer')} />}</Td>
-                <Td>{item.get('feeInMyda') && `${mydaRound(item.get('feeInMyda'))} ${CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}` }</Td>
+                <Td>{item.get('feeInMyda') && `${tokenRound(item.get('feeInMyda'))} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}` }</Td>
                 <Td>
                   <HStack>
                     <ShortAddress address={item.get('transaction_hash')} />
-                    <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.get('transaction_hash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${item.get('transaction_hash')}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                   </HStack>
                 </Td> 
               </Tr>)}

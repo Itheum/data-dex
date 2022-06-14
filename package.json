@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Itheum Data DEX lets you trade in personal data",
   "dependencies": {
     "@chakra-ui/icons": "^1.1.5",
@@ -27,8 +27,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts start",
+    "build": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-flat": "npx http-server -o /flat",

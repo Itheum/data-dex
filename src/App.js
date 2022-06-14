@@ -1,47 +1,62 @@
-import { useEffect, useState, useRef } from "react";
-import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
-import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { useEffect, useState, useRef } from 'react';
+import moment from 'moment';
+import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay, useColorMode, Link,
+  Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from '@chakra-ui/react';
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from '@chakra-ui/layout';
+import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
-import { useMoralis, useMoralisWeb3Api } from "react-moralis";
-import { Auth } from "./Auth";
-import SellData from "./SellData";
-import BuyData from "./BuyData";
-import PurchasedData from "./PurchasedData";
-import AdvertisedData from "./AdvertisedData";
-import PersonalDataProofs from "./PersonalDataProofs";
-import ShortAddress from "./UtilComps/ShortAddress";
-import Tools from "./Tools";
-import ChainTransactions from "./ChainTransactions";
-import DataVault from "./DataVault";
-import DataNFTs from "./DataNFTs";
-import MyDataNFTs from "./DataNFT/MyDataNFTs";
-import DataNFTMarketplace from "./DataNFT/DataNFTMarketplace";
-import DataStreams from "./DataStreams";
-import DataCoalitions from "./DataCoalitions";
-import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
-import TrustedComputation from "./TrustedComputation";
-import { mydaRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice } from "./libs/util";
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES } from "./libs/util";
-import { chainMeta, ChainMetaContext } from "./libs/contexts";
-import logo from "./img/logo.png";
-import logoSmlD from "./img/logo-sml-d.png";
-import logoSmlL from "./img/logo-sml-l.png";
-import chainEth from "./img/eth-chain-logo.png";
-import chainPol from "./img/polygon-chain-logo.png";
-import chainBsc from "./img/bsc-chain-logo.png";
-import chainAvln from "./img/avalanche-chain-logo.png";
-import chainHrmy from "./img/harmony-chain-logo.png";
-import chainPlaton from "./img/platon-chain-logo.png";
-import chainParastate from "./img/parastate-chain-logo.png";
-import chainElrond from "./img/elrond-chain-logo.png";
-import chainHedera from "./img/hedera-chain-logo.png";
-import moralisIcon from "./img/powered-moralis.png";
+import { useMoralis, useMoralisWeb3Api } from 'react-moralis';
+import { Auth } from './Auth';
+import SellData from './SellData';
+import BuyData from './BuyData';
+import PurchasedData from './PurchasedData';
+import AdvertisedData from './AdvertisedData';
+import PersonalDataProofs from './PersonalDataProofs';
+import ShortAddress from './UtilComps/ShortAddress';
+import Tools from './Tools';
+import ChainTransactions from './ChainTransactions';
+import DataVault from './DataVault';
+import DataNFTs from './DataNFTs';
+import MyDataNFTs from './DataNFT/MyDataNFTs';
+import DataNFTMarketplace from './DataNFT/DataNFTMarketplace';
+import DataStreams from './DataStreams';
+import DataCoalitions from './DataCoalitions';
+import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
+import TrustedComputation from './TrustedComputation';
+import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES } from './libs/util';
+import logo from './img/logo.png';
+import logoSmlD from './img/logo-sml-d.png';
+import logoSmlL from './img/logo-sml-l.png';
+import chainEth from './img/eth-chain-logo.png';
+import chainPol from './img/polygon-chain-logo.png';
+import chainBsc from './img/bsc-chain-logo.png';
+import chainAvln from './img/avalanche-chain-logo.png';
+import chainHrmy from './img/harmony-chain-logo.png';
+import chainPlaton from './img/platon-chain-logo.png';
+import chainParastate from './img/parastate-chain-logo.png';
+import chainElrond from './img/elrond-chain-logo.png';
+import chainHedera from './img/hedera-chain-logo.png';
+import moralisIcon from './img/powered-moralis.png';
+import { useUser } from './store/UserContext';
+import { useChainMeta } from './store/ChainMetaContext';
+import AlertOverlay from './UtilComps/AlertOverlay';
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./ElrondApi";
 
+const _chainMetaLocal = {};
+
+const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
+
 const elrondLogout = logout;
+
 function App() {
   const {
     isAuthenticated,
@@ -52,7 +67,7 @@ function App() {
   const { address: elrondAddress } = useGetAccountInfo();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
-  const [myMydaBal, setMydaBal] = useState(0);
+  const [tokenBal, setTokenBal] = useState(0);
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
@@ -64,8 +79,21 @@ function App() {
   });
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode } = useColorMode(); 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [getClaimesError, setGetClaimsError] = useState(null);
+  
+  // context hooks
+  const { user: _user, setUser } = useUser();
+  const { setChainMeta } = useChainMeta();
+
+  useEffect(() => {
+    setUser({
+      isAuthenticated,
+      claimBalanceValues: ['-1', '-1', '-1'],
+      claimBalanceDates: [0, 0, 0],
+    });
+  },[]);
 
   useEffect(() => {
     enableWeb3();
@@ -78,9 +106,14 @@ function App() {
       const networkId = "ED";
       setChain(CHAINS[networkId]);
       const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-      setMydaBal(balance);
-      chainMeta.networkId = networkId;
-      chainMeta.contracts = contractsForChain(networkId);
+      setTokenBal(balance);
+      _chainMetaLocal.networkId = networkId;
+      _chainMetaLocal.contracts = contractsForChain(networkId);
+
+      setChainMeta({
+        networkId,
+        contracts: contractsForChain(networkId)
+      });
     }
   }, [elrondAddress]);
 
@@ -93,29 +126,89 @@ function App() {
       if (!SUPPORTED_CHAINS.includes(networkId)) {
         setAlertIsOpen(true);
       } else {
-        chainMeta.networkId = networkId;
-        chainMeta.contracts = contractsForChain(networkId);
+        _chainMetaLocal.networkId = networkId;
+        _chainMetaLocal.contracts = contractsForChain(networkId);
+        
+        setChainMeta({
+          networkId,
+          contracts: contractsForChain(networkId)
+        });
+        
+        await web3_getTokenBalance();
+        await sleep(1);
 
-        await showMydaBalance();
+        await web_getClaimBalance();
         await sleep(1);
       }
     }
   }, [user, isWeb3Enabled]);
 
   const handleRefreshBalance = async () => {
-    await showMydaBalance();
+    await web3_getTokenBalance();
+    await web_getClaimBalance();
   };
 
-  const showMydaBalance = async () => {
-    const walletAddress = user.get("ethAddress");
+  const web_getClaimBalance = async () => {
+    const walletAddress = user.get('ethAddress');
+    const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
 
+    const keys = Object.keys(CLAIM_TYPES);
+    
+    const values = keys.map((el) => {
+      return CLAIM_TYPES[el]
+    });
+    
+    // queue all smart contract calls
+    const hexDataPromiseArray =  values.map(async (el) => {
+      let a = await contract.deposits(walletAddress, el);
+      return a;
+    });
+
+    try {
+      const claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
+        const date = new Date((parseInt((el.lastDeposited._hex.toString()),16))*1000);
+        const value = (parseInt(el.amount._hex.toString(),16))/(10**18);
+        return { values: value , dates: date}
+      });
+
+      const valuesArray = claimBalanceResponse.map((el) => {
+        return el['values'];
+      });
+  
+      const datesArray = claimBalanceResponse.map((el) => {
+        return el['dates'];
+      });
+  
+      await setUser({
+        ..._user,
+        claimBalanceValues: valuesArray,
+        claimBalanceDates: datesArray
+      });
+    } catch(e) {
+      console.error(e);
+      setGetClaimsError({
+        errContextMsg: 'Could not get your claims information from the blockchain',
+        rawError: e
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (_user && _user.isAuthenticated) {
+      web3_getTokenBalance();
+    }
+  },[_user.claimBalanceValues]);
+
+  const web3_getTokenBalance = async () => {
+    const walletAddress = user.get('ethAddress');
+    
     /*
     // Example of running a contract via moralis's runContractFunction (for reference)
     // you will need const Web3Api = useMoralisWeb3Api();
 
     let options = {
-      chain: CHAIN_NAMES[chainMeta.networkId],
-      address: chainMeta.contracts.myda,
+      chain: CHAIN_NAMES[_chainMetaLocal.networkId],
+      address: _chainMetaLocal.contracts.itheumToken,
       function_name: "decimals",
       abi: ABIS.token,
     };
@@ -127,13 +220,13 @@ function App() {
     */
 
     // call contract via ethers
-    const contract = new ethers.Contract(chainMeta.contracts.myda, ABIS.token, web3Provider);
+    const contract = new ethers.Contract(_chainMetaLocal.contracts.itheumToken, ABIS.token, web3Provider);
     const balance = await contract.balanceOf(walletAddress);
     const decimals = await contract.decimals();
 
     // show the token balance in readable format
-    setMydaBal(mydaRoundUtil(balance, decimals, ethers.BigNumber));
-  };
+    setTokenBal(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
+  }
 
   // utility that will reload a component and reset it's state
   const handleRfMount = (key) => {
@@ -156,24 +249,48 @@ function App() {
 
               <Heading>
                 <Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text>
+                <Text fontSize="xx-small">{dataDexVersion}</Text>
               </Heading>
 
               <Spacer />
 
               <HStack>
-                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
-                  {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)} {myMydaBal}
+                <Box
+                  as="text"
+                  fontSize={["xs", "sm"]}
+                  minWidth={"5.5rem"}
+                  align="center"
+                  p={2}
+                  color="white"
+                  fontWeight="bold"
+                  borderRadius="md"
+                  bgGradient="linear(to-l, #7928CA, #FF0080)">{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
                 </Box>
 
-                <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
-                  {chain || "..."}
+                <Box
+                  display={['none', null, 'block']}
+                  fontSize={["xs", "sm"]}
+                  align="center"
+                  p={2}
+                  color="rgb(243, 183, 30)"
+                  fontWeight="bold"
+                  bg="rgba(243, 132, 30, 0.05)"
+                  borderRadius="md">{chain || '...'}
                 </Box>
 
-                <Button onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
+                <Button onClick={toggleColorMode}>
+                  {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+                </Button>
+
               </HStack>
 
               <Menu>
-                <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
+                <MenuButton
+                  as={IconButton}
+                  aria-label='Options'
+                  icon={<HamburgerIcon />}
+                  variant='outline'
+                />
                 <MenuList>
                   <MenuGroup>
                     <MenuItem closeOnSelect={false}>
@@ -200,8 +317,14 @@ function App() {
 
                   <MenuGroup>
                     <MenuItem closeOnSelect={false} display={["block", null, "none"]}>
-                      <Box fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
-                        {chain || "..."}
+                      <Box
+                        fontSize={["xs", "sm"]}
+                        align="center"
+                        p={2}
+                        color="rgb(243, 183, 30)"
+                        fontWeight="bold"
+                        bg="rgba(243, 132, 30, 0.05)"
+                        borderRadius="md">{chain || '...'}
                       </Box>
                     </MenuItem>
                   </MenuGroup>
@@ -211,9 +334,12 @@ function App() {
 
             <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} backgroundColor={"blue1"} pt={5}>
               <Box backgroundColor={"green1"}>
-                <Button display={["block", null, "none"]} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
-                  Main menu
-                </Button>
+                <Button display={["block", null, "none"]} 
+                  colorScheme="teal" 
+                  variant="solid"
+                  m="auto"
+                  mb={5}
+                  onClick={() => setShowMobileMenu(!showMobileMenu)}>Main menu</Button>
 
                 <Stack direction="column" spacing={4} display={[(showMobileMenu && "block") || "none", , "block"]}>
                   <HStack pl="3">
@@ -226,6 +352,7 @@ function App() {
                   </HStack>
 
                   <Flex direction="column" justify="space-between" minH="80vh">
+
                     <Stack ml="15px" spacing={4}>
                       <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => setMenuItem(MENU.HOME)}>
                         Home
@@ -272,7 +399,7 @@ function App() {
                           <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                             <Button
                               colorScheme="teal"
-                              isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, chainMeta.networkId)}
+                              isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)}
                               onClick={() => {
                                 if (splashScreenShown[MENU.NFT]) {
                                   setMenuItem(MENU.NFTMINE);
@@ -287,7 +414,7 @@ function App() {
 
                             <Button
                               colorScheme="teal"
-                              isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, chainMeta.networkId)}
+                              isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)}
                               onClick={() => {
                                 if (splashScreenShown[MENU.NFT]) {
                                   setMenuItem(MENU.NFTALL);
@@ -339,7 +466,7 @@ function App() {
                         </AccordionButton>
                         <AccordionPanel>
                           <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <Button disabled={noChainSupport(MENU.TX, chainMeta.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => setMenuItem(MENU.TX)}>
+                            <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => setMenuItem(MENU.TX)}>
                               Chain Transactions
                             </Button>
                           </Stack>
@@ -367,34 +494,34 @@ function App() {
                           </Stack>
                         </AccordionPanel>
                       </AccordionItem>
+
                     </Accordion>
 
                     <ByMoralisLogo />
+                    
                   </Flex>
                 </Stack>
               </Box>
 
               <Box backgroundColor={"red1"} pl={5} w="full">
-                <ChainMetaContext.Provider value={chainMeta}>
-                  {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
-                  {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />}
-                  {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />}
-                  {menuItem === MENU.ADVERTISED && <AdvertisedData />}
-                  {menuItem === MENU.PURCHASED && <PurchasedData />}
-                  {menuItem === MENU.DATAPROOFS && <PersonalDataProofs />}
-                  {menuItem === MENU.TX && <ChainTransactions />}
-                  {menuItem === MENU.VAULT && <DataVault />}
+                {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
+                {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />}
+                {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />}
+                {menuItem === MENU.ADVERTISED && <AdvertisedData />}
+                {menuItem === MENU.PURCHASED && <PurchasedData />}
+                {menuItem === MENU.DATAPROOFS && <PersonalDataProofs />}
+                {menuItem === MENU.TX && <ChainTransactions />}
+                {menuItem === MENU.VAULT && <DataVault />}
 
-                  {menuItem === MENU.NFT && <DataNFTs setMenuItem={setMenuItem} />}
-                  {menuItem === MENU.NFTMINE && <MyDataNFTs />}
-                  {menuItem === MENU.NFTALL && <DataNFTMarketplace />}
+                {menuItem === MENU.NFT && <DataNFTs setMenuItem={setMenuItem} />}
+                {menuItem === MENU.NFTMINE && <MyDataNFTs />}
+                {menuItem === MENU.NFTALL && <DataNFTMarketplace />}
 
-                  {menuItem === MENU.COALITION && <DataCoalitions setMenuItem={setMenuItem} />}
-                  {menuItem === MENU.COALITIONALL && <DataCoalitionsViewAll />}
+                {menuItem === MENU.COALITION && <DataCoalitions setMenuItem={setMenuItem} />}
+                {menuItem === MENU.COALITIONALL && <DataCoalitionsViewAll />}
 
-                  {menuItem === MENU.STREAM && <DataStreams />}
-                  {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
-                </ChainMetaContext.Provider>
+                {menuItem === MENU.STREAM && <DataStreams />}
+                {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
               </Box>
             </HStack>
           </Flex>
@@ -423,6 +550,9 @@ function App() {
               </AlertDialogContent>
             </AlertDialogOverlay>
           </AlertDialog>
+
+          {getClaimesError && <AlertOverlay errorData={getClaimesError} onClose={() => console.log}/>}
+
         </Container>
       ) : (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">

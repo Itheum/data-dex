@@ -1,12 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import { ChakraProvider, extendTheme, Flex, Container, Box } from "@chakra-ui/react";
-import { createBreakpoints } from "@chakra-ui/theme-tools";
-import { MoralisProvider } from "react-moralis";
-import ErrorBoundary from "./ErrorBoundary";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/react';
+import { createBreakpoints } from '@chakra-ui/theme-tools'
+import { MoralisProvider } from 'react-moralis';
+import ErrorBoundary from './ErrorBoundary';
+import { UserContextProvider } from './store/UserContext';
+import { ChainMetaContextProvider } from './store/ChainMetaContext';
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
-// import { appId, serverURL } from './secrets.js';
 
 const {
   TransactionsToastList,
@@ -40,9 +41,6 @@ const theme = extendTheme({
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
-if (!process.env.REACT_APP_ENV_MORALIS_APPID || !process.env.REACT_APP_ENV_MORALIS_SERVER) {
-}
-
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
@@ -52,7 +50,13 @@ ReactDOM.render(
             <TransactionsToastList />
             <NotificationModal />
             <SignTransactionsModals className="custom-class-for-modals" />
-            <App />
+            
+            <ChainMetaContextProvider>
+              <UserContextProvider>
+                <App />
+              </UserContextProvider>
+            </ChainMetaContextProvider>
+
           </DappProvider>
         </ChakraProvider>
       </MoralisProvider>

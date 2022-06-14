@@ -143,25 +143,31 @@ export const Auth = () => {
                       WalletConnect
                     </Button>
                   </Box>
-
+                  
                   <Box>
-                    <Button isLoading={Boolean(isAuthenticatingElrond)} onClick={() => handleAuthenticate(WALLETS.ELROND)} width="220px" p="8">
-                      <Image src={chainElrond} boxSize="40px" borderRadius="lg" mr="2" />
-                      Elrond via Ledger
+                    <Button width="220px" p="8">
+                      <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"}></WalletConnectLoginButton>
                     </Button>
                   </Box>
+
                   <Box>
-                    <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"}></WalletConnectLoginButton>
+                    <Button width="220px" p="8">
+                      <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"}></ExtensionLoginButton>
+                    </Button>
                   </Box>
+
                   <Box>
-                    <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"}></ExtensionLoginButton>
+                    <Button width="220px" p="8">
+                      <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"}></WebWalletLoginButton>
+                    </Button>
                   </Box>
+
                   <Box>
-                    <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"}></WebWalletLoginButton>
+                    <Button width="220px" p="8">
+                      <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"}></LedgerLoginButton>
+                    </Button>
                   </Box>
-                  <Box>
-                    <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"}></LedgerLoginButton>
-                  </Box>
+
                 </Wrap>
               </Box>
 

@@ -21,7 +21,7 @@ import ShortAddress from './UtilComps/ShortAddress';
 import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { config, sleep } from './libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './libs/util';
-import { ChainMetaContext } from './libs/contexts';
+import { useChainMeta } from './store/ChainMetaContext';
 
 const useContainerDimensions = myRef => {
   const getDimensions = () => ({
@@ -51,9 +51,9 @@ const useContainerDimensions = myRef => {
 };
 
 export default function() {
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const componentRef = useRef();
   const { width, height } = useContainerDimensions(componentRef);
-  const chainMeta = useContext(ChainMetaContext);
   const toast = useToast();
   const { user } = useMoralis();
   const [noData, setNoData] = useState(false);
@@ -66,7 +66,7 @@ export default function() {
     data: dataUsrPurOrders
   } = useMoralisCloudFunction("getUserPurchaseDataOrders", {
     userAddress: user.get('ethAddress'),
-    networkId: chainMeta.networkId
+    networkId: _chainMeta.networkId
   }, { autoFetch: false });  
 
   useEffect(() => {
@@ -151,11 +151,11 @@ export default function() {
                 <Td><Text fontSize="sm">{item.dataPack[0].dataPreview}</Text></Td>
                 <Td><Text fontSize="sm">{TERMS.find(i => i.id === item.dataPack[0].termsOfUseId).val}</Text></Td>
                 <Td><Link href={item.dataFileUrl} isExternal><Text fontSize="sm">Download Data File <ExternalLinkIcon mx="2px" /></Text></Link></Td>
-                <Td><Text fontSize="sm">{item.pricePaid} {CHAIN_TOKEN_SYMBOL(chainMeta.networkId)}</Text></Td>
+                <Td><Text fontSize="sm">{item.pricePaid} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text></Td>
                 <Td>
                   <HStack>
                     <ShortAddress address={item.txHash} />
-                    <Link href={`${CHAIN_TX_VIEWER[chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                   </HStack>
                 </Td>
               </Tr>)}
