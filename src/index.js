@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import { ChakraProvider, extendTheme, Flex, Container, Box } from '@chakra-ui/react';
-import { createBreakpoints } from '@chakra-ui/theme-tools'
-import { MoralisProvider } from 'react-moralis';
-import ErrorBoundary from './ErrorBoundary';
-import { UserContextProvider } from './store/UserContext';
-import { ChainMetaContextProvider } from './store/ChainMetaContext';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { ChakraProvider, extendTheme, Flex, Container, Box } from "@chakra-ui/react";
+import { createBreakpoints } from "@chakra-ui/theme-tools";
+import { MoralisProvider } from "react-moralis";
+import ErrorBoundary from "./ErrorBoundary";
+import { UserContextProvider } from "./store/UserContext";
+import { ChainMetaContextProvider } from "./store/ChainMetaContext";
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
-
+import "../src/Elrond/elrond.css";
 const {
   TransactionsToastList,
   SignTransactionsModals,
@@ -50,13 +50,12 @@ ReactDOM.render(
             <TransactionsToastList />
             <NotificationModal />
             <SignTransactionsModals className="custom-class-for-modals" />
-            
+
             <ChainMetaContextProvider>
               <UserContextProvider>
                 <App />
               </UserContextProvider>
             </ChainMetaContextProvider>
-
           </DappProvider>
         </ChakraProvider>
       </MoralisProvider>

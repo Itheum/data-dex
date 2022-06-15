@@ -1,5 +1,6 @@
 import { ProxyNetworkProvider } from "@elrondnetwork/erdjs-network-providers/out";
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, BigUIntValue, VariadicValue, Transaction, TransactionPayload, ContractFunction } from "@elrondnetwork/erdjs/out";
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from "@elrondnetwork/erdjs/out";
+import { refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import jsonData from "./ABIs/claims.abi.json";
 import { mydaContractAddress_devnetElrond } from "../libs/contactAddresses";
 export class ClaimsContract {
@@ -33,5 +34,29 @@ export class ClaimsContract {
     });
     console.log(result);
     return result;
+  }
+
+  async sendClaimRewardsTransaction(rewardType) {
+    const claimTransaction = new Transaction({
+      value: 0,
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction("claim"))
+        .addArg(new U64Value(rewardType))
+        .build(),
+      receiver: new Address(mydaContractAddress_devnetElrond),
+      gasLimit: 6000000,
+      chainID: "D",
+    });
+    await refreshAccount();
+    const { sessionId, error } = await sendTransactions({
+      transactions: claimTransaction,
+      transactionsDisplayInfo: {
+        processingMessage: "Claiming ITHEUM",
+        errorMessage: "Error occured during ITHEUM claiming",
+        successMessage: "ITHEUM claimed successfully",
+      },
+      redirectAfterSign: false,
+    });
+    return { sessionId, error };
   }
 }

@@ -1,39 +1,31 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
-import { Box, Stack } from '@chakra-ui/layout';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
-import {
-  Button, Link, Progress, Badge,
-  Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter,
-  Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner,
-  useToast, useDisclosure
-} from '@chakra-ui/react';
-import moment from 'moment';
-import ShortAddress from './UtilComps/ShortAddress';
-import { progInfoMeta, config, sleep } from './libs/util';
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
-import imgProgGaPa from './img/prog-gaming.jpg';
-import imgProgRhc from './img/prog-rhc.png';
-import imgProgWfh from './img/prog-wfh.png';
-import ClaimModal from './UtilComps/ClaimModal';
-import { useUser } from './store/UserContext';
+import React, { useContext, useState, useEffect } from "react";
+import { useMoralis, useMoralisCloudFunction } from "react-moralis";
+import { Box, Stack } from "@chakra-ui/layout";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import moment from "moment";
+import ShortAddress from "./UtilComps/ShortAddress";
+import { progInfoMeta, config, sleep } from "./libs/util";
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES } from "./libs/util";
+import { useChainMeta } from "./store/ChainMetaContext";
+import imgProgGaPa from "./img/prog-gaming.jpg";
+import imgProgRhc from "./img/prog-rhc.png";
+import imgProgWfh from "./img/prog-wfh.png";
+import ClaimModal from "./UtilComps/ClaimModal";
+import { useUser } from "./store/UserContext";
 
-export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
+export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
-  const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
+  const {
+    web3: web3Provider,
+    Moralis: { web3Library: ethers },
+  } = useMoralis();
   const { user } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const {user: _user} = useUser();
+  const { user: _user } = useUser();
 
-  const {
-    error: errCfTestData,
-    isLoading: loadingCfTestData,
-    fetch: doCfTestData,
-    data: dataCfTestData
-  } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
+  const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
@@ -46,7 +38,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {
-      const response = JSON.parse(decodeURIComponent((atob(dataCfTestData))));
+      const response = JSON.parse(decodeURIComponent(atob(dataCfTestData)));
 
       toast({
         title: "Congrats! an itheum test account has been linked",
@@ -67,7 +59,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     } else {
       if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
         toast({
-          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,          
+          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,
           status: "success",
           duration: 6000,
           isClosable: true,
@@ -79,24 +71,24 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     }
   }, [txConfirmationFaucet, txHashFaucet, txErrorFaucet]);
 
-  const web3_tokenFaucet = async() => {
+  const web3_tokenFaucet = async () => {
     setFaucetWorking(true);
 
     const web3Signer = web3Provider.getSigner();
     const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const tokenInPrecision = ethers.utils.parseUnits('50.0', decimals).toHexString();
+    const tokenInPrecision = ethers.utils.parseUnits("50.0", decimals).toHexString();
 
     try {
-      const txResponse = await tokenContract.faucet(user.get('ethAddress'), tokenInPrecision);
-      
+      const txResponse = await tokenContract.faucet(user.get("ethAddress"), tokenInPrecision);
+
       // show a nice loading animation to user
       setTxHashFaucet(txResponse.hash);
 
       await sleep(2);
       setTxConfirmationFaucet(0.5);
-      
+
       // wait for 1 confirmation from ethers
       const txReceipt = await txResponse.wait();
       setTxConfirmationFaucet(1);
@@ -105,15 +97,15 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
       if (txReceipt.status) {
         setTxConfirmationFaucet(2);
       } else {
-        const txErr = new Error('Token Contract Error on method faucet');
+        const txErr = new Error("Token Contract Error on method faucet");
         console.error(txErr);
-        
+
         setTxErrorFaucet(txErr);
       }
-    } catch(e) {
+    } catch (e) {
       setTxErrorFaucet(e);
     }
-  }
+  };
 
   function resetFauceState() {
     setFaucetWorking(false);
@@ -122,72 +114,72 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     setTxErrorFaucet(null);
   }
 
-  const handleLearnMoreProg = progCode => {
+  const handleLearnMoreProg = (progCode) => {
     setLearnMoreProg(progCode);
     onProgressModalOpen();
-  }
+  };
 
-   // S: claims related logic
-   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
-  
-   const rewardsModalData = {
-     isOpen: isRewardsOpen,
-     onClose: refreshTokenBalances => {
-       onRewardsClose();
-       if (refreshTokenBalances) {
-         onRefreshBalance();
-       }
-     },
-     title: "Rewards",
-     tag1: "Total Available",
-     value1: _user.claimBalanceValues?.[0],
-     tag2: "Deposited On",
-     value2: moment(_user?.claimBalanceDates?.[0]).format(config.dateStrTm),
-     n: CLAIM_TYPES.REWARDS
-   }
- 
-   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
-   
-   const airdropsModalData = {
-     isOpen: isAirdropsOpen,
-     onClose: refreshTokenBalances => {
-       onAirdropClose();
-       if (refreshTokenBalances) {
-         onRefreshBalance();
-       }
-     },
-     title: "Airdrops",
-     tag1: "Total Available",
-     value1: _user?.claimBalanceValues?.[1],
-     tag2: "Deposited On",
-     value2: moment(_user?.claimBalanceDates?.[1]).format(config.dateStrTm),
-     n: CLAIM_TYPES.AIRDROPS
-   }
-   
-   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
-   
-   const allocationsModalData = {
-     isOpen: isAllocationsOpen,
-     onClose: refreshTokenBalances => {
-       onAllocationsClose();
-       if (refreshTokenBalances) {
-         onRefreshBalance();
-       }
-     },
-     title: "Allocations",
-     tag1: "Total Available",
-     value1: _user?.claimBalanceValues?.[2],
-     tag2: "Deposited On",
-     value2: moment(_user?.claimBalanceDates?.[2]).format(config.dateStrTm),
-     n: CLAIM_TYPES.ALLOCATIONS
-   }
-   // E: claims related logic 
+  // S: claims related logic
+  const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
 
-   const handleOnChainFaucet = () => {
+  const rewardsModalData = {
+    isOpen: isRewardsOpen,
+    onClose: (refreshTokenBalances) => {
+      onRewardsClose();
+      if (refreshTokenBalances) {
+        onRefreshBalance();
+      }
+    },
+    title: "Rewards",
+    tag1: "Total Available",
+    value1: _user.claimBalanceValues?.[0],
+    tag2: "Deposited On",
+    value2: moment(_user?.claimBalanceDates?.[0]).format(config.dateStrTm),
+    n: CLAIM_TYPES.REWARDS,
+  };
+
+  const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
+
+  const airdropsModalData = {
+    isOpen: isAirdropsOpen,
+    onClose: (refreshTokenBalances) => {
+      onAirdropClose();
+      if (refreshTokenBalances) {
+        onRefreshBalance();
+      }
+    },
+    title: "Airdrops",
+    tag1: "Total Available",
+    value1: _user?.claimBalanceValues?.[1],
+    tag2: "Deposited On",
+    value2: moment(_user?.claimBalanceDates?.[1]).format(config.dateStrTm),
+    n: CLAIM_TYPES.AIRDROPS,
+  };
+
+  const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
+
+  const allocationsModalData = {
+    isOpen: isAllocationsOpen,
+    onClose: (refreshTokenBalances) => {
+      onAllocationsClose();
+      if (refreshTokenBalances) {
+        onRefreshBalance();
+      }
+    },
+    title: "Allocations",
+    tag1: "Total Available",
+    value1: _user?.claimBalanceValues?.[2],
+    tag2: "Deposited On",
+    value2: moment(_user?.claimBalanceDates?.[2]).format(config.dateStrTm),
+    n: CLAIM_TYPES.ALLOCATIONS,
+  };
+  // E: claims related logic
+
+  const handleOnChainFaucet = () => {
     setTxErrorFaucet(null);
     web3_tokenFaucet();
   };
-  
+
   return (
     <Stack>
       <Heading size="lg">Home</Heading>
@@ -196,58 +188,85 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
             {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
-            {!itheumAccount && <Alert status="warning" variant="solid">
-              <Stack>
-                <AlertTitle fontSize="md"><AlertIcon mb={2} /> Sorry! You don't seem to have a <Link href="https://itheum.com" isExternal>itheum.com</Link> platform account</AlertTitle>
-                <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
-              </Stack>
-            </Alert>}
-            
-            {itheumAccount && 
+            {!itheumAccount && (
+              <Alert status="warning" variant="solid">
+                <Stack>
+                  <AlertTitle fontSize="md">
+                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{" "}
+                    <Link href="https://itheum.com" isExternal>
+                      itheum.com
+                    </Link>{" "}
+                    platform account
+                  </AlertTitle>
+                  <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
+                </Stack>
+              </Alert>
+            )}
+
+            {itheumAccount && (
               <Stack>
                 <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
                 <Text fontSize="sm">You have data available to sell from the following programs you are participating in... </Text>
-                {itheumAccount.programsAllocation.map(item => (
+                {itheumAccount.programsAllocation.map((item) => (
                   <Stack direction="row" key={item.program}>
-                    <Badge borderRadius="full" px="2" colorScheme="teal">{itheumAccount._lookups.programs[item.program].programName}</Badge>
+                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                      {itheumAccount._lookups.programs[item.program].programName}
+                    </Badge>
                   </Stack>
-                  ))}
+                ))}
               </Stack>
-            }
+            )}
 
             <Spacer />
-            
-            {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
 
-            {itheumAccount && 
-              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>Trade My Data</Button>
-            }
+            {!itheumAccount && (
+              <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>
+                Load Test Data
+              </Button>
+            )}
+
+            {itheumAccount && (
+              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>
+                Trade My Data
+              </Button>
+            )}
           </Stack>
         </WrapItem>
 
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
             <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
-            <Text fontSize="sm" pb={5}>Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features</Text>
-          
-            {txHashFaucet && <Stack>
-              <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
+            <Text fontSize="sm" pb={5}>
+              Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
+            </Text>
 
-              <HStack>
-                <Text fontSize="sm">Transaction </Text>
-                <ShortAddress address={txHashFaucet} />
-                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
-              </HStack>                    
-            </Stack>}
+            {txHashFaucet && (
+              <Stack>
+                <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
-            {txErrorFaucet && <Alert status="error">
-              <AlertIcon />
-              {txErrorFaucet.message && <AlertTitle fontSize="md">{txErrorFaucet.message}</AlertTitle>}
-              <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
-            </Alert>}
+                <HStack>
+                  <Text fontSize="sm">Transaction </Text>
+                  <ShortAddress address={txHashFaucet} />
+                  <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
+                    {" "}
+                    <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </HStack>
+              </Stack>
+            )}
+
+            {txErrorFaucet && (
+              <Alert status="error">
+                <AlertIcon />
+                {txErrorFaucet.message && <AlertTitle fontSize="md">{txErrorFaucet.message}</AlertTitle>}
+                <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
+              </Alert>
+            )}
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Button>
+            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
+              Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+            </Button>
           </Stack>
         </WrapItem>
 
@@ -257,20 +276,26 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             <Spacer />
             <HStack spacing={50}>
               <Text>Rewards</Text>
-              <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>{_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size='xs' /> }</Button>
+              <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
+              </Button>
               <ClaimModal {...rewardsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={50}>
               <Text>Airdrops</Text>
-              <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen} >{_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size='xs' />}</Button>
-              <ClaimModal {...airdropsModalData}/>
+              <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
+              </Button>
+              <ClaimModal {...airdropsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={30}>
               <Text>Allocations</Text>
-              <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen} >{_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size='xs' /> }</Button>
-              <ClaimModal {...allocationsModalData}/>
+              <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
+              </Button>
+              <ClaimModal {...allocationsModalData} />
             </HStack>
 
             <Spacer />
@@ -287,19 +312,20 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
             <Box p="3">
               <Box d="flex" alignItems="baseline">
-                <Box
-                  mt="1"
-                  mr="1"
-                  fontWeight="semibold"
-                  as="h4"
-                  lineHeight="tight"
-                  isTruncated>
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
                   Red Heart Challenge
                 </Box>
-                <Badge borderRadius="full" px="2" colorScheme="teal"> Live</Badge>
+                <Badge borderRadius="full" px="2" colorScheme="teal">
+                  {" "}
+                  Live
+                </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('rhc'))}>Learn More</Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => (window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`))}>Join Now</Button>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
+                Learn More
+              </Button>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`)}>
+                Join Now
+              </Button>
             </Box>
           </Box>
 
@@ -308,19 +334,20 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
             <Box p="3">
               <Box d="flex" alignItems="baseline">
-                <Box
-                  mt="1"
-                  mr="1"
-                  fontWeight="semibold"
-                  as="h4"
-                  lineHeight="tight"
-                  isTruncated>
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
                   Gamer Passport
                 </Box>
-                <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
+                <Badge borderRadius="full" px="2" colorScheme="blue">
+                  {" "}
+                  Coming Soon
+                </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('gdc'))}>Learn More</Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
+                Learn More
+              </Button>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
+                Join Now
+              </Button>
             </Box>
           </Box>
 
@@ -329,47 +356,71 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
             <Box p="3">
               <Box d="flex" alignItems="baseline">
-                <Box
-                  mt="1"
-                  mr="1"
-                  fontWeight="semibold"
-                  as="h4"
-                  lineHeight="tight"
-                  isTruncated>
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
                   Wearables Fitness and Activity
                 </Box>
-                <Badge borderRadius="full" px="2" colorScheme="blue"> Coming Soon</Badge>
+                <Badge borderRadius="full" px="2" colorScheme="blue">
+                  {" "}
+                  Coming Soon
+                </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => (handleLearnMoreProg('wfa'))}>Learn More</Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => (window.open(''))}>Join Now</Button>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
+                Learn More
+              </Button>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
+                Join Now
+              </Button>
             </Box>
           </Box>
         </Wrap>
       </Stack>
 
-      {learnMoreProd && <Modal size="xl"
-        isOpen={isProgressModalOpen}
-        onClose={onProgressModalClose}
-        closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <Stack spacing="5">
-            <Text>{progInfoMeta[learnMoreProd].desc}</Text>
-              <Stack><Text color="gray" as="b">Delivered Via:</Text> <p>{progInfoMeta[learnMoreProd].medium}</p></Stack>
-              <Stack><Text color="gray" as="b">Data Collected:</Text> <p>{progInfoMeta[learnMoreProd].data}</p></Stack>
-              <Stack><Text color="gray" as="b">App Outcome:</Text> <p>{progInfoMeta[learnMoreProd].outcome}</p></Stack>
-              <Stack><Text color="gray" as="b">Target Buyers:</Text> <p>{progInfoMeta[learnMoreProd].targetBuyer}</p></Stack>
-            </Stack>
-          </ModalBody>
-          <ModalFooter>
-            <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>Close</Button>
-            <Button size="sm" colorScheme="teal" onClick={() => (window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`))}>Join Now</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>}
+      {learnMoreProd && (
+        <Modal size="xl" isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <Stack spacing="5">
+                <Text>{progInfoMeta[learnMoreProd].desc}</Text>
+                <Stack>
+                  <Text color="gray" as="b">
+                    Delivered Via:
+                  </Text>{" "}
+                  <p>{progInfoMeta[learnMoreProd].medium}</p>
+                </Stack>
+                <Stack>
+                  <Text color="gray" as="b">
+                    Data Collected:
+                  </Text>{" "}
+                  <p>{progInfoMeta[learnMoreProd].data}</p>
+                </Stack>
+                <Stack>
+                  <Text color="gray" as="b">
+                    App Outcome:
+                  </Text>{" "}
+                  <p>{progInfoMeta[learnMoreProd].outcome}</p>
+                </Stack>
+                <Stack>
+                  <Text color="gray" as="b">
+                    Target Buyers:
+                  </Text>{" "}
+                  <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
+                </Stack>
+              </Stack>
+            </ModalBody>
+            <ModalFooter>
+              <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
+                Close
+              </Button>
+              <Button size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`)}>
+                Join Now
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
     </Stack>
   );
-};
+}
