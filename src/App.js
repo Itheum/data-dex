@@ -93,13 +93,11 @@ function App() {
       claimBalanceValues: ['-1', '-1', '-1'],
       claimBalanceDates: [0, 0, 0],
     });
-  },[]);
 
-  useEffect(() => {
     enableWeb3();
 
     console.log(consoleNotice);
-  }, []);
+  },[]);
 
   useEffect(async () => {
     if (elrondAddress) {

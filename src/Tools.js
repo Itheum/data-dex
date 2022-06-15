@@ -43,10 +43,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
 
-  useEffect(() => {
-    console.log('MOUNT Tools');
-  }, []);
-
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {
@@ -144,9 +140,9 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
      },
      title: "Rewards",
      tag1: "Total Available",
-     value1: _user?.claimBalanceValues[0],
+     value1: _user.claimBalanceValues?.[0],
      tag2: "Deposited On",
-     value2: moment(_user?.claimBalanceDates[0]).format(config.dateStrTm),
+     value2: moment(_user?.claimBalanceDates?.[0]).format(config.dateStrTm),
      n: CLAIM_TYPES.REWARDS
    }
  
@@ -162,9 +158,9 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
      },
      title: "Airdrops",
      tag1: "Total Available",
-     value1: _user?.claimBalanceValues[1],
+     value1: _user?.claimBalanceValues?.[1],
      tag2: "Deposited On",
-     value2: moment(_user?.claimBalanceDates[1]).format(config.dateStrTm),
+     value2: moment(_user?.claimBalanceDates?.[1]).format(config.dateStrTm),
      n: CLAIM_TYPES.AIRDROPS
    }
    
@@ -180,9 +176,9 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
      },
      title: "Allocations",
      tag1: "Total Available",
-     value1: _user?.claimBalanceValues[2],
+     value1: _user?.claimBalanceValues?.[2],
      tag2: "Deposited On",
-     value2: moment(_user?.claimBalanceDates[2]).format(config.dateStrTm),
+     value2: moment(_user?.claimBalanceDates?.[2]).format(config.dateStrTm),
      n: CLAIM_TYPES.ALLOCATIONS
    }
    // E: claims related logic 
@@ -261,19 +257,19 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             <Spacer />
             <HStack spacing={50}>
               <Text>Rewards</Text>
-              <Button disabled={_user?.claimBalanceValues[0] === "-1" || !_user?.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>{_user?.claimBalanceValues[0] !== "-1" ? _user?.claimBalanceValues[0] : <Spinner size='xs' /> }</Button>
+              <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>{_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size='xs' /> }</Button>
               <ClaimModal {...rewardsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={50}>
               <Text>Airdrops</Text>
-              <Button disabled={_user?.claimBalanceValues[1] === "-1" || !_user?.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen} >{_user?.claimBalanceValues[1] !== "-1" ? _user?.claimBalanceValues[1] : <Spinner size='xs' />}</Button>
+              <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen} >{_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size='xs' />}</Button>
               <ClaimModal {...airdropsModalData}/>
             </HStack>
             <Spacer />
             <HStack spacing={30}>
               <Text>Allocations</Text>
-              <Button disabled={_user?.claimBalanceValues[2] === "-1" || !_user?.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen} >{_user?.claimBalanceValues[2] !== "-1" ? _user?.claimBalanceValues[2] : <Spinner size='xs' /> }</Button>
+              <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen} >{_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size='xs' /> }</Button>
               <ClaimModal {...allocationsModalData}/>
             </HStack>
 

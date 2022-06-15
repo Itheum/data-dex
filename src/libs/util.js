@@ -330,6 +330,7 @@ export const CHAIN_TX_LIST = {
 };
 
 export const CHAIN_TOKEN_SYMBOL = (networkId) => {
+  console.log(networkId);
   const mapping = {
     ITHEUM: [3, 4, 1, "E1", "ED"],
     mITHEUM: [80001, 137],
