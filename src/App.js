@@ -1,59 +1,52 @@
-import { useEffect, useState, useRef } from 'react';
-import moment from 'moment';
-import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge,
-  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay, useColorMode, Link,
-  Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from '@chakra-ui/react';
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from '@chakra-ui/layout';
-import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { useEffect, useState, useRef } from "react";
+import moment from "moment";
+import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
+import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
-import { useMoralis, useMoralisWeb3Api } from 'react-moralis';
-import { Auth } from './Auth';
-import SellData from './SellData';
-import BuyData from './BuyData';
-import PurchasedData from './PurchasedData';
-import AdvertisedData from './AdvertisedData';
-import PersonalDataProofs from './PersonalDataProofs';
-import ShortAddress from './UtilComps/ShortAddress';
-import Tools from './Tools';
-import ChainTransactions from './ChainTransactions';
-import DataVault from './DataVault';
-import DataNFTs from './DataNFTs';
-import MyDataNFTs from './DataNFT/MyDataNFTs';
-import DataNFTMarketplace from './DataNFT/DataNFTMarketplace';
-import DataStreams from './DataStreams';
-import DataCoalitions from './DataCoalitions';
-import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
-import TrustedComputation from './TrustedComputation';
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from './libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES } from './libs/util';
-import logo from './img/logo.png';
-import logoSmlD from './img/logo-sml-d.png';
-import logoSmlL from './img/logo-sml-l.png';
-import chainEth from './img/eth-chain-logo.png';
-import chainPol from './img/polygon-chain-logo.png';
-import chainBsc from './img/bsc-chain-logo.png';
-import chainAvln from './img/avalanche-chain-logo.png';
-import chainHrmy from './img/harmony-chain-logo.png';
-import chainPlaton from './img/platon-chain-logo.png';
-import chainParastate from './img/parastate-chain-logo.png';
-import chainElrond from './img/elrond-chain-logo.png';
-import chainHedera from './img/hedera-chain-logo.png';
-import moralisIcon from './img/powered-moralis.png';
-import { useUser } from './store/UserContext';
-import { useChainMeta } from './store/ChainMetaContext';
-import AlertOverlay from './UtilComps/AlertOverlay';
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
+import { Auth } from "./Auth";
+import SellData from "./SellData";
+import BuyData from "./BuyData";
+import PurchasedData from "./PurchasedData";
+import AdvertisedData from "./AdvertisedData";
+import PersonalDataProofs from "./PersonalDataProofs";
+import ShortAddress from "./UtilComps/ShortAddress";
+import Tools from "./Tools";
+import ChainTransactions from "./ChainTransactions";
+import DataVault from "./DataVault";
+import DataNFTs from "./DataNFTs";
+import MyDataNFTs from "./DataNFT/MyDataNFTs";
+import DataNFTMarketplace from "./DataNFT/DataNFTMarketplace";
+import DataStreams from "./DataStreams";
+import DataCoalitions from "./DataCoalitions";
+import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
+import TrustedComputation from "./TrustedComputation";
+import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from "./libs/util";
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES } from "./libs/util";
+import logo from "./img/logo.png";
+import logoSmlD from "./img/logo-sml-d.png";
+import logoSmlL from "./img/logo-sml-l.png";
+import chainEth from "./img/eth-chain-logo.png";
+import chainPol from "./img/polygon-chain-logo.png";
+import chainBsc from "./img/bsc-chain-logo.png";
+import chainAvln from "./img/avalanche-chain-logo.png";
+import chainHrmy from "./img/harmony-chain-logo.png";
+import chainPlaton from "./img/platon-chain-logo.png";
+import chainParastate from "./img/parastate-chain-logo.png";
+import chainElrond from "./img/elrond-chain-logo.png";
+import chainHedera from "./img/hedera-chain-logo.png";
+import moralisIcon from "./img/powered-moralis.png";
+import { useUser } from "./store/UserContext";
+import { useChainMeta } from "./store/ChainMetaContext";
+import AlertOverlay from "./UtilComps/AlertOverlay";
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./ElrondApi";
-
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
+import { ClaimsContract } from "./Elrond/claims";
 const _chainMetaLocal = {};
 
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
+const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 
 const elrondLogout = logout;
 
@@ -79,10 +72,10 @@ function App() {
   });
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
-  const { colorMode, toggleColorMode } = useColorMode(); 
+  const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimesError, setGetClaimsError] = useState(null);
-  
+
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
@@ -90,29 +83,46 @@ function App() {
   useEffect(() => {
     setUser({
       isAuthenticated,
-      claimBalanceValues: ['-1', '-1', '-1'],
+      claimBalanceValues: ["-1", "-1", "-1"],
       claimBalanceDates: [0, 0, 0],
     });
 
     enableWeb3();
 
     console.log(consoleNotice);
-  },[]);
+  }, []);
 
-  useEffect(async () => {
-    if (elrondAddress) {
-      const networkId = "ED";
-      setChain(CHAINS[networkId]);
-      const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-      setTokenBal(balance);
-      _chainMetaLocal.networkId = networkId;
-      _chainMetaLocal.contracts = contractsForChain(networkId);
+  useEffect(() => {
+    async function elrondLogin() {
+      if (elrondAddress) {
+        const networkId = "ED";
+        setChain(CHAINS[networkId]);
+        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
+        setTokenBal(balance);
+        _chainMetaLocal.networkId = networkId;
+        _chainMetaLocal.contracts = contractsForChain(networkId);
 
-      setChainMeta({
-        networkId,
-        contracts: contractsForChain(networkId)
-      });
+        setChainMeta({
+          networkId,
+          contracts: contractsForChain(networkId),
+        });
+        const claimContract = new ClaimsContract(networkId);
+        const claims = await claimContract.getClaims(elrondAddress);
+        let claimBalanceValues = [];
+        let claimBalanceDates = [];
+        claims.forEach((claim) => {
+          claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+          claimBalanceDates.push(claim.date);
+        });
+        const tr = true;
+        setUser({
+          tr,
+          claimBalanceValues: claimBalanceValues,
+          claimBalanceDates: claimBalanceDates,
+        });
+      }
     }
+    elrondLogin();
   }, [elrondAddress]);
 
   useEffect(async () => {
@@ -126,12 +136,12 @@ function App() {
       } else {
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
-        
+
         setChainMeta({
           networkId,
-          contracts: contractsForChain(networkId)
+          contracts: contractsForChain(networkId),
         });
-        
+
         await web3_getTokenBalance();
         await sleep(1);
 
@@ -147,46 +157,46 @@ function App() {
   };
 
   const web_getClaimBalance = async () => {
-    const walletAddress = user.get('ethAddress');
+    const walletAddress = user.get("ethAddress");
     const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
 
     const keys = Object.keys(CLAIM_TYPES);
-    
+
     const values = keys.map((el) => {
-      return CLAIM_TYPES[el]
+      return CLAIM_TYPES[el];
     });
-    
+
     // queue all smart contract calls
-    const hexDataPromiseArray =  values.map(async (el) => {
+    const hexDataPromiseArray = values.map(async (el) => {
       let a = await contract.deposits(walletAddress, el);
       return a;
     });
 
     try {
       const claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
-        const date = new Date((parseInt((el.lastDeposited._hex.toString()),16))*1000);
-        const value = (parseInt(el.amount._hex.toString(),16))/(10**18);
-        return { values: value , dates: date}
+        const date = new Date(parseInt(el.lastDeposited._hex.toString(), 16) * 1000);
+        const value = parseInt(el.amount._hex.toString(), 16) / 10 ** 18;
+        return { values: value, dates: date };
       });
 
       const valuesArray = claimBalanceResponse.map((el) => {
-        return el['values'];
+        return el["values"];
       });
-  
+
       const datesArray = claimBalanceResponse.map((el) => {
-        return el['dates'];
+        return el["dates"];
       });
-  
+
       await setUser({
         ..._user,
         claimBalanceValues: valuesArray,
-        claimBalanceDates: datesArray
+        claimBalanceDates: datesArray,
       });
-    } catch(e) {
+    } catch (e) {
       console.error(e);
       setGetClaimsError({
-        errContextMsg: 'Could not get your claims information from the blockchain',
-        rawError: e
+        errContextMsg: "Could not get your claims information from the blockchain",
+        rawError: e,
       });
     }
   };
@@ -195,11 +205,11 @@ function App() {
     if (_user && _user.isAuthenticated) {
       web3_getTokenBalance();
     }
-  },[_user.claimBalanceValues]);
+  }, [_user.claimBalanceValues]);
 
   const web3_getTokenBalance = async () => {
-    const walletAddress = user.get('ethAddress');
-    
+    const walletAddress = user.get("ethAddress");
+
     /*
     // Example of running a contract via moralis's runContractFunction (for reference)
     // you will need const Web3Api = useMoralisWeb3Api();
@@ -224,7 +234,7 @@ function App() {
 
     // show the token balance in readable format
     setTokenBal(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
-  }
+  };
 
   // utility that will reload a component and reset it's state
   const handleRfMount = (key) => {
@@ -253,42 +263,19 @@ function App() {
               <Spacer />
 
               <HStack>
-                <Box
-                  as="text"
-                  fontSize={["xs", "sm"]}
-                  minWidth={"5.5rem"}
-                  align="center"
-                  p={2}
-                  color="white"
-                  fontWeight="bold"
-                  borderRadius="md"
-                  bgGradient="linear(to-l, #7928CA, #FF0080)">{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
+                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
+                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
                 </Box>
 
-                <Box
-                  display={['none', null, 'block']}
-                  fontSize={["xs", "sm"]}
-                  align="center"
-                  p={2}
-                  color="rgb(243, 183, 30)"
-                  fontWeight="bold"
-                  bg="rgba(243, 132, 30, 0.05)"
-                  borderRadius="md">{chain || '...'}
+                <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                  {chain || "..."}
                 </Box>
 
-                <Button onClick={toggleColorMode}>
-                  {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-                </Button>
-
+                <Button onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
               </HStack>
 
               <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label='Options'
-                  icon={<HamburgerIcon />}
-                  variant='outline'
-                />
+                <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
                 <MenuList>
                   <MenuGroup>
                     <MenuItem closeOnSelect={false}>
@@ -315,14 +302,8 @@ function App() {
 
                   <MenuGroup>
                     <MenuItem closeOnSelect={false} display={["block", null, "none"]}>
-                      <Box
-                        fontSize={["xs", "sm"]}
-                        align="center"
-                        p={2}
-                        color="rgb(243, 183, 30)"
-                        fontWeight="bold"
-                        bg="rgba(243, 132, 30, 0.05)"
-                        borderRadius="md">{chain || '...'}
+                      <Box fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                        {chain || "..."}
                       </Box>
                     </MenuItem>
                   </MenuGroup>
@@ -332,12 +313,9 @@ function App() {
 
             <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} backgroundColor={"blue1"} pt={5}>
               <Box backgroundColor={"green1"}>
-                <Button display={["block", null, "none"]} 
-                  colorScheme="teal" 
-                  variant="solid"
-                  m="auto"
-                  mb={5}
-                  onClick={() => setShowMobileMenu(!showMobileMenu)}>Main menu</Button>
+                <Button display={["block", null, "none"]} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                  Main menu
+                </Button>
 
                 <Stack direction="column" spacing={4} display={[(showMobileMenu && "block") || "none", , "block"]}>
                   <HStack pl="3">
@@ -350,7 +328,6 @@ function App() {
                   </HStack>
 
                   <Flex direction="column" justify="space-between" minH="80vh">
-
                     <Stack ml="15px" spacing={4}>
                       <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => setMenuItem(MENU.HOME)}>
                         Home
@@ -492,11 +469,9 @@ function App() {
                           </Stack>
                         </AccordionPanel>
                       </AccordionItem>
-
                     </Accordion>
 
                     <ByMoralisLogo />
-                    
                   </Flex>
                 </Stack>
               </Box>
@@ -549,23 +524,20 @@ function App() {
             </AlertDialogOverlay>
           </AlertDialog>
 
-          {getClaimesError && <AlertOverlay errorData={getClaimesError} onClose={() => console.log}/>}
-
+          {getClaimesError && <AlertOverlay errorData={getClaimesError} onClose={() => console.log} />}
         </Container>
       ) : (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex justify="center" direction="column">
             <Box p={["20px", null, "30px"]} borderWidth="2px" borderRadius="lg">
               <Stack>
-                <Image
-                  w={["70px", null, "90px"]}
-                  h={["60px", null, "80px"]}
-                  src={logo}
-                  alt="Itheum Data DEX"
-                  margin="auto"
-                />
-                <Heading size="md" textAlign="center">Itheum Data DEX</Heading>            
-                <Text fontSize="sm" textAlign="center">Trade your personal data via secure on-chain exchange</Text>
+                <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={logo} alt="Itheum Data DEX" margin="auto" />
+                <Heading size="md" textAlign="center">
+                  Itheum Data DEX
+                </Heading>
+                <Text fontSize="sm" textAlign="center">
+                  Trade your personal data via secure on-chain exchange
+                </Text>
                 <Spacer />
                 <Auth key={rfKeys.auth} />
 
@@ -600,10 +572,12 @@ function App() {
                   </Tooltip>
                   <Tooltip label="Hedera - Coming soon...">
                     <Image src={chainHedera} boxSize="40px" opacity=".3" m="5px" />
-                  </Tooltip>              
+                  </Tooltip>
                 </Flex>
 
-                <Text textAlign="center" fontSize="xx-small">{dataDexVersion}</Text>
+                <Text textAlign="center" fontSize="xx-small">
+                  {dataDexVersion}
+                </Text>
 
                 <ByMoralisLogo />
               </Stack>

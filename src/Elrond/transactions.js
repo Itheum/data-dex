@@ -5,17 +5,17 @@ export const d_ITHEUM_TOKEN_ID = "ITHEUM-a61317";
 
 //check token balance on Elrond
 export const checkBalance = async (token, address, chain) => {
-  console.log(chain);
   let api;
   if (chain === "Elrond - Mainnet") {
     api = "api.elrond.com";
   } else {
     api = "devnet-api.elrond.com";
   }
-  const resp = await axios.get(`https://${api}/accounts/${address}/tokens/${token}`);
-  if (resp.status === 200) {
+  try {
+    const resp = await axios.get(`https://${api}/accounts/${address}/tokens/${token}`);
+    console.log(resp);
     return resp.data.balance;
-  } else {
+  } catch (error) {
     return 0;
   }
 };
