@@ -96,7 +96,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, n }) =
 
   const handleOnChainClaim = () => {
     if (elrondAddress) {
-      claimsContract.sendClaimRewardsTransaction(n);
+      claimsContract.sendClaimRewardsTransaction(n - 1);
     } else {
       setTxErrorClaim(null);
       web3_claims(n);
