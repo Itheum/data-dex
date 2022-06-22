@@ -41,7 +41,7 @@ import moralisIcon from "./img/powered-moralis.png";
 import { useUser } from "./store/UserContext";
 import { useChainMeta } from "./store/ChainMetaContext";
 import AlertOverlay from "./UtilComps/AlertOverlay";
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
 const _chainMetaLocal = {};
@@ -58,6 +58,7 @@ function App() {
     Moralis: { web3Library: ethers },
   } = useMoralis();
   const { address: elrondAddress } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(0);
   const [tokenBal, setTokenBal] = useState(0);
@@ -123,7 +124,7 @@ function App() {
       }
     }
     elrondLogin();
-  }, [elrondAddress]);
+  }, [elrondAddress, hasPendingTransactions]);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {

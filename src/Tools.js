@@ -13,9 +13,12 @@ import imgProgRhc from "./img/prog-rhc.png";
 import imgProgWfh from "./img/prog-wfh.png";
 import ClaimModal from "./UtilComps/ClaimModal";
 import { useUser } from "./store/UserContext";
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
+import { ClaimsContract } from "./Elrond/claims";
 
 export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { address: elrondAddress } = useGetAccountInfo();
   const toast = useToast();
   const {
     web3: web3Provider,
@@ -176,8 +179,12 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   // E: claims related logic
 
   const handleOnChainFaucet = () => {
-    setTxErrorFaucet(null);
-    web3_tokenFaucet();
+    if (elrondAddress) {
+      ClaimsContract.sendActivateFaucetTransaction();
+    } else {
+      setTxErrorFaucet(null);
+      web3_tokenFaucet();
+    }
   };
 
   return (
@@ -265,7 +272,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
             <Spacer />
             <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
-              Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+              Send me {elrondAddress ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
             </Button>
           </Stack>
         </WrapItem>

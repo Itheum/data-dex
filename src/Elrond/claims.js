@@ -32,7 +32,6 @@ export class ClaimsContract {
         date: item.date.toNumber() * 1000,
       });
     });
-    console.log(result);
     return result;
   }
 
@@ -52,6 +51,29 @@ export class ClaimsContract {
       transactions: claimTransaction,
       transactionsDisplayInfo: {
         processingMessage: "Claiming ITHEUM",
+        errorMessage: "Error occured during ITHEUM claiming",
+        successMessage: "ITHEUM claimed successfully",
+      },
+      redirectAfterSign: false,
+    });
+    return { sessionId, error };
+  }
+
+  static async sendActivateFaucetTransaction() {
+    const claimTransaction = new Transaction({
+      value: 0,
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction("activateFaucet"))
+        .build(),
+      receiver: new Address("erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf"),
+      gasLimit: 20000000,
+      chainID: "D",
+    });
+    await refreshAccount();
+    const { sessionId, error } = await sendTransactions({
+      transactions: claimTransaction,
+      transactionsDisplayInfo: {
+        processingMessage: "Getting ITHEUM through faucet",
         errorMessage: "Error occured during ITHEUM claiming",
         successMessage: "ITHEUM claimed successfully",
       },
