@@ -31,7 +31,7 @@ import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
 import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from './libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from './libs/util';
 import logo from './img/logo.png';
 import logoSmlD from './img/logo-sml-d.png';
 import logoSmlL from './img/logo-sml-l.png';
@@ -48,7 +48,7 @@ import moralisIcon from './img/powered-moralis.png';
 import { useUser } from './store/UserContext';
 import { useChainMeta } from './store/ChainMetaContext';
 import AlertOverlay from './UtilComps/AlertOverlay';
-import { Outlet, Route, Routes, useNavigate, useRoutes } from 'react-router-dom';
+import { Outlet, Route, Routes, useLocation, useNavigate, useRoutes } from 'react-router-dom';
 
 const _chainMetaLocal = {};
 
@@ -73,6 +73,7 @@ function App() {
   const { colorMode, toggleColorMode } = useColorMode(); 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimesError, setGetClaimsError] = useState(null);
+  const {pathname} = useLocation();
   
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -217,6 +218,17 @@ function App() {
 
   const navigate = useNavigate()
 
+
+  //handling Route Path
+  const path = pathname?.split("/")[pathname?.split("/")?.length - 1]
+
+  useEffect(()=>{
+    if(path){
+      setMenuItem(PATHS[path][0])
+
+    }
+  },[])
+
   if (isAuthenticated) {
     return (
       <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
@@ -328,7 +340,7 @@ function App() {
                     <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => {(setMenuItem(MENU.SELL)); navigate("selldata")}}>Sell Data</Button>
                   </Stack>
 
-                  <Accordion flexGrow="1" defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
+                  <Accordion flexGrow="1" defaultIndex={path? PATHS[path][1]: [-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}} >
                     <AccordionItem>
                       <AccordionButton>
                         <Button flex="1" colorScheme="teal" variant="outline">Data Packs</Button>
@@ -419,6 +431,7 @@ function App() {
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => {(setMenuItem(MENU.VAULT)); navigate("labs/datavault")}}>Data Vault</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => {(setMenuItem(MENU.STREAM)); navigate("labs/datastreams")}}>Data Streams</Button>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => {(setMenuItem(MENU.TRUSTEDCOMP)); navigate("labs/trustedcomputation")}}>Trusted Computation</Button>
+
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
