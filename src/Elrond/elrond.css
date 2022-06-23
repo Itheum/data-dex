@@ -47,11 +47,8 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .navbar-container {
@@ -83,9 +80,7 @@
 }
 .dapp-core-ui-component body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -93,7 +88,7 @@
   text-align: left;
   background-color: #fff;
 }
-.dapp-core-ui-component [tabindex='-1']:focus:not(:focus-visible) {
+.dapp-core-ui-component [tabindex="-1"]:focus:not(:focus-visible) {
   outline: 0 !important;
 }
 .dapp-core-ui-component hr {
@@ -192,8 +187,7 @@
 .dapp-core-ui-component code,
 .dapp-core-ui-component kbd,
 .dapp-core-ui-component samp {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 1em;
 }
 .dapp-core-ui-component pre {
@@ -255,33 +249,33 @@
 .dapp-core-ui-component select {
   text-transform: none;
 }
-.dapp-core-ui-component [role='button'] {
+.dapp-core-ui-component [role="button"] {
   cursor: pointer;
 }
 .dapp-core-ui-component select {
   word-wrap: normal;
 }
 .dapp-core-ui-component button,
-.dapp-core-ui-component [type='button'],
-.dapp-core-ui-component [type='reset'],
-.dapp-core-ui-component [type='submit'] {
+.dapp-core-ui-component [type="button"],
+.dapp-core-ui-component [type="reset"],
+.dapp-core-ui-component [type="submit"] {
   -webkit-appearance: button;
 }
 .dapp-core-ui-component button:not(:disabled),
-.dapp-core-ui-component [type='button']:not(:disabled),
-.dapp-core-ui-component [type='reset']:not(:disabled),
-.dapp-core-ui-component [type='submit']:not(:disabled) {
+.dapp-core-ui-component [type="button"]:not(:disabled),
+.dapp-core-ui-component [type="reset"]:not(:disabled),
+.dapp-core-ui-component [type="submit"]:not(:disabled) {
   cursor: pointer;
 }
 .dapp-core-ui-component button::-moz-focus-inner,
-.dapp-core-ui-component [type='button']::-moz-focus-inner,
-.dapp-core-ui-component [type='reset']::-moz-focus-inner,
-.dapp-core-ui-component [type='submit']::-moz-focus-inner {
+.dapp-core-ui-component [type="button"]::-moz-focus-inner,
+.dapp-core-ui-component [type="reset"]::-moz-focus-inner,
+.dapp-core-ui-component [type="submit"]::-moz-focus-inner {
   padding: 0;
   border-style: none;
 }
-.dapp-core-ui-component input[type='radio'],
-.dapp-core-ui-component input[type='checkbox'] {
+.dapp-core-ui-component input[type="radio"],
+.dapp-core-ui-component input[type="checkbox"] {
   box-sizing: border-box;
   padding: 0;
 }
@@ -309,15 +303,15 @@
 .dapp-core-ui-component progress {
   vertical-align: baseline;
 }
-.dapp-core-ui-component [type='number']::-webkit-inner-spin-button,
-.dapp-core-ui-component [type='number']::-webkit-outer-spin-button {
+.dapp-core-ui-component [type="number"]::-webkit-inner-spin-button,
+.dapp-core-ui-component [type="number"]::-webkit-outer-spin-button {
   height: auto;
 }
-.dapp-core-ui-component [type='search'] {
+.dapp-core-ui-component [type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none;
 }
-.dapp-core-ui-component [type='search']::-webkit-search-decoration {
+.dapp-core-ui-component [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 .dapp-core-ui-component ::-webkit-file-upload-button {
@@ -445,7 +439,7 @@
   color: #6c757d;
 }
 .dapp-core-ui-component .blockquote-footer::before {
-  content: '\2014\00A0';
+  content: "\2014\00A0";
 }
 .dapp-core-ui-component .img-fluid {
   max-width: 100%;
@@ -557,7 +551,7 @@ a > .dapp-core-ui-component code {
   margin-left: 0;
 }
 .dapp-core-ui-component .no-gutters > .col,
-.dapp-core-ui-component .no-gutters > [class*='col-'] {
+.dapp-core-ui-component .no-gutters > [class*="col-"] {
   padding-right: 0;
   padding-left: 0;
 }
@@ -1792,10 +1786,10 @@ a > .dapp-core-ui-component code {
   background-color: #e9ecef;
   opacity: 1;
 }
-.dapp-core-ui-component input[type='date'].form-control,
-.dapp-core-ui-component input[type='time'].form-control,
-.dapp-core-ui-component input[type='datetime-local'].form-control,
-.dapp-core-ui-component input[type='month'].form-control {
+.dapp-core-ui-component input[type="date"].form-control,
+.dapp-core-ui-component input[type="time"].form-control,
+.dapp-core-ui-component input[type="datetime-local"].form-control,
+.dapp-core-ui-component input[type="month"].form-control {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -1880,7 +1874,7 @@ a > .dapp-core-ui-component code {
   margin-left: -5px;
 }
 .dapp-core-ui-component .form-row > .col,
-.dapp-core-ui-component .form-row > [class*='col-'] {
+.dapp-core-ui-component .form-row > [class*="col-"] {
   padding-right: 5px;
   padding-left: 5px;
 }
@@ -1936,7 +1930,7 @@ a > .dapp-core-ui-component code {
   border-radius: 0.25rem;
 }
 .form-row > .col > .dapp-core-ui-component .valid-tooltip,
-.form-row > [class*='col-'] > .dapp-core-ui-component .valid-tooltip {
+.form-row > [class*="col-"] > .dapp-core-ui-component .valid-tooltip {
   left: 5px;
 }
 .was-validated .dapp-core-ui-component:valid ~ .valid-feedback,
@@ -1962,96 +1956,55 @@ a > .dapp-core-ui-component code {
 .was-validated .dapp-core-ui-component textarea.form-control:valid,
 .dapp-core-ui-component textarea.form-control.is-valid {
   padding-right: calc(1.5em + 0.75rem);
-  background-position: top calc(0.375em + 0.1875rem) right
-    calc(0.375em + 0.1875rem);
+  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
 }
 .was-validated .dapp-core-ui-component .custom-select:valid,
 .dapp-core-ui-component .custom-select.is-valid {
   border-color: #28a745;
   padding-right: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
-      right 0.75rem center/8px 10px no-repeat,
-    #fff
-      url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e")
-      center right 1.75rem / calc(0.75em + 0.375rem) calc(0.75em + 0.375rem)
-      no-repeat;
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") center right 1.75rem / calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated .dapp-core-ui-component .custom-select:valid:focus,
 .dapp-core-ui-component .custom-select.is-valid:focus {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
-.was-validated
-  .dapp-core-ui-component
-  .form-check-input:valid
-  ~ .form-check-label,
+.was-validated .dapp-core-ui-component .form-check-input:valid ~ .form-check-label,
 .dapp-core-ui-component .form-check-input.is-valid ~ .form-check-label {
   color: #28a745;
 }
-.was-validated
-  .dapp-core-ui-component
-  .form-check-input:valid
-  ~ .valid-feedback,
+.was-validated .dapp-core-ui-component .form-check-input:valid ~ .valid-feedback,
 .was-validated .dapp-core-ui-component .form-check-input:valid ~ .valid-tooltip,
 .dapp-core-ui-component .form-check-input.is-valid ~ .valid-feedback,
 .dapp-core-ui-component .form-check-input.is-valid ~ .valid-tooltip {
   display: block;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:valid
-  ~ .custom-control-label,
+.was-validated .dapp-core-ui-component .custom-control-input:valid ~ .custom-control-label,
 .dapp-core-ui-component .custom-control-input.is-valid ~ .custom-control-label {
   color: #28a745;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:valid
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-valid
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:valid ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-valid ~ .custom-control-label::before {
   border-color: #28a745;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:valid:checked
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-valid:checked
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:valid:checked ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-valid:checked ~ .custom-control-label::before {
   border-color: #34ce57;
   background-color: #34ce57;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:valid:focus
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-valid:focus
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:valid:focus ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-valid:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:valid:focus:not(:checked)
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-valid:focus:not(:checked)
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:valid:focus:not(:checked) ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-valid:focus:not(:checked) ~ .custom-control-label::before {
   border-color: #28a745;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-file-input:valid
-  ~ .custom-file-label,
+.was-validated .dapp-core-ui-component .custom-file-input:valid ~ .custom-file-label,
 .dapp-core-ui-component .custom-file-input.is-valid ~ .custom-file-label {
   border-color: #28a745;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-file-input:valid:focus
-  ~ .custom-file-label,
+.was-validated .dapp-core-ui-component .custom-file-input:valid:focus ~ .custom-file-label,
 .dapp-core-ui-component .custom-file-input.is-valid:focus ~ .custom-file-label {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
@@ -2079,7 +2032,7 @@ a > .dapp-core-ui-component code {
   border-radius: 0.25rem;
 }
 .form-row > .col > .dapp-core-ui-component .invalid-tooltip,
-.form-row > [class*='col-'] > .dapp-core-ui-component .invalid-tooltip {
+.form-row > [class*="col-"] > .dapp-core-ui-component .invalid-tooltip {
   left: 5px;
 }
 .was-validated .dapp-core-ui-component:invalid ~ .invalid-feedback,
@@ -2105,104 +2058,56 @@ a > .dapp-core-ui-component code {
 .was-validated .dapp-core-ui-component textarea.form-control:invalid,
 .dapp-core-ui-component textarea.form-control.is-invalid {
   padding-right: calc(1.5em + 0.75rem);
-  background-position: top calc(0.375em + 0.1875rem) right
-    calc(0.375em + 0.1875rem);
+  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
 }
 .was-validated .dapp-core-ui-component .custom-select:invalid,
 .dapp-core-ui-component .custom-select.is-invalid {
   border-color: #dc3545;
   padding-right: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
-      right 0.75rem center/8px 10px no-repeat,
-    #fff
-      url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e")
-      center right 1.75rem / calc(0.75em + 0.375rem) calc(0.75em + 0.375rem)
-      no-repeat;
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") center right 1.75rem / calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated .dapp-core-ui-component .custom-select:invalid:focus,
 .dapp-core-ui-component .custom-select.is-invalid:focus {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
-.was-validated
-  .dapp-core-ui-component
-  .form-check-input:invalid
-  ~ .form-check-label,
+.was-validated .dapp-core-ui-component .form-check-input:invalid ~ .form-check-label,
 .dapp-core-ui-component .form-check-input.is-invalid ~ .form-check-label {
   color: #dc3545;
 }
-.was-validated
-  .dapp-core-ui-component
-  .form-check-input:invalid
-  ~ .invalid-feedback,
-.was-validated
-  .dapp-core-ui-component
-  .form-check-input:invalid
-  ~ .invalid-tooltip,
+.was-validated .dapp-core-ui-component .form-check-input:invalid ~ .invalid-feedback,
+.was-validated .dapp-core-ui-component .form-check-input:invalid ~ .invalid-tooltip,
 .dapp-core-ui-component .form-check-input.is-invalid ~ .invalid-feedback,
 .dapp-core-ui-component .form-check-input.is-invalid ~ .invalid-tooltip {
   display: block;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:invalid
-  ~ .custom-control-label,
-.dapp-core-ui-component
-  .custom-control-input.is-invalid
-  ~ .custom-control-label {
+.was-validated .dapp-core-ui-component .custom-control-input:invalid ~ .custom-control-label,
+.dapp-core-ui-component .custom-control-input.is-invalid ~ .custom-control-label {
   color: #dc3545;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:invalid
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-invalid
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:invalid ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-invalid ~ .custom-control-label::before {
   border-color: #dc3545;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:invalid:checked
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-invalid:checked
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:invalid:checked ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-invalid:checked ~ .custom-control-label::before {
   border-color: #e4606d;
   background-color: #e4606d;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:invalid:focus
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-invalid:focus
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:invalid:focus ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-invalid:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-control-input:invalid:focus:not(:checked)
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input.is-invalid:focus:not(:checked)
-  ~ .custom-control-label::before {
+.was-validated .dapp-core-ui-component .custom-control-input:invalid:focus:not(:checked) ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input.is-invalid:focus:not(:checked) ~ .custom-control-label::before {
   border-color: #dc3545;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-file-input:invalid
-  ~ .custom-file-label,
+.was-validated .dapp-core-ui-component .custom-file-input:invalid ~ .custom-file-label,
 .dapp-core-ui-component .custom-file-input.is-invalid ~ .custom-file-label {
   border-color: #dc3545;
 }
-.was-validated
-  .dapp-core-ui-component
-  .custom-file-input:invalid:focus
-  ~ .custom-file-label,
-.dapp-core-ui-component
-  .custom-file-input.is-invalid:focus
-  ~ .custom-file-label {
+.was-validated .dapp-core-ui-component .custom-file-input:invalid:focus ~ .custom-file-label,
+.dapp-core-ui-component .custom-file-input.is-invalid:focus ~ .custom-file-label {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
@@ -2278,8 +2183,7 @@ a > .dapp-core-ui-component code {
   font-size: 1rem;
   line-height: 1.5;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
   .dapp-core-ui-component .btn {
@@ -2371,10 +2275,8 @@ a > .dapp-core-ui-component code {
   background-color: #545b62;
   border-color: #4e555b;
 }
-.dapp-core-ui-component
-  .btn-secondary:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-secondary:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-secondary:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-secondary:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-secondary.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
 }
@@ -2606,19 +2508,15 @@ a > .dapp-core-ui-component code {
   color: #1b46c2;
   background-color: transparent;
 }
-.dapp-core-ui-component
-  .btn-outline-primary:not(:disabled):not(.disabled):active,
-.dapp-core-ui-component
-  .btn-outline-primary:not(:disabled):not(.disabled).active,
+.dapp-core-ui-component .btn-outline-primary:not(:disabled):not(.disabled):active,
+.dapp-core-ui-component .btn-outline-primary:not(:disabled):not(.disabled).active,
 .show > .dapp-core-ui-component .btn-outline-primary.dropdown-toggle {
   color: #fff;
   background-color: #1b46c2;
   border-color: #1b46c2;
 }
-.dapp-core-ui-component
-  .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-primary.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(27, 70, 194, 0.5);
 }
@@ -2640,19 +2538,15 @@ a > .dapp-core-ui-component code {
   color: #6c757d;
   background-color: transparent;
 }
-.dapp-core-ui-component
-  .btn-outline-secondary:not(:disabled):not(.disabled):active,
-.dapp-core-ui-component
-  .btn-outline-secondary:not(:disabled):not(.disabled).active,
+.dapp-core-ui-component .btn-outline-secondary:not(:disabled):not(.disabled):active,
+.dapp-core-ui-component .btn-outline-secondary:not(:disabled):not(.disabled).active,
 .show > .dapp-core-ui-component .btn-outline-secondary.dropdown-toggle {
   color: #fff;
   background-color: #6c757d;
   border-color: #6c757d;
 }
-.dapp-core-ui-component
-  .btn-outline-secondary:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-secondary:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-secondary:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-secondary:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-secondary.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
 }
@@ -2674,19 +2568,15 @@ a > .dapp-core-ui-component code {
   color: #28a745;
   background-color: transparent;
 }
-.dapp-core-ui-component
-  .btn-outline-success:not(:disabled):not(.disabled):active,
-.dapp-core-ui-component
-  .btn-outline-success:not(:disabled):not(.disabled).active,
+.dapp-core-ui-component .btn-outline-success:not(:disabled):not(.disabled):active,
+.dapp-core-ui-component .btn-outline-success:not(:disabled):not(.disabled).active,
 .show > .dapp-core-ui-component .btn-outline-success.dropdown-toggle {
   color: #fff;
   background-color: #28a745;
   border-color: #28a745;
 }
-.dapp-core-ui-component
-  .btn-outline-success:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-success:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-success:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-success:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-success.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
 }
@@ -2715,10 +2605,8 @@ a > .dapp-core-ui-component code {
   background-color: #17a2b8;
   border-color: #17a2b8;
 }
-.dapp-core-ui-component
-  .btn-outline-info:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-info:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-info:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-info:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-info.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.5);
 }
@@ -2740,19 +2628,15 @@ a > .dapp-core-ui-component code {
   color: #ffc107;
   background-color: transparent;
 }
-.dapp-core-ui-component
-  .btn-outline-warning:not(:disabled):not(.disabled):active,
-.dapp-core-ui-component
-  .btn-outline-warning:not(:disabled):not(.disabled).active,
+.dapp-core-ui-component .btn-outline-warning:not(:disabled):not(.disabled):active,
+.dapp-core-ui-component .btn-outline-warning:not(:disabled):not(.disabled).active,
 .show > .dapp-core-ui-component .btn-outline-warning.dropdown-toggle {
   color: #212529;
   background-color: #ffc107;
   border-color: #ffc107;
 }
-.dapp-core-ui-component
-  .btn-outline-warning:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-warning:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-warning:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-warning:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-warning.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5);
 }
@@ -2774,19 +2658,15 @@ a > .dapp-core-ui-component code {
   color: #dc3545;
   background-color: transparent;
 }
-.dapp-core-ui-component
-  .btn-outline-danger:not(:disabled):not(.disabled):active,
-.dapp-core-ui-component
-  .btn-outline-danger:not(:disabled):not(.disabled).active,
+.dapp-core-ui-component .btn-outline-danger:not(:disabled):not(.disabled):active,
+.dapp-core-ui-component .btn-outline-danger:not(:disabled):not(.disabled).active,
 .show > .dapp-core-ui-component .btn-outline-danger.dropdown-toggle {
   color: #fff;
   background-color: #dc3545;
   border-color: #dc3545;
 }
-.dapp-core-ui-component
-  .btn-outline-danger:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-danger:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-danger:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-danger:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-danger.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.5);
 }
@@ -2815,10 +2695,8 @@ a > .dapp-core-ui-component code {
   background-color: #fafafa;
   border-color: #fafafa;
 }
-.dapp-core-ui-component
-  .btn-outline-light:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-light:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-light:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-light:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-light.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(250, 250, 250, 0.5);
 }
@@ -2847,10 +2725,8 @@ a > .dapp-core-ui-component code {
   background-color: #343a40;
   border-color: #343a40;
 }
-.dapp-core-ui-component
-  .btn-outline-dark:not(:disabled):not(.disabled):active:focus,
-.dapp-core-ui-component
-  .btn-outline-dark:not(:disabled):not(.disabled).active:focus,
+.dapp-core-ui-component .btn-outline-dark:not(:disabled):not(.disabled):active:focus,
+.dapp-core-ui-component .btn-outline-dark:not(:disabled):not(.disabled).active:focus,
 .show > .dapp-core-ui-component .btn-outline-dark.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.5);
 }
@@ -2893,9 +2769,9 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .btn-block + .btn-block {
   margin-top: 0.5rem;
 }
-.dapp-core-ui-component input[type='submit'].btn-block,
-.dapp-core-ui-component input[type='reset'].btn-block,
-.dapp-core-ui-component input[type='button'].btn-block {
+.dapp-core-ui-component input[type="submit"].btn-block,
+.dapp-core-ui-component input[type="reset"].btn-block,
+.dapp-core-ui-component input[type="button"].btn-block {
   width: 100%;
 }
 .dapp-core-ui-component .fade {
@@ -2936,7 +2812,7 @@ a > .dapp-core-ui-component code {
   display: inline-block;
   margin-left: 0.255em;
   vertical-align: 0.255em;
-  content: '';
+  content: "";
   border-top: 0.3em solid;
   border-right: 0.3em solid transparent;
   border-bottom: 0;
@@ -3022,7 +2898,7 @@ a > .dapp-core-ui-component code {
   display: inline-block;
   margin-left: 0.255em;
   vertical-align: 0.255em;
-  content: '';
+  content: "";
   border-top: 0;
   border-right: 0.3em solid transparent;
   border-bottom: 0.3em solid;
@@ -3042,7 +2918,7 @@ a > .dapp-core-ui-component code {
   display: inline-block;
   margin-left: 0.255em;
   vertical-align: 0.255em;
-  content: '';
+  content: "";
   border-top: 0.3em solid transparent;
   border-right: 0;
   border-bottom: 0.3em solid transparent;
@@ -3065,7 +2941,7 @@ a > .dapp-core-ui-component code {
   display: inline-block;
   margin-left: 0.255em;
   vertical-align: 0.255em;
-  content: '';
+  content: "";
 }
 .dapp-core-ui-component .dropleft .dropdown-toggle::after {
   display: none;
@@ -3074,7 +2950,7 @@ a > .dapp-core-ui-component code {
   display: inline-block;
   margin-right: 0.255em;
   vertical-align: 0.255em;
-  content: '';
+  content: "";
   border-top: 0.3em solid transparent;
   border-right: 0.3em solid;
   border-bottom: 0.3em solid transparent;
@@ -3085,10 +2961,10 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .dropleft .dropdown-toggle::before {
   vertical-align: 0;
 }
-.dapp-core-ui-component .dropdown-menu[x-placement^='top'],
-.dapp-core-ui-component .dropdown-menu[x-placement^='right'],
-.dapp-core-ui-component .dropdown-menu[x-placement^='bottom'],
-.dapp-core-ui-component .dropdown-menu[x-placement^='left'] {
+.dapp-core-ui-component .dropdown-menu[x-placement^="top"],
+.dapp-core-ui-component .dropdown-menu[x-placement^="right"],
+.dapp-core-ui-component .dropdown-menu[x-placement^="bottom"],
+.dapp-core-ui-component .dropdown-menu[x-placement^="left"] {
   right: auto;
   bottom: auto;
 }
@@ -3179,9 +3055,7 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-.dapp-core-ui-component
-  .btn-group
-  > .btn:not(:last-child):not(.dropdown-toggle),
+.dapp-core-ui-component .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
 .dapp-core-ui-component .btn-group > .btn-group:not(:last-child) > .btn {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -3226,21 +3100,13 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
-.dapp-core-ui-component
-  .btn-group-vertical
-  > .btn:not(:last-child):not(.dropdown-toggle),
-.dapp-core-ui-component
-  .btn-group-vertical
-  > .btn-group:not(:last-child)
-  > .btn {
+.dapp-core-ui-component .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle),
+.dapp-core-ui-component .btn-group-vertical > .btn-group:not(:last-child) > .btn {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 .dapp-core-ui-component .btn-group-vertical > .btn:not(:first-child),
-.dapp-core-ui-component
-  .btn-group-vertical
-  > .btn-group:not(:first-child)
-  > .btn {
+.dapp-core-ui-component .btn-group-vertical > .btn-group:not(:first-child) > .btn {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
@@ -3248,18 +3114,10 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .btn-group-toggle > .btn-group > .btn {
   margin-bottom: 0;
 }
-.dapp-core-ui-component .btn-group-toggle > .btn input[type='radio'],
-.dapp-core-ui-component .btn-group-toggle > .btn input[type='checkbox'],
-.dapp-core-ui-component
-  .btn-group-toggle
-  > .btn-group
-  > .btn
-  input[type='radio'],
-.dapp-core-ui-component
-  .btn-group-toggle
-  > .btn-group
-  > .btn
-  input[type='checkbox'] {
+.dapp-core-ui-component .btn-group-toggle > .btn input[type="radio"],
+.dapp-core-ui-component .btn-group-toggle > .btn input[type="checkbox"],
+.dapp-core-ui-component .btn-group-toggle > .btn-group > .btn input[type="radio"],
+.dapp-core-ui-component .btn-group-toggle > .btn-group > .btn input[type="checkbox"] {
   position: absolute;
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
@@ -3297,11 +3155,7 @@ a > .dapp-core-ui-component code {
 }
 .dapp-core-ui-component .input-group > .form-control:focus,
 .dapp-core-ui-component .input-group > .custom-select:focus,
-.dapp-core-ui-component
-  .input-group
-  > .custom-file
-  .custom-file-input:focus
-  ~ .custom-file-label {
+.dapp-core-ui-component .input-group > .custom-file .custom-file-input:focus ~ .custom-file-label {
   z-index: 3;
 }
 .dapp-core-ui-component .input-group > .custom-file .custom-file-input:focus {
@@ -3316,40 +3170,20 @@ a > .dapp-core-ui-component code {
   display: flex;
   align-items: center;
 }
-.dapp-core-ui-component
-  .input-group
-  > .custom-file:not(:last-child)
-  .custom-file-label,
-.dapp-core-ui-component
-  .input-group
-  > .custom-file:not(:first-child)
-  .custom-file-label {
+.dapp-core-ui-component .input-group > .custom-file:not(:last-child) .custom-file-label,
+.dapp-core-ui-component .input-group > .custom-file:not(:first-child) .custom-file-label {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-.dapp-core-ui-component
-  .input-group:not(.has-validation)
-  > .form-control:not(:last-child),
-.dapp-core-ui-component
-  .input-group:not(.has-validation)
-  > .custom-select:not(:last-child),
-.dapp-core-ui-component
-  .input-group:not(.has-validation)
-  > .custom-file:not(:last-child)
-  .custom-file-label::after {
+.dapp-core-ui-component .input-group:not(.has-validation) > .form-control:not(:last-child),
+.dapp-core-ui-component .input-group:not(.has-validation) > .custom-select:not(:last-child),
+.dapp-core-ui-component .input-group:not(.has-validation) > .custom-file:not(:last-child) .custom-file-label::after {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.dapp-core-ui-component
-  .input-group.has-validation
-  > .form-control:nth-last-child(n + 3),
-.dapp-core-ui-component
-  .input-group.has-validation
-  > .custom-select:nth-last-child(n + 3),
-.dapp-core-ui-component
-  .input-group.has-validation
-  > .custom-file:nth-last-child(n + 3)
-  .custom-file-label::after {
+.dapp-core-ui-component .input-group.has-validation > .form-control:nth-last-child(n + 3),
+.dapp-core-ui-component .input-group.has-validation > .custom-select:nth-last-child(n + 3),
+.dapp-core-ui-component .input-group.has-validation > .custom-file:nth-last-child(n + 3) .custom-file-label::after {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -3368,17 +3202,11 @@ a > .dapp-core-ui-component code {
 }
 .dapp-core-ui-component .input-group-prepend .btn + .btn,
 .dapp-core-ui-component .input-group-prepend .btn + .input-group-text,
-.dapp-core-ui-component
-  .input-group-prepend
-  .input-group-text
-  + .input-group-text,
+.dapp-core-ui-component .input-group-prepend .input-group-text + .input-group-text,
 .dapp-core-ui-component .input-group-prepend .input-group-text + .btn,
 .dapp-core-ui-component .input-group-append .btn + .btn,
 .dapp-core-ui-component .input-group-append .btn + .input-group-text,
-.dapp-core-ui-component
-  .input-group-append
-  .input-group-text
-  + .input-group-text,
+.dapp-core-ui-component .input-group-append .input-group-text + .input-group-text,
 .dapp-core-ui-component .input-group-append .input-group-text + .btn {
   margin-left: -1px;
 }
@@ -3403,8 +3231,8 @@ a > .dapp-core-ui-component code {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
-.dapp-core-ui-component .input-group-text input[type='radio'],
-.dapp-core-ui-component .input-group-text input[type='checkbox'] {
+.dapp-core-ui-component .input-group-text input[type="radio"],
+.dapp-core-ui-component .input-group-text input[type="checkbox"] {
   margin-top: 0;
 }
 .dapp-core-ui-component .input-group-lg > .form-control:not(textarea),
@@ -3413,14 +3241,8 @@ a > .dapp-core-ui-component code {
 }
 .dapp-core-ui-component .input-group-lg > .form-control,
 .dapp-core-ui-component .input-group-lg > .custom-select,
-.dapp-core-ui-component
-  .input-group-lg
-  > .input-group-prepend
-  > .input-group-text,
-.dapp-core-ui-component
-  .input-group-lg
-  > .input-group-append
-  > .input-group-text,
+.dapp-core-ui-component .input-group-lg > .input-group-prepend > .input-group-text,
+.dapp-core-ui-component .input-group-lg > .input-group-append > .input-group-text,
 .dapp-core-ui-component .input-group-lg > .input-group-prepend > .btn,
 .dapp-core-ui-component .input-group-lg > .input-group-append > .btn {
   padding: 0.5rem 1rem;
@@ -3434,14 +3256,8 @@ a > .dapp-core-ui-component code {
 }
 .dapp-core-ui-component .input-group-sm > .form-control,
 .dapp-core-ui-component .input-group-sm > .custom-select,
-.dapp-core-ui-component
-  .input-group-sm
-  > .input-group-prepend
-  > .input-group-text,
-.dapp-core-ui-component
-  .input-group-sm
-  > .input-group-append
-  > .input-group-text,
+.dapp-core-ui-component .input-group-sm > .input-group-prepend > .input-group-text,
+.dapp-core-ui-component .input-group-sm > .input-group-append > .input-group-text,
 .dapp-core-ui-component .input-group-sm > .input-group-prepend > .btn,
 .dapp-core-ui-component .input-group-sm > .input-group-append > .btn {
   padding: 0.25rem 0.5rem;
@@ -3455,51 +3271,21 @@ a > .dapp-core-ui-component code {
 }
 .dapp-core-ui-component .input-group > .input-group-prepend > .btn,
 .dapp-core-ui-component .input-group > .input-group-prepend > .input-group-text,
-.dapp-core-ui-component
-  .input-group:not(.has-validation)
-  > .input-group-append:not(:last-child)
-  > .btn,
-.dapp-core-ui-component
-  .input-group:not(.has-validation)
-  > .input-group-append:not(:last-child)
-  > .input-group-text,
-.dapp-core-ui-component
-  .input-group.has-validation
-  > .input-group-append:nth-last-child(n + 3)
-  > .btn,
-.dapp-core-ui-component
-  .input-group.has-validation
-  > .input-group-append:nth-last-child(n + 3)
-  > .input-group-text,
-.dapp-core-ui-component
-  .input-group
-  > .input-group-append:last-child
-  > .btn:not(:last-child):not(.dropdown-toggle),
-.dapp-core-ui-component
-  .input-group
-  > .input-group-append:last-child
-  > .input-group-text:not(:last-child) {
+.dapp-core-ui-component .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .btn,
+.dapp-core-ui-component .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .input-group-text,
+.dapp-core-ui-component .input-group.has-validation > .input-group-append:nth-last-child(n + 3) > .btn,
+.dapp-core-ui-component .input-group.has-validation > .input-group-append:nth-last-child(n + 3) > .input-group-text,
+.dapp-core-ui-component .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+.dapp-core-ui-component .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 .dapp-core-ui-component .input-group > .input-group-append > .btn,
 .dapp-core-ui-component .input-group > .input-group-append > .input-group-text,
-.dapp-core-ui-component
-  .input-group
-  > .input-group-prepend:not(:first-child)
-  > .btn,
-.dapp-core-ui-component
-  .input-group
-  > .input-group-prepend:not(:first-child)
-  > .input-group-text,
-.dapp-core-ui-component
-  .input-group
-  > .input-group-prepend:first-child
-  > .btn:not(:first-child),
-.dapp-core-ui-component
-  .input-group
-  > .input-group-prepend:first-child
-  > .input-group-text:not(:first-child) {
+.dapp-core-ui-component .input-group > .input-group-prepend:not(:first-child) > .btn,
+.dapp-core-ui-component .input-group > .input-group-prepend:not(:first-child) > .input-group-text,
+.dapp-core-ui-component .input-group > .input-group-prepend:first-child > .btn:not(:first-child),
+.dapp-core-ui-component .input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -3524,26 +3310,18 @@ a > .dapp-core-ui-component code {
   height: 1.25rem;
   opacity: 0;
 }
-.dapp-core-ui-component
-  .custom-control-input:checked
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-control-input:checked ~ .custom-control-label::before {
   color: #fff;
   border-color: #1b46c2;
   background-color: #1b46c2;
 }
-.dapp-core-ui-component
-  .custom-control-input:focus
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-control-input:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 0.2rem rgba(27, 70, 194, 0.25);
 }
-.dapp-core-ui-component
-  .custom-control-input:focus:not(:checked)
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
   border-color: #7191eb;
 }
-.dapp-core-ui-component
-  .custom-control-input:not(:disabled):active
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
   color: #fff;
   background-color: #9eb4f2;
   border-color: #9eb4f2;
@@ -3552,12 +3330,8 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .custom-control-input:disabled ~ .custom-control-label {
   color: #6c757d;
 }
-.dapp-core-ui-component
-  .custom-control-input[disabled]
-  ~ .custom-control-label::before,
-.dapp-core-ui-component
-  .custom-control-input:disabled
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-control-input[disabled] ~ .custom-control-label::before,
+.dapp-core-ui-component .custom-control-input:disabled ~ .custom-control-label::before {
   background-color: #e9ecef;
 }
 .dapp-core-ui-component .custom-control-label {
@@ -3573,7 +3347,7 @@ a > .dapp-core-ui-component code {
   width: 1rem;
   height: 1rem;
   pointer-events: none;
-  content: '';
+  content: "";
   background-color: #fff;
   border: #adb5bd solid 1px;
 }
@@ -3584,56 +3358,35 @@ a > .dapp-core-ui-component code {
   display: block;
   width: 1rem;
   height: 1rem;
-  content: '';
+  content: "";
   background: 50% / 50% 50% no-repeat;
 }
 .dapp-core-ui-component .custom-checkbox .custom-control-label::before {
   border-radius: 0.25rem;
 }
-.dapp-core-ui-component
-  .custom-checkbox
-  .custom-control-input:checked
-  ~ .custom-control-label::after {
+.dapp-core-ui-component .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26l2.974 2.99L8 2.193z'/%3e%3c/svg%3e");
 }
-.dapp-core-ui-component
-  .custom-checkbox
-  .custom-control-input:indeterminate
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::before {
   border-color: #1b46c2;
   background-color: #1b46c2;
 }
-.dapp-core-ui-component
-  .custom-checkbox
-  .custom-control-input:indeterminate
-  ~ .custom-control-label::after {
+.dapp-core-ui-component .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::after {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3e%3cpath stroke='%23fff' d='M0 2h4'/%3e%3c/svg%3e");
 }
-.dapp-core-ui-component
-  .custom-checkbox
-  .custom-control-input:disabled:checked
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
   background-color: rgba(27, 70, 194, 0.5);
 }
-.dapp-core-ui-component
-  .custom-checkbox
-  .custom-control-input:disabled:indeterminate
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-checkbox .custom-control-input:disabled:indeterminate ~ .custom-control-label::before {
   background-color: rgba(27, 70, 194, 0.5);
 }
 .dapp-core-ui-component .custom-radio .custom-control-label::before {
   border-radius: 50%;
 }
-.dapp-core-ui-component
-  .custom-radio
-  .custom-control-input:checked
-  ~ .custom-control-label::after {
+.dapp-core-ui-component .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
 }
-.dapp-core-ui-component
-  .custom-radio
-  .custom-control-input:disabled:checked
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-radio .custom-control-input:disabled:checked ~ .custom-control-label::before {
   background-color: rgba(27, 70, 194, 0.5);
 }
 .dapp-core-ui-component .custom-switch {
@@ -3652,25 +3405,18 @@ a > .dapp-core-ui-component code {
   height: calc(1rem - 4px);
   background-color: #adb5bd;
   border-radius: 0.5rem;
-  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
   .dapp-core-ui-component .custom-switch .custom-control-label::after {
     transition: none;
   }
 }
-.dapp-core-ui-component
-  .custom-switch
-  .custom-control-input:checked
-  ~ .custom-control-label::after {
+.dapp-core-ui-component .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   background-color: #fff;
   transform: translateX(0.75rem);
 }
-.dapp-core-ui-component
-  .custom-switch
-  .custom-control-input:disabled:checked
-  ~ .custom-control-label::before {
+.dapp-core-ui-component .custom-switch .custom-control-input:disabled:checked ~ .custom-control-label::before {
   background-color: rgba(27, 70, 194, 0.5);
 }
 .dapp-core-ui-component .custom-select {
@@ -3683,9 +3429,7 @@ a > .dapp-core-ui-component code {
   line-height: 1.5;
   color: #495057;
   vertical-align: middle;
-  background: #fff
-    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
-    right 0.75rem center/8px 10px no-repeat;
+  background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   -webkit-appearance: none;
@@ -3702,7 +3446,7 @@ a > .dapp-core-ui-component code {
   background-color: #fff;
 }
 .dapp-core-ui-component .custom-select[multiple],
-.dapp-core-ui-component .custom-select[size]:not([size='1']) {
+.dapp-core-ui-component .custom-select[size]:not([size="1"]) {
   height: auto;
   padding-right: 0.75rem;
   background-image: none;
@@ -3756,14 +3500,10 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .custom-file-input:disabled ~ .custom-file-label {
   background-color: #e9ecef;
 }
-.dapp-core-ui-component
-  .custom-file-input:lang(en)
-  ~ .custom-file-label::after {
-  content: 'Browse';
+.dapp-core-ui-component .custom-file-input:lang(en) ~ .custom-file-label::after {
+  content: "Browse";
 }
-.dapp-core-ui-component
-  .custom-file-input
-  ~ .custom-file-label[data-browse]::after {
+.dapp-core-ui-component .custom-file-input ~ .custom-file-label[data-browse]::after {
   content: attr(data-browse);
 }
 .dapp-core-ui-component .custom-file-label {
@@ -3793,7 +3533,7 @@ a > .dapp-core-ui-component code {
   padding: 0.375rem 0.75rem;
   line-height: 1.5;
   color: #495057;
-  content: 'Browse';
+  content: "Browse";
   background-color: #e9ecef;
   border-left: inherit;
   border-radius: 0 0.25rem 0.25rem 0;
@@ -3829,10 +3569,8 @@ a > .dapp-core-ui-component code {
   background-color: #1b46c2;
   border: 0;
   border-radius: 1rem;
-  -webkit-transition: background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
+  -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   -webkit-appearance: none;
   appearance: none;
 }
@@ -3860,10 +3598,8 @@ a > .dapp-core-ui-component code {
   background-color: #1b46c2;
   border: 0;
   border-radius: 1rem;
-  -moz-transition: background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
+  -moz-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   -moz-appearance: none;
   appearance: none;
 }
@@ -3894,10 +3630,8 @@ a > .dapp-core-ui-component code {
   background-color: #1b46c2;
   border: 0;
   border-radius: 1rem;
-  -ms-transition: background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
+  -ms-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   appearance: none;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3945,8 +3679,7 @@ a > .dapp-core-ui-component code {
 .dapp-core-ui-component .custom-control-label::before,
 .dapp-core-ui-component .custom-file-label,
 .dapp-core-ui-component .custom-select {
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
   .dapp-core-ui-component .custom-control-label::before,
@@ -4103,7 +3836,7 @@ a > .dapp-core-ui-component code {
   width: 1.5em;
   height: 1.5em;
   vertical-align: middle;
-  content: '';
+  content: "";
   background: 50% / 100% 100% no-repeat;
 }
 .dapp-core-ui-component .navbar-nav-scroll {
@@ -4583,10 +4316,7 @@ a > .dapp-core-ui-component code {
   .dapp-core-ui-component .card-group > .card:not(:first-child) .card-header {
     border-top-left-radius: 0;
   }
-  .dapp-core-ui-component
-    .card-group
-    > .card:not(:first-child)
-    .card-img-bottom,
+  .dapp-core-ui-component .card-group > .card:not(:first-child) .card-img-bottom,
   .dapp-core-ui-component .card-group > .card:not(:first-child) .card-footer {
     border-bottom-left-radius: 0;
   }
@@ -4643,7 +4373,7 @@ a > .dapp-core-ui-component code {
   float: left;
   padding-right: 0.5rem;
   color: #6c757d;
-  content: '/';
+  content: "/";
 }
 .dapp-core-ui-component .breadcrumb-item + .breadcrumb-item:hover::before {
   text-decoration: underline;
@@ -4740,8 +4470,7 @@ a > .dapp-core-ui-component code {
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
   .dapp-core-ui-component .badge {
@@ -5048,16 +4777,7 @@ a.dapp-core-ui-component .badge-dark.focus {
   }
 }
 .dapp-core-ui-component .progress-bar-striped {
-  background-image: linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.15) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.15) 75%,
-    transparent 75%,
-    transparent
-  ) !important;
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent) !important;
   background-size: 1rem 1rem;
 }
 .dapp-core-ui-component .progress-bar-animated {
@@ -5127,16 +4847,10 @@ a.dapp-core-ui-component .badge-dark.focus {
   background-color: #1b46c2;
   border-color: #1b46c2;
 }
-.dapp-core-ui-component
-  .list-group-item
-  + .dapp-core-ui-component
-  .list-group-item {
+.dapp-core-ui-component .list-group-item + .dapp-core-ui-component .list-group-item {
   border-top-width: 0;
 }
-.dapp-core-ui-component
-  .list-group-item
-  + .dapp-core-ui-component
-  .list-group-item.active {
+.dapp-core-ui-component .list-group-item + .dapp-core-ui-component .list-group-item.active {
   margin-top: -1px;
   border-top-width: 1px;
 }
@@ -5154,17 +4868,11 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component .list-group-horizontal > .list-group-item.active {
   margin-top: 0;
 }
-.dapp-core-ui-component
-  .list-group-horizontal
-  > .list-group-item
-  + .list-group-item {
+.dapp-core-ui-component .list-group-horizontal > .list-group-item + .list-group-item {
   border-top-width: 1px;
   border-left-width: 0;
 }
-.dapp-core-ui-component
-  .list-group-horizontal
-  > .list-group-item
-  + .list-group-item.active {
+.dapp-core-ui-component .list-group-horizontal > .list-group-item + .list-group-item.active {
   margin-left: -1px;
   border-left-width: 1px;
 }
@@ -5172,32 +4880,22 @@ a.dapp-core-ui-component .badge-dark.focus {
   .dapp-core-ui-component .list-group-horizontal-sm {
     flex-direction: row;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-sm
-    > .list-group-item:first-child {
+  .dapp-core-ui-component .list-group-horizontal-sm > .list-group-item:first-child {
     border-bottom-left-radius: 0.25rem;
     border-top-right-radius: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-sm
-    > .list-group-item:last-child {
+  .dapp-core-ui-component .list-group-horizontal-sm > .list-group-item:last-child {
     border-top-right-radius: 0.25rem;
     border-bottom-left-radius: 0;
   }
   .dapp-core-ui-component .list-group-horizontal-sm > .list-group-item.active {
     margin-top: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-sm
-    > .list-group-item
-    + .list-group-item {
+  .dapp-core-ui-component .list-group-horizontal-sm > .list-group-item + .list-group-item {
     border-top-width: 1px;
     border-left-width: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-sm
-    > .list-group-item
-    + .list-group-item.active {
+  .dapp-core-ui-component .list-group-horizontal-sm > .list-group-item + .list-group-item.active {
     margin-left: -1px;
     border-left-width: 1px;
   }
@@ -5206,32 +4904,22 @@ a.dapp-core-ui-component .badge-dark.focus {
   .dapp-core-ui-component .list-group-horizontal-md {
     flex-direction: row;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-md
-    > .list-group-item:first-child {
+  .dapp-core-ui-component .list-group-horizontal-md > .list-group-item:first-child {
     border-bottom-left-radius: 0.25rem;
     border-top-right-radius: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-md
-    > .list-group-item:last-child {
+  .dapp-core-ui-component .list-group-horizontal-md > .list-group-item:last-child {
     border-top-right-radius: 0.25rem;
     border-bottom-left-radius: 0;
   }
   .dapp-core-ui-component .list-group-horizontal-md > .list-group-item.active {
     margin-top: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-md
-    > .list-group-item
-    + .list-group-item {
+  .dapp-core-ui-component .list-group-horizontal-md > .list-group-item + .list-group-item {
     border-top-width: 1px;
     border-left-width: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-md
-    > .list-group-item
-    + .list-group-item.active {
+  .dapp-core-ui-component .list-group-horizontal-md > .list-group-item + .list-group-item.active {
     margin-left: -1px;
     border-left-width: 1px;
   }
@@ -5240,32 +4928,22 @@ a.dapp-core-ui-component .badge-dark.focus {
   .dapp-core-ui-component .list-group-horizontal-lg {
     flex-direction: row;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-lg
-    > .list-group-item:first-child {
+  .dapp-core-ui-component .list-group-horizontal-lg > .list-group-item:first-child {
     border-bottom-left-radius: 0.25rem;
     border-top-right-radius: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-lg
-    > .list-group-item:last-child {
+  .dapp-core-ui-component .list-group-horizontal-lg > .list-group-item:last-child {
     border-top-right-radius: 0.25rem;
     border-bottom-left-radius: 0;
   }
   .dapp-core-ui-component .list-group-horizontal-lg > .list-group-item.active {
     margin-top: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-lg
-    > .list-group-item
-    + .list-group-item {
+  .dapp-core-ui-component .list-group-horizontal-lg > .list-group-item + .list-group-item {
     border-top-width: 1px;
     border-left-width: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-lg
-    > .list-group-item
-    + .list-group-item.active {
+  .dapp-core-ui-component .list-group-horizontal-lg > .list-group-item + .list-group-item.active {
     margin-left: -1px;
     border-left-width: 1px;
   }
@@ -5274,32 +4952,22 @@ a.dapp-core-ui-component .badge-dark.focus {
   .dapp-core-ui-component .list-group-horizontal-xl {
     flex-direction: row;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-xl
-    > .list-group-item:first-child {
+  .dapp-core-ui-component .list-group-horizontal-xl > .list-group-item:first-child {
     border-bottom-left-radius: 0.25rem;
     border-top-right-radius: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-xl
-    > .list-group-item:last-child {
+  .dapp-core-ui-component .list-group-horizontal-xl > .list-group-item:last-child {
     border-top-right-radius: 0.25rem;
     border-bottom-left-radius: 0;
   }
   .dapp-core-ui-component .list-group-horizontal-xl > .list-group-item.active {
     margin-top: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-xl
-    > .list-group-item
-    + .list-group-item {
+  .dapp-core-ui-component .list-group-horizontal-xl > .list-group-item + .list-group-item {
     border-top-width: 1px;
     border-left-width: 0;
   }
-  .dapp-core-ui-component
-    .list-group-horizontal-xl
-    > .list-group-item
-    + .list-group-item.active {
+  .dapp-core-ui-component .list-group-horizontal-xl > .list-group-item + .list-group-item.active {
     margin-left: -1px;
     border-left-width: 1px;
   }
@@ -5332,13 +5000,11 @@ a.dapp-core-ui-component .badge-dark.focus {
   background-color: #d6d8db;
 }
 .dapp-core-ui-component .list-group-item-secondary.list-group-item-action:hover,
-.dapp-core-ui-component
-  .list-group-item-secondary.list-group-item-action:focus {
+.dapp-core-ui-component .list-group-item-secondary.list-group-item-action:focus {
   color: #383d41;
   background-color: #c8cbcf;
 }
-.dapp-core-ui-component
-  .list-group-item-secondary.list-group-item-action.active {
+.dapp-core-ui-component .list-group-item-secondary.list-group-item-action.active {
   color: #fff;
   background-color: #383d41;
   border-color: #383d41;
@@ -5499,13 +5165,18 @@ a.dapp-core-ui-component .badge-dark.focus {
 }
 
 .dapp-core-ui-component.modal {
- /* ITHEUM DATA DEX */
- margin-top: -600px;
+  /* ITHEUM DATA DEX */
+  margin-top: -600px;
 }
 
 .dapp-core-ui-component.modal .btn-close-link {
- /* ITHEUM DATA DEX */
- background-color: #81e6d9;
+  /* ITHEUM DATA DEX */
+  background-color: #81e6d9;
+}
+
+.transactions-toast-list_toastContainer {
+  /* ITHEUM DATA DEX */
+  color: #81e6d9;
 }
 
 .dapp-core-ui-component .modal {
@@ -5566,16 +5237,14 @@ a.dapp-core-ui-component .badge-dark.focus {
   height: -webkit-min-content;
   height: -moz-min-content;
   height: min-content;
-  content: '';
+  content: "";
 }
 .dapp-core-ui-component .modal-dialog-centered.modal-dialog-scrollable {
   flex-direction: column;
   justify-content: center;
   height: 100%;
 }
-.dapp-core-ui-component
-  .modal-dialog-centered.modal-dialog-scrollable
-  .modal-content {
+.dapp-core-ui-component .modal-dialog-centered.modal-dialog-scrollable .modal-content {
   max-height: none;
 }
 .dapp-core-ui-component .modal-dialog-centered.modal-dialog-scrollable::before {
@@ -5690,9 +5359,7 @@ a.dapp-core-ui-component .badge-dark.focus {
   z-index: 1070;
   display: block;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -5721,66 +5388,66 @@ a.dapp-core-ui-component .badge-dark.focus {
 }
 .dapp-core-ui-component .tooltip .arrow::before {
   position: absolute;
-  content: '';
+  content: "";
   border-color: transparent;
   border-style: solid;
 }
 .dapp-core-ui-component .bs-tooltip-top,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='top'] {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="top"] {
   padding: 0.4rem 0;
 }
 .dapp-core-ui-component .bs-tooltip-top .arrow,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='top'] .arrow {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="top"] .arrow {
   bottom: 0;
 }
 .dapp-core-ui-component .bs-tooltip-top .arrow::before,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='top'] .arrow::before {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="top"] .arrow::before {
   top: 0;
   border-width: 0.4rem 0.4rem 0;
   border-top-color: #000;
 }
 .dapp-core-ui-component .bs-tooltip-right,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='right'] {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="right"] {
   padding: 0 0.4rem;
 }
 .dapp-core-ui-component .bs-tooltip-right .arrow,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='right'] .arrow {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="right"] .arrow {
   left: 0;
   width: 0.4rem;
   height: 0.8rem;
 }
 .dapp-core-ui-component .bs-tooltip-right .arrow::before,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='right'] .arrow::before {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="right"] .arrow::before {
   right: 0;
   border-width: 0.4rem 0.4rem 0.4rem 0;
   border-right-color: #000;
 }
 .dapp-core-ui-component .bs-tooltip-bottom,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='bottom'] {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="bottom"] {
   padding: 0.4rem 0;
 }
 .dapp-core-ui-component .bs-tooltip-bottom .arrow,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='bottom'] .arrow {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="bottom"] .arrow {
   top: 0;
 }
 .dapp-core-ui-component .bs-tooltip-bottom .arrow::before,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='bottom'] .arrow::before {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
   bottom: 0;
   border-width: 0 0.4rem 0.4rem;
   border-bottom-color: #000;
 }
 .dapp-core-ui-component .bs-tooltip-left,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='left'] {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="left"] {
   padding: 0 0.4rem;
 }
 .dapp-core-ui-component .bs-tooltip-left .arrow,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='left'] .arrow {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="left"] .arrow {
   right: 0;
   width: 0.4rem;
   height: 0.8rem;
 }
 .dapp-core-ui-component .bs-tooltip-left .arrow::before,
-.dapp-core-ui-component .bs-tooltip-auto[x-placement^='left'] .arrow::before {
+.dapp-core-ui-component .bs-tooltip-auto[x-placement^="left"] .arrow::before {
   left: 0;
   border-width: 0.4rem 0 0.4rem 0.4rem;
   border-left-color: #000;
@@ -5800,9 +5467,7 @@ a.dapp-core-ui-component .badge-dark.focus {
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -5834,111 +5499,103 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component .popover .arrow::after {
   position: absolute;
   display: block;
-  content: '';
+  content: "";
   border-color: transparent;
   border-style: solid;
 }
 .dapp-core-ui-component .bs-popover-top,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='top'] {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="top"] {
   margin-bottom: 0.5rem;
 }
 .dapp-core-ui-component .bs-popover-top > .arrow,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='top'] > .arrow {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="top"] > .arrow {
   bottom: calc(-0.5rem - 1px);
 }
 .dapp-core-ui-component .bs-popover-top > .arrow::before,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='top'] > .arrow::before {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="top"] > .arrow::before {
   bottom: 0;
   border-width: 0.5rem 0.5rem 0;
   border-top-color: rgba(0, 0, 0, 0.25);
 }
 .dapp-core-ui-component .bs-popover-top > .arrow::after,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='top'] > .arrow::after {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="top"] > .arrow::after {
   bottom: 1px;
   border-width: 0.5rem 0.5rem 0;
   border-top-color: #fff;
 }
 .dapp-core-ui-component .bs-popover-right,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='right'] {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="right"] {
   margin-left: 0.5rem;
 }
 .dapp-core-ui-component .bs-popover-right > .arrow,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='right'] > .arrow {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="right"] > .arrow {
   left: calc(-0.5rem - 1px);
   width: 0.5rem;
   height: 1rem;
   margin: 0.3rem 0;
 }
 .dapp-core-ui-component .bs-popover-right > .arrow::before,
-.dapp-core-ui-component
-  .bs-popover-auto[x-placement^='right']
-  > .arrow::before {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="right"] > .arrow::before {
   left: 0;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: rgba(0, 0, 0, 0.25);
 }
 .dapp-core-ui-component .bs-popover-right > .arrow::after,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='right'] > .arrow::after {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="right"] > .arrow::after {
   left: 1px;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: #fff;
 }
 .dapp-core-ui-component .bs-popover-bottom,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='bottom'] {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="bottom"] {
   margin-top: 0.5rem;
 }
 .dapp-core-ui-component .bs-popover-bottom > .arrow,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='bottom'] > .arrow {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="bottom"] > .arrow {
   top: calc(-0.5rem - 1px);
 }
 .dapp-core-ui-component .bs-popover-bottom > .arrow::before,
-.dapp-core-ui-component
-  .bs-popover-auto[x-placement^='bottom']
-  > .arrow::before {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="bottom"] > .arrow::before {
   top: 0;
   border-width: 0 0.5rem 0.5rem 0.5rem;
   border-bottom-color: rgba(0, 0, 0, 0.25);
 }
 .dapp-core-ui-component .bs-popover-bottom > .arrow::after,
-.dapp-core-ui-component
-  .bs-popover-auto[x-placement^='bottom']
-  > .arrow::after {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="bottom"] > .arrow::after {
   top: 1px;
   border-width: 0 0.5rem 0.5rem 0.5rem;
   border-bottom-color: #fff;
 }
 .dapp-core-ui-component .bs-popover-bottom .popover-header::before,
-.dapp-core-ui-component
-  .bs-popover-auto[x-placement^='bottom']
-  .popover-header::before {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="bottom"] .popover-header::before {
   position: absolute;
   top: 0;
   left: 50%;
   display: block;
   width: 1rem;
   margin-left: -0.5rem;
-  content: '';
+  content: "";
   border-bottom: 1px solid #f7f7f7;
 }
 .dapp-core-ui-component .bs-popover-left,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='left'] {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="left"] {
   margin-right: 0.5rem;
 }
 .dapp-core-ui-component .bs-popover-left > .arrow,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='left'] > .arrow {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="left"] > .arrow {
   right: calc(-0.5rem - 1px);
   width: 0.5rem;
   height: 1rem;
   margin: 0.3rem 0;
 }
 .dapp-core-ui-component .bs-popover-left > .arrow::before,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='left'] > .arrow::before {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="left"] > .arrow::before {
   right: 0;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: rgba(0, 0, 0, 0.25);
 }
 .dapp-core-ui-component .bs-popover-left > .arrow::after,
-.dapp-core-ui-component .bs-popover-auto[x-placement^='left'] > .arrow::after {
+.dapp-core-ui-component .bs-popover-auto[x-placement^="left"] > .arrow::after {
   right: 1px;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: #fff;
@@ -5973,7 +5630,7 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component .carousel-inner::after {
   display: block;
   clear: both;
-  content: '';
+  content: "";
 }
 .dapp-core-ui-component .carousel-item {
   position: relative;
@@ -6383,7 +6040,7 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component .clearfix::after {
   display: block;
   clear: both;
-  content: '';
+  content: "";
 }
 .dapp-core-ui-component .d-none {
   display: none !important;
@@ -6566,7 +6223,7 @@ a.dapp-core-ui-component .badge-dark.focus {
 }
 .dapp-core-ui-component .embed-responsive::before {
   display: block;
-  content: '';
+  content: "";
 }
 .dapp-core-ui-component .embed-responsive .embed-responsive-item,
 .dapp-core-ui-component .embed-responsive iframe,
@@ -9032,12 +8689,11 @@ a.dapp-core-ui-component .badge-dark.focus {
   left: 0;
   z-index: 1;
   pointer-events: auto;
-  content: '';
+  content: "";
   background-color: rgba(0, 0, 0, 0);
 }
 .dapp-core-ui-component .text-monospace {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace !important;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
 }
 .dapp-core-ui-component .text-justify {
   text-align: justify !important;
@@ -9238,7 +8894,7 @@ a.dapp-core-ui-component .badge-dark.focus {
     text-decoration: underline;
   }
   .dapp-core-ui-component abbr[title]::after {
-    content: ' (' attr(title) ')';
+    content: " (" attr(title) ")";
   }
   .dapp-core-ui-component pre {
     white-space: pre-wrap !important;
@@ -9405,7 +9061,7 @@ a.dapp-core-ui-component .badge-dark.focus {
   margin-left: 1.6428571428571428rem;
 }
 .dapp-core-ui-component .navbar .dapp-name:before {
-  content: '';
+  content: "";
   display: block;
   width: 1px;
   height: toRem(42);
@@ -9558,9 +9214,7 @@ a.dapp-core-ui-component .badge-dark.focus {
 }
 .dapp-core-ui-component body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -9568,7 +9222,7 @@ a.dapp-core-ui-component .badge-dark.focus {
   text-align: left;
   background-color: #fff;
 }
-.dapp-core-ui-component [tabindex='-1']:focus:not(:focus-visible) {
+.dapp-core-ui-component [tabindex="-1"]:focus:not(:focus-visible) {
   outline: 0 !important;
 }
 .dapp-core-ui-component hr {
@@ -9667,8 +9321,7 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component code,
 .dapp-core-ui-component kbd,
 .dapp-core-ui-component samp {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 1em;
 }
 .dapp-core-ui-component pre {
@@ -9730,33 +9383,33 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component select {
   text-transform: none;
 }
-.dapp-core-ui-component [role='button'] {
+.dapp-core-ui-component [role="button"] {
   cursor: pointer;
 }
 .dapp-core-ui-component select {
   word-wrap: normal;
 }
 .dapp-core-ui-component button,
-.dapp-core-ui-component [type='button'],
-.dapp-core-ui-component [type='reset'],
-.dapp-core-ui-component [type='submit'] {
+.dapp-core-ui-component [type="button"],
+.dapp-core-ui-component [type="reset"],
+.dapp-core-ui-component [type="submit"] {
   -webkit-appearance: button;
 }
 .dapp-core-ui-component button:not(:disabled),
-.dapp-core-ui-component [type='button']:not(:disabled),
-.dapp-core-ui-component [type='reset']:not(:disabled),
-.dapp-core-ui-component [type='submit']:not(:disabled) {
+.dapp-core-ui-component [type="button"]:not(:disabled),
+.dapp-core-ui-component [type="reset"]:not(:disabled),
+.dapp-core-ui-component [type="submit"]:not(:disabled) {
   cursor: pointer;
 }
 .dapp-core-ui-component button::-moz-focus-inner,
-.dapp-core-ui-component [type='button']::-moz-focus-inner,
-.dapp-core-ui-component [type='reset']::-moz-focus-inner,
-.dapp-core-ui-component [type='submit']::-moz-focus-inner {
+.dapp-core-ui-component [type="button"]::-moz-focus-inner,
+.dapp-core-ui-component [type="reset"]::-moz-focus-inner,
+.dapp-core-ui-component [type="submit"]::-moz-focus-inner {
   padding: 0;
   border-style: none;
 }
-.dapp-core-ui-component input[type='radio'],
-.dapp-core-ui-component input[type='checkbox'] {
+.dapp-core-ui-component input[type="radio"],
+.dapp-core-ui-component input[type="checkbox"] {
   box-sizing: border-box;
   padding: 0;
 }
@@ -9784,15 +9437,15 @@ a.dapp-core-ui-component .badge-dark.focus {
 .dapp-core-ui-component progress {
   vertical-align: baseline;
 }
-.dapp-core-ui-component [type='number']::-webkit-inner-spin-button,
-.dapp-core-ui-component [type='number']::-webkit-outer-spin-button {
+.dapp-core-ui-component [type="number"]::-webkit-inner-spin-button,
+.dapp-core-ui-component [type="number"]::-webkit-outer-spin-button {
   height: auto;
 }
-.dapp-core-ui-component [type='search'] {
+.dapp-core-ui-component [type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none;
 }
-.dapp-core-ui-component [type='search']::-webkit-search-decoration {
+.dapp-core-ui-component [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 .dapp-core-ui-component ::-webkit-file-upload-button {
@@ -9922,36 +9575,20 @@ a.dapp-core-ui-component .badge-dark.focus {
   background: none;
   box-shadow: unset;
 }
-.dapp-core-ui-component
-  .modal-container
-  .modal-dialog
-  .modal-content
-  .card-body {
+.dapp-core-ui-component .modal-container .modal-dialog .modal-content .card-body {
   padding: 40px !important;
 }
-.dapp-core-ui-component
-  .modal-container
-  .modal-dialog
-  .modal-content
-  .btn-close-link {
+.dapp-core-ui-component .modal-container .modal-dialog .modal-content .btn-close-link {
   width: 8rem;
   background: #f3f9ff;
   border: 1px solid #ddeeff;
   box-sizing: border-box;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
 }
-.dapp-core-ui-component
-  .modal-container
-  .modal-dialog
-  .modal-content
-  .btn-close-link:hover {
+.dapp-core-ui-component .modal-container .modal-dialog .modal-content .btn-close-link:hover {
   background-image: linear-gradient(rgba(77, 169, 255, 0.1) 0 0);
 }
-.dapp-core-ui-component
-  .modal-container
-  .modal-dialog
-  .modal-card
-  .modal-card-body {
+.dapp-core-ui-component .modal-container .modal-dialog .modal-card .modal-card-body {
   border-radius: 0.25rem;
 }
 @media (min-width: 576px) {
@@ -9966,12 +9603,7 @@ a.dapp-core-ui-component .badge-dark.focus {
   border: none;
   width: unset;
 }
-.dapp-core-ui-component
-  .modal-container
-  .modal-dialog
-  .modal-card
-  .card
-  > .p-4 {
+.dapp-core-ui-component .modal-container .modal-dialog .modal-card .card > .p-4 {
   padding: 0 !important;
 }
 .dapp-core-ui-component .modal-container .modal-dialog .modal-card .card.my-4 {
@@ -10069,19 +9701,10 @@ a.dapp-core-ui-component .badge-dark.focus {
   font-size: inherit;
   line-height: inherit;
 }
-.dapp-core-ui-component
-  .toast-messages
-  .toast.toast-visible
-  .progress
-  .progress-bar {
+.dapp-core-ui-component .toast-messages .toast.toast-visible .progress .progress-bar {
   background-color: rgba(108, 117, 125, 0.2) !important;
 }
-.dapp-core-ui-component
-  .toast-messages
-  .toast.toast-visible
-  .progress
-  .progress-bar
-  .content-height {
+.dapp-core-ui-component .toast-messages .toast.toast-visible .progress .progress-bar .content-height {
   z-index: -1;
   visibility: hidden;
   width: 0 !important;
