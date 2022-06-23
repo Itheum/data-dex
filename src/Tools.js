@@ -13,8 +13,8 @@ import imgProgRhc from "./img/prog-rhc.png";
 import imgProgWfh from "./img/prog-wfh.png";
 import ClaimModal from "./UtilComps/ClaimModal";
 import { useUser } from "./store/UserContext";
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
-import { ClaimsContract } from "./Elrond/claims";
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions, transactionServices } from "@elrondnetwork/dapp-core";
+import { FaucetContract } from "./Elrond/faucet";
 
 export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -178,9 +178,9 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   };
   // E: claims related logic
 
-  const handleOnChainFaucet = () => {
+  const handleOnChainFaucet = async () => {
     if (elrondAddress) {
-      ClaimsContract.sendActivateFaucetTransaction();
+      FaucetContract.sendActivateFaucetTransaction();
     } else {
       setTxErrorFaucet(null);
       web3_tokenFaucet();

@@ -33,6 +33,12 @@ const contracts = {
       claimsContractAddress: "0x985A5c96663C9c44d46Ea061f4b7E50118180F8d",
     },
   },
+  elrond: {
+    dev: {
+      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqtywnp7z0war94rpzk00p2n2wjwaws2xr7yqsejxy7f",
+      faucetContractAddress: "erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf",
+    },
+  },
 };
 
 // Matic Polygon Contracts
@@ -57,6 +63,10 @@ export const ddexContractAddress_testnetBSC = contracts.bsc[contractsMode].ddexC
 export const dNFTContractAddress_testnetBSC = contracts.bsc[contractsMode].dNFTContractAddress;
 export const claimsContractAddress_testnetBSC = contracts.bsc[contractsMode].claimsContractAddress;
 
+//Elrond contracts
+export const claimsContractAddress_Elrond = contracts.elrond[contractsMode].claimsContractAddress;
+export const faucetContractAddress_Elrond = contracts.elrond[contractsMode].faucetContractAddress;
+
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";
 export const tokenContractAddress_testnetPlatON = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
@@ -78,5 +88,3 @@ export const ddexContractAddress_Local = "0xDc64a140Aa3E981100a9becA4E685f962f0c
 export const dNFTContractAddress_Local = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
 
 export const claimsContractAddress_testnetAvalanche = "0xb38731CEC66340ff1c9F58B8ceCDEdb9B4Cb8f38";
-
-export const mydaContractAddress_devnetElrond = "erd1qqqqqqqqqqqqqpgqtywnp7z0war94rpzk00p2n2wjwaws2xr7yqsejxy7f";

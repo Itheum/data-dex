@@ -2,7 +2,7 @@ import { ProxyNetworkProvider } from "@elrondnetwork/erdjs-network-providers/out
 import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from "@elrondnetwork/erdjs/out";
 import { refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import jsonData from "./ABIs/claims.abi.json";
-import { mydaContractAddress_devnetElrond } from "../libs/contactAddresses";
+import { claimsContractAddress_Elrond } from "../libs/contactAddresses.js";
 export class ClaimsContract {
   constructor(networkId) {
     if (networkId === "E1") {
@@ -14,7 +14,7 @@ export class ClaimsContract {
     const abiRegistry = AbiRegistry.create(json);
     const abi = new SmartContractAbi(abiRegistry, ["ClaimsContract"]);
     this.contract = new SmartContract({
-      address: new Address(mydaContractAddress_devnetElrond),
+      address: new Address(claimsContractAddress_Elrond),
       abi: abi,
     });
   }
@@ -42,7 +42,7 @@ export class ClaimsContract {
         .setFunction(new ContractFunction("claim"))
         .addArg(new U64Value(rewardType))
         .build(),
-      receiver: new Address(mydaContractAddress_devnetElrond),
+      receiver: new Address(claimsContractAddress_Elrond),
       gasLimit: 6000000,
       chainID: "D",
     });
@@ -51,29 +51,6 @@ export class ClaimsContract {
       transactions: claimTransaction,
       transactionsDisplayInfo: {
         processingMessage: "Claiming ITHEUM",
-        errorMessage: "Error occured during ITHEUM claiming",
-        successMessage: "ITHEUM claimed successfully",
-      },
-      redirectAfterSign: false,
-    });
-    return { sessionId, error };
-  }
-
-  static async sendActivateFaucetTransaction() {
-    const claimTransaction = new Transaction({
-      value: 0,
-      data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction("activateFaucet"))
-        .build(),
-      receiver: new Address("erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf"),
-      gasLimit: 20000000,
-      chainID: "D",
-    });
-    await refreshAccount();
-    const { sessionId, error } = await sendTransactions({
-      transactions: claimTransaction,
-      transactionsDisplayInfo: {
-        processingMessage: "Getting ITHEUM through faucet",
         errorMessage: "Error occured during ITHEUM claiming",
         successMessage: "ITHEUM claimed successfully",
       },
