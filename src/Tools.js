@@ -3,7 +3,7 @@ import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Button, Link, Progress, Badge,
+  Button, Link, Progress, Badge, Tooltip,
   Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter,
   Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner,
@@ -11,8 +11,9 @@ import {
 } from '@chakra-ui/react';
 import moment from 'moment';
 import ShortAddress from './UtilComps/ShortAddress';
+import ChainSupportedInput from './UtilComps/ChainSupportedInput';
 import { progInfoMeta, config, sleep } from './libs/util';
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES } from './libs/util';
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from './libs/util';
 import { useChainMeta } from './store/ChainMetaContext';
 import imgProgGaPa from './img/prog-gaming.jpg';
 import imgProgRhc from './img/prog-rhc.png';
@@ -54,7 +55,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
       toast({
         title: "Congrats! an itheum test account has been linked",
-        description: "You can now sell your data on the DEX",
+        description: "You can now advertise your data on the Data DEX",
         status: "success",
         duration: 6000,
         isClosable: true,
@@ -210,7 +211,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             {itheumAccount && 
               <Stack>
                 <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                <Text fontSize="sm">You have data available to sell from the following programs you are participating in... </Text>
+                <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
                 {itheumAccount.programsAllocation.map(item => (
                   <Stack direction="row" key={item.program}>
                     <Badge borderRadius="full" px="2" colorScheme="teal">{itheumAccount._lookups.programs[item.program].programName}</Badge>
@@ -251,7 +252,11 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             </Alert>}
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Button>
+
+            <ChainSupportedInput feature={MENU.FAUCET}>
+              <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Button>              
+            </ChainSupportedInput>
+            
           </Stack>
         </WrapItem>
 

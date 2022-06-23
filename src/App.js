@@ -48,6 +48,7 @@ import moralisIcon from './img/powered-moralis.png';
 import { useUser } from './store/UserContext';
 import { useChainMeta } from './store/ChainMetaContext';
 import AlertOverlay from './UtilComps/AlertOverlay';
+import ChainSupportedInput from './UtilComps/ChainSupportedInput';
 
 const _chainMetaLocal = {};
 
@@ -83,13 +84,16 @@ function App() {
       claimBalanceValues: ['-1', '-1', '-1'],
       claimBalanceDates: [0, 0, 0],
     });
+
+    console.log(consoleNotice);
   },[]);
 
   useEffect(() => {
-    enableWeb3();
-
-    console.log(consoleNotice);
-  }, []);
+    // this ensure that if the user reloads the page when logged in, we restore their web3Session to ethers.js
+    if (user && isAuthenticated) {
+      enableWeb3(); // default to metamask
+    }
+  }, [user, isAuthenticated]);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
@@ -322,7 +326,7 @@ function App() {
 
                   <Stack ml="15px" spacing={4}>
                     <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Sell Data</Button>
+                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Trade Data</Button>
                   </Stack>
 
                   <Accordion flexGrow="1" defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
@@ -333,10 +337,10 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => (setMenuItem(MENU.DATAPROOFS))}>Personal Data Proofs</Button>
+                          <ChainSupportedInput feature={MENU.BUY}><Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.ADVERTISED}><Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.PURCHASED}><Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.DATAPROOFS}><Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => (setMenuItem(MENU.DATAPROOFS))}>Personal Data Proofs</Button></ChainSupportedInput>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -348,23 +352,28 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)} onClick={() => {
-                            if (splashScreenShown[MENU.NFT]) {
-                              setMenuItem(MENU.NFTMINE);
-                            } else {
-                              doSplashScreenShown(MENU.NFT);
-                              setMenuItem(MENU.NFT);
-                            }
-                          }}>Wallet</Button>
+                          <ChainSupportedInput feature={MENU.NFTMINE}>
+                            <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)} onClick={() => {
+                              if (splashScreenShown[MENU.NFT]) {
+                                setMenuItem(MENU.NFTMINE);
+                              } else {
+                                doSplashScreenShown(MENU.NFT);
+                                setMenuItem(MENU.NFT);
+                              }
+                            }}>Wallet</Button>
+                          </ChainSupportedInput>
                           
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)} onClick={() => {
-                            if (splashScreenShown[MENU.NFT]) {
-                              setMenuItem(MENU.NFTALL);
-                            } else {
-                              doSplashScreenShown(MENU.NFT);
-                              setMenuItem(MENU.NFT);
-                            }
-                          }}>Marketplace</Button>
+                          <ChainSupportedInput feature={MENU.NFTALL}>
+                            <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)} onClick={() => {
+                              if (splashScreenShown[MENU.NFT]) {
+                                setMenuItem(MENU.NFTALL);
+                              } else {
+                                doSplashScreenShown(MENU.NFT);
+                                setMenuItem(MENU.NFT);
+                              }
+                            }}>Marketplace</Button>
+                          </ChainSupportedInput>
+                          
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -376,6 +385,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
+                        <ChainSupportedInput feature={MENU.COALITION}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITIONALL} onClick={() => {
                             if(splashScreenShown[MENU.COALITION]) {
                               setMenuItem(MENU.COALITIONALL);
@@ -384,6 +394,7 @@ function App() {
                               setMenuItem(MENU.COALITION);
                             }
                           }}>View Coalitions</Button>
+                          </ChainSupportedInput>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -395,7 +406,9 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                          <ChainSupportedInput feature={MENU.TX}>
+                            <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                          </ChainSupportedInput>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>

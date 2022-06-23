@@ -13,17 +13,17 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure
 } from '@chakra-ui/react';
+import ChainSupportedInput from './UtilComps/ChainSupportedInput';
 import { FaUncharted } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";
 import { GiVintageRobot } from "react-icons/gi";
 import { MdOutlinePattern } from "react-icons/md";
 
 import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
 import ShortAddress from './UtilComps/ShortAddress';
 import IconButton from './UtilComps/IconButton';
 import { useChainMeta } from './store/ChainMetaContext';
-import { log } from 'async';
 
 const baseStyle = {
   flex: 1,
@@ -445,7 +445,7 @@ export default function({onRfMount, itheumAccount}) {
 
   function closeProgressModal() {
     toast({
-      title: "Data sent for sale",
+      title: "Data advertised for trade",
       status: "success",
       duration: 4000,
       isClosable: true,
@@ -537,8 +537,8 @@ export default function({onRfMount, itheumAccount}) {
 
   return (
     <Stack spacing={5}>
-      <Heading size="lg">Sell Data</Heading>
-      <Heading size="xs" opacity=".7">Sell your personal data direct-to-buyer (peer-to-peer) or as Data NFTs across many NFT Marketplaces</Heading>
+      <Heading size="lg">Trade Data</Heading>
+      <Heading size="xs" opacity=".7">Trade your personal data direct-to-buyer (peer-to-peer) or as Data NFTs across many NFT Marketplaces</Heading>
 
       {(itheumAccount && itheumAccount.programsAllocation.length > 0) && 
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
@@ -559,7 +559,7 @@ export default function({onRfMount, itheumAccount}) {
                     {itheumAccount._lookups.programs[item.program].programName}
                   </Box>
                 </Box>
-                <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>Sell Program Data</Button>
+                <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>Trade Program Data</Button>
             </Box>
             
             </Box>
@@ -578,10 +578,10 @@ export default function({onRfMount, itheumAccount}) {
                   as="h4"
                   lineHeight="tight"
                   isTruncated>
-                  Sell Any Arbitrary Data Set
+                  Trade Any Arbitrary Data Set
                 </Box>
               </Box>
-              <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
+              <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale()}>Advertise Data</Button>
             </Box>     
         </Box>
 
@@ -596,10 +596,10 @@ export default function({onRfMount, itheumAccount}) {
                   as="h4"
                   lineHeight="tight"
                   isTruncated>
-                  Sell My Facebook Data
+                  Trade My Facebook Data
                 </Box>
               </Box>
-              <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale()}>Sell Data</Button>
+              <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale()}>Advertise Data</Button>
             </Box>     
         </Box>
       </Wrap>
@@ -610,7 +610,7 @@ export default function({onRfMount, itheumAccount}) {
           <DrawerHeader>
             <HStack spacing="5">
               <CloseButton size="lg" onClick={onRfMount} />
-              {currSellObject && <Stack><Text fontSize="2xl">Sell data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
+              {currSellObject && <Stack><Text fontSize="2xl">Trade data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
             </HStack>
           </DrawerHeader>
           <DrawerBody>
@@ -618,7 +618,7 @@ export default function({onRfMount, itheumAccount}) {
           
             <Stack spacing={5} mt="5">
 
-              <Text fontWeight="bold">Sale Type</Text>
+              <Text fontWeight="bold">Trade Type</Text>
               
               {/* <RadioGroup value={drawerInMintNFT} onChange={() => setDrawerInMintNFT(!drawerInMintNFT)}>
                 <Stack>
@@ -659,7 +659,7 @@ export default function({onRfMount, itheumAccount}) {
                   </NumberInputStepper>
                 </NumberInput>
                 <Text colorScheme="gray" fontSize="sm">Data NFTs can be sold in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} or ETH -  
-                  <Tooltip label={`If you sell your Data NFT in the Itheum Data NFT marketplace you can sell it in ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}. You can also sell it in ETH by using the OpenSea marketplace. Unsure what to do? Set a ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} price for now.`} aria-label="A tooltip"> [Tell me more]
+                  <Tooltip label={`If you trade your Data NFT in the Itheum Data NFT marketplace you cantTrade it in ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}. You can also trade it in ETH by using the OpenSea marketplace. Unsure what to do? Set a ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} price for now.`} aria-label="A tooltip"> [Tell me more]
                   </Tooltip>
                 </Text>
 
@@ -704,7 +704,7 @@ export default function({onRfMount, itheumAccount}) {
               </>}
 
               <HStack>
-                <Text fontWeight="bold">Data Payload for Sale:</Text>
+                <Text fontWeight="bold">Data Payload for Trade:</Text>
                 <Tooltip label="Only a JSON file with a '.json' extension that is larger than 100 bytes and smaller than 1.5 megabytes is allowed" aria-label="Upload Requirements">
                   <Text fontSize="sm">[Upload Requirements]</Text>
                 </Tooltip>
@@ -751,8 +751,8 @@ export default function({onRfMount, itheumAccount}) {
               </Text>}              
 
               <Flex>
-                {!drawerInMintNFT && <Button mt="5" mr="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataPackSellSubmit}>Place for Sale as Data Pack</Button>}
-                {drawerInMintNFT && <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Sell as NFT</Button>}
+                {!drawerInMintNFT && <ChainSupportedInput feature={MENU.BUY}><Button mt="5" mr="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataPackSellSubmit}>Place for Trade as Data Pack</Button></ChainSupportedInput>}
+                {drawerInMintNFT && <ChainSupportedInput feature={MENU.BUY}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>}
               </Flex>
             </Stack>}
 
@@ -763,7 +763,7 @@ export default function({onRfMount, itheumAccount}) {
             >
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader>Sell Progress</ModalHeader>
+                <ModalHeader>Data Advertising Progress</ModalHeader>
                 <ModalBody pb={6}>
                   <Stack spacing={5}>
                     <HStack>
@@ -793,7 +793,7 @@ export default function({onRfMount, itheumAccount}) {
                     
                       <HStack>
                         {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Advertising for sale on blockchain</Text>
+                        <Text>Advertising for trade on blockchain</Text>
                       </HStack>
                     </>}
 
@@ -847,7 +847,7 @@ export default function({onRfMount, itheumAccount}) {
 
                       <HStack>
                         {!saveProgressNFT.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Advertising for sale as a Data NFT</Text>
+                        <Text>Advertising for trade as a Data NFT</Text>
                       </HStack>
                     </>}
 

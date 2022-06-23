@@ -1,5 +1,5 @@
 # Itheum Data DEX
-The Itheum Data DEX enables you to sell your personal data in the open market using blockchain technology. It is multi-chain by default and supports many EVM compatible chains. 
+The Itheum Data DEX enables you to trade your personal data in the open market using blockchain technology. It is multi-chain by default and supports many EVM compatible chains. 
 
 ![Itheum Data DEX](https://raw.githubusercontent.com/Itheum/data-dex/main/itheum-dex-hero.png)
 

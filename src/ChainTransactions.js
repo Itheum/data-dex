@@ -102,7 +102,7 @@ export default function() {
               {allTx.map((item) => <Tr key={item.id}>
                 <Td>
                   <Badge borderRadius="full" px="2" colorScheme={isPurchasedEvent(item.className) && 'teal' || 'green' }>
-                    {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Sale'}
+                    {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Trade'}
                   </Badge>
                 </Td>
                 <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
