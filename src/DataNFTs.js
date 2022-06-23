@@ -10,7 +10,8 @@ import dataNFTIcon from './img/data-nft-icon.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function({setMenuItem}) {
-  const navigate= useNavigate()
+  const navigate= useNavigate();
+  
   return (
     <Stack spacing={5}>      
       <Flex align="top" spacing={10}>
@@ -26,8 +27,8 @@ export default function({setMenuItem}) {
             </HStack>
             
             <HStack spacing="5" mt="10">
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTMINE); navigate("wallet")}}>Data NFT Wallet</Button>
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTALL); navigate("marketplace")}}>Data NFT Marketplace</Button>
+              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTMINE); navigate("wallet");}}>Data NFT Wallet</Button>
+              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTALL); navigate("marketplace");}}>Data NFT Marketplace</Button>
             </HStack>
 
             <Stack mt="10" align="center">
