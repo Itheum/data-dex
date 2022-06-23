@@ -5497,6 +5497,17 @@ a.dapp-core-ui-component .badge-dark.focus {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+.dapp-core-ui-component.modal {
+ /* ITHEUM DATA DEX */
+ margin-top: -600px;
+}
+
+.dapp-core-ui-component.modal .btn-close-link {
+ /* ITHEUM DATA DEX */
+ background-color: #81e6d9;
+}
+
 .dapp-core-ui-component .modal {
   position: fixed;
   top: 0;
@@ -10040,7 +10051,8 @@ a.dapp-core-ui-component .badge-dark.focus {
   max-width: 28.875rem;
   transition: transform 0.3s ease-in-out;
   transform: translateX(120%);
-  background-color: #fff;
+  /* background-color: #fff; */
+  background-color: #1a202c; /* ITHEUM DATA DEX */
   border-radius: 0.25rem;
   border-color: #dee2e6;
 }
