@@ -334,7 +334,7 @@ function App() {
 
                   <Stack ml="15px" spacing={4}>
                     <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => {setMenuItem(MENU.HOME); navigate("home");}}>Home</Button>
-                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => {(setMenuItem(MENU.SELL)); navigate("selldata");}}>Sell Data</Button>
+                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => {(setMenuItem(MENU.SELL)); navigate("selldata");}}>Trade Data</Button>
                   </Stack>
 
                   <Accordion flexGrow="1" defaultIndex={path? PATHS[path][1]: [-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}} >
@@ -368,7 +368,7 @@ function App() {
                               } else {
                                 doSplashScreenShown(MENU.NFT);
                                 navigate("datanfts");
-                                setMenuItem(MENU.NFT);
+                                setMenuItem(MENU.NFTMINE);
                               }
                             }}>Wallet</Button>
                           </ChainSupportedInput>
@@ -381,7 +381,7 @@ function App() {
                               } else {
                                 doSplashScreenShown(MENU.NFT);
                                 navigate("datanfts");
-                                setMenuItem(MENU.NFT);
+                                setMenuItem(MENU.NFTALL);
                               }
                             }}>Marketplace</Button>
                           </ChainSupportedInput>

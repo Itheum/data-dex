@@ -233,6 +233,7 @@ export const MENU = {
   COALITIONALL: 12,
   DATAPROOFS: 13,
   TRUSTEDCOMP:14,
+  FAUCET: 14
 };
 
 export const PATHS = {
@@ -251,7 +252,6 @@ export const PATHS = {
   datacoalitions: [12,[2]],
   personaldataproof: [13,[0]],
   trustedcomputation:[14,[4]]
-
 };
 
 export const CHAINS = {
