@@ -219,7 +219,7 @@ function App() {
 
   const menuButtonW = '180px';
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
 
   //handling Route Path
@@ -339,8 +339,8 @@ function App() {
                 <Flex direction="column" justify="space-between" minH="80vh">
 
                   <Stack ml="15px" spacing={4}>
-                    <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => {setMenuItem(MENU.HOME); navigate("home")}}>Home</Button>
-                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => {(setMenuItem(MENU.SELL)); navigate("selldata")}}>Sell Data</Button>
+                    <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => {setMenuItem(MENU.HOME); navigate("home");}}>Home</Button>
+                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => {(setMenuItem(MENU.SELL)); navigate("selldata");}}>Sell Data</Button>
                   </Stack>
 
                   <Accordion flexGrow="1" defaultIndex={path? PATHS[path][1]: [-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}} >
@@ -351,10 +351,10 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => {(setMenuItem(MENU.BUY)); navigate("datapacks/buydata")}}>Buy Data</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => {(setMenuItem(MENU.ADVERTISED));navigate("datapacks/advertiseddata")}}>Advertised Data</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => {(setMenuItem(MENU.PURCHASED));navigate("datapacks/purchaseddata")}}>Purchased Data</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => {(setMenuItem(MENU.DATAPROOFS)); navigate("datapacks/personaldataproof")}}>Personal Data Proofs</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => {(setMenuItem(MENU.BUY)); navigate("datapacks/buydata");}}>Buy Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => {(setMenuItem(MENU.ADVERTISED));navigate("datapacks/advertiseddata");}}>Advertised Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => {(setMenuItem(MENU.PURCHASED));navigate("datapacks/purchaseddata");}}>Purchased Data</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => {(setMenuItem(MENU.DATAPROOFS)); navigate("datapacks/personaldataproof");}}>Personal Data Proofs</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -368,22 +368,22 @@ function App() {
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {
-                              navigate("datanfts/wallet")
+                              navigate("datanfts/wallet");
                               setMenuItem(MENU.NFTMINE);
                             } else {
                               doSplashScreenShown(MENU.NFT);
-                              navigate("datanfts")
+                              navigate("datanfts");
                               setMenuItem(MENU.NFT);
                             }
                           }}>Wallet</Button>
                           
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)} onClick={() => {
                             if (splashScreenShown[MENU.NFT]) {
-                              navigate("datanfts/marketplace")
+                              navigate("datanfts/marketplace");
                               setMenuItem(MENU.NFTALL);
                             } else {
                               doSplashScreenShown(MENU.NFT);
-                              navigate("datanfts")
+                              navigate("datanfts");
                               setMenuItem(MENU.NFT);
                             }
                           }}>Marketplace</Button>
@@ -405,7 +405,7 @@ function App() {
                               setMenuItem(MENU.COALITIONALL);
                             } else {
                               doSplashScreenShown(MENU.COALITION);
-                              navigate("datacoalitions/")
+                              navigate("datacoalitions/");
                               setMenuItem(MENU.COALITION);
                             }
                           }}>View Coalitions</Button>
@@ -421,7 +421,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => {(setMenuItem(MENU.TX)); navigate("utils/chaintransactions")}}>Chain Transactions</Button>
+                          <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => {(setMenuItem(MENU.TX)); navigate("utils/chaintransactions");}}>Chain Transactions</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -433,9 +433,9 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => {(setMenuItem(MENU.VAULT)); navigate("labs/datavault")}}>Data Vault</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => {(setMenuItem(MENU.STREAM)); navigate("labs/datastreams")}}>Data Streams</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => {(setMenuItem(MENU.TRUSTEDCOMP)); navigate("labs/trustedcomputation")}}>Trusted Computation</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => {(setMenuItem(MENU.VAULT)); navigate("labs/datavault");}}>Data Vault</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => {(setMenuItem(MENU.STREAM)); navigate("labs/datastreams");}}>Data Streams</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => {(setMenuItem(MENU.TRUSTEDCOMP)); navigate("labs/trustedcomputation");}}>Trusted Computation</Button>
 
                         </Stack>
                       </AccordionPanel>
