@@ -28,7 +28,7 @@ export default function({setMenuItem}) {
             </HStack>
 
             <HStack spacing="5" mt="10">
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.COALITIONALL); navigate("viewcoalitions")}}>Enter - Data Coalitions</Button>
+              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.COALITIONALL); navigate("viewcoalitions");}}>Enter - Data Coalitions</Button>
             </HStack>
 
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-coalitions-1" isExternal>
