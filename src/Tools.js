@@ -20,6 +20,7 @@ import imgProgRhc from './img/prog-rhc.png';
 import imgProgWfh from './img/prog-wfh.png';
 import ClaimModal from './UtilComps/ClaimModal';
 import { useUser } from './store/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount}) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -43,6 +44,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('MOUNT Tools');
@@ -225,7 +228,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
             {!itheumAccount && <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>Load Test Data</Button>}
 
             {itheumAccount && 
-              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>Trade My Data</Button>
+              <Button colorScheme="teal" variant="outline" onClick={() => {setMenuItem(2); navigate("/selldata");}}>Trade My Data</Button>
             }
           </Stack>
         </WrapItem>

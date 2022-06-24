@@ -31,7 +31,7 @@ import DataCoalitions from './DataCoalitions';
 import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from './TrustedComputation';
 import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from './libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from './libs/util';
 import logo from './img/logo.png';
 import logoSmlD from './img/logo-sml-d.png';
 import logoSmlL from './img/logo-sml-l.png';
@@ -48,10 +48,10 @@ import moralisIcon from './img/powered-moralis.png';
 import { useUser } from './store/UserContext';
 import { useChainMeta } from './store/ChainMetaContext';
 import AlertOverlay from './UtilComps/AlertOverlay';
+import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import ChainSupportedInput from './UtilComps/ChainSupportedInput';
 
 const _chainMetaLocal = {};
-
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
 function App() {
@@ -73,10 +73,14 @@ function App() {
   const { colorMode, toggleColorMode } = useColorMode(); 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimesError, setGetClaimsError] = useState(null);
+  const { pathname } = useLocation();
   
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
+
+  const navigate = useNavigate();
+  const path = pathname?.split("/")[pathname?.split("/")?.length - 1];  // handling Route Path
 
   useEffect(() => {
     setUser({
@@ -84,6 +88,10 @@ function App() {
       claimBalanceValues: ['-1', '-1', '-1'],
       claimBalanceDates: [0, 0, 0],
     });
+
+    if (path) {
+      setMenuItem(PATHS[path][0]);
+    }
 
     console.log(consoleNotice);
   },[]);
@@ -325,11 +333,11 @@ function App() {
                 <Flex direction="column" justify="space-between" minH="80vh">
 
                   <Stack ml="15px" spacing={4}>
-                    <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => (setMenuItem(MENU.HOME))}>Home</Button>
-                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => (setMenuItem(MENU.SELL))}>Trade Data</Button>
+                    <Button rightIcon={<AiFillHome />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.HOME} variant="solid" onClick={() => {setMenuItem(MENU.HOME); navigate("home");}}>Home</Button>
+                    <Button rightIcon={<GiReceiveMoney />} w={menuButtonW} colorScheme="teal" isDisabled={menuItem === MENU.SELL} variant="solid" onClick={() => {(setMenuItem(MENU.SELL)); navigate("selldata");}}>Trade Data</Button>
                   </Stack>
 
-                  <Accordion flexGrow="1" defaultIndex={[-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}}>
+                  <Accordion flexGrow="1" defaultIndex={path? PATHS[path][1]: [-1]} allowToggle={true} w="230px" style={{border: 'solid 1px transparent'}} >
                     <AccordionItem>
                       <AccordionButton>
                         <Button flex="1" colorScheme="teal" variant="outline">Data Packs</Button>
@@ -337,10 +345,10 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <ChainSupportedInput feature={MENU.BUY}><Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => (setMenuItem(MENU.BUY))}>Buy Data</Button></ChainSupportedInput>
-                          <ChainSupportedInput feature={MENU.ADVERTISED}><Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => (setMenuItem(MENU.ADVERTISED))}>Advertised Data</Button></ChainSupportedInput>
-                          <ChainSupportedInput feature={MENU.PURCHASED}><Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => (setMenuItem(MENU.PURCHASED))}>Purchased Data</Button></ChainSupportedInput>
-                          <ChainSupportedInput feature={MENU.DATAPROOFS}><Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => (setMenuItem(MENU.DATAPROOFS))}>Personal Data Proofs</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.BUY}><Button colorScheme="teal" isDisabled={menuItem === MENU.BUY} onClick={() => {(setMenuItem(MENU.BUY)); navigate("datapacks/buydata");}}>Buy Data</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.ADVERTISED}><Button colorScheme="teal" isDisabled={menuItem === MENU.ADVERTISED} onClick={() => {(setMenuItem(MENU.ADVERTISED)); navigate("datapacks/advertiseddata");}}>Advertised Data</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.PURCHASED}><Button colorScheme="teal" isDisabled={menuItem === MENU.PURCHASED} onClick={() => {(setMenuItem(MENU.PURCHASED)); navigate("datapacks/purchaseddata");}}>Purchased Data</Button></ChainSupportedInput>
+                          <ChainSupportedInput feature={MENU.DATAPROOFS}><Button colorScheme="teal" isDisabled={menuItem === MENU.DATAPROOFS} onClick={() => {(setMenuItem(MENU.DATAPROOFS)); navigate("datapacks/personaldataproof");}}>Personal Data Proofs</Button></ChainSupportedInput>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -355,10 +363,12 @@ function App() {
                           <ChainSupportedInput feature={MENU.NFTMINE}>
                             <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)} onClick={() => {
                               if (splashScreenShown[MENU.NFT]) {
+                                navigate("datanfts/wallet");
                                 setMenuItem(MENU.NFTMINE);
                               } else {
                                 doSplashScreenShown(MENU.NFT);
-                                setMenuItem(MENU.NFT);
+                                navigate("datanfts");
+                                setMenuItem(MENU.NFTMINE);
                               }
                             }}>Wallet</Button>
                           </ChainSupportedInput>
@@ -366,10 +376,12 @@ function App() {
                           <ChainSupportedInput feature={MENU.NFTALL}>
                             <Button colorScheme="teal" isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)} onClick={() => {
                               if (splashScreenShown[MENU.NFT]) {
+                                navigate("datanfts/marketplace");
                                 setMenuItem(MENU.NFTALL);
                               } else {
                                 doSplashScreenShown(MENU.NFT);
-                                setMenuItem(MENU.NFT);
+                                navigate("datanfts");
+                                setMenuItem(MENU.NFTALL);
                               }
                             }}>Marketplace</Button>
                           </ChainSupportedInput>
@@ -388,9 +400,11 @@ function App() {
                         <ChainSupportedInput feature={MENU.COALITION}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITIONALL} onClick={() => {
                             if(splashScreenShown[MENU.COALITION]) {
+                              navigate("datacoalitions/viewcoalitions");
                               setMenuItem(MENU.COALITIONALL);
                             } else {
                               doSplashScreenShown(MENU.COALITION);
+                              navigate("datacoalitions");
                               setMenuItem(MENU.COALITION);
                             }
                           }}>View Coalitions</Button>
@@ -407,7 +421,7 @@ function App() {
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                           <ChainSupportedInput feature={MENU.TX}>
-                            <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" isDisabled={menuItem === MENU.TX} onClick={() => (setMenuItem(MENU.TX))}>Chain Transactions</Button>
+                            <Button disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)} colorScheme="teal" onClick={() => {(setMenuItem(MENU.TX)); navigate("utils/chaintransactions");}}>Chain Transactions</Button>
                           </ChainSupportedInput>
                         </Stack>
                       </AccordionPanel>
@@ -420,9 +434,9 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => (setMenuItem(MENU.VAULT))}>Data Vault</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => (setMenuItem(MENU.STREAM))}>Data Streams</Button>
-                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => (setMenuItem(MENU.TRUSTEDCOMP))}>Trusted Computation</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.VAULT} onClick={() => {(setMenuItem(MENU.VAULT)); navigate("labs/datavault");}}>Data Vault</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.STREAM} onClick={() => {(setMenuItem(MENU.STREAM)); navigate("labs/datastreams");}}>Data Streams</Button>
+                          <Button colorScheme="teal" isDisabled={menuItem === MENU.TRUSTEDCOMP} onClick={() => {(setMenuItem(MENU.TRUSTEDCOMP)); navigate("labs/trustedcomputation");}}>Trusted Computation</Button>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>
@@ -436,27 +450,36 @@ function App() {
             </Box>
 
             <Box backgroundColor={"red1"} pl={5} w="full">
-              {menuItem === MENU.HOME && <Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}
-              {menuItem === MENU.BUY && <BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />}
-              {menuItem === MENU.SELL && <SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}
-              {menuItem === MENU.ADVERTISED && <AdvertisedData />}
-              {menuItem === MENU.PURCHASED && <PurchasedData />}
-              {menuItem === MENU.DATAPROOFS && <PersonalDataProofs />}
-              {menuItem === MENU.TX && <ChainTransactions />}
-              {menuItem === MENU.VAULT && <DataVault />}
-              
-              {menuItem === MENU.NFT && <DataNFTs setMenuItem={setMenuItem} />}
-              {menuItem === MENU.NFTMINE && <MyDataNFTs />}
-              {menuItem === MENU.NFTALL && <DataNFTMarketplace />}
-              
-              {menuItem === MENU.COALITION && <DataCoalitions setMenuItem={setMenuItem} />}
-              {menuItem === MENU.COALITIONALL && <DataCoalitionsViewAll />}
-
-              {menuItem === MENU.STREAM && <DataStreams />}
-              {menuItem === MENU.TRUSTEDCOMP && <TrustedComputation />}
+              <Routes>
+                <Route path="/" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                <Route path="home" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />}/>
+                <Route path = "datapacks" element={<Outlet/>}>
+                  <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />} />
+                  <Route path="advertiseddata" element={<AdvertisedData />}/>
+                  <Route path="purchaseddata" element={<PurchasedData />}/>
+                  <Route path="personaldataproof" element={<PersonalDataProofs />}/>
+                </Route>
+                <Route path="datanfts" element={<Outlet/>}>
+                  <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
+                  <Route path="wallet" element={ <MyDataNFTs />} />
+                  <Route path="marketplace"element={<DataNFTMarketplace />} />
+                </Route>
+                <Route path="datacoalitions" element={<Outlet/>}>
+                  <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
+                  <Route path="viewcoalitions" element={<DataCoalitionsViewAll />} />
+                </Route>
+                <Route paths="utils" element={<Outlet/>}>
+                  <Route path="chaintransactions" element={<ChainTransactions/>} />
+                </Route>
+                <Route path="labs" element={<Outlet/>}>
+                  <Route path="datastreams" element={<DataStreams />} />
+                  <Route path="datavault" element={<DataVault />} />
+                  <Route path="trustedcomputation" element={<TrustedComputation />} />
+                </Route>
+              </Routes>
             </Box>
           </HStack>
-         
         </Flex>
 
         <AlertDialog

@@ -7,10 +7,12 @@ import {
 import { CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
 import { useChainMeta } from './store/ChainMetaContext';
 import dataCoalitionsIcon from './img/data-coalitions-icon.png';
+import { useNavigate } from 'react-router-dom';
 
 export default function({setMenuItem}) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-
+  const navigate = useNavigate();
+ 
   return (
     <Stack spacing={5}>      
       <Flex align="top" spacing={10}>
@@ -26,7 +28,7 @@ export default function({setMenuItem}) {
             </HStack>
 
             <HStack spacing="5" mt="10">
-              <Button colorScheme="teal" onClick={() => setMenuItem(MENU.COALITIONALL)}>Enter - Data Coalitions</Button>
+              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.COALITIONALL); navigate("viewcoalitions");}}>Enter - Data Coalitions</Button>
             </HStack>
 
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-coalitions-1" isExternal>
