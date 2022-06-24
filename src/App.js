@@ -85,13 +85,16 @@ function App() {
       claimBalanceValues: ['-1', '-1', '-1'],
       claimBalanceDates: [0, 0, 0],
     });
+
+    console.log(consoleNotice);
   },[]);
 
   useEffect(() => {
-    enableWeb3();
-
-    console.log(consoleNotice);
-  }, []);
+    // this ensure that if the user reloads the page when logged in, we restore their web3Session to ethers.js
+    if (user && isAuthenticated) {
+      enableWeb3(); // default to metamask
+    }
+  }, [user, isAuthenticated]);
 
   useEffect(async () => {
     if (user && isWeb3Enabled) {
@@ -395,6 +398,7 @@ function App() {
                       </AccordionButton>
                       <AccordionPanel>
                         <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
+                        <ChainSupportedInput feature={MENU.COALITION}>
                           <Button colorScheme="teal" isDisabled={menuItem === MENU.COALITIONALL} onClick={() => {
                             if(splashScreenShown[MENU.COALITION]) {
                               navigate("datacoalitions/viewcoalitions");
@@ -405,6 +409,7 @@ function App() {
                               setMenuItem(MENU.COALITION);
                             }
                           }}>View Coalitions</Button>
+                          </ChainSupportedInput>
                         </Stack>
                       </AccordionPanel>
                     </AccordionItem>

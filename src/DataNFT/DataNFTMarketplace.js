@@ -115,6 +115,7 @@ export default function() {
 
             <Flex p="3" direction="column" justify="space-between" height="360px">
               <Box
+                fontSize="sm"
                 mt="1"
                 fontWeight="semibold"
                 as="h4"
@@ -129,7 +130,7 @@ export default function() {
               </Box>
 
               <Box mt="5">  
-                <Text>For Sale on <Badge borderRadius="full" px="2" colorScheme="teal">{CHAINS[item.txNetworkId]}</Badge></Text>
+                <Text fontSize="sm">For Trade on <Badge borderRadius="full" px="2" colorScheme="teal">{CHAINS[item.txNetworkId]}</Badge></Text>
 
                 <HStack mt="5">
                   <Text fontSize="xs">Seller: </Text>
