@@ -48,11 +48,10 @@ import moralisIcon from './img/powered-moralis.png';
 import { useUser } from './store/UserContext';
 import { useChainMeta } from './store/ChainMetaContext';
 import AlertOverlay from './UtilComps/AlertOverlay';
-import { Outlet, Route, Routes, useNavigate } from 'react-router-dom';
+import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import ChainSupportedInput from './UtilComps/ChainSupportedInput';
 
 const _chainMetaLocal = {};
-
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
 function App() {
@@ -74,11 +73,14 @@ function App() {
   const { colorMode, toggleColorMode } = useColorMode(); 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimesError, setGetClaimsError] = useState(null);
-  const {pathname} = useLocation();
+  const { pathname } = useLocation();
   
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
+
+  const navigate = useNavigate();
+  const path = pathname?.split("/")[pathname?.split("/")?.length - 1];  // handling Route Path
 
   useEffect(() => {
     setUser({
@@ -86,6 +88,10 @@ function App() {
       claimBalanceValues: ['-1', '-1', '-1'],
       claimBalanceDates: [0, 0, 0],
     });
+
+    if (path) {
+      setMenuItem(PATHS[path][0]);
+    }
 
     console.log(consoleNotice);
   },[]);
@@ -219,19 +225,6 @@ function App() {
   }
 
   const menuButtonW = '180px';
-
-  const navigate = useNavigate();
-
-
-  //handling Route Path
-  const path = pathname?.split("/")[pathname?.split("/")?.length - 1]
-
-  useEffect(()=>{
-    if(path){
-      setMenuItem(PATHS[path][0])
-
-    }
-  },[])
 
   if (isAuthenticated) {
     return (
@@ -374,6 +367,7 @@ function App() {
                                 setMenuItem(MENU.NFTMINE);
                               } else {
                                 doSplashScreenShown(MENU.NFT);
+                                navigate("datanfts");
                                 setMenuItem(MENU.NFT);
                               }
                             }}>Wallet</Button>
@@ -386,6 +380,7 @@ function App() {
                                 setMenuItem(MENU.NFTALL);
                               } else {
                                 doSplashScreenShown(MENU.NFT);
+                                navigate("datanfts");
                                 setMenuItem(MENU.NFT);
                               }
                             }}>Marketplace</Button>
@@ -409,7 +404,7 @@ function App() {
                               setMenuItem(MENU.COALITIONALL);
                             } else {
                               doSplashScreenShown(MENU.COALITION);
-                              navigate("datacoalitions/");
+                              navigate("datacoalitions");
                               setMenuItem(MENU.COALITION);
                             }
                           }}>View Coalitions</Button>
