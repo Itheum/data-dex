@@ -7,6 +7,7 @@ import { MoralisProvider } from 'react-moralis';
 import ErrorBoundary from './ErrorBoundary';
 import { UserContextProvider } from './store/UserContext';
 import { ChainMetaContextProvider } from './store/ChainMetaContext';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const breakpoints = createBreakpoints({
   sm: '30em',
@@ -41,7 +42,9 @@ ReactDOM.render(
         <ChakraProvider theme={theme}>
           <ChainMetaContextProvider>
             <UserContextProvider>
-              <App />
+              <Router>
+                <App />
+              </Router>
             </UserContextProvider>
           </ChainMetaContextProvider>
         </ChakraProvider>
