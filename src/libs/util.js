@@ -305,7 +305,7 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
     31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
-    97: [MENU.TX],
+    97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     210309: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     123: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
