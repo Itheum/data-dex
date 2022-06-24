@@ -19,6 +19,15 @@ export class FaucetContract {
     });
   }
 
+  async getFaucetTime(address) {
+    const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
+    const query = interaction.buildQuery();
+    const res = await this.networkProvider.queryContract(query);
+    const endpointDefinition = interaction.getEndpoint();
+    const { firstValue} = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+    return firstValue.valueOf().toNumber()*1000
+  }
+
   static async sendActivateFaucetTransaction() {
     const faucetTransaction = new Transaction({
       value: 0,

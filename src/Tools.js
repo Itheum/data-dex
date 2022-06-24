@@ -13,12 +13,13 @@ import imgProgRhc from "./img/prog-rhc.png";
 import imgProgWfh from "./img/prog-wfh.png";
 import ClaimModal from "./UtilComps/ClaimModal";
 import { useUser } from "./store/UserContext";
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions, transactionServices } from "@elrondnetwork/dapp-core";
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions, transactionServices,useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 import { FaucetContract } from "./Elrond/faucet";
 
 export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { address: elrondAddress } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
   const {
     web3: web3Provider,
@@ -32,6 +33,8 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
+  const [elrondFaucetTime, setElrondFaucetTime] = useState(0);
+  const faucetContract=new FaucetContract("ED");
 
   // eth tx state (faucet)
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
@@ -54,6 +57,14 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
       onItheumAccount(response);
     }
   }, [dataCfTestData]);
+
+  useEffect(() => {
+    if(elrondAddress){
+      faucetContract.getFaucetTime(elrondAddress).then(res => {
+        setElrondFaucetTime(res);
+      })
+    }
+  },[elrondAddress, hasPendingTransactions])
 
   // Faucet
   useEffect(() => {
@@ -271,7 +282,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
             )}
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
+            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={(elrondFaucetTime+300000>new Date().getTime())}>
               Send me {elrondAddress ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
             </Button>
           </Stack>
