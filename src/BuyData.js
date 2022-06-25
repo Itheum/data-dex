@@ -422,7 +422,7 @@ export default function({onRfMount, onRefreshBalance}) {
 
                   <HStack>
                     {!buyProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                    <Text>Finalising sale</Text>
+                    <Text>Finalising access transfer</Text>
                   </HStack>                  
 
                   {txErrorAllowance && 

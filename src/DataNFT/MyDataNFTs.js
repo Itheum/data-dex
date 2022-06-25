@@ -108,6 +108,7 @@ export default function() {
 
             <Flex p="3" direction="column" justify="space-between" height="250px">
               <Box
+                fontSize="sm"
                 mt="1"
                 fontWeight="semibold"
                 as="h4"

@@ -237,6 +237,26 @@ export const MENU = {
   NFTALL: 11,
   COALITIONALL: 12,
   DATAPROOFS: 13,
+  TRUSTEDCOMP:14,
+  FAUCET: 14
+};
+
+export const PATHS = {
+  home: [0,[-1]],
+  buydata: [1,[0]],
+  selldata: [2,[-1]],
+  purchaseddata: [3,[0]],
+  chaintransactions: [4,[3]],
+  datavault: [5,[4]],
+  datanfts: [6,[1]],
+  viewcoalitions: [7,[2]],
+  datastreams: [8,[4]],
+  advertiseddata: [9,[0]],
+  wallet: [10,[1]],
+  marketplace: [11,[1]],
+  datacoalitions: [12,[2]],
+  personaldataproof: [13,[0]],
+  trustedcomputation:[14,[4]]
 };
 
 export const CHAINS = {
@@ -292,11 +312,12 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
     31337: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
-    97: [MENU.TX],
+    97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     210309: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     123: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.TX],
+    ED: [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
   };
 
   if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -332,7 +353,6 @@ export const CHAIN_TX_LIST = {
 };
 
 export const CHAIN_TOKEN_SYMBOL = (networkId) => {
-  console.log(networkId);
   const mapping = {
     ITHEUM: [3, 4, 1, "E1", "ED"],
     mITHEUM: [80001, 137],

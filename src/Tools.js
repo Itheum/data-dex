@@ -2,17 +2,26 @@ import React, { useContext, useState, useEffect } from "react";
 import { useMoralis, useMoralisCloudFunction } from "react-moralis";
 import { Box, Stack } from "@chakra-ui/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import {
+  Button, Link, Progress, Badge, Tooltip,
+  Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter,
+  Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner,
+  useToast, useDisclosure
+} from '@chakra-ui/react';
 import moment from "moment";
 import ShortAddress from "./UtilComps/ShortAddress";
 import { progInfoMeta, config, sleep } from "./libs/util";
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES } from "./libs/util";
-import { useChainMeta } from "./store/ChainMetaContext";
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "./libs/util";
 import imgProgGaPa from "./img/prog-gaming.jpg";
 import imgProgRhc from "./img/prog-rhc.png";
 import imgProgWfh from "./img/prog-wfh.png";
 import ClaimModal from "./UtilComps/ClaimModal";
 import { useUser } from "./store/UserContext";
+import { useChainMeta } from "./store/ChainMetaContext";
+import ChainSupportedInput from './UtilComps/ChainSupportedInput';
+import { useNavigate } from 'react-router-dom';
+
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions, transactionServices } from "@elrondnetwork/dapp-core";
 import { FaucetContract } from "./Elrond/faucet";
 
@@ -38,6 +47,12 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('MOUNT Tools');
+  }, []);
+
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {
@@ -45,7 +60,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
       toast({
         title: "Congrats! an itheum test account has been linked",
-        description: "You can now sell your data on the DEX",
+        description: "You can now advertise your data on the Data DEX",
         status: "success",
         duration: 6000,
         isClosable: true,
@@ -213,8 +228,8 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
             {itheumAccount && (
               <Stack>
                 <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                <Text fontSize="sm">You have data available to sell from the following programs you are participating in... </Text>
-                {itheumAccount.programsAllocation.map((item) => (
+                <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
+                {itheumAccount.programsAllocation.map(item => (
                   <Stack direction="row" key={item.program}>
                     <Badge borderRadius="full" px="2" colorScheme="teal">
                       {itheumAccount._lookups.programs[item.program].programName}
@@ -232,11 +247,10 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
               </Button>
             )}
 
-            {itheumAccount && (
-              <Button colorScheme="teal" variant="outline" onClick={() => setMenuItem(2)}>
-                Trade My Data
-              </Button>
-            )}
+
+            {itheumAccount && 
+              <Button colorScheme="teal" variant="outline" onClick={() => {setMenuItem(2); navigate("/selldata");}}>Trade My Data</Button>
+            }
           </Stack>
         </WrapItem>
 
@@ -271,9 +285,13 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
             )}
 
             <Spacer />
-            <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
-              Send me {elrondAddress ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
-            </Button>
+
+            <ChainSupportedInput feature={MENU.FAUCET}>
+              <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
+                Send me {elrondAddress ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+              </Button>              
+            </ChainSupportedInput>
+            
           </Stack>
         </WrapItem>
 
