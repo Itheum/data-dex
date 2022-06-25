@@ -10,6 +10,7 @@ import { ChainMetaContextProvider } from "./store/ChainMetaContext";
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
 import { BrowserRouter as Router } from 'react-router-dom';
 import "../src/Elrond/elrond.css";
+import "../src/Elrond/custom.css";
 
 const {
   TransactionsToastList,

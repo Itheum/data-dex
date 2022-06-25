@@ -146,25 +146,25 @@ export const Auth = () => {
                   
                   <Box>
                     <Button width="220px" p="8">
-                      <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"}></WalletConnectLoginButton>
+                      <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"} className="auth_button "></WalletConnectLoginButton>
                     </Button>
                   </Box>
 
                   <Box>
                     <Button width="220px" p="8">
-                      <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"}></ExtensionLoginButton>
+                      <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"} className="auth_button "></ExtensionLoginButton>
                     </Button>
                   </Box>
 
                   <Box>
                     <Button width="220px" p="8">
-                      <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"}></WebWalletLoginButton>
+                      <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} className="auth_button "></WebWalletLoginButton>
                     </Button>
                   </Box>
 
                   <Box>
                     <Button width="220px" p="8">
-                      <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"}></LedgerLoginButton>
+                      <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} className="auth_button "></LedgerLoginButton>
                     </Button>
                   </Box>
 
