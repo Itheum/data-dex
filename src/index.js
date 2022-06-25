@@ -8,7 +8,9 @@ import ErrorBoundary from "./ErrorBoundary";
 import { UserContextProvider } from "./store/UserContext";
 import { ChainMetaContextProvider } from "./store/ChainMetaContext";
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
+import { BrowserRouter as Router } from 'react-router-dom';
 import "../src/Elrond/elrond.css";
+
 const {
   TransactionsToastList,
   SignTransactionsModals,
@@ -53,7 +55,9 @@ ReactDOM.render(
 
             <ChainMetaContextProvider>
               <UserContextProvider>
+              <Router>
                 <App />
+              </Router>
               </UserContextProvider>
             </ChainMetaContextProvider>
           </DappProvider>
