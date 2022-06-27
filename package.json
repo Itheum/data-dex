@@ -5,7 +5,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^1.1.5",
     "@chakra-ui/react": "^1.8.3",
-    "@elrondnetwork/dapp-core": "^1.1.19",
+    "@elrondnetwork/dapp-core": "^1.2.8",
     "@elrondnetwork/erdjs": "10.2.5",
     "@elrondnetwork/erdjs-network-providers": "0.1.5",
     "@emotion/react": "^11.7.1",
@@ -30,6 +30,8 @@
   "scripts": {
     "start": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts start",
     "build": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts build",
+    "localWinBuild": "react-scripts build",
+    "localWinStart": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-flat": "npx http-server -o /flat",
