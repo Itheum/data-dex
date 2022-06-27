@@ -3,6 +3,7 @@ import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, T
 import { refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import jsonData from "./ABIs/devnetfaucet.abi.json";
 import { faucetContractAddress_Elrond } from "../libs/contactAddresses.js";
+
 export class FaucetContract {
   constructor(networkId) {
     if (networkId === "E1") {

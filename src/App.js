@@ -54,11 +54,17 @@ import { ClaimsContract } from "./Elrond/claims";
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 const elrondLogout = logout;
+const baseUserContext = {
+  isMoralisAuthenticated: false,
+  isElondAuthenticated: false,
+  claimBalanceValues: ["-1", "-1", "-1"],
+  claimBalanceDates: [0, 0, 0],
+}; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
 function App() {
   const {
     isAuthenticated,
-    logout,
+    logout: moralisLogout,
     user,
     Moralis: { web3Library: ethers },
   } = useMoralis();
@@ -91,11 +97,7 @@ function App() {
   const path = pathname?.split("/")[pathname?.split("/")?.length - 1];  // handling Route Path
 
   useEffect(() => {
-    setUser({
-      isAuthenticated,
-      claimBalanceValues: ["-1", "-1", "-1"],
-      claimBalanceDates: [0, 0, 0],
-    });
+    setUser({...baseUserContext}); // set base user context for app
 
     if (path) {
       setMenuItem(PATHS[path][0]);
@@ -105,19 +107,36 @@ function App() {
   },[]);
 
   useEffect(() => {
-    // this ensure that if the user reloads the page when logged in, we restore their web3Session to ethers.js
+    // Moralis authenticated for 1st time or is a reload.
+    // ... on reload we restore their web3Session to ethers.js
     if (user && isAuthenticated) {
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isMoralisAuthenticated: isAuthenticated
+      });
+
       enableWeb3(); // default to metamask
     }
   }, [user, isAuthenticated]);
 
   useEffect(() => {
+    // Elrond authenticated for 1st time or is a reload.
+    // ... get account token balance and claims
     async function elrondLogin() {
       if (elrondAddress) {
-        const networkId = "ED";
+        setUser({
+          ...baseUserContext,
+          ..._user,
+          isElondAuthenticated: true         
+        });
+
+        await sleep(1);
+
+        const networkId = "ED"; // @TODO: This needs to come from the logged in wallet provider
+        
         setChain(CHAINS[networkId]);
-        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-        setTokenBal(balance);
+
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
 
@@ -125,26 +144,40 @@ function App() {
           networkId,
           contracts: contractsForChain(networkId),
         });
+
+        // get user token balance from elrond
+        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
+        setTokenBal(balance);
+
+        await sleep(2);
+        
+        // get user claims token balance from elrond
         const claimContract = new ClaimsContract(networkId);
         const claims = await claimContract.getClaims(elrondAddress);
+        
         let claimBalanceValues = [];
         let claimBalanceDates = [];
+        
         claims.forEach((claim) => {
           claimBalanceValues.push(claim.amount / Math.pow(10, 18));
           claimBalanceDates.push(claim.date);
         });
-        const tr = true;
+        
         setUser({
-          tr,
+          ...baseUserContext,
+          ..._user,
+          isElondAuthenticated: true,
           claimBalanceValues: claimBalanceValues,
           claimBalanceDates: claimBalanceDates,
         });
       }
     }
+    
     elrondLogin();
   }, [elrondAddress, hasPendingTransactions]);
 
   useEffect(async () => {
+    // user is Moralis authenticated and we have a web3 provider to talk to chain
     if (user && isWeb3Enabled) {
       const networkId = web3Provider.network.chainId;
 
@@ -161,10 +194,10 @@ function App() {
           contracts: contractsForChain(networkId),
         });
 
-        await web3_getTokenBalance();
+        await web3_getTokenBalance();  // get user token balance from EVM
         await sleep(1);
 
-        await web_getClaimBalance();
+        await web_getClaimBalance(); // get user claims token balance from EVM
         await sleep(1);
       }
     }
@@ -207,7 +240,9 @@ function App() {
       });
 
       await setUser({
+        ...baseUserContext,
         ..._user,
+        isMoralisAuthenticated: true,
         claimBalanceValues: valuesArray,
         claimBalanceDates: datesArray,
       });
@@ -270,10 +305,20 @@ function App() {
     setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
   };
 
+  const handleLogout = () => {
+    if (_user.isMoralisAuthenticated) {
+      moralisLogout();
+    } else {
+      elrondLogout();
+    }
+
+    setUser({...baseUserContext});
+  }
+
   const menuButtonW = "180px";
   return (
     <>
-      {isAuthenticated || elrondAddress ? (
+      {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
             <HStack h="10vh" p="5">
@@ -309,13 +354,7 @@ function App() {
                       </Text>
                     </MenuItem>
                     <MenuItem
-                      onClick={() => {
-                        if (isAuthenticated) {
-                          logout();
-                        } else {
-                          elrondLogout();
-                        }
-                      }}
+                      onClick={handleLogout}
                       fontSize="sm"
                     >
                       Logout

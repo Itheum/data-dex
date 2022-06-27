@@ -19,7 +19,7 @@ export const Auth = () => {
     ELROND: 3,
   };
 
-  const { authenticate, isAuthenticating, Moralis, authError, isAuthenticated } = useMoralis();
+  const { authenticate, isAuthenticating, authError } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const [authErrorUi, setAuthErrorUi] = useState(null);
