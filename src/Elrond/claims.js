@@ -11,9 +11,11 @@ export class ClaimsContract {
     } else {
       this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.elrond.com");
     }
+
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
     const abi = new SmartContractAbi(abiRegistry, ["ClaimsContract"]);
+
     this.contract = new SmartContract({
       address: new Address(claimsContractAddress_Elrond),
       abi: abi,
@@ -23,16 +25,19 @@ export class ClaimsContract {
   async getClaims(address) {
     const interaction = this.contract.methods.viewClaimWithDate([new Address(address)]);
     const query = interaction.buildQuery();
-    let result = [];
+    const result = [];
     const res = await this.networkProvider.queryContract(query);
     const endpointDefinition = interaction.getEndpoint();
+
     const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
     firstValue.valueOf().forEach((item, index) => {
       result.push({
         amount: item.amount.toNumber(),
         date: item.date.toNumber() * 1000,
       });
     });
+
     return result;
   }
 
@@ -47,7 +52,9 @@ export class ClaimsContract {
       gasLimit: 6000000,
       chainID: "D",
     });
+
     await refreshAccount();
+
     const { sessionId, error } = await sendTransactions({
       transactions: claimTransaction,
       transactionsDisplayInfo: {
@@ -55,8 +62,9 @@ export class ClaimsContract {
         errorMessage: "Error occured during ITHEUM claiming",
         successMessage: "ITHEUM claimed successfully",
       },
-      redirectAfterSign: false,
+      redirectAfterSign: false
     });
+
     return { sessionId, error };
   }
 }
