@@ -76,12 +76,13 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
   // S: Faucet
   useEffect(() => {
+    console.log(elrondFaucetContract);
     if (elrondAddress && elrondFaucetContract) {
       elrondFaucetContract.getFaucetTime(elrondAddress).then((res) => {
         setElrondFaucetTime(res);
       });
     }
-  }, [elrondAddress, hasPendingTransactions]);
+  }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
   useEffect(() => {
     if (txErrorFaucet) {

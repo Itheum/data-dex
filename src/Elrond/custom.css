@@ -1,21 +1,19 @@
-<<<<<<< HEAD
 .auth_button.btn.btn-primary {
-    box-shadow: none !important;
-    border: 0;
-    background-color: #ffffff00;
-=======
-body .auth_button {
-    box-shadow: none !important;
-    border: 0;
-    width: 230px;
-    height: 50px;
+  box-shadow: none !important;
+  border: 0;
+  background-color: #ffffff00;
+}
+body.auth_button {
+  box-shadow: none !important;
+  border: 0;
+  width: 230px;
+  height: 50px;
 }
 
 .dapp-core-modal-active .chakra-portal {
   display: none;
 }
 
-.dapp-core-modal-active  .dapp-core-ui-component.modal {
+.dapp-core-modal-active .dapp-core-ui-component.modal {
   margin-top: -750px;
->>>>>>> feature/#64-elrond-login
 }
