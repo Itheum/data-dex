@@ -3,6 +3,7 @@ import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, T
 import { refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import jsonData from "./ABIs/devnetfaucet.abi.json";
 import { faucetContractAddress_Elrond } from "../libs/contactAddresses.js";
+
 export class FaucetContract {
   constructor(networkId) {
     if (networkId === "E1") {
@@ -10,9 +11,11 @@ export class FaucetContract {
     } else {
       this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.elrond.com");
     }
+
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
     const abi = new SmartContractAbi(abiRegistry, ["DevNetFaucet"]);
+
     this.contract = new SmartContract({
       address: new Address(faucetContractAddress_Elrond),
       abi: abi,
@@ -24,8 +27,9 @@ export class FaucetContract {
     const query = interaction.buildQuery();
     const res = await this.networkProvider.queryContract(query);
     const endpointDefinition = interaction.getEndpoint();
-    const { firstValue} = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-    return firstValue.valueOf().toNumber()*1000
+    const { firstValue } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+    return firstValue.valueOf().toNumber() * 1000;
   }
 
   static async sendActivateFaucetTransaction() {
@@ -38,7 +42,9 @@ export class FaucetContract {
       gasLimit: 20000000,
       chainID: "D",
     });
+
     await refreshAccount();
+
     const { sessionId, error } = await sendTransactions({
       transactions: faucetTransaction,
       transactionsDisplayInfo: {
@@ -48,6 +54,7 @@ export class FaucetContract {
       },
       redirectAfterSign: false,
     });
+
     return { sessionId, error };
   }
 }
