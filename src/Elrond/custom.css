@@ -1,5 +1,14 @@
-.auth_button.btn.btn-primary {
+body .auth_button {
     box-shadow: none !important;
     border: 0;
-    background-color: #ffffff00;
+    width: 230px;
+    height: 50px;
+}
+
+.dapp-core-modal-active .chakra-portal {
+  display: none;
+}
+
+.dapp-core-modal-active  .dapp-core-ui-component.modal {
+  margin-top: -750px;
 }
