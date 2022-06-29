@@ -20,6 +20,12 @@
   border-color: #ffffff22;
 }
 
+.extension-login_noExtensionButtonWrapper.btn.btn-unlock{
+  background-color: #ffffff00;
+  border-color: #ffffff00;
+  box-shadow: none !important;
+}
+
 body.auth_button {
   box-shadow: none !important;
   border: 0;
