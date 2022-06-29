@@ -9,15 +9,19 @@
   flex-direction: row;
   justify-content: center;
   align-items: center !important;
-  background-color: #ffffff22;
+  background-color: var(--chakra-colors-whiteAlpha-200);;
   border-radius: 0.375rem;
   width: 220px;
   height: 64px;
 }
 
+.auth_wrap:hover{
+  background: var(--chakra-colors-whiteAlpha-300);
+}
+
 .dapp-core-ui-component .btn-primary:not(:disabled):not(.disabled):active {
-  background-color: #ffffff22;
-  border-color: #ffffff22;
+  background-color: #ffffff00;
+  border-color: #ffffff00;
 }
 
 .extension-login_noExtensionButtonWrapper.btn.btn-unlock{
