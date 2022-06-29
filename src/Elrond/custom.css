@@ -19,6 +19,11 @@
   background: var(--chakra-colors-whiteAlpha-300);
 }
 
+.dapp-core-ui-component.modal{
+  color: var(--chakra-colors-teal-600);
+  font-weight: bold;
+}
+
 .dapp-core-ui-component .btn-primary:not(:disabled):not(.disabled):active {
   background-color: #ffffff00;
   border-color: #ffffff00;
