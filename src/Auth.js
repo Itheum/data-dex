@@ -164,20 +164,20 @@ export const Auth = () => {
 
               <Box p="5px">
                 <Stack>
-                  <Wrap spacing="20px" justify="space-between">
-                    <WrapItem onClick={handleModelFix} width="230px">
+                  <Wrap spacing="20px" justify="space-between" padding="10px">
+                    <WrapItem onClick={handleModelFix} className="auth_wrap">
                       <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
-                    <WrapItem width="230px">
+                    <WrapItem className="auth_wrap">
                       <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
                     </WrapItem>
 
-                    <WrapItem width="230px">
+                    <WrapItem className="auth_wrap">
                       <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={handleModelFix} width="230px">
+                    <WrapItem onClick={handleModelFix} className="auth_wrap">
                       <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
                     </WrapItem>
                   </Wrap>

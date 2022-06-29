@@ -3,6 +3,23 @@
   border: 0;
   background-color: #ffffff00;
 }
+
+.auth_wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center !important;
+  background-color: #ffffff22;
+  border-radius: 0.375rem;
+  width: 220px;
+  height: 64px;
+}
+
+.dapp-core-ui-component .btn-primary:not(:disabled):not(.disabled):active {
+  background-color: #ffffff22;
+  border-color: #ffffff22;
+}
+
 body.auth_button {
   box-shadow: none !important;
   border: 0;
