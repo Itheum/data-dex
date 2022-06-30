@@ -1,14 +1,51 @@
-body .auth_button {
-    box-shadow: none !important;
-    border: 0;
-    width: 230px;
-    height: 50px;
+.auth_button.btn.btn-primary {
+  box-shadow: none !important;
+  border: 0;
+  background-color: #ffffff00;
+}
+
+.auth_wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center !important;
+  background-color: var(--chakra-colors-whiteAlpha-200);;
+  border-radius: 0.375rem;
+  width: 220px;
+  height: 64px;
+}
+
+.auth_wrap:hover{
+  background: var(--chakra-colors-whiteAlpha-300);
+}
+
+.dapp-core-ui-component.modal{
+  color: var(--chakra-colors-teal-600);
+  font-weight: bold;
+}
+
+.dapp-core-ui-component .btn-primary:not(:disabled):not(.disabled):active {
+  background-color: #ffffff00;
+  border-color: #ffffff00;
+}
+
+.extension-login_noExtensionButtonWrapper.btn.btn-unlock{
+  background-color: #ffffff00;
+  border-color: #ffffff00;
+  box-shadow: none !important;
+}
+
+body.auth_button {
+  box-shadow: none !important;
+  border: 0;
+  width: 230px;
+  height: 50px;
 }
 
 .dapp-core-modal-active .chakra-portal {
   display: none;
 }
 
-.dapp-core-modal-active  .dapp-core-ui-component.modal {
+.dapp-core-modal-active .dapp-core-ui-component.modal {
   margin-top: -750px;
 }

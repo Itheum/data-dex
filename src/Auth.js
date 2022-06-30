@@ -31,8 +31,8 @@ export const Auth = () => {
 
   useEffect(() => {
     try {
-      document.getElementsByClassName('chakra-portal')[0].style.display = 'initial';
-    } catch(e) {}
+      document.getElementsByClassName("chakra-portal")[0].style.display = "initial";
+    } catch (e) {}
   }, []);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export const Auth = () => {
     onProgressModalClose();
 
     // reset the original state of the chakra model
-    document.querySelector('body').classList.remove('dapp-core-modal-active');
+    document.querySelector("body").classList.remove("dapp-core-modal-active");
   };
 
   const handleAuthenticate = (wallet) => {
@@ -114,8 +114,8 @@ export const Auth = () => {
   };
 
   const handleModelFix = () => {
-    document.querySelector('body').classList.toggle('dapp-core-modal-active');
-  }
+    document.querySelector("body").classList.toggle("dapp-core-modal-active");
+  };
 
   return (
     <Stack spacing={6} p="5">
@@ -157,42 +157,30 @@ export const Auth = () => {
                       WalletConnect
                     </Button>
                   </Box>
-                </Wrap>             
+                </Wrap>
               </Box>
 
               <Text fontSize="sm">Want to use the Elrond Blockchain? Try these wallets...</Text>
 
               <Box p="5px">
                 <Stack>
-                  <Wrap spacing="20px" justify="space-between">
-                    <WrapItem onClick={handleModelFix} width="230px">
-                      <WalletConnectLoginButton 
-                        callbackRoute={"/"} 
-                        loginButtonText={"Maiar App"} 
-                        buttonClassName="auth_button"></WalletConnectLoginButton>
+                  <Wrap spacing="20px" justify="space-between" padding="10px">
+                    <WrapItem onClick={handleModelFix} className="auth_wrap">
+                      <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
-                    <WrapItem width="230px">
-                      <ExtensionLoginButton 
-                        callbackRoute={"/"} 
-                        loginButtonText={"Maiar DeFi Wallet"} 
-                        buttonClassName="auth_button"></ExtensionLoginButton>
+                    <WrapItem className="auth_wrap">
+                      <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
                     </WrapItem>
 
-                    <WrapItem width="230px">
-                      <WebWalletLoginButton 
-                        callbackRoute={"/"} 
-                        loginButtonText={"Web Wallet"} 
-                        buttonClassName="auth_button"></WebWalletLoginButton>
+                    <WrapItem className="auth_wrap">
+                      <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={handleModelFix} width="230px">
-                      <LedgerLoginButton callbackRoute={"/"} 
-                        loginButtonText={"Ledger"} 
-                        buttonClassName="auth_button" ></LedgerLoginButton>
+                    <WrapItem onClick={handleModelFix} className="auth_wrap">
+                      <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
                     </WrapItem>
                   </Wrap>
-
                 </Stack>
               </Box>
 
