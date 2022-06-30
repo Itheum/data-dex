@@ -4,7 +4,6 @@ import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, Tex
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import walletConnect from "./img/wallet-connect.png";
 import walletMetamask from "./img/wallet-metamask.png";
-import chainElrond from "./img/elrond-chain-logo.png";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 

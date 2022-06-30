@@ -38,7 +38,6 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
   const [elrondFaucetTime, setElrondFaucetTime] = useState(0);
-  const faucetContract = new FaucetContract("ED");
 
   // eth tx state (faucet)
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
@@ -76,7 +75,6 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
   // S: Faucet
   useEffect(() => {
-    console.log(elrondFaucetContract);
     if (elrondAddress && elrondFaucetContract) {
       elrondFaucetContract.getFaucetTime(elrondAddress).then((res) => {
         setElrondFaucetTime(res);

@@ -726,8 +726,8 @@ function App() {
                 </Text>
 
                 <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
-                  <Tooltip label="Elrond - Coming soon...">
-                    <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
+                  <Tooltip label="Live on Devnet">
+                    <Image src={chainElrond} boxSize="40px" borderRadius="lg" m="5px" />
                   </Tooltip>
                   <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                     <Image src={chainEth} boxSize="40px" width="30px" m="5px" />
