@@ -47,13 +47,9 @@ import moralisIcon from "./img/powered-moralis.png";
 import { useUser } from "./store/UserContext";
 import { useChainMeta } from "./store/ChainMetaContext";
 
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
-import { ClaimsContract } from "./Elrond/claims";
-
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
-const elrondLogout = logout;
+
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElondAuthenticated: false,
@@ -61,16 +57,25 @@ const baseUserContext = {
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
-function App() {
-  const {
-    isAuthenticated,
-    logout: moralisLogout,
-    user,
-    Moralis: { web3Library: ethers },
-  } = useMoralis();
-  const { address: elrondAddress } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
-  const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
+function App({config}) {
+  const {isAuthenticated,
+  moralisLogout,
+  user,
+  ethers,
+  web3Provider,
+  enableWeb3,
+  isWeb3Enabled,
+  isWeb3EnableLoading,
+  web3EnableError,
+
+  elrondAddress,
+  hasPendingTransactions,
+  elrondLogout,
+  ClaimsContract,
+  checkBalance,
+  ITHEUM_TOKEN_ID,
+  d_ITHEUM_TOKEN_ID} = config;
+
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
   const [chain, setChain] = useState(0);
@@ -221,6 +226,7 @@ function App() {
   };
 
   const web_getClaimBalance = async () => {
+    debugger;
     const walletAddress = user.get("ethAddress");
     const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
 
@@ -330,7 +336,7 @@ function App() {
   const menuButtonW = "180px";
   return (
     <>
-      {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
+      {(_user.isMoralisAuthenticated || _user.isElondAuthenticated) &&
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
             <HStack h="10vh" p="5">
@@ -640,16 +646,14 @@ function App() {
                         </AccordionPanel>
                       </AccordionItem>
                     </Accordion>
-
-                    <ByMoralisLogo />
                   </Flex>
                 </Stack>
               </Box>
 
               <Box backgroundColor={"red1"} pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
-                  <Route path="home" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                  <Route path="/" element={<Tools config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                  <Route path="home" element={<Tools config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
                   <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />} />
@@ -706,74 +710,8 @@ function App() {
 
           {getClaimesError && <AlertOverlay errorData={getClaimesError} onClose={() => console.log} />}
         </Container>
-      ) : (
-        <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
-          <Flex justify="center" direction="column">
-            <Box p={["20px", null, "30px"]} borderWidth="2px" borderRadius="lg">
-              <Stack>
-                <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={logo} alt="Itheum Data DEX" margin="auto" />
-                <Heading size="md" textAlign="center">
-                  Itheum Data DEX
-                </Heading>
-                <Text fontSize="sm" textAlign="center">
-                  Trade your personal data via secure on-chain exchange
-                </Text>
-                <Spacer />
-                <Auth key={rfKeys.auth} />
-
-                <Text textAlign="center" fontSize="sm">
-                  Supported Chains
-                </Text>
-
-                <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
-                  <Tooltip label="Live on Devnet">
-                    <Image src={chainElrond} boxSize="40px" borderRadius="lg" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on Ropsten & Rinkeby Testnets">
-                    <Image src={chainEth} boxSize="40px" width="30px" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on Binance Smart Chain Testnet">
-                    <Image src={chainBsc} boxSize="40px" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on Avalanche C-Chain Testnet">
-                    <Image src={chainAvln} boxSize="40px" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on Mumbai Testnet">
-                    <Image src={chainPol} boxSize="40px" borderRadius="lg" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on Parastate Testnet">
-                    <Image src={chainParastate} boxSize="40px" width="30px" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on PlatON Testnet">
-                    <Image src={chainPlaton} boxSize="40px" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Live on Harmony Testnet">
-                    <Image src={chainHrmy} boxSize="40px" m="5px" />
-                  </Tooltip>
-                  <Tooltip label="Hedera - Coming soon...">
-                    <Image src={chainHedera} boxSize="40px" opacity=".3" m="5px" />
-                  </Tooltip>
-                </Flex>
-
-                <Text textAlign="center" fontSize="xx-small">
-                  {dataDexVersion}
-                </Text>
-
-                <ByMoralisLogo />
-              </Stack>
-            </Box>
-          </Flex>
-        </Container>
-      )}
+      }
     </>
-  );
-}
-
-function ByMoralisLogo() {
-  return (
-    <Flex direction="column" alignItems="center" display="none">
-      <Image mt="10" borderRadius="lg" boxSize="180px" height="auto" src={moralisIcon} alt="Built with Moralis web3" />
-    </Flex>
   );
 }
 

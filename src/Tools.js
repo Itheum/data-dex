@@ -15,21 +15,39 @@ import { useUser } from "./store/UserContext";
 import { useChainMeta } from "./store/ChainMetaContext";
 import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
 import { useNavigate } from "react-router-dom";
-import { useGetAccountInfo, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
+// import { useGetAccountInfo, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 import { FaucetContract } from "./Elrond/faucet";
 
 let elrondFaucetContract = null;
 
-export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
+export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
+  const {isAuthenticated,
+    moralisLogout,
+    user,
+    ethers,
+    web3Provider,
+    enableWeb3,
+    isWeb3Enabled,
+    isWeb3EnableLoading,
+    web3EnableError,
+  
+    elrondAddress,
+    hasPendingTransactions,
+    elrondLogout,
+    ClaimsContract,
+    checkBalance,
+    ITHEUM_TOKEN_ID,
+    d_ITHEUM_TOKEN_ID} = config;
+
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const { address: elrondAddress } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
+  // const { address: elrondAddress } = useGetAccountInfo();
+  // const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
-  const {
-    web3: web3Provider,
-    Moralis: { web3Library: ethers },
-  } = useMoralis();
-  const { user } = useMoralis();
+  // const {
+  //   web3: web3Provider,
+  //   Moralis: { web3Library: ethers },
+  // } = useMoralis();
+  // const { user } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { user: _user } = useUser();
 
@@ -162,6 +180,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
 
   const rewardsModalData = {
+    config: {config},
     isOpen: isRewardsOpen,
     onClose: (refreshTokenBalances) => {
       onRewardsClose();
@@ -180,6 +199,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
 
   const airdropsModalData = {
+    config: {config},
     isOpen: isAirdropsOpen,
     onClose: (refreshTokenBalances) => {
       onAirdropClose();
@@ -198,6 +218,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
 
   const allocationsModalData = {
+    config: {config},
     isOpen: isAllocationsOpen,
     onClose: (refreshTokenBalances) => {
       onAllocationsClose();

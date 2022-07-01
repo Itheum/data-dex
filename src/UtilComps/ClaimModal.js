@@ -7,24 +7,47 @@ import { config, sleep } from "../libs/util";
 import { ABIS, CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "../libs/util";
 import { useUser } from "../store/UserContext";
 import { useChainMeta } from "../store/ChainMetaContext";
-import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
+// import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import { ClaimsContract } from "../Elrond/claims";
 
-const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
+const ClaimModal = ({ config, isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
+  const {isAuthenticated,
+    moralisLogout,
+    user,
+    ethers,
+    web3Provider,
+    enableWeb3,
+    isWeb3Enabled,
+    isWeb3EnableLoading,
+    web3EnableError,
+  
+    elrondAddress,
+    hasPendingTransactions,
+    elrondLogout,
+    ClaimsContract,
+    checkBalance,
+    ITHEUM_TOKEN_ID,
+    d_ITHEUM_TOKEN_ID} = config;
+
   const toast = useToast();
 
-  const {
-    web3: web3Provider,
-    Moralis: { web3Library: ethers },
-  } = useMoralis();
+  // const {
+  //   web3: web3Provider,
+  //   Moralis: { web3Library: ethers },
+  // } = useMoralis();
   const [txConfirmationClaim, setTxConfirmationClaim] = useState(0);
   const [txHashClaim, setTxHashClaim] = useState(null);
   const [txErrorClaim, setTxErrorClaim] = useState(null);
   const [claimWorking, setClaimWorking] = useState(false);
   const { user: _user, setUser } = useUser();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const { address: elrondAddress } = useGetAccountInfo();
-  const claimsContract = new ClaimsContract(_chainMeta.networkId);
+  // const { address: elrondAddress } = useGetAccountInfo();
+  let claimsContract = null;
+
+  if (ClaimsContract && elrondAddress) {
+    claimsContract = new ClaimsContract(_chainMeta.networkId);
+  }
+
   useEffect(() => {
     if (txErrorClaim) {
       resetClaimState({ clearError: false, keepOpen: true });

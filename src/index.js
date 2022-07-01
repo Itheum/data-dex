@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
+import Launcher from "./Launcher";
 import { ChakraProvider, extendTheme, Flex, Container, Box } from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 import { MoralisProvider } from "react-moralis";
@@ -8,7 +9,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { UserContextProvider } from "./store/UserContext";
 import { ChainMetaContextProvider } from "./store/ChainMetaContext";
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router } from 'react-router-dom';
 import "../src/Elrond/elrond.css";
 import "../src/Elrond/custom.css";
 
@@ -42,29 +43,19 @@ const theme = extendTheme({
   },
 });
 
-const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
-
 ReactDOM.render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
-        <ChakraProvider theme={theme}>
-          <DappProvider environment="devnet" customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
-            <TransactionsToastList />
-            <NotificationModal />
-            <SignTransactionsModals className="custom-class-for-modals" />
-
-            <ChainMetaContextProvider>
-              <UserContextProvider>
-                <Router>
-                  <App />
-                </Router>
-              </UserContextProvider>
-            </ChainMetaContextProvider>
-          </DappProvider>
-        </ChakraProvider>
-      </MoralisProvider>
-    </ErrorBoundary>
+    {/* <ErrorBoundary> */}
+      <ChakraProvider theme={theme}>
+        <ChainMetaContextProvider>
+          <UserContextProvider>
+            <Router>
+              <Launcher />
+            </Router>
+          </UserContextProvider>
+        </ChainMetaContextProvider>
+      </ChakraProvider>
+    {/* </ErrorBoundary> */}
   </React.StrictMode>,
   document.getElementById("root")
 );
