@@ -20,8 +20,15 @@
 }
 
 .dapp-core-ui-component.modal{
-  color: var(--chakra-colors-teal-600);
+  /* color: var(--chakra-colors-teal-600); */
+  color: #ffffff;
   font-weight: bold;
+  margin-top: -700px;
+}
+
+.chakra-ui-light .dapp-core-ui-component.modal{
+  /* color: var(--chakra-colors-teal-600); */
+  color: #ffffff;
 }
 
 .dapp-core-ui-component .btn-primary:not(:disabled):not(.disabled):active {
@@ -48,4 +55,8 @@ body.auth_button {
 
 .dapp-core-modal-active .dapp-core-ui-component.modal {
   margin-top: -750px;
+}
+
+.dapp-core-ui-component .media-body {
+  color: #ffffff;
 }
