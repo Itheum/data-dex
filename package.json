@@ -10,6 +10,8 @@
     "@elrondnetwork/erdjs-network-providers": "0.1.5",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@sentry/react": "^7.4.1",
+    "@sentry/tracing": "^7.4.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

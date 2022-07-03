@@ -1,3 +1,6 @@
+import * as Sentry from "@sentry/react";
+import { BrowserTracing } from "@sentry/tracing";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
@@ -11,6 +14,16 @@ import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
 import { BrowserRouter as Router } from "react-router-dom";
 import "../src/Elrond/elrond.css";
 import "../src/Elrond/custom.css";
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
+    integrations: [new BrowserTracing()],
+
+    // Set tracesSampleRate to 1.0 to capture 100%  of transactions for performance monitoring.
+    tracesSampleRate: 1.0,
+  });
+}
 
 const {
   TransactionsToastList,
