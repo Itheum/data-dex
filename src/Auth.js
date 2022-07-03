@@ -6,27 +6,28 @@ import walletConnect from "./img/wallet-connect.png";
 import walletMetamask from "./img/wallet-metamask.png";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
+import { gtagGo } from "./libs/util";
 
 export const Auth = () => {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
-
   const { address: elrondAddress } = useGetAccountInfo();
 
   const WALLETS = {
-    METAMASK: 1,
+    METAMASK: 'evm_metamask',
     WC: 2,
-    ELROND: 3,
+    ELROND_MAIARAPP: 'el_maiar',
+    ELROND_DEFI: 'el_defi',
+    ELROND_WEBWALLET: 'el_webwallet',
+    ELROND_LEDGER: 'el_ledger',
   };
 
   const { authenticate, isAuthenticating, authError } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const [authErrorUi, setAuthErrorUi] = useState(null);
-  const [walletUsed, setWalletUsed] = useState(WALLETS.METAMASK);
+  const [walletUsed, setWalletUsed] = useState(null);
   const [isAuthenticatingMetamask, setIsAuthenticatingMetamask] = useState(0);
   const [isAuthenticatingWc, setIsAuthenticatingWc] = useState(0);
-  const [isAuthenticatingElrond, setIsAuthenticatingElrond] = useState(0);
-  const [chakraPortalVideoToggle, setChakraPortalVideoToggle] = useState(false);
 
   useEffect(() => {
     try {
@@ -36,25 +37,17 @@ export const Auth = () => {
 
   useEffect(() => {
     if (authError) {
-      setWalletUsed(WALLETS.METAMASK);
+      setWalletUsed(null);
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
-      setIsAuthenticatingElrond(0);
       setAuthErrorUi(authError);
     }
   }, [authError]);
 
   useEffect(() => {
     if (elrondAddress) {
-      setWalletUsed(WALLETS.ELROND);
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
-      setIsAuthenticatingElrond(0);
-    } else {
-      setWalletUsed(WALLETS.METAMASK);
-      setIsAuthenticatingMetamask(0);
-      setIsAuthenticatingWc(0);
-      setIsAuthenticatingElrond(0);
     }
   }, [elrondAddress]);
 
@@ -65,10 +58,6 @@ export const Auth = () => {
           setIsAuthenticatingWc(1);
           break;
 
-        case WALLETS.ELROND:
-          setIsAuthenticatingElrond(1);
-          break;
-
         default:
           setIsAuthenticatingMetamask(1);
           break;
@@ -76,10 +65,9 @@ export const Auth = () => {
     } else {
       // this will trigger when the user login and logsout -- so it's like a ui reset
       // ... (but we cant reset error as we need to show this)
-      setWalletUsed(WALLETS.METAMASK);
+      setWalletUsed(null);
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
-      setIsAuthenticatingElrond(0);
     }
   }, [isAuthenticating]);
 
@@ -100,12 +88,8 @@ export const Auth = () => {
         authenticate({ provider: "walletconnect" });
         break;
 
-      case WALLETS.ELROND:
-        setWalletUsed(WALLETS.ELROND);
-        authenticate({ type: "erd" });
-        break;
-
       default:
+        gtagGo('auth', 'login', wallet);
         setWalletUsed(WALLETS.METAMASK);
         authenticate();
         break;
@@ -114,6 +98,16 @@ export const Auth = () => {
 
   const handleModelFix = () => {
     document.querySelector("body").classList.toggle("dapp-core-modal-active");
+  };
+
+  const goElrondLogin = (walletVal) => {
+    gtagGo('auth', 'login', walletVal);
+
+    setWalletUsed(walletVal);
+
+    if (walletVal === 'el_maiar' || walletVal === 'el_ledger') {
+      handleModelFix();
+    }
   };
 
   return (
@@ -144,7 +138,7 @@ export const Auth = () => {
               <Box p="15px">
                 <Wrap spacing="20px" justify="space-between">
                   <Box>
-                    <Button isLoading={Boolean(isAuthenticatingMetamask)} onClick={() => handleAuthenticate()} width="220px" p="8">
+                    <Button isLoading={Boolean(isAuthenticatingMetamask)} onClick={() => handleAuthenticate(WALLETS.METAMASK)} width="220px" p="8">
                       <Image src={walletMetamask} boxSize="40px" borderRadius="lg" mr="2" />
                       <Text>MetaMask</Text>
                     </Button>
@@ -164,19 +158,19 @@ export const Auth = () => {
               <Box p="5px">
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
-                    <WrapItem onClick={handleModelFix} className="auth_wrap">
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_MAIARAPP)} className="auth_wrap">
                       <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
-                    <WrapItem className="auth_wrap">
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">
                       <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
                     </WrapItem>
 
-                    <WrapItem className="auth_wrap">
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_WEBWALLET)} className="auth_wrap">
                       <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={handleModelFix} className="auth_wrap">
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_LEDGER)} className="auth_wrap">
                       <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
                     </WrapItem>
                   </Wrap>
