@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import moment from "moment";
 import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton} from '@chakra-ui/react'
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
 import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { GiReceiveMoney } from "react-icons/gi";
@@ -48,8 +49,9 @@ import { useUser } from "./store/UserContext";
 import { useChainMeta } from "./store/ChainMetaContext";
 
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID, getClaimTransactions } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
+import { claimsContractAddress_Elrond } from "./libs/contactAddresses";
 
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
@@ -73,6 +75,7 @@ function App() {
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
+  const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(false);
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
@@ -313,6 +316,11 @@ function App() {
     setRfKeys(reRf);
   };
 
+  const handleTokenBalanceClick = async () => {
+    const transactions = await getClaimTransactions(elrondAddress,claimsContractAddress_Elrond,CHAINS["ED"])
+    setClaimTransactionsModalOpen(true);
+  }
+
   const doSplashScreenShown = (menuItem) => {
     setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
   };
@@ -330,6 +338,22 @@ function App() {
   const menuButtonW = "180px";
   return (
     <>
+    <Modal isOpen={claimTransactionsModalOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Recent Claim Transactions</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Table will be put here @TODO
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={() => setClaimTransactionsModalOpen(false)}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
@@ -344,7 +368,7 @@ function App() {
               <Spacer />
 
               <HStack>
-                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
+                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)" onClick={handleTokenBalanceClick}>
                   {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
                 </Box>
 
