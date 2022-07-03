@@ -86,7 +86,7 @@ function App() {
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [getClaimesError, setGetClaimsError] = useState(null);
+  const [getClaimsError, setGetClaimsError] = useState(null);
   const { pathname } = useLocation();
 
   // context hooks
@@ -704,7 +704,7 @@ function App() {
             </AlertDialogOverlay>
           </AlertDialog>
 
-          {getClaimesError && <AlertOverlay errorData={getClaimesError} onClose={() => console.log} />}
+          {getClaimsError && <AlertOverlay errorData={getClaimsError} onClose={() => console.log} />}
         </Container>
       ) : (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
