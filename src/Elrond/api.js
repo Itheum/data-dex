@@ -11,6 +11,18 @@ export const getApi = (chain) => {
   }
 }
 
+export const getExplorer = (chain) => {
+  if (chain === "Elrond - Mainnet") {
+    return "explorer.elrond.com";
+  } else {
+    return "devnet-explorer.elrond.com";
+  }
+}
+
+export const getTransactionLink = (chain, txHash) => {
+    return `https://${getExplorer(chain)}/transactions/${txHash}`;
+}
+
 // check token balance on Elrond
 export const checkBalance = async (token, address, chain) => {
   let api = getApi(chain);
@@ -27,18 +39,18 @@ export const getClaimTransactions = async (address, smartContractAddress, chain)
   try{
     const link = `https://${api}/accounts/${address}/transactions?size=30&receiver=${smartContractAddress}&status=success&withOperations=true`;
     const resp = await (await axios.get(link)).data.filter(tx => {
-      return tx.function === "claim";}).slice(0, 15);
+      return tx.function === "claim";}).slice(0, 10);
     let transactions=[]
     for (const tx in resp){
       let transaction={}
-      transaction["timestamp"]=resp[tx]["timestamp"];
+      transaction["timestamp"]=parseInt(resp[tx]["timestamp"])*1000;
       transaction["hash"]=resp[tx]["txHash"];
       let data = Buffer.from(resp[tx]["data"],'base64').toString('ascii').split('@');
       if(data.length === 1){
         transaction["claimType"]="Claim All"
       }else{
         switch(data[1]){
-          case "00":
+          case "":
             transaction["claimType"]="Reward";
             break;
           case "01":

@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, React } from "react";
 import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import moment from "moment";
-import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
+import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider, TableContainer } from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton} from '@chakra-ui/react'
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
 import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
@@ -47,9 +47,10 @@ import moralisIcon from "./img/powered-moralis.png";
 
 import { useUser } from "./store/UserContext";
 import { useChainMeta } from "./store/ChainMetaContext";
+import { Table, TableCaption, Thead, Tbody, Tr, Th, Td, Tfoot, chakra } from '@chakra-ui/react';
 
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID, getClaimTransactions } from "./Elrond/api";
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID, getClaimTransactions, getTransactionLink } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
 import { claimsContractAddress_Elrond } from "./libs/contactAddresses";
 
@@ -76,6 +77,7 @@ function App() {
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(false);
+  const [elrondClaims, setElrondClaims] = useState([]);
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
@@ -95,7 +97,7 @@ function App() {
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
-
+  
   const navigate = useNavigate();
   const path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
@@ -317,8 +319,12 @@ function App() {
   };
 
   const handleTokenBalanceClick = async () => {
-    const transactions = await getClaimTransactions(elrondAddress,claimsContractAddress_Elrond,CHAINS["ED"])
-    setClaimTransactionsModalOpen(true);
+    if(elrondAddress){
+      const transactions = await getClaimTransactions(elrondAddress,claimsContractAddress_Elrond,CHAINS[_chainMetaLocal.networkId])
+      setElrondClaims(transactions);
+      setClaimTransactionsModalOpen(true);
+    }
+    
   }
 
   const doSplashScreenShown = (menuItem) => {
@@ -340,20 +346,41 @@ function App() {
   const menuButtonW = "180px";
   return (
     <>
-    <Modal isOpen={claimTransactionsModalOpen}>
-        <ModalOverlay />
+    <Modal isOpen={claimTransactionsModalOpen} onClose={() => setClaimTransactionsModalOpen(false)} size="xl">
+        <ModalOverlay/>
         <ModalContent>
           <ModalHeader>Recent Claim Transactions</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            Table will be put here @TODO
+          <TableContainer>
+          <Table variant="striped" size="sm">
+            <Thead>
+              <Tr>
+                <Th textAlign="center">When</Th>
+                <Th textAlign="center">Hash</Th>
+                <Th textAlign="center">Type</Th>
+                <Th textAlign="center">Amount</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+            {elrondClaims.map((item) => <Tr key={item.hash}>
+              <Td textAlign="center"><Text fontSize="xs">{new Date(item.timestamp).toLocaleString()}</Text></Td>
+              <Td textAlign="center"><Link fontSize="sm" href={getTransactionLink(CHAINS[_chainMetaLocal.networkId], item.hash)} isExternal>{item.hash.slice(0,5)}...{item.hash.slice(item.hash.length-5, item.hash.length)}</Link></Td>
+              <Td textAlign="center"><Text fontSize="sm">{item.claimType}</Text></Td>
+              <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10,18).toFixed(2)}</Text></Td>
+              </Tr>)}
+          </Tbody>
+            <Tfoot>
+              <Tr>
+                <Th textAlign="center">When</Th>
+                <Th textAlign="center">Hash</Th>
+                <Th textAlign="center">Type</Th>
+                <Th textAlign="center">Amount</Th>
+              </Tr>
+            </Tfoot>
+          </Table>  
+          </TableContainer>
           </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={() => setClaimTransactionsModalOpen(false)}>
-              Close
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
       {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
