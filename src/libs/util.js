@@ -1721,3 +1721,40 @@ export const sleep = (sec) => {
 export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => {
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
 };
+
+export const gtagGo = (category, action, label, value) => {
+  /*
+  e.g.
+  Category: "Videos", Action: "Play", Label: "Gone With the Wind"
+  Category: "Videos"; Action: "Play - Mac Chrome"
+  Category: "Videos", Action: "Video Load Time", Label: "Gone With the Wind", Value: downloadTime
+
+  Category: "Auth", Action: "Login", Label: "Metamask"
+  Category: "Auth", Action: "Login - Success", Label: "Metamask"
+  Category: "Auth", Action: "Login", Label: "DeFi"
+  Category: "Auth", Action: "Login", Label: "Ledger"
+  Category: "Auth", Action: "Login", Label: "MaiarApp"
+  Category: "Auth", Action: "Login", Label: "WebWallet"
+
+  Category: "Auth", Action: "Logout", Label: "WebWallet"
+  */
+ 
+  if (!action || !category) {
+    console.error('gtag tracking needs both action and category');
+    return;
+  }
+
+  const eventObj =  {
+    'event_category' : category
+  }
+
+  if (label) {
+    eventObj['event_label'] = label;
+  }
+
+  if (value) {
+    eventObj['event_value'] = value;
+  }
+
+  window.gtag('event', action, eventObj);
+};

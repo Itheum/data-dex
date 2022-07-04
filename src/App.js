@@ -28,7 +28,7 @@ import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
 import TrustedComputation from "./TrustedComputation";
 import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
 import AlertOverlay from "./UtilComps/AlertOverlay";
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from "./libs/util";
+import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config, gtagGo } from "./libs/util";
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from "./libs/util";
 
 import logo from "./img/logo.png";
@@ -327,8 +327,10 @@ function App() {
 
   const handleLogout = () => {
     if (_user.isMoralisAuthenticated) {
+      gtagGo('auth', 'logout', 'evm');
       moralisLogout();
     } else {
+      gtagGo('auth', 'logout', 'el');
       elrondLogout();
     }
 
