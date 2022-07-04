@@ -50,6 +50,7 @@ import { useChainMeta } from "./store/ChainMetaContext";
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
+import { useSessionStorage } from './libs/hooks';
 
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
@@ -87,8 +88,9 @@ function App() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimesError, setGetClaimsError] = useState(null);
-  const [walletUsed, setWalletUsed] = useState(null);
+  const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -147,14 +149,18 @@ function App() {
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
 
-        if (walletUsed) {
-          gtagGo('auth', 'login_success', walletUsed);
+        if (walletUsedLocal) {
+          gtagGo('auth', 'login_success', walletUsedLocal);
+        } else if(walletUsedSession) {
+          // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
+          // ... note that a user reloaded tab will also gtag login_success
+          gtagGo('auth', 'login_success', walletUsedSession);
         }
 
         setChainMeta({
           networkId,
           contracts: contractsForChain(networkId),
-          walletUsed
+          walletUsed: walletUsedLocal || walletUsedSession
         });
 
         // get user token balance from elrond
@@ -213,14 +219,16 @@ function App() {
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
 
-        if (walletUsed) {
-          gtagGo('auth', 'login_success', walletUsed);
+        if (walletUsedLocal) {
+          gtagGo('auth', 'login_success', walletUsedLocal);
+        } else if(walletUsedSession) {
+          gtagGo('auth', 'login_success', walletUsedSession);
         }
 
         setChainMeta({
           networkId,
           contracts: contractsForChain(networkId),
-          walletUsed
+          walletUsed: walletUsedLocal || walletUsedSession
         });
 
         await web3_getTokenBalance(); // get user token balance from EVM
@@ -343,11 +351,15 @@ function App() {
       elrondLogout();
     }
 
+    setWalletUsedSession(null);
+
     setUser({ ...baseUserContext });
+    setChainMeta({});
   };
 
-  const handleSetWalletUsed = walletVal => {    
-    setWalletUsed(walletVal);
+  const handleSetWalletUsed = walletVal => {   
+    // locally store the wallet that was used for login 
+    setWalletUsedLocal(walletVal);    
   }
 
   const menuButtonW = "180px";
@@ -745,7 +757,7 @@ function App() {
                   Trade your personal data via secure on-chain exchange
                 </Text>
                 <Spacer />
-                <Auth key={rfKeys.auth} onSetWalletUsed={handleSetWalletUsed} />
+                <Auth key={rfKeys.auth} setWalletUsed={handleSetWalletUsed} />
 
                 <Text textAlign="center" fontSize="sm">
                   Supported Chains

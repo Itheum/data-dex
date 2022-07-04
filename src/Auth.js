@@ -7,9 +7,9 @@ import walletMetamask from "./img/wallet-metamask.png";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import { gtagGo } from "./libs/util";
-import { useChainMeta } from "./store/ChainMetaContext";
+import { useSessionStorage } from './libs/hooks';
 
-export const Auth = ({onSetWalletUsed}) => {
+export const Auth = ({setWalletUsed}) => {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
   const { address: elrondAddress } = useGetAccountInfo();
 
@@ -29,6 +29,7 @@ export const Auth = ({onSetWalletUsed}) => {
   const [EVMWalletUsed, setEVMWalletUsed] = useState(null);
   const [isAuthenticatingMetamask, setIsAuthenticatingMetamask] = useState(0);
   const [isAuthenticatingWc, setIsAuthenticatingWc] = useState(0);
+  const [, setWalletUsedSession] = useSessionStorage('wallet-used', null);
 
   useEffect(() => {
     try {
@@ -86,31 +87,33 @@ export const Auth = ({onSetWalletUsed}) => {
     switch (wallet) {
       case WALLETS.WC:
         setEVMWalletUsed(WALLETS.WC);
-        onSetWalletUsed(WALLETS.WC);
+        setWalletUsed(WALLETS.WC);
         authenticate({ provider: "walletconnect" });
         break;
 
       default:
         gtagGo('auth', 'login', wallet);
         setEVMWalletUsed(WALLETS.METAMASK);
-        onSetWalletUsed(WALLETS.METAMASK);
+        setWalletUsed(WALLETS.METAMASK);
         authenticate();
         break;
     }
 
-    onSetWalletUsed(wallet);
+    setWalletUsed(wallet);
+    setWalletUsedSession(wallet);
   };
 
   const handleModelFix = () => {
     document.querySelector("body").classList.toggle("dapp-core-modal-active");
   };
 
-  const goElrondLogin = (walletVal) => {
-    gtagGo('auth', 'login', walletVal);
+  const goElrondLogin = (wallet) => {
+    gtagGo('auth', 'login', wallet);
 
-    onSetWalletUsed(walletVal);
+    setWalletUsed(wallet);
+    setWalletUsedSession(wallet);
 
-    if (walletVal === 'el_maiar' || walletVal === 'el_ledger') {
+    if (wallet === 'el_maiar' || wallet === 'el_ledger') {
       handleModelFix();
     }
   };
