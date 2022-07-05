@@ -40,7 +40,9 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
               <Spinner size="lg" />
             </Box> 
           || 
-            <TableContainer>
+            <>
+            {elrondClaims.length > 0 && 
+              <TableContainer>
               <Table variant="striped" size="sm">
                 <Thead>
                   <Tr>
@@ -73,7 +75,12 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
                   </Tr>
                 </Tfoot>
               </Table>
-            </TableContainer>          
+              </TableContainer> || 
+              <Box minH="150" alignItems="center" display="flex" justifyContent="center">
+                No claims yet...
+              </Box>
+            }
+            </>     
           }
         </ModalBody>
       </ModalContent>
