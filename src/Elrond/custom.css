@@ -9,7 +9,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center !important;
-  background-color: var(--chakra-colors-whiteAlpha-200);;
+  background-color: var(--chakra-colors-whiteAlpha-200);
   border-radius: 0.375rem;
   width: 220px;
   height: 64px;
@@ -29,6 +29,18 @@
 .chakra-ui-light .dapp-core-ui-component.modal{
   /* color: var(--chakra-colors-teal-600); */
   color: #ffffff;
+}
+
+.chakra-ui-light .dapp-core-ui-component .btn-primary{
+  color: var(--chakra-colors-gray-800);
+}
+
+.chakra-ui-light .auth_wrap{
+  background-color: var(--chakra-colors-gray-100);
+}
+
+.chakra-ui-light .auth_wrap:hover{
+  background-color: var(--chakra-colors-gray-200);
 }
 
 .dapp-core-ui-component .btn-primary:not(:disabled):not(.disabled):active {

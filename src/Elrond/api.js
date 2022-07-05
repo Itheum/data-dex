@@ -37,14 +37,16 @@ export const checkBalance = async (token, address, chain) => {
 export const getClaimTransactions = async (address, smartContractAddress, chain) => {
   let api = getApi(chain);
   try{
-    const link = `https://${api}/accounts/${address}/transactions?size=30&receiver=${smartContractAddress}&status=success&withOperations=true`;
+    const link = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
+    console.log(link);
     const resp = await (await axios.get(link)).data.filter(tx => {
-      return tx.function === "claim";}).slice(0, 10);
+      return tx.function === "claim";}).slice(0, 25);
     let transactions=[]
     for (const tx in resp){
       let transaction={}
       transaction["timestamp"]=parseInt(resp[tx]["timestamp"])*1000;
       transaction["hash"]=resp[tx]["txHash"];
+      transaction["status"]=resp[tx]["status"];
       let data = Buffer.from(resp[tx]["data"],'base64').toString('ascii').split('@');
       if(data.length === 1){
         transaction["claimType"]="Claim All"
@@ -53,11 +55,17 @@ export const getClaimTransactions = async (address, smartContractAddress, chain)
           case "":
             transaction["claimType"]="Reward";
             break;
+          case "00":
+            transaction["claimType"]="Reward";
+            break;
           case "01":
             transaction["claimType"]="Airdrop";
             break;
-          default:
+          case "02":
             transaction["claimType"]="Allocation";
+            break;
+          default:
+            transaction["claimType"]="Unknown";
             break;
         }
       }
@@ -70,7 +78,6 @@ export const getClaimTransactions = async (address, smartContractAddress, chain)
       transaction["amount"]=amount;
       transactions.push(transaction);
     }
-    console.log(transactions);
     return transactions;
   }catch(error){
     return [];

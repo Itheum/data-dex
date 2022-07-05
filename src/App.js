@@ -4,7 +4,7 @@ import moment from "moment";
 import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider, TableContainer } from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton} from '@chakra-ui/react'
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
-import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
 
@@ -343,7 +343,7 @@ function App() {
     setRfKeys(reRf);
   };
 
-  const handleTokenBalanceClick = async () => {
+  const handleClaimsModalOpenClick = async () => {
     if(elrondAddress){
       const transactions = await getClaimTransactions(elrondAddress,claimsContractAddress_Elrond,CHAINS[_chainMetaLocal.networkId])
       setElrondClaims(transactions);
@@ -398,7 +398,11 @@ function App() {
             <Tbody>
             {elrondClaims.map((item) => <Tr key={item.hash}>
               <Td textAlign="center"><Text fontSize="xs">{new Date(item.timestamp).toLocaleString()}</Text></Td>
-              <Td textAlign="center"><Link fontSize="sm" href={getTransactionLink(CHAINS[_chainMetaLocal.networkId], item.hash)} isExternal>{item.hash.slice(0,5)}...{item.hash.slice(item.hash.length-5, item.hash.length)}</Link></Td>
+              <Td textAlign="center">
+                {item.status === "success" ? '':<CloseIcon fontSize="xs" verticalAlign="baseline"></CloseIcon>}
+                {' '}
+                <Link fontSize="sm" href={getTransactionLink(CHAINS[_chainMetaLocal.networkId], item.hash)} isExternal>{item.hash.slice(0,5)}...{item.hash.slice(item.hash.length-5, item.hash.length)}</Link>
+              </Td>
               <Td textAlign="center"><Text fontSize="sm">{item.claimType}</Text></Td>
               <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10,18).toFixed(2)}</Text></Td>
               </Tr>)}
@@ -430,7 +434,7 @@ function App() {
               <Spacer />
 
               <HStack>
-                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)" onClick={handleTokenBalanceClick}>
+                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
                   {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
                 </Box>
 
@@ -449,6 +453,11 @@ function App() {
                       <Text fontSize="xs">
                         {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
                         <ShortAddress address={user ? user.get("ethAddress") : elrondAddress} />
+                      </Text>
+                    </MenuItem>
+                    <MenuItem closeOnSelect={false} onClick={handleClaimsModalOpenClick}>
+                      <Text fontSize="xs">
+                        View claims history
                       </Text>
                     </MenuItem>
                     <MenuItem onClick={handleLogout} fontSize="sm">
