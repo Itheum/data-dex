@@ -1,85 +1,99 @@
-import axios from "axios";
+import axios from 'axios';
 
-export const ITHEUM_TOKEN_ID = "ITHEUM-df6f26";
-export const d_ITHEUM_TOKEN_ID = "ITHEUM-a61317";
+export const ITHEUM_TOKEN_ID = 'ITHEUM-df6f26';
+export const d_ITHEUM_TOKEN_ID = 'ITHEUM-a61317';
 
 export const getApi = (chain) => {
-  if (chain === "Elrond - Mainnet") {
-    return "api.elrond.com";
+  if (chain === 'Elrond - Mainnet') {
+    return 'api.elrond.com';
   } else {
-    return "devnet-api.elrond.com";
+    return 'devnet-api.elrond.com';
   }
 }
 
 export const getExplorer = (chain) => {
-  if (chain === "Elrond - Mainnet") {
-    return "explorer.elrond.com";
+  if (chain === 'Elrond - Mainnet') {
+    return 'explorer.elrond.com';
   } else {
-    return "devnet-explorer.elrond.com";
+    return 'devnet-explorer.elrond.com';
   }
 }
 
 export const getTransactionLink = (chain, txHash) => {
-    return `https://${getExplorer(chain)}/transactions/${txHash}`;
+  return `https://${getExplorer(chain)}/transactions/${txHash}`;
 }
 
 // check token balance on Elrond
 export const checkBalance = async (token, address, chain) => {
-  let api = getApi(chain);
+  const api = getApi(chain);
+
   try {
     const resp = await axios.get(`https://${api}/accounts/${address}/tokens/${token}`);
     return resp.data.balance;
   } catch (error) {
+    console.error(error);
     return 0;
   }
 };
 
 export const getClaimTransactions = async (address, smartContractAddress, chain) => {
-  let api = getApi(chain);
-  try{
-    const link = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
-    console.log(link);
-    const resp = await (await axios.get(link)).data.filter(tx => {
-      return tx.function === "claim";}).slice(0, 25);
-    let transactions=[]
-    for (const tx in resp){
-      let transaction={}
-      transaction["timestamp"]=parseInt(resp[tx]["timestamp"])*1000;
-      transaction["hash"]=resp[tx]["txHash"];
-      transaction["status"]=resp[tx]["status"];
-      let data = Buffer.from(resp[tx]["data"],'base64').toString('ascii').split('@');
-      if(data.length === 1){
-        transaction["claimType"]="Claim All"
-      }else{
-        switch(data[1]){
-          case "":
-            transaction["claimType"]="Reward";
+  const api = getApi(chain);
+
+  try {
+    const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
+    console.log(allTxs);
+
+    const resp = await (await axios.get(allTxs)).data.filter(tx => {
+      return tx.function === 'claim';
+    }).slice(0, 25);
+
+    const transactions = [];
+
+    for (const tx in resp) {
+      const transaction = {};
+      transaction['timestamp'] = parseInt(resp[tx]['timestamp']) * 1000;
+      transaction['hash'] = resp[tx]['txHash'];
+      transaction['status'] = resp[tx]['status'];
+
+      const data = Buffer.from(resp[tx]['data'], 'base64').toString('ascii').split('@');
+
+      if (data.length === 1) {
+        transaction['claimType'] = 'Claim All';
+      } else {
+        switch (data[1]) {
+          case '':
+            transaction['claimType'] = 'Reward';
             break;
-          case "00":
-            transaction["claimType"]="Reward";
+          case '00':
+            transaction['claimType'] = 'Reward';
             break;
-          case "01":
-            transaction["claimType"]="Airdrop";
+          case '01':
+            transaction['claimType'] = 'Airdrop';
             break;
-          case "02":
-            transaction["claimType"]="Allocation";
+          case '02':
+            transaction['claimType'] = 'Allocation';
             break;
           default:
-            transaction["claimType"]="Unknown";
+            transaction['claimType'] = 'Unknown';
             break;
         }
       }
-      let amount = 0
-      for (const op in resp[tx]["operations"]){
-        if(resp[tx]["operations"][op]["value"]){
-          amount += parseInt(resp[tx]["operations"][op]["value"]);
+
+      let amount = 0;
+
+      for (const op in resp[tx]['operations']) {
+        if (resp[tx]['operations'][op]['value']) {
+          amount += parseInt(resp[tx]['operations'][op]['value']);
         }
       }
-      transaction["amount"]=amount;
+
+      transaction['amount'] = amount;
       transactions.push(transaction);
     }
+
     return transactions;
-  }catch(error){
+  } catch (error) {
+    console.error(error);
     return [];
   }
 }

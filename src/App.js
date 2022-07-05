@@ -1,10 +1,8 @@
 import { useEffect, useState, useRef, React } from "react";
 import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import moment from "moment";
-import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider, TableContainer } from "@chakra-ui/react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton} from '@chakra-ui/react'
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
-import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { Button, Text, Image, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
+import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
 
@@ -28,6 +26,7 @@ import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
 import TrustedComputation from "./TrustedComputation";
 import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
 import AlertOverlay from "./UtilComps/AlertOverlay";
+import ClaimsHistory from "./Elrond/ClaimsHistory";
 import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config, gtagGo } from "./libs/util";
 import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from "./libs/util";
 
@@ -47,12 +46,10 @@ import moralisIcon from "./img/powered-moralis.png";
 
 import { useUser } from "./store/UserContext";
 import { useChainMeta } from "./store/ChainMetaContext";
-import { Table, TableCaption, Thead, Tbody, Tr, Th, Td, Tfoot, chakra } from '@chakra-ui/react';
 
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID, getClaimTransactions, getTransactionLink } from "./Elrond/api";
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
-import { claimsContractAddress_Elrond } from "./libs/contactAddresses";
 import { useSessionStorage } from './libs/hooks';
 
 const _chainMetaLocal = {};
@@ -77,8 +74,7 @@ function App() {
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
-  const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(false);
-  const [elrondClaims, setElrondClaims] = useState([]);
+  const [elrondShowClaimsHistory, setElrondShowClaimsHistory] = useState(false);
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
@@ -100,7 +96,7 @@ function App() {
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
-  
+
   const navigate = useNavigate();
   const path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
@@ -156,7 +152,7 @@ function App() {
 
         if (walletUsedLocal) {
           gtagGo('auth', 'login_success', walletUsedLocal);
-        } else if(walletUsedSession) {
+        } else if (walletUsedSession) {
           // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
           // ... note that a user reloaded tab will also gtag login_success
           gtagGo('auth', 'login_success', walletUsedSession);
@@ -226,7 +222,7 @@ function App() {
 
         if (walletUsedLocal) {
           gtagGo('auth', 'login_success', walletUsedLocal);
-        } else if(walletUsedSession) {
+        } else if (walletUsedSession) {
           gtagGo('auth', 'login_success', walletUsedSession);
         }
 
@@ -244,6 +240,13 @@ function App() {
       }
     }
   }, [user, isWeb3Enabled]);
+
+  useEffect(() => {
+    // claims balanced triggered updating is only needed if we are in HOME screen
+    if (_user.claimBalanceValues && _user?.isAuthenticated && menuItem === MENU.HOME) {
+      web3_getTokenBalance();
+    }
+  }, [_user.claimBalanceValues]);
 
   const handleRefreshBalance = async () => {
     await web3_getTokenBalance();
@@ -297,13 +300,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    // claims balanced triggered updating is only needed if we are in HOME screen
-    if (_user.claimBalanceValues && _user?.isAuthenticated && menuItem === MENU.HOME) {
-      web3_getTokenBalance();
-    }
-  }, [_user.claimBalanceValues]);
-
   const web3_getTokenBalance = async () => {
     if (!_chainMetaLocal.contracts) {
       return;
@@ -343,15 +339,6 @@ function App() {
     setRfKeys(reRf);
   };
 
-  const handleClaimsModalOpenClick = async () => {
-    if(elrondAddress){
-      const transactions = await getClaimTransactions(elrondAddress,claimsContractAddress_Elrond,CHAINS[_chainMetaLocal.networkId])
-      setElrondClaims(transactions);
-      setClaimTransactionsModalOpen(true);
-    }
-    
-  }
-
   const doSplashScreenShown = (menuItem) => {
     setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
   };
@@ -371,55 +358,14 @@ function App() {
     setChainMeta({});
   };
 
-  const handleSetWalletUsed = walletVal => {   
+  const handleSetWalletUsed = walletVal => {
     // locally store the wallet that was used for login 
-    setWalletUsedLocal(walletVal);    
+    setWalletUsedLocal(walletVal);
   }
 
   const menuButtonW = "180px";
   return (
     <>
-    <Modal isOpen={claimTransactionsModalOpen} onClose={() => setClaimTransactionsModalOpen(false)} size="xl">
-        <ModalOverlay/>
-        <ModalContent>
-          <ModalHeader>Recent Claim Transactions</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-          <TableContainer>
-          <Table variant="striped" size="sm">
-            <Thead>
-              <Tr>
-                <Th textAlign="center">When</Th>
-                <Th textAlign="center">Hash</Th>
-                <Th textAlign="center">Type</Th>
-                <Th textAlign="center">Amount</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-            {elrondClaims.map((item) => <Tr key={item.hash}>
-              <Td textAlign="center"><Text fontSize="xs">{new Date(item.timestamp).toLocaleString()}</Text></Td>
-              <Td textAlign="center">
-                {item.status === "success" ? '':<CloseIcon fontSize="xs" verticalAlign="baseline"></CloseIcon>}
-                {' '}
-                <Link fontSize="sm" href={getTransactionLink(CHAINS[_chainMetaLocal.networkId], item.hash)} isExternal>{item.hash.slice(0,5)}...{item.hash.slice(item.hash.length-5, item.hash.length)}</Link>
-              </Td>
-              <Td textAlign="center"><Text fontSize="sm">{item.claimType}</Text></Td>
-              <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10,18).toFixed(2)}</Text></Td>
-              </Tr>)}
-          </Tbody>
-            <Tfoot>
-              <Tr>
-                <Th textAlign="center">When</Th>
-                <Th textAlign="center">Hash</Th>
-                <Th textAlign="center">Type</Th>
-                <Th textAlign="center">Amount</Th>
-              </Tr>
-            </Tfoot>
-          </Table>  
-          </TableContainer>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
       {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
@@ -455,11 +401,11 @@ function App() {
                         <ShortAddress address={user ? user.get("ethAddress") : elrondAddress} />
                       </Text>
                     </MenuItem>
-                    <MenuItem closeOnSelect={false} onClick={handleClaimsModalOpenClick}>
+                    { _user.isElondAuthenticated && <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
                       <Text fontSize="xs">
                         View claims history
                       </Text>
-                    </MenuItem>
+                    </MenuItem>}
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>
@@ -524,7 +470,7 @@ function App() {
                       </Button>
                     </Stack>
 
-                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path]?.[1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>                    
+                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path]?.[1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
@@ -803,6 +749,8 @@ function App() {
           </AlertDialog>
 
           {getClaimsError && <AlertOverlay errorData={getClaimsError} onClose={() => console.log} />}
+
+          {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}
         </Container>
       ) : (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">

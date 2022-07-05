@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { useMoralis, useMoralisCloudFunction } from "react-moralis";
 import { Box, Stack } from "@chakra-ui/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Button, Link, Progress, Badge, Tooltip, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
 import ShortAddress from "./UtilComps/ShortAddress";
 import { progInfoMeta, config, sleep } from "./libs/util";
@@ -76,7 +76,6 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
 
   // S: Faucet
   useEffect(() => {
-    console.log(elrondFaucetContract);
     if (elrondAddress && elrondFaucetContract) {
       elrondFaucetContract.getFaucetTime(elrondAddress).then((res) => {
         setElrondFaucetTime(res);
