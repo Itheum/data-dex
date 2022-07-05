@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, React } from "react";
-import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import moment from "moment";
 import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider, TableContainer } from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton} from '@chakra-ui/react'
@@ -53,6 +53,7 @@ import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPend
 import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID, getClaimTransactions, getTransactionLink } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
 import { claimsContractAddress_Elrond } from "./libs/contactAddresses";
+import { useSessionStorage } from './libs/hooks';
 
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
@@ -92,7 +93,9 @@ function App() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimsError, setGetClaimsError] = useState(null);
+  const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -105,7 +108,7 @@ function App() {
     setUser({ ...baseUserContext }); // set base user context for app
 
     if (path) {
-      setMenuItem(PATHS[path][0]);
+      setMenuItem(PATHS[path]?.[0]);
     }
 
     console.log(consoleNotice);
@@ -130,6 +133,12 @@ function App() {
     // ... get account token balance and claims
     async function elrondLogin() {
       if (elrondAddress) {
+        // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
+        if (path === 'unlock') {
+          handleLogout();
+          return;
+        }
+
         setUser({
           ...baseUserContext,
           ..._user,
@@ -145,9 +154,18 @@ function App() {
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
 
+        if (walletUsedLocal) {
+          gtagGo('auth', 'login_success', walletUsedLocal);
+        } else if(walletUsedSession) {
+          // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
+          // ... note that a user reloaded tab will also gtag login_success
+          gtagGo('auth', 'login_success', walletUsedSession);
+        }
+
         setChainMeta({
           networkId,
           contracts: contractsForChain(networkId),
+          walletUsed: walletUsedLocal || walletUsedSession
         });
 
         // get user token balance from elrond
@@ -206,9 +224,16 @@ function App() {
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
 
+        if (walletUsedLocal) {
+          gtagGo('auth', 'login_success', walletUsedLocal);
+        } else if(walletUsedSession) {
+          gtagGo('auth', 'login_success', walletUsedSession);
+        }
+
         setChainMeta({
           networkId,
           contracts: contractsForChain(networkId),
+          walletUsed: walletUsedLocal || walletUsedSession
         });
 
         await web3_getTokenBalance(); // get user token balance from EVM
@@ -340,8 +365,16 @@ function App() {
       elrondLogout();
     }
 
+    setWalletUsedSession(null);
+
     setUser({ ...baseUserContext });
+    setChainMeta({});
   };
+
+  const handleSetWalletUsed = walletVal => {   
+    // locally store the wallet that was used for login 
+    setWalletUsedLocal(walletVal);    
+  }
 
   const menuButtonW = "180px";
   return (
@@ -482,7 +515,7 @@ function App() {
                       </Button>
                     </Stack>
 
-                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path][1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>
+                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path]?.[1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>                    
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
@@ -727,6 +760,9 @@ function App() {
                     <Route path="datavault" element={<DataVault />} />
                     <Route path="trustedcomputation" element={<TrustedComputation />} />
                   </Route>
+
+                  {/* if no route matches, go to home */}
+                  {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
                 </Routes>
               </Box>
             </HStack>
@@ -772,7 +808,7 @@ function App() {
                   Trade your personal data via secure on-chain exchange
                 </Text>
                 <Spacer />
-                <Auth key={rfKeys.auth} />
+                <Auth key={rfKeys.auth} setWalletUsed={handleSetWalletUsed} />
 
                 <Text textAlign="center" fontSize="sm">
                   Supported Chains

@@ -7,8 +7,9 @@ import walletMetamask from "./img/wallet-metamask.png";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 import { gtagGo } from "./libs/util";
+import { useSessionStorage } from './libs/hooks';
 
-export const Auth = () => {
+export const Auth = ({setWalletUsed}) => {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
   const { address: elrondAddress } = useGetAccountInfo();
 
@@ -25,9 +26,10 @@ export const Auth = () => {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const [authErrorUi, setAuthErrorUi] = useState(null);
-  const [walletUsed, setWalletUsed] = useState(null);
+  const [EVMWalletUsed, setEVMWalletUsed] = useState(null);
   const [isAuthenticatingMetamask, setIsAuthenticatingMetamask] = useState(0);
   const [isAuthenticatingWc, setIsAuthenticatingWc] = useState(0);
+  const [, setWalletUsedSession] = useSessionStorage('wallet-used', null);
 
   useEffect(() => {
     try {
@@ -37,7 +39,7 @@ export const Auth = () => {
 
   useEffect(() => {
     if (authError) {
-      setWalletUsed(null);
+      setEVMWalletUsed(null);
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
       setAuthErrorUi(authError);
@@ -53,7 +55,7 @@ export const Auth = () => {
 
   useEffect(() => {
     if (isAuthenticating) {
-      switch (walletUsed) {
+      switch (EVMWalletUsed) {
         case WALLETS.WC:
           setIsAuthenticatingWc(1);
           break;
@@ -65,7 +67,7 @@ export const Auth = () => {
     } else {
       // this will trigger when the user login and logsout -- so it's like a ui reset
       // ... (but we cant reset error as we need to show this)
-      setWalletUsed(null);
+      setEVMWalletUsed(null);
       setIsAuthenticatingMetamask(0);
       setIsAuthenticatingWc(0);
     }
@@ -84,28 +86,34 @@ export const Auth = () => {
 
     switch (wallet) {
       case WALLETS.WC:
+        setEVMWalletUsed(WALLETS.WC);
         setWalletUsed(WALLETS.WC);
         authenticate({ provider: "walletconnect" });
         break;
 
       default:
         gtagGo('auth', 'login', wallet);
+        setEVMWalletUsed(WALLETS.METAMASK);
         setWalletUsed(WALLETS.METAMASK);
         authenticate();
         break;
     }
+
+    setWalletUsed(wallet);
+    setWalletUsedSession(wallet);
   };
 
   const handleModelFix = () => {
     document.querySelector("body").classList.toggle("dapp-core-modal-active");
   };
 
-  const goElrondLogin = (walletVal) => {
-    gtagGo('auth', 'login', walletVal);
+  const goElrondLogin = (wallet) => {
+    gtagGo('auth', 'login', wallet);
 
-    setWalletUsed(walletVal);
+    setWalletUsed(wallet);
+    setWalletUsedSession(wallet);
 
-    if (walletVal === 'el_maiar' || walletVal === 'el_ledger') {
+    if (wallet === 'el_maiar' || wallet === 'el_ledger') {
       handleModelFix();
     }
   };
