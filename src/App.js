@@ -381,7 +381,7 @@ function App() {
 
               <HStack>
                 <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
-                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
+                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal.toFixed(2)}
                 </Box>
 
                 <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
