@@ -88,6 +88,7 @@ function App() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [getClaimsError, setGetClaimsError] = useState(null);
+  const [getBalanceError, setGetBalanceError] = useState(null);
   const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
@@ -165,25 +166,32 @@ function App() {
         });
 
         // get user token balance from elrond
-        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-        setTokenBal(balance);
+        try {
+          const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
+          setTokenBal(balance);
+        } catch (e) {
+          setGetBalanceError({
+            errContextMsg: 'Could not get your balance information from the blockchain',
+            rawError: e,
+          });
+        }
 
         await sleep(2);
 
         // get user claims token balance from elrond
         const claimContract = new ClaimsContract(networkId);
-        let claims;
-        let iterations = 0;
-        while (!claims && iterations < 5) {
+        let claims = [
+          { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
+        ];
+        try {
           claims = await claimContract.getClaims(elrondAddress);
-          iterations++;
-        }
-        if (!claims) {
-          claims = [
-            { amount: 0, date: 0 },
-            { amount: 0, date: 0 },
-            { amount: 0, date: 0 },
-          ];
+        } catch (e) {
+          setGetClaimsError({
+            errContextMsg: 'Could not get your claims information from the blockchain',
+            rawError: e,
+          });
         }
 
         let claimBalanceValues = [];
@@ -761,7 +769,7 @@ function App() {
             </AlertDialogOverlay>
           </AlertDialog>
 
-          {getClaimsError && <AlertOverlay errorData={getClaimsError} onClose={() => console.log} />}
+          {getClaimsError || (getBalanceError && <AlertOverlay errorData={getClaimsError ? getClaimsError : getBalanceError} onClose={() => console.log} />)}
 
           {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}
         </Container>
