@@ -131,6 +131,7 @@ function App() {
         // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
         if (path === "unlock") {
           handleLogout();
+          navigate("/");
           return;
         }
 
@@ -352,12 +353,20 @@ function App() {
       moralisLogout();
     } else {
       gtagGo("auth", "logout", "el");
-      await elrondLogout();
-      window.location.reload();
+      await elrondLogout("/", () => {
+        elrondLogoutCallback();
+      });
     }
 
     setWalletUsedSession(null);
 
+    setUser({ ...baseUserContext });
+    setChainMeta({});
+  };
+
+  const elrondLogoutCallback = () => {
+    window.location.reload();
+    setWalletUsedSession(null);
     setUser({ ...baseUserContext });
     setChainMeta({});
   };
