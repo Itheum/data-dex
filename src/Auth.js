@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
-import { useMoralis } from "react-moralis";
-import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, Text, Image, Link, Wrap, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import walletConnect from "./img/wallet-connect.png";
-import walletMetamask from "./img/wallet-metamask.png";
-import { DappUI } from "@elrondnetwork/dapp-core";
-import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
-import { gtagGo } from "./libs/util";
+import { useEffect, useState } from 'react';
+import { useMoralis } from 'react-moralis';
+import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, Text, Image, Link, Wrap, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+import walletConnect from './img/wallet-connect.png';
+import walletMetamask from './img/wallet-metamask.png';
+import { DappUI } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo, refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
+import { gtagGo } from './libs/util';
 import { useSessionStorage } from './libs/hooks';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export const Auth = ({setWalletUsed}) => {
+export const Auth = ({ setWalletUsed }) => {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
   const { address: elrondAddress } = useGetAccountInfo();
 
@@ -30,10 +31,18 @@ export const Auth = ({setWalletUsed}) => {
   const [isAuthenticatingMetamask, setIsAuthenticatingMetamask] = useState(0);
   const [isAuthenticatingWc, setIsAuthenticatingWc] = useState(0);
   const [, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/unlock') {
+      navigate('/', { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     try {
-      document.getElementsByClassName("chakra-portal")[0].style.display = "initial";
+      document.getElementsByClassName('chakra-portal')[0].style.display = 'initial';
     } catch (e) {}
   }, []);
 
@@ -78,7 +87,7 @@ export const Auth = ({setWalletUsed}) => {
     onProgressModalClose();
 
     // reset the original state of the chakra model
-    document.querySelector("body").classList.remove("dapp-core-modal-active");
+    document.querySelector('body').classList.remove('dapp-core-modal-active');
   };
 
   const handleAuthenticate = (wallet) => {
@@ -88,7 +97,7 @@ export const Auth = ({setWalletUsed}) => {
       case WALLETS.WC:
         setEVMWalletUsed(WALLETS.WC);
         setWalletUsed(WALLETS.WC);
-        authenticate({ provider: "walletconnect" });
+        authenticate({ provider: 'walletconnect' });
         break;
 
       default:
@@ -104,7 +113,7 @@ export const Auth = ({setWalletUsed}) => {
   };
 
   const handleModelFix = () => {
-    document.querySelector("body").classList.toggle("dapp-core-modal-active");
+    document.querySelector('body').classList.toggle('dapp-core-modal-active');
   };
 
   const goElrondLogin = (wallet) => {
@@ -167,30 +176,30 @@ export const Auth = ({setWalletUsed}) => {
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_MAIARAPP)} className="auth_wrap">
-                      <WalletConnectLoginButton callbackRoute={"/"} loginButtonText={"Maiar App"} buttonClassName="auth_button"></WalletConnectLoginButton>
+                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">
-                      <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"Maiar DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
+                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button"></ExtensionLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_WEBWALLET)} className="auth_wrap">
-                      <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
+                      <WebWalletLoginButton callbackRoute={'/'} loginButtonText={'Web Wallet'} buttonClassName="auth_button"></WebWalletLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_LEDGER)} className="auth_wrap">
-                      <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
+                      <LedgerLoginButton callbackRoute={'/'} loginButtonText={'Ledger'} buttonClassName="auth_button"></LedgerLoginButton>
                     </WrapItem>
                   </Wrap>
                 </Stack>
               </Box>
 
               <Text fontSize="sm">
-                By logging in, you are agreeing to the{" "}
+                By logging in, you are agreeing to the{' '}
                 <Link href="https://itheum.com/termsofuse" isExternal>
                   Terms of Use <ExternalLinkIcon mx="2px" />
-                </Link>{" "}
-                &{" "}
+                </Link>{' '}
+                &{' '}
                 <Link href="https://itheum.com/privacypolicy" isExternal>
                   Privacy Policy <ExternalLinkIcon mx="2px" />
                 </Link>
