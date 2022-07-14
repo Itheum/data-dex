@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, React } from "react";
-import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Button, Text, Image, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
 import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
@@ -50,7 +50,7 @@ import { useChainMeta } from "./store/ChainMetaContext";
 import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
 import { ClaimsContract } from "./Elrond/claims";
-import { useSessionStorage } from './libs/hooks';
+import { useSessionStorage } from "./libs/hooks";
 
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
@@ -69,8 +69,7 @@ function App() {
     user,
     Moralis: { web3Library: ethers },
   } = useMoralis();
-  const { address: elrondAddress } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
+  const { address: elrondAddress, hasPendingTransactions } = useGetAccountInfo();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
@@ -91,7 +90,7 @@ function App() {
   const [getClaimsError, setGetClaimsError] = useState(null);
   const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("wallet-used", null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -130,7 +129,7 @@ function App() {
     async function elrondLogin() {
       if (elrondAddress) {
         // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
-        if (path === 'unlock') {
+        if (path === "unlock") {
           handleLogout();
           return;
         }
@@ -151,17 +150,17 @@ function App() {
         _chainMetaLocal.contracts = contractsForChain(networkId);
 
         if (walletUsedLocal) {
-          gtagGo('auth', 'login_success', walletUsedLocal);
+          gtagGo("auth", "login_success", walletUsedLocal);
         } else if (walletUsedSession) {
           // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
           // ... note that a user reloaded tab will also gtag login_success
-          gtagGo('auth', 'login_success', walletUsedSession);
+          gtagGo("auth", "login_success", walletUsedSession);
         }
 
         setChainMeta({
           networkId,
           contracts: contractsForChain(networkId),
-          walletUsed: walletUsedLocal || walletUsedSession
+          walletUsed: walletUsedLocal || walletUsedSession,
         });
 
         // get user token balance from elrond
@@ -193,52 +192,56 @@ function App() {
           claimBalanceValues.push(claim.amount / Math.pow(10, 18));
           claimBalanceDates.push(claim.date);
         });
-
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElondAuthenticated: true,
-          claimBalanceValues: claimBalanceValues,
-          claimBalanceDates: claimBalanceDates,
-        });
+        if (elrondAddress) {
+          setUser({
+            ...baseUserContext,
+            ..._user,
+            isElondAuthenticated: true,
+            claimBalanceValues: claimBalanceValues,
+            claimBalanceDates: claimBalanceDates,
+          });
+        }
       }
     }
 
     elrondLogin();
   }, [elrondAddress, hasPendingTransactions]);
 
-  useEffect(async () => {
-    // user is Moralis authenticated and we have a web3 provider to talk to chain
-    if (user && isWeb3Enabled) {
-      const networkId = web3Provider.network.chainId;
+  useEffect(() => {
+    async function getBalances() {
+      // user is Moralis authenticated and we have a web3 provider to talk to chain
+      if (user && isWeb3Enabled) {
+        const networkId = web3Provider.network.chainId;
 
-      setChain(CHAINS[networkId] || "Unknown chain");
+        setChain(CHAINS[networkId] || "Unknown chain");
 
-      if (!SUPPORTED_CHAINS.includes(networkId)) {
-        setAlertIsOpen(true);
-      } else {
-        _chainMetaLocal.networkId = networkId;
-        _chainMetaLocal.contracts = contractsForChain(networkId);
+        if (!SUPPORTED_CHAINS.includes(networkId)) {
+          setAlertIsOpen(true);
+        } else {
+          _chainMetaLocal.networkId = networkId;
+          _chainMetaLocal.contracts = contractsForChain(networkId);
 
-        if (walletUsedLocal) {
-          gtagGo('auth', 'login_success', walletUsedLocal);
-        } else if (walletUsedSession) {
-          gtagGo('auth', 'login_success', walletUsedSession);
+          if (walletUsedLocal) {
+            gtagGo("auth", "login_success", walletUsedLocal);
+          } else if (walletUsedSession) {
+            gtagGo("auth", "login_success", walletUsedSession);
+          }
+
+          setChainMeta({
+            networkId,
+            contracts: contractsForChain(networkId),
+            walletUsed: walletUsedLocal || walletUsedSession,
+          });
+
+          await web3_getTokenBalance(); // get user token balance from EVM
+          await sleep(1);
+
+          await web_getClaimBalance(); // get user claims token balance from EVM
+          await sleep(1);
         }
-
-        setChainMeta({
-          networkId,
-          contracts: contractsForChain(networkId),
-          walletUsed: walletUsedLocal || walletUsedSession
-        });
-
-        await web3_getTokenBalance(); // get user token balance from EVM
-        await sleep(1);
-
-        await web_getClaimBalance(); // get user claims token balance from EVM
-        await sleep(1);
       }
     }
+    getBalances();
   }, [user, isWeb3Enabled]);
 
   useEffect(() => {
@@ -343,13 +346,14 @@ function App() {
     setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (_user.isMoralisAuthenticated) {
-      gtagGo('auth', 'logout', 'evm');
+      gtagGo("auth", "logout", "evm");
       moralisLogout();
     } else {
-      gtagGo('auth', 'logout', 'el');
-      elrondLogout();
+      gtagGo("auth", "logout", "el");
+      await elrondLogout();
+      window.location.reload();
     }
 
     setWalletUsedSession(null);
@@ -358,10 +362,10 @@ function App() {
     setChainMeta({});
   };
 
-  const handleSetWalletUsed = walletVal => {
-    // locally store the wallet that was used for login 
+  const handleSetWalletUsed = (walletVal) => {
+    // locally store the wallet that was used for login
     setWalletUsedLocal(walletVal);
-  }
+  };
 
   const menuButtonW = "180px";
   return (
@@ -401,11 +405,11 @@ function App() {
                         <ShortAddress address={user ? user.get("ethAddress") : elrondAddress} />
                       </Text>
                     </MenuItem>
-                    { _user.isElondAuthenticated && <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
-                      <Text fontSize="xs">
-                        View claims history
-                      </Text>
-                    </MenuItem>}
+                    {_user.isElondAuthenticated && (
+                      <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
+                        <Text fontSize="xs">View claims history</Text>
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>
