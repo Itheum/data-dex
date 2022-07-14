@@ -47,7 +47,7 @@ import moralisIcon from './img/powered-moralis.png';
 import { useUser } from './store/UserContext';
 import { useChainMeta } from './store/ChainMetaContext';
 
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from '@elrondnetwork/dapp-core';
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
 import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from './Elrond/api';
 import { ClaimsContract } from './Elrond/claims';
 import { useSessionStorage } from './libs/hooks';
@@ -69,6 +69,7 @@ function App() {
     user,
     Moralis: { web3Library: ethers },
   } = useMoralis();
+  const { isLoggedIn: isElrondLoggedIn, loginMethod: elrondLoginMethod } = useGetLoginInfo();
   const { address: elrondAddress, hasPendingTransactions } = useGetAccountInfo();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
@@ -128,11 +129,10 @@ function App() {
     // Elrond authenticated for 1st time or is a reload.
     // ... get account token balance and claims
     async function elrondLogin() {
-      if (elrondAddress) {
+      if (elrondAddress && isElrondLoggedIn) {
         // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
         if (path === 'unlock') {
           handleLogout();
-          navigate('/');
           return;
         }
 
@@ -214,7 +214,7 @@ function App() {
     }
 
     elrondLogin();
-  }, [elrondAddress, hasPendingTransactions]);
+  }, [elrondAddress, hasPendingTransactions, isElrondLoggedIn]);
 
   useEffect(() => {
     async function getBalances() {
@@ -356,28 +356,28 @@ function App() {
   };
 
   const handleLogout = async () => {
+    setWalletUsedSession(null);
+    setUser({ ...baseUserContext });
+    setChainMeta({});
+
     if (_user.isMoralisAuthenticated) {
       gtagGo('auth', 'logout', 'evm');
       moralisLogout();
     } else {
       gtagGo('auth', 'logout', 'el');
-      await elrondLogout('/', () => {
-        elrondLogoutCallback();
-      });
-    }
 
-    setWalletUsedSession(null);
-
-    setUser({ ...baseUserContext });
-    setChainMeta({});
+      if (elrondLoginMethod === 'wallet') {
+        // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
+        elrondLogout();
+      } else {
+        // sending in / will reload the data dex after logout is done so it cleans up data dex state
+        elrondLogout('/');
+      }
+      
+    }    
   };
 
-  const elrondLogoutCallback = () => {
-    window.location.reload();
-    setWalletUsedSession(null);
-    setUser({ ...baseUserContext });
-    setChainMeta({});
-  };
+  
 
   const handleSetWalletUsed = (walletVal) => {
     // locally store the wallet that was used for login
