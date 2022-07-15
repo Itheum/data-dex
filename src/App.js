@@ -457,15 +457,16 @@ function App() {
               </HStack>
 
               <Menu>
-                <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
+                <MenuButton as={Button} colorScheme='teal'>
+                  <ShortAddress address={user ? user.get('ethAddress') : elrondAddress} fontSize="sm" />
+                </MenuButton>
                 <MenuList>
                   <MenuGroup>
-                    <MenuItem closeOnSelect={false}>
+                    {itheumAccount && <MenuItem closeOnSelect={false}>
                       <Text fontSize="xs">
-                        {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
-                        <ShortAddress address={user ? user.get('ethAddress') : elrondAddress} />
+                        <Text>{`Profile :  ${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
                       </Text>
-                    </MenuItem>
+                    </MenuItem>}
                     {_user.isElondAuthenticated && (
                       <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
                         <Text fontSize="xs">View claims history</Text>
