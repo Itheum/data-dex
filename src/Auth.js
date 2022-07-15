@@ -5,14 +5,12 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import walletConnect from './img/wallet-connect.png';
 import walletMetamask from './img/wallet-metamask.png';
 import { DappUI } from '@elrondnetwork/dapp-core';
-import { useGetAccountInfo, refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import { gtagGo } from './libs/util';
 import { useSessionStorage } from './libs/hooks';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Auth = ({ setWalletUsed }) => {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
-  const { address: elrondAddress } = useGetAccountInfo();
 
   const WALLETS = {
     METAMASK: 'evm_metamask',
@@ -54,13 +52,6 @@ export const Auth = ({ setWalletUsed }) => {
       setAuthErrorUi(authError);
     }
   }, [authError]);
-
-  useEffect(() => {
-    if (elrondAddress) {
-      setIsAuthenticatingMetamask(0);
-      setIsAuthenticatingWc(0);
-    }
-  }, [elrondAddress]);
 
   useEffect(() => {
     if (isAuthenticating) {
@@ -180,7 +171,7 @@ export const Auth = ({ setWalletUsed }) => {
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">
-                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button"></ExtensionLoginButton>
+                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_WEBWALLET)} className="auth_wrap">
