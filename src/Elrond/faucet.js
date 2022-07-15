@@ -5,8 +5,9 @@ import jsonData from './ABIs/devnetfaucet.abi.json';
 import { faucetContractAddress_Elrond } from '../libs/contactAddresses.js';
 
 export class FaucetContract {
-  timeout = 5000;
   constructor(networkId) {
+    this.timeout = 5000;
+
     if (networkId === 'E1') {
       this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
     } else {

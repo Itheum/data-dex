@@ -4,9 +4,10 @@ import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import jsonData from './ABIs/claims.abi.json';
 import { claimsContractAddress_Elrond } from '../libs/contactAddresses.js';
 
-export class ClaimsContract {
-  timeout = 5000;
+export class ClaimsContract {  
   constructor(networkId) {
+    this.timeout = 5000;
+
     if (networkId === 'E1') {
       this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
     } else {

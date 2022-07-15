@@ -70,7 +70,8 @@ function App() {
     Moralis: { web3Library: ethers },
   } = useMoralis();
   const { isLoggedIn: isElrondLoggedIn, loginMethod: elrondLoginMethod } = useGetLoginInfo();
-  const { address: elrondAddress, hasPendingTransactions } = useGetAccountInfo();
+  const { address: elrondAddress } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
@@ -93,6 +94,7 @@ function App() {
   const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [loggedInActiveElrondWallet, setLoggedInActiveElrondWallet] = useState(null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -128,93 +130,120 @@ function App() {
   useEffect(() => {
     // Elrond authenticated for 1st time or is a reload.
     // ... get account token balance and claims
-    async function elrondLogin() {
-      if (elrondAddress && isElrondLoggedIn) {
-        // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
-        if (path === 'unlock') {
-          handleLogout();
-          return;
-        }
-
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElondAuthenticated: true,
-        });
-
-        await sleep(1);
-
-        const networkId = 'ED'; // @TODO: This needs to come from the logged in wallet provider
-
-        setChain(CHAINS[networkId]);
-
-        _chainMetaLocal.networkId = networkId;
-        _chainMetaLocal.contracts = contractsForChain(networkId);
-
-        if (walletUsedLocal) {
-          gtagGo('auth', 'login_success', walletUsedLocal);
-        } else if (walletUsedSession) {
-          // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
-          // ... note that a user reloaded tab will also gtag login_success
-          gtagGo('auth', 'login_success', walletUsedSession);
-        }
-
-        setChainMeta({
-          networkId,
-          contracts: contractsForChain(networkId),
-          walletUsed: walletUsedLocal || walletUsedSession,
-        });
-
-        // get user token balance from elrond
-        try {
-          const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-          setTokenBal(balance);
-        } catch (e) {
-          setGetBalanceError({
-            errContextMsg: 'Could not get your balance information from the blockchain',
-            rawError: e,
-          });
-        }
-
-        await sleep(2);
-
-        // get user claims token balance from elrond
-        const claimContract = new ClaimsContract(networkId);
-        let claims = [
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-        ];
-        try {
-          claims = await claimContract.getClaims(elrondAddress);
-        } catch (e) {
-          setGetClaimsError({
-            errContextMsg: 'Could not get your claims information from the blockchain',
-            rawError: e,
-          });
-        }
-
-        let claimBalanceValues = [];
-        let claimBalanceDates = [];
-
-        claims.forEach((claim) => {
-          claimBalanceValues.push(claim.amount / Math.pow(10, 18));
-          claimBalanceDates.push(claim.date);
-        });
-        if (elrondAddress) {
-          setUser({
-            ...baseUserContext,
-            ..._user,
-            isElondAuthenticated: true,
-            claimBalanceValues: claimBalanceValues,
-            claimBalanceDates: claimBalanceDates,
-          });
-        }
+    async function elrondSessionInit() {
+      // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
+      if (path === 'unlock' || loggedInActiveElrondWallet !== null) {
+        handleLogout();
+        return;
       }
+
+      // we set the "ssctive elrond wallet", we can use this to prvent the Maiar App delayed approve bug 
+      // ... where wallets sessions can be swapped - https://github.com/Itheum/data-dex/issues/95
+      // ... if we detect loggedInActiveElrondWallet is NOT null then we abort and logout the user (see above)
+      setLoggedInActiveElrondWallet(elrondAddress);
+
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isElondAuthenticated: true,
+      });
+
+      await sleep(1);
+
+      const networkId = 'ED'; // @TODO: This needs to come from the logged in wallet provider
+
+      setChain(CHAINS[networkId]);
+
+      _chainMetaLocal.networkId = networkId;
+      _chainMetaLocal.contracts = contractsForChain(networkId);
+
+      if (walletUsedLocal) {
+        gtagGo('auth', 'login_success', walletUsedLocal);
+      } else if (walletUsedSession) {
+        // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
+        // ... note that a user reloaded tab will also gtag login_success
+        gtagGo('auth', 'login_success', walletUsedSession);
+      }
+
+      setChainMeta({
+        networkId,
+        contracts: contractsForChain(networkId),
+        walletUsed: walletUsedLocal || walletUsedSession,
+      });
+
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isElondAuthenticated: true
+      });
+
+      elrondBalancesUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
     }
 
-    elrondLogin();
-  }, [elrondAddress, hasPendingTransactions, isElrondLoggedIn]);
+    if (elrondAddress && isElrondLoggedIn) {
+      elrondSessionInit();
+    }
+  }, [elrondAddress]);
+
+
+  useEffect(() => {
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's "false" we need to get balances    
+    if (!hasPendingTransactions) {
+      elrondBalancesUpdate();
+    }
+  }, [hasPendingTransactions]);
+
+  // Elrond transactions state changed so need new balances
+  const elrondBalancesUpdate = async() => {
+    if (elrondAddress && isElrondLoggedIn) {
+      // get user token balance from elrond
+      try {
+        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[_chainMetaLocal.networkId])) / Math.pow(10, 18);
+        setTokenBal(balance);
+      } catch (e) {
+        setGetBalanceError({
+          errContextMsg: 'Could not get your balance information from the blockchain',
+          rawError: e,
+        });
+      }
+
+      await sleep(2);
+
+      // get user claims token balance from elrond
+      const claimContract = new ClaimsContract(_chainMetaLocal.networkId);
+
+      let claims = [
+        { amount: 0, date: 0 },
+        { amount: 0, date: 0 },
+        { amount: 0, date: 0 },
+      ];
+
+      try {
+        claims = await claimContract.getClaims(elrondAddress);
+      } catch(e) {
+        setGetClaimsError({
+          errContextMsg: 'Could not get your claims information from the blockchain',
+          rawError: e,
+        });
+      }
+
+      const claimBalanceValues = [];
+      const claimBalanceDates = [];
+
+      claims.forEach((claim) => {
+        claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+        claimBalanceDates.push(claim.date);
+      });
+      
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isElondAuthenticated: true,
+        claimBalanceValues: claimBalanceValues,
+        claimBalanceDates: claimBalanceDates,
+      });
+    }
+  }
 
   useEffect(() => {
     async function getBalances() {
@@ -250,6 +279,7 @@ function App() {
         }
       }
     }
+
     getBalances();
   }, [user, isWeb3Enabled]);
 
@@ -355,7 +385,7 @@ function App() {
     setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async() => {
     setWalletUsedSession(null);
     setUser({ ...baseUserContext });
     setChainMeta({});
@@ -376,15 +406,13 @@ function App() {
       
     }    
   };
-
   
-
   const handleSetWalletUsed = (walletVal) => {
-    // locally store the wallet that was used for login
-    setWalletUsedLocal(walletVal);
+    setWalletUsedLocal(walletVal); // locally store the wallet that was used for login
   };
 
   const menuButtonW = '180px';
+
   return (
     <>
       {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
