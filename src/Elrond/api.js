@@ -9,7 +9,7 @@ export const getApi = (chain) => {
   } else {
     return 'devnet-api.elrond.com';
   }
-}
+};
 
 export const getExplorer = (chain) => {
   if (chain === 'Elrond - Mainnet') {
@@ -17,23 +17,31 @@ export const getExplorer = (chain) => {
   } else {
     return 'devnet-explorer.elrond.com';
   }
-}
+};
 
 export const getTransactionLink = (chain, txHash) => {
   return `https://${getExplorer(chain)}/transactions/${txHash}`;
-}
+};
 
 // check token balance on Elrond
 export const checkBalance = async (token, address, chain) => {
   const api = getApi(chain);
-
-  try {
-    const resp = await axios.get(`https://${api}/accounts/${address}/tokens/${token}`);
-    return resp.data.balance;
-  } catch (error) {
-    console.error(error);
-    return 0;
-  }
+  
+  return new Promise((resolve, reject) => {
+    axios.get(`https://${api}/accounts/${address}/tokens/${token}`)
+    .then((resp) => {
+      resolve({balance: resp.data.balance});
+    })
+    .catch((error) => {
+      if (error.response) {
+        if (error.response.status === 404) {
+          resolve({balance: 0});  // user has no ITHEUM so API return 404 it seems
+        } else {
+          resolve({error: error.response.data});
+        }
+      }
+    });
+  });
 };
 
 export const getClaimTransactions = async (address, smartContractAddress, chain) => {
@@ -43,9 +51,11 @@ export const getClaimTransactions = async (address, smartContractAddress, chain)
     const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
     console.log(allTxs);
 
-    const resp = await (await axios.get(allTxs)).data.filter(tx => {
-      return tx.function === 'claim';
-    }).slice(0, 25);
+    const resp = await (await axios.get(allTxs)).data
+      .filter((tx) => {
+        return tx.function === 'claim';
+      })
+      .slice(0, 25);
 
     const transactions = [];
 
@@ -55,7 +65,9 @@ export const getClaimTransactions = async (address, smartContractAddress, chain)
       transaction['hash'] = resp[tx]['txHash'];
       transaction['status'] = resp[tx]['status'];
 
-      const data = Buffer.from(resp[tx]['data'], 'base64').toString('ascii').split('@');
+      const data = Buffer.from(resp[tx]['data'], 'base64')
+        .toString('ascii')
+        .split('@');
 
       if (data.length === 1) {
         transaction['claimType'] = 'Claim All';
@@ -96,4 +108,4 @@ export const getClaimTransactions = async (address, smartContractAddress, chain)
     console.error(error);
     return [];
   }
-}
+};

@@ -1,74 +1,80 @@
-import { useEffect, useState, useRef, React } from "react";
+import { useEffect, useState, useRef, React } from 'react';
 import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Text, Image, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
-import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { GiReceiveMoney } from "react-icons/gi";
-import { AiFillHome } from "react-icons/ai";
+import { Button, Text, Image, Tooltip, AlertDialog, Badge, 
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
+  AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
+  Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider, 
+  useToast, useColorMode } from '@chakra-ui/react';
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
+import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { GiReceiveMoney } from 'react-icons/gi';
+import { AiFillHome } from 'react-icons/ai';
 
-import { useMoralis, useMoralisWeb3Api } from "react-moralis";
-import { Auth } from "./Auth";
-import SellData from "./SellData";
-import BuyData from "./BuyData";
-import PurchasedData from "./PurchasedData";
-import AdvertisedData from "./AdvertisedData";
-import PersonalDataProofs from "./PersonalDataProofs";
-import ShortAddress from "./UtilComps/ShortAddress";
-import Tools from "./Tools";
-import ChainTransactions from "./ChainTransactions";
-import DataVault from "./DataVault";
-import DataNFTs from "./DataNFTs";
-import MyDataNFTs from "./DataNFT/MyDataNFTs";
-import DataNFTMarketplace from "./DataNFT/DataNFTMarketplace";
-import DataStreams from "./DataStreams";
-import DataCoalitions from "./DataCoalitions";
-import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
-import TrustedComputation from "./TrustedComputation";
-import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
-import AlertOverlay from "./UtilComps/AlertOverlay";
-import ClaimsHistory from "./Elrond/ClaimsHistory";
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config, gtagGo } from "./libs/util";
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from "./libs/util";
+import { useMoralis, useMoralisWeb3Api } from 'react-moralis';
+import { Auth } from './Auth';
+import SellData from './SellData';
+import BuyData from './BuyData';
+import PurchasedData from './PurchasedData';
+import AdvertisedData from './AdvertisedData';
+import PersonalDataProofs from './PersonalDataProofs';
+import ShortAddress from './UtilComps/ShortAddress';
+import Tools from './Tools';
+import ChainTransactions from './ChainTransactions';
+import DataVault from './DataVault';
+import DataNFTs from './DataNFTs';
+import MyDataNFTs from './DataNFT/MyDataNFTs';
+import DataNFTMarketplace from './DataNFT/DataNFTMarketplace';
+import DataStreams from './DataStreams';
+import DataCoalitions from './DataCoalitions';
+import DataCoalitionsViewAll from './DataCoalition/DataCoalitionsViewAll';
+import TrustedComputation from './TrustedComputation';
+import ChainSupportedInput from './UtilComps/ChainSupportedInput';
+import AlertOverlay from './UtilComps/AlertOverlay';
+import ClaimsHistory from './Elrond/ClaimsHistory';
+import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config, gtagGo } from './libs/util';
+import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from './libs/util';
 
-import logo from "./img/logo.png";
-import logoSmlD from "./img/logo-sml-d.png";
-import logoSmlL from "./img/logo-sml-l.png";
-import chainEth from "./img/eth-chain-logo.png";
-import chainPol from "./img/polygon-chain-logo.png";
-import chainBsc from "./img/bsc-chain-logo.png";
-import chainAvln from "./img/avalanche-chain-logo.png";
-import chainHrmy from "./img/harmony-chain-logo.png";
-import chainPlaton from "./img/platon-chain-logo.png";
-import chainParastate from "./img/parastate-chain-logo.png";
-import chainElrond from "./img/elrond-chain-logo.png";
-import chainHedera from "./img/hedera-chain-logo.png";
-import moralisIcon from "./img/powered-moralis.png";
+import logo from './img/logo.png';
+import logoSmlD from './img/logo-sml-d.png';
+import logoSmlL from './img/logo-sml-l.png';
+import chainEth from './img/eth-chain-logo.png';
+import chainPol from './img/polygon-chain-logo.png';
+import chainBsc from './img/bsc-chain-logo.png';
+import chainAvln from './img/avalanche-chain-logo.png';
+import chainHrmy from './img/harmony-chain-logo.png';
+import chainPlaton from './img/platon-chain-logo.png';
+import chainParastate from './img/parastate-chain-logo.png';
+import chainElrond from './img/elrond-chain-logo.png';
+import chainHedera from './img/hedera-chain-logo.png';
+import moralisIcon from './img/powered-moralis.png';
 
-import { useUser } from "./store/UserContext";
-import { useChainMeta } from "./store/ChainMetaContext";
+import { useUser } from './store/UserContext';
+import { useChainMeta } from './store/ChainMetaContext';
 
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "./Elrond/api";
-import { ClaimsContract } from "./Elrond/claims";
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from './Elrond/api';
+import { ClaimsContract } from './Elrond/claims';
 import { useSessionStorage } from './libs/hooks';
 
 const _chainMetaLocal = {};
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
+const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 const elrondLogout = logout;
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElondAuthenticated: false,
-  claimBalanceValues: ["-1", "-1", "-1"],
+  claimBalanceValues: ['-1', '-1', '-1'],
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
 function App() {
+  const toast = useToast();
   const {
     isAuthenticated,
     logout: moralisLogout,
     user,
     Moralis: { web3Library: ethers },
   } = useMoralis();
+  const { isLoggedIn: isElrondLoggedIn, loginMethod: elrondLoginMethod } = useGetLoginInfo();
   const { address: elrondAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
@@ -88,17 +94,17 @@ function App() {
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [getClaimsError, setGetClaimsError] = useState(null);
   const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [loggedInActiveElrondWallet, setLoggedInActiveElrondWallet] = useState(null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
 
   const navigate = useNavigate();
-  const path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
+  const path = pathname?.split('/')[pathname?.split('/')?.length - 1]; // handling Route Path
 
   useEffect(() => {
     setUser({ ...baseUserContext }); // set base user context for app
@@ -127,118 +133,167 @@ function App() {
   useEffect(() => {
     // Elrond authenticated for 1st time or is a reload.
     // ... get account token balance and claims
-    async function elrondLogin() {
-      if (elrondAddress) {
-        // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
-        if (path === 'unlock') {
-          handleLogout();
-          return;
+    async function elrondSessionInit() {
+      // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
+      // ... also do the loggedInActiveElrondWallet check to make sure elrond addresses didnt swap midway (see below for why)
+      if (path === 'unlock' || (loggedInActiveElrondWallet !== null && loggedInActiveElrondWallet !== elrondAddress)) {
+        handleLogout();
+        return;
+      }
+
+      // we set the "active elrond wallet", we can use this to prvent the Maiar App delayed approve bug 
+      // ... where wallets sessions can be swapped - https://github.com/Itheum/data-dex/issues/95
+      // ... if we detect loggedInActiveElrondWallet is NOT null then we abort and logout the user (see above)
+      setLoggedInActiveElrondWallet(elrondAddress);
+
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isElondAuthenticated: true,
+      });
+
+      await sleep(1);
+
+      const networkId = 'ED'; // @TODO: This needs to come from the logged in wallet provider
+
+      setChain(CHAINS[networkId]);
+
+      _chainMetaLocal.networkId = networkId;
+      _chainMetaLocal.contracts = contractsForChain(networkId);
+
+      if (walletUsedLocal) {
+        gtagGo('auth', 'login_success', walletUsedLocal);
+      } else if (walletUsedSession) {
+        // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
+        // ... note that a user reloaded tab will also gtag login_success
+        gtagGo('auth', 'login_success', walletUsedSession);
+      }
+
+      setChainMeta({
+        networkId,
+        contracts: contractsForChain(networkId),
+        walletUsed: walletUsedLocal || walletUsedSession,
+      });
+
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isElondAuthenticated: true
+      });
+
+      elrondBalancesUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
+    }
+
+    if (elrondAddress && isElrondLoggedIn) {
+      elrondSessionInit();
+    }
+  }, [elrondAddress]);
+
+
+  useEffect(() => {
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's "false" we need to get balances    
+    if (!hasPendingTransactions) {
+      elrondBalancesUpdate();
+    }
+  }, [hasPendingTransactions]);
+
+  // Elrond transactions state changed so need new balances
+  const elrondBalancesUpdate = async() => {
+    if (elrondAddress && isElrondLoggedIn) {
+      // get user token balance from elrond
+      const data = await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[_chainMetaLocal.networkId]);
+
+      if (data.balance) {
+        setTokenBal((data.balance / Math.pow(10, 18)));
+      } else if (data.error) {
+        if (!toast.isActive('er1')) {
+          toast({
+            id: 'er1',
+            title: 'ER1: Could not get your balance information from the blockchain. Failed to get a valid response from elrond api',
+            status: 'error',
+            isClosable: true,
+            duration: null
+          });
         }
+      }        
+  
+      await sleep(2);
 
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElondAuthenticated: true,
+      // get user claims token balance from elrond
+      const claimContract = new ClaimsContract(_chainMetaLocal.networkId);
+
+      let claims = [
+        { amount: 0, date: 0 },
+        { amount: 0, date: 0 },
+        { amount: 0, date: 0 },
+      ];
+
+      try {
+        claims = await claimContract.getClaims(elrondAddress);
+      } catch(e) {
+        toast({
+          id: 'er2',
+          title: 'ER2: Could not get your claims information from the elrond blockchain.',
+          status: 'error',
+          isClosable: true,
+          duration: null
         });
+      }
 
-        await sleep(1);
+      const claimBalanceValues = [];
+      const claimBalanceDates = [];
 
-        const networkId = "ED"; // @TODO: This needs to come from the logged in wallet provider
+      claims.forEach((claim) => {
+        claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+        claimBalanceDates.push(claim.date);
+      });
+      
+      setUser({
+        ...baseUserContext,
+        ..._user,
+        isElondAuthenticated: true,
+        claimBalanceValues: claimBalanceValues,
+        claimBalanceDates: claimBalanceDates,
+      });
+    }
+  }
 
-        setChain(CHAINS[networkId]);
+  useEffect(() => {
+    async function getBalances() {
+      // user is Moralis authenticated and we have a web3 provider to talk to chain
+      if (user && isWeb3Enabled) {
+        const networkId = web3Provider.network.chainId;
 
-        _chainMetaLocal.networkId = networkId;
-        _chainMetaLocal.contracts = contractsForChain(networkId);
+        setChain(CHAINS[networkId] || 'Unknown chain');
 
-        if (walletUsedLocal) {
-          gtagGo('auth', 'login_success', walletUsedLocal);
-        } else if (walletUsedSession) {
-          // if it's webwallet, use session storage to gtag as walletUsedLocal will be empty
-          // ... note that a user reloaded tab will also gtag login_success
-          gtagGo('auth', 'login_success', walletUsedSession);
+        if (!SUPPORTED_CHAINS.includes(networkId)) {
+          setAlertIsOpen(true);
+        } else {
+          _chainMetaLocal.networkId = networkId;
+          _chainMetaLocal.contracts = contractsForChain(networkId);
+
+          if (walletUsedLocal) {
+            gtagGo('auth', 'login_success', walletUsedLocal);
+          } else if (walletUsedSession) {
+            gtagGo('auth', 'login_success', walletUsedSession);
+          }
+
+          setChainMeta({
+            networkId,
+            contracts: contractsForChain(networkId),
+            walletUsed: walletUsedLocal || walletUsedSession,
+          });
+
+          await web3_getTokenBalance(); // get user token balance from EVM
+          await sleep(1);
+
+          await web_getClaimBalance(); // get user claims token balance from EVM
+          await sleep(1);
         }
-
-        setChainMeta({
-          networkId,
-          contracts: contractsForChain(networkId),
-          walletUsed: walletUsedLocal || walletUsedSession
-        });
-
-        // get user token balance from elrond
-        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-        setTokenBal(balance);
-
-        await sleep(2);
-
-        // get user claims token balance from elrond
-        const claimContract = new ClaimsContract(networkId);
-        let claims;
-        let iterations = 0;
-        while (!claims && iterations < 5) {
-          claims = await claimContract.getClaims(elrondAddress);
-          iterations++;
-        }
-        if (!claims) {
-          claims = [
-            { amount: 0, date: 0 },
-            { amount: 0, date: 0 },
-            { amount: 0, date: 0 },
-          ];
-        }
-
-        let claimBalanceValues = [];
-        let claimBalanceDates = [];
-
-        claims.forEach((claim) => {
-          claimBalanceValues.push(claim.amount / Math.pow(10, 18));
-          claimBalanceDates.push(claim.date);
-        });
-
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElondAuthenticated: true,
-          claimBalanceValues: claimBalanceValues,
-          claimBalanceDates: claimBalanceDates,
-        });
       }
     }
 
-    elrondLogin();
-  }, [elrondAddress, hasPendingTransactions]);
-
-  useEffect(async () => {
-    // user is Moralis authenticated and we have a web3 provider to talk to chain
-    if (user && isWeb3Enabled) {
-      const networkId = web3Provider.network.chainId;
-
-      setChain(CHAINS[networkId] || "Unknown chain");
-
-      if (!SUPPORTED_CHAINS.includes(networkId)) {
-        setAlertIsOpen(true);
-      } else {
-        _chainMetaLocal.networkId = networkId;
-        _chainMetaLocal.contracts = contractsForChain(networkId);
-
-        if (walletUsedLocal) {
-          gtagGo('auth', 'login_success', walletUsedLocal);
-        } else if (walletUsedSession) {
-          gtagGo('auth', 'login_success', walletUsedSession);
-        }
-
-        setChainMeta({
-          networkId,
-          contracts: contractsForChain(networkId),
-          walletUsed: walletUsedLocal || walletUsedSession
-        });
-
-        await web3_getTokenBalance(); // get user token balance from EVM
-        await sleep(1);
-
-        await web_getClaimBalance(); // get user claims token balance from EVM
-        await sleep(1);
-      }
-    }
+    getBalances();
   }, [user, isWeb3Enabled]);
 
   useEffect(() => {
@@ -254,7 +309,7 @@ function App() {
   };
 
   const web_getClaimBalance = async () => {
-    const walletAddress = user.get("ethAddress");
+    const walletAddress = user.get('ethAddress');
     const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
 
     const keys = Object.keys(CLAIM_TYPES);
@@ -277,11 +332,11 @@ function App() {
       });
 
       const valuesArray = claimBalanceResponse.map((el) => {
-        return el["values"];
+        return el['values'];
       });
 
       const datesArray = claimBalanceResponse.map((el) => {
-        return el["dates"];
+        return el['dates'];
       });
 
       await setUser({
@@ -293,9 +348,12 @@ function App() {
       });
     } catch (e) {
       console.error(e);
-      setGetClaimsError({
-        errContextMsg: "Could not get your claims information from the blockchain",
-        rawError: e,
+      toast({
+        id: 'er3',
+        title: 'ER3: Could not get your claims information from the EVM blockchain.',
+        status: 'error',
+        isClosable: true,
+        duration: null
       });
     }
   };
@@ -305,7 +363,7 @@ function App() {
       return;
     }
 
-    const walletAddress = user.get("ethAddress");
+    const walletAddress = user.get('ethAddress');
 
     /*
     // Example of running a contract via moralis's runContractFunction (for reference)
@@ -343,80 +401,88 @@ function App() {
     setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
+    setWalletUsedSession(null);
+    setUser({ ...baseUserContext });
+    setChainMeta({});
+
     if (_user.isMoralisAuthenticated) {
       gtagGo('auth', 'logout', 'evm');
       moralisLogout();
     } else {
       gtagGo('auth', 'logout', 'el');
-      elrondLogout();
-    }
 
-    setWalletUsedSession(null);
-
-    setUser({ ...baseUserContext });
-    setChainMeta({});
+      if (elrondLoginMethod === 'wallet') {
+        // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
+        elrondLogout();
+      } else {
+        // sending in / will reload the data dex after logout is done so it cleans up data dex state
+        elrondLogout('/');
+      }
+      
+    }    
+  };
+  
+  const handleSetWalletUsed = (walletVal) => {
+    setWalletUsedLocal(walletVal); // locally store the wallet that was used for login
   };
 
-  const handleSetWalletUsed = walletVal => {
-    // locally store the wallet that was used for login 
-    setWalletUsedLocal(walletVal);
-  }
+  const menuButtonW = '180px';
 
-  const menuButtonW = "180px";
   return (
     <>
       {_user.isMoralisAuthenticated || _user.isElondAuthenticated ? (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
-          <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
+          <Flex h="100vh" w="100vw" direction={{ base: 'column', md: 'column' }}>
             <HStack h="10vh" p="5">
-              <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Image boxSize="50px" height="auto" src={colorMode === 'light' ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
 
               <Heading>
-                <Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text>
+                <Text fontSize={['xs', 'sm']}>Itheum Data DEX</Text>
                 <Text fontSize="xx-small">{dataDexVersion}</Text>
               </Heading>
 
               <Spacer />
 
               <HStack>
-                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
-                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
+                <Box as="text" fontSize={['xs', 'sm']} minWidth={'5.5rem'} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
+                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal.toFixed(2)}
                 </Box>
 
-                <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
-                  {chain || "..."}
+                <Box display={['none', null, 'block']} fontSize={['xs', 'sm']} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                  {chain || '...'}
                 </Box>
 
-                <Button onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
+                <Button onClick={toggleColorMode}>{colorMode === 'light' ? <MoonIcon /> : <SunIcon />}</Button>
               </HStack>
 
               <Menu>
-                <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
+                <MenuButton as={Button} colorScheme='teal'>
+                  <ShortAddress address={user ? user.get('ethAddress') : elrondAddress} fontSize="sm" />
+                </MenuButton>
                 <MenuList>
                   <MenuGroup>
-                    <MenuItem closeOnSelect={false}>
+                    {itheumAccount && <MenuItem closeOnSelect={false}>
                       <Text fontSize="xs">
-                        {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
-                        <ShortAddress address={user ? user.get("ethAddress") : elrondAddress} />
-                      </Text>
-                    </MenuItem>
-                    { _user.isElondAuthenticated && <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
-                      <Text fontSize="xs">
-                        View claims history
+                        <Text>{`Profile :  ${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
                       </Text>
                     </MenuItem>}
+                    {_user.isElondAuthenticated && (
+                      <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
+                        <Text fontSize="xs">View claims history</Text>
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>
                   </MenuGroup>
 
-                  <MenuDivider display={["block", null, "none"]} />
+                  <MenuDivider display={['block', null, 'none']} />
 
                   <MenuGroup>
-                    <MenuItem closeOnSelect={false} display={["block", null, "none"]}>
-                      <Box fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
-                        {chain || "..."}
+                    <MenuItem closeOnSelect={false} display={['block', null, 'none']}>
+                      <Box fontSize={['xs', 'sm']} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                        {chain || '...'}
                       </Box>
                     </MenuItem>
                   </MenuGroup>
@@ -424,13 +490,13 @@ function App() {
               </Menu>
             </HStack>
 
-            <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} backgroundColor={"blue1"} pt={5}>
-              <Box backgroundColor={"green1"}>
-                <Button display={["block", null, "none"]} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
+            <HStack alignItems={['center', , 'flex-start']} flexDirection={['column', , 'row']} backgroundColor={'blue1'} pt={5}>
+              <Box backgroundColor={'green1'}>
+                <Button display={['block', null, 'none']} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
                   Main menu
                 </Button>
 
-                <Stack direction="column" spacing={4} display={[(showMobileMenu && "block") || "none", , "block"]}>
+                <Stack direction="column" spacing={4} display={[(showMobileMenu && 'block') || 'none', , 'block']}>
                   <HStack pl="3">
                     <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                       Terms of Use <ExternalLinkIcon mx="2px" />
@@ -450,7 +516,7 @@ function App() {
                         variant="solid"
                         onClick={() => {
                           setMenuItem(MENU.HOME);
-                          navigate("home");
+                          navigate('home');
                         }}
                       >
                         Home
@@ -463,14 +529,14 @@ function App() {
                         variant="solid"
                         onClick={() => {
                           setMenuItem(MENU.SELL);
-                          navigate("selldata");
+                          navigate('selldata');
                         }}
                       >
                         Trade Data
                       </Button>
                     </Stack>
 
-                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path]?.[1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>
+                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path]?.[1] : [-1]} allowToggle={true} w="230px" style={{ border: 'solid 1px transparent' }}>
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
@@ -486,7 +552,7 @@ function App() {
                                 isDisabled={menuItem === MENU.BUY}
                                 onClick={() => {
                                   setMenuItem(MENU.BUY);
-                                  navigate("datapacks/buydata");
+                                  navigate('datapacks/buydata');
                                 }}
                               >
                                 Buy Data
@@ -498,7 +564,7 @@ function App() {
                                 isDisabled={menuItem === MENU.ADVERTISED}
                                 onClick={() => {
                                   setMenuItem(MENU.ADVERTISED);
-                                  navigate("datapacks/advertiseddata");
+                                  navigate('datapacks/advertiseddata');
                                 }}
                               >
                                 Advertised Data
@@ -510,7 +576,7 @@ function App() {
                                 isDisabled={menuItem === MENU.PURCHASED}
                                 onClick={() => {
                                   setMenuItem(MENU.PURCHASED);
-                                  navigate("datapacks/purchaseddata");
+                                  navigate('datapacks/purchaseddata');
                                 }}
                               >
                                 Purchased Data
@@ -522,7 +588,7 @@ function App() {
                                 isDisabled={menuItem === MENU.DATAPROOFS}
                                 onClick={() => {
                                   setMenuItem(MENU.DATAPROOFS);
-                                  navigate("datapacks/personaldataproof");
+                                  navigate('datapacks/personaldataproof');
                                 }}
                               >
                                 Personal Data Proofs
@@ -547,11 +613,11 @@ function App() {
                                 isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
-                                    navigate("datanfts/wallet");
+                                    navigate('datanfts/wallet');
                                     setMenuItem(MENU.NFTMINE);
                                   } else {
                                     doSplashScreenShown(MENU.NFT);
-                                    navigate("datanfts");
+                                    navigate('datanfts');
                                     setMenuItem(MENU.NFTMINE);
                                   }
                                 }}
@@ -566,11 +632,11 @@ function App() {
                                 isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
-                                    navigate("datanfts/marketplace");
+                                    navigate('datanfts/marketplace');
                                     setMenuItem(MENU.NFTALL);
                                   } else {
                                     doSplashScreenShown(MENU.NFT);
-                                    navigate("datanfts");
+                                    navigate('datanfts');
                                     setMenuItem(MENU.NFTALL);
                                   }
                                 }}
@@ -597,11 +663,11 @@ function App() {
                                 isDisabled={menuItem === MENU.COALITIONALL}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.COALITION]) {
-                                    navigate("datacoalitions/viewcoalitions");
+                                    navigate('datacoalitions/viewcoalitions');
                                     setMenuItem(MENU.COALITIONALL);
                                   } else {
                                     doSplashScreenShown(MENU.COALITION);
-                                    navigate("datacoalitions");
+                                    navigate('datacoalitions');
                                     setMenuItem(MENU.COALITION);
                                   }
                                 }}
@@ -628,7 +694,7 @@ function App() {
                                 colorScheme="teal"
                                 onClick={() => {
                                   setMenuItem(MENU.TX);
-                                  navigate("utils/chaintransactions");
+                                  navigate('utils/chaintransactions');
                                 }}
                               >
                                 Chain Transactions
@@ -652,7 +718,7 @@ function App() {
                               isDisabled={menuItem === MENU.VAULT}
                               onClick={() => {
                                 setMenuItem(MENU.VAULT);
-                                navigate("labs/datavault");
+                                navigate('labs/datavault');
                               }}
                             >
                               Data Vault
@@ -662,7 +728,7 @@ function App() {
                               isDisabled={menuItem === MENU.STREAM}
                               onClick={() => {
                                 setMenuItem(MENU.STREAM);
-                                navigate("labs/datastreams");
+                                navigate('labs/datastreams');
                               }}
                             >
                               Data Streams
@@ -672,7 +738,7 @@ function App() {
                               isDisabled={menuItem === MENU.TRUSTEDCOMP}
                               onClick={() => {
                                 setMenuItem(MENU.TRUSTEDCOMP);
-                                navigate("labs/trustedcomputation");
+                                navigate('labs/trustedcomputation');
                               }}
                             >
                               Trusted Computation
@@ -687,13 +753,13 @@ function App() {
                 </Stack>
               </Box>
 
-              <Box backgroundColor={"red1"} pl={5} w="full">
+              <Box backgroundColor={'red1'} pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
-                  <Route path="home" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
-                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
+                  <Route path="/" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                  <Route path="home" element={<Tools key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
-                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />} />
+                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshBalance={handleRefreshBalance} />} />
                     <Route path="advertiseddata" element={<AdvertisedData />} />
                     <Route path="purchaseddata" element={<PurchasedData />} />
                     <Route path="personaldataproof" element={<PersonalDataProofs />} />
@@ -731,7 +797,7 @@ function App() {
                 </AlertDialogHeader>
 
                 <AlertDialogBody>
-                  Sorry the {chain} chain is currently not supported. We are working on it. You need to be on{" "}
+                  Sorry the {chain} chain is currently not supported. We are working on it. You need to be on{' '}
                   {SUPPORTED_CHAINS.map((i) => (
                     <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">
                       {CHAINS[i]}
@@ -746,18 +812,16 @@ function App() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialogOverlay>
-          </AlertDialog>
-
-          {getClaimsError && <AlertOverlay errorData={getClaimsError} onClose={() => console.log} />}
+          </AlertDialog>          
 
           {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}
         </Container>
       ) : (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex justify="center" direction="column">
-            <Box p={["20px", null, "30px"]} borderWidth="2px" borderRadius="lg">
+            <Box p={['20px', null, '30px']} borderWidth="2px" borderRadius="lg">
               <Stack>
-                <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={logo} alt="Itheum Data DEX" margin="auto" />
+                <Image w={['70px', null, '90px']} h={['60px', null, '80px']} src={logo} alt="Itheum Data DEX" margin="auto" />
                 <Heading size="md" textAlign="center">
                   Itheum Data DEX
                 </Heading>
@@ -771,7 +835,7 @@ function App() {
                   Supported Chains
                 </Text>
 
-                <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
+                <Flex wrap={['wrap', 'nowrap']} direction="row" justify={['start', 'space-around']} w={['300px', '500px']}>
                   <Tooltip label="Live on Devnet">
                     <Image src={chainElrond} boxSize="40px" borderRadius="lg" m="5px" />
                   </Tooltip>

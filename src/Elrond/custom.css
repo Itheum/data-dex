@@ -2,6 +2,9 @@
   box-shadow: none !important;
   border: 0;
   background-color: #ffffff00;
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
 }
 
 .auth_wrap {
@@ -58,7 +61,7 @@ body.auth_button {
   box-shadow: none !important;
   border: 0;
   width: 230px;
-  height: 50px;
+  height: 50px;  
 }
 
 .dapp-core-modal-active .chakra-portal {
