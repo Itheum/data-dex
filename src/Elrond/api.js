@@ -26,9 +26,22 @@ export const getTransactionLink = (chain, txHash) => {
 // check token balance on Elrond
 export const checkBalance = async (token, address, chain) => {
   const api = getApi(chain);
-
-  const resp = await axios.get(`https://${api}/accounts/${address}/tokens/${token}`);
-  return resp.data.balance;
+  
+  return new Promise((resolve, reject) => {
+    axios.get(`https://${api}/accounts/${address}/tokens/${token}`)
+    .then((resp) => {
+      resolve({balance: resp.data.balance});
+    })
+    .catch((error) => {
+      if (error.response) {
+        if (error.response.status === 404) {
+          resolve({balance: 0});  // user has no ITHEUM so API return 404 it seems
+        } else {
+          resolve({error: error.response.data});
+        }
+      }
+    });
+  });
 };
 
 export const getClaimTransactions = async (address, smartContractAddress, chain) => {

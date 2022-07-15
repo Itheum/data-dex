@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef, React } from 'react';
 import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Text, Image, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from '@chakra-ui/react';
+import { Button, Text, Image, Tooltip, AlertDialog, Badge, 
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
+  AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
+  Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider, 
+  useToast, useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
 import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from 'react-icons/gi';
@@ -63,6 +67,7 @@ const baseUserContext = {
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
 function App() {
+  const toast = useToast();
   const {
     isAuthenticated,
     logout: moralisLogout,
@@ -89,8 +94,6 @@ function App() {
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [getClaimsError, setGetClaimsError] = useState(null);
-  const [getBalanceError, setGetBalanceError] = useState(null);
   const [walletUsedLocal, setWalletUsedLocal] = useState(null);
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
@@ -132,12 +135,13 @@ function App() {
     // ... get account token balance and claims
     async function elrondSessionInit() {
       // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
-      if (path === 'unlock' || loggedInActiveElrondWallet !== null) {
+      // ... also do the loggedInActiveElrondWallet check to make sure elrond addresses didnt swap midway (see below for why)
+      if (path === 'unlock' || (loggedInActiveElrondWallet !== null && loggedInActiveElrondWallet !== elrondAddress)) {
         handleLogout();
         return;
       }
 
-      // we set the "ssctive elrond wallet", we can use this to prvent the Maiar App delayed approve bug 
+      // we set the "active elrond wallet", we can use this to prvent the Maiar App delayed approve bug 
       // ... where wallets sessions can be swapped - https://github.com/Itheum/data-dex/issues/95
       // ... if we detect loggedInActiveElrondWallet is NOT null then we abort and logout the user (see above)
       setLoggedInActiveElrondWallet(elrondAddress);
@@ -197,16 +201,22 @@ function App() {
   const elrondBalancesUpdate = async() => {
     if (elrondAddress && isElrondLoggedIn) {
       // get user token balance from elrond
-      try {
-        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[_chainMetaLocal.networkId])) / Math.pow(10, 18);
-        setTokenBal(balance);
-      } catch (e) {
-        setGetBalanceError({
-          errContextMsg: 'Could not get your balance information from the blockchain',
-          rawError: e,
-        });
-      }
+      const data = await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[_chainMetaLocal.networkId]);
 
+      if (data.balance) {
+        setTokenBal((data.balance / Math.pow(10, 18)));
+      } else if (data.error) {
+        if (!toast.isActive('er1')) {
+          toast({
+            id: 'er1',
+            title: 'ER1: Could not get your balance information from the blockchain. Failed to get a valid response from elrond api',
+            status: 'error',
+            isClosable: true,
+            duration: null
+          });
+        }
+      }        
+  
       await sleep(2);
 
       // get user claims token balance from elrond
@@ -221,9 +231,12 @@ function App() {
       try {
         claims = await claimContract.getClaims(elrondAddress);
       } catch(e) {
-        setGetClaimsError({
-          errContextMsg: 'Could not get your claims information from the blockchain',
-          rawError: e,
+        toast({
+          id: 'er2',
+          title: 'ER2: Could not get your claims information from the elrond blockchain.',
+          status: 'error',
+          isClosable: true,
+          duration: null
         });
       }
 
@@ -335,9 +348,12 @@ function App() {
       });
     } catch (e) {
       console.error(e);
-      setGetClaimsError({
-        errContextMsg: 'Could not get your claims information from the blockchain',
-        rawError: e,
+      toast({
+        id: 'er3',
+        title: 'ER3: Could not get your claims information from the EVM blockchain.',
+        status: 'error',
+        isClosable: true,
+        duration: null
       });
     }
   };
@@ -795,9 +811,7 @@ function App() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialogOverlay>
-          </AlertDialog>
-
-          {getClaimsError || (getBalanceError && <AlertOverlay errorData={getClaimsError ? getClaimsError : getBalanceError} onClose={() => console.log} />)}
+          </AlertDialog>          
 
           {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}
         </Container>
