@@ -4,92 +4,43 @@ import { Box, Stack } from "@chakra-ui/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Button, Link, Progress, Badge, Tooltip, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
-import ShortAddress from "./UtilComps/ShortAddress";
-import { progInfoMeta, config, sleep } from "./libs/util";
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "./libs/util";
-import imgProgGaPa from "./img/prog-gaming.jpg";
-import imgProgRhc from "./img/prog-rhc.png";
-import imgProgWfh from "./img/prog-wfh.png";
-import ClaimModal from "./UtilComps/ClaimModal";
-import { useUser } from "./store/UserContext";
-import { useChainMeta } from "./store/ChainMetaContext";
-import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
+import { progInfoMeta, config, sleep } from "../libs/util";
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "../libs/util";
+import imgProgGaPa from "../img/prog-gaming.jpg";
+import imgProgRhc from "../img/prog-rhc.png";
+import imgProgWfh from "../img/prog-wfh.png";
+import ClaimModalElrond from "../ClaimModel/ClaimModalElrond";
+import { useUser } from "../store/UserContext";
+import { useChainMeta } from "../store/ChainMetaContext";
+import ChainSupportedInput from "../UtilComps/ChainSupportedInput";
 import { useNavigate } from "react-router-dom";
-// import { useGetAccountInfo, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { FaucetContract } from "./Elrond/faucet";
+import { FaucetContract } from "../Elrond/faucet";
+import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 
 let elrondFaucetContract = null;
 
-export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
-  const {isAuthenticated,
-    moralisLogout,
-    user,
-    ethers,
-    web3Provider,
-    enableWeb3,
-    isWeb3Enabled,
-    isWeb3EnableLoading,
-    web3EnableError,
-  
-    elrondAddress,
-    hasPendingTransactions,
-    elrondLogout,
-    ClaimsContract,
-    checkBalance,
-    ITHEUM_TOKEN_ID,
-    d_ITHEUM_TOKEN_ID} = config;
+export default function({ onRfMount, onRefreshBalance }) {
+  const { address: elrondAddress } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
 
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  // const { address: elrondAddress } = useGetAccountInfo();
-  // const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
-  // const {
-  //   web3: web3Provider,
-  //   Moralis: { web3Library: ethers },
-  // } = useMoralis();
-  // const { user } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { user: _user } = useUser();
 
-  const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
-
-  const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
   const [elrondFaucetTime, setElrondFaucetTime] = useState(0);
-
-  // eth tx state (faucet)
-  const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
-  const [txHashFaucet, setTxHashFaucet] = useState(null);
-  const [txErrorFaucet, setTxErrorFaucet] = useState(null);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("MOUNT Tools");
   }, []);
 
   useEffect(() => {
+    debugger;
     if (_chainMeta?.networkId && _user?.isElondAuthenticated) {
       elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
     }
   }, [_chainMeta]);
-
-  // test data
-  useEffect(() => {
-    if (dataCfTestData && dataCfTestData.length > 0) {
-      const response = JSON.parse(decodeURIComponent(atob(dataCfTestData)));
-
-      toast({
-        title: "Congrats! an itheum test account has been linked",
-        description: "You can now advertise your data on the Data DEX",
-        status: "success",
-        duration: 6000,
-        isClosable: true,
-      });
-
-      onItheumAccount(response);
-    }
-  }, [dataCfTestData]);
 
   // S: Faucet
   useEffect(() => {
@@ -100,73 +51,10 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
     }
   }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
-  useEffect(() => {
-    if (txErrorFaucet) {
-      setFaucetWorking(false);
-    } else {
-      if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
-        toast({
-          title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,
-          status: "success",
-          duration: 6000,
-          isClosable: true,
-        });
-
-        resetFauceState();
-        onRefreshBalance();
-      }
-    }
-  }, [txConfirmationFaucet, txHashFaucet, txErrorFaucet]);
-
-  const web3_tokenFaucet = async () => {
-    setFaucetWorking(true);
-
-    const web3Signer = web3Provider.getSigner();
-    const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
-
-    const decimals = 18;
-    const tokenInPrecision = ethers.utils.parseUnits("50.0", decimals).toHexString();
-
-    try {
-      const txResponse = await tokenContract.faucet(user.get("ethAddress"), tokenInPrecision);
-
-      // show a nice loading animation to user
-      setTxHashFaucet(txResponse.hash);
-
-      await sleep(2);
-      setTxConfirmationFaucet(0.5);
-
-      // wait for 1 confirmation from ethers
-      const txReceipt = await txResponse.wait();
-      setTxConfirmationFaucet(1);
-      await sleep(2);
-
-      if (txReceipt.status) {
-        setTxConfirmationFaucet(2);
-      } else {
-        const txErr = new Error("Token Contract Error on method faucet");
-        console.error(txErr);
-
-        setTxErrorFaucet(txErr);
-      }
-    } catch (e) {
-      setTxErrorFaucet(e);
-    }
-  };
-
-  function resetFauceState() {
-    setFaucetWorking(false);
-    setTxConfirmationFaucet(0);
-    setTxHashFaucet(null);
-    setTxErrorFaucet(null);
-  }
-
   const handleOnChainFaucet = async () => {
-    if (_user?.isElondAuthenticated && elrondFaucetContract) {
+    debugger;
+    if (elrondAddress) {
       FaucetContract.sendActivateFaucetTransaction();
-    } else {
-      setTxErrorFaucet(null);
-      web3_tokenFaucet();
     }
   };
   // E: Faucet
@@ -242,93 +130,15 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
       <Wrap>
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360">
-            {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
-            {!itheumAccount && (
-              <Alert status="warning" variant="solid">
-                <Stack>
-                  <AlertTitle fontSize="md">
-                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{" "}
-                    <Link href="https://itheum.com" isExternal>
-                      itheum.com
-                    </Link>{" "}
-                    platform account
-                  </AlertTitle>
-                  <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
-                </Stack>
-              </Alert>
-            )}
-
-            {itheumAccount && (
-              <Stack>
-                <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
-                {itheumAccount.programsAllocation.map((item) => (
-                  <Stack direction="row" key={item.program}>
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      {itheumAccount._lookups.programs[item.program].programName}
-                    </Badge>
-                  </Stack>
-                ))}
-              </Stack>
-            )}
-
-            <Spacer />
-
-            {!itheumAccount && (
-              <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>
-                Load Test Data
-              </Button>
-            )}
-
-            {itheumAccount && (
-              <Button
-                colorScheme="teal"
-                variant="outline"
-                onClick={() => {
-                  setMenuItem(2);
-                  navigate("/selldata");
-                }}
-              >
-                Trade My Data
-              </Button>
-            )}
-          </Stack>
-        </WrapItem>
-
-        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="5" h="360">
             <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
             <Text fontSize="sm" pb={5}>
               Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
             </Text>
 
-            {txHashFaucet && (
-              <Stack>
-                <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
-
-                <HStack>
-                  <Text fontSize="sm">Transaction </Text>
-                  <ShortAddress address={txHashFaucet} />
-                  <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
-                    {" "}
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </HStack>
-              </Stack>
-            )}
-
-            {txErrorFaucet && (
-              <Alert status="error">
-                <AlertIcon />
-                {txErrorFaucet.message && <AlertTitle fontSize="md">{txErrorFaucet.message}</AlertTitle>}
-                <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
-              </Alert>
-            )}
-
             <Spacer />
 
             <ChainSupportedInput feature={MENU.FAUCET}>
-              <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={elrondFaucetTime + 120000 > new Date().getTime()}>
+              <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={elrondFaucetTime + 120000 > new Date().getTime()}>
                 Send me {_user?.isElondAuthenticated ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Button>
             </ChainSupportedInput>
@@ -344,7 +154,7 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
               <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                 {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
               </Button>
-              <ClaimModal {...rewardsModalData} />
+              <ClaimModalElrond {...rewardsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={50}>
@@ -352,7 +162,7 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
               <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                 {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
               </Button>
-              <ClaimModal {...airdropsModalData} />
+              <ClaimModalElrond {...airdropsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={30}>
@@ -360,7 +170,7 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
               <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                 {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
               </Button>
-              <ClaimModal {...allocationsModalData} />
+              <ClaimModalElrond {...allocationsModalData} />
             </HStack>
 
             <Spacer />
@@ -388,7 +198,7 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`)}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge`)}>
                 Join Now
               </Button>
             </Box>
@@ -479,7 +289,7 @@ export default function({ config, onRfMount, setMenuItem, onRefreshBalance, onIt
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              <Button size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`)}>
+              <Button size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}`)}>
                 Join Now
               </Button>
             </ModalFooter>

@@ -7,46 +7,22 @@ import { config, sleep } from "../libs/util";
 import { ABIS, CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "../libs/util";
 import { useUser } from "../store/UserContext";
 import { useChainMeta } from "../store/ChainMetaContext";
-// import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
-import { ClaimsContract } from "../Elrond/claims";
 
-const ClaimModal = ({ config, isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
-  const {isAuthenticated,
-    moralisLogout,
+const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
+  const {
+    isAuthenticated,
     user,
-    ethers,
-    web3Provider,
-    enableWeb3,
-    isWeb3Enabled,
-    isWeb3EnableLoading,
-    web3EnableError,
-  
-    elrondAddress,
-    hasPendingTransactions,
-    elrondLogout,
-    ClaimsContract,
-    checkBalance,
-    ITHEUM_TOKEN_ID,
-    d_ITHEUM_TOKEN_ID} = config;
+    Moralis: { web3Library: ethers }, web3: web3Provider
+  } = useMoralis();
 
   const toast = useToast();
 
-  // const {
-  //   web3: web3Provider,
-  //   Moralis: { web3Library: ethers },
-  // } = useMoralis();
   const [txConfirmationClaim, setTxConfirmationClaim] = useState(0);
   const [txHashClaim, setTxHashClaim] = useState(null);
   const [txErrorClaim, setTxErrorClaim] = useState(null);
   const [claimWorking, setClaimWorking] = useState(false);
   const { user: _user, setUser } = useUser();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  // const { address: elrondAddress } = useGetAccountInfo();
-  let claimsContract = null;
-
-  if (ClaimsContract && elrondAddress) {
-    claimsContract = new ClaimsContract(_chainMeta.networkId);
-  }
 
   useEffect(() => {
     if (txErrorClaim) {
@@ -118,13 +94,8 @@ const ClaimModal = ({ config, isOpen, onClose, title, tag1, value1, tag2, value2
   };
 
   const handleOnChainClaim = () => {
-    if (elrondAddress) {
-      onClose();
-      claimsContract.sendClaimRewardsTransaction(n - 1);
-    } else {
-      setTxErrorClaim(null);
-      web3_claims(n);
-    }
+    setTxErrorClaim(null);
+    web3_claims(n);
   };
 
   return (

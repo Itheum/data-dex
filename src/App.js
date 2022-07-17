@@ -15,7 +15,12 @@ import PurchasedData from "./PurchasedData";
 import AdvertisedData from "./AdvertisedData";
 import PersonalDataProofs from "./PersonalDataProofs";
 import ShortAddress from "./UtilComps/ShortAddress";
-import Tools from "./Tools";
+
+// import Tools from "./Tools";
+import ToolsElrond from './Tools/ToolsElrond';
+import ToolsEVM from './Tools/ToolsEVM';
+
+
 import ChainTransactions from "./ChainTransactions";
 import DataVault from "./DataVault";
 import DataNFTs from "./DataNFTs";
@@ -59,7 +64,7 @@ const baseUserContext = {
 
 function App({config}) {
   const {isAuthenticated,
-  moralisLogout,
+  onMoralisLogout,
   user,
   ethers,
   web3Provider,
@@ -70,7 +75,7 @@ function App({config}) {
 
   elrondAddress,
   hasPendingTransactions,
-  elrondLogout,
+  onElrondLogout,
   ClaimsContract,
   checkBalance,
   ITHEUM_TOKEN_ID,
@@ -226,7 +231,6 @@ function App({config}) {
   };
 
   const web_getClaimBalance = async () => {
-    debugger;
     const walletAddress = user.get("ethAddress");
     const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
 
@@ -325,9 +329,9 @@ function App({config}) {
 
   const handleLogout = () => {
     if (_user.isMoralisAuthenticated) {
-      moralisLogout();
+      onMoralisLogout();
     } else {
-      elrondLogout();
+      onElrondLogout();
     }
 
     setUser({ ...baseUserContext });
@@ -652,8 +656,14 @@ function App({config}) {
 
               <Box backgroundColor={"red1"} pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={<Tools config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
-                  <Route path="home" element={<Tools config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />} />
+                  <Route path="/" element={_user.isMoralisAuthenticated && 
+                    <ToolsEVM config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} /> ||
+                    <ToolsElrond config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />
+                  }/>
+                  <Route path="home" element={_user.isMoralisAuthenticated && 
+                    <ToolsEVM config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} /> ||
+                    <ToolsElrond config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />
+                  }/>
                   <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />} />

@@ -3,7 +3,7 @@ import App from "./App";
 
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 
-function EVMAppHarness() {
+function EVMAppHarness({resetLaunchMode}) {
   const {
     isAuthenticated,
     logout: moralisLogout,
@@ -13,11 +13,17 @@ function EVMAppHarness() {
 
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
 
+  const handleMoralisLogout = () => {
+    resetLaunchMode();
+    moralisLogout();
+  }
+
   return (
     <>
-      <App config={{
+      {(isAuthenticated && user) && <App config={{
         isAuthenticated,
         moralisLogout,
+        onMoralisLogout: handleMoralisLogout,
         user,
         ethers,
         web3Provider,
@@ -25,7 +31,7 @@ function EVMAppHarness() {
         isWeb3Enabled,
         isWeb3EnableLoading,
         web3EnableError
-      }} />
+      }} /> || <div>NO EVM Session Yet</div>}
     </>
   );
 }

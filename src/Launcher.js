@@ -33,21 +33,25 @@ function Launcher() {
 
   return (
     <>
-      <AuthLauncher onLaunchMode={handleLaunchMode} />
+      <div>launchMode {launchMode}</div>
+      
+      {launchMode == 'auth' && 
+        <AuthLauncher onLaunchMode={handleLaunchMode} />
+      }
 
       {launchMode == 'evm' && <>
         <div>EVM Mode</div>
         <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
-          <AuthPickerEVM />
-          {/* <EVMAppHarness /> */}
+          <AuthPickerEVM resetLaunchMode={() => setLaunchMode('auth')} />
+          <EVMAppHarness resetLaunchMode={() => setLaunchMode('auth')} />
         </MoralisProvider>
       </>}
 
       {launchMode == 'elrond' && <>
-        <div>Elrond Mode</div>
+        <div>Elrond {lanchEnvironment} Mode</div>
         <DappProvider environment={lanchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
-          <AuthPickerElrond />
-          {/* <ElrondAppHarness /> */}
+          <AuthPickerElrond resetLaunchMode={() => setLaunchMode('auth')} />
+          <ElrondAppHarness resetLaunchMode={() => setLaunchMode('auth')} />
         </DappProvider>
       </>}
     </>

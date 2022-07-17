@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import walletConnect from "./img/wallet-connect.png";
 import walletMetamask from "./img/wallet-metamask.png";
 
-function AuthPickerEVM () {
+function AuthPickerEVM ({resetLaunchMode}) {
   useEffect(() => {
     onProgressModalOpen();
   },[]);
@@ -15,7 +15,7 @@ function AuthPickerEVM () {
     WC: 2
   };
 
-  const { authenticate, isAuthenticating, authError } = useMoralis();
+  const { authenticate, isAuthenticating, authError, isAuthenticated, user } = useMoralis();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const [authErrorUi, setAuthErrorUi] = useState(null);
@@ -52,9 +52,16 @@ function AuthPickerEVM () {
     }
   }, [isAuthenticating]);
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      handleProgressModalClose();
+    }
+  }, [isAuthenticated]);
+
   const handleProgressModalClose = () => {
     setAuthErrorUi(null);
     onProgressModalClose();
+    resetLaunchMode();
   };
 
   const handleAuthenticate = (wallet) => {

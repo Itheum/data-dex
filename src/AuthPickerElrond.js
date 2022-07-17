@@ -4,7 +4,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
 
-function AuthPickerElrond () {
+function AuthPickerElrond ({resetLaunchMode}) {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
 
   const { address: elrondAddress } = useGetAccountInfo();
@@ -27,6 +27,7 @@ function AuthPickerElrond () {
   useEffect(() => {
     if (elrondAddress) {
       // setWalletUsed(WALLETS.ELROND);
+      handleProgressModalClose();
     }
   }, [elrondAddress]);
 
@@ -35,6 +36,8 @@ function AuthPickerElrond () {
 
     // reset the original state of the chakra model
     document.querySelector('body').classList.remove('dapp-core-modal-active');
+
+    resetLaunchMode();
   };
 
   const handleModelFix = () => {

@@ -8,21 +8,32 @@ import { ClaimsContract } from "./Elrond/claims";
 
 const elrondLogout = logout;
 
-function ElrondAppHarness() {
+function ElrondAppHarness({resetLaunchMode}) {
   const { address: elrondAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
 
+  useEffect(() => {
+    if (elrondAddress) {
+      // setWalletUsed(WALLETS.ELROND);
+    }
+  }, [elrondAddress]);
+
+  const handleElrondLogout = () => {
+    resetLaunchMode();
+    elrondLogout();
+  }
+
   return (
     <>
-      <App config={{
+      {elrondAddress && <App config={{
         elrondAddress,
         hasPendingTransactions,
-        elrondLogout,
+        onElrondLogout: handleElrondLogout,
         ClaimsContract,
         checkBalance,
         ITHEUM_TOKEN_ID,
         d_ITHEUM_TOKEN_ID
-      }} />
+      }} /> || <div>NO Elrond Session Yet</div>}
     </>
   );
 }
