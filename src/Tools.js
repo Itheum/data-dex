@@ -1,22 +1,22 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useMoralis, useMoralisCloudFunction } from "react-moralis";
-import { Box, Stack } from "@chakra-ui/layout";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
-import moment from "moment";
-import ShortAddress from "./UtilComps/ShortAddress";
-import { progInfoMeta, config, sleep } from "./libs/util";
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "./libs/util";
-import imgProgGaPa from "./img/prog-gaming.jpg";
-import imgProgRhc from "./img/prog-rhc.png";
-import imgProgWfh from "./img/prog-wfh.png";
-import ClaimModal from "./UtilComps/ClaimModal";
-import { useUser } from "./store/UserContext";
-import { useChainMeta } from "./store/ChainMetaContext";
-import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
-import { useNavigate } from "react-router-dom";
-import { useGetAccountInfo, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
-import { FaucetContract } from "./Elrond/faucet";
+import React, { useContext, useState, useEffect } from 'react';
+import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
+import { Box, Stack } from '@chakra-ui/layout';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from '@chakra-ui/react';
+import moment from 'moment';
+import ShortAddress from './UtilComps/ShortAddress';
+import { progInfoMeta, config, sleep } from './libs/util';
+import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from './libs/util';
+import imgProgGaPa from './img/prog-gaming.jpg';
+import imgProgRhc from './img/prog-rhc.png';
+import imgProgWfh from './img/prog-wfh.png';
+import ClaimModal from './UtilComps/ClaimModal';
+import { useUser } from './store/UserContext';
+import { useChainMeta } from './store/ChainMetaContext';
+import ChainSupportedInput from './UtilComps/ChainSupportedInput';
+import { useNavigate } from 'react-router-dom';
+import { useGetAccountInfo, useGetPendingTransactions } from '@elrondnetwork/dapp-core';
+import { FaucetContract } from './Elrond/faucet';
 
 let elrondFaucetContract = null;
 
@@ -33,12 +33,12 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { user: _user } = useUser();
 
-  const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
+  const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction('loadTestData', {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
-  const [elrondFaucetTime, setElrondFaucetTime] = useState(0);
-  const faucetContract = new FaucetContract("ED");
+  const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(0);
+  const faucetContract = new FaucetContract('ED');
 
   // eth tx state (faucet)
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
@@ -48,14 +48,31 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("MOUNT Tools");
+    console.log('MOUNT Tools');
   }, []);
 
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElondAuthenticated) {
       elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
+      elrondFaucetContract.getFaucetTime(elrondAddress).then((time) => {
+        setIsElrondFaucetDisabled(time + 120000 > new Date().getTime());
+      });
     }
   }, [_chainMeta]);
+
+  useEffect(() => {
+    if (elrondAddress && elrondFaucetContract) {
+      elrondFaucetContract.getFaucetTime(elrondAddress).then((time) => {
+        const timeNow = new Date().getTime();
+        if (time + 120000 > timeNow) {
+          setIsElrondFaucetDisabled(true);
+          setTimeout(() => {
+            setIsElrondFaucetDisabled(false);
+          }, time + 120000 + 1000 - timeNow);
+        }
+      });
+    }
+  }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
   // test data
   useEffect(() => {
@@ -63,9 +80,9 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
       const response = JSON.parse(decodeURIComponent(atob(dataCfTestData)));
 
       toast({
-        title: "Congrats! an itheum test account has been linked",
-        description: "You can now advertise your data on the Data DEX",
-        status: "success",
+        title: 'Congrats! an itheum test account has been linked',
+        description: 'You can now advertise your data on the Data DEX',
+        status: 'success',
         duration: 6000,
         isClosable: true,
       });
@@ -74,15 +91,6 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
     }
   }, [dataCfTestData]);
 
-  // S: Faucet
-  useEffect(() => {
-    if (elrondAddress && elrondFaucetContract) {
-      elrondFaucetContract.getFaucetTime(elrondAddress).then((res) => {
-        setElrondFaucetTime(res);
-      });
-    }
-  }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
-
   useEffect(() => {
     if (txErrorFaucet) {
       setFaucetWorking(false);
@@ -90,7 +98,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
       if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
         toast({
           title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,
-          status: "success",
+          status: 'success',
           duration: 6000,
           isClosable: true,
         });
@@ -108,10 +116,10 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
     const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const tokenInPrecision = ethers.utils.parseUnits("50.0", decimals).toHexString();
+    const tokenInPrecision = ethers.utils.parseUnits('50.0', decimals).toHexString();
 
     try {
-      const txResponse = await tokenContract.faucet(user.get("ethAddress"), tokenInPrecision);
+      const txResponse = await tokenContract.faucet(user.get('ethAddress'), tokenInPrecision);
 
       // show a nice loading animation to user
       setTxHashFaucet(txResponse.hash);
@@ -127,7 +135,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
       if (txReceipt.status) {
         setTxConfirmationFaucet(2);
       } else {
-        const txErr = new Error("Token Contract Error on method faucet");
+        const txErr = new Error('Token Contract Error on method faucet');
         console.error(txErr);
 
         setTxErrorFaucet(txErr);
@@ -147,6 +155,8 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
   const handleOnChainFaucet = async () => {
     if (_user?.isElondAuthenticated && elrondFaucetContract) {
       FaucetContract.sendActivateFaucetTransaction();
+      setIsElrondFaucetDisabled(true);
+      setTimeout(() => setIsElrondFaucetDisabled(false), 120000);
     } else {
       setTxErrorFaucet(null);
       web3_tokenFaucet();
@@ -170,10 +180,10 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
         onRefreshBalance();
       }
     },
-    title: "Rewards",
-    tag1: "Total Available",
+    title: 'Rewards',
+    tag1: 'Total Available',
     value1: _user.claimBalanceValues?.[0],
-    tag2: "Deposited On",
+    tag2: 'Deposited On',
     value2: moment(_user?.claimBalanceDates?.[0]).format(config.dateStrTm),
     n: CLAIM_TYPES.REWARDS,
   };
@@ -188,10 +198,10 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
         onRefreshBalance();
       }
     },
-    title: "Airdrops",
-    tag1: "Total Available",
+    title: 'Airdrops',
+    tag1: 'Total Available',
     value1: _user?.claimBalanceValues?.[1],
-    tag2: "Deposited On",
+    tag2: 'Deposited On',
     value2: moment(_user?.claimBalanceDates?.[1]).format(config.dateStrTm),
     n: CLAIM_TYPES.AIRDROPS,
   };
@@ -206,10 +216,10 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
         onRefreshBalance();
       }
     },
-    title: "Allocations",
-    tag1: "Total Available",
+    title: 'Allocations',
+    tag1: 'Total Available',
     value1: _user?.claimBalanceValues?.[2],
-    tag2: "Deposited On",
+    tag2: 'Deposited On',
     value2: moment(_user?.claimBalanceDates?.[2]).format(config.dateStrTm),
     n: CLAIM_TYPES.ALLOCATIONS,
   };
@@ -227,10 +237,10 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
               <Alert status="warning" variant="solid">
                 <Stack>
                   <AlertTitle fontSize="md">
-                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{" "}
+                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{' '}
                     <Link href="https://itheum.com" isExternal>
                       itheum.com
-                    </Link>{" "}
+                    </Link>{' '}
                     platform account
                   </AlertTitle>
                   <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
@@ -266,7 +276,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                 variant="outline"
                 onClick={() => {
                   setMenuItem(2);
-                  navigate("/selldata");
+                  navigate('/selldata');
                 }}
               >
                 Trade My Data
@@ -290,7 +300,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                   <Text fontSize="sm">Transaction </Text>
                   <ShortAddress address={txHashFaucet} />
                   <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
-                    {" "}
+                    {' '}
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </HStack>
@@ -308,7 +318,7 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
             <Spacer />
 
             <ChainSupportedInput feature={MENU.FAUCET}>
-              <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={elrondFaucetTime + 120000 > new Date().getTime()}>
+              <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
                 Send me {_user?.isElondAuthenticated ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Button>
             </ChainSupportedInput>
@@ -321,24 +331,24 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
             <Spacer />
             <HStack spacing={50}>
               <Text>Rewards</Text>
-              <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
+              <Button disabled={_user?.claimBalanceValues?.[0] === '-1' || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                {_user?.claimBalanceValues?.[0] !== '-1' ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
               </Button>
               <ClaimModal {...rewardsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={50}>
               <Text>Airdrops</Text>
-              <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
+              <Button disabled={_user?.claimBalanceValues?.[1] === '-1' || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                {_user?.claimBalanceValues?.[1] !== '-1' ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
               </Button>
               <ClaimModal {...airdropsModalData} />
             </HStack>
             <Spacer />
             <HStack spacing={30}>
               <Text>Allocations</Text>
-              <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
+              <Button disabled={_user?.claimBalanceValues?.[2] === '-1' || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                {_user?.claimBalanceValues?.[2] !== '-1' ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
               </Button>
               <ClaimModal {...allocationsModalData} />
             </HStack>
@@ -361,11 +371,11 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                   Red Heart Challenge
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {" "}
+                  {' '}
                   Live
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
                 Learn More
               </Button>
               <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`)}>
@@ -383,14 +393,14 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                   Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {" "}
+                  {' '}
                   Coming Soon
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('gdc')}>
                 Learn More
               </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
                 Join Now
               </Button>
             </Box>
@@ -405,14 +415,14 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                   Wearables Fitness and Activity
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {" "}
+                  {' '}
                   Coming Soon
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('wfa')}>
                 Learn More
               </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
                 Join Now
               </Button>
             </Box>
@@ -432,25 +442,25 @@ export default function({ onRfMount, setMenuItem, onRefreshBalance, onItheumAcco
                 <Stack>
                   <Text color="gray" as="b">
                     Delivered Via:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].medium}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Data Collected:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].data}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     App Outcome:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].outcome}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Target Buyers:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
                 </Stack>
               </Stack>
