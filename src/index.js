@@ -1,24 +1,27 @@
+import * as Sentry from "@sentry/react";
+import { BrowserTracing } from "@sentry/tracing";
+
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
 import Launcher from "./Launcher";
-import { ChakraProvider, extendTheme, Flex, Container, Box } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
-import { MoralisProvider } from "react-moralis";
 import ErrorBoundary from "./ErrorBoundary";
 import { UserContextProvider } from "./store/UserContext";
 import { ChainMetaContextProvider } from "./store/ChainMetaContext";
-import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
 import { BrowserRouter as Router } from 'react-router-dom';
 import "../src/Elrond/elrond.css";
 import "../src/Elrond/custom.css";
 
-const {
-  TransactionsToastList,
-  SignTransactionsModals,
-  NotificationModal,
-  DappCorePages: { UnlockPage },
-} = DappUI;
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
+    integrations: [new BrowserTracing()],
+
+    // Set tracesSampleRate to 1.0 to capture 100%  of transactions for performance monitoring.
+    tracesSampleRate: 1.0,
+  });
+}
 
 const breakpoints = createBreakpoints({
   sm: "30em",
@@ -59,13 +62,3 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
-
-{
-  /* <Container maxW="container.xl" p={0} m={0}>
-  <Flex h="100vh" w="100vw" direction={{'base': 'column', md:"column"}}>
-      <Box h="10vh" bgColor={"red"}>Header</Box>
-      <Box h="800vh" bgColor={"blue"}>Body</Box>
-      <Box h="10vh" bgColor={"green"}>Footer</Box>
-  </Flex>
-</Container> */
-}

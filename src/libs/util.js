@@ -303,7 +303,16 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai",
 };
 
-export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123, 43113, "E1", "ED"];
+export const SUPPORTED_CHAINS = [31337, 3, 4, 80001, 97, 1666700000, 210309, 123, 43113, 'ED'];
+
+export const WALLETS = {
+  METAMASK: 'evm_metamask',
+  WC: 'evm_wc',
+  ELROND_MAIARAPP: 'el_maiar',
+  ELROND_DEFI: 'el_defi',
+  ELROND_WEBWALLET: 'el_webwallet',
+  ELROND_LEDGER: 'el_ledger',
+};
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
@@ -317,7 +326,7 @@ export function noChainSupport(menuItem, networkId) {
     210309: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     123: [MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.TX],
-    ED: [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
+    'ED': [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
   };
 
   if (SUPPORTED_CHAINS.includes(networkId) && UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -354,7 +363,8 @@ export const CHAIN_TX_LIST = {
 
 export const CHAIN_TOKEN_SYMBOL = (networkId) => {
   const mapping = {
-    ITHEUM: [3, 4, 1, "E1", "ED"],
+    ITHEUM: ['E1', 'ED'],
+    eITHEUM: [3, 4, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
     hITHEUM: [1666700000],
@@ -1720,4 +1730,41 @@ export const sleep = (sec) => {
 
 export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => {
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
+};
+
+export const gtagGo = (category, action, label, value) => {
+  /*
+  e.g.
+  Category: "Videos", Action: "Play", Label: "Gone With the Wind"
+  Category: "Videos"; Action: "Play - Mac Chrome"
+  Category: "Videos", Action: "Video Load Time", Label: "Gone With the Wind", Value: downloadTime
+
+  Category: "Auth", Action: "Login", Label: "Metamask"
+  Category: "Auth", Action: "Login - Success", Label: "Metamask"
+  Category: "Auth", Action: "Login", Label: "DeFi"
+  Category: "Auth", Action: "Login", Label: "Ledger"
+  Category: "Auth", Action: "Login", Label: "MaiarApp"
+  Category: "Auth", Action: "Login", Label: "WebWallet"
+
+  Category: "Auth", Action: "Logout", Label: "WebWallet"
+  */
+ 
+  if (!action || !category) {
+    console.error('gtag tracking needs both action and category');
+    return;
+  }
+
+  const eventObj =  {
+    'event_category' : category
+  }
+
+  if (label) {
+    eventObj['event_label'] = label;
+  }
+
+  if (value) {
+    eventObj['event_value'] = value;
+  }
+
+  // window.gtag('event', action, eventObj);
 };

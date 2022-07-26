@@ -1,13 +1,9 @@
-import { useEffect, useState, useRef } from "react";
-import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider,
-  Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio, Input, } from "@chakra-ui/react";
+import { useState } from "react";
+import { Button, Text, Image, Tooltip, 
+  Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio, } from "@chakra-ui/react";
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from "./libs/util";
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS  } from "./libs/util";
 
 import logo from "./img/logo.png";
-import logoSmlD from "./img/logo-sml-d.png";
-import logoSmlL from "./img/logo-sml-l.png";
 import chainEth from "./img/eth-chain-logo.png";
 import chainPol from "./img/polygon-chain-logo.png";
 import chainBsc from "./img/bsc-chain-logo.png";
@@ -17,12 +13,10 @@ import chainPlaton from "./img/platon-chain-logo.png";
 import chainParastate from "./img/parastate-chain-logo.png";
 import chainElrond from "./img/elrond-chain-logo.png";
 import chainHedera from "./img/hedera-chain-logo.png";
-import moralisIcon from "./img/powered-moralis.png";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
-
-export const AuthLauncher = ({onLaunchMode}) => {
+const AuthLauncher = ({onLaunchMode}) => {
   return (
     <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
       <Flex justify="center" direction="column">
@@ -54,8 +48,8 @@ export const AuthLauncher = ({onLaunchMode}) => {
             </Text>
 
             <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]}>
-              <Tooltip label="Elrond - Coming soon...">
-                <Image src={chainElrond} boxSize="40px" opacity=".3" borderRadius="lg" m="5px" />
+              <Tooltip label="Live on Devnet">
+                <Image src={chainElrond} boxSize="40px" borderRadius="lg" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Ropsten & Rinkeby Testnets">
                 <Image src={chainEth} boxSize="40px" width="30px" m="5px" />
@@ -130,3 +124,5 @@ const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
       </Popover>
     );
 };
+
+export default AuthLauncher;

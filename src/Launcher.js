@@ -1,21 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
-import ReactDOM from "react-dom";
-import { ChakraProvider, extendTheme, Flex, Container, Box } from "@chakra-ui/react";
-import { createBreakpoints } from "@chakra-ui/theme-tools";
-import ErrorBoundary from "./ErrorBoundary";
-import { UserContextProvider } from "./store/UserContext";
-import { ChainMetaContextProvider } from "./store/ChainMetaContext";
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
-import { BrowserRouter as Router } from 'react-router-dom';
-
 import { MoralisProvider } from "react-moralis";
 
-import { AuthLauncher } from "./AuthLauncher";
-import EVMAppHarness from "./EVMAppHarness";
-import ElrondAppHarness from "./ElrondAppHarness";
-import AuthPickerEVM from './AuthPickerEVM';
-import AuthPickerElrond from './AuthPickerElrond';
+import AuthLauncher from "./AuthLauncher";
+import EVMAppHarness from "./AppHarness/AppHarnessEVM";
+import ElrondAppHarness from "./AppHarness/AppHarnessElrond";
+import AuthPickerEVM from './AuthPicker/AuthPickerEVM';
+import AuthPickerElrond from './AuthPicker/AuthPickerElrond';
+
+const {
+  TransactionsToastList,
+  SignTransactionsModals,
+  NotificationModal,
+} = DappUI;
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
@@ -50,13 +48,16 @@ function Launcher() {
       {launchMode == 'elrond' && <>
         <div>Elrond {lanchEnvironment} Mode</div>
         <DappProvider environment={lanchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
+          <TransactionsToastList />
+          <NotificationModal />
+          <SignTransactionsModals className="custom-class-for-modals" />
+
           <AuthPickerElrond resetLaunchMode={() => setLaunchMode('auth')} />
-          <ElrondAppHarness resetLaunchMode={() => setLaunchMode('auth')} />
+          <ElrondAppHarness lanchEnvironment={lanchEnvironment} />
         </DappProvider>
       </>}
     </>
   );
 }
-
 
 export default Launcher;

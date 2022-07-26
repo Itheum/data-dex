@@ -1,88 +1,69 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, React } from 'react';
 import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import moment from "moment";
-import { Button, Text, Image, Divider, Tooltip, AlertDialog, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useColorMode, Link, Menu, MenuButton, MenuList, MenuItem, IconButton, MenuGroup, MenuDivider } from "@chakra-ui/react";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
-import { SunIcon, MoonIcon, ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { GiReceiveMoney } from "react-icons/gi";
-import { AiFillHome } from "react-icons/ai";
+import { Button, Text, Image, AlertDialog, Badge, 
+  Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
+  AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
+  Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, 
+  useToast, useColorMode } from '@chakra-ui/react';
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
+import { SunIcon, MoonIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { GiReceiveMoney } from 'react-icons/gi';
+import { AiFillHome } from 'react-icons/ai';
+import SellData from 'SellData';
+import BuyData from 'BuyData';
+import PurchasedData from 'PurchasedData';
+import AdvertisedData from 'AdvertisedData';
+import PersonalDataProofs from 'PersonalDataProofs';
+import ShortAddress from 'UtilComps/ShortAddress';
+import ToolsElrond from 'Tools/ToolsElrond';
+import ChainTransactions from 'ChainTransactions';
+import DataVault from 'DataVault';
+import DataNFTs from 'DataNFTs';
+import MyDataNFTs from 'DataNFT/MyDataNFTs';
+import DataNFTMarketplace from 'DataNFT/DataNFTMarketplace';
+import DataStreams from 'DataStreams';
+import DataCoalitions from 'DataCoalitions';
+import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
+import TrustedComputation from 'TrustedComputation';
+import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
+import ClaimsHistory from 'Elrond/ClaimsHistory';
+import { sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo } from 'libs/util';
+import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
+import { useUser } from 'store/UserContext';
+import { useChainMeta } from 'store/ChainMetaContext';
+import { useSessionStorage } from 'libs/hooks';
+import logoSmlD from 'img/logo-sml-d.png';
+import logoSmlL from 'img/logo-sml-l.png';
 
-import { useMoralis, useMoralisWeb3Api } from "react-moralis";
-import { Auth } from "./Auth";
-import SellData from "./SellData";
-import BuyData from "./BuyData";
-import PurchasedData from "./PurchasedData";
-import AdvertisedData from "./AdvertisedData";
-import PersonalDataProofs from "./PersonalDataProofs";
-import ShortAddress from "./UtilComps/ShortAddress";
+import { logout, useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from "@elrondnetwork/dapp-core";
+import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "Elrond/api";
+import { ClaimsContract } from "Elrond/claims";
 
-// import Tools from "./Tools";
-import ToolsElrond from './Tools/ToolsElrond';
-import ToolsEVM from './Tools/ToolsEVM';
-
-
-import ChainTransactions from "./ChainTransactions";
-import DataVault from "./DataVault";
-import DataNFTs from "./DataNFTs";
-import MyDataNFTs from "./DataNFT/MyDataNFTs";
-import DataNFTMarketplace from "./DataNFT/DataNFTMarketplace";
-import DataStreams from "./DataStreams";
-import DataCoalitions from "./DataCoalitions";
-import DataCoalitionsViewAll from "./DataCoalition/DataCoalitionsViewAll";
-import TrustedComputation from "./TrustedComputation";
-import ChainSupportedInput from "./UtilComps/ChainSupportedInput";
-import AlertOverlay from "./UtilComps/AlertOverlay";
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, qsParams, consoleNotice, config } from "./libs/util";
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CHAIN_NAMES, CLAIM_TYPES, PATHS } from "./libs/util";
-
-import logo from "./img/logo.png";
-import logoSmlD from "./img/logo-sml-d.png";
-import logoSmlL from "./img/logo-sml-l.png";
-import chainEth from "./img/eth-chain-logo.png";
-import chainPol from "./img/polygon-chain-logo.png";
-import chainBsc from "./img/bsc-chain-logo.png";
-import chainAvln from "./img/avalanche-chain-logo.png";
-import chainHrmy from "./img/harmony-chain-logo.png";
-import chainPlaton from "./img/platon-chain-logo.png";
-import chainParastate from "./img/parastate-chain-logo.png";
-import chainElrond from "./img/elrond-chain-logo.png";
-import chainHedera from "./img/hedera-chain-logo.png";
-import moralisIcon from "./img/powered-moralis.png";
-
-import { useUser } from "./store/UserContext";
-import { useChainMeta } from "./store/ChainMetaContext";
-
+const elrondLogout = logout;
 const _chainMetaLocal = {};
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
-
+const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElondAuthenticated: false,
-  claimBalanceValues: ["-1", "-1", "-1"],
+  claimBalanceValues: ['-1', '-1', '-1'],
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
-function App({config}) {
-  const {isAuthenticated,
-  onMoralisLogout,
-  user,
-  ethers,
-  web3Provider,
-  enableWeb3,
-  isWeb3Enabled,
-  isWeb3EnableLoading,
-  web3EnableError,
+let debugPanel = true;
 
-  elrondAddress,
-  hasPendingTransactions,
-  onElrondLogout,
-  ClaimsContract,
-  checkBalance,
-  ITHEUM_TOKEN_ID,
-  d_ITHEUM_TOKEN_ID} = config;
+function App({ appConfig }) {
+  const { address: elrondAddress } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
+  const { isLoggedIn: isElrondLoggedIn, loginMethod: elrondLoginMethod } = useGetLoginInfo();
 
+  const {
+    elrondEnvironment
+  } = appConfig;
+
+  const toast = useToast();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(0);
+  const [elrondShowClaimsHistory, setElrondShowClaimsHistory] = useState(false);
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
@@ -96,95 +77,146 @@ function App({config}) {
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [getClaimesError, setGetClaimsError] = useState(null);
   const { pathname } = useLocation();
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [loggedInActiveElrondWallet, setLoggedInActiveElrondWallet] = useState(null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
 
   const navigate = useNavigate();
-  const path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
+  const path = pathname?.split('/')[pathname?.split('/')?.length - 1]; // handling Route Path
 
   useEffect(() => {
     setUser({ ...baseUserContext }); // set base user context for app
 
     if (path) {
-      setMenuItem(PATHS[path][0]);
+      setMenuItem(PATHS[path]?.[0]);
     }
 
     console.log(consoleNotice);
   }, []);
 
   useEffect(() => {
-    // Moralis authenticated for 1st time or is a reload.
-    // ... on reload we restore their web3Session to ethers.js
-    if (user && isAuthenticated) {
+    // Elrond authenticated for 1st time or is a reload.
+    // ... get account token balance and claims
+    async function elrondSessionInit() {
+      // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
+      // ... also do the loggedInActiveElrondWallet check to make sure elrond addresses didnt swap midway (see below for why)
+      if (path === 'unlock' || (loggedInActiveElrondWallet !== null && loggedInActiveElrondWallet !== elrondAddress)) {
+        handleLogout();
+        return;
+      }
+
+      // we set the "active elrond wallet", we can use this to prvent the Maiar App delayed approve bug 
+      // ... where wallets sessions can be swapped - https://github.com/Itheum/data-dex/issues/95
+      // ... if we detect loggedInActiveElrondWallet is NOT null then we abort and logout the user (see above)
+      setLoggedInActiveElrondWallet(elrondAddress);
+
       setUser({
         ...baseUserContext,
         ..._user,
-        isMoralisAuthenticated: isAuthenticated,
+        isElondAuthenticated: true,
       });
 
-      enableWeb3(); // default to metamask
-    }
-  }, [user, isAuthenticated]);
+      await sleep(1);
 
-  useEffect(() => {
-    // Elrond authenticated for 1st time or is a reload.
-    // ... get account token balance and claims
-    async function elrondLogin() {
-      if (elrondAddress) {
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElondAuthenticated: true,
-        });
+      const networkId = (elrondEnvironment === 'devnet') ? 'ED' : 'E1';
 
-        await sleep(1);
+      setChain(CHAINS[networkId] || 'Unknown chain');
 
-        const networkId = "ED"; // @TODO: This needs to come from the logged in wallet provider
-
-        setChain(CHAINS[networkId]);
-
+      if (!SUPPORTED_CHAINS.includes(networkId)) {
+        setAlertIsOpen(true);
+      } else {
         _chainMetaLocal.networkId = networkId;
         _chainMetaLocal.contracts = contractsForChain(networkId);
+
+        if (walletUsedSession) {
+          // note that a user reloaded tab will also gtag login_success
+          gtagGo('auth', 'login_success', walletUsedSession);
+        }
 
         setChainMeta({
           networkId,
           contracts: contractsForChain(networkId),
+          walletUsed: walletUsedSession,
         });
 
-        // get user token balance from elrond
-        const balance = (await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[networkId])) / Math.pow(10, 18);
-        setTokenBal(balance);
+        setUser({
+          ...baseUserContext,
+          ..._user,
+          isElondAuthenticated: true
+        });
 
+        elrondBalancesUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
+      }
+    }
+
+    if (elrondAddress && isElrondLoggedIn) {
+      elrondSessionInit();
+    }
+  }, [elrondAddress]);
+
+  useEffect(() => {
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's "false" we need to get balances    
+    if (!hasPendingTransactions) {
+      elrondBalancesUpdate();
+    }
+  }, [hasPendingTransactions]);
+
+  // Elrond transactions state changed so need new balances
+  const elrondBalancesUpdate = async() => {
+    if (elrondAddress && isElrondLoggedIn) {
+      if (SUPPORTED_CHAINS.includes(_chainMetaLocal.networkId)) {
+        // get user token balance from elrond
+        const data = await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[_chainMetaLocal.networkId]);
+
+        if (data.balance) {
+          setTokenBal((data.balance / Math.pow(10, 18)));
+        } else if (data.error) {
+          if (!toast.isActive('er1')) {
+            toast({
+              id: 'er1',
+              title: 'ER1: Could not get your balance information from the blockchain. Failed to get a valid response from elrond api',
+              status: 'error',
+              isClosable: true,
+              duration: null
+            });
+          }
+        }        
+    
         await sleep(2);
 
         // get user claims token balance from elrond
-        const claimContract = new ClaimsContract(networkId);
-        let claims;
-        let iterations = 0;
-        while (!claims && iterations < 5) {
+        const claimContract = new ClaimsContract(_chainMetaLocal.networkId);
+
+        let claims = [
+          { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
+        ];
+
+        try {
           claims = await claimContract.getClaims(elrondAddress);
-          iterations++;
-        }
-        if (!claims) {
-          claims = [
-            { amount: 0, date: 0 },
-            { amount: 0, date: 0 },
-            { amount: 0, date: 0 },
-          ];
+        } catch(e) {
+          toast({
+            id: 'er2',
+            title: 'ER2: Could not get your claims information from the elrond blockchain.',
+            status: 'error',
+            isClosable: true,
+            duration: null
+          });
         }
 
-        let claimBalanceValues = [];
-        let claimBalanceDates = [];
+        const claimBalanceValues = [];
+        const claimBalanceDates = [];
 
         claims.forEach((claim) => {
           claimBalanceValues.push(claim.amount / Math.pow(10, 18));
           claimBalanceDates.push(claim.date);
         });
-
+        
         setUser({
           ...baseUserContext,
           ..._user,
@@ -194,128 +226,7 @@ function App({config}) {
         });
       }
     }
-
-    elrondLogin();
-  }, [elrondAddress, hasPendingTransactions]);
-
-  useEffect(async () => {
-    // user is Moralis authenticated and we have a web3 provider to talk to chain
-    if (user && isWeb3Enabled) {
-      const networkId = web3Provider.network.chainId;
-
-      setChain(CHAINS[networkId] || "Unknown chain");
-
-      if (!SUPPORTED_CHAINS.includes(networkId)) {
-        setAlertIsOpen(true);
-      } else {
-        _chainMetaLocal.networkId = networkId;
-        _chainMetaLocal.contracts = contractsForChain(networkId);
-
-        setChainMeta({
-          networkId,
-          contracts: contractsForChain(networkId),
-        });
-
-        await web3_getTokenBalance(); // get user token balance from EVM
-        await sleep(1);
-
-        await web_getClaimBalance(); // get user claims token balance from EVM
-        await sleep(1);
-      }
-    }
-  }, [user, isWeb3Enabled]);
-
-  const handleRefreshBalance = async () => {
-    await web3_getTokenBalance();
-    await web_getClaimBalance();
-  };
-
-  const web_getClaimBalance = async () => {
-    const walletAddress = user.get("ethAddress");
-    const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
-
-    const keys = Object.keys(CLAIM_TYPES);
-
-    const values = keys.map((el) => {
-      return CLAIM_TYPES[el];
-    });
-
-    // queue all smart contract calls
-    const hexDataPromiseArray = values.map(async (el) => {
-      let a = await contract.deposits(walletAddress, el);
-      return a;
-    });
-
-    try {
-      const claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
-        const date = new Date(parseInt(el.lastDeposited._hex.toString(), 16) * 1000);
-        const value = parseInt(el.amount._hex.toString(), 16) / 10 ** 18;
-        return { values: value, dates: date };
-      });
-
-      const valuesArray = claimBalanceResponse.map((el) => {
-        return el["values"];
-      });
-
-      const datesArray = claimBalanceResponse.map((el) => {
-        return el["dates"];
-      });
-
-      await setUser({
-        ...baseUserContext,
-        ..._user,
-        isMoralisAuthenticated: true,
-        claimBalanceValues: valuesArray,
-        claimBalanceDates: datesArray,
-      });
-    } catch (e) {
-      console.error(e);
-      setGetClaimsError({
-        errContextMsg: "Could not get your claims information from the blockchain",
-        rawError: e,
-      });
-    }
-  };
-
-  useEffect(() => {
-    // claims balanced triggered updating is only needed if we are in HOME screen
-    if (_user.claimBalanceValues && _user?.isAuthenticated && menuItem === MENU.HOME) {
-      web3_getTokenBalance();
-    }
-  }, [_user.claimBalanceValues]);
-
-  const web3_getTokenBalance = async () => {
-    if (!_chainMetaLocal.contracts) {
-      return;
-    }
-
-    const walletAddress = user.get("ethAddress");
-
-    /*
-    // Example of running a contract via moralis's runContractFunction (for reference)
-    // you will need const Web3Api = useMoralisWeb3Api();
-
-    let options = {
-      chain: CHAIN_NAMES[_chainMetaLocal.networkId],
-      address: _chainMetaLocal.contracts.itheumToken,
-      function_name: "decimals",
-      abi: ABIS.token,
-    };
-    
-    const decimals = await Web3Api.native.runContractFunction(options);
-
-    options = {...options, function_name: 'balanceOf', params: {account: walletAddress}};
-    const balance = await Web3Api.native.runContractFunction(options);
-    */
-
-    // call contract via ethers
-    const contract = new ethers.Contract(_chainMetaLocal.contracts.itheumToken, ABIS.token, web3Provider);
-    const balance = await contract.balanceOf(walletAddress);
-    const decimals = await contract.decimals();
-
-    // show the token balance in readable format
-    setTokenBal(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
-  };
+  }
 
   // utility that will reload a component and reset it's state
   const handleRfMount = (key) => {
@@ -328,19 +239,29 @@ function App({config}) {
   };
 
   const handleLogout = () => {
-    if (_user.isMoralisAuthenticated) {
-      onMoralisLogout();
-    } else {
-      onElrondLogout();
-    }
+    // WIERD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
+    // ... so we explictely remove 'wallet-used' here
+    sessionStorage.removeItem('wallet-used');
 
     setUser({ ...baseUserContext });
-  };
+    setChainMeta({});
 
-  const menuButtonW = "180px";
+    gtagGo('auth', 'logout', 'el');
+
+    if (elrondLoginMethod === 'wallet') {
+      // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
+      elrondLogout();
+    } else {
+      // sending in / will reload the data dex after logout is done so it cleans up data dex state
+      elrondLogout('/');
+    }  
+  };
+  
+  const menuButtonW = '180px';
+
   return (
     <>
-      {(_user.isMoralisAuthenticated || _user.isElondAuthenticated) &&
+      { _user.isElondAuthenticated && (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
             <HStack h="10vh" p="5">
@@ -366,26 +287,32 @@ function App({config}) {
               </HStack>
 
               <Menu>
-                <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
+                <MenuButton as={Button} colorScheme='teal'>
+                  <ShortAddress address={elrondAddress} fontSize="md" />
+                </MenuButton>
                 <MenuList>
                   <MenuGroup>
-                    <MenuItem closeOnSelect={false}>
+                    {itheumAccount && <MenuItem closeOnSelect={false}>
                       <Text fontSize="xs">
-                        {itheumAccount && <Text>{`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>}
-                        <ShortAddress address={user ? user.get("ethAddress") : elrondAddress} />
+                        <Text>{`Profile :  ${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
                       </Text>
-                    </MenuItem>
+                    </MenuItem>}
+                    {_user.isElondAuthenticated && (
+                      <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
+                        <Text fontSize="xs">View claims history</Text>
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>
                   </MenuGroup>
 
-                  <MenuDivider display={["block", null, "none"]} />
+                  <MenuDivider display={['block', null, 'none']} />
 
                   <MenuGroup>
-                    <MenuItem closeOnSelect={false} display={["block", null, "none"]}>
-                      <Box fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
-                        {chain || "..."}
+                    <MenuItem closeOnSelect={false} display={['block', null, 'none']}>
+                      <Box fontSize={['xs', 'sm']} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                        {chain || '...'}
                       </Box>
                     </MenuItem>
                   </MenuGroup>
@@ -393,8 +320,8 @@ function App({config}) {
               </Menu>
             </HStack>
 
-            <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} backgroundColor={"blue1"} pt={5}>
-              <Box backgroundColor={"green1"}>
+            <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} pt={5}>
+              <Box>
                 <Button display={["block", null, "none"]} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
                   Main menu
                 </Button>
@@ -406,11 +333,11 @@ function App({config}) {
                     </Link>
                     <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
                       Privacy Policy <ExternalLinkIcon mx="2px" />
-                    </Link>
+                    </Link>                    
                   </HStack>
 
                   <Flex direction="column" justify="space-between" minH="80vh">
-                    <Stack ml="15px" spacing={4}>
+                    <Stack ml="15px" spacing={4}>                    
                       <Button
                         rightIcon={<AiFillHome />}
                         w={menuButtonW}
@@ -424,19 +351,21 @@ function App({config}) {
                       >
                         Home
                       </Button>
-                      <Button
-                        rightIcon={<GiReceiveMoney />}
-                        w={menuButtonW}
-                        colorScheme="teal"
-                        isDisabled={menuItem === MENU.SELL}
-                        variant="solid"
-                        onClick={() => {
-                          setMenuItem(MENU.SELL);
-                          navigate("selldata");
-                        }}
-                      >
-                        Trade Data
-                      </Button>
+                      <ChainSupportedInput feature={MENU.SELL}>
+                        <Button
+                          rightIcon={<GiReceiveMoney />}
+                          w={menuButtonW}
+                          colorScheme="teal"
+                          isDisabled={menuItem === MENU.SELL}
+                          variant="solid"
+                          onClick={() => {
+                            setMenuItem(MENU.SELL);
+                            navigate("selldata");
+                          }}
+                        >
+                          Trade Data
+                        </Button>
+                      </ChainSupportedInput>
                     </Stack>
 
                     <Accordion flexGrow="1" defaultIndex={path ? PATHS[path][1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>
@@ -654,19 +583,13 @@ function App({config}) {
                 </Stack>
               </Box>
 
-              <Box backgroundColor={"red1"} pl={5} w="full">
+              <Box pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={_user.isMoralisAuthenticated && 
-                    <ToolsEVM config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} /> ||
-                    <ToolsElrond config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />
-                  }/>
-                  <Route path="home" element={_user.isMoralisAuthenticated && 
-                    <ToolsEVM config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} /> ||
-                    <ToolsElrond config={config} key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />
-                  }/>
-                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
+                  <Route path="/" element={<ToolsElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
+                  <Route path="home" element={<ToolsElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
+                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} />} />
                   <Route path="datapacks" element={<Outlet />}>
-                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />} />
+                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} />} />
                     <Route path="advertiseddata" element={<AdvertisedData />} />
                     <Route path="purchaseddata" element={<PurchasedData />} />
                     <Route path="personaldataproof" element={<PersonalDataProofs />} />
@@ -718,9 +641,13 @@ function App({config}) {
             </AlertDialogOverlay>
           </AlertDialog>
 
-          {getClaimesError && <AlertOverlay errorData={getClaimesError} onClose={() => console.log} />}
+          {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}
+          
+          {debugPanel && <div style={{position: 'fixed', left: '0', top: '0', backgroundColor: 'black', padding: '2px', fontSize: '.5rem'}}>
+            walletUsedSession = {walletUsedSession}<br/>
+          </div>}
         </Container>
-      }
+      )}
     </>
   );
 }

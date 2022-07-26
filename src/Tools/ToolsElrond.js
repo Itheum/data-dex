@@ -1,11 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useMoralis, useMoralisCloudFunction } from "react-moralis";
+import React, { useState, useEffect } from "react";
 import { Box, Stack } from "@chakra-ui/layout";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Button, Link, Progress, Badge, Tooltip, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import { Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading,  Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
-import { progInfoMeta, config, sleep } from "../libs/util";
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "../libs/util";
+import { progInfoMeta, config } from "../libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "../libs/util";
 import imgProgGaPa from "../img/prog-gaming.jpg";
 import imgProgRhc from "../img/prog-rhc.png";
 import imgProgWfh from "../img/prog-wfh.png";
@@ -13,9 +11,8 @@ import ClaimModalElrond from "../ClaimModel/ClaimModalElrond";
 import { useUser } from "../store/UserContext";
 import { useChainMeta } from "../store/ChainMetaContext";
 import ChainSupportedInput from "../UtilComps/ChainSupportedInput";
-import { useNavigate } from "react-router-dom";
 import { FaucetContract } from "../Elrond/faucet";
-import { logout, useGetAccountInfo, refreshAccount, sendTransactions, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
+import { useGetAccountInfo, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
 
 let elrondFaucetContract = null;
 
@@ -36,7 +33,6 @@ export default function({ onRfMount, onRefreshBalance }) {
   }, []);
 
   useEffect(() => {
-    debugger;
     if (_chainMeta?.networkId && _user?.isElondAuthenticated) {
       elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
     }
@@ -52,7 +48,6 @@ export default function({ onRfMount, onRefreshBalance }) {
   }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
   const handleOnChainFaucet = async () => {
-    debugger;
     if (elrondAddress) {
       FaucetContract.sendActivateFaucetTransaction();
     }
@@ -72,9 +67,9 @@ export default function({ onRfMount, onRefreshBalance }) {
     isOpen: isRewardsOpen,
     onClose: (refreshTokenBalances) => {
       onRewardsClose();
-      if (refreshTokenBalances) {
-        onRefreshBalance();
-      }
+      // if (refreshTokenBalances) {
+      //   onRefreshBalance();
+      // }
     },
     title: "Rewards",
     tag1: "Total Available",
@@ -91,9 +86,9 @@ export default function({ onRfMount, onRefreshBalance }) {
     isOpen: isAirdropsOpen,
     onClose: (refreshTokenBalances) => {
       onAirdropClose();
-      if (refreshTokenBalances) {
-        onRefreshBalance();
-      }
+      // if (refreshTokenBalances) {
+      //   onRefreshBalance();
+      // }
     },
     title: "Airdrops",
     tag1: "Total Available",
@@ -110,9 +105,9 @@ export default function({ onRfMount, onRefreshBalance }) {
     isOpen: isAllocationsOpen,
     onClose: (refreshTokenBalances) => {
       onAllocationsClose();
-      if (refreshTokenBalances) {
-        onRefreshBalance();
-      }
+      // if (refreshTokenBalances) {
+      //   onRefreshBalance();
+      // }
     },
     title: "Allocations",
     tag1: "Total Available",

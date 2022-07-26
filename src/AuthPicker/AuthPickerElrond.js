@@ -1,19 +1,17 @@
-import { useEffect, useState } from "react";
-import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, Text, Image, Link, Wrap, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { Stack, Box, Text, Link, Wrap, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { DappUI } from "@elrondnetwork/dapp-core";
-import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
+import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
+import { WALLETS } from 'libs/util';
+import { gtagGo } from 'libs/util';
+import { useSessionStorage } from 'libs/hooks';
 
-function AuthPickerElrond ({resetLaunchMode}) {
+function AuthPickerElrond ({ resetLaunchMode }) {
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
-
   const { address: elrondAddress } = useGetAccountInfo();
-
-  // const WALLETS = {
-  //   ELROND: 3,
-  // };
-
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
 
   useEffect(() => {
     onProgressModalOpen();
@@ -26,7 +24,6 @@ function AuthPickerElrond ({resetLaunchMode}) {
 
   useEffect(() => {
     if (elrondAddress) {
-      // setWalletUsed(WALLETS.ELROND);
       handleProgressModalClose();
     }
   }, [elrondAddress]);
@@ -37,15 +34,25 @@ function AuthPickerElrond ({resetLaunchMode}) {
     // reset the original state of the chakra model
     document.querySelector('body').classList.remove('dapp-core-modal-active');
 
-    resetLaunchMode();
+    // only reset host page to elrond vs evm wallet selector IF user did NOT just already log in successfully
+    if (!elrondAddress) {
+      resetLaunchMode();
+    }
   };
 
-  const handleModelFix = () => {
-    document.querySelector('body').classList.toggle('dapp-core-modal-active');
-  }
+  const goElrondLogin = (wallet) => {
+    gtagGo('auth', 'login', wallet);
+
+    setWalletUsedSession(wallet);
+
+    if (wallet === 'el_maiar' || wallet === 'el_ledger') {
+      document.querySelector('body').classList.add('dapp-core-modal-active');
+    }
+  };
 
   return (
-    <Stack spacing={6} p="5">
+    <>
+      {!elrondAddress && <Stack spacing={6} p="5">
       <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
@@ -57,35 +64,23 @@ function AuthPickerElrond ({resetLaunchMode}) {
 
               <Box p="5px">
                 <Stack>
-                  <Wrap spacing="20px" justify="space-between">
-                    <WrapItem onClick={handleModelFix} width="230px">
-                      <WalletConnectLoginButton 
-                        callbackRoute={"/"} 
-                        loginButtonText={"Maiar App"} 
-                        buttonClassName="auth_button"></WalletConnectLoginButton>
+                  <Wrap spacing="20px" justify="space-between" padding="10px">
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_MAIARAPP)} className="auth_wrap">
+                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
-                    <WrapItem width="230px">
-                      <ExtensionLoginButton 
-                        callbackRoute={"/"} 
-                        loginButtonText={"Maiar DeFi Wallet"} 
-                        buttonClassName="auth_button"></ExtensionLoginButton>
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">
+                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
                     </WrapItem>
 
-                    <WrapItem width="230px">
-                      <WebWalletLoginButton 
-                        callbackRoute={"/"} 
-                        loginButtonText={"Web Wallet"} 
-                        buttonClassName="auth_button"></WebWalletLoginButton>
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_WEBWALLET)} className="auth_wrap">
+                      <WebWalletLoginButton callbackRoute={'/'} loginButtonText={'Web Wallet'} buttonClassName="auth_button"></WebWalletLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={handleModelFix} width="230px">
-                      <LedgerLoginButton callbackRoute={"/"} 
-                        loginButtonText={"Ledger"} 
-                        buttonClassName="auth_button" ></LedgerLoginButton>
+                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_LEDGER)} className="auth_wrap">
+                      <LedgerLoginButton callbackRoute={'/'} loginButtonText={'Ledger'} buttonClassName="auth_button"></LedgerLoginButton>
                     </WrapItem>
                   </Wrap>
-
                 </Stack>
               </Box>
 
@@ -103,7 +98,8 @@ function AuthPickerElrond ({resetLaunchMode}) {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Stack>
+    </Stack>}
+    </>
   );
 };
 

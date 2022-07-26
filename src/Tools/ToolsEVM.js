@@ -1,8 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useMoralis, useMoralisCloudFunction } from "react-moralis";
 import { Box, Stack } from "@chakra-ui/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Button, Link, Progress, Badge, Tooltip, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
 import ShortAddress from "../UtilComps/ShortAddress";
 import { progInfoMeta, config, sleep } from "../libs/util";
@@ -18,12 +18,10 @@ import { useNavigate } from "react-router-dom";
 
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
   const {
-    isAuthenticated,
-    logout: moralisLogout,
     user,
     Moralis: { web3Library: ethers },
   } = useMoralis();
-  const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
+  const { web3: web3Provider } = useMoralis();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
@@ -82,7 +80,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   }, [txConfirmationFaucet, txHashFaucet, txErrorFaucet]);
 
   const web3_tokenFaucet = async () => {
-    debugger;
     setFaucetWorking(true);
 
     const web3Signer = web3Provider.getSigner();
