@@ -2,14 +2,15 @@ import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out
 import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@elrondnetwork/erdjs/out';
 import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import jsonData from './ABIs/devnetfaucet.abi.json';
-import { faucetContractAddress_Elrond } from '../libs/contactAddresses.js';
+import { contractsForChain } from 'libs/util';
 
 export class FaucetContract {
   constructor(networkId) {
     this.timeout = 5000;
+    this.claimsContractAddress = contractsForChain(networkId).faucet;
 
     if (networkId === 'E1') {
-      this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
+      throw new Error('Faucet not available on Elrond mainnet')
     } else {
       this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
     }
@@ -19,7 +20,7 @@ export class FaucetContract {
     const abi = new SmartContractAbi(abiRegistry, ['DevNetFaucet']);
 
     this.contract = new SmartContract({
-      address: new Address(faucetContractAddress_Elrond),
+      address: new Address(this.claimsContractAddress),
       abi: abi,
     });
   }
@@ -40,7 +41,7 @@ export class FaucetContract {
       data: TransactionPayload.contractCall()
         .setFunction(new ContractFunction('activateFaucet'))
         .build(),
-      receiver: new Address(faucetContractAddress_Elrond),
+      receiver: new Address(this.claimsContractAddress),
       gasLimit: 20000000,
       chainID: 'D',
     });

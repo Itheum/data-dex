@@ -15,7 +15,7 @@ import PurchasedData from 'PurchasedData';
 import AdvertisedData from 'AdvertisedData';
 import PersonalDataProofs from 'PersonalDataProofs';
 import ShortAddress from 'UtilComps/ShortAddress';
-import ToolsElrond from 'Tools/ToolsElrond';
+import HomeElrond from 'Home/HomeElrond';
 import ChainTransactions from 'ChainTransactions';
 import DataVault from 'DataVault';
 import DataNFTs from 'DataNFTs';
@@ -27,16 +27,17 @@ import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import ClaimsHistory from 'Elrond/ClaimsHistory';
-import { sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo } from 'libs/util';
-import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
+import { sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui } from 'libs/util';
+import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { useSessionStorage } from 'libs/hooks';
 import logoSmlD from 'img/logo-sml-d.png';
 import logoSmlL from 'img/logo-sml-l.png';
+import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 import { logout, useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from "@elrondnetwork/dapp-core";
-import { checkBalance, ITHEUM_TOKEN_ID, d_ITHEUM_TOKEN_ID } from "Elrond/api";
+import { checkBalance } from "Elrond/api";
 import { ClaimsContract } from "Elrond/claims";
 
 const elrondLogout = logout;
@@ -44,12 +45,10 @@ const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 const baseUserContext = {
   isMoralisAuthenticated: false,
-  isElondAuthenticated: false,
+  isElrondAuthenticated: false,
   claimBalanceValues: ['-1', '-1', '-1'],
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
-
-let debugPanel = true;
 
 function App({ appConfig }) {
   const { address: elrondAddress } = useGetAccountInfo();
@@ -114,41 +113,33 @@ function App({ appConfig }) {
       // ... if we detect loggedInActiveElrondWallet is NOT null then we abort and logout the user (see above)
       setLoggedInActiveElrondWallet(elrondAddress);
 
+      const networkId = elrondEnvironment === 'mainnet' ? 'E1' : 'ED' ;
+
+      _chainMetaLocal.networkId = networkId;
+      _chainMetaLocal.contracts = contractsForChain(networkId);
+
+      if (walletUsedSession) {
+        // note that a user reloaded tab will also gtag login_success
+        gtagGo('auth', 'login_success', walletUsedSession);
+      }
+
+      setChain(CHAINS[networkId] || 'Unknown chain');
+
+      setChainMeta({
+        networkId,
+        contracts: contractsForChain(networkId),
+        walletUsed: walletUsedSession,
+      });
+
       setUser({
         ...baseUserContext,
         ..._user,
-        isElondAuthenticated: true,
+        isElrondAuthenticated: true
       });
-
-      await sleep(1);
-
-      const networkId = (elrondEnvironment === 'devnet') ? 'ED' : 'E1';
-
-      setChain(CHAINS[networkId] || 'Unknown chain');
 
       if (!SUPPORTED_CHAINS.includes(networkId)) {
         setAlertIsOpen(true);
       } else {
-        _chainMetaLocal.networkId = networkId;
-        _chainMetaLocal.contracts = contractsForChain(networkId);
-
-        if (walletUsedSession) {
-          // note that a user reloaded tab will also gtag login_success
-          gtagGo('auth', 'login_success', walletUsedSession);
-        }
-
-        setChainMeta({
-          networkId,
-          contracts: contractsForChain(networkId),
-          walletUsed: walletUsedSession,
-        });
-
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElondAuthenticated: true
-        });
-
         elrondBalancesUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
     }
@@ -170,7 +161,7 @@ function App({ appConfig }) {
     if (elrondAddress && isElrondLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMetaLocal.networkId)) {
         // get user token balance from elrond
-        const data = await checkBalance(d_ITHEUM_TOKEN_ID, elrondAddress, CHAINS[_chainMetaLocal.networkId]);
+        const data = await checkBalance(_chainMetaLocal.contracts.itheumToken, elrondAddress, _chainMetaLocal.networkId);
 
         if (data.balance) {
           setTokenBal((data.balance / Math.pow(10, 18)));
@@ -220,7 +211,7 @@ function App({ appConfig }) {
         setUser({
           ...baseUserContext,
           ..._user,
-          isElondAuthenticated: true,
+          isElrondAuthenticated: true,
           claimBalanceValues: claimBalanceValues,
           claimBalanceDates: claimBalanceDates,
         });
@@ -239,7 +230,7 @@ function App({ appConfig }) {
   };
 
   const handleLogout = () => {
-    // WIERD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
+    // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
     // ... so we explictely remove 'wallet-used' here
     sessionStorage.removeItem('wallet-used');
 
@@ -259,9 +250,12 @@ function App({ appConfig }) {
   
   const menuButtonW = '180px';
 
+  debugui(`walletUsedSession ${walletUsedSession}`);
+  debugui(`_chainMetaLocal.networkId ${_chainMetaLocal.networkId}`);
+
   return (
     <>
-      { _user.isElondAuthenticated && (
+      { _user.isElrondAuthenticated && (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
             <HStack h="10vh" p="5">
@@ -297,10 +291,12 @@ function App({ appConfig }) {
                         <Text>{`Profile :  ${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
                       </Text>
                     </MenuItem>}
-                    {_user.isElondAuthenticated && (
-                      <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
-                        <Text fontSize="xs">View claims history</Text>
-                      </MenuItem>
+                    {_user.isElrondAuthenticated && (
+                      <ChainSupportedComponent feature={MENU.CLAIMS}>
+                        <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
+                          <Text fontSize="xs">View claims history</Text>
+                        </MenuItem>
+                      </ChainSupportedComponent>
                     )}
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
@@ -585,8 +581,8 @@ function App({ appConfig }) {
 
               <Box pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={<ToolsElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
-                  <Route path="home" element={<ToolsElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
+                  <Route path="/" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
+                  <Route path="home" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
                   <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} />} />
@@ -619,9 +615,7 @@ function App({ appConfig }) {
           <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={() => setAlertIsOpen(false)}>
             <AlertDialogOverlay>
               <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Alert
-                </AlertDialogHeader>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold"></AlertDialogHeader>
 
                 <AlertDialogBody>
                   Sorry the {chain} chain is currently not supported. We are working on it. You need to be on{" "}
@@ -634,18 +628,14 @@ function App({ appConfig }) {
 
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={() => setAlertIsOpen(false)}>
-                    Cancel
+                    Close
                   </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialogOverlay>
           </AlertDialog>
 
-          {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}
-          
-          {debugPanel && <div style={{position: 'fixed', left: '0', top: '0', backgroundColor: 'black', padding: '2px', fontSize: '.5rem'}}>
-            walletUsedSession = {walletUsedSession}<br/>
-          </div>}
+          {elrondShowClaimsHistory && <ClaimsHistory elrondAddress={elrondAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setElrondShowClaimsHistory(false)} />}        
         </Container>
       )}
     </>

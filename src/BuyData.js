@@ -13,7 +13,8 @@ import {
 import ShortAddress from './UtilComps/ShortAddress';
 import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
 import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import { ABIS } from "EVM/ABIs";
 import { useChainMeta } from './store/ChainMetaContext';
 
 export default function({onRfMount, onRefreshBalance}) {

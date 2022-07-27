@@ -6,7 +6,8 @@ import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescr
 import moment from "moment";
 import ShortAddress from "../UtilComps/ShortAddress";
 import { progInfoMeta, config, sleep } from "../libs/util";
-import { ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "../libs/util";
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "libs/util";
+import { ABIS } from "EVM/ABIs";
 import imgProgGaPa from "../img/prog-gaming.jpg";
 import imgProgRhc from "../img/prog-rhc.png";
 import imgProgWfh from "../img/prog-wfh.png";
@@ -15,6 +16,7 @@ import { useUser } from "../store/UserContext";
 import { useChainMeta } from "../store/ChainMetaContext";
 import ChainSupportedInput from "../UtilComps/ChainSupportedInput";
 import { useNavigate } from "react-router-dom";
+import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
   const {
@@ -252,77 +254,81 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
           </Stack>
         </WrapItem>
 
-        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="5" h="360">
-            <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
-            <Text fontSize="sm" pb={5}>
-              Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
-            </Text>
+        <ChainSupportedComponent feature={MENU.FAUCET}>
+          <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
+            <Stack p="5" h="360">
+              <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
+              <Text fontSize="sm" pb={5}>
+                Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
+              </Text>
 
-            {txHashFaucet && (
-              <Stack>
-                <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
+              {txHashFaucet && (
+                <Stack>
+                  <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
-                <HStack>
-                  <Text fontSize="sm">Transaction </Text>
-                  <ShortAddress address={txHashFaucet} />
-                  <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
-                    {" "}
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </HStack>
-              </Stack>
-            )}
+                  <HStack>
+                    <Text fontSize="sm">Transaction </Text>
+                    <ShortAddress address={txHashFaucet} />
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
+                      {" "}
+                      <ExternalLinkIcon mx="2px" />
+                    </Link>
+                  </HStack>
+                </Stack>
+              )}
 
-            {txErrorFaucet && (
-              <Alert status="error">
-                <AlertIcon />
-                {txErrorFaucet.message && <AlertTitle fontSize="md">{txErrorFaucet.message}</AlertTitle>}
-                <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
-              </Alert>
-            )}
+              {txErrorFaucet && (
+                <Alert status="error">
+                  <AlertIcon />
+                  {txErrorFaucet.message && <AlertTitle fontSize="md">{txErrorFaucet.message}</AlertTitle>}
+                  <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
+                </Alert>
+              )}
 
-            <Spacer />
+              <Spacer />
 
-            <ChainSupportedInput feature={MENU.FAUCET}>
-              <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
-                Send me {_user?.isElondAuthenticated ? 10 : 50} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
-              </Button>
-            </ChainSupportedInput>
-          </Stack>
-        </WrapItem>
+              <ChainSupportedInput feature={MENU.FAUCET}>
+                <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
+                  Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                </Button>
+              </ChainSupportedInput>
+            </Stack>
+          </WrapItem>
+        </ChainSupportedComponent>
 
-        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="5" h="360">
-            <Heading size="md">My Claims</Heading>
-            <Spacer />
-            <HStack spacing={50}>
-              <Text>Rewards</Text>
-              <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
-              </Button>
-              <ClaimModalEVM {...rewardsModalData} />
-            </HStack>
-            <Spacer />
-            <HStack spacing={50}>
-              <Text>Airdrops</Text>
-              <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
-              </Button>
-              <ClaimModalEVM {...airdropsModalData} />
-            </HStack>
-            <Spacer />
-            <HStack spacing={30}>
-              <Text>Allocations</Text>
-              <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
-              </Button>
-              <ClaimModalEVM {...allocationsModalData} />
-            </HStack>
+        <ChainSupportedComponent feature={MENU.CLAIMS}>
+          <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
+            <Stack p="5" h="360">
+              <Heading size="md">My Claims</Heading>
+              <Spacer />
+              <HStack spacing={50}>
+                <Text>Rewards</Text>
+                <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
+                </Button>
+                <ClaimModalEVM {...rewardsModalData} />
+              </HStack>
+              <Spacer />
+              <HStack spacing={50}>
+                <Text>Airdrops</Text>
+                <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
+                </Button>
+                <ClaimModalEVM {...airdropsModalData} />
+              </HStack>
+              <Spacer />
+              <HStack spacing={30}>
+                <Text>Allocations</Text>
+                <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                  {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
+                </Button>
+                <ClaimModalEVM {...allocationsModalData} />
+              </HStack>
 
-            <Spacer />
-          </Stack>
-        </WrapItem>
+              <Spacer />
+            </Stack>
+          </WrapItem>
+        </ChainSupportedComponent>
       </Wrap>
 
       <Stack p="5" h="360">

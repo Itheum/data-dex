@@ -2,11 +2,12 @@ import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out
 import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@elrondnetwork/erdjs/out';
 import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import jsonData from './ABIs/claims.abi.json';
-import { claimsContractAddress_Elrond } from '../libs/contactAddresses.js';
+import { contractsForChain } from 'libs/util';
 
 export class ClaimsContract {  
   constructor(networkId) {
     this.timeout = 5000;
+    this.claimsContractAddress = contractsForChain(networkId).claims;
 
     if (networkId === 'E1') {
       this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
@@ -19,7 +20,7 @@ export class ClaimsContract {
     const abi = new SmartContractAbi(abiRegistry, ['ClaimsContract']);
 
     this.contract = new SmartContract({
-      address: new Address(claimsContractAddress_Elrond),
+      address: new Address(this.claimsContractAddress),
       abi: abi,
     });
   }
@@ -54,7 +55,7 @@ export class ClaimsContract {
         .setFunction(new ContractFunction('claim'))
         .addArg(new U64Value(rewardType))
         .build(),
-      receiver: new Address(claimsContractAddress_Elrond),
+      receiver: new Address(this.claimsContractAddress),
       gasLimit: 6000000,
       chainID: 'D',
     });

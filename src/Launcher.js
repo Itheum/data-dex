@@ -8,6 +8,7 @@ import EVMAppHarness from "./AppHarness/AppHarnessEVM";
 import ElrondAppHarness from "./AppHarness/AppHarnessElrond";
 import AuthPickerEVM from './AuthPicker/AuthPickerEVM';
 import AuthPickerElrond from './AuthPicker/AuthPickerElrond';
+import { debugui } from 'libs/util';
 
 const {
   TransactionsToastList,
@@ -19,41 +20,43 @@ const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
 function Launcher() {
   const [launchMode, setLaunchMode] = useState('auth');
-  const [lanchEnvironment, setLanchEnvironment] = useState('devnet');
+  const [launchEnvironment, setLaunchEnvironment] = useState('devnet');
 
-  const handleLaunchMode = (option, environment) => {
+  const handleLaunchMode = (option, environment) => {   
     setLaunchMode(option);
 
     if (environment) {
-      setLanchEnvironment(environment);
+      setLaunchEnvironment(environment);
     }
+
+    // always reset this value in case user is toggling between wallets in front end
+    // ... resetting here is nice an clean
+    sessionStorage.removeItem('wallet-used');
   }
+
+  debugui(`launchMode ${launchMode} environment ${launchEnvironment}`);
 
   return (
     <>
-      <div>launchMode {launchMode}</div>
-      
       {launchMode == 'auth' && 
         <AuthLauncher onLaunchMode={handleLaunchMode} />
       }
 
       {launchMode == 'evm' && <>
-        <div>EVM Mode</div>
         <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
-          <AuthPickerEVM resetLaunchMode={() => setLaunchMode('auth')} />
-          <EVMAppHarness resetLaunchMode={() => setLaunchMode('auth')} />
+          <AuthPickerEVM resetLaunchMode={() => handleLaunchMode('auth')} />
+          <EVMAppHarness resetLaunchMode={() => handleLaunchMode('auth')} />
         </MoralisProvider>
       </>}
 
       {launchMode == 'elrond' && <>
-        <div>Elrond {lanchEnvironment} Mode</div>
-        <DappProvider environment={lanchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
+        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
           <TransactionsToastList />
           <NotificationModal />
           <SignTransactionsModals className="custom-class-for-modals" />
 
-          <AuthPickerElrond resetLaunchMode={() => setLaunchMode('auth')} />
-          <ElrondAppHarness lanchEnvironment={lanchEnvironment} />
+          <AuthPickerElrond resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
+          <ElrondAppHarness launchEnvironment={launchEnvironment} />
         </DappProvider>
       </>}
     </>

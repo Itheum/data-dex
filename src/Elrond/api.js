@@ -1,31 +1,28 @@
 import axios from 'axios';
 
-export const ITHEUM_TOKEN_ID = 'ITHEUM-df6f26';
-export const d_ITHEUM_TOKEN_ID = 'ITHEUM-a61317';
-
-export const getApi = (chain) => {
-  if (chain === 'Elrond - Mainnet') {
+export const getApi = (networkId) => {
+  if (networkId === 'E1') {
     return 'api.elrond.com';
   } else {
     return 'devnet-api.elrond.com';
   }
 };
 
-export const getExplorer = (chain) => {
-  if (chain === 'Elrond - Mainnet') {
+export const getExplorer = (networkId) => {
+  if (networkId === 'E1') {
     return 'explorer.elrond.com';
   } else {
     return 'devnet-explorer.elrond.com';
   }
 };
 
-export const getTransactionLink = (chain, txHash) => {
-  return `https://${getExplorer(chain)}/transactions/${txHash}`;
+export const getTransactionLink = (networkId, txHash) => {
+  return `https://${getExplorer(networkId)}/transactions/${txHash}`;
 };
 
 // check token balance on Elrond
-export const checkBalance = async (token, address, chain) => {
-  const api = getApi(chain);
+export const checkBalance = async (token, address, networkId) => {
+  const api = getApi(networkId);
   
   return new Promise((resolve, reject) => {
     axios.get(`https://${api}/accounts/${address}/tokens/${token}`)
@@ -44,8 +41,8 @@ export const checkBalance = async (token, address, chain) => {
   });
 };
 
-export const getClaimTransactions = async (address, smartContractAddress, chain) => {
-  const api = getApi(chain);
+export const getClaimTransactions = async (address, smartContractAddress, networkId) => {
+  const api = getApi(networkId);
 
   try {
     const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;

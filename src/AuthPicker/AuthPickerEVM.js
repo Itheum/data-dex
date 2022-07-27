@@ -91,12 +91,10 @@ function AuthPickerEVM({ resetLaunchMode }) {
         <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Select a Wallet</ModalHeader>
+            <ModalHeader>Select a EVM Wallet</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
               <Stack spacing="5">
-                <Text fontSize="sm">Please select a wallet to connect to the Data DEX</Text>
-
                 {authErrorUi && (
                   <Alert status="error">
                     <AlertIcon />

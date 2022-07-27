@@ -34,9 +34,15 @@ const contracts = {
     },
   },
   elrond: {
-    dev: {
+    devnet: {
+      itheumTokenContractAddress: "ITHEUM-a61317",
       claimsContractAddress: "erd1qqqqqqqqqqqqqpgqtywnp7z0war94rpzk00p2n2wjwaws2xr7yqsejxy7f",
       faucetContractAddress: "erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf",
+    },
+    mainnet: {
+      itheumTokenContractAddress: "ITHEUM-df6f26",
+      claimsContractAddress: "",
+      faucetContractAddress: "",
     },
   },
 };
@@ -63,9 +69,13 @@ export const ddexContractAddress_testnetBSC = contracts.bsc[contractsMode].ddexC
 export const dNFTContractAddress_testnetBSC = contracts.bsc[contractsMode].dNFTContractAddress;
 export const claimsContractAddress_testnetBSC = contracts.bsc[contractsMode].claimsContractAddress;
 
-//Elrond contracts
-export const claimsContractAddress_Elrond = contracts.elrond[contractsMode].claimsContractAddress;
-export const faucetContractAddress_Elrond = contracts.elrond[contractsMode].faucetContractAddress;
+// Elrond contracts
+export const tokenContractAddress_Elrond_Devnet = contracts.elrond['devnet'].itheumTokenContractAddress;
+export const claimsContractAddress_Elrond_Devnet = contracts.elrond['devnet'].claimsContractAddress;
+export const faucetContractAddress_Elrond_Devnet = contracts.elrond['devnet'].faucetContractAddress;
+export const tokenContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].itheumTokenContractAddress;
+export const claimsContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].claimsContractAddress;
+export const faucetContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].faucetContractAddress;
 
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";

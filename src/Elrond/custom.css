@@ -64,11 +64,11 @@ body.auth_button {
   height: 50px;  
 }
 
-.dapp-core-modal-active .chakra-portal {
+body[data-rr-ui-modal-open] .chakra-portal {
   display: none;
 }
 
-.dapp-core-modal-active .dapp-core-ui-component.modal {
+body[data-rr-ui-modal-open] .dapp-core-ui-component.modal {
   margin-top: -750px;
   display: contents !important;
 }

@@ -15,7 +15,7 @@ import PurchasedData from 'PurchasedData';
 import AdvertisedData from 'AdvertisedData';
 import PersonalDataProofs from 'PersonalDataProofs';
 import ShortAddress from 'UtilComps/ShortAddress';
-import ToolsEVM from 'Tools/ToolsEVM';
+import HomeEVM from 'Home/HomeEVM';
 import ChainTransactions from 'ChainTransactions';
 import DataVault from 'DataVault';
 import DataNFTs from 'DataNFTs';
@@ -26,8 +26,9 @@ import DataCoalitions from 'DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo } from 'libs/util';
-import { MENU, ABIS, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
+import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui } from 'libs/util';
+import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
+import { ABIS } from "EVM/ABIs";
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { useSessionStorage } from 'libs/hooks';
@@ -40,7 +41,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 
 const baseUserContext = {
   isMoralisAuthenticated: false,
-  isElondAuthenticated: false,
+  isElrondAuthenticated: false,
   claimBalanceValues: ['-1', '-1', '-1'],
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
@@ -252,7 +253,7 @@ function App({ appConfig }) {
   };
 
   const handleLogout = () => {
-    // WIERD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
+    // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
     // ... so we explictely remove 'wallet-used' here
     sessionStorage.removeItem('wallet-used');
 
@@ -264,6 +265,8 @@ function App({ appConfig }) {
   };
   
   const menuButtonW = '180px';
+
+  debugui(`walletUsedSession ${walletUsedSession}`);
 
   return (
     <>
@@ -586,8 +589,8 @@ function App({ appConfig }) {
 
               <Box pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={<ToolsEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}/>
-                  <Route path="home" element={<ToolsEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}/>
+                  <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}/>
+                  <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}/>
                   <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />} />
@@ -620,9 +623,7 @@ function App({ appConfig }) {
           <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={() => setAlertIsOpen(false)}>
             <AlertDialogOverlay>
               <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Alert
-                </AlertDialogHeader>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold"></AlertDialogHeader>
 
                 <AlertDialogBody>
                   Sorry the {chain} chain is currently not supported. We are working on it. You need to be on{" "}
@@ -635,16 +636,13 @@ function App({ appConfig }) {
 
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={() => setAlertIsOpen(false)}>
-                    Cancel
+                    Close
                   </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialogOverlay>
           </AlertDialog>
 
-          {debugPanel && <div style={{position: 'fixed', left: '0', top: '0', backgroundColor: 'black', padding: '2px', fontSize: '.5rem'}}>
-            walletUsedSession = {walletUsedSession}<br/>
-          </div>}
         </Container>
       )}
     </>

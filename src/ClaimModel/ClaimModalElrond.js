@@ -4,7 +4,7 @@ import ShortAddress from "../UtilComps/ShortAddress";
 import React, { useState, useEffect, useContext } from "react";
 import { useMoralis } from "react-moralis";
 import { config, sleep } from "../libs/util";
-import { ABIS, CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "../libs/util";
+import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "../libs/util";
 import { useUser } from "../store/UserContext";
 import { useChainMeta } from "../store/ChainMetaContext";
 import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";

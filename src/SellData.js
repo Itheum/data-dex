@@ -20,7 +20,8 @@ import { GiVintageRobot } from "react-icons/gi";
 import { MdOutlinePattern } from "react-icons/md";
 
 import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
+import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
+import { ABIS } from "EVM/ABIs";
 import ShortAddress from './UtilComps/ShortAddress';
 import IconButton from './UtilComps/IconButton';
 import { useChainMeta } from './store/ChainMetaContext';

@@ -4,21 +4,21 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
   TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot  } from '@chakra-ui/react';
 import { getClaimTransactions, getTransactionLink } from './api';
-import { claimsContractAddress_Elrond } from '../libs/contactAddresses';
+import { useChainMeta } from "store/ChainMetaContext";
 import { CloseIcon } from '@chakra-ui/icons';
-import { CHAINS } from '../libs/util';
 
 export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseChaimsHistory}) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const [elrondClaims, setElrondClaims] = useState([]);
   const [loadingClaims, setLoadingClaims] = useState(true);
+  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
 
   useEffect(() => {
     fetchElrondClaims();
   },[]);
 
   const fetchElrondClaims = async () => {
-    const transactions = await getClaimTransactions(elrondAddress, claimsContractAddress_Elrond, CHAINS[networkId]);
+    const transactions = await getClaimTransactions(elrondAddress, _chainMeta.contracts.claims, networkId);
     setElrondClaims(transactions);
     setClaimTransactionsModalOpen(true);
 
@@ -60,7 +60,7 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
                       {new Date(item.timestamp).toLocaleString()}
                     </Text></Td>
                     <Td textAlign="center">
-                      <Link fontSize="sm" href={getTransactionLink(CHAINS[networkId], item.hash)} isExternal>{item.hash.slice(0, 5)}...{item.hash.slice(item.hash.length - 5, item.hash.length)}</Link>
+                      <Link fontSize="sm" href={getTransactionLink(networkId, item.hash)} isExternal>{item.hash.slice(0, 5)}...{item.hash.slice(item.hash.length - 5, item.hash.length)}</Link>
                     </Td>
                     <Td textAlign="center"><Text fontSize="sm">{item.claimType}</Text></Td>
                     <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10, 18).toFixed(2)}</Text></Td>

@@ -15,10 +15,6 @@ function AuthPickerElrond ({ resetLaunchMode }) {
 
   useEffect(() => {
     onProgressModalOpen();
-    
-    try {
-      document.getElementsByClassName('chakra-portal')[0].style.display = 'initial';
-    } catch(e) {}
   }, []);
 
 
@@ -31,9 +27,6 @@ function AuthPickerElrond ({ resetLaunchMode }) {
   const handleProgressModalClose = () => {
     onProgressModalClose();
 
-    // reset the original state of the chakra model
-    document.querySelector('body').classList.remove('dapp-core-modal-active');
-
     // only reset host page to elrond vs evm wallet selector IF user did NOT just already log in successfully
     if (!elrondAddress) {
       resetLaunchMode();
@@ -44,10 +37,6 @@ function AuthPickerElrond ({ resetLaunchMode }) {
     gtagGo('auth', 'login', wallet);
 
     setWalletUsedSession(wallet);
-
-    if (wallet === 'el_maiar' || wallet === 'el_ledger') {
-      document.querySelector('body').classList.add('dapp-core-modal-active');
-    }
   };
 
   return (
@@ -56,12 +45,10 @@ function AuthPickerElrond ({ resetLaunchMode }) {
       <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select a Wallet</ModalHeader>
+          <ModalHeader>Select a Elrond Wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="5">
-              <Text fontSize="sm">Want to use the Elrond Blockchain? Try these wallets...</Text>
-
               <Box p="5px">
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">

@@ -1,13 +1,13 @@
 import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
 import AppElrond from "App/AppElrond";
 
-function AppHarnessElrond({ lanchEnvironment }) {
+function AppHarnessElrond({ launchEnvironment }) {
   const { address: elrondAddress } = useGetAccountInfo();
 
   return (
     <>
       {elrondAddress && <AppElrond appConfig={{
-        elrondEnvironment: lanchEnvironment
+        elrondEnvironment: launchEnvironment
       }} />}
     </>
   );

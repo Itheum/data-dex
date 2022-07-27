@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Text, Image, Tooltip, 
   Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio, } from "@chakra-ui/react";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack, VStack } from "@chakra-ui/layout";
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
 
 import logo from "./img/logo.png";
 import chainEth from "./img/eth-chain-logo.png";
@@ -16,7 +16,7 @@ import chainHedera from "./img/hedera-chain-logo.png";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
-const AuthLauncher = ({onLaunchMode}) => {
+const AuthLauncher = ({ onLaunchMode }) => {
   return (
     <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
       <Flex justify="center" direction="column">
@@ -32,7 +32,6 @@ const AuthLauncher = ({onLaunchMode}) => {
             <Spacer />
 
             <HStack justifyContent="center" p="3" spacing={6}>
-
               <PopupChainSelectorForWallet
                 lrgButtonSize={true}
                 hideTerms={true}
@@ -108,7 +107,7 @@ const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
 
         <PopoverContent>
           <PopoverBody>
-            <Text fontSize="sm" mt="2" mb="2">Please pick a supported Elrond environment</Text>
+            <Text fontSize="sm" mt="2" mb="2">Please pick a Elrond environment</Text>
               <RadioGroup value={elrondEnv} onChange={networkCode => setElrondEnv(networkCode)}>
                 <Radio value="devnet" p="1"><Text fontSize="sm">Devnet</Text></Radio>
                 <Radio value="mainnet" p="1"><Text fontSize="sm">Mainnet</Text></Radio>
