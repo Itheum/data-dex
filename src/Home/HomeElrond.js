@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading,  Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import { 
+  Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
+  Text, HStack, Heading,  Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
 import { progInfoMeta, config, debugui } from "libs/util";
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
@@ -51,7 +53,7 @@ export default function({ onRfMount }) {
 
   const handleOnChainFaucet = async () => {
     if (elrondAddress) {
-      FaucetContract.sendActivateFaucetTransaction();
+      elrondFaucetContract.sendActivateFaucetTransaction();
     }
   };
   // E: Faucet

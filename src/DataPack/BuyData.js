@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery, useNewMoralisObject } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Skeleton, CloseButton, Button, Link, Spinner, Progress,
+  CloseButton, Button, Link, Spinner, Progress,
   Alert, AlertIcon, AlertTitle, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Text, HStack, 
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
-import ShortAddress from './UtilComps/ShortAddress';
-import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
-import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
+import ShortAddress from 'UtilComps/ShortAddress';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { config, dataTemplates, sleep } from 'libs/util';
+import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from 'libs/util';
 import { ABIS } from "EVM/ABIs";
-import { useChainMeta } from './store/ChainMetaContext';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function({onRfMount, onRefreshBalance}) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();

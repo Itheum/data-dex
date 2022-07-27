@@ -3,11 +3,11 @@ import React from "react";
 import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
 import { MoralisProvider } from "react-moralis";
 
-import AuthLauncher from "./AuthLauncher";
-import EVMAppHarness from "./AppHarness/AppHarnessEVM";
-import ElrondAppHarness from "./AppHarness/AppHarnessElrond";
-import AuthPickerEVM from './AuthPicker/AuthPickerEVM';
-import AuthPickerElrond from './AuthPicker/AuthPickerElrond';
+import AuthLauncher from "Launch/AuthLauncher";
+import EVMAppHarness from "AppHarness/AppHarnessEVM";
+import ElrondAppHarness from "AppHarness/AppHarnessElrond";
+import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
+import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
 import { debugui } from 'libs/util';
 
 const {
@@ -53,7 +53,7 @@ function Launcher() {
         <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
           <TransactionsToastList />
           <NotificationModal />
-          <SignTransactionsModals className="custom-class-for-modals" />
+          <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
           <AuthPickerElrond resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
           <ElrondAppHarness launchEnvironment={launchEnvironment} />

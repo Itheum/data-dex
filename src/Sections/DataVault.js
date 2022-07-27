@@ -1,15 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Button, Link, Progress, Badge, Flex, Image, StackDivider,
-  Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
-  Text, HStack, Heading, Center,
-  useToast
+  Button, Link, Badge, Flex, Image, StackDivider,
+  HStack, Heading, Center,
 } from '@chakra-ui/react';
-import { CHAIN_TOKEN_SYMBOL } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
-import dataVaultIcon from './img/data-vault-icon.png';
+import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
+import dataVaultIcon from 'img/data-vault-icon.png';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();

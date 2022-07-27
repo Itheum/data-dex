@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Button, Link, Badge, Flex, Image, StackDivider, Text,
+  Button, Link, Badge, Flex, Image, StackDivider,
   HStack, Heading, Center,
 } from '@chakra-ui/react';
 
-import TrustedComputationFrameworkIcon from './img/trusted-computation-icon.png';
+import TrustedComputationFrameworkIcon from 'img/trusted-computation-icon.png';
 
 export default function() {
   return (

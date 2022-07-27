@@ -3,10 +3,10 @@ import { BrowserTracing } from "@sentry/tracing";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import Launcher from "./Launcher";
+import Launcher from "./Launch/Launcher";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorBoundary from "UtilComps/ErrorBoundary";
 import { UserContextProvider } from "./store/UserContext";
 import { ChainMetaContextProvider } from "./store/ChainMetaContext";
 import { BrowserRouter as Router } from 'react-router-dom';

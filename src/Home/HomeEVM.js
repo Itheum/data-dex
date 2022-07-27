@@ -2,19 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useMoralis, useMoralisCloudFunction } from "react-moralis";
 import { Box, Stack } from "@chakra-ui/layout";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import { 
+  Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, 
+  Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, 
+  ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, 
+  WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
-import ShortAddress from "../UtilComps/ShortAddress";
-import { progInfoMeta, config, sleep } from "../libs/util";
+import ShortAddress from "UtilComps/ShortAddress";
+import { progInfoMeta, config, sleep } from "libs/util";
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "libs/util";
 import { ABIS } from "EVM/ABIs";
-import imgProgGaPa from "../img/prog-gaming.jpg";
-import imgProgRhc from "../img/prog-rhc.png";
-import imgProgWfh from "../img/prog-wfh.png";
-import ClaimModalEVM from "../ClaimModel/ClaimModalEVM";
-import { useUser } from "../store/UserContext";
-import { useChainMeta } from "../store/ChainMetaContext";
-import ChainSupportedInput from "../UtilComps/ChainSupportedInput";
+import imgProgGaPa from "img/prog-gaming.jpg";
+import imgProgRhc from "img/prog-rhc.png";
+import imgProgWfh from "img/prog-wfh.png";
+import ClaimModalEVM from "ClaimModel/ClaimModalEVM";
+import { useUser } from "store/UserContext";
+import { useChainMeta } from "store/ChainMetaContext";
+import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 import { useNavigate } from "react-router-dom";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 

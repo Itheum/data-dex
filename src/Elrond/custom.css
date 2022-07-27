@@ -70,9 +70,17 @@ body[data-rr-ui-modal-open] .chakra-portal {
 
 body[data-rr-ui-modal-open] .dapp-core-ui-component.modal {
   margin-top: -750px;
+}
+
+body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.wallect-connect-login {
+  display: contents !important;
+}
+
+body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
   display: contents !important;
 }
 
 .dapp-core-ui-component .media-body {
   color: #ffffff;
 }
+

@@ -1,19 +1,18 @@
 import moment from 'moment';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
-  Skeleton, Alert, Text, Link, Badge,
+  Alert, Text, Link, Badge,
   AlertIcon, AlertTitle, CloseButton, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
-  useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import ShortAddress from './UtilComps/ShortAddress';
-import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
-import { config, itheumTokenRoundUtil } from './libs/util';
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
+import ShortAddress from 'UtilComps/ShortAddress';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { config, itheumTokenRoundUtil } from 'libs/util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();

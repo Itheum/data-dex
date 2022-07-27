@@ -1,4 +1,4 @@
-import {Text, Tooltip} from '@chakra-ui/react';
+import { Text, Tooltip } from '@chakra-ui/react';
 
 export default function ShortAddress({address, fontSize = 'xs'}) {
   return (

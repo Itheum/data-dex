@@ -3,16 +3,16 @@ import { Button, Text, Image, Tooltip,
   Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio, } from "@chakra-ui/react";
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
 
-import logo from "./img/logo.png";
-import chainEth from "./img/eth-chain-logo.png";
-import chainPol from "./img/polygon-chain-logo.png";
-import chainBsc from "./img/bsc-chain-logo.png";
-import chainAvln from "./img/avalanche-chain-logo.png";
-import chainHrmy from "./img/harmony-chain-logo.png";
-import chainPlaton from "./img/platon-chain-logo.png";
-import chainParastate from "./img/parastate-chain-logo.png";
-import chainElrond from "./img/elrond-chain-logo.png";
-import chainHedera from "./img/hedera-chain-logo.png";
+import logo from "img/logo.png";
+import chainEth from "img/eth-chain-logo.png";
+import chainPol from "img/polygon-chain-logo.png";
+import chainBsc from "img/bsc-chain-logo.png";
+import chainAvln from "img/avalanche-chain-logo.png";
+import chainHrmy from "img/harmony-chain-logo.png";
+import chainPlaton from "img/platon-chain-logo.png";
+import chainParastate from "img/parastate-chain-logo.png";
+import chainElrond from "img/elrond-chain-logo.png";
+import chainHedera from "img/hedera-chain-logo.png";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 

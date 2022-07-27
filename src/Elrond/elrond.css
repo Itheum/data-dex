@@ -1,5 +1,6 @@
 .dapp-core-ui-component {
   display: contents;
+  
   /*!
    * Bootstrap v4.6.0 (https://getbootstrap.com/)
    * Copyright 2011-2021 The Bootstrap Authors
@@ -20,6 +21,7 @@
   /* Loader, Transaction Success/Fail
     -------------------------------------------------- */
 }
+
 .dapp-core-ui-component :root {
   --blue: #007bff;
   --indigo: #6610f2;

@@ -9,22 +9,22 @@ import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui
 import { SunIcon, MoonIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
-import SellData from 'SellData';
-import BuyData from 'BuyData';
-import PurchasedData from 'PurchasedData';
-import AdvertisedData from 'AdvertisedData';
-import PersonalDataProofs from 'PersonalDataProofs';
+import SellData from 'DataPack/SellData';
+import BuyData from 'DataPack/BuyData';
+import PurchasedData from 'DataPack/PurchasedData';
+import AdvertisedData from 'DataPack/AdvertisedData';
+import PersonalDataProofs from 'DataPack/PersonalDataProofs';
 import ShortAddress from 'UtilComps/ShortAddress';
 import HomeEVM from 'Home/HomeEVM';
-import ChainTransactions from 'ChainTransactions';
-import DataVault from 'DataVault';
-import DataNFTs from 'DataNFTs';
+import ChainTransactions from 'Sections/ChainTransactions';
+import DataVault from 'Sections/DataVault';
+import DataNFTs from 'DataNFT/DataNFTs';
 import MyDataNFTs from 'DataNFT/MyDataNFTs';
 import DataNFTMarketplace from 'DataNFT/DataNFTMarketplace';
-import DataStreams from 'DataStreams';
-import DataCoalitions from 'DataCoalitions';
+import DataStreams from 'Sections/DataStreams';
+import DataCoalitions from 'DataCoalition/DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
-import TrustedComputation from 'TrustedComputation';
+import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
@@ -297,7 +297,7 @@ function App({ appConfig }) {
 
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
-                  <ShortAddress address={user.get('ethAddress')} fontSize="md" />
+                  <ShortAddress address={user.get('ethAddress').toUpperCase()} fontSize="sm" />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup>

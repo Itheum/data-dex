@@ -35,7 +35,7 @@ export class FaucetContract {
     return firstValue.valueOf().toNumber() * 1000;
   }
 
-  static async sendActivateFaucetTransaction() {
+  async sendActivateFaucetTransaction() {
     const faucetTransaction = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()

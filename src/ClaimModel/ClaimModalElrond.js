@@ -1,16 +1,14 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, HStack, Text, Spacer, Button, Link, Progress, CloseButton, Stack, Alert, AlertIcon, AlertTitle, useToast } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import ShortAddress from "../UtilComps/ShortAddress";
-import React, { useState, useEffect, useContext } from "react";
-import { useMoralis } from "react-moralis";
-import { config, sleep } from "../libs/util";
-import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "../libs/util";
-import { useUser } from "../store/UserContext";
-import { useChainMeta } from "../store/ChainMetaContext";
-import { useGetAccountInfo, refreshAccount, sendTransactions } from "@elrondnetwork/dapp-core";
-import { ClaimsContract } from "../Elrond/claims";
+import { 
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, 
+  HStack, Text, Spacer, Button, Stack, useToast } from "@chakra-ui/react";
+import React from "react";
+import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
+import { CHAIN_TOKEN_SYMBOL } from "libs/util";
+import { useUser } from "store/UserContext";
+import { useChainMeta } from "store/ChainMetaContext";
+import { ClaimsContract } from "Elrond/claims";
 
-const ClaimModal = ({ config, isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
+const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
   const { address: elrondAddress } = useGetAccountInfo();
 
   const toast = useToast();

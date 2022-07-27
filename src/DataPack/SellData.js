@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useDropzone } from 'react-dropzone';
-import { useContext, useMemo, useEffect, useState, useCallback } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
@@ -13,18 +13,18 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure
 } from '@chakra-ui/react';
-import ChainSupportedInput from './UtilComps/ChainSupportedInput';
+import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { FaUncharted } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";
 import { GiVintageRobot } from "react-icons/gi";
 import { MdOutlinePattern } from "react-icons/md";
 
-import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
+import { config, dataTemplates, sleep } from 'libs/util';
+import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from 'libs/util';
 import { ABIS } from "EVM/ABIs";
-import ShortAddress from './UtilComps/ShortAddress';
-import IconButton from './UtilComps/IconButton';
-import { useChainMeta } from './store/ChainMetaContext';
+import ShortAddress from 'UtilComps/ShortAddress';
+import IconButton from 'UtilComps/IconButton';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 const baseStyle = {
   flex: 1,

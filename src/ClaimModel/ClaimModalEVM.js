@@ -1,13 +1,15 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, HStack, Text, Spacer, Button, Link, Progress, CloseButton, Stack, Alert, AlertIcon, AlertTitle, useToast } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import ShortAddress from "../UtilComps/ShortAddress";
-import React, { useState, useEffect, useContext } from "react";
 import { useMoralis } from "react-moralis";
-import { config, sleep } from "../libs/util";
-import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "../libs/util";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, 
+  ModalCloseButton, HStack, Text, Spacer, Button, Link, Progress, CloseButton, Stack, 
+  Alert, AlertIcon, AlertTitle, useToast } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import ShortAddress from "UtilComps/ShortAddress";
+import React, { useState, useEffect } from "react";
+import { config, sleep } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "libs/util";
 import { ABIS } from "EVM/ABIs";
-import { useUser } from "../store/UserContext";
-import { useChainMeta } from "../store/ChainMetaContext";
+import { useUser } from "store/UserContext";
+import { useChainMeta } from "store/ChainMetaContext";
 
 const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
   const {
