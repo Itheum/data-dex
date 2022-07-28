@@ -54,14 +54,14 @@ function Launcher() {
         </MoralisProvider>
       </>}
 
-      {launchMode == 'elrond' && <>
+      {launchMode == 'elrond' && <>      
         <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
           <TransactionsToastList />
           <NotificationModal />
           <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
           <AuthPickerElrond resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
-          <ElrondAppHarness launchEnvironment={launchEnvironment} />
+          <ElrondAppHarness launchEnvironment={launchEnvironment} />          
         </DappProvider>
       </>}
     </>
