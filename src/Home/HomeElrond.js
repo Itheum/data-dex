@@ -31,10 +31,6 @@ export default function({ onRfMount }) {
   const [elrondFaucetTime, setElrondFaucetTime] = useState(0);
 
   useEffect(() => {
-    console.log("MOUNT Tools");
-  }, []);
-
-  useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         elrondFaucetContract = new FaucetContract(_chainMeta.networkId);

@@ -459,6 +459,18 @@ export const gtagGo = (category, action, label, value) => {
 };
 
 export const debugui = (text) => {
-  const div = document.getElementById('debugui');
-  div.innerHTML = text + '<br/>' + div.innerHTML;
+  if (sessionStorage && sessionStorage.getItem('itm-debugui')) {
+    const div = document.getElementById('debugui');
+    div.innerHTML = text + '<br/>' + div.innerHTML;
+    div.style.display = 'block';
+  }
 };
+
+export const clearAppSessions = () => {
+  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
+    // ... so we explictely remove 'itm-wallet-used' here
+    sessionStorage.removeItem('itm-wallet-used');
+    
+    sessionStorage.removeItem('itm-launch-mode');
+    sessionStorage.removeItem('itm-launch-env');
+}

@@ -44,6 +44,9 @@ const theme = extendTheme({
     xl: "1.05rem",
     "2xl": "1.15rem",
   },
+  Toast: {
+    colorScheme: "teal",
+  }
 });
 
 ReactDOM.render(

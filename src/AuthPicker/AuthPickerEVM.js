@@ -20,7 +20,7 @@ function AuthPickerEVM({ resetLaunchMode }) {
   const [EVMWalletUsed, setEVMWalletUsed] = useState(null);
   const [isAuthenticatingMetamask, setIsAuthenticatingMetamask] = useState(0);
   const [isAuthenticatingWc, setIsAuthenticatingWc] = useState(0);
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
 
   useEffect(() => {
     if (authError) {

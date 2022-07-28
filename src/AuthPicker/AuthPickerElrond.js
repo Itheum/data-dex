@@ -4,19 +4,33 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
 import { WALLETS } from 'libs/util';
-import { gtagGo } from 'libs/util';
+import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
+import { useNavigate } from 'react-router-dom';
 
 function AuthPickerElrond ({ resetLaunchMode }) {
+  const navigate = useNavigate();
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
   const { address: elrondAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
 
   useEffect(() => {
-    onProgressModalOpen();
-  }, []);
+    async function cleanOutRemoteMaiarAppWalletDisconnect() {
+      clearAppSessions();
 
+      await sleep(2);
+      window.location.replace("/");
+    }
+
+    if (window.location.pathname === '/unlock') {
+      // if a user disconnects the mobile maiar app, it logs out user 
+      //... via dapp-core internally but redirects to a /unlock. We need to clean out the sessions correctly in this case
+      cleanOutRemoteMaiarAppWalletDisconnect();
+    } else {
+      onProgressModalOpen();
+    }
+  }, []);
 
   useEffect(() => {
     if (elrondAddress) {

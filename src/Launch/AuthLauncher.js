@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button, Text, Image, Tooltip, 
-  Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio, } from "@chakra-ui/react";
+  Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio, useColorMode } from "@chakra-ui/react";
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
 
-import logo from "img/logo.png";
+import logoSmlD from 'img/logo-sml-d.png';
+import logoSmlL from 'img/logo-sml-l.png';
 import chainEth from "img/eth-chain-logo.png";
 import chainPol from "img/polygon-chain-logo.png";
 import chainBsc from "img/bsc-chain-logo.png";
@@ -17,12 +18,14 @@ import chainHedera from "img/hedera-chain-logo.png";
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
 const AuthLauncher = ({ onLaunchMode }) => {
+  const { colorMode } = useColorMode();
+
   return (
     <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
       <Flex justify="center" direction="column">
         <Box p={["20px", null, "30px"]} borderWidth="2px" borderRadius="lg">
           <Stack>
-            <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={logo} alt="Itheum Data DEX" margin="auto" />
+            <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" margin="auto" />
             <Heading size="md" textAlign="center">
               Itheum Data DEX
             </Heading>

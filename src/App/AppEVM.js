@@ -26,7 +26,7 @@ import DataCoalitions from 'DataCoalition/DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui } from 'libs/util';
+import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
 import { ABIS } from "EVM/ABIs";
 import { useUser } from 'store/UserContext';
@@ -78,7 +78,7 @@ function App({ appConfig }) {
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { pathname } = useLocation();
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -253,9 +253,7 @@ function App({ appConfig }) {
   };
 
   const handleLogout = () => {
-    // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
-    // ... so we explictely remove 'wallet-used' here
-    sessionStorage.removeItem('wallet-used');
+    clearAppSessions();
 
     setUser({ ...baseUserContext });
     setChainMeta({});

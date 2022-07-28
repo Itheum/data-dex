@@ -45,10 +45,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("MOUNT Tools");
-  }, []);
-
   // test data
   useEffect(() => {
     if (dataCfTestData && dataCfTestData.length > 0) {

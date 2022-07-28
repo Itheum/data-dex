@@ -27,7 +27,7 @@ import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import ClaimsHistory from 'Elrond/ClaimsHistory';
-import { sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui } from 'libs/util';
+import { sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
@@ -77,7 +77,7 @@ function App({ appConfig }) {
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { pathname } = useLocation();
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('wallet-used', null);
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
   const [loggedInActiveElrondWallet, setLoggedInActiveElrondWallet] = useState(null);
 
   // context hooks
@@ -230,9 +230,7 @@ function App({ appConfig }) {
   };
 
   const handleLogout = () => {
-    // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
-    // ... so we explictely remove 'wallet-used' here
-    sessionStorage.removeItem('wallet-used');
+    clearAppSessions();
 
     setUser({ ...baseUserContext });
     setChainMeta({});
@@ -294,7 +292,7 @@ function App({ appConfig }) {
                     {_user.isElrondAuthenticated && (
                       <ChainSupportedComponent feature={MENU.CLAIMS}>
                         <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
-                          <Text fontSize="xs">View claims history</Text>
+                          <Text fontSize="sm">View claims history</Text>
                         </MenuItem>
                       </ChainSupportedComponent>
                     )}

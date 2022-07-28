@@ -223,10 +223,6 @@ export default function({onRfMount, onRefreshBalance}) {
       setTxConfirmationTransfer(1);
       await sleep(2);
 
-      // await sleep(2);
-      // setTxConfirmationTransfer(1);
-      // await sleep(2);
-
       if (txReceipt.status) {
         setTxConfirmationTransfer(2);
       } else {
