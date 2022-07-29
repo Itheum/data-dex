@@ -84,3 +84,10 @@ body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
   color: #ffffff;
 }
 
+.chakra-ui-dark .dapp-core-ui-component .toast-messages .toast {
+  border-color: #81e6d9 !important;
+}
+
+.chakra-ui-light .dapp-core-ui-component .toast-messages .toast {
+  border-color: #2d7a7b !important;
+}

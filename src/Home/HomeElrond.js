@@ -28,6 +28,7 @@ export default function({ onRfMount }) {
   const { user: _user } = useUser();
 
   const [learnMoreProd, setLearnMoreProg] = useState(null);
+  const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(false);
 
   useEffect(() => {
@@ -53,15 +54,22 @@ export default function({ onRfMount }) {
           setTimeout(() => {
             setIsElrondFaucetDisabled(false);
           }, lastUsedTime + 120000 + 1000 - timeNow);
+        } else {
+          setIsElrondFaucetDisabled(false);
         }
       });
     }
   }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
   useEffect(() => {
-    // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
     if (hasPendingTransactions) {
+      // block user trying to do other claims or on-chain tx until current one completes
+      setIsOnChainInteractionDisabled(true);
+
+      // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
       setIsElrondFaucetDisabled(true);
+    } else {
+      setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }
   }, [hasPendingTransactions]);
 
@@ -155,7 +163,7 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={50}>
                 <Text>Rewards</Text>
-                <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || _user?.claimBalanceValues?.[0] === "-2" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                <Button disabled={isOnChainInteractionDisabled || _user?.claimBalanceValues?.[0] === "-1" || _user?.claimBalanceValues?.[0] === "-2" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                   {(_user?.claimBalanceValues?.[0] !== "-1" && _user?.claimBalanceValues?.[0] !== "-2") ? 
                       _user?.claimBalanceValues?.[0] : _user?.claimBalanceValues?.[0] !== "-2" ? 
                         <Spinner size="xs" /> : <WarningTwoIcon />
@@ -166,7 +174,7 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={50}>
                 <Text>Airdrops</Text>
-                <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || _user?.claimBalanceValues?.[1] === "-2" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                <Button disabled={isOnChainInteractionDisabled || _user?.claimBalanceValues?.[1] === "-1" || _user?.claimBalanceValues?.[1] === "-2" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                   {(_user?.claimBalanceValues?.[1] !== "-1" && _user?.claimBalanceValues?.[1] !== "-2") ? 
                       _user?.claimBalanceValues?.[1] : _user?.claimBalanceValues?.[1] !== "-2" ? 
                         <Spinner size="xs" /> : <WarningTwoIcon />
@@ -177,7 +185,7 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={30}>
                 <Text>Allocations</Text>
-                <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || _user?.claimBalanceValues?.[2] === "-2" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                <Button disabled={isOnChainInteractionDisabled || _user?.claimBalanceValues?.[2] === "-1" || _user?.claimBalanceValues?.[2] === "-2" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                   {(_user?.claimBalanceValues?.[2] !== "-1" && _user?.claimBalanceValues?.[2] !== "-2") ? 
                       _user?.claimBalanceValues?.[2] : _user?.claimBalanceValues?.[2] !== "-2" ? 
                         <Spinner size="xs" /> : <WarningTwoIcon />
