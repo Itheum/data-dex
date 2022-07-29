@@ -28,7 +28,7 @@ export default function({ onRfMount }) {
   const { user: _user } = useUser();
 
   const [learnMoreProd, setLearnMoreProg] = useState(null);
-  const [elrondFaucetTime, setElrondFaucetTime] = useState(0);
+  const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(false);
 
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
@@ -40,12 +40,30 @@ export default function({ onRfMount }) {
 
   // S: Faucet
   useEffect(() => {
-    if (elrondAddress && elrondFaucetContract) {
-      elrondFaucetContract.getFaucetTime(elrondAddress).then((res) => {
-        setElrondFaucetTime(res);
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... 
+    // ... so if it's "false" we need check and prevent faucet from being used too often
+    if (elrondAddress && elrondFaucetContract && !hasPendingTransactions) {
+      elrondFaucetContract.getFaucetTime(elrondAddress).then((lastUsedTime) => {
+        const timeNow = new Date().getTime();
+
+        if (lastUsedTime + 120000 > timeNow) {
+          setIsElrondFaucetDisabled(true);
+
+          // after 2 min wait we reenable the button on the UI automatically
+          setTimeout(() => {
+            setIsElrondFaucetDisabled(false);
+          }, lastUsedTime + 120000 + 1000 - timeNow);
+        }
       });
     }
   }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
+
+  useEffect(() => {
+    // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
+    if (hasPendingTransactions) {
+      setIsElrondFaucetDisabled(true);
+    }
+  }, [hasPendingTransactions]);
 
   const handleOnChainFaucet = async () => {
     if (elrondAddress) {
@@ -123,7 +141,7 @@ export default function({ onRfMount }) {
 
               <Spacer />
 
-              <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={elrondFaucetTime + 120000 > new Date().getTime()}>
+              <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
                 Send me 10 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Button>
             </Stack>

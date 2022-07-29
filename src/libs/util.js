@@ -116,7 +116,7 @@ export const uxConfig = {
   txConfirmationsNeededLrg: 2,
   dateStr: "MMM Do YYYY",
   dateStrTm: "MMM Do YYYY LT",
-  elrondAPITimeoutMs: 2000
+  elrondAPITimeoutMs: 10000
 };
 
 export const progInfoMeta = {
