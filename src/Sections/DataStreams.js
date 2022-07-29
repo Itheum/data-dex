@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Button, Link, Badge, Flex, Image, StackDivider,  
   HStack, Heading, Center,
 } from '@chakra-ui/react';
-
-import dataStreamIcon from './img/data-stream-icon.png';
+import dataStreamIcon from 'img/data-stream-icon.png';
 
 export default function() {
   return (

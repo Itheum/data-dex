@@ -1,14 +1,14 @@
-import React, { useContext, useEffect } from 'react';
-import { useMoralis, useMoralisQuery } from 'react-moralis';
+import React, { useEffect } from 'react';
+import { useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, Badge, ButtonGroup, Button, Divider,
+  CloseButton, Badge, ButtonGroup, Button, Divider,
   Alert, AlertIcon, AlertTitle, Heading, Flex, Text, Tooltip
 } from '@chakra-ui/react';
-import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
-import { CHAIN_TOKEN_SYMBOL } from '../libs/util';
-import { progInfoMeta } from '../libs/util';
-import { useChainMeta } from '../store/ChainMetaContext';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
+import { progInfoMeta } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 let progToIdMapping = {};
 

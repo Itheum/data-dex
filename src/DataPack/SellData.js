@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useDropzone } from 'react-dropzone';
-import { useContext, useMemo, useEffect, useState, useCallback } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
@@ -13,17 +13,18 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure
 } from '@chakra-ui/react';
-import ChainSupportedInput from './UtilComps/ChainSupportedInput';
+import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { FaUncharted } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";
 import { GiVintageRobot } from "react-icons/gi";
 import { MdOutlinePattern } from "react-icons/md";
 
-import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from './libs/util';
-import ShortAddress from './UtilComps/ShortAddress';
-import IconButton from './UtilComps/IconButton';
-import { useChainMeta } from './store/ChainMetaContext';
+import { uxConfig, dataTemplates, sleep } from 'libs/util';
+import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from 'libs/util';
+import { ABIS } from "EVM/ABIs";
+import ShortAddress from 'UtilComps/ShortAddress';
+import IconButton from 'UtilComps/IconButton';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 const baseStyle = {
   flex: 1,
@@ -113,7 +114,7 @@ export default function({onRfMount, itheumAccount}) {
     const data = await res.json();
 
     if (data && data.length > 0) {
-      const previewStr = `${data.length} datapoints from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(config.dateStr)} to ${moment(selObj.toTs).format(config.dateStr)}`;
+      const previewStr = `${data.length} datapoints from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(uxConfig.dateStr)} to ${moment(selObj.toTs).format(uxConfig.dateStr)}`;
       
       setSellerDataPreview(previewStr);
       setSellerDataNFTDesc(previewStr)
@@ -292,7 +293,7 @@ export default function({onRfMount, itheumAccount}) {
   useEffect(async () => {
     if (txError) {
       console.error(txError);
-    } else if (txHash && txConfirmation === config.txConfirmationsNeededLrg) {
+    } else if (txHash && txConfirmation === uxConfig.txConfirmationsNeededLrg) {
       savedDataPackMoralis.set('txHash', txHash);      
 
       await savedDataPackMoralis.save();
@@ -798,7 +799,7 @@ export default function({onRfMount, itheumAccount}) {
                     </>}
 
                     {txHash && <Stack>                      
-                      <Progress colorScheme="teal" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmation} />
+                      <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmation} />
 
                       <HStack>
                         <Text fontSize="sm">Transaction </Text>
@@ -828,7 +829,7 @@ export default function({onRfMount, itheumAccount}) {
 
                       {txNFTHash && 
                         <Stack>
-                          <Progress colorScheme="teal" fontSize="sm" value={(100 / config.txConfirmationsNeededLrg) * txNFTConfirmation} />
+                          <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txNFTConfirmation} />
 
                           <HStack>
                             <Text fontSize="sm">Transaction </Text>

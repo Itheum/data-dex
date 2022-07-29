@@ -1,17 +1,16 @@
-import moment from 'moment';
-import React, { useContext, useState, useEffect } from 'react';
-import { useMoralis, useMoralisQuery, useMoralisCloudFunction, useMoralisWeb3Api } from 'react-moralis';
+import React, { useState, useEffect } from 'react';
+import { useMoralis, useMoralisCloudFunction, useMoralisWeb3Api } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ShortAddress from '../UtilComps/ShortAddress';
-import SkeletonLoadingList from '../UtilComps/SkeletonLoadingList';
-import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from '../libs/util';
-import { sleep, buyOnOpenSea, contractsForChain } from '../libs/util';
-import { useChainMeta } from '../store/ChainMetaContext';
+import ShortAddress from 'UtilComps/ShortAddress';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from 'libs/util';
+import { sleep, buyOnOpenSea, contractsForChain } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();

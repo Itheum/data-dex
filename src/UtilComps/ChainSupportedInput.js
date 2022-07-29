@@ -1,7 +1,7 @@
 import React from 'react';
 import { IoConstructOutline } from "react-icons/io5";
-import { noChainSupport } from '../libs/util';
-import { useChainMeta } from '../store/ChainMetaContext';
+import { noChainSupport } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function ChainSupportedInput({feature, children}) {
   const { chainMeta: _chainMeta } = useChainMeta();

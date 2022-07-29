@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Button, Link, Badge, Flex, Image, StackDivider,
   HStack, Heading, Center, Text
 } from '@chakra-ui/react';
-import { MENU } from './libs/util';
-import openSeaLogoIcon from './img/opensea-logo.png';
-import dataNFTIcon from './img/data-nft-icon.png';
-import { useNavigate } from 'react-router-dom';
+import { MENU } from 'libs/util';
+import openSeaLogoIcon from 'img/opensea-logo.png';
+import dataNFTIcon from 'img/data-nft-icon.png';
 
 export default function({setMenuItem}) {
   const navigate= useNavigate();
