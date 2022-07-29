@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react';
 import { 
   Spinner, Box, Text, Link,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
-  TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot  } from '@chakra-ui/react';
+  TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot, useToast  } from '@chakra-ui/react';
 import { getClaimTransactions, getTransactionLink } from './api';
 import { useChainMeta } from "store/ChainMetaContext";
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, WarningTwoIcon } from '@chakra-ui/icons';
 
 export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseChaimsHistory}) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const [elrondClaims, setElrondClaims] = useState([]);
-  const [loadingClaims, setLoadingClaims] = useState(true);
+  const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const toast = useToast();
 
   useEffect(() => {
     fetchElrondClaims();
@@ -19,10 +20,22 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
 
   const fetchElrondClaims = async () => {
     const transactions = await getClaimTransactions(elrondAddress, _chainMeta.contracts.claims, networkId);
-    setElrondClaims(transactions);
-    setClaimTransactionsModalOpen(true);
+    
+    if (transactions.error) {
+      toast({
+        title: 'ER4: Could not get your recent transactions from the elrond blockchain.',
+        status: 'error',
+        isClosable: true,
+        duration: null
+      });
 
-    setLoadingClaims(false);
+      setLoadingClaims(-2);
+    } else {
+      setElrondClaims(transactions);
+      setLoadingClaims(0);
+    }
+
+    setClaimTransactionsModalOpen(true);
   }
 
   return (
@@ -35,9 +48,9 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
         <ModalHeader>Recent Claim Transactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {loadingClaims && 
+          {(loadingClaims === -1 || loadingClaims === -2) && 
             <Box minH="150" alignItems="center" display="flex" justifyContent="center">
-              <Spinner size="lg" />
+              {loadingClaims === -1 ? <Spinner size="lg" /> : <WarningTwoIcon />}
             </Box> 
           || 
             <>

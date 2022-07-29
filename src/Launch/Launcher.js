@@ -8,7 +8,7 @@ import EVMAppHarness from "AppHarness/AppHarnessEVM";
 import ElrondAppHarness from "AppHarness/AppHarnessElrond";
 import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
-import { debugui } from 'libs/util';
+import { debugui, uxConfig } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 
 const {
@@ -55,7 +55,7 @@ function Launcher() {
       </>}
 
       {launchMode == 'elrond' && <>      
-        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: 6000 }}>
+        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: uxConfig.elrondAPITimeoutMs }}>
           <TransactionsToastList />
           <NotificationModal />
           <SignTransactionsModals className="itheum-data-dex-elrond-modals" />

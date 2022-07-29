@@ -13,7 +13,7 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { config, sleep } from 'libs/util';
+import { uxConfig, sleep } from 'libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
@@ -122,7 +122,7 @@ export default function() {
             </Thead>
             <Tbody>
               {userDataOrders.map((item) => <Tr key={item.objectId}>
-                <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+                <Td><Text fontSize="xs">{moment(item.createdAt).format(uxConfig.dateStrTm)}</Text></Td>
                 <Td>
                   <Popover>
                     <PopoverTrigger>

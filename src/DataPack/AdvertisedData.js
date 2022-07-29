@@ -11,8 +11,7 @@ import {
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { TERMS, CHAIN_TOKEN_SYMBOL } from 'libs/util';
-import { sleep } from 'libs/util';
-import { config } from 'libs/util';
+import { sleep, uxConfig } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
@@ -73,7 +72,7 @@ export default function() {
             </Thead>
             <Tbody>
             {userAdvertisedData.map((item) => <Tr key={item.id}>
-              <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+              <Td><Text fontSize="xs">{moment(item.createdAt).format(uxConfig.dateStrTm)}</Text></Td>
               <Td><ShortAddress address={item.id} /></Td>
               <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>

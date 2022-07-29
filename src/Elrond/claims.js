@@ -29,22 +29,32 @@ export class ClaimsContract {
     const interaction = this.contract.methods.viewClaimWithDate([new Address(address)]);
     const query = interaction.buildQuery();
     const result = [];
+
     try {
       const res = await this.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
       const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
-      firstValue.valueOf().forEach((item, index) => {
-        result.push({
-          amount: item.amount.toNumber(),
-          date: item.date.toNumber() * 1000,
+      if (returnCode && returnCode.isSuccess()) {
+        firstValue.valueOf().forEach((item, index) => {
+          result.push({
+            amount: item.amount.toNumber(),
+            date: item.date.toNumber() * 1000,
+          });
         });
-      });
 
-      return result;
-    } catch (e) {
-      return [];
+        return result;
+      } else {
+        const nonOKErr = new Error('getClaims returnCode returned a non OK value');
+        console.error(nonOKErr);
+        
+        return {error: nonOKErr};
+      }
+    } catch (error) {
+      console.error(error);
+
+      return {error};
     }
   }
 

@@ -3,8 +3,9 @@ import { Box, Stack } from "@chakra-ui/layout";
 import { 
   Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
   Text, HStack, Heading,  Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+import { WarningTwoIcon } from '@chakra-ui/icons';
 import moment from "moment";
-import { progInfoMeta, config, debugui } from "libs/util";
+import { progInfoMeta, uxConfig, debugui } from "libs/util";
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
 import imgProgGaPa from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
@@ -23,7 +24,6 @@ export default function({ onRfMount }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const toast = useToast();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { user: _user } = useUser();
 
@@ -63,7 +63,6 @@ export default function({ onRfMount }) {
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
 
   const rewardsModalData = {
-    config: {config},
     isOpen: isRewardsOpen,
     onClose: () => {
       onRewardsClose();
@@ -72,14 +71,13 @@ export default function({ onRfMount }) {
     tag1: "Total Available",
     value1: _user.claimBalanceValues?.[0],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[0]).format(config.dateStrTm),
-    n: CLAIM_TYPES.REWARDS,
+    value2: moment(_user?.claimBalanceDates?.[0]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.REWARDS,
   };
 
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
 
   const airdropsModalData = {
-    config: {config},
     isOpen: isAirdropsOpen,
     onClose: () => {
       onAirdropClose();
@@ -88,14 +86,13 @@ export default function({ onRfMount }) {
     tag1: "Total Available",
     value1: _user?.claimBalanceValues?.[1],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[1]).format(config.dateStrTm),
-    n: CLAIM_TYPES.AIRDROPS,
+    value2: moment(_user?.claimBalanceDates?.[1]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.AIRDROPS,
   };
 
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
 
   const allocationsModalData = {
-    config: {config},
     isOpen: isAllocationsOpen,
     onClose: () => {
       onAllocationsClose();
@@ -104,8 +101,8 @@ export default function({ onRfMount }) {
     tag1: "Total Available",
     value1: _user?.claimBalanceValues?.[2],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[2]).format(config.dateStrTm),
-    n: CLAIM_TYPES.ALLOCATIONS,
+    value2: moment(_user?.claimBalanceDates?.[2]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.ALLOCATIONS,
   };
   // E: claims related logic
 
@@ -140,24 +137,33 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={50}>
                 <Text>Rewards</Text>
-                <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                  {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
+                <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || _user?.claimBalanceValues?.[0] === "-2" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  {(_user?.claimBalanceValues?.[0] !== "-1" && _user?.claimBalanceValues?.[0] !== "-2") ? 
+                      _user?.claimBalanceValues?.[0] : _user?.claimBalanceValues?.[0] !== "-2" ? 
+                        <Spinner size="xs" /> : <WarningTwoIcon />
+                  }
                 </Button>
                 <ClaimModalElrond {...rewardsModalData} />
               </HStack>
               <Spacer />
               <HStack spacing={50}>
                 <Text>Airdrops</Text>
-                <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                  {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
+                <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || _user?.claimBalanceValues?.[1] === "-2" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  {(_user?.claimBalanceValues?.[1] !== "-1" && _user?.claimBalanceValues?.[1] !== "-2") ? 
+                      _user?.claimBalanceValues?.[1] : _user?.claimBalanceValues?.[1] !== "-2" ? 
+                        <Spinner size="xs" /> : <WarningTwoIcon />
+                  }
                 </Button>
                 <ClaimModalElrond {...airdropsModalData} />
               </HStack>
               <Spacer />
               <HStack spacing={30}>
                 <Text>Allocations</Text>
-                <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                  {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
+                <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || _user?.claimBalanceValues?.[2] === "-2" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                  {(_user?.claimBalanceValues?.[2] !== "-1" && _user?.claimBalanceValues?.[2] !== "-2") ? 
+                      _user?.claimBalanceValues?.[2] : _user?.claimBalanceValues?.[2] !== "-2" ? 
+                        <Spinner size="xs" /> : <WarningTwoIcon />
+                  }
                 </Button>
                 <ClaimModalElrond {...allocationsModalData} />
               </HStack>

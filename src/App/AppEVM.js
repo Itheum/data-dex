@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef, React } from 'react';
 import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Text, Image, AlertDialog, Badge, 
+import { Button, Text, Image, AlertDialog, Badge, Spinner,
   Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
   AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
   Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, 
   useToast, useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
-import { SunIcon, MoonIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import SellData from 'DataPack/SellData';
@@ -42,7 +42,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElrondAuthenticated: false,
-  claimBalanceValues: ['-1', '-1', '-1'],
+  claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
@@ -63,7 +63,7 @@ function App({ appConfig }) {
 
   const toast = useToast();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
-  const [tokenBal, setTokenBal] = useState(0);
+  const [tokenBal, setTokenBal] = useState(-1); // -1 is loading, -2 is error
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
@@ -214,6 +214,8 @@ function App({ appConfig }) {
       return;
     }
 
+    setTokenBal(-1); // -1 is loading
+
     const walletAddress = user.get('ethAddress');
 
     /*
@@ -283,7 +285,9 @@ function App({ appConfig }) {
 
               <HStack>
                 <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
-                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
+                  {(tokenBal === -1) ? <Spinner size="xs" /> : 
+                      (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}</>
+                  }
                 </Box>
 
                 <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">

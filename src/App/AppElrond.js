@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef, React } from 'react';
 import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Text, Image, AlertDialog, Badge, 
+import { Button, Text, Image, AlertDialog, Badge, Spinner,
   Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
   AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
   Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, 
   useToast, useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
-import { SunIcon, MoonIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import SellData from 'DataPack/SellData';
@@ -46,7 +46,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElrondAuthenticated: false,
-  claimBalanceValues: ['-1', '-1', '-1'],
+  claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
   claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
@@ -61,7 +61,7 @@ function App({ appConfig }) {
 
   const toast = useToast();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
-  const [tokenBal, setTokenBal] = useState(0);
+  const [tokenBal, setTokenBal] = useState(-1);  // -1 is loading, -2 is error
   const [elrondShowClaimsHistory, setElrondShowClaimsHistory] = useState(false);
   const [chain, setChain] = useState(0);
   const [itheumAccount, setItheumAccount] = useState(null);
@@ -160,16 +160,20 @@ function App({ appConfig }) {
   const elrondBalancesUpdate = async() => {
     if (elrondAddress && isElrondLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMetaLocal.networkId)) {
+        setTokenBal(-1); // -1 is loading
+
         // get user token balance from elrond
         const data = await checkBalance(_chainMetaLocal.contracts.itheumToken, elrondAddress, _chainMetaLocal.networkId);
 
         if (data.balance) {
           setTokenBal((data.balance / Math.pow(10, 18)));
         } else if (data.error) {
+          setTokenBal(-2); // -2 is error getting it
+
           if (!toast.isActive('er1')) {
             toast({
               id: 'er1',
-              title: 'ER1: Could not get your balance information from the blockchain. Failed to get a valid response from elrond api',
+              title: 'ER1: Could not get your token information from the elrond blockchain.',
               status: 'error',
               isClosable: true,
               duration: null
@@ -188,26 +192,30 @@ function App({ appConfig }) {
           { amount: 0, date: 0 },
         ];
 
-        try {
-          claims = await claimContract.getClaims(elrondAddress);
-        } catch(e) {
-          toast({
-            id: 'er2',
-            title: 'ER2: Could not get your claims information from the elrond blockchain.',
-            status: 'error',
-            isClosable: true,
-            duration: null
-          });
-        }
-
         const claimBalanceValues = [];
         const claimBalanceDates = [];
 
-        claims.forEach((claim) => {
-          claimBalanceValues.push(claim.amount / Math.pow(10, 18));
-          claimBalanceDates.push(claim.date);
-        });
-        
+        claims = await claimContract.getClaims(elrondAddress);
+
+        if (!claims.error) {
+          claims.forEach((claim) => {
+            claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+            claimBalanceDates.push(claim.date);
+          });
+        } else if (claims.error) {
+          claimBalanceValues.push('-2', '-2', '-2'); // errors
+          
+          if (!toast.isActive('er2')) {
+            toast({
+              id: 'er2',
+              title: 'ER2: Could not get your claims information from the elrond blockchain.',
+              status: 'error',
+              isClosable: true,
+              duration: null
+            });
+          }
+        } 
+
         setUser({
           ...baseUserContext,
           ..._user,
@@ -268,7 +276,9 @@ function App({ appConfig }) {
 
               <HStack>
                 <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
-                  {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}
+                  {(tokenBal === -1) ? <Spinner size="xs" /> : 
+                      (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}</>
+                  }
                 </Box>
 
                 <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">

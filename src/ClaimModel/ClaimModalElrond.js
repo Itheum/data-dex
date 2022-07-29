@@ -1,6 +1,6 @@
 import { 
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, 
-  HStack, Text, Spacer, Button, Stack, useToast } from "@chakra-ui/react";
+  HStack, Text, Spacer, Button, Stack } from "@chakra-ui/react";
 import React from "react";
 import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
 import { CHAIN_TOKEN_SYMBOL } from "libs/util";
@@ -8,11 +8,8 @@ import { useUser } from "store/UserContext";
 import { useChainMeta } from "store/ChainMetaContext";
 import { ClaimsContract } from "Elrond/claims";
 
-const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
+const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType }) => {
   const { address: elrondAddress } = useGetAccountInfo();
-
-  const toast = useToast();
-
   const { user: _user, setUser } = useUser();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   let claimsContract = null;
@@ -42,7 +39,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, n }) =
   const handleOnChainClaim = () => {
     if (elrondAddress) {
       onClose();
-      claimsContract.sendClaimRewardsTransaction(n - 1);
+      claimsContract.sendClaimRewardsTransaction(claimType - 1);
     }
   };
 

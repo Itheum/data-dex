@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { config, dataTemplates, sleep } from 'libs/util';
+import { uxConfig, dataTemplates, sleep } from 'libs/util';
 import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from 'libs/util';
 import { ABIS } from "EVM/ABIs";
 import { useChainMeta } from 'store/ChainMetaContext';
@@ -62,7 +62,7 @@ export default function({onRfMount, onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
-    } else if (txHashAllowance && (txConfirmationAllowance === config.txConfirmationsNeededLrg)) {
+    } else if (txHashAllowance && (txConfirmationAllowance === uxConfig.txConfirmationsNeededLrg)) {
       console.log('AUTHORISED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
@@ -74,7 +74,7 @@ export default function({onRfMount, onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
-    } else if (txHashTransfer && (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
+    } else if (txHashTransfer && (txConfirmationTransfer === uxConfig.txConfirmationsNeededLrg)) {
       console.log('TRANSFERRED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
@@ -393,7 +393,7 @@ export default function({onRfMount, onRefreshBalance}) {
                   </HStack>
 
                   {txHashAllowance && <Stack>
-                    <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationAllowance} />
+                    <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationAllowance} />
 
                     <HStack>
                       <Text fontSize="sm">Transaction </Text>
@@ -408,7 +408,7 @@ export default function({onRfMount, onRefreshBalance}) {
                   </HStack>
 
                   {txHashTransfer && <Stack>
-                    <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
+                    <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text fontSize="sm">Transaction </Text>

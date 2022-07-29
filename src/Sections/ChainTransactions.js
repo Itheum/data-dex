@@ -10,7 +10,7 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { config, itheumTokenRoundUtil } from 'libs/util';
+import { uxConfig, itheumTokenRoundUtil } from 'libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CHAIN_TX_LIST } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
@@ -104,7 +104,7 @@ export default function() {
                     {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Trade'}
                   </Badge>
                 </Td>
-                <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+                <Td><Text fontSize="xs">{moment(item.createdAt).format(uxConfig.dateStrTm)}</Text></Td>
                 <Td><ShortAddress address={item.get('dataPackId')} /></Td>
                 <Td>{item.get('seller') && <ShortAddress address={item.get('seller')} />}</Td>
                 <Td>{item.get('buyer') && <ShortAddress address={item.get('buyer')} />}</Td>

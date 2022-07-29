@@ -5,16 +5,14 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody,
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import ShortAddress from "UtilComps/ShortAddress";
 import React, { useState, useEffect } from "react";
-import { config, sleep } from "libs/util";
+import { uxConfig, sleep } from "libs/util";
 import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "libs/util";
 import { ABIS } from "EVM/ABIs";
 import { useUser } from "store/UserContext";
 import { useChainMeta } from "store/ChainMetaContext";
 
-const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, n }) => {
+const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimType }) => {
   const {
-    isAuthenticated,
-    user,
     Moralis: { web3Library: ethers }, web3: web3Provider
   } = useMoralis();
 
@@ -31,7 +29,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, n }) =>
     if (txErrorClaim) {
       resetClaimState({ clearError: false, keepOpen: true });
     } else {
-      if (txHashClaim && txConfirmationClaim === config.txConfirmationsNeededLrg) {
+      if (txHashClaim && txConfirmationClaim === uxConfig.txConfirmationsNeededLrg) {
         toast({
           title: `Congrats! you have claimed your tokens for ${title}`,
           status: "success",
@@ -98,7 +96,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, n }) =>
 
   const handleOnChainClaim = () => {
     setTxErrorClaim(null);
-    web3_claims(n);
+    web3_claims(claimType);
   };
 
   return (
@@ -128,7 +126,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, n }) =>
 
           {txHashClaim && (
             <Stack>
-              <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationClaim} />
+              <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationClaim} />
 
               <HStack>
                 <Text fontSize="sm">Transaction </Text>

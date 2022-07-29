@@ -9,7 +9,7 @@ import {
   WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
 import ShortAddress from "UtilComps/ShortAddress";
-import { progInfoMeta, config, sleep } from "libs/util";
+import { progInfoMeta, uxConfig, sleep } from "libs/util";
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "libs/util";
 import { ABIS } from "EVM/ABIs";
 import imgProgGaPa from "img/prog-gaming.jpg";
@@ -67,7 +67,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     if (txErrorFaucet) {
       setFaucetWorking(false);
     } else {
-      if (txHashFaucet && txConfirmationFaucet === config.txConfirmationsNeededLrg) {
+      if (txHashFaucet && txConfirmationFaucet === uxConfig.txConfirmationsNeededLrg) {
         toast({
           title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,
           status: "success",
@@ -139,7 +139,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
 
   const rewardsModalData = {
-    config: {config},
     isOpen: isRewardsOpen,
     onClose: (refreshTokenBalances) => {
       onRewardsClose();
@@ -151,14 +150,13 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     tag1: "Total Available",
     value1: _user.claimBalanceValues?.[0],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[0]).format(config.dateStrTm),
-    n: CLAIM_TYPES.REWARDS,
+    value2: moment(_user?.claimBalanceDates?.[0]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.REWARDS,
   };
 
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
 
   const airdropsModalData = {
-    config: {config},
     isOpen: isAirdropsOpen,
     onClose: (refreshTokenBalances) => {
       onAirdropClose();
@@ -170,14 +168,13 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     tag1: "Total Available",
     value1: _user?.claimBalanceValues?.[1],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[1]).format(config.dateStrTm),
-    n: CLAIM_TYPES.AIRDROPS,
+    value2: moment(_user?.claimBalanceDates?.[1]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.AIRDROPS,
   };
 
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
 
   const allocationsModalData = {
-    config: {config},
     isOpen: isAllocationsOpen,
     onClose: (refreshTokenBalances) => {
       onAllocationsClose();
@@ -189,8 +186,8 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     tag1: "Total Available",
     value1: _user?.claimBalanceValues?.[2],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[2]).format(config.dateStrTm),
-    n: CLAIM_TYPES.ALLOCATIONS,
+    value2: moment(_user?.claimBalanceDates?.[2]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.ALLOCATIONS,
   };
   // E: claims related logic
 
@@ -264,7 +261,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
 
               {txHashFaucet && (
                 <Stack>
-                  <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationFaucet} />
+                  <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
                   <HStack>
                     <Text fontSize="sm">Transaction </Text>

@@ -111,11 +111,12 @@ export const contractsForChain = (networkId) => {
   return contracts;
 };
 
-export const config = {
+export const uxConfig = {
   txConfirmationsNeededSml: 1,
   txConfirmationsNeededLrg: 2,
   dateStr: "MMM Do YYYY",
   dateStrTm: "MMM Do YYYY LT",
+  elrondAPITimeoutMs: 2000
 };
 
 export const progInfoMeta = {
