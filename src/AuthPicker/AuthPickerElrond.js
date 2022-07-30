@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Stack, Box, Text, Link, Wrap, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from "@chakra-ui/react";
+import { Stack, Box, Text, Link, Wrap, Badge, Modal, ModalOverlay, ModalContent, 
+  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { DappUI } from "@elrondnetwork/dapp-core";
 import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
@@ -8,7 +9,7 @@ import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 import { useNavigate } from 'react-router-dom';
 
-function AuthPickerElrond ({ resetLaunchMode }) {
+function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   const navigate = useNavigate();
   const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
   const { address: elrondAddress } = useGetAccountInfo();
@@ -59,7 +60,7 @@ function AuthPickerElrond ({ resetLaunchMode }) {
       <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select a Elrond Wallet</ModalHeader>
+          <ModalHeader>Select a <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{launchEnvironment}</Badge> Elrond Wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="5">

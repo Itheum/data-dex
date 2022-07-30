@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Text, Image, Tooltip, 
-  Popover, PopoverTrigger, PopoverContent, PopoverBody, RadioGroup, Radio } from "@chakra-ui/react";
+  Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverCloseButton, PopoverHeader, PopoverArrow } from "@chakra-ui/react";
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
 
 import logo from 'img/logo-sml-g.png';
@@ -38,7 +38,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
               onElrondEnvPick={onLaunchMode} />
 
             <Button onClick={() => onLaunchMode('evm')}>
-              Connect my EVM Wallet
+              Connect EVM Wallet
             </Button>
           </HStack>
 
@@ -88,7 +88,6 @@ const AuthLauncher = ({ onLaunchMode }) => {
 
 const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
   const [showElrondEnvPicker, setShowElrondEnvPicker] = useState(false);
-  const [elrondEnv, setElrondEnv] = useState('devnet');
 
   return (
     <Popover
@@ -100,22 +99,27 @@ const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
       lazyBehavior='keepMounted'>
         <HStack>              
           <PopoverTrigger>
-            <Button>Connect my Elrond Wallet</Button>
+            <Button>Connect Elrond Wallet</Button>
           </PopoverTrigger>
         </HStack>
 
         <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader>
+            <Text fontSize="md">Please pick a Elrond environment</Text>            
+          </PopoverHeader>
           <PopoverBody>
-              <Text fontSize="sm" mt="2" mb="2">Please pick a Elrond environment</Text>
-              <RadioGroup value={elrondEnv} onChange={networkCode => setElrondEnv(networkCode)}>
-                <Radio value="devnet" p="1"><Text fontSize="sm">Devnet</Text></Radio>
-                <Radio value="mainnet" p="1"><Text fontSize="sm">Mainnet</Text></Radio>
-              </RadioGroup>
+              <Button size="sm" mr="2" onClick={() => {
+                setShowElrondEnvPicker(false);
+                onElrondEnvPick('elrond', 'devnet');
+              }}> Devnet
+              </Button>
 
-              <Button size="sm" mt="4" onClick={() => {
-                setShowElrondEnvPicker(false); 
-                onElrondEnvPick('elrond', elrondEnv);
-              }}> Select Wallet
+              <Button size="sm" onClick={() => {
+                setShowElrondEnvPicker(false);
+                onElrondEnvPick('elrond', 'mainnet');
+              }}> Mainnet
               </Button>
           </PopoverBody>
         </PopoverContent>

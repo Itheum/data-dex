@@ -18,31 +18,29 @@
   height: 64px;
 }
 
-.auth_wrap:hover{
+.auth_wrap:hover {
   background: var(--chakra-colors-whiteAlpha-300);
 }
 
-.dapp-core-ui-component.modal{
-  /* color: var(--chakra-colors-teal-600); */
+.dapp-core-ui-component.modal {
   color: #ffffff;
   font-weight: bold;
   margin-top: -700px;
 }
 
-.chakra-ui-light .dapp-core-ui-component.modal{
-  /* color: var(--chakra-colors-teal-600); */
+.chakra-ui-light .dapp-core-ui-component.modal {
   color: #ffffff;
 }
 
-.chakra-ui-light .dapp-core-ui-component .btn-primary{
+.chakra-ui-light .dapp-core-ui-component .btn-primary {
   color: var(--chakra-colors-gray-800);
 }
 
-.chakra-ui-light .auth_wrap{
+.chakra-ui-light .auth_wrap {
   background-color: var(--chakra-colors-gray-100);
 }
 
-.chakra-ui-light .auth_wrap:hover{
+.chakra-ui-light .auth_wrap:hover {
   background-color: var(--chakra-colors-gray-200);
 }
 
@@ -51,7 +49,7 @@
   border-color: #ffffff00;
 }
 
-.extension-login_noExtensionButtonWrapper.btn.btn-unlock{
+.extension-login_noExtensionButtonWrapper.btn.btn-unlock {
   background-color: #ffffff00;
   border-color: #ffffff00;
   box-shadow: none !important;

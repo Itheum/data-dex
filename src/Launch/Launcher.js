@@ -60,7 +60,7 @@ function Launcher() {
           <NotificationModal />
           <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-          <AuthPickerElrond resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
+          <AuthPickerElrond launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
           <ElrondAppHarness launchEnvironment={launchEnvironment} />          
         </DappProvider>
       </>}

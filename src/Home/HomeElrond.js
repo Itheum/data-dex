@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Stack } from "@chakra-ui/layout";
 import { 
   Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
-  Text, HStack, Heading,  Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import { WarningTwoIcon } from '@chakra-ui/icons';
 import moment from "moment";
 import { progInfoMeta, uxConfig, debugui } from "libs/util";
