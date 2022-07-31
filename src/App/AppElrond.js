@@ -37,7 +37,6 @@ import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 import { logout, useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from "@elrondnetwork/dapp-core";
 import { checkBalance } from "Elrond/api";
-import { ClaimsContract } from "Elrond/claims";
 
 const elrondLogout = logout;
 const _chainMetaLocal = {};
@@ -45,8 +44,6 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElrondAuthenticated: false,
-  claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
-  claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
 function App({ appConfig }) {
@@ -63,7 +60,6 @@ function App({ appConfig }) {
   const [tokenBal, setTokenBal] = useState(-1);  // -1 is loading, -2 is error
   const [elrondShowClaimsHistory, setElrondShowClaimsHistory] = useState(false);
   const [chain, setChain] = useState(0);
-  const [itheumAccount, setItheumAccount] = useState(null);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
@@ -139,7 +135,7 @@ function App({ appConfig }) {
       if (!SUPPORTED_CHAINS.includes(networkId)) {
         setAlertIsOpen(true);
       } else {
-        elrondBalancesUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
+        itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
     }
 
@@ -151,12 +147,12 @@ function App({ appConfig }) {
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's "false" we need to get balances    
     if (!hasPendingTransactions) {
-      elrondBalancesUpdate();
+      itheumTokenBalanceUpdate();
     }
   }, [hasPendingTransactions]);
 
   // Elrond transactions state changed so need new balances
-  const elrondBalancesUpdate = async() => {
+  const itheumTokenBalanceUpdate = async() => {
     if (elrondAddress && isElrondLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMetaLocal.networkId)) {
         setTokenBal(-1); // -1 is loading
@@ -178,50 +174,7 @@ function App({ appConfig }) {
               duration: null
             });
           }
-        }        
-    
-        await sleep(2);
-
-        // get user claims token balance from elrond
-        const claimContract = new ClaimsContract(_chainMetaLocal.networkId);
-
-        let claims = [
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-        ];
-
-        const claimBalanceValues = [];
-        const claimBalanceDates = [];
-
-        claims = await claimContract.getClaims(elrondAddress);
-
-        if (!claims.error) {
-          claims.forEach((claim) => {
-            claimBalanceValues.push(claim.amount / Math.pow(10, 18));
-            claimBalanceDates.push(claim.date);
-          });
-        } else if (claims.error) {
-          claimBalanceValues.push('-2', '-2', '-2'); // errors
-          
-          if (!toast.isActive('er2')) {
-            toast({
-              id: 'er2',
-              title: 'ER2: Could not get your claims information from the elrond blockchain.',
-              status: 'error',
-              isClosable: true,
-              duration: null
-            });
-          }
-        } 
-
-        setUser({
-          ...baseUserContext,
-          ..._user,
-          isElrondAuthenticated: true,
-          claimBalanceValues: claimBalanceValues,
-          claimBalanceDates: claimBalanceDates,
-        });
+        }
       }
     }
   }

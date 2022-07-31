@@ -16,33 +16,41 @@ import { useUser } from "store/UserContext";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import { FaucetContract } from "Elrond/faucet";
-import { useGetAccountInfo, useGetPendingTransactions } from "@elrondnetwork/dapp-core";
+import { ClaimsContract } from "Elrond/claims";
+import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from "@elrondnetwork/dapp-core";
 
 let elrondFaucetContract = null;
+let elrondClaimsContract = null;
 
 export default function({ onRfMount }) {
+  const toast = useToast();
+  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
+  const { chainMeta: _chainMeta } = useChainMeta();
+  const { user: _user } = useUser();
   const { address: elrondAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const { user: _user } = useUser();
-
+  const { isLoggedIn: isElrondLoggedIn } = useGetLoginInfo();
+  
   const [learnMoreProd, setLearnMoreProg] = useState(null);
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(false);
+  const [claimsBalances, setClaimsBalances] = useState({
+    claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
+    claimBalanceDates: [0, 0, 0]
+  });
 
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
+        elrondClaimsContract = new ClaimsContract(_chainMeta.networkId);
       }
     }
   }, [_chainMeta]);
 
   // S: Faucet
   useEffect(() => {
-    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... 
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done... 
     // ... so if it's "false" we need check and prevent faucet from being used too often
     if (elrondAddress && elrondFaucetContract && !hasPendingTransactions) {
       elrondFaucetContract.getFaucetTime(elrondAddress).then((lastUsedTime) => {
@@ -62,6 +70,76 @@ export default function({ onRfMount }) {
     }
   }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
+  const handleOnChainFaucet = async () => {
+    if (elrondAddress) {
+      elrondFaucetContract.sendActivateFaucetTransaction();
+    }
+  };
+  // E: Faucet
+
+
+  // S: Claims
+  useEffect(() => {
+    // this will trigger during component load/page load, so let's get the latest claims balances
+    if (elrondClaimsContract && !hasPendingTransactions) {
+      elrondClaimsBalancesUpdate();
+    }
+  }, [elrondAddress, hasPendingTransactions, elrondClaimsContract]);
+
+  // utility func to get claims balances from chain
+  const elrondClaimsBalancesUpdate = async() => {
+    if (elrondAddress && isElrondLoggedIn) {
+      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
+        // get user claims token balance from elrond
+        // const claimContract = new ClaimsContract(_chainMeta.networkId);
+
+        let claims = [
+          { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
+        ];
+
+        const claimBalanceValues = [];
+        const claimBalanceDates = [];
+
+        claims = await elrondClaimsContract.getClaims(elrondAddress);
+
+        if (!claims.error) {
+          claims.forEach((claim) => {
+            claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+            claimBalanceDates.push(claim.date);
+          });
+        } else if (claims.error) {
+          claimBalanceValues.push('-2', '-2', '-2'); // errors
+          
+          if (!toast.isActive('er2')) {
+            toast({
+              id: 'er2',
+              title: 'ER2: Could not get your claims information from the elrond blockchain.',
+              status: 'error',
+              isClosable: true,
+              duration: null
+            });
+          }
+        } 
+
+        setClaimsBalances({
+          claimBalanceValues,
+          claimBalanceDates
+        });
+
+        // setUser({
+        //   ...baseUserContext,
+        //   ..._user,
+        //   isElrondAuthenticated: true,
+        //   claimBalanceValues: claimBalanceValues,
+        //   claimBalanceDates: claimBalanceDates,
+        // });
+      }
+    }
+  }
+  // E: Claims
+
   useEffect(() => {
     if (hasPendingTransactions) {
       // block user trying to do other claims or on-chain tx until current one completes
@@ -70,16 +148,11 @@ export default function({ onRfMount }) {
       // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
       setIsElrondFaucetDisabled(true);
     } else {
+      elrondClaimsBalancesUpdate(); // get latest claims balances from on-chain as well
+
       setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }
   }, [hasPendingTransactions]);
-
-  const handleOnChainFaucet = async () => {
-    if (elrondAddress) {
-      elrondFaucetContract.sendActivateFaucetTransaction();
-    }
-  };
-  // E: Faucet
 
   const handleLearnMoreProg = (progCode) => {
     setLearnMoreProg(progCode);
@@ -96,10 +169,11 @@ export default function({ onRfMount }) {
     },
     title: "Rewards",
     tag1: "Total Available",
-    value1: _user.claimBalanceValues?.[0],
+    value1: claimsBalances.claimBalanceValues[0],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[0]).format(uxConfig.dateStrTm),
+    value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
+    elrondClaimsContract
   };
 
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
@@ -111,10 +185,11 @@ export default function({ onRfMount }) {
     },
     title: "Airdrops",
     tag1: "Total Available",
-    value1: _user?.claimBalanceValues?.[1],
+    value1: claimsBalances.claimBalanceValues[1],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[1]).format(uxConfig.dateStrTm),
+    value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
+    elrondClaimsContract
   };
 
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
@@ -126,10 +201,11 @@ export default function({ onRfMount }) {
     },
     title: "Allocations",
     tag1: "Total Available",
-    value1: _user?.claimBalanceValues?.[2],
+    value1: claimsBalances.claimBalanceValues[2],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[2]).format(uxConfig.dateStrTm),
+    value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
+    elrondClaimsContract
   };
   // E: claims related logic
 
@@ -173,9 +249,9 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={50}>
                 <Text>Rewards</Text>
-                <Button disabled={isOnChainInteractionDisabled || _user?.claimBalanceValues?.[0] === "-1" || _user?.claimBalanceValues?.[0] === "-2" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                  {(_user?.claimBalanceValues?.[0] !== "-1" && _user?.claimBalanceValues?.[0] !== "-2") ? 
-                      _user?.claimBalanceValues?.[0] : _user?.claimBalanceValues?.[0] !== "-2" ? 
+                <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === "-1" || claimsBalances.claimBalanceValues[0] === "-2" || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  {(claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2") ? 
+                      claimsBalances.claimBalanceValues[0] : claimsBalances.claimBalanceValues[0] !== "-2" ? 
                         <Spinner size="xs" /> : <WarningTwoIcon />
                   }
                 </Button>
@@ -184,9 +260,9 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={50}>
                 <Text>Airdrops</Text>
-                <Button disabled={isOnChainInteractionDisabled || _user?.claimBalanceValues?.[1] === "-1" || _user?.claimBalanceValues?.[1] === "-2" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                  {(_user?.claimBalanceValues?.[1] !== "-1" && _user?.claimBalanceValues?.[1] !== "-2") ? 
-                      _user?.claimBalanceValues?.[1] : _user?.claimBalanceValues?.[1] !== "-2" ? 
+                <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === "-1" || claimsBalances.claimBalanceValues[1] === "-2" || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  {(claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2") ? 
+                      claimsBalances.claimBalanceValues[1] : claimsBalances.claimBalanceValues[1] !== "-2" ? 
                         <Spinner size="xs" /> : <WarningTwoIcon />
                   }
                 </Button>
@@ -195,9 +271,9 @@ export default function({ onRfMount }) {
               <Spacer />
               <HStack spacing={30}>
                 <Text>Allocations</Text>
-                <Button disabled={isOnChainInteractionDisabled || _user?.claimBalanceValues?.[2] === "-1" || _user?.claimBalanceValues?.[2] === "-2" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                  {(_user?.claimBalanceValues?.[2] !== "-1" && _user?.claimBalanceValues?.[2] !== "-2") ? 
-                      _user?.claimBalanceValues?.[2] : _user?.claimBalanceValues?.[2] !== "-2" ? 
+                <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === "-1" || claimsBalances.claimBalanceValues[2] === "-2" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                  {(claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2") ? 
+                      claimsBalances.claimBalanceValues[2] : claimsBalances.claimBalanceValues[2] !== "-2" ? 
                         <Spinner size="xs" /> : <WarningTwoIcon />
                   }
                 </Button>

@@ -4,42 +4,20 @@ import {
 import React from "react";
 import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
 import { CHAIN_TOKEN_SYMBOL } from "libs/util";
-import { useUser } from "store/UserContext";
 import { useChainMeta } from "store/ChainMetaContext";
-import { ClaimsContract } from "Elrond/claims";
 
-const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType }) => {
+const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, elrondClaimsContract }) => {
   const { address: elrondAddress } = useGetAccountInfo();
-  const { user: _user, setUser } = useUser();
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  let claimsContract = null;
+  const { chainMeta: _chainMeta } = useChainMeta();
 
-  if (ClaimsContract && elrondAddress) {
-    claimsContract = new ClaimsContract(_chainMeta.networkId);
-  }
-
-  const resetClaimState = ({ refreshTokenBalances = false, clearError = true, keepOpen = false }) => {
-
-    if (clearError) {}
-
-    if (!keepOpen) {
-      if (refreshTokenBalances) {
-        setUser({
-          ..._user,
-          claimBalanceValues: ["-1", "-1", "-1"],
-        });
-
-        onClose(true);
-      } else {
-        onClose();
-      }
-    }
+  const resetClaimState = () => {
+    onClose();
   };
 
   const handleOnChainClaim = () => {
     if (elrondAddress) {
       onClose();
-      claimsContract.sendClaimRewardsTransaction(claimType - 1);
+      elrondClaimsContract.sendClaimRewardsTransaction(claimType - 1);
     }
   };
 
