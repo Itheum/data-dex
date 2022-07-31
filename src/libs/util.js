@@ -139,10 +139,10 @@ export const progInfoMeta = {
     outcome: "Data produced from this app can be used to unlock valuable data; direct-from-gamers.",
     targetBuyer: "Games, Game Platforms, Guilds, Guild Hubs, GameFi Platforms",
     data: "Discord community score, on-chain gaming performance, on-chain game earnings, game earnings and spending patterns, HOLDing ability, game assets composition to earning patterns",
-    url: "https://itheum.com/program",
+    url: "https://itheum.medium.com/the-gamer-passport-empowering-gamers-across-the-globe-to-own-their-game-play-data-2fc4129aeee4",
     dc: "Gamer Passport Data",
     id: "foo",
-    canJoin: 0,
+    canJoin: 1,
   },
   wfa: {
     name: "Wearables Fitness and Activity",

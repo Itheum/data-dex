@@ -7,7 +7,6 @@ import { Button, Text, Image, AlertDialog, Badge, Spinner,
   useToast, useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons';
-import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import SellData from 'DataPack/SellData';
 import BuyData from 'DataPack/BuyData';
@@ -294,11 +293,6 @@ function App({ appConfig }) {
                 </MenuButton>
                 <MenuList>
                   <MenuGroup>
-                    {itheumAccount && <MenuItem closeOnSelect={false}>
-                      <Text fontSize="xs">
-                        <Text>{`Profile :  ${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                      </Text>
-                    </MenuItem>}
                     {_user.isElrondAuthenticated && (
                       <ChainSupportedComponent feature={MENU.CLAIMS}>
                         <MenuItem closeOnSelect={false} onClick={() => setElrondShowClaimsHistory(true)}>
@@ -306,6 +300,11 @@ function App({ appConfig }) {
                         </MenuItem>
                       </ChainSupportedComponent>
                     )}
+                    <MenuItem closeOnSelect={false}>
+                      <Text fontSize="xs">
+                        My Address Quick Copy: <ShortAddress address={elrondAddress} />
+                      </Text>
+                    </MenuItem>
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>
@@ -357,7 +356,6 @@ function App({ appConfig }) {
                       </Button>
                       <ChainSupportedInput feature={MENU.SELL}>
                         <Button
-                          rightIcon={<GiReceiveMoney />}
                           w={menuButtonW}
                           colorScheme="teal"
                           isDisabled={menuItem === MENU.SELL}
@@ -626,7 +624,7 @@ function App({ appConfig }) {
                 <AlertDialogHeader fontSize="lg" fontWeight="bold"></AlertDialogHeader>
 
                 <AlertDialogBody>
-                  Sorry the {chain} chain is currently not supported. We are working on it. You need to be on{" "}
+                  Sorry the <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{chain}</Badge> chain is currently not supported. We are working on it. You need to be on{" "}
                   {SUPPORTED_CHAINS.map((i) => (
                     <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">
                       {CHAINS[i]}

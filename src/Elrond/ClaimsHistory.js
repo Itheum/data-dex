@@ -5,7 +5,7 @@ import {
   TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot, useToast  } from '@chakra-ui/react';
 import { getClaimTransactions, getTransactionLink } from './api';
 import { useChainMeta } from "store/ChainMetaContext";
-import { CloseIcon, WarningTwoIcon } from '@chakra-ui/icons';
+import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 
 export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseChaimsHistory}) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
@@ -59,31 +59,32 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
               <Table variant="striped" size="sm">
                 <Thead>
                   <Tr>
-                    <Th textAlign="center">When</Th>
-                    <Th textAlign="center">Hash</Th>
-                    <Th textAlign="center">Type</Th>
+                    <Th>When</Th>
+                    <Th>Hash</Th>
+                    <Th>Type</Th>
                     <Th textAlign="center">Amount</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {elrondClaims.map((item) => <Tr key={item.hash}>
-                    <Td textAlign="center"><Text fontSize="xs">
-                      {item.status === "success" ? '' : <CloseIcon fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
-                      {' '}
-                      {new Date(item.timestamp).toLocaleString()}
+                    <Td><Text fontSize="xs">                      
+                      {new Date(item.timestamp).toLocaleString()}                      
                     </Text></Td>
-                    <Td textAlign="center">
-                      <Link fontSize="sm" href={getTransactionLink(networkId, item.hash)} isExternal>{item.hash.slice(0, 5)}...{item.hash.slice(item.hash.length - 5, item.hash.length)}</Link>
+                    <Td>                      
+                      <Link fontSize="sm" href={getTransactionLink(networkId, item.hash)} isExternal>
+                        <ExternalLinkIcon mx="2px" /> {item.hash.slice(0, 5)}...{item.hash.slice(item.hash.length - 5, item.hash.length)}
+                      </Link>
+                      {item.status === "success" ? '' : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
                     </Td>
-                    <Td textAlign="center"><Text fontSize="sm">{item.claimType}</Text></Td>
+                    <Td><Text fontSize="sm">{item.claimType}</Text></Td>
                     <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10, 18).toFixed(2)}</Text></Td>
                   </Tr>)}
                 </Tbody>
                 <Tfoot>
                   <Tr>
-                    <Th textAlign="center">When</Th>
-                    <Th textAlign="center">Hash</Th>
-                    <Th textAlign="center">Type</Th>
+                    <Th>When</Th>
+                    <Th>Hash</Th>
+                    <Th>Type</Th>
                     <Th textAlign="center">Amount</Th>
                   </Tr>
                 </Tfoot>

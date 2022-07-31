@@ -88,7 +88,7 @@ function AuthPickerEVM({ resetLaunchMode }) {
   return (
     <>
       {(!isAuthenticated && !user) && <Stack spacing={6} p="5">
-        <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+        <Modal isCentered size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Select a EVM Wallet</ModalHeader>

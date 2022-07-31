@@ -303,11 +303,11 @@ function App({ appConfig }) {
                 </MenuButton>
                 <MenuList>
                   <MenuGroup>
-                    {itheumAccount && <MenuItem closeOnSelect={false}>
+                    <MenuItem closeOnSelect={false}>
                       <Text fontSize="xs">
-                        <Text>{`Profile :  ${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+                        My Address Quick Copy: <ShortAddress address={user.get('ethAddress')} />
                       </Text>
-                    </MenuItem>}
+                    </MenuItem>
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>
@@ -628,7 +628,7 @@ function App({ appConfig }) {
                 <AlertDialogHeader fontSize="lg" fontWeight="bold"></AlertDialogHeader>
 
                 <AlertDialogBody>
-                  Sorry the {chain} chain is currently not supported. We are working on it. You need to be on{" "}
+                  Sorry the <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{chain}</Badge> chain is currently not supported. We are working on it. You need to be on{" "}
                   {SUPPORTED_CHAINS.map((i) => (
                     <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">
                       {CHAINS[i]}

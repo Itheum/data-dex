@@ -1,33 +1,35 @@
 import { useState } from "react";
 import { Button, Text, Image, Tooltip, 
-  Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverCloseButton, PopoverHeader, PopoverArrow } from "@chakra-ui/react";
+  Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverCloseButton, PopoverHeader, PopoverArrow,
+  useColorMode } from "@chakra-ui/react";
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
-
-import logo from 'img/logo-sml-g.png';
 import chainEth from "img/eth-chain-logo.png";
 import chainPol from "img/polygon-chain-logo.png";
 import chainBsc from "img/bsc-chain-logo.png";
 import chainAvln from "img/avalanche-chain-logo.png";
 import chainHrmy from "img/harmony-chain-logo.png";
-import chainPlaton from "img/platon-chain-logo.png";
 import chainParastate from "img/parastate-chain-logo.png";
 import chainElrond from "img/elrond-chain-logo.png";
-import chainHedera from "img/hedera-chain-logo.png";
+import logoSmlL from 'img/logo-sml-l.png';
+import logoSmlD from 'img/logo-sml-d.png';
+import launcherBG from 'img/launch-bg.png';
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
 const AuthLauncher = ({ onLaunchMode }) => {
 
+  const { colorMode } = useColorMode();
+
   return (
-    <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
-      <Box p={["20px", null, "30px"]} borderWidth="1px" borderRadius="lg">
+    <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center" backgroundImage={colorMode === "dark" && [null, null, launcherBG]}>
+      <Box p={["20px", null, "30px"]} borderWidth="1px" borderRadius="lg" backgroundColor={colorMode === "dark" && "gray.800"}>
         <Stack>
-          <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={logo} alt="Itheum Data DEX" margin="auto" />
+          <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={colorMode === "dark" ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />
           <Heading size="md" textAlign="center">
             Itheum Data DEX
           </Heading>
           <Text fontSize="sm" textAlign="center">
-            Trade your personal data via secure on-chain exchange
+            Multi-chain Web3 tools for personal data ownership and trade
           </Text>
           <Spacer />
 
@@ -48,7 +50,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
 
           <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]} align="center">
             <Tooltip label="Live on Elrond Mainnet & Devnet">
-              <Image src={chainElrond} boxSize="55px" borderRadius="lg" m="5px" />
+              <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
             </Tooltip>
             <Tooltip label="Live on Ropsten & Rinkeby Testnets">
               <Image src={chainEth} boxSize="30px" width="20px" m="5px" />
@@ -65,14 +67,8 @@ const AuthLauncher = ({ onLaunchMode }) => {
             <Tooltip label="Live on Parastate (Polkadot) Testnet">
               <Image src={chainParastate} boxSize="30px" width="25px" m="5px" />
             </Tooltip>
-            <Tooltip label="Live on PlatON Testnet">
-              <Image src={chainPlaton} boxSize="30px" m="5px" />
-            </Tooltip>
             <Tooltip label="Live on Harmony Testnet">
               <Image src={chainHrmy} boxSize="30px" m="5px" />
-            </Tooltip>
-            <Tooltip label="Hedera - Coming soon...">
-              <Image src={chainHedera} boxSize="30px" opacity=".3" m="5px" />
             </Tooltip>
           </Flex>
 

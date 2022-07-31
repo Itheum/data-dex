@@ -57,7 +57,7 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   return (
     <>
       {!elrondAddress && <Stack spacing={6} p="5">
-      <Modal size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+      <Modal isCentered size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Select a <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{launchEnvironment}</Badge> Elrond Wallet</ModalHeader>

@@ -22,12 +22,6 @@
   background: var(--chakra-colors-whiteAlpha-300);
 }
 
-.dapp-core-ui-component.modal {
-  color: #ffffff;
-  font-weight: bold;
-  margin-top: -700px;
-}
-
 .chakra-ui-light .dapp-core-ui-component.modal {
   color: #ffffff;
 }
@@ -67,15 +61,22 @@ body[data-rr-ui-modal-open] .chakra-portal {
 }
 
 body[data-rr-ui-modal-open] .dapp-core-ui-component.modal {
-  margin-top: -750px;
+  color: #ffffff;
+  font-weight: bold;
+  display: block;
+  position: fixed;
+  z-index: 1041;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.wallect-connect-login {
-  display: contents !important;
+  /* display: contents !important; */
 }
 
 body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
-  display: contents !important;
+  /* display: contents !important; */
 }
 
 .dapp-core-ui-component .media-body {
@@ -88,4 +89,38 @@ body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
 
 .chakra-ui-light .dapp-core-ui-component .toast-messages .toast {
   border-color: #2d7a7b !important;
+}
+
+body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
+  /* display: contents !important; */
+}
+
+body[data-rr-ui-modal-open] .modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1040;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+}
+
+body[data-rr-ui-modal-open] .modal-backdrop.fade {
+  opacity: 0;
+}
+
+body[data-rr-ui-modal-open] .modal-backdrop.show {
+  opacity: 0.5;
+}
+
+.dapp-core-ui-component.modal .btn-close-link {
+  background-color: #81e6d9;
+}
+
+.transactions-toast-list_toastContainer {
+  color: #81e6d9;
+}
+
+.dapp-core-ui-component .toast-messages .toast {
+  background-color: #1a202c;
 }

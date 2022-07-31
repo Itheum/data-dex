@@ -200,14 +200,14 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
           <Stack p="5" h="360">
             {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
             {!itheumAccount && (
-              <Alert status="warning" variant="solid">
+              <Alert>
                 <Stack>
                   <AlertTitle fontSize="md">
                     <AlertIcon mb={2} /> Sorry! You don't seem to have a{" "}
                     <Link href="https://itheum.com" isExternal>
                       itheum.com
                     </Link>{" "}
-                    platform account
+                    Data CAT account
                   </AlertTitle>
                   <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
                 </Stack>
@@ -332,7 +332,29 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
         <Heading size="md">App Marketplace</Heading>
         <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+            <Image src={imgProgGaPa} />
+
+            <Box p="3">
+              <Box d="flex" alignItems="baseline">
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+                  Gamer Passport
+                </Box>
+                <Badge borderRadius="full" px="2" colorScheme="teal">
+                  {" "}
+                  Live
+                </Badge>
+              </Box>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
+                Learn More
+              </Button>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open("https://itheum.medium.com/the-gamer-passport-empowering-gamers-across-the-globe-to-own-their-game-play-data-2fc4129aeee4")}>
+                Join Now
+              </Button>
+            </Box>
+          </Box>
+          
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -349,28 +371,6 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
                 Learn More
               </Button>
               <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`)}>
-                Join Now
-              </Button>
-            </Box>
-          </Box>
-
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-            <Image src={imgProgGaPa} />
-
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Gamer Passport
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {" "}
-                  Coming Soon
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
-                Learn More
-              </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
                 Join Now
               </Button>
             </Box>

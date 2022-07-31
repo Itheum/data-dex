@@ -44,7 +44,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => resetClaimState({})} isCentered size={"xl"} closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal isOpen={isOpen} onClose={() => resetClaimState({})} isCentered size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
 
       <ModalContent h="300px" w="400px">
