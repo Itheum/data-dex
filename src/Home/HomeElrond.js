@@ -10,6 +10,7 @@ import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/ut
 import imgProgGaPa from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
 import imgProgWfh from "img/prog-wfh.png";
+import myNFMe from "img/my-nfme.png";
 import ClaimModalElrond from "ClaimModel/ClaimModalElrond";
 import { useUser } from "store/UserContext";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -155,6 +156,15 @@ export default function({ onRfMount }) {
             </Stack>
           </WrapItem>
         </ChainSupportedComponent>
+
+        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
+          <Stack p="5" h="360" bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
+            <Heading size="md" align="center">NFMe ID Identity</Heading>                  
+            <Spacer />
+            <Button disabled colorScheme="teal">Mint & Own NFT</Button>
+            <Text fontSize="sm" align="center">Coming Soon</Text>
+          </Stack>
+        </WrapItem>
 
         <ChainSupportedComponent feature={MENU.CLAIMS}>
           <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
