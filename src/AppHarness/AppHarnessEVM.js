@@ -12,7 +12,7 @@ function AppHarnessEVM({resetLaunchMode}) {
   const handleMoralisLogout = async() => {
     resetLaunchMode();
     await moralisLogout();
-    await sleep(2);
+    await sleep(1);
     window.location.replace("/");
   }
 

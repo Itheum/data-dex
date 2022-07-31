@@ -10,7 +10,7 @@ import {
 import moment from "moment";
 import ShortAddress from "UtilComps/ShortAddress";
 import { progInfoMeta, uxConfig, sleep } from "libs/util";
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU } from "libs/util";
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
 import { ABIS } from "EVM/ABIs";
 import imgProgGaPa from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
@@ -23,28 +23,25 @@ import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 import { useNavigate } from "react-router-dom";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
-export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccount, itheumAccount }) {
-  const {
-    user,
-    Moralis: { web3Library: ethers },
-  } = useMoralis();
-  const { web3: web3Provider } = useMoralis();
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheumAccount, itheumAccount }) {
   const toast = useToast();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
+  const navigate = useNavigate();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
-
+  const { user, isWeb3Enabled, Moralis: { web3Library: ethers }} = useMoralis();
+  const { web3: web3Provider } = useMoralis();
   const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
-
-  // eth tx state (faucet)
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
-
-  const navigate = useNavigate();
+  const [claimsBalances, setClaimsBalances] = useState({
+    claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
+    claimBalanceDates: [0, 0, 0]
+  });
 
   // test data
   useEffect(() => {
@@ -77,7 +74,7 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
         });
 
         resetFauceState();
-        onRefreshBalance();
+        onRefreshTokenBalance();
       }
     }
   }, [txConfirmationFaucet, txHashFaucet, txErrorFaucet]);
@@ -131,6 +128,65 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
   };
   // E: Faucet
 
+  // S: Claims
+  useEffect(() => {
+    // this will trigger during component load/page load, so let's get the latest claims balances
+    // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
+    if (_chainMeta?.networkId && user && isWeb3Enabled) {
+      web3_evmClaimsBalancesUpdate();
+    }
+  }, [user, isWeb3Enabled, _chainMeta]);
+
+  const web3_evmClaimsBalancesUpdate = async () => {
+    if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
+      const walletAddress = user.get('ethAddress');
+      const contract = new ethers.Contract(_chainMeta.contracts.claims, ABIS.claims, web3Provider);
+
+      const keys = Object.keys(CLAIM_TYPES);
+
+      const values = keys.map((el) => {
+        return CLAIM_TYPES[el];
+      });
+
+      // queue all smart contract calls
+      const hexDataPromiseArray = values.map(async (el) => {
+        let a = await contract.deposits(walletAddress, el);
+        return a;
+      });
+
+      try {
+        const claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
+          const date = new Date(parseInt(el.lastDeposited._hex.toString(), 16) * 1000);
+          const value = parseInt(el.amount._hex.toString(), 16) / 10 ** 18;
+          return { values: value, dates: date };
+        });
+
+        const valuesArray = claimBalanceResponse.map((el) => {
+          return el['values'];
+        });
+
+        const datesArray = claimBalanceResponse.map((el) => {
+          return el['dates'];
+        });
+
+        setClaimsBalances({
+          claimBalanceValues: valuesArray,
+          claimBalanceDates: datesArray
+        });
+      } catch (e) {
+        console.error(e);
+        toast({
+          id: 'er3',
+          title: 'ER3: Could not get your claims information from the EVM blockchain.',
+          status: 'error',
+          isClosable: true,
+          duration: null
+        });
+      }
+    }
+  };
+  // E: Claims
+
   const handleLearnMoreProg = (progCode) => {
     setLearnMoreProg(progCode);
     onProgressModalOpen();
@@ -144,15 +200,16 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     onClose: (refreshTokenBalances) => {
       onRewardsClose();
       if (refreshTokenBalances) {
-        onRefreshBalance();
+        onRefreshTokenBalance();
       }
     },
     title: "Rewards",
     tag1: "Total Available",
-    value1: _user.claimBalanceValues?.[0],
+    value1: claimsBalances.claimBalanceValues[0],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[0]).format(uxConfig.dateStrTm),
+    value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
+    onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
   };
 
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
@@ -162,15 +219,16 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     onClose: (refreshTokenBalances) => {
       onAirdropClose();
       if (refreshTokenBalances) {
-        onRefreshBalance();
+        onRefreshTokenBalance();
       }
     },
     title: "Airdrops",
     tag1: "Total Available",
-    value1: _user?.claimBalanceValues?.[1],
+    value1: claimsBalances.claimBalanceValues[1],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[1]).format(uxConfig.dateStrTm),
+    value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
+    onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
   };
 
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
@@ -180,15 +238,16 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
     onClose: (refreshTokenBalances) => {
       onAllocationsClose();
       if (refreshTokenBalances) {
-        onRefreshBalance();
+        onRefreshTokenBalance();
       }
     },
     title: "Allocations",
     tag1: "Total Available",
-    value1: _user?.claimBalanceValues?.[2],
+    value1: claimsBalances.claimBalanceValues[2],
     tag2: "Deposited On",
-    value2: moment(_user?.claimBalanceDates?.[2]).format(uxConfig.dateStrTm),
+    value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
+    onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
   };
   // E: claims related logic
 
@@ -310,24 +369,24 @@ export default function({onRfMount, setMenuItem, onRefreshBalance, onItheumAccou
               <Spacer />
               <HStack spacing={50}>
                 <Text>Rewards</Text>
-                <Button disabled={_user?.claimBalanceValues?.[0] === "-1" || !_user?.claimBalanceValues?.[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                  {_user?.claimBalanceValues?.[0] !== "-1" ? _user?.claimBalanceValues?.[0] : <Spinner size="xs" />}
+                <Button disabled={claimsBalances.claimBalanceValues[0] === "-1" || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  {claimsBalances.claimBalanceValues[0] !== "-1" ? claimsBalances.claimBalanceValues[0] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...rewardsModalData} />
               </HStack>
               <Spacer />
               <HStack spacing={50}>
                 <Text>Airdrops</Text>
-                <Button disabled={_user?.claimBalanceValues?.[1] === "-1" || !_user?.claimBalanceValues?.[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                  {_user?.claimBalanceValues?.[1] !== "-1" ? _user?.claimBalanceValues?.[1] : <Spinner size="xs" />}
+                <Button disabled={claimsBalances.claimBalanceValues[1] === "-1" || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  {claimsBalances.claimBalanceValues[1] !== "-1" ? claimsBalances.claimBalanceValues[1] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...airdropsModalData} />
               </HStack>
               <Spacer />
               <HStack spacing={30}>
                 <Text>Allocations</Text>
-                <Button disabled={_user?.claimBalanceValues?.[2] === "-1" || !_user?.claimBalanceValues?.[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                  {_user?.claimBalanceValues?.[2] !== "-1" ? _user?.claimBalanceValues?.[2] : <Spinner size="xs" />}
+                <Button disabled={claimsBalances.claimBalanceValues[2] === "-1" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                  {claimsBalances.claimBalanceValues[2] !== "-1" ? claimsBalances.claimBalanceValues[2] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...allocationsModalData} />
               </HStack>

@@ -20,7 +20,7 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
     async function cleanOutRemoteMaiarAppWalletDisconnect() {
       clearAppSessions();
 
-      await sleep(2);
+      await sleep(1);
       window.location.replace("/");
     }
 

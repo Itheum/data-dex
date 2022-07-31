@@ -8,10 +8,9 @@ import React, { useState, useEffect } from "react";
 import { uxConfig, sleep } from "libs/util";
 import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "libs/util";
 import { ABIS } from "EVM/ABIs";
-import { useUser } from "store/UserContext";
 import { useChainMeta } from "store/ChainMetaContext";
 
-const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimType }) => {
+const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimType, onRefreshClaimsBalance }) => {
   const {
     Moralis: { web3Library: ethers }, web3: web3Provider
   } = useMoralis();
@@ -22,8 +21,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
   const [txHashClaim, setTxHashClaim] = useState(null);
   const [txErrorClaim, setTxErrorClaim] = useState(null);
   const [claimWorking, setClaimWorking] = useState(false);
-  const { user: _user, setUser } = useUser();
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
 
   useEffect(() => {
     if (txErrorClaim) {
@@ -82,11 +80,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
 
     if (!keepOpen) {
       if (refreshTokenBalances) {
-        setUser({
-          ..._user,
-          claimBalanceValues: ["-1", "-1", "-1"],
-        });
-
+        onRefreshClaimsBalance();
         onClose(true);
       } else {
         onClose();

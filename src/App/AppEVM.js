@@ -4,7 +4,7 @@ import { Button, Text, Image, AlertDialog, Badge, Spinner,
   Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
   AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
   Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, 
-  useToast, useColorMode } from '@chakra-ui/react';
+  useColorMode } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from 'react-icons/gi';
@@ -27,7 +27,7 @@ import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
-import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, PATHS } from 'libs/util';
+import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { ABIS } from "EVM/ABIs";
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
@@ -42,11 +42,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isElrondAuthenticated: false,
-  claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
-  claimBalanceDates: [0, 0, 0],
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
-
-let debugPanel = true;
 
 function App({ appConfig }) {
   const {
@@ -61,7 +57,6 @@ function App({ appConfig }) {
 
   const { web3: web3Provider, enableWeb3, isWeb3Enabled, isWeb3EnableLoading, web3EnableError } = useMoralis();
 
-  const toast = useToast();
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBal, setTokenBal] = useState(-1); // -1 is loading, -2 is error
   const [chain, setChain] = useState(0);
@@ -134,11 +129,7 @@ function App({ appConfig }) {
             contracts: contractsForChain(networkId)
           });
 
-          await web3_getTokenBalance(); // get user token balance from EVM
-          await sleep(1);
-
-          await web3_getClaimBalance(); // get user claims token balance from EVM
-          await sleep(1);
+          await web3_getTokenBalance(); // get itheum token balance from EVM
         }
       }
     }
@@ -146,67 +137,8 @@ function App({ appConfig }) {
     getBalances();
   }, [user, isWeb3Enabled]);
 
-  useEffect(() => {
-    // claims balanced triggered updating is only needed if we are in HOME screen
-    if (_user.claimBalanceValues && _user?.isAuthenticated && menuItem === MENU.HOME) {
-      web3_getTokenBalance();
-    }
-  }, [_user.claimBalanceValues]);
-
-
-  const handleRefreshBalance = async () => {
+  const handleRefreshTokenBalance = async () => {
     await web3_getTokenBalance();
-    await web3_getClaimBalance();
-  };
-
-  const web3_getClaimBalance = async () => {
-    const walletAddress = user.get('ethAddress');
-    const contract = new ethers.Contract(_chainMetaLocal.contracts.claims, ABIS.claims, web3Provider);
-
-    const keys = Object.keys(CLAIM_TYPES);
-
-    const values = keys.map((el) => {
-      return CLAIM_TYPES[el];
-    });
-
-    // queue all smart contract calls
-    const hexDataPromiseArray = values.map(async (el) => {
-      let a = await contract.deposits(walletAddress, el);
-      return a;
-    });
-
-    try {
-      const claimBalanceResponse = (await Promise.all(hexDataPromiseArray)).map((el) => {
-        const date = new Date(parseInt(el.lastDeposited._hex.toString(), 16) * 1000);
-        const value = parseInt(el.amount._hex.toString(), 16) / 10 ** 18;
-        return { values: value, dates: date };
-      });
-
-      const valuesArray = claimBalanceResponse.map((el) => {
-        return el['values'];
-      });
-
-      const datesArray = claimBalanceResponse.map((el) => {
-        return el['dates'];
-      });
-
-      await setUser({
-        ...baseUserContext,
-        ..._user,
-        isMoralisAuthenticated: true,
-        claimBalanceValues: valuesArray,
-        claimBalanceDates: datesArray,
-      });
-    } catch (e) {
-      console.error(e);
-      toast({
-        id: 'er3',
-        title: 'ER3: Could not get your claims information from the EVM blockchain.',
-        status: 'error',
-        isClosable: true,
-        duration: null
-      });
-    }
   };
 
   const web3_getTokenBalance = async () => {
@@ -591,11 +523,11 @@ function App({ appConfig }) {
 
               <Box pl={5} w="full">
                 <Routes>
-                  <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}/>
-                  <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshBalance={handleRefreshBalance} onItheumAccount={setItheumAccount} />}/>
+                  <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
+                  <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
                   <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
-                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshBalance={handleRefreshBalance} />} />
+                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshTokenBalance={handleRefreshTokenBalance} />} />
                     <Route path="advertiseddata" element={<AdvertisedData />} />
                     <Route path="purchaseddata" element={<PurchasedData />} />
                     <Route path="personaldataproof" element={<PersonalDataProofs />} />
