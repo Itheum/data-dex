@@ -355,7 +355,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
 
         <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
           <Stack p="5" h="360" bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
-            <Heading size="md" align="center">NFMe ID Identity</Heading>                  
+            <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
             <Spacer />
             <Button disabled colorScheme="teal">Mint & Own NFT</Button>
             <Text fontSize="sm" align="center">Coming Soon</Text>

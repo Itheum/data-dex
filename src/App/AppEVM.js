@@ -231,7 +231,7 @@ function App({ appConfig }) {
 
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
-                  <ShortAddress address={user.get('ethAddress').toUpperCase()} fontSize="sm" />
+                  <ShortAddress address={user.get('ethAddress')} fontSize="md" />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup>

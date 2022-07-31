@@ -242,7 +242,7 @@ function App({ appConfig }) {
 
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
-                  <ShortAddress address={elrondAddress.toUpperCase()} fontSize="sm" />
+                  <ShortAddress address={elrondAddress} fontSize="md" />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup>
