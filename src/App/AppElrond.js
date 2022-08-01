@@ -134,6 +134,7 @@ function App({ appConfig }) {
 
       if (!SUPPORTED_CHAINS.includes(networkId)) {
         setAlertIsOpen(true);
+        itheumTokenBalanceUpdate(); // let's also show toke balances for Elrond mainnet (1/8/22 mainnet is not supported)
       } else {
         itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
@@ -147,33 +148,33 @@ function App({ appConfig }) {
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's "false" we need to get balances    
     if (!hasPendingTransactions) {
-      itheumTokenBalanceUpdate();
+      if (SUPPORTED_CHAINS.includes(_chainMetaLocal.networkId)) {
+        itheumTokenBalanceUpdate();
+      }
     }
   }, [hasPendingTransactions]);
 
   // Elrond transactions state changed so need new balances
   const itheumTokenBalanceUpdate = async() => {
     if (elrondAddress && isElrondLoggedIn) {
-      if (SUPPORTED_CHAINS.includes(_chainMetaLocal.networkId)) {
-        setTokenBal(-1); // -1 is loading
+      setTokenBal(-1); // -1 is loading
 
-        // get user token balance from elrond
-        const data = await checkBalance(_chainMetaLocal.contracts.itheumToken, elrondAddress, _chainMetaLocal.networkId);
+      // get user token balance from elrond
+      const data = await checkBalance(_chainMetaLocal.contracts.itheumToken, elrondAddress, _chainMetaLocal.networkId);
 
-        if (data.balance) {
-          setTokenBal((data.balance / Math.pow(10, 18)));
-        } else if (data.error) {
-          setTokenBal(-2); // -2 is error getting it
+      if (typeof data.balance !== 'undefined') {
+        setTokenBal((data.balance / Math.pow(10, 18)));
+      } else if (data.error) {
+        setTokenBal(-2); // -2 is error getting it
 
-          if (!toast.isActive('er1')) {
-            toast({
-              id: 'er1',
-              title: 'ER1: Could not get your token information from the elrond blockchain.',
-              status: 'error',
-              isClosable: true,
-              duration: null
-            });
-          }
+        if (!toast.isActive('er1')) {
+          toast({
+            id: 'er1',
+            title: 'ER1: Could not get your token information from the elrond blockchain.',
+            status: 'error',
+            isClosable: true,
+            duration: null
+          });
         }
       }
     }
