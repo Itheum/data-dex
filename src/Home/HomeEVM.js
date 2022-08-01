@@ -419,7 +419,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open("https://itheum.medium.com/the-gamer-passport-empowering-gamers-across-the-globe-to-own-their-game-play-data-2fc4129aeee4")}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}>
                 Join Now
               </Button>
             </Box>
