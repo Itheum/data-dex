@@ -1,13 +1,14 @@
 import { useEffect, useState, useRef, React } from 'react';
 import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import { Button, Text, Image, AlertDialog, Badge, Spinner,
+import { Button, Text, Image, AlertDialog, Badge, Spinner, IconButton,
   Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
   AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
   Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, 
-  useToast, useColorMode } from '@chakra-ui/react';
+  useToast, useColorMode, useBreakpointValue } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
-import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons';
+import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { AiFillHome } from 'react-icons/ai';
+import { IoConstructOutline } from "react-icons/io5";
 import SellData from 'DataPack/SellData';
 import BuyData from 'DataPack/BuyData';
 import PurchasedData from 'DataPack/PurchasedData';
@@ -26,7 +27,7 @@ import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import ClaimsHistory from 'Elrond/ClaimsHistory';
-import { sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
+import { contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
@@ -205,12 +206,13 @@ function App({ appConfig }) {
       // sending in / will reload the data dex after logout is done so it cleans up data dex state
       elrondLogout('/');
     }  
-  };
-  
-  const menuButtonW = '180px';
+  };  
 
   debugui(`walletUsedSession ${walletUsedSession}`);
   debugui(`_chainMetaLocal.networkId ${_chainMetaLocal.networkId}`);
+
+  const menuButtonW = '180px';
+  const screenBreakPoint = useBreakpointValue({ base: 'base', md: 'md' });
 
   return (
     <>
@@ -220,30 +222,31 @@ function App({ appConfig }) {
             <HStack h="10vh" p="5">
               <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
 
-              <Heading>
-                <Text fontSize={["xs", "sm"]}>Itheum Data DEX</Text>
+              <Heading display={["none", "initial"]}>
+                <Text fontSize={"sm"}>Itheum Data DEX</Text>
                 <Text fontSize="xx-small">{dataDexVersion}</Text>
               </Heading>
 
               <Spacer />
 
               <HStack>
-                <Box as="text" fontSize={["xs", "sm"]} minWidth={"5.5rem"} align="center" p={2} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
+                <Box as="text" fontSize={["sm", "md"]} minWidth={"5.5rem"} align="center" p={"11.3px"} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
                   {(tokenBal === -1) ? <Spinner size="xs" /> : 
                       (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}</>
                   }
                 </Box>
 
-                <Box display={["none", null, "block"]} fontSize={["xs", "sm"]} align="center" p={2} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                <Box display={["none", null, "block"]} fontSize={["xs", "md"]} align="center" p={"11.3px"} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
                   {chain || "..."}
                 </Box>
 
-                <Button onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
+                <Button display={["none", "initial"]} onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
               </HStack>
 
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
-                  <ShortAddress address={elrondAddress} fontSize="md" />
+                  {screenBreakPoint === 'md' && <ShortAddress address={elrondAddress} fontSize="md" />}
+                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={["block", "none"]} />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup>
@@ -290,11 +293,16 @@ function App({ appConfig }) {
                     </Link>
                     <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
                       Privacy Policy <ExternalLinkIcon mx="2px" />
-                    </Link>                    
-                  </HStack>
+                    </Link>
+                  </HStack>                                    
 
-                  <Flex direction="column" justify="space-between" minH="80vh">
-                    <Stack ml="15px" spacing={4}>                    
+                  <Flex direction="column" justify="space-between">
+                    <Stack ml="15px" spacing={4}>
+                      <HStack justify={"center"} pr="10" opacity={.8}>
+                        <IoConstructOutline />
+                        <Text fontSize="xs" as="i">Feature Coming Soon</Text>
+                      </HStack>
+
                       <Button
                         rightIcon={<AiFillHome />}
                         w={menuButtonW}
@@ -304,10 +312,12 @@ function App({ appConfig }) {
                         onClick={() => {
                           setMenuItem(MENU.HOME);
                           navigate("home");
+                          setShowMobileMenu(false);
                         }}
                       >
                         Home
                       </Button>
+                      
                       <ChainSupportedInput feature={MENU.SELL}>
                         <Button
                           w={menuButtonW}
@@ -317,6 +327,7 @@ function App({ appConfig }) {
                           onClick={() => {
                             setMenuItem(MENU.SELL);
                             navigate("selldata");
+                            setShowMobileMenu(false);
                           }}
                         >
                           Trade Data
@@ -341,6 +352,7 @@ function App({ appConfig }) {
                                 onClick={() => {
                                   setMenuItem(MENU.BUY);
                                   navigate("datapacks/buydata");
+                                  setShowMobileMenu(false);
                                 }}
                               >
                                 Buy Data
@@ -353,6 +365,7 @@ function App({ appConfig }) {
                                 onClick={() => {
                                   setMenuItem(MENU.ADVERTISED);
                                   navigate("datapacks/advertiseddata");
+                                  setShowMobileMenu(false);
                                 }}
                               >
                                 Advertised Data
@@ -365,6 +378,7 @@ function App({ appConfig }) {
                                 onClick={() => {
                                   setMenuItem(MENU.PURCHASED);
                                   navigate("datapacks/purchaseddata");
+                                  setShowMobileMenu(false);
                                 }}
                               >
                                 Purchased Data
@@ -377,6 +391,7 @@ function App({ appConfig }) {
                                 onClick={() => {
                                   setMenuItem(MENU.DATAPROOFS);
                                   navigate("datapacks/personaldataproof");
+                                  setShowMobileMenu(false);
                                 }}
                               >
                                 Personal Data Proofs
@@ -403,10 +418,12 @@ function App({ appConfig }) {
                                   if (splashScreenShown[MENU.NFT]) {
                                     navigate("datanfts/wallet");
                                     setMenuItem(MENU.NFTMINE);
+                                    setShowMobileMenu(false);
                                   } else {
                                     doSplashScreenShown(MENU.NFT);
                                     navigate("datanfts");
                                     setMenuItem(MENU.NFTMINE);
+                                    setShowMobileMenu(false);
                                   }
                                 }}
                               >
@@ -422,10 +439,12 @@ function App({ appConfig }) {
                                   if (splashScreenShown[MENU.NFT]) {
                                     navigate("datanfts/marketplace");
                                     setMenuItem(MENU.NFTALL);
+                                    setShowMobileMenu(false);
                                   } else {
                                     doSplashScreenShown(MENU.NFT);
                                     navigate("datanfts");
                                     setMenuItem(MENU.NFTALL);
+                                    setShowMobileMenu(false);
                                   }
                                 }}
                               >
@@ -453,10 +472,12 @@ function App({ appConfig }) {
                                   if (splashScreenShown[MENU.COALITION]) {
                                     navigate("datacoalitions/viewcoalitions");
                                     setMenuItem(MENU.COALITIONALL);
+                                    setShowMobileMenu(false);
                                   } else {
                                     doSplashScreenShown(MENU.COALITION);
                                     navigate("datacoalitions");
                                     setMenuItem(MENU.COALITION);
+                                    setShowMobileMenu(false);
                                   }
                                 }}
                               >
@@ -483,6 +504,7 @@ function App({ appConfig }) {
                                 onClick={() => {
                                   setMenuItem(MENU.TX);
                                   navigate("utils/chaintransactions");
+                                  setShowMobileMenu(false);
                                 }}
                               >
                                 Chain Transactions
@@ -507,6 +529,7 @@ function App({ appConfig }) {
                               onClick={() => {
                                 setMenuItem(MENU.VAULT);
                                 navigate("labs/datavault");
+                                setShowMobileMenu(false);
                               }}
                             >
                               Data Vault
@@ -517,6 +540,7 @@ function App({ appConfig }) {
                               onClick={() => {
                                 setMenuItem(MENU.STREAM);
                                 navigate("labs/datastreams");
+                                setShowMobileMenu(false);
                               }}
                             >
                               Data Streams
@@ -527,6 +551,7 @@ function App({ appConfig }) {
                               onClick={() => {
                                 setMenuItem(MENU.TRUSTEDCOMP);
                                 navigate("labs/trustedcomputation");
+                                setShowMobileMenu(false);
                               }}
                             >
                               Trusted Computation
@@ -539,7 +564,7 @@ function App({ appConfig }) {
                 </Stack>
               </Box>
 
-              <Box pl={5} w="full">
+              <Box w={[null, "full"]}>
                 <Routes>
                   <Route path="/" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>
                   <Route path="home" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount("tools")}  />}/>

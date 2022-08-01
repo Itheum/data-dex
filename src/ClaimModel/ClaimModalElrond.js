@@ -1,6 +1,6 @@
 import { 
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, 
-  HStack, Text, Spacer, Button, Stack } from "@chakra-ui/react";
+  HStack, Text, Spacer, Button, Stack, useBreakpointValue } from "@chakra-ui/react";
 import React from "react";
 import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
 import { CHAIN_TOKEN_SYMBOL } from "libs/util";
@@ -21,8 +21,10 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
     }
   };
 
+  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+
   return (
-    <Modal isOpen={isOpen} onClose={() => resetClaimState({})} isCentered size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState({})} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
 
       <ModalContent h="300px" w="400px">

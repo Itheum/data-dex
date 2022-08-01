@@ -1,7 +1,7 @@
 import { useMoralis } from "react-moralis";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, 
   ModalCloseButton, HStack, Text, Spacer, Button, Link, Progress, CloseButton, Stack, 
-  Alert, AlertIcon, AlertTitle, useToast } from "@chakra-ui/react";
+  Alert, AlertIcon, AlertTitle, useToast, useBreakpointValue } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import ShortAddress from "UtilComps/ShortAddress";
 import React, { useState, useEffect } from "react";
@@ -93,8 +93,10 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
     web3_claims(claimType);
   };
 
+  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+
   return (
-    <Modal isOpen={isOpen} onClose={() => resetClaimState({})} isCentered size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState({})} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
 
       <ModalContent h="400px" w="400px">

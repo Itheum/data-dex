@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Stack } from "@chakra-ui/layout";
 import { 
   Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
-  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
 import { WarningTwoIcon } from '@chakra-ui/icons';
 import moment from "moment";
 import { progInfoMeta, uxConfig, debugui } from "libs/util";
@@ -90,9 +90,6 @@ export default function({ onRfMount }) {
   const elrondClaimsBalancesUpdate = async() => {
     if (elrondAddress && isElrondLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        // get user claims token balance from elrond
-        // const claimContract = new ClaimsContract(_chainMeta.networkId);
-
         let claims = [
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
@@ -127,14 +124,6 @@ export default function({ onRfMount }) {
           claimBalanceValues,
           claimBalanceDates
         });
-
-        // setUser({
-        //   ...baseUserContext,
-        //   ..._user,
-        //   isElrondAuthenticated: true,
-        //   claimBalanceValues: claimBalanceValues,
-        //   claimBalanceDates: claimBalanceDates,
-        // });
       }
     }
   }
@@ -210,6 +199,8 @@ export default function({ onRfMount }) {
   // E: claims related logic
 
   debugui(`_chainMeta.networkId ${_chainMeta.networkId}`);
+
+  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
 
   return (
     <Stack>
@@ -359,7 +350,7 @@ export default function({ onRfMount }) {
       </Stack>
 
       {learnMoreProd && (
-        <Modal size="xl" isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+        <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>

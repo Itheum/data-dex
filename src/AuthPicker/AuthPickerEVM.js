@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
-import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, Text, Image, Link, Wrap, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem } from "@chakra-ui/react";
+import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, 
+  Text, Image, Link, Wrap, Modal, ModalOverlay, ModalContent, 
+  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import walletConnect from "img/wallet-connect.png";
 import walletMetamask from "img/wallet-metamask.png";
@@ -20,7 +22,7 @@ function AuthPickerEVM({ resetLaunchMode }) {
   const [EVMWalletUsed, setEVMWalletUsed] = useState(null);
   const [isAuthenticatingMetamask, setIsAuthenticatingMetamask] = useState(0);
   const [isAuthenticatingWc, setIsAuthenticatingWc] = useState(0);
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);  
 
   useEffect(() => {
     if (authError) {
@@ -85,10 +87,12 @@ function AuthPickerEVM({ resetLaunchMode }) {
     setWalletUsedSession(wallet);
   };
 
+  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+
   return (
     <>
       {(!isAuthenticated && !user) && <Stack spacing={6} p="5">
-        <Modal isCentered size="xl" isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+        <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Select a EVM Wallet</ModalHeader>

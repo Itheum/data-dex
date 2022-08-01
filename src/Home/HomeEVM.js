@@ -6,7 +6,7 @@ import {
   Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, 
   Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, 
   ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, 
-  WrapItem, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
+  WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
 import moment from "moment";
 import ShortAddress from "UtilComps/ShortAddress";
 import { progInfoMeta, uxConfig, sleep } from "libs/util";
@@ -251,6 +251,8 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
   };
   // E: claims related logic
 
+  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+
   return (
     <Stack>
       <Heading size="lg">Home</Heading>
@@ -470,7 +472,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
       </Stack>
 
       {learnMoreProd && (
-        <Modal size="xl" isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+        <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>

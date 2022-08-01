@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   Spinner, Box, Text, Link,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
-  TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot, useToast  } from '@chakra-ui/react';
+  TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot, useToast, useBreakpointValue } from '@chakra-ui/react';
 import { getClaimTransactions, getTransactionLink } from './api';
 import { useChainMeta } from "store/ChainMetaContext";
 import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
@@ -38,11 +38,13 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
     setClaimTransactionsModalOpen(true);
   }
 
+  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+
   return (
     <Modal isOpen={claimTransactionsModalOpen} onClose={() => {
         onAfterCloseChaimsHistory();
         setClaimTransactionsModalOpen(false);
-      }} size="xl" scrollBehavior="inside">
+      }} size={modelSize} scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Recent Claim Transactions</ModalHeader>

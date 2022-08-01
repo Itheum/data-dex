@@ -33,11 +33,13 @@ const AuthLauncher = ({ onLaunchMode }) => {
           </Text>
           <Spacer />
 
-          <HStack justifyContent="center" p="8" spacing={6}>
+          <HStack justifyContent="center" p={["initial", 8]} spacing={["initial", 6]} flexDirection={["column", "initial"]}>
             <PopupChainSelectorForWallet
               lrgButtonSize={true}
               hideTerms={true}
               onElrondEnvPick={onLaunchMode} />
+
+            <Spacer pt={5} display={["block", "none"]} />
 
             <Button onClick={() => onLaunchMode('evm')}>
               Connect EVM Wallet
@@ -48,7 +50,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
             Supported Chains
           </Text>
 
-          <Flex wrap={["wrap", "nowrap"]} direction="row" justify={["start", "space-around"]} w={["300px", "500px"]} align="center">
+          <Flex wrap={["wrap", "nowrap"]} direction="row" justify={"space-around"} w={["300px", "500px"]} align="center">
             <Tooltip label="Live on Elrond Mainnet & Devnet">
               <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
             </Tooltip>

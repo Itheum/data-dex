@@ -15,6 +15,12 @@ export default function SkeletonLoadingList() {
       <Skeleton height="20px" />
       <Skeleton height="20px" />
       <Skeleton height="20px" />
+      <Box />
+      <Skeleton height="20px" />
+      <Skeleton height="20px" />
+      <Skeleton height="20px" />
+      <Skeleton height="20px" />
+      <Skeleton height="20px" />
     </Stack>
   );
 }
