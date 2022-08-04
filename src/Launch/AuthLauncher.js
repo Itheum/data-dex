@@ -105,7 +105,7 @@ const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
           <PopoverArrow />
           <PopoverCloseButton />
           <PopoverHeader>
-            <Text fontSize="md">Please pick a Elrond environment</Text>            
+            <Text fontSize="md">Please pick an Elrond environment</Text>            
           </PopoverHeader>
           <PopoverBody>
               <Button size="sm" mr="2" onClick={() => {

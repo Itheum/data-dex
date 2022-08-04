@@ -206,7 +206,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
     title: "Rewards",
     tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[0],
-    tag2: "Deposited On",
+    tag2: "Last Deposited on",
     value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
     onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
@@ -225,7 +225,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
     title: "Airdrops",
     tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[1],
-    tag2: "Deposited On",
+    tag2: "Last Deposited on",
     value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
     onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
@@ -244,7 +244,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
     title: "Allocations",
     tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[2],
-    tag2: "Deposited On",
+    tag2: "Last Deposited on",
     value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
     onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
@@ -368,6 +368,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
           <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
             <Stack p="5" h="360">
               <Heading size="md">My Claims</Heading>
+
               <Spacer />
               <HStack spacing={50}>
                 <Text>Rewards</Text>
@@ -376,6 +377,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                 </Button>
                 <ClaimModalEVM {...rewardsModalData} />
               </HStack>
+
               <Spacer />
               <HStack spacing={50}>
                 <Text>Airdrops</Text>
@@ -385,13 +387,18 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                 <ClaimModalEVM {...airdropsModalData} />
               </HStack>
               <Spacer />
-              <HStack spacing={30}>
+
+              {claimsBalances.claimBalanceValues[2] > 0 && 
+                <Box h="40px">
+                  <HStack spacing={30}>
                 <Text>Allocations</Text>
                 <Button disabled={claimsBalances.claimBalanceValues[2] === "-1" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                   {claimsBalances.claimBalanceValues[2] !== "-1" ? claimsBalances.claimBalanceValues[2] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...allocationsModalData} />
-              </HStack>
+                  </HStack>
+                </Box> 
+              || <Box h="40px" />}
 
               <Spacer />
             </Stack>
@@ -510,7 +517,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              <Button size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`)}>
+              <Button disabled={true} size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`)}>
                 Join Now
               </Button>
             </ModalFooter>

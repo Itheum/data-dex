@@ -154,7 +154,7 @@ export const progInfoMeta = {
     url: "https://itheum.com/program",
     dc: "Wearables Fitness and Activity Data",
     id: "foo",
-    canJoin: 1,
+    canJoin: 0,
   },
 };
 

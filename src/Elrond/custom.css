@@ -71,14 +71,6 @@ body[data-rr-ui-modal-open] .dapp-core-ui-component.modal {
   transform: translate(-50%, -50%);
 }
 
-body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.wallect-connect-login {
-  /* display: contents !important; */
-}
-
-body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
-  /* display: contents !important; */
-}
-
 .dapp-core-ui-component .media-body {
   color: #ffffff;
 }
@@ -89,10 +81,6 @@ body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
 
 .chakra-ui-light .dapp-core-ui-component .toast-messages .toast {
   border-color: #2d7a7b !important;
-}
-
-body[data-rr-ui-modal-open] .dapp-core-ui-component.modal.ledger-login {
-  /* display: contents !important; */
 }
 
 body[data-rr-ui-modal-open] .modal-backdrop {
@@ -123,4 +111,13 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
 
 .dapp-core-ui-component .toast-messages .toast {
   background-color: #1a202c;
+}
+
+.extension-login_noExtensionButtonContent {
+  font-style: italic;
+  font-weight: normal;
+}
+
+.chakra-ui-dark .extension-login_noExtensionButtonContent {
+  color: #aaa;
 }
