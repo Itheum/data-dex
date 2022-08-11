@@ -3,7 +3,7 @@ import { Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-do
 import { Button, Text, Image, AlertDialog, Badge, Spinner, IconButton,
   Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, 
   AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, 
-  Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, 
+  Link, Menu, MenuButton, MenuList, MenuItem, MenuGroup, MenuDivider, MenuItemOption,
   useColorMode, useBreakpointValue } from '@chakra-ui/react';
 import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from '@chakra-ui/icons';
@@ -237,12 +237,15 @@ function App({ appConfig }) {
                   <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={["block", "none"]} />
                 </MenuButton>
                 <MenuList>
+                  <MenuGroup title='My Address Quick Copy'>
+                    <MenuItemOption closeOnSelect={false}>
+                      <ShortAddress address={user.get('ethAddress')} fontSize="sm" />
+                    </MenuItemOption>
+
+                    <MenuDivider />
+                  </MenuGroup>
+
                   <MenuGroup>
-                    <MenuItem closeOnSelect={false}>
-                      <Text fontSize="xs">
-                        My Address Quick Copy: <ShortAddress address={user.get('ethAddress')} />
-                      </Text>
-                    </MenuItem>
                     <MenuItem onClick={handleLogout} fontSize="sm">
                       Logout
                     </MenuItem>

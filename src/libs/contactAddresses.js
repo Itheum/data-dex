@@ -36,7 +36,7 @@ const contracts = {
   elrond: {
     devnet: {
       itheumTokenContractAddress: "ITHEUM-a61317",
-      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqtywnp7z0war94rpzk00p2n2wjwaws2xr7yqsejxy7f",
+      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqms979krpfug4r8p39d0j9p74g95r749afsxspcay83",
       faucetContractAddress: "erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf",
     },
     mainnet: {
