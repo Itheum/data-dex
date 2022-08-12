@@ -206,89 +206,91 @@ export default function({ onRfMount }) {
     <Stack>
       <Heading size="lg">Home</Heading>
 
-      <Wrap>
-        <ChainSupportedComponent feature={MENU.FAUCET}>
-          <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-            <Stack p="5" h="360">
-              <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
-              <Text fontSize="sm" pb={5}>
-                Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
-              </Text>
+      <Stack p="5">
+        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+          <ChainSupportedComponent feature={MENU.FAUCET}>
+            <Box maxW="container.sm" minW="300px" borderWidth="1px" borderRadius="lg" >
+              <Stack p="5" h="360">
+                <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
+                <Text fontSize="sm" pb={5}>
+                  Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
+                </Text>
 
-              <Spacer />
+                <Spacer />
 
-              <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
-                Send me 10 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
-              </Button>
-            </Stack>
-          </WrapItem>
-        </ChainSupportedComponent>
-
-        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="5" h="360" bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
-            <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
-            <Spacer />
-            <Button disabled colorScheme="teal">Mint & Own NFT</Button>
-            <Text fontSize="sm" align="center">Coming Soon</Text>
-          </Stack>
-        </WrapItem>
-
-        <ChainSupportedComponent feature={MENU.CLAIMS}>
-          <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-            <Stack p="5" h="360">
-              <Heading size="md">My Claims</Heading>
-              
-              <Spacer />
-              <HStack spacing={50}>
-                <Text>Rewards</Text>
-                <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === "-1" || claimsBalances.claimBalanceValues[0] === "-2" || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                  {(claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2") ? 
-                      claimsBalances.claimBalanceValues[0] : claimsBalances.claimBalanceValues[0] !== "-2" ? 
-                        <Spinner size="xs" /> : <WarningTwoIcon />
-                  }
+                <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
+                  Send me 10 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Button>
-                <ClaimModalElrond {...rewardsModalData} />
-              </HStack>
-              
-              <Spacer />
-              <HStack spacing={50}>
-                <Text>Airdrops</Text>
-                <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === "-1" || claimsBalances.claimBalanceValues[1] === "-2" || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                  {(claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2") ? 
-                      claimsBalances.claimBalanceValues[1] : claimsBalances.claimBalanceValues[1] !== "-2" ? 
-                        <Spinner size="xs" /> : <WarningTwoIcon />
-                  }
-                </Button>
-                <ClaimModalElrond {...airdropsModalData} />
-              </HStack>
-              <Spacer />
-              
-              {claimsBalances.claimBalanceValues[2] > 0 && 
-                <Box h="40px">
-                  <HStack spacing={30}>
-                    <Text>Allocations</Text>
-                    <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === "-1" || claimsBalances.claimBalanceValues[2] === "-2" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                      {(claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2") ? 
-                          claimsBalances.claimBalanceValues[2] : claimsBalances.claimBalanceValues[2] !== "-2" ? 
-                            <Spinner size="xs" /> : <WarningTwoIcon />
-                      }
-                    </Button>
-                    <ClaimModalElrond {...allocationsModalData} />
-                  </HStack>
-                </Box>
-              || <Box h="40px" />}
+              </Stack>
+            </Box>
+          </ChainSupportedComponent>
 
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW="300px">
+            <Stack p="5" h="360" bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
+              <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
               <Spacer />
+              <Button disabled colorScheme="teal">Mint & Own NFT</Button>
+              <Text fontSize="sm" align="center">Coming Soon</Text>
             </Stack>
-          </WrapItem>
-        </ChainSupportedComponent>
-      </Wrap>
+          </Box>
+
+          <ChainSupportedComponent feature={MENU.CLAIMS}>
+            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW={["300px", "initial"]}>
+              <Stack p="5" h="360">
+                <Heading size="md">My Claims</Heading>
+                
+                <Spacer />
+                <HStack spacing={50}>
+                  <Text>Rewards</Text>
+                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === "-1" || claimsBalances.claimBalanceValues[0] === "-2" || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                    {(claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2") ? 
+                        claimsBalances.claimBalanceValues[0] : claimsBalances.claimBalanceValues[0] !== "-2" ? 
+                          <Spinner size="xs" /> : <WarningTwoIcon />
+                    }
+                  </Button>
+                  <ClaimModalElrond {...rewardsModalData} />
+                </HStack>
+                
+                <Spacer />
+                <HStack spacing={50}>
+                  <Text>Airdrops</Text>
+                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === "-1" || claimsBalances.claimBalanceValues[1] === "-2" || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                    {(claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2") ? 
+                        claimsBalances.claimBalanceValues[1] : claimsBalances.claimBalanceValues[1] !== "-2" ? 
+                          <Spinner size="xs" /> : <WarningTwoIcon />
+                    }
+                  </Button>
+                  <ClaimModalElrond {...airdropsModalData} />
+                </HStack>
+                <Spacer />
+                
+                {claimsBalances.claimBalanceValues[2] > 0 && 
+                  <Box h="40px">
+                    <HStack spacing={30}>
+                      <Text>Allocations</Text>
+                      <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === "-1" || claimsBalances.claimBalanceValues[2] === "-2" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                        {(claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2") ? 
+                            claimsBalances.claimBalanceValues[2] : claimsBalances.claimBalanceValues[2] !== "-2" ? 
+                              <Spinner size="xs" /> : <WarningTwoIcon />
+                        }
+                      </Button>
+                      <ClaimModalElrond {...allocationsModalData} />
+                    </HStack>
+                  </Box>
+                || <Box h="40px" />}
+
+                <Spacer />
+              </Stack>
+            </Box>
+          </ChainSupportedComponent>
+        </Wrap>
+      </Stack>
 
       <Stack p="5" h="360">
         <Heading size="md">App Marketplace</Heading>
         <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
             <Image src={imgProgGaPa} />
 
             <Box p="3">
@@ -310,7 +312,7 @@ export default function({ onRfMount }) {
             </Box>
           </Box>
           
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -332,7 +334,7 @@ export default function({ onRfMount }) {
             </Box>
           </Box>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" w="300px">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
             <Image src={imgProgWfh} />
 
             <Box p="3">
