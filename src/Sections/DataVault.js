@@ -1,15 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Button, Link, Progress, Badge, Flex, Image, StackDivider,
-  Alert, AlertIcon, AlertTitle, AlertDescription, Spacer,
-  Text, HStack, Heading, Center,
-  useToast
+  Button, Link, Badge, Flex, Image, StackDivider,
+  HStack, Heading, Center,
 } from '@chakra-ui/react';
-import { CHAIN_TOKEN_SYMBOL } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
-import dataVaultIcon from './img/data-vault-icon.png';
+import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
+import dataVaultIcon from 'img/data-vault-icon.png';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -21,7 +18,7 @@ export default function() {
           <Center flexDirection="column">
             <Heading size="lg">Data Vault <Badge variant="outline" colorScheme="teal">Coming Soon</Badge></Heading>
             <Image src={dataVaultIcon} boxSize="150px" m={5} borderRadius="md" />
-            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
+            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
               <Box fontSize="sm" align="center" flex="1">Store highly sensitive personal data in your data vault. For example: details about your gender, race, sexual preference, prior health conditions, financial history etc</Box>
               <Box fontSize="sm" align="center" flex="1">Data is encrypted using your own private key (no one else can unlock and view it) and stored in IPFS (no one else can destroy it)</Box>
               <Box fontSize="sm" align="center" flex="1">Append data from your vault to the regular data you trade on the data dex. As this gives the "dataset" more context, it becomes more valuable to the buyer  -  so you will earn more {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Box>

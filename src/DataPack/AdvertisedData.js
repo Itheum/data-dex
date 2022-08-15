@@ -1,19 +1,18 @@
 import moment from 'moment';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, Text,
+  CloseButton, Text,
   Alert, AlertIcon, AlertTitle, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
-  useToast, useDisclosure, 
+  useToast,
 } from '@chakra-ui/react';
-import ShortAddress from './UtilComps/ShortAddress';
-import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
-import { TERMS, CHAIN_TOKEN_SYMBOL } from './libs/util';
-import { sleep } from './libs/util';
-import { config } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
+import ShortAddress from 'UtilComps/ShortAddress';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { TERMS, CHAIN_TOKEN_SYMBOL } from 'libs/util';
+import { sleep, uxConfig } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -73,7 +72,7 @@ export default function() {
             </Thead>
             <Tbody>
             {userAdvertisedData.map((item) => <Tr key={item.id}>
-              <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+              <Td><Text fontSize="xs">{moment(item.createdAt).format(uxConfig.dateStrTm)}</Text></Td>
               <Td><ShortAddress address={item.id} /></Td>
               <Td><Text fontSize="sm">{item.get('dataPreview')}</Text></Td>
               <Td><ShortAddress address={item.get('dataHash')} /></Td>

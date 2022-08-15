@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMoralis, useMoralisQuery, useNewMoralisObject } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Skeleton, CloseButton, Button, Link, Spinner, Progress,
+  CloseButton, Button, Link, Spinner, Progress,
   Alert, AlertIcon, AlertTitle, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Text, HStack, 
   useToast, useDisclosure, 
 } from '@chakra-ui/react';
-import ShortAddress from './UtilComps/ShortAddress';
-import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
-import { config, dataTemplates, sleep } from './libs/util';
-import { TERMS, ABIS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
+import ShortAddress from 'UtilComps/ShortAddress';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { uxConfig, dataTemplates, sleep } from 'libs/util';
+import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from 'libs/util';
+import { ABIS } from "EVM/ABIs";
+import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function({onRfMount, onRefreshBalance}) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -61,7 +62,7 @@ export default function({onRfMount, onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorAllowance) {
       console.error(txErrorAllowance);
-    } else if (txHashAllowance && (txConfirmationAllowance === config.txConfirmationsNeededLrg)) {
+    } else if (txHashAllowance && (txConfirmationAllowance === uxConfig.txConfirmationsNeededLrg)) {
       console.log('AUTHORISED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
@@ -73,7 +74,7 @@ export default function({onRfMount, onRefreshBalance}) {
   useEffect(async () => {
     if (txErrorTransfer) {
       console.error(txErrorTransfer);
-    } else if (txHashTransfer && (txConfirmationTransfer === config.txConfirmationsNeededLrg)) {
+    } else if (txHashTransfer && (txConfirmationTransfer === uxConfig.txConfirmationsNeededLrg)) {
       console.log('TRANSFERRED');
 
       setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
@@ -221,10 +222,6 @@ export default function({onRfMount, onRefreshBalance}) {
       const txReceipt = await txResponse.wait();
       setTxConfirmationTransfer(1);
       await sleep(2);
-
-      // await sleep(2);
-      // setTxConfirmationTransfer(1);
-      // await sleep(2);
 
       if (txReceipt.status) {
         setTxConfirmationTransfer(2);
@@ -396,7 +393,7 @@ export default function({onRfMount, onRefreshBalance}) {
                   </HStack>
 
                   {txHashAllowance && <Stack>
-                    <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationAllowance} />
+                    <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationAllowance} />
 
                     <HStack>
                       <Text fontSize="sm">Transaction </Text>
@@ -411,7 +408,7 @@ export default function({onRfMount, onRefreshBalance}) {
                   </HStack>
 
                   {txHashTransfer && <Stack>
-                    <Progress colorScheme="teal" size="sm" value={(100 / config.txConfirmationsNeededLrg) * txConfirmationTransfer} />
+                    <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationTransfer} />
 
                     <HStack>
                       <Text fontSize="sm">Transaction </Text>

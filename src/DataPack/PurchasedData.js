@@ -1,27 +1,21 @@
 import moment from 'moment';
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack, HStack } from '@chakra-ui/layout';
 import {
-  Skeleton, Alert, Link, Text,
+  Alert, Link, Text,
   AlertIcon, AlertTitle, CloseButton, Heading,
   Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverFooter,
-  PopoverArrow,
-  PopoverCloseButton,
+  Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody,
+  PopoverArrow, PopoverCloseButton,
   useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ShortAddress from './UtilComps/ShortAddress';
-import SkeletonLoadingList from './UtilComps/SkeletonLoadingList';
-import { config, sleep } from './libs/util';
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from './libs/util';
-import { useChainMeta } from './store/ChainMetaContext';
+import ShortAddress from 'UtilComps/ShortAddress';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { uxConfig, sleep } from 'libs/util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, TERMS } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 
 const useContainerDimensions = myRef => {
   const getDimensions = () => ({
@@ -128,7 +122,7 @@ export default function() {
             </Thead>
             <Tbody>
               {userDataOrders.map((item) => <Tr key={item.objectId}>
-                <Td><Text fontSize="xs">{moment(item.createdAt).format(config.dateStrTm)}</Text></Td>
+                <Td><Text fontSize="xs">{moment(item.createdAt).format(uxConfig.dateStrTm)}</Text></Td>
                 <Td>
                   <Popover>
                     <PopoverTrigger>

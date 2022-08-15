@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Button, Link, Badge, Flex, Image, StackDivider,
   HStack, Heading, Center, Text
 } from '@chakra-ui/react';
-import { MENU } from './libs/util';
-import openSeaLogoIcon from './img/opensea-logo.png';
-import dataNFTIcon from './img/data-nft-icon.png';
-import { useNavigate } from 'react-router-dom';
+import { MENU } from 'libs/util';
+import openSeaLogoIcon from 'img/opensea-logo.png';
+import dataNFTIcon from 'img/data-nft-icon.png';
 
 export default function({setMenuItem}) {
   const navigate= useNavigate();
@@ -19,7 +19,7 @@ export default function({setMenuItem}) {
           <Center flexDirection="column">
             <Heading size="lg">Data NFTs <Badge colorScheme="teal" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" m={5} borderRadius="md" />
-            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline">
+            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
               <Box fontSize="sm" align="center" flex="1">Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability</Box>
               <Box fontSize="sm" align="center" flex="1">Allow for resale in secondary markets (like OpenSea) and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn a % as royalty</Box>
               <Box fontSize="sm" align="center" flex="1">To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.                
