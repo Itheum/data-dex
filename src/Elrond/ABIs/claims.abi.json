@@ -1,247 +1,286 @@
 {
-    "buildInfo": {
-        "rustc": {
-            "version": "1.61.0-nightly",
-            "commitHash": "38a0b81b1c32764d6a583a5efb6f306b8c44c503",
-            "commitDate": "2022-03-06",
-            "channel": "Nightly",
-            "short": "rustc 1.61.0-nightly (38a0b81b1 2022-03-06)"
-        },
-        "contractCrate": {
-            "name": "claims",
-            "version": "0.0.0",
-            "git_version": "d2dd214"
-        },
-        "framework": {
-            "name": "elrond-wasm",
-            "version": "0.31.1"
-        }
-    },
-    "name": "ClaimsContract",
-    "constructor": {
-        "inputs": [],
-        "outputs": []
-    },
-    "endpoints": [
-        {
-            "name": "setRewardToken",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "token",
-                    "type": "TokenIdentifier"
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "pause",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [],
-            "outputs": []
-        },
-        {
-            "name": "addClaim",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "payableInTokens": [
-                "*"
-            ],
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                },
-                {
-                    "name": "claim_type",
-                    "type": "ClaimType"
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "addClaims",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "payableInTokens": [
-                "*"
-            ],
-            "inputs": [
-                {
-                    "name": "claims",
-                    "type": "variadic<multi<Address,ClaimType,BigUint>>",
-                    "multi_arg": true
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "removeClaim",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                },
-                {
-                    "name": "claim_type",
-                    "type": "ClaimType"
-                },
-                {
-                    "name": "amount",
-                    "type": "BigUint"
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "removeClaims",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "claims",
-                    "type": "variadic<multi<Address,ClaimType,BigUint>>",
-                    "multi_arg": true
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "claim",
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "claim_type",
-                    "type": "optional<ClaimType>",
-                    "multi_arg": true
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "viewTokenIdentifier",
-            "mutability": "readonly",
-            "inputs": [],
-            "outputs": [
-                {
-                    "type": "TokenIdentifier"
-                }
-            ]
-        },
-        {
-            "name": "viewClaim",
-            "mutability": "readonly",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                },
-                {
-                    "name": "claim_type",
-                    "type": "ClaimType"
-                }
-            ],
-            "outputs": [
-                {
-                    "type": "BigUint"
-                }
-            ]
-        },
-        {
-            "name": "viewClaimAddDate",
-            "mutability": "readonly",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                },
-                {
-                    "name": "claim_type",
-                    "type": "ClaimType"
-                }
-            ],
-            "outputs": [
-                {
-                    "type": "u64"
-                }
-            ]
-        },
-        {
-            "name": "isPaused",
-            "mutability": "readonly",
-            "inputs": [],
-            "outputs": [
-                {
-                    "type": "bool"
-                }
-            ]
-        },
-        {
-            "name": "viewClaims",
-            "mutability": "readonly",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                }
-            ],
-            "outputs": [
-                {
-                    "type": "BigUint"
-                }
-            ]
-        },
-        {
-            "name": "viewClaimWithDate",
-            "mutability": "readonly",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                }
-            ],
-            "outputs": [
-                {
-                    "type": "List<Claim>"
-                }
-            ]
-        }
-    ],
-    "hasCallback": false,
-    "types": {
-        "Claim": {
-            "type": "struct",
-            "fields": [
-                {
-                    "name": "amount",
-                    "type": "BigUint"
-                },
-                {
-                    "name": "date",
-                    "type": "u64"
-                }
-            ]
-        },
-        "ClaimType": {
-            "type": "enum",
-            "variants": [
-                {
-                    "name": "Reward",
-                    "discriminant": 0
-                },
-                {
-                    "name": "Airdrop",
-                    "discriminant": 1
-                },
-                {
-                    "name": "Allocation",
-                    "discriminant": 2
-                }
-            ]
-        }
-    }
+  "buildInfo": {
+      "rustc": {
+          "version": "1.63.0-nightly",
+          "commitHash": "21e9336fe81a1fce364349bb7a35a0347c369f34",
+          "commitDate": "2022-06-18",
+          "channel": "Nightly",
+          "short": "rustc 1.63.0-nightly (21e9336fe 2022-06-18)"
+      },
+      "contractCrate": {
+          "name": "claims",
+          "version": "0.0.0",
+          "git_version": "086b7e4-modified"
+      },
+      "framework": {
+          "name": "elrond-wasm",
+          "version": "0.31.1"
+      }
+  },
+  "name": "ClaimsContract",
+  "constructor": {
+      "inputs": [],
+      "outputs": []
+  },
+  "endpoints": [
+      {
+          "name": "setClaimToken",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "token",
+                  "type": "TokenIdentifier"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "pause",
+          "mutability": "mutable",
+          "inputs": [],
+          "outputs": []
+      },
+      {
+          "name": "unpause",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [],
+          "outputs": []
+      },
+      {
+          "name": "addPrivilegedAddress",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "removePrivilegedAddress",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "addClaim",
+          "mutability": "mutable",
+          "payableInTokens": [
+              "*"
+          ],
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              },
+              {
+                  "name": "claim_type",
+                  "type": "ClaimType"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "addClaims",
+          "mutability": "mutable",
+          "payableInTokens": [
+              "*"
+          ],
+          "inputs": [
+              {
+                  "name": "claims",
+                  "type": "variadic<multi<Address,ClaimType,BigUint>>",
+                  "multi_arg": true
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "removeClaim",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              },
+              {
+                  "name": "claim_type",
+                  "type": "ClaimType"
+              },
+              {
+                  "name": "amount",
+                  "type": "BigUint"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "removeClaims",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "claims",
+                  "type": "variadic<multi<Address,ClaimType,BigUint>>",
+                  "multi_arg": true
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "claim",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "claim_type",
+                  "type": "optional<ClaimType>",
+                  "multi_arg": true
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "viewTokenIdentifier",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "TokenIdentifier"
+              }
+          ]
+      },
+      {
+          "name": "viewClaim",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              },
+              {
+                  "name": "claim_type",
+                  "type": "ClaimType"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "viewClaimModifyDate",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              },
+              {
+                  "name": "claim_type",
+                  "type": "ClaimType"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "u64"
+              }
+          ]
+      },
+      {
+          "name": "isPaused",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "bool"
+              }
+          ]
+      },
+      {
+          "name": "viewPrivilegedAddresses",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "variadic<Address>",
+                  "multi_result": true
+              }
+          ]
+      },
+      {
+          "name": "viewClaims",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "viewClaimWithDate",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "List<Claim>"
+              }
+          ]
+      }
+  ],
+  "hasCallback": false,
+  "types": {
+      "Claim": {
+          "type": "struct",
+          "fields": [
+              {
+                  "name": "amount",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "date",
+                  "type": "u64"
+              }
+          ]
+      },
+      "ClaimType": {
+          "type": "enum",
+          "variants": [
+              {
+                  "name": "Reward",
+                  "discriminant": 0
+              },
+              {
+                  "name": "Airdrop",
+                  "discriminant": 1
+              },
+              {
+                  "name": "Allocation",
+                  "discriminant": 2
+              }
+          ]
+      }
+  }
 }

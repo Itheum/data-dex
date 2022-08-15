@@ -8,9 +8,11 @@ export class ClaimsContract {
   constructor(networkId) {
     this.timeout = 5000;
     this.claimsContractAddress = contractsForChain(networkId).claims;
+    this.chainID = 'D';
 
     if (networkId === 'E1') {
       this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
+      this.chainID = '1';
     } else {
       this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
     }
@@ -67,7 +69,7 @@ export class ClaimsContract {
         .build(),
       receiver: new Address(this.claimsContractAddress),
       gasLimit: 6000000,
-      chainID: 'D',
+      chainID: this.chainID
     });
 
     await refreshAccount();
