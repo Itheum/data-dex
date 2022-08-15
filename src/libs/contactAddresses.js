@@ -41,7 +41,7 @@ const contracts = {
     },
     mainnet: {
       itheumTokenContractAddress: "ITHEUM-df6f26",
-      claimsContractAddress: "",
+      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqnsmrn5q08eqth3fy8el87sgdj0mkhwdwl2jqnf59cg",
       faucetContractAddress: "",
     },
   },

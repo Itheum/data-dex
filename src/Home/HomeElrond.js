@@ -42,7 +42,11 @@ export default function({ onRfMount }) {
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
+        try {
+          elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
+        } catch(e) {
+          console.log(e);
+        }
         elrondClaimsContract = new ClaimsContract(_chainMeta.networkId);
       }
     }
@@ -71,7 +75,7 @@ export default function({ onRfMount }) {
   }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
 
   const handleOnChainFaucet = async () => {
-    if (elrondAddress) {
+    if (elrondAddress && elrondFaucetContract) {
       elrondFaucetContract.sendActivateFaucetTransaction();
     }
   };

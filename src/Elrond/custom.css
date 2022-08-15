@@ -30,6 +30,10 @@
   color: var(--chakra-colors-gray-800);
 }
 
+.chakra-ui-light .dapp-core-ui-component.modal .btn-primary {
+  color: var(--chakra-colors-gray-100);
+}
+
 .chakra-ui-light .auth_wrap {
   background-color: var(--chakra-colors-gray-100);
 }
@@ -120,4 +124,12 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
 
 .chakra-ui-dark .extension-login_noExtensionButtonContent {
   color: #aaa;
+}
+
+.chakra-ui-dark .dapp-core-ui-component .table {
+  color: #fff;
+}
+
+.chakra-ui-light .dapp-core-ui-component .table {
+  color: #fff;
 }

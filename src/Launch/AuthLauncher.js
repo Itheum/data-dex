@@ -108,16 +108,16 @@ const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
             <Text fontSize="md">Please pick an Elrond environment</Text>            
           </PopoverHeader>
           <PopoverBody>
-              <Button size="sm" mr="2" onClick={() => {
-                setShowElrondEnvPicker(false);
-                onElrondEnvPick('elrond', 'devnet');
-              }}> Devnet
-              </Button>
-
               <Button size="sm" onClick={() => {
                 setShowElrondEnvPicker(false);
                 onElrondEnvPick('elrond', 'mainnet');
               }}> Mainnet
+              </Button>
+
+              <Button size="sm" ml="2" onClick={() => {
+                setShowElrondEnvPicker(false);
+                onElrondEnvPick('elrond', 'devnet');
+              }}> Devnet
               </Button>
           </PopoverBody>
         </PopoverContent>

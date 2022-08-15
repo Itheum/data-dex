@@ -10,7 +10,7 @@ export class FaucetContract {
     this.claimsContractAddress = contractsForChain(networkId).faucet;
 
     if (networkId === 'E1') {
-      throw new Error('Faucet not available on Elrond mainnet')
+      throw new Error('Faucet not available on Elrond mainnet');
     } else {
       this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
     }

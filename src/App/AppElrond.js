@@ -104,7 +104,7 @@ function App({ appConfig }) {
         return;
       }
 
-      // we set the "active elrond wallet", we can use this to prvent the Maiar App delayed approve bug 
+      // we set the "active elrond wallet", we can use this to prevent the Maiar App delayed approve bug 
       // ... where wallets sessions can be swapped - https://github.com/Itheum/data-dex/issues/95
       // ... if we detect loggedInActiveElrondWallet is NOT null then we abort and logout the user (see above)
       setLoggedInActiveElrondWallet(elrondAddress);
@@ -135,7 +135,6 @@ function App({ appConfig }) {
 
       if (!SUPPORTED_CHAINS.includes(networkId)) {
         setAlertIsOpen(true);
-        itheumTokenBalanceUpdate(); // let's also show toke balances for Elrond mainnet (1/8/22 mainnet is not supported)
       } else {
         itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
