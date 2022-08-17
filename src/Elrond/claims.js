@@ -4,7 +4,7 @@ import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import jsonData from './ABIs/claims.abi.json';
 import { contractsForChain } from 'libs/util';
 
-export class ClaimsContract {  
+export class ClaimsContract {
   constructor(networkId) {
     this.timeout = 5000;
     this.claimsContractAddress = contractsForChain(networkId).claims;
@@ -41,7 +41,7 @@ export class ClaimsContract {
       if (returnCode && returnCode.isSuccess()) {
         firstValue.valueOf().forEach((item, index) => {
           result.push({
-            amount: item.amount.toNumber(),
+            amount: item.amount,
             date: item.date.toNumber() * 1000,
           });
         });
@@ -50,13 +50,13 @@ export class ClaimsContract {
       } else {
         const nonOKErr = new Error('getClaims returnCode returned a non OK value');
         console.error(nonOKErr);
-        
-        return {error: nonOKErr};
+
+        return { error: nonOKErr };
       }
     } catch (error) {
       console.error(error);
 
-      return {error};
+      return { error };
     }
   }
 
@@ -69,7 +69,7 @@ export class ClaimsContract {
         .build(),
       receiver: new Address(this.claimsContractAddress),
       gasLimit: 6000000,
-      chainID: this.chainID
+      chainID: this.chainID,
     });
 
     await refreshAccount();

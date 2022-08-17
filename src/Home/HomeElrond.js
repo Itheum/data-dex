@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Box, Stack } from "@chakra-ui/layout";
-import { 
-  Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
-  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
+import React, { useState, useEffect } from 'react';
+import { Box, Stack } from '@chakra-ui/layout';
+import { Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
 import { WarningTwoIcon } from '@chakra-ui/icons';
-import moment from "moment";
-import { progInfoMeta, uxConfig, debugui } from "libs/util";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
-import imgProgGaPa from "img/prog-gaming.jpg";
-import imgProgRhc from "img/prog-rhc.png";
-import imgProgWfh from "img/prog-wfh.png";
-import myNFMe from "img/my-nfme.png";
-import ClaimModalElrond from "ClaimModel/ClaimModalElrond";
-import { useUser } from "store/UserContext";
-import { useChainMeta } from "store/ChainMetaContext";
-import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
-import { FaucetContract } from "Elrond/faucet";
-import { ClaimsContract } from "Elrond/claims";
-import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from "@elrondnetwork/dapp-core";
+import moment from 'moment';
+import { progInfoMeta, uxConfig, debugui } from 'libs/util';
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
+import imgProgGaPa from 'img/prog-gaming.jpg';
+import imgProgRhc from 'img/prog-rhc.png';
+import imgProgWfh from 'img/prog-wfh.png';
+import myNFMe from 'img/my-nfme.png';
+import ClaimModalElrond from 'ClaimModel/ClaimModalElrond';
+import { useUser } from 'store/UserContext';
+import { useChainMeta } from 'store/ChainMetaContext';
+import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
+import { FaucetContract } from 'Elrond/faucet';
+import { ClaimsContract } from 'Elrond/claims';
+import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
+import { TokenPayment } from '@elrondnetwork/erdjs/out';
 
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
@@ -30,7 +29,7 @@ export default function({ onRfMount }) {
   const { address: elrondAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isElrondLoggedIn } = useGetLoginInfo();
-  
+
   const [learnMoreProd, setLearnMoreProg] = useState(null);
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(false);
@@ -44,7 +43,7 @@ export default function({ onRfMount }) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         try {
           elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
-        } catch(e) {
+        } catch (e) {
           console.log(e);
         }
         elrondClaimsContract = new ClaimsContract(_chainMeta.networkId);
@@ -54,7 +53,7 @@ export default function({ onRfMount }) {
 
   // S: Faucet
   useEffect(() => {
-    // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done... 
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's "false" we need check and prevent faucet from being used too often
     if (elrondAddress && elrondFaucetContract && !hasPendingTransactions) {
       elrondFaucetContract.getFaucetTime(elrondAddress).then((lastUsedTime) => {
@@ -81,7 +80,6 @@ export default function({ onRfMount }) {
   };
   // E: Faucet
 
-
   // S: Claims
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
@@ -91,7 +89,7 @@ export default function({ onRfMount }) {
   }, [elrondAddress, hasPendingTransactions, elrondClaimsContract]);
 
   // utility func to get claims balances from chain
-  const elrondClaimsBalancesUpdate = async() => {
+  const elrondClaimsBalancesUpdate = async () => {
     if (elrondAddress && isElrondLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         let claims = [
@@ -107,12 +105,12 @@ export default function({ onRfMount }) {
 
         if (!claims.error) {
           claims.forEach((claim) => {
-            claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+            claimBalanceValues.push(claim.amount.div(1e18).toNumber());
             claimBalanceDates.push(claim.date);
           });
         } else if (claims.error) {
           claimBalanceValues.push('-2', '-2', '-2'); // errors
-          
+
           if (!toast.isActive('er2')) {
             toast({
               id: 'er2',
@@ -122,7 +120,7 @@ export default function({ onRfMount }) {
               duration: null
             });
           }
-        } 
+        }
 
         setClaimsBalances({
           claimBalanceValues,
@@ -130,7 +128,7 @@ export default function({ onRfMount }) {
         });
       }
     }
-  }
+  };
   // E: Claims
 
   useEffect(() => {
@@ -242,7 +240,7 @@ export default function({ onRfMount }) {
             <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW={["300px", "initial"]}>
               <Stack p="5" h="360">
                 <Heading size="md">My Claims</Heading>
-                
+
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Rewards</Text>
@@ -254,7 +252,7 @@ export default function({ onRfMount }) {
                   </Button>
                   <ClaimModalElrond {...rewardsModalData} />
                 </HStack>
-                
+
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Airdrops</Text>
@@ -267,7 +265,7 @@ export default function({ onRfMount }) {
                   <ClaimModalElrond {...airdropsModalData} />
                 </HStack>
                 <Spacer />
-                
+
                 {claimsBalances.claimBalanceValues[2] > 0 && 
                   <Box h="40px">
                     <HStack spacing={30}>
@@ -315,7 +313,7 @@ export default function({ onRfMount }) {
               </Button>
             </Box>
           </Box>
-          
+
           <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
             <Image src={imgProgRhc} />
 
