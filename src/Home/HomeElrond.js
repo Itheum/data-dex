@@ -16,7 +16,6 @@ import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import { FaucetContract } from 'Elrond/faucet';
 import { ClaimsContract } from 'Elrond/claims';
 import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
-import { TokenPayment } from '@elrondnetwork/erdjs/out';
 
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
