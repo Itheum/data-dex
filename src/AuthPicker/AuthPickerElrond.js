@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import { Stack, Box, Text, Link, Wrap, Badge, Modal, ModalOverlay, ModalContent, 
-  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem, useBreakpointValue } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { DappUI } from "@elrondnetwork/dapp-core";
-import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
+  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem, useBreakpointValue } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { DappUI } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
 import { WALLETS } from 'libs/util';
 import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
@@ -21,7 +21,7 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
       clearAppSessions();
 
       await sleep(1);
-      window.location.replace("/");
+      window.location.replace('/');
     }
 
     if (window.location.pathname === '/unlock') {
@@ -89,11 +89,11 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
               </Box>
 
               <Text fontSize="sm">
-                By logging in, you are agreeing to the{" "}
+                By logging in, you are agreeing to the{' '}
                 <Link href="https://itheum.com/termsofuse" isExternal>
                   Terms of Use <ExternalLinkIcon mx="2px" />
-                </Link>{" "}
-                &{" "}
+                </Link>{' '}
+                &{' '}
                 <Link href="https://itheum.com/privacypolicy" isExternal>
                   Privacy Policy <ExternalLinkIcon mx="2px" />
                 </Link>

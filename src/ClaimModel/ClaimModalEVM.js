@@ -1,16 +1,16 @@
-import { useMoralis } from "react-moralis";
+import { useMoralis } from 'react-moralis';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, 
   ModalCloseButton, HStack, Text, Spacer, Button, Link, Progress, CloseButton, Stack, 
-  Alert, AlertIcon, AlertTitle, useToast, useBreakpointValue } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import ShortAddress from "UtilComps/ShortAddress";
-import React, { useState, useEffect } from "react";
-import { uxConfig, sleep } from "libs/util";
-import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from "libs/util";
-import { ABIS } from "EVM/ABIs";
-import { useChainMeta } from "store/ChainMetaContext";
+  Alert, AlertIcon, AlertTitle, useToast, useBreakpointValue } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+import ShortAddress from 'UtilComps/ShortAddress';
+import React, { useState, useEffect } from 'react';
+import { uxConfig, sleep } from 'libs/util';
+import { CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER } from 'libs/util';
+import { ABIS } from 'EVM/ABIs';
+import { useChainMeta } from 'store/ChainMetaContext';
 
-const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimType, onRefreshClaimsBalance }) => {
+const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, onRefreshClaimsBalance }) => {
   const {
     Moralis: { web3Library: ethers }, web3: web3Provider
   } = useMoralis();
@@ -30,7 +30,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
       if (txHashClaim && txConfirmationClaim === uxConfig.txConfirmationsNeededLrg) {
         toast({
           title: `Congrats! you have claimed your tokens for ${title}`,
-          status: "success",
+          status: 'success',
           duration: 6000,
           isClosable: true,
         });
@@ -60,7 +60,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
       if (txReceipt.status) {
         setTxConfirmationClaim(2);
       } else {
-        const txErr = new Error("Claim Contract Error on method claimDeposit");
+        const txErr = new Error('Claim Contract Error on method claimDeposit');
         console.error(txErr);
         setTxErrorClaim(txErr);
       }
@@ -105,18 +105,18 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
         <ModalBody pb={5}>
           <Stack spacing="5" mb="5">
             <Stack>
-              <Text color="gray" as="b" fontSize={"md"}>
+              <Text color="gray" as="b" fontSize="md">
                 {tag1}:
-              </Text>{" "}
-              <Text fontSize={"md"}>
+              </Text>{' '}
+              <Text fontSize="md">
                 {value1} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Text>
             </Stack>
             <Stack>
-              <Text color="gray" as="b" fontSize={"md"}>
+              <Text color="gray" as="b" fontSize="md">
                 {tag2}:
-              </Text>{" "}
-              <Text fontSize={"md"}>{value2}</Text>
+              </Text>{' '}
+              <Text fontSize="md">{value2}</Text>
             </Stack>
           </Stack>
 
@@ -128,7 +128,7 @@ const ClaimModal = ({isOpen, onClose, title, tag1, value1, tag2, value2, claimTy
                 <Text fontSize="sm">Transaction </Text>
                 <ShortAddress address={txHashClaim} />
                 <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashClaim}`} isExternal>
-                  {" "}
+                  {' '}
                   <ExternalLinkIcon mx="2px" />
                 </Link>
               </HStack>

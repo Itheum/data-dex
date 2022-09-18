@@ -9,7 +9,7 @@ import { MENU } from 'libs/util';
 import openSeaLogoIcon from 'img/opensea-logo.png';
 import dataNFTIcon from 'img/data-nft-icon.png';
 
-export default function({setMenuItem}) {
+export default function({ setMenuItem }) {
   const navigate= useNavigate();
   
   return (
@@ -19,7 +19,7 @@ export default function({setMenuItem}) {
           <Center flexDirection="column">
             <Heading size="lg">Data NFTs <Badge colorScheme="teal" fontSize="0.5em">Beta</Badge></Heading>
             <Image src={dataNFTIcon} boxSize="150px" m={5} borderRadius="md" />
-            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
+            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={['column', 'initial']}>
               <Box fontSize="sm" align="center" flex="1">Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability</Box>
               <Box fontSize="sm" align="center" flex="1">Allow for resale in secondary markets (like OpenSea) and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn a % as royalty</Box>
               <Box fontSize="sm" align="center" flex="1">To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.                
@@ -27,8 +27,8 @@ export default function({setMenuItem}) {
             </HStack>
             
             <HStack spacing="5" mt="10">
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTMINE); navigate("wallet");}}>Data NFT Wallet</Button>
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTALL); navigate("marketplace");}}>Data NFT Marketplace</Button>
+              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTMINE); navigate('wallet');}}>Data NFT Wallet</Button>
+              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTALL); navigate('marketplace');}}>Data NFT Marketplace</Button>
             </HStack>
 
             <Stack mt="10" align="center">

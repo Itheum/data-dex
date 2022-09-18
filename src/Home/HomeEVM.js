@@ -1,37 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { useMoralis, useMoralisCloudFunction } from "react-moralis";
-import { Box, Stack } from "@chakra-ui/layout";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import React, { useState, useEffect } from 'react';
+import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
+import { Box, Stack } from '@chakra-ui/layout';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { 
   Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, 
   Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, 
   ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, 
-  WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
-import moment from "moment";
-import ShortAddress from "UtilComps/ShortAddress";
-import { progInfoMeta, uxConfig, sleep } from "libs/util";
-import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
-import { ABIS } from "EVM/ABIs";
-import imgProgGaPa from "img/prog-gaming.jpg";
-import imgProgRhc from "img/prog-rhc.png";
-import imgProgWfh from "img/prog-wfh.png";
-import myNFMe from "img/my-nfme.png";
-import ClaimModalEVM from "ClaimModel/ClaimModalEVM";
-import { useUser } from "store/UserContext";
-import { useChainMeta } from "store/ChainMetaContext";
-import ChainSupportedInput from "UtilComps/ChainSupportedInput";
-import { useNavigate } from "react-router-dom";
-import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
+  WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
+import moment from 'moment';
+import ShortAddress from 'UtilComps/ShortAddress';
+import { progInfoMeta, uxConfig, sleep } from 'libs/util';
+import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
+import { ABIS } from 'EVM/ABIs';
+import imgProgGaPa from 'img/prog-gaming.jpg';
+import imgProgRhc from 'img/prog-rhc.png';
+import imgProgWfh from 'img/prog-wfh.png';
+import myNFMe from 'img/my-nfme.png';
+import ClaimModalEVM from 'ClaimModel/ClaimModalEVM';
+import { useUser } from 'store/UserContext';
+import { useChainMeta } from 'store/ChainMetaContext';
+import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
+import { useNavigate } from 'react-router-dom';
+import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 
-export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheumAccount, itheumAccount }) {
+export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheumAccount, itheumAccount }) {
   const toast = useToast();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
-  const { user, isWeb3Enabled, Moralis: { web3Library: ethers }} = useMoralis();
+  const { user, isWeb3Enabled, Moralis: { web3Library: ethers } } = useMoralis();
   const { web3: web3Provider } = useMoralis();
-  const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction("loadTestData", {}, { autoFetch: false });
+  const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction('loadTestData', {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
   const [learnMoreProd, setLearnMoreProg] = useState(null);
@@ -49,9 +49,9 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
       const response = JSON.parse(decodeURIComponent(atob(dataCfTestData)));
 
       toast({
-        title: "Congrats! an itheum test account has been linked",
-        description: "You can now advertise your data on the Data DEX",
-        status: "success",
+        title: 'Congrats! an itheum test account has been linked',
+        description: 'You can now advertise your data on the Data DEX',
+        status: 'success',
         duration: 6000,
         isClosable: true,
       });
@@ -68,7 +68,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
       if (txHashFaucet && txConfirmationFaucet === uxConfig.txConfirmationsNeededLrg) {
         toast({
           title: `Congrats! the faucet has sent you some ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`,
-          status: "success",
+          status: 'success',
           duration: 6000,
           isClosable: true,
         });
@@ -86,10 +86,10 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
     const tokenContract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
 
     const decimals = 18;
-    const tokenInPrecision = ethers.utils.parseUnits("50.0", decimals).toHexString();
+    const tokenInPrecision = ethers.utils.parseUnits('50.0', decimals).toHexString();
 
     try {
-      const txResponse = await tokenContract.faucet(user.get("ethAddress"), tokenInPrecision);
+      const txResponse = await tokenContract.faucet(user.get('ethAddress'), tokenInPrecision);
 
       // show a nice loading animation to user
       setTxHashFaucet(txResponse.hash);
@@ -105,7 +105,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
       if (txReceipt.status) {
         setTxConfirmationFaucet(2);
       } else {
-        const txErr = new Error("Token Contract Error on method faucet");
+        const txErr = new Error('Token Contract Error on method faucet');
         console.error(txErr);
 
         setTxErrorFaucet(txErr);
@@ -203,10 +203,10 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
         onRefreshTokenBalance();
       }
     },
-    title: "Rewards",
-    tag1: "Total Available",
+    title: 'Rewards',
+    tag1: 'Total Available',
     value1: claimsBalances.claimBalanceValues[0],
-    tag2: "Last Deposited on",
+    tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
     onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
@@ -222,10 +222,10 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
         onRefreshTokenBalance();
       }
     },
-    title: "Airdrops",
-    tag1: "Total Available",
+    title: 'Airdrops',
+    tag1: 'Total Available',
     value1: claimsBalances.claimBalanceValues[1],
-    tag2: "Last Deposited on",
+    tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
     onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
@@ -241,10 +241,10 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
         onRefreshTokenBalance();
       }
     },
-    title: "Allocations",
-    tag1: "Total Available",
+    title: 'Allocations',
+    tag1: 'Total Available',
     value1: claimsBalances.claimBalanceValues[2],
-    tag2: "Last Deposited on",
+    tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
     onRefreshClaimsBalance: web3_evmClaimsBalancesUpdate
@@ -265,10 +265,10 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
               <Alert>
                 <Stack>
                   <AlertTitle fontSize="md">
-                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{" "}
+                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{' '}
                     <Link href="https://itheum.com" isExternal>
                       itheum.com
-                    </Link>{" "}
+                    </Link>{' '}
                     Data CAT account
                   </AlertTitle>
                   <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
@@ -304,7 +304,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                 variant="outline"
                 onClick={() => {
                   setMenuItem(2);
-                  navigate("/selldata");
+                  navigate('/selldata');
                 }}
               >
                 Trade My Data
@@ -329,7 +329,7 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                     <Text fontSize="sm">Transaction </Text>
                     <ShortAddress address={txHashFaucet} />
                     <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
-                      {" "}
+                      {' '}
                       <ExternalLinkIcon mx="2px" />
                     </Link>
                   </HStack>
@@ -372,8 +372,8 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
               <Spacer />
               <HStack spacing={50}>
                 <Text>Rewards</Text>
-                <Button disabled={claimsBalances.claimBalanceValues[0] === "-1" || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                  {claimsBalances.claimBalanceValues[0] !== "-1" ? claimsBalances.claimBalanceValues[0] : <Spinner size="xs" />}
+                <Button disabled={claimsBalances.claimBalanceValues[0] === '-1' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  {claimsBalances.claimBalanceValues[0] !== '-1' ? claimsBalances.claimBalanceValues[0] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...rewardsModalData} />
               </HStack>
@@ -381,8 +381,8 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
               <Spacer />
               <HStack spacing={50}>
                 <Text>Airdrops</Text>
-                <Button disabled={claimsBalances.claimBalanceValues[1] === "-1" || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                  {claimsBalances.claimBalanceValues[1] !== "-1" ? claimsBalances.claimBalanceValues[1] : <Spinner size="xs" />}
+                <Button disabled={claimsBalances.claimBalanceValues[1] === '-1' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  {claimsBalances.claimBalanceValues[1] !== '-1' ? claimsBalances.claimBalanceValues[1] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...airdropsModalData} />
               </HStack>
@@ -392,8 +392,8 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                 <Box h="40px">
                   <HStack spacing={30}>
                 <Text>Allocations</Text>
-                <Button disabled={claimsBalances.claimBalanceValues[2] === "-1" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                  {claimsBalances.claimBalanceValues[2] !== "-1" ? claimsBalances.claimBalanceValues[2] : <Spinner size="xs" />}
+                <Button disabled={claimsBalances.claimBalanceValues[2] === '-1' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                  {claimsBalances.claimBalanceValues[2] !== '-1' ? claimsBalances.claimBalanceValues[2] : <Spinner size="xs" />}
                 </Button>
                 <ClaimModalEVM {...allocationsModalData} />
                   </HStack>
@@ -419,14 +419,14 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                   Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {" "}
+                  {' '}
                   Live
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('gdc')}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae')}>
                 Join Now
               </Button>
             </Box>
@@ -441,11 +441,11 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                   Red Heart Challenge
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {" "}
+                  {' '}
                   Live
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
                 Learn More
               </Button>
               <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`)}>
@@ -463,14 +463,14 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                   Wearables Fitness and Activity
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {" "}
+                  {' '}
                   Coming Soon
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('wfa')}>
                 Learn More
               </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
                 Join Now
               </Button>
             </Box>
@@ -490,25 +490,25 @@ export default function({onRfMount, setMenuItem, onRefreshTokenBalance, onItheum
                 <Stack>
                   <Text color="gray" as="b">
                     Delivered Via:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].medium}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Data Collected:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].data}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     App Outcome:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].outcome}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Target Buyers:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
                 </Stack>
               </Stack>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export const useLocalStorage = (storageKey, fallbackState) => {
   // https://www.robinwieruch.de/local-storage-react/

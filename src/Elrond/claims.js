@@ -51,12 +51,12 @@ export class ClaimsContract {
         const nonOKErr = new Error('getClaims returnCode returned a non OK value');
         console.error(nonOKErr);
         
-        return {error: nonOKErr};
+        return { error: nonOKErr };
       }
     } catch (error) {
       console.error(error);
 
-      return {error};
+      return { error };
     }
   }
 

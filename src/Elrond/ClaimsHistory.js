@@ -4,10 +4,10 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
   TableContainer, Table, Thead, Tr, Th, Tbody, Td, Tfoot, useToast, useBreakpointValue } from '@chakra-ui/react';
 import { getClaimTransactions, getTransactionLink } from './api';
-import { useChainMeta } from "store/ChainMetaContext";
+import { useChainMeta } from 'store/ChainMetaContext';
 import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 
-export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseChaimsHistory}) {
+export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseChaimsHistory }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const [elrondClaims, setElrondClaims] = useState([]);
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
@@ -16,7 +16,7 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
 
   useEffect(() => {
     fetchElrondClaims();
-  },[]);
+  }, []);
 
   const fetchElrondClaims = async () => {
     const transactions = await getClaimTransactions(elrondAddress, _chainMeta.contracts.claims, networkId);
@@ -76,7 +76,7 @@ export default function ChaimsHistory({elrondAddress, networkId, onAfterCloseCha
                       <Link fontSize="sm" href={getTransactionLink(networkId, item.hash)} isExternal>
                         <ExternalLinkIcon mx="2px" /> {item.hash.slice(0, 5)}...{item.hash.slice(item.hash.length - 5, item.hash.length)}
                       </Link>
-                      {item.status === "success" ? '' : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
+                      {item.status === 'success' ? '' : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
                     </Td>
                     <Td><Text fontSize="sm">{item.claimType}</Text></Td>
                     <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10, 18).toFixed(2)}</Text></Td>

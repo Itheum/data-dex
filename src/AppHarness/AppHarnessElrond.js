@@ -1,5 +1,5 @@
-import { useGetAccountInfo } from "@elrondnetwork/dapp-core";
-import AppElrond from "App/AppElrond";
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import AppElrond from 'App/AppElrond';
 
 function AppHarnessElrond({ launchEnvironment }) {
   const { address: elrondAddress } = useGetAccountInfo();

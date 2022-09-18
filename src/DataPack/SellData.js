@@ -14,14 +14,14 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { FaUncharted } from "react-icons/fa";
-import { AiOutlinePicture } from "react-icons/ai";
-import { GiVintageRobot } from "react-icons/gi";
-import { MdOutlinePattern } from "react-icons/md";
+import { FaUncharted } from 'react-icons/fa';
+import { AiOutlinePicture } from 'react-icons/ai';
+import { GiVintageRobot } from 'react-icons/gi';
+import { MdOutlinePattern } from 'react-icons/md';
 
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
 import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from 'libs/util';
-import { ABIS } from "EVM/ABIs";
+import { ABIS } from 'EVM/ABIs';
 import ShortAddress from 'UtilComps/ShortAddress';
 import IconButton from 'UtilComps/IconButton';
 import { useChainMeta } from 'store/ChainMetaContext';
@@ -54,10 +54,10 @@ const rejectStyle = {
   borderColor: '#ff1744'
 };
 
-export default function({onRfMount, itheumAccount}) {
+export default function({ onRfMount, itheumAccount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { user } = useMoralis();
-  const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
+  const { web3: web3Provider, Moralis: { web3Library: ethers } } = useMoralis();
   const toast = useToast();
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerDataNFTDesc, setSellerDataNFTDesc] = useState('');
@@ -67,8 +67,8 @@ export default function({onRfMount, itheumAccount}) {
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
   const [termsOfUseId, setTermsOfUseId] = useState('2');
-  const [saveProgress, setSaveProgress] = useState({s1: 0, s2: 0, s3: 0, s4: 0});
-  const [saveProgressNFT, setSaveProgressNFT] = useState({n1: 0, n2: 0, n3: 0});
+  const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0, s4: 0 });
+  const [saveProgressNFT, setSaveProgressNFT] = useState({ n1: 0, n2: 0, n3: 0 });
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpen, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
@@ -92,7 +92,7 @@ export default function({onRfMount, itheumAccount}) {
     onOpenDrawer();
 
     if (programId) {
-      const selObj = {...itheumAccount.programsAllocation.find(i => i.program === programId), ...itheumAccount._lookups.programs[programId]};
+      const selObj = { ...itheumAccount.programsAllocation.find(i => i.program === programId), ...itheumAccount._lookups.programs[programId] };
       setCurrSellObject(selObj);
 
       fetchData(selObj);
@@ -103,7 +103,7 @@ export default function({onRfMount, itheumAccount}) {
 
   const fetchData = async selObj => {
     const myHeaders = new Headers();
-    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY);
+    myHeaders.append('authorization', process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY);
 
     const requestOptions = {
       method: 'GET',
@@ -141,7 +141,7 @@ export default function({onRfMount, itheumAccount}) {
     isLoading: loadingCfHashData,
     fetch: doCfHashData,
     data: dataCfHashData
-  } = useMoralisCloudFunction("saveSellerDataToFile", { sellerData }, { autoFetch: false });
+  } = useMoralisCloudFunction('saveSellerDataToFile', { sellerData }, { autoFetch: false });
 
   const {
     error: errFileSave,
@@ -163,7 +163,7 @@ export default function({onRfMount, itheumAccount}) {
 
   useEffect(async () => {
     if (dataFileSave && !loadingFileSave) {
-      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s1: 1}));
+      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
 
       await doCfHashData(); // get the hash of the file
     }
@@ -171,7 +171,7 @@ export default function({onRfMount, itheumAccount}) {
 
   useEffect(async () => {
     if (NFTMetaDataFile && !loadingNFTMetaDataFile) {
-      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n1: 1}));
+      setSaveProgressNFT(prevSaveProgress => ({ ...prevSaveProgress, n1: 1 }));
 
       await web3_dnftCreateNFT(NFTMetaDataFile.url());
     }
@@ -186,7 +186,7 @@ export default function({onRfMount, itheumAccount}) {
 
       await savedDataNFTMoralis.save();
       
-      setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n3: 1}));
+      setSaveProgressNFT(prevSaveProgress => ({ ...prevSaveProgress, n3: 1 }));
 
       sleep(3);
       closeProgressModal();
@@ -200,21 +200,20 @@ export default function({onRfMount, itheumAccount}) {
   useEffect(async () => {
     // if 1st time, then these vars come as [] or null
     if (dataCfHashData && !Array.isArray(dataCfHashData)) {
-      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s2: 1}));
+      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
-      const {dataHash} = dataCfHashData;
+      const { dataHash } = dataCfHashData;
 
       if (dataHash) {
         if (!drawerInMintNFT) {
           // create the datapack object
-          const newDataPack = {...dataTemplates.dataPack, 
+          const newDataPack = { ...dataTemplates.dataPack, 
             dataPreview: sellerDataPreview,
             sellerEthAddress: user.get('ethAddress'),
             dataHash,
             dataFile: dataFileSave,
             termsOfUseId,
-            txNetworkId: _chainMeta.networkId
-          };
+            txNetworkId: _chainMeta.networkId };
 
           // if core programID is available then link it
           if (currSellObject) {
@@ -226,7 +225,7 @@ export default function({onRfMount, itheumAccount}) {
           setSavedDataPackMoralis(newPack);
         } else {
           // create the dataNFT object
-          const newDataNFT = {...dataTemplates.dataNFT, 
+          const newDataNFT = { ...dataTemplates.dataNFT, 
             dataPreview: sellerDataNFTDesc,
             nftName: sellerDataPreview,
             feeInMyda: dataNFTFeeInMyda,
@@ -235,8 +234,7 @@ export default function({onRfMount, itheumAccount}) {
             dataFile: dataFileSave,
             termsOfUseId,
             txNetworkId: _chainMeta.networkId,
-            txNFTContract: _chainMeta.contracts.dnft
-          };
+            txNFTContract: _chainMeta.contracts.dnft };
 
           // if core programID is available then link it
           if (currSellObject) {
@@ -258,7 +256,7 @@ export default function({onRfMount, itheumAccount}) {
 
   useEffect(async () => {
     if (savedDataPackMoralis && savedDataPackMoralis.id && savedDataPackMoralis.get('dataHash')) {
-      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s3: 1}));
+      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
 
       web3_ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
     }
@@ -277,16 +275,15 @@ export default function({onRfMount, itheumAccount}) {
 
       setDataNFTImg(NFTImgUrl);
 
-      const newNFTMetaDataFile = {...dataTemplates.dataNFTMetaDataFile, 
+      const newNFTMetaDataFile = { ...dataTemplates.dataNFTMetaDataFile, 
         name: sellerDataPreview,
         description: sellerDataNFTDesc,
         image: NFTImgUrl,
-        external_url: `https://datadex.itheum.com/datanfts/marketplace/${savedDataNFTMoralis.id}`
-      };
+        external_url: `https://datadex.itheum.com/datanfts/marketplace/${savedDataNFTMoralis.id}` };
 
       newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
 
-      await saveNFTMetaDataFile("metadata.json", {base64 : btoa(JSON.stringify(newNFTMetaDataFile))});
+      await saveNFTMetaDataFile('metadata.json', { base64 : btoa(JSON.stringify(newNFTMetaDataFile)) });
     }
   }, [savedDataNFTMoralis]);
 
@@ -298,7 +295,7 @@ export default function({onRfMount, itheumAccount}) {
 
       await savedDataPackMoralis.save();
       
-      setSaveProgress(prevSaveProgress => ({...prevSaveProgress, s4: 1}));
+      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
 
       sleep(3);
       closeProgressModal();
@@ -338,7 +335,7 @@ export default function({onRfMount, itheumAccount}) {
           5) Update the Data Pack in Moralis with the transactionHash (s4)
         */
 
-        await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
+        await saveFile('sellerDatafile.json', { base64 : btoa(sellerData) });
 
         return;
       } catch(e) {
@@ -366,7 +363,7 @@ export default function({onRfMount, itheumAccount}) {
 
       onProgressModalOpen();
 
-      await saveFile("sellerDatafile.json", {base64 : btoa(sellerData)});
+      await saveFile('sellerDatafile.json', { base64 : btoa(sellerData) });
     }
   }
 
@@ -421,7 +418,7 @@ export default function({onRfMount, itheumAccount}) {
       await sleep(2);
 
       if (txReceipt.status) {
-        setSaveProgressNFT(prevSaveProgress => ({...prevSaveProgress, n2: 1}));
+        setSaveProgressNFT(prevSaveProgress => ({ ...prevSaveProgress, n2: 1 }));
 
         setTxNFTConfirmation(2);
 
@@ -446,8 +443,8 @@ export default function({onRfMount, itheumAccount}) {
 
   function closeProgressModal() {
     toast({
-      title: "Data advertised for trade",
-      status: "success",
+      title: 'Data advertised for trade',
+      status: 'success',
       duration: 4000,
       isClosable: true,
     });
@@ -466,12 +463,12 @@ export default function({onRfMount, itheumAccount}) {
     if (file.size < 100) {
       return {
         code: 'file-too-small',
-        message: `file size needs to be larger than 100 bytes`
+        message: 'file size needs to be larger than 100 bytes'
       };
     } else if (file.size > 1572864) {
       return {
         code: 'file-too-big',
-        message: `file size needs to be smaller than 1.5MB (megabyte)`
+        message: 'file size needs to be smaller than 1.5MB (megabyte)'
       };
     }
   
@@ -712,7 +709,7 @@ export default function({onRfMount, itheumAccount}) {
               </HStack>
               
               {isArbirData && <>
-              <Box {...getRootProps({style})}>
+              <Box {...getRootProps({ style })}>
                 <input {...getInputProps()} />
                 <Text>Drag 'n' drop a .json file here, or click to select a file</Text>
               </Box>
@@ -729,7 +726,7 @@ export default function({onRfMount, itheumAccount}) {
               </Collapse>
 
               <Button onClick={handleCodeShowToggle} mt="1rem">
-                Show {showCode ? "Less" : "More"}
+                Show {showCode ? 'Less' : 'More'}
               </Button></>}
               
               <Stack mt="10" spacing="5">

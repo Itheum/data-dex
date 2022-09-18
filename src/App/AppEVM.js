@@ -9,7 +9,7 @@ import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
-import { IoConstructOutline } from "react-icons/io5";
+import { IoConstructOutline } from 'react-icons/io5';
 import SellData from 'DataPack/SellData';
 import BuyData from 'DataPack/BuyData';
 import PurchasedData from 'DataPack/PurchasedData';
@@ -27,15 +27,15 @@ import DataCoalitions from 'DataCoalition/DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { itheumTokenRoundUtil, sleep, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
+import { itheumTokenRoundUtil, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
-import { ABIS } from "EVM/ABIs";
+import { ABIS } from 'EVM/ABIs';
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { useSessionStorage } from 'libs/hooks';
 import logoSmlD from 'img/logo-sml-d.png';
 import logoSmlL from 'img/logo-sml-l.png';
-import { useMoralis } from "react-moralis";
+import { useMoralis } from 'react-moralis';
 
 const _chainMetaLocal = {};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
@@ -158,7 +158,7 @@ function App({ appConfig }) {
     let options = {
       chain: CHAIN_NAMES[_chainMetaLocal.networkId],
       address: _chainMetaLocal.contracts.itheumToken,
-      function_name: "decimals",
+      function_name: 'decimals',
       abi: ABIS.token,
     };
     
@@ -206,35 +206,35 @@ function App({ appConfig }) {
     <>
       {_user.isMoralisAuthenticated&& (
         <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
-          <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
+          <Flex h="100vh" w="100vw" direction={{ base: 'column', md: 'column' }}>
             <HStack h="10vh" p="5">
-              <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Image boxSize="50px" height="auto" src={colorMode === 'light' ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
 
-              <Heading display={["none", "initial"]}>
-                <Text fontSize={"sm"}>Itheum Data DEX</Text>
+              <Heading display={['none', 'initial']}>
+                <Text fontSize="sm">Itheum Data DEX</Text>
                 <Text fontSize="xx-small">{dataDexVersion}</Text>
               </Heading>
 
               <Spacer />
 
               <HStack>
-                <Box as="text" fontSize={["sm", "md"]} minWidth={"5.5rem"} align="center" p={"11.3px"} color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
+                <Box as="text" fontSize={['sm', 'md']} minWidth="5.5rem" align="center" p="11.3px" color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
                   {(tokenBal === -1) ? <Spinner size="xs" /> : 
                       (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}</>
                   }
                 </Box>
 
-                <Box display={["none", null, "block"]} fontSize={["xs", "md"]} align="center" p={"11.3px"} color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
-                  {chain || "..."}
+                <Box display={['none', null, 'block']} fontSize={['xs', 'md']} align="center" p="11.3px" color="rgb(243, 183, 30)" fontWeight="bold" bg="rgba(243, 132, 30, 0.05)" borderRadius="md">
+                  {chain || '...'}
                 </Box>
 
-                <Button display={["none", "initial"]} onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
+                <Button display={['none', 'initial']} onClick={toggleColorMode}>{colorMode === 'light' ? <MoonIcon /> : <SunIcon />}</Button>
               </HStack>
 
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
                   {screenBreakPoint === 'md' && <ShortAddress address={user.get('ethAddress')} fontSize="md" />}
-                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={["block", "none"]} />
+                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={['block', 'none']} />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup title='My Address Quick Copy'>
@@ -264,13 +264,13 @@ function App({ appConfig }) {
               </Menu>
             </HStack>
 
-            <HStack alignItems={["center", , "flex-start"]} flexDirection={["column", , "row"]} pt={5}>
+            <HStack alignItems={['center', , 'flex-start']} flexDirection={['column', , 'row']} pt={5}>
               <Box>
-                <Button display={["block", null, "none"]} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                <Button display={['block', null, 'none']} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
                   Main menu
                 </Button>
 
-                <Stack direction="column" spacing={4} display={[(showMobileMenu && "block") || "none", , "block"]}>
+                <Stack direction="column" spacing={4} display={[(showMobileMenu && 'block') || 'none', , 'block']}>
                   <HStack pl="3">
                     <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                       Terms of Use <ExternalLinkIcon mx="2px" />
@@ -282,7 +282,7 @@ function App({ appConfig }) {
 
                   <Flex direction="column" justify="space-between">
                     <Stack ml="15px" spacing={4}>
-                      <HStack justify={"center"} pr="10" opacity={.8}>
+                      <HStack justify="center" pr="10" opacity={.8}>
                         <IoConstructOutline />
                         <Text fontSize="xs" as="i">Feature Coming Soon</Text>
                       </HStack>
@@ -295,7 +295,7 @@ function App({ appConfig }) {
                         variant="solid"
                         onClick={() => {
                           setMenuItem(MENU.HOME);
-                          navigate("home");
+                          navigate('home');
                           setShowMobileMenu(false);
                         }}
                       >
@@ -311,7 +311,7 @@ function App({ appConfig }) {
                           variant="solid"
                           onClick={() => {
                             setMenuItem(MENU.SELL);
-                            navigate("selldata");
+                            navigate('selldata');
                             setShowMobileMenu(false);
                           }}
                         >
@@ -320,7 +320,7 @@ function App({ appConfig }) {
                       </ChainSupportedInput>
                     </Stack>
 
-                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path][1] : [-1]} allowToggle={true} w="230px" style={{ border: "solid 1px transparent" }}>
+                    <Accordion flexGrow="1" defaultIndex={path ? PATHS[path][1] : [-1]} allowToggle={true} w="230px" style={{ border: 'solid 1px transparent' }}>
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
@@ -336,7 +336,7 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.BUY}
                                 onClick={() => {
                                   setMenuItem(MENU.BUY);
-                                  navigate("datapacks/buydata");
+                                  navigate('datapacks/buydata');
                                   setShowMobileMenu(false);
                                 }}
                               >
@@ -349,7 +349,7 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.ADVERTISED}
                                 onClick={() => {
                                   setMenuItem(MENU.ADVERTISED);
-                                  navigate("datapacks/advertiseddata");
+                                  navigate('datapacks/advertiseddata');
                                   setShowMobileMenu(false);
                                 }}
                               >
@@ -362,7 +362,7 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.PURCHASED}
                                 onClick={() => {
                                   setMenuItem(MENU.PURCHASED);
-                                  navigate("datapacks/purchaseddata");
+                                  navigate('datapacks/purchaseddata');
                                   setShowMobileMenu(false);
                                 }}
                               >
@@ -375,7 +375,7 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.DATAPROOFS}
                                 onClick={() => {
                                   setMenuItem(MENU.DATAPROOFS);
-                                  navigate("datapacks/personaldataproof");
+                                  navigate('datapacks/personaldataproof');
                                   setShowMobileMenu(false);
                                 }}
                               >
@@ -401,12 +401,12 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
-                                    navigate("datanfts/wallet");
+                                    navigate('datanfts/wallet');
                                     setMenuItem(MENU.NFTMINE);
                                     setShowMobileMenu(false);
                                   } else {
                                     doSplashScreenShown(MENU.NFT);
-                                    navigate("datanfts");
+                                    navigate('datanfts');
                                     setMenuItem(MENU.NFTMINE);
                                     setShowMobileMenu(false);
                                   }
@@ -422,12 +422,12 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
-                                    navigate("datanfts/marketplace");
+                                    navigate('datanfts/marketplace');
                                     setMenuItem(MENU.NFTALL);
                                     setShowMobileMenu(false);
                                   } else {
                                     doSplashScreenShown(MENU.NFT);
-                                    navigate("datanfts");
+                                    navigate('datanfts');
                                     setMenuItem(MENU.NFTALL);
                                     setShowMobileMenu(false);
                                   }
@@ -455,12 +455,12 @@ function App({ appConfig }) {
                                 isDisabled={menuItem === MENU.COALITIONALL}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.COALITION]) {
-                                    navigate("datacoalitions/viewcoalitions");
+                                    navigate('datacoalitions/viewcoalitions');
                                     setMenuItem(MENU.COALITIONALL);
                                     setShowMobileMenu(false);
                                   } else {
                                     doSplashScreenShown(MENU.COALITION);
-                                    navigate("datacoalitions");
+                                    navigate('datacoalitions');
                                     setMenuItem(MENU.COALITION);
                                     setShowMobileMenu(false);
                                   }
@@ -488,7 +488,7 @@ function App({ appConfig }) {
                                 colorScheme="teal"
                                 onClick={() => {
                                   setMenuItem(MENU.TX);
-                                  navigate("utils/chaintransactions");
+                                  navigate('utils/chaintransactions');
                                   setShowMobileMenu(false);
                                 }}
                               >
@@ -513,7 +513,7 @@ function App({ appConfig }) {
                               isDisabled={menuItem === MENU.VAULT}
                               onClick={() => {
                                 setMenuItem(MENU.VAULT);
-                                navigate("labs/datavault");
+                                navigate('labs/datavault');
                                 setShowMobileMenu(false);
                               }}
                             >
@@ -524,7 +524,7 @@ function App({ appConfig }) {
                               isDisabled={menuItem === MENU.STREAM}
                               onClick={() => {
                                 setMenuItem(MENU.STREAM);
-                                navigate("labs/datastreams");
+                                navigate('labs/datastreams');
                                 setShowMobileMenu(false);
                               }}
                             >
@@ -535,7 +535,7 @@ function App({ appConfig }) {
                               isDisabled={menuItem === MENU.TRUSTEDCOMP}
                               onClick={() => {
                                 setMenuItem(MENU.TRUSTEDCOMP);
-                                navigate("labs/trustedcomputation");
+                                navigate('labs/trustedcomputation');
                                 setShowMobileMenu(false);
                               }}
                             >
@@ -549,13 +549,13 @@ function App({ appConfig }) {
                 </Stack>
               </Box>
 
-              <Box w={[null, "full"]}>
+              <Box w={[null, 'full']}>
                 <Routes>
-                  <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
-                  <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
-                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} itheumAccount={itheumAccount} />} />
+                  <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
+                  <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
+                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
-                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount("buyData")} onRefreshTokenBalance={handleRefreshTokenBalance} />} />
+                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshTokenBalance={handleRefreshTokenBalance} />} />
                     <Route path="advertiseddata" element={<AdvertisedData />} />
                     <Route path="purchaseddata" element={<PurchasedData />} />
                     <Route path="personaldataproof" element={<PersonalDataProofs />} />
@@ -588,7 +588,7 @@ function App({ appConfig }) {
                 <AlertDialogHeader fontSize="lg" fontWeight="bold"></AlertDialogHeader>
 
                 <AlertDialogBody>
-                  Sorry the <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{chain}</Badge> chain is currently not supported. We are working on it. You need to be on{" "}
+                  Sorry the <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{chain}</Badge> chain is currently not supported. We are working on it. You need to be on{' '}
                   {SUPPORTED_CHAINS.map((i) => (
                     <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">
                       {CHAINS[i]}

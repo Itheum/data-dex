@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Box, Stack } from "@chakra-ui/layout";
+import React, { useState, useEffect } from 'react';
+import { Box, Stack } from '@chakra-ui/layout';
 import { 
   Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
-  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
+  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
 import { WarningTwoIcon } from '@chakra-ui/icons';
-import moment from "moment";
-import { progInfoMeta, uxConfig, debugui } from "libs/util";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
-import imgProgGaPa from "img/prog-gaming.jpg";
-import imgProgRhc from "img/prog-rhc.png";
-import imgProgWfh from "img/prog-wfh.png";
-import myNFMe from "img/my-nfme.png";
-import ClaimModalElrond from "ClaimModel/ClaimModalElrond";
-import { useUser } from "store/UserContext";
-import { useChainMeta } from "store/ChainMetaContext";
-import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
-import { FaucetContract } from "Elrond/faucet";
-import { ClaimsContract } from "Elrond/claims";
-import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from "@elrondnetwork/dapp-core";
+import moment from 'moment';
+import { progInfoMeta, uxConfig, debugui } from 'libs/util';
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
+import imgProgGaPa from 'img/prog-gaming.jpg';
+import imgProgRhc from 'img/prog-rhc.png';
+import imgProgWfh from 'img/prog-wfh.png';
+import myNFMe from 'img/my-nfme.png';
+import ClaimModalElrond from 'ClaimModel/ClaimModalElrond';
+import { useUser } from 'store/UserContext';
+import { useChainMeta } from 'store/ChainMetaContext';
+import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
+import { FaucetContract } from 'Elrond/faucet';
+import { ClaimsContract } from 'Elrond/claims';
+import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
 
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
@@ -55,7 +55,7 @@ export default function({ onRfMount }) {
   // S: Faucet
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done... 
-    // ... so if it's "false" we need check and prevent faucet from being used too often
+    // ... so if it's 'false' we need check and prevent faucet from being used too often
     if (elrondAddress && elrondFaucetContract && !hasPendingTransactions) {
       elrondFaucetContract.getFaucetTime(elrondAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
@@ -160,10 +160,10 @@ export default function({ onRfMount }) {
     onClose: () => {
       onRewardsClose();
     },
-    title: "Rewards",
-    tag1: "Total Available",
+    title: 'Rewards',
+    tag1: 'Total Available',
     value1: claimsBalances.claimBalanceValues[0],
-    tag2: "Last Deposited on",
+    tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
     elrondClaimsContract
@@ -176,10 +176,10 @@ export default function({ onRfMount }) {
     onClose: () => {
       onAirdropClose();
     },
-    title: "Airdrops",
-    tag1: "Total Available",
+    title: 'Airdrops',
+    tag1: 'Total Available',
     value1: claimsBalances.claimBalanceValues[1],
-    tag2: "Last Deposited on",
+    tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
     elrondClaimsContract
@@ -192,10 +192,10 @@ export default function({ onRfMount }) {
     onClose: () => {
       onAllocationsClose();
     },
-    title: "Allocations",
-    tag1: "Total Available",
+    title: 'Allocations',
+    tag1: 'Total Available',
     value1: claimsBalances.claimBalanceValues[2],
-    tag2: "Last Deposited on",
+    tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
     elrondClaimsContract
@@ -239,16 +239,16 @@ export default function({ onRfMount }) {
           </Box>
 
           <ChainSupportedComponent feature={MENU.CLAIMS}>
-            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW={["300px", "initial"]}>
+            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW={['300px', 'initial']}>
               <Stack p="5" h="360">
                 <Heading size="md">My Claims</Heading>
                 
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Rewards</Text>
-                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === "-1" || claimsBalances.claimBalanceValues[0] === "-2" || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                    {(claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2") ? 
-                        claimsBalances.claimBalanceValues[0] : claimsBalances.claimBalanceValues[0] !== "-2" ? 
+                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === '-1' || claimsBalances.claimBalanceValues[0] === '-2' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                    {(claimsBalances.claimBalanceValues[0] !== '-1' && claimsBalances.claimBalanceValues[0] !== '-2') ? 
+                        claimsBalances.claimBalanceValues[0] : claimsBalances.claimBalanceValues[0] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
                     }
                   </Button>
@@ -258,9 +258,9 @@ export default function({ onRfMount }) {
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Airdrops</Text>
-                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === "-1" || claimsBalances.claimBalanceValues[1] === "-2" || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                    {(claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2") ? 
-                        claimsBalances.claimBalanceValues[1] : claimsBalances.claimBalanceValues[1] !== "-2" ? 
+                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === '-1' || claimsBalances.claimBalanceValues[1] === '-2' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                    {(claimsBalances.claimBalanceValues[1] !== '-1' && claimsBalances.claimBalanceValues[1] !== '-2') ? 
+                        claimsBalances.claimBalanceValues[1] : claimsBalances.claimBalanceValues[1] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
                     }
                   </Button>
@@ -272,9 +272,9 @@ export default function({ onRfMount }) {
                   <Box h="40px">
                     <HStack spacing={30}>
                       <Text>Allocations</Text>
-                      <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === "-1" || claimsBalances.claimBalanceValues[2] === "-2" || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                        {(claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2") ? 
-                            claimsBalances.claimBalanceValues[2] : claimsBalances.claimBalanceValues[2] !== "-2" ? 
+                      <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === '-1' || claimsBalances.claimBalanceValues[2] === '-2' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                        {(claimsBalances.claimBalanceValues[2] !== '-1' && claimsBalances.claimBalanceValues[2] !== '-2') ? 
+                            claimsBalances.claimBalanceValues[2] : claimsBalances.claimBalanceValues[2] !== '-2' ? 
                               <Spinner size="xs" /> : <WarningTwoIcon />
                         }
                       </Button>
@@ -303,14 +303,14 @@ export default function({ onRfMount }) {
                   Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {" "}
+                  {' '}
                   Live
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('gdc')}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae')}>
                 Join Now
               </Button>
             </Box>
@@ -325,14 +325,14 @@ export default function({ onRfMount }) {
                   Red Heart Challenge
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {" "}
+                  {' '}
                   Live
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge`)}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.com/redheartchallenge')}>
                 Join Now
               </Button>
             </Box>
@@ -347,14 +347,14 @@ export default function({ onRfMount }) {
                   Wearables Fitness and Activity
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {" "}
+                  {' '}
                   Coming Soon
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('wfa')}>
                 Learn More
               </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
                 Join Now
               </Button>
             </Box>
@@ -374,25 +374,25 @@ export default function({ onRfMount }) {
                 <Stack>
                   <Text color="gray" as="b">
                     Delivered Via:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].medium}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Data Collected:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].data}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     App Outcome:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].outcome}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Target Buyers:
-                  </Text>{" "}
+                  </Text>{' '}
                   <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
                 </Stack>
               </Stack>

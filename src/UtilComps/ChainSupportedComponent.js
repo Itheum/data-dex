@@ -1,7 +1,7 @@
 import { noChainSupport } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
-export default function ChainSupportedComponent({feature, children}) {
+export default function ChainSupportedComponent({ feature, children }) {
   const { chainMeta: _chainMeta } = useChainMeta();
 
   if (!noChainSupport(feature, _chainMeta.networkId)) {

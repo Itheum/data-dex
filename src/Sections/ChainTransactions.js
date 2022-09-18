@@ -16,20 +16,20 @@ import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const { user, Moralis: {web3Library: ethers} } = useMoralis();
+  const { user, Moralis: { web3Library: ethers } } = useMoralis();
   const { web3 } = useMoralis();
 
   const [allTx, setAllTx] = useState([]);
 
   const { data: advertiseEvents, error: errorAdvertiseEvents } = useMoralisQuery(CHAIN_TX_LIST[_chainMeta.networkId].advertiseEvents, query =>
-    query.descending("createdAt")
+    query.descending('createdAt')
   );
 
   const { fetch: fetchPurchaseEvents, data: purchaseEvents, error: errorPurchaseEvents, isLoading } = useMoralisQuery(
     CHAIN_TX_LIST[_chainMeta.networkId].purchaseEvents,
     query =>
       query
-        .descending("createdAt"),
+        .descending('createdAt'),
     [],
     { autoFetch: false },
   );
@@ -100,8 +100,8 @@ export default function() {
             <Tbody>
               {allTx.map((item) => <Tr key={item.id}>
                 <Td>
-                  <Badge borderRadius="full" px="2" colorScheme={isPurchasedEvent(item.className) && 'teal' || 'green' }>
-                    {isPurchasedEvent(item.className) && 'Data Purchased' || 'Advertised for Trade'}
+                  <Badge borderRadius="full" px="2" colorScheme={isPurchasedEvent(item.className) ? 'teal' : 'green' }>
+                    {isPurchasedEvent(item.className) ? 'Data Purchased' : 'Advertised for Trade'}
                   </Badge>
                 </Td>
                 <Td><Text fontSize="xs">{moment(item.createdAt).format(uxConfig.dateStrTm)}</Text></Td>

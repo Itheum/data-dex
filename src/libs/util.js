@@ -30,7 +30,7 @@ import {
   tokenContractAddress_Elrond_Mainnet,
   claimsContractAddress_Elrond_Mainnet,
   faucetContractAddress_Elrond_Mainnet,
-} from "./contactAddresses";
+} from './contactAddresses';
 
 export const contractsForChain = (networkId) => {
   const contracts = {
@@ -75,18 +75,17 @@ export const contractsForChain = (networkId) => {
       contracts.ddex = ddexContractAddress_testnetHarmony;
       contracts.dnft = dNFTContractAddress_testnetHarmony;
       break;
-      break;
     case 43113:
       contracts.itheumToken = tokenContractAddress_testnetAvalanche;
       contracts.ddex = ddexContractAddress_testnetAvalanche;
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
-    case "ED":
+    case 'ED':
       contracts.itheumToken = tokenContractAddress_Elrond_Devnet;
       contracts.claims = claimsContractAddress_Elrond_Devnet;
       contracts.faucet = faucetContractAddress_Elrond_Devnet;
       break;
-    case "E1":
+    case 'E1':
       contracts.itheumToken = tokenContractAddress_Elrond_Mainnet;
       contracts.claims = claimsContractAddress_Elrond_Mainnet;
       contracts.faucet = faucetContractAddress_Elrond_Mainnet;
@@ -99,59 +98,58 @@ export const contractsForChain = (networkId) => {
 export const uxConfig = {
   txConfirmationsNeededSml: 1,
   txConfirmationsNeededLrg: 2,
-  dateStr: "MMM Do YYYY",
-  dateStrTm: "MMM Do YYYY LT",
+  dateStr: 'MMM Do YYYY',
+  dateStrTm: 'MMM Do YYYY LT',
   elrondAPITimeoutMs: 10000
 };
 
 export const progInfoMeta = {
   rhc: {
-    name: "Red Heart Challenge",
-    desc: "Take this 3 week program and get unique insights into the health of your heart. This app uses a first of it’s kind technology to coach you through every step and to puts you in the center of the entire process.",
-    medium: "Telegram App",
-    outcome: "Data produced from this program can be used to assess the impact blood pressure, stress, diet and activity has on overall cardiovascular health.",
+    name: 'Red Heart Challenge',
+    desc: 'Take this 3 week program and get unique insights into the health of your heart. This app uses a first of it’s kind technology to coach you through every step and to puts you in the center of the entire process.',
+    medium: 'Telegram App',
+    outcome: 'Data produced from this program can be used to assess the impact blood pressure, stress, diet and activity has on overall cardiovascular health.',
     targetBuyer: 'Research Institutes, Drug Manufacturers, Health "Care Teams", Private Health Insurance',
-    data: "Blood Pressure (single arm and both arms), Stress Levels, Activity Levels, Diet Assessment",
-    url: "https://itheum.com/redheartchallenge",
-    dc: "Cardiovascular Health Data",
-    id: "70dc6bd0-59b0-11e8-8d54-2d562f6cba54",
+    data: 'Blood Pressure (single arm and both arms), Stress Levels, Activity Levels, Diet Assessment',
+    url: 'https://itheum.com/redheartchallenge',
+    dc: 'Cardiovascular Health Data',
+    id: '70dc6bd0-59b0-11e8-8d54-2d562f6cba54',
     canJoin: 1,
   },
   gdc: {
-    name: "Gamer Passport",
-    desc: "Calling all web3 gamers! The Gamer Passport app will empower you to claim and own your web3 gaming data as you move between games and guilds. You will then be able to attach it to your NFMe ID Avatar and trade your data with participants in the gaming industry.",
-    medium: "Data Adaptors",
-    outcome: "Data produced from this app can be used to power 'proof-of-play' and 'proof-of-community-reputation'",
-    targetBuyer: "Games, Game Platforms, Guilds, Guild Hubs, GameFi Platforms",
-    data: "Discord community score, on-chain gaming performance, on-chain game earnings, game earnings and spending patterns, HOLDing ability, game assets composition to earning patterns",
-    url: "https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae",
-    dc: "Gamer Passport Data",
-    id: "foo",
+    name: 'Gamer Passport',
+    desc: 'Calling all web3 gamers! The Gamer Passport app will empower you to claim and own your web3 gaming data as you move between games and guilds. You will then be able to attach it to your NFMe ID Avatar and trade your data with participants in the gaming industry.',
+    medium: 'Data Adaptors',
+    outcome: 'Data produced from this app can be used to power "proof-of-play" and "proof-of-community-reputation"',
+    targetBuyer: 'Games, Game Platforms, Guilds, Guild Hubs, GameFi Platforms',
+    data: 'Discord community score, on-chain gaming performance, on-chain game earnings, game earnings and spending patterns, HOLDing ability, game assets composition to earning patterns',
+    url: 'https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae',
+    dc: 'Gamer Passport Data',
+    id: 'foo',
     canJoin: 1,
   },
   wfa: {
-    name: "Wearables Fitness and Activity",
-    desc: "This ongoing program will automatically connect to your Strava account and will download your latest activity from wearables like FitBit, Garmin, TomTom. Strava has a large global user base (76 million users) so dataset will be large and uniform and be worth a lot.",
-    medium: "Telegram App + Strava API",
-    outcome: 'Data produced from this program is fully "normalised" and will be very valuable',
-    targetBuyer: "Researchers",
-    data: "Activity, Workouts",
-    url: "https://itheum.com/program",
-    dc: "Wearables Fitness and Activity Data",
-    id: "foo",
+    name: 'Wearables Fitness and Activity',
+    desc: 'This ongoing program will automatically connect to your Strava account and will download your latest activity from wearables like FitBit, Garmin, TomTom. Strava has a large global user base (76 million users) so dataset will be large and uniform and be worth a lot.',
+    medium: 'Telegram App + Strava API',
+    outcome: 'Data produced from this program is fully normalised and will be very valuable',
+    targetBuyer: 'Researchers',
+    data: 'Activity, Workouts',
+    url: 'https://itheum.com/program',
+    dc: 'Wearables Fitness and Activity Data',
+    id: 'foo',
     canJoin: 0,
   },
 };
 
 export const tmpProgIdMapping = {
-  "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": "Red Heart Challenge",
-  "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": "Hypertension Insights Intense",
-  "476ab840-1cb7-11e9-84fe-e935b365220a": "Blood Pressure OnDemand",
-  "2553c3b0-51b0-11e7-9bd2-2f33680a66b6": "Pregnancy Condition Monitoring",
-  "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": "Red Heart Challenge",
-  "183f0290-f726-11e7-9186-3bcb5c5d22db": "Chronic Wounds Healing Progress Tracker",
-  "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
-  "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
+  '70dc6bd0-59b0-11e8-8d54-2d562f6cba54': 'Red Heart Challenge',
+  'bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42': 'Hypertension Insights Intense',
+  '476ab840-1cb7-11e9-84fe-e935b365220a': 'Blood Pressure OnDemand',
+  '2553c3b0-51b0-11e7-9bd2-2f33680a66b6': 'Pregnancy Condition Monitoring',
+  '183f0290-f726-11e7-9186-3bcb5c5d22db': 'Chronic Wounds Healing Progress Tracker',
+  'ef62c220-50e1-11e7-9bd2-2f33680a66b6': 'Blood Pressure Tracker',
+  '48d7b020-eab0-11ea-a466-0334ff0e8bf2': 'OkPulse',
 };
 
 export const dataTemplates = {
@@ -188,12 +186,12 @@ export const dataTemplates = {
     txNetworkId: null,
   },
   dataNFTMetaDataFile: {
-    name: "",
-    description: "",
-    image: "",
-    external_url: "",
+    name: '',
+    description: '',
+    image: '',
+    external_url: '',
     properties: {
-      data_dex_nft_id: "",
+      data_dex_nft_id: '',
     },
   },
 };
@@ -260,43 +258,43 @@ export const PATHS = {
 };
 
 export const CHAINS = {
-  31337: "Localhost",
-  1: "Eth - Mainnet",
-  3: "Eth - Ropsten",
-  4: "Eth - Rinkeby",
-  42: "Eth - Kovan",
-  420: "Eth - Goerli",
-  137: "Matic - Mainnet",
-  80001: "Matic - Mumbai",
-  97: "BSC - Chapel",
-  56: "BSC - Mainnet",
-  1666700000: "Harmony - Testnet",
-  43113: "Avalanche - Testnet",
-  E1: "Elrond - Mainnet",
-  ED: "Elrond - Devnet",
+  31337: 'Localhost',
+  1: 'Eth - Mainnet',
+  3: 'Eth - Ropsten',
+  4: 'Eth - Rinkeby',
+  42: 'Eth - Kovan',
+  420: 'Eth - Goerli',
+  137: 'Matic - Mainnet',
+  80001: 'Matic - Mumbai',
+  97: 'BSC - Chapel',
+  56: 'BSC - Mainnet',
+  1666700000: 'Harmony - Testnet',
+  43113: 'Avalanche - Testnet',
+  E1: 'Elrond - Mainnet',
+  ED: 'Elrond - Devnet',
 };
 
 // these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)
 export const CHAIN_NAMES = {
-  31337: "localhost",
-  1: "eth",
-  3: "ropsten",
-  4: "rinkeby",
-  42: "kovan",
-  420: "goerli",
-  137: "matic",
-  80001: "mumbai",
-  97: "bsc testnet",
-  56: "bsc",
-  1666700000: "harmony testnet",
-  43113: "avalanche testnet",
+  31337: 'localhost',
+  1: 'eth',
+  3: 'ropsten',
+  4: 'rinkeby',
+  42: 'kovan',
+  420: 'goerli',
+  137: 'matic',
+  80001: 'mumbai',
+  97: 'bsc testnet',
+  56: 'bsc',
+  1666700000: 'harmony testnet',
+  43113: 'avalanche testnet',
 };
 
 export const OPENSEA_CHAIN_NAMES = {
-  1: "eth",
-  4: "rinkeby",
-  137: "matic",
-  80001: "mumbai",
+  1: 'eth',
+  4: 'rinkeby',
+  137: 'matic',
+  80001: 'mumbai',
 };
 
 export const SUPPORTED_CHAINS = ['E1', 'ED', 3, 4, 80001, 97, 1666700000, 43113];
@@ -332,26 +330,26 @@ export function noChainSupport(menuItem, networkId) {
 }
 
 export const CHAIN_TX_VIEWER = {
-  3: "https://ropsten.etherscan.io/tx/",
-  4: "https://rinkeby.etherscan.io/tx/",
-  80001: "https://explorer-mumbai.maticvigil.com/tx/",
-  97: "https://testnet.bscscan.com/tx/",
-  1666700000: "https://explorer.pops.one/#/",
-  43113: "https://testnet.snowtrace.io/tx/",
+  3: 'https://ropsten.etherscan.io/tx/',
+  4: 'https://rinkeby.etherscan.io/tx/',
+  80001: 'https://explorer-mumbai.maticvigil.com/tx/',
+  97: 'https://testnet.bscscan.com/tx/',
+  1666700000: 'https://explorer.pops.one/#/',
+  43113: 'https://testnet.snowtrace.io/tx/',
 };
 
 export const CHAIN_TX_LIST = {
   3: {
-    advertiseEvents: "AdvertiseEventsA",
-    purchaseEvents: "PurchaseEvents",
+    advertiseEvents: 'AdvertiseEventsA',
+    purchaseEvents: 'PurchaseEvents',
   },
   4: {
-    advertiseEvents: "AdvertiseEventsA",
-    purchaseEvents: "PurchaseEvents",
+    advertiseEvents: 'AdvertiseEventsA',
+    purchaseEvents: 'PurchaseEvents',
   },
   80001: {
-    advertiseEvents: "AdvertiseEventsPA",
-    purchaseEvents: "PurchaseEventsPA",
+    advertiseEvents: 'AdvertiseEventsPA',
+    purchaseEvents: 'PurchaseEventsPA',
   },
 };
 
@@ -379,9 +377,9 @@ export const CHAIN_TOKEN_SYMBOL = (networkId) => {
 };
 
 export const TERMS = [
-  { id: "1", val: "Research Purposes Only", coin: 2 },
-  { id: "2", val: "Research or Commercial Purposes Only", coin: 2 },
-  { id: "3", val: "Fully License (any use case)", coin: 2 },
+  { id: '1', val: 'Research Purposes Only', coin: 2 },
+  { id: '2', val: 'Research or Commercial Purposes Only', coin: 2 },
+  { id: '3', val: 'Fully License (any use case)', coin: 2 },
 ];
 
 export const sleep = (sec) => {
@@ -399,18 +397,18 @@ export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => {
 export const gtagGo = (category, action, label, value) => {
   /*
   e.g.
-  Category: "Videos", Action: "Play", Label: "Gone With the Wind"
-  Category: "Videos"; Action: "Play - Mac Chrome"
-  Category: "Videos", Action: "Video Load Time", Label: "Gone With the Wind", Value: downloadTime
+  Category: 'Videos', Action: 'Play', Label: 'Gone With the Wind'
+  Category: 'Videos'; Action: 'Play - Mac Chrome'
+  Category: 'Videos', Action: 'Video Load Time', Label: 'Gone With the Wind', Value: downloadTime
 
-  Category: "Auth", Action: "Login", Label: "Metamask"
-  Category: "Auth", Action: "Login - Success", Label: "Metamask"
-  Category: "Auth", Action: "Login", Label: "DeFi"
-  Category: "Auth", Action: "Login", Label: "Ledger"
-  Category: "Auth", Action: "Login", Label: "MaiarApp"
-  Category: "Auth", Action: "Login", Label: "WebWallet"
+  Category: 'Auth', Action: 'Login', Label: 'Metamask'
+  Category: 'Auth', Action: 'Login - Success', Label: 'Metamask'
+  Category: 'Auth', Action: 'Login', Label: 'DeFi'
+  Category: 'Auth', Action: 'Login', Label: 'Ledger'
+  Category: 'Auth', Action: 'Login', Label: 'MaiarApp'
+  Category: 'Auth', Action: 'Login', Label: 'WebWallet'
 
-  Category: "Auth", Action: "Logout", Label: "WebWallet"
+  Category: 'Auth', Action: 'Logout', Label: 'WebWallet'
   */
  
   if (!action || !category) {

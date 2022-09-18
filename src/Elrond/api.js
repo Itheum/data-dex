@@ -26,9 +26,9 @@ export const checkBalance = async (token, address, networkId) => {
   const api = getApi(networkId);
   
   return new Promise((resolve, reject) => {
-    axios.get(`https://${api}/accounts/${address}/tokens/${token}`, {timeout: uxConfig.elrondAPITimeoutMs})
+    axios.get(`https://${api}/accounts/${address}/tokens/${token}`, { timeout: uxConfig.elrondAPITimeoutMs })
     .then((resp) => {
-      resolve({balance: resp.data.balance});
+      resolve({ balance: resp.data.balance });
     })
     .catch((error) => {
       if (error) {
@@ -36,12 +36,12 @@ export const checkBalance = async (token, address, networkId) => {
 
         if (error.response) {
           if (error.response.status === 404) {
-            resolve({balance: 0});  // user has no ITHEUM so API return 404 it seems
+            resolve({ balance: 0 });  // user has no ITHEUM so API return 404 it seems
           } else {
-            resolve({error});
+            resolve({ error });
           }
         } else {
-          resolve({error});
+          resolve({ error });
         } 
       }     
     });
@@ -54,7 +54,7 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
   try {
     const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
 
-    const resp = await (await axios.get(allTxs, {timeout: uxConfig.elrondAPITimeoutMs})).data
+    const resp = await (await axios.get(allTxs, { timeout: uxConfig.elrondAPITimeoutMs })).data
       .filter((tx) => {
         return tx.function === 'claim';
       })
@@ -109,6 +109,6 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
     return transactions;
   } catch (error) {
     console.error(error);
-    return {error};
+    return { error };
   }
 };

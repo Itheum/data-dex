@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState } from 'react';
 import { Button, Text, Image, Tooltip, 
   Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverCloseButton, PopoverHeader, PopoverArrow,
-  useColorMode } from "@chakra-ui/react";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
-import chainEth from "img/eth-chain-logo.png";
-import chainPol from "img/polygon-chain-logo.png";
-import chainBsc from "img/bsc-chain-logo.png";
-import chainAvln from "img/avalanche-chain-logo.png";
-import chainHrmy from "img/harmony-chain-logo.png";
-import chainElrond from "img/elrond-chain-logo.png";
+  useColorMode } from '@chakra-ui/react';
+import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui/layout';
+import chainEth from 'img/eth-chain-logo.png';
+import chainPol from 'img/polygon-chain-logo.png';
+import chainBsc from 'img/bsc-chain-logo.png';
+import chainAvln from 'img/avalanche-chain-logo.png';
+import chainHrmy from 'img/harmony-chain-logo.png';
+import chainElrond from 'img/elrond-chain-logo.png';
 import logoSmlL from 'img/logo-sml-l.png';
 import logoSmlD from 'img/logo-sml-d.png';
 import launcherBG from 'img/launch-bg-1.png';
@@ -21,9 +21,9 @@ const AuthLauncher = ({ onLaunchMode }) => {
 
   return (
     <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
-      <Box p={["20px", null, "30px"]} borderWidth="1px" borderRadius="lg" backgroundColor={colorMode === "dark" && "gray.800" || "white"}>
+      <Box p={['20px', null, '30px']} borderWidth="1px" borderRadius="lg" backgroundColor={colorMode === 'dark' && 'gray.800' || 'white'}>
         <Stack>
-          <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={colorMode === "dark" ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />
+          <Image w={['70px', null, '90px']} h={['60px', null, '80px']} src={colorMode === 'dark' ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />
           <Heading size="md" textAlign="center">
             Itheum Data DEX
           </Heading>
@@ -32,13 +32,13 @@ const AuthLauncher = ({ onLaunchMode }) => {
           </Text>
           <Spacer />
 
-          <HStack justifyContent="center" p={["initial", 8]} spacing={["initial", 6]} flexDirection={["column", "initial"]}>
+          <HStack justifyContent="center" p={['initial', 8]} spacing={['initial', 6]} flexDirection={['column', 'initial']}>
             <PopupChainSelectorForWallet
               lrgButtonSize={true}
               hideTerms={true}
               onElrondEnvPick={onLaunchMode} />
 
-            <Spacer pt={5} display={["block", "none"]} />
+            <Spacer pt={5} display={['block', 'none']} />
 
             <Button onClick={() => onLaunchMode('evm')}>
               Connect EVM Wallet
@@ -49,7 +49,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
             Supported Chains
           </Text>
 
-          <Flex wrap={["wrap", "nowrap"]} direction="row" justify={"space-around"} w={["300px", "500px"]} align="center">
+          <Flex wrap={['wrap', 'nowrap']} direction="row" justify="space-around" w={['300px', '500px']} align="center">
             <Tooltip label="Live on Elrond Mainnet & Devnet">
               <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
             </Tooltip>
@@ -80,7 +80,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
   );
 };
 
-const PopupChainSelectorForWallet = ({onElrondEnvPick}) => {
+const PopupChainSelectorForWallet = ({ onElrondEnvPick }) => {
   const [showElrondEnvPicker, setShowElrondEnvPicker] = useState(false);
 
   return (

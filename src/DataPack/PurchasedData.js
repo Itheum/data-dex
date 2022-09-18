@@ -34,10 +34,10 @@ const useContainerDimensions = myRef => {
       setDimensions(getDimensions())
     }
 
-    window.addEventListener("resize", handleResize)
+    window.addEventListener('resize', handleResize)
 
     return () => {
-      window.removeEventListener("resize", handleResize)
+      window.removeEventListener('resize', handleResize)
     }
   }, [myRef])
 
@@ -58,7 +58,7 @@ export default function() {
     isLoading: loadingUsrPurOrders,
     fetch: doUsrPurOrders,
     data: dataUsrPurOrders
-  } = useMoralisCloudFunction("getUserPurchaseDataOrders", {
+  } = useMoralisCloudFunction('getUserPurchaseDataOrders', {
     userAddress: user.get('ethAddress'),
     networkId: _chainMeta.networkId
   }, { autoFetch: false });  

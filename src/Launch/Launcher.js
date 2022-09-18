@@ -1,11 +1,11 @@
-import { useState } from "react";
-import React from "react";
-import { DappProvider, DappUI } from "@elrondnetwork/dapp-core";
-import { MoralisProvider } from "react-moralis";
+import { useState } from 'react';
+import React from 'react';
+import { DappProvider, DappUI } from '@elrondnetwork/dapp-core';
+import { MoralisProvider } from 'react-moralis';
 
-import AuthLauncher from "Launch/AuthLauncher";
-import EVMAppHarness from "AppHarness/AppHarnessEVM";
-import ElrondAppHarness from "AppHarness/AppHarnessElrond";
+import AuthLauncher from 'Launch/AuthLauncher';
+import EVMAppHarness from 'AppHarness/AppHarnessEVM';
+import ElrondAppHarness from 'AppHarness/AppHarnessElrond';
 import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
 import { debugui, uxConfig } from 'libs/util';
@@ -43,19 +43,19 @@ function Launcher() {
 
   return (
     <>
-      {launchMode == 'auth' && 
+      {launchMode === 'auth' && 
         <AuthLauncher onLaunchMode={handleLaunchMode} />
       }
 
-      {launchMode == 'evm' && <>
+      {launchMode === 'evm' && <>
         <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
           <AuthPickerEVM resetLaunchMode={() => handleLaunchMode('auth')} />
           <EVMAppHarness resetLaunchMode={() => handleLaunchMode('auth')} />
         </MoralisProvider>
       </>}
 
-      {launchMode == 'elrond' && <>      
-        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: "customConfig", apiTimeout: uxConfig.elrondAPITimeoutMs }}>
+      {launchMode === 'elrond' && <>      
+        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: 'customConfig', apiTimeout: uxConfig.elrondAPITimeoutMs }}>
           <TransactionsToastList />
           <NotificationModal />
           <SignTransactionsModals className="itheum-data-dex-elrond-modals" />

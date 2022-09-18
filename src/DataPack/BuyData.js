@@ -14,23 +14,23 @@ import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
 import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL } from 'libs/util';
-import { ABIS } from "EVM/ABIs";
+import { ABIS } from 'EVM/ABIs';
 import { useChainMeta } from 'store/ChainMetaContext';
 
-export default function({onRfMount, onRefreshBalance}) {
+export default function({ onRfMount, onRefreshBalance }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
-  const { web3: web3Provider, Moralis: {web3Library: ethers} } = useMoralis();
+  const { web3: web3Provider, Moralis: { web3Library: ethers } } = useMoralis();
   const { user } = useMoralis();
   const [noData, setNoData] = useState(false);
-  const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
-    query.descending("createdAt") &&
-    query.notEqualTo("txHash", null) &&
-    query.equalTo("txNetworkId", _chainMeta.networkId)
+  const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery('DataPack', query =>
+    query.descending('createdAt') &&
+    query.notEqualTo('txHash', null) &&
+    query.equalTo('txNetworkId', _chainMeta.networkId)
   );
   const { isSaving, error: errorOrderSave, save: saveDataOrder } = useNewMoralisObject('DataOrder');
   const [currBuyObject, setCurrBuyObject] = useState(null);
-  const [buyProgress, setbuyProgress] = useState({s0: 0, s1: 0, s2: 0, s3: 0, s4: 0});
+  const [buyProgress, setbuyProgress] = useState({ s0: 0, s1: 0, s2: 0, s3: 0, s4: 0 });
   const [buyProgressErr, setbuyProgressErr] = useState(null);
   const [otherUserDataSets, setOtherUserDataSets] = useState([]);
 
@@ -65,7 +65,7 @@ export default function({onRfMount, onRefreshBalance}) {
     } else if (txHashAllowance && (txConfirmationAllowance === uxConfig.txConfirmationsNeededLrg)) {
       console.log('AUTHORISED');
 
-      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
+      setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s2: 1 }));
 
       web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
     }
@@ -77,7 +77,7 @@ export default function({onRfMount, onRefreshBalance}) {
     } else if (txHashTransfer && (txConfirmationTransfer === uxConfig.txConfirmationsNeededLrg)) {
       console.log('TRANSFERRED');
 
-      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s3: 1}));
+      setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s3: 1 }));
 
       finaliseSale();
     }
@@ -91,7 +91,7 @@ export default function({onRfMount, onRefreshBalance}) {
       const isVerified = await web3_ddexVerifyData(currBuyObject.dataPackId, currBuyObject.dataHash);
 
       if (isVerified) {
-        setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s0: 1}));
+        setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s0: 1 }));
 
         handleMinRequirementsCheck();
       } else {
@@ -140,7 +140,7 @@ export default function({onRfMount, onRefreshBalance}) {
     const isEligible = await web3_tokenBalanceOf();
 
     if (isEligible) {
-      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s1: 1}));
+      setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s1: 1 }));
       handleAllowanceCheck();
     } else {
       setbuyProgressErr(`Do you have enough ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} for this?`);
@@ -151,7 +151,7 @@ export default function({onRfMount, onRefreshBalance}) {
     const isAllowed = await web3_tokenCheckAllowance();
 
     if (isAllowed) {
-      setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s2: 1}));
+      setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s2: 1 }));
 
       web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
     } else {
@@ -272,24 +272,23 @@ export default function({onRfMount, onRefreshBalance}) {
   }
 
   const finaliseSale = async() => {
-    const newDataOrder = {...dataTemplates.dataOrder,
+    const newDataOrder = { ...dataTemplates.dataOrder,
       dataPackId: currBuyObject.dataPackId,
       buyerEthAddress: user.get('ethAddress'),
       pricePaid: currBuyObject.cost,
       dataFileUrl: currBuyObject.dataFileUrl,
       dataHash: currBuyObject.dataHash,
       txHash: txHashTransfer,
-      txNetworkId: _chainMeta.networkId
-    };
+      txNetworkId: _chainMeta.networkId };
 
     await saveDataOrder(newDataOrder);
 
-    setbuyProgress(prevBuyProgress => ({...prevBuyProgress, s4: 1}));
+    setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s4: 1 }));
 
     toast({
-      title: "Congrats! you have purchased rights to use the data pack",
-      description: "Head over to the 'Purchased Data' tab to access the data",
-      status: "success",
+      title: 'Congrats! you have purchased rights to use the data pack',
+      description: 'Head over to the "Purchased Data" tab to access the data',
+      status: 'success',
       duration: 4000,
       isClosable: true,
     });

@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useMoralis } from "react-moralis";
+import { useEffect, useState } from 'react';
+import { useMoralis } from 'react-moralis';
 import { Button, Stack, Alert, AlertIcon, Box, AlertTitle, AlertDescription, 
   Text, Image, Link, Wrap, Modal, ModalOverlay, ModalContent, 
-  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, useBreakpointValue } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import walletConnect from "img/wallet-connect.png";
-import walletMetamask from "img/wallet-metamask.png";
+  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+import walletConnect from 'img/wallet-connect.png';
+import walletMetamask from 'img/wallet-metamask.png';
 import { WALLETS } from 'libs/util';
 import { gtagGo } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
@@ -74,7 +74,7 @@ function AuthPickerEVM({ resetLaunchMode }) {
 
     switch (wallet) {
       case WALLETS.WC:
-        authenticate({ provider: "walletconnect" });
+        authenticate({ provider: 'walletconnect' });
         break;
 
       default:
@@ -128,11 +128,11 @@ function AuthPickerEVM({ resetLaunchMode }) {
                 </Box>
 
                 <Text fontSize="sm">
-                  By logging in, you are agreeing to the{" "}
+                  By logging in, you are agreeing to the{' '}
                   <Link href="https://itheum.com/termsofuse" isExternal>
                     Terms of Use <ExternalLinkIcon mx="2px" />
-                  </Link>{" "}
-                  &{" "}
+                  </Link>{' '}
+                  &{' '}
                   <Link href="https://itheum.com/privacypolicy" isExternal>
                     Privacy Policy <ExternalLinkIcon mx="2px" />
                   </Link>

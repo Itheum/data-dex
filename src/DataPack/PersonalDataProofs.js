@@ -19,11 +19,11 @@ export default function() {
   const { user } = useMoralis();
   const [dataProofs, setDataProofs] = useState([]);
   const [noData, setNoData] = useState(false);
-  const { data: dataPacks, error: errorDataPackGet } = useMoralisQuery("DataPack", query =>
-    query.descending("createdAt") &&
-    query.notEqualTo("txHash", null) &&
-    query.notEqualTo("fromProgramId", null) &&
-    query.equalTo("txNetworkId", _chainMeta.networkId)
+  const { data: dataPacks, error: errorDataPackGet } = useMoralisQuery('DataPack', query =>
+    query.descending('createdAt') &&
+    query.notEqualTo('txHash', null) &&
+    query.notEqualTo('fromProgramId', null) &&
+    query.equalTo('txNetworkId', _chainMeta.networkId)
   );
 
   useEffect(() => {

@@ -21,10 +21,10 @@ export default function() {
   const { user } = useMoralis();
   const [noData, setNoData] = useState(false);
   const [userAdvertisedData, setUserAdvertisedData] = useState([]);
-  const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery("DataPack", query =>
-    query.descending("createdAt") &&
-    query.notEqualTo("txHash", null) &&
-    query.equalTo("txNetworkId", _chainMeta.networkId)
+  const { data: dataPacks, error: errorDataPackGet, isLoading } = useMoralisQuery('DataPack', query =>
+    query.descending('createdAt') &&
+    query.notEqualTo('txHash', null) &&
+    query.equalTo('txNetworkId', _chainMeta.networkId)
   );
 
   useEffect(() => {

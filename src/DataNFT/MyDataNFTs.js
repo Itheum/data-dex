@@ -9,7 +9,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { sleep, buyOnOpenSea, contractsForChain } from 'libs/util';
-import { TERMS, CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
+import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
@@ -22,13 +22,12 @@ export default function() {
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
-  const [showRoboHashTnk, setShowRoboHashTnk] = useState(false);
 
   const {
     error: cfErr_getUserDataNFTCatalog,
     fetch: cf_getUserDataNFTCatalog,
     data: usersDataNFTCatalog,
-  } = useMoralisCloudFunction("getUserDataNFTCatalog", {
+  } = useMoralisCloudFunction('getUserDataNFTCatalog', {
     ethAddress: user.get('ethAddress'),
     networkId: _chainMeta.networkId,
     myOnChainNFTs: onChainNFTs
@@ -72,10 +71,6 @@ export default function() {
       if (usersDataNFTCatalog && usersDataNFTCatalog.length === 0) {
         await sleep(5);
         setNoData(true);
-      } else {
-        if (usersDataNFTCatalog) {
-          setShowRoboHashTnk(true);
-        }
       }
     })();
   }, [usersDataNFTCatalog]);
@@ -148,12 +143,6 @@ export default function() {
           
         </Flex>
       }
-
-      {showRoboHashTnk && <Text fontSize="xs" textAlign="center" opacity=".2" pb="10">
-        <Tooltip fontSize="xs" label="Itheum will launch our own generative art engine shortly; in the interim, we use the open-source Robohash imageset">
-          Robots lovingly delivered by Robohash.org
-        </Tooltip>
-      </Text>}
     </Stack>
   );
 };

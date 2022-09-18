@@ -44,6 +44,19 @@
     "url": "git+https://github.com/Itheum/data-dex.git"
   },
   "eslintConfig": {
+    "rules": {
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "no-debugger": [
+        "warn"
+      ],
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ]
+    },
     "extends": [
       "react-app",
       "react-app/jest"

@@ -1,8 +1,8 @@
-import AppEVM from "App/AppEVM";
-import { useMoralis } from "react-moralis";
+import AppEVM from 'App/AppEVM';
+import { useMoralis } from 'react-moralis';
 import { sleep } from 'libs/util';
 
-function AppHarnessEVM({resetLaunchMode}) {
+function AppHarnessEVM({ resetLaunchMode }) {
   const {
     isAuthenticated,
     logout: moralisLogout,
@@ -13,7 +13,7 @@ function AppHarnessEVM({resetLaunchMode}) {
     resetLaunchMode();
     await moralisLogout();
     await sleep(1);
-    window.location.replace("/");
+    window.location.replace('/');
   }
 
   return (

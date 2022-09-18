@@ -24,8 +24,8 @@ export default function() {
     }, {});
   }, []);
 
-  const { data: dataCoalitions, error: errorDataCoalitionGet } = useMoralisQuery("DataCoalition", query =>
-    query.descending("createdAt")
+  const { data: dataCoalitions, error: errorDataCoalitionGet } = useMoralisQuery('DataCoalition', query =>
+    query.descending('createdAt')
   );
 
   return (
@@ -62,7 +62,7 @@ export default function() {
                 <Text mt="2" mb="2">I'm interested in:</Text>
 
                 {item.get('dataHoldingMapping').map(i => (
-                  <Badge borderRadius="full" px="2" mr="2" colorScheme="teal">{i.progId && progToIdMapping[i.progId].name || "Any Arbitrary Data"}</Badge>
+                  <Badge borderRadius="full" px="2" mr="2" colorScheme="teal">{i.progId && progToIdMapping[i.progId].name || 'Any Arbitrary Data'}</Badge>
                 ))} 
               </Box>
 
