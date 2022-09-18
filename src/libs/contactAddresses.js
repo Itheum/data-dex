@@ -79,18 +79,12 @@ export const faucetContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].
 
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";
-export const tokenContractAddress_testnetPlatON = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-export const tokenContractAddress_testnetParastate = "0xD77E137B6483bC8d392b73D02E733e3DE13Dd72d";
 export const tokenContractAddress_testnetAvalanche = "0x2982563dAf8Eeb43Cec78bf4E1A8614BD56CD1e3";
 
 export const ddexContractAddress_testnetHarmony = "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f";
-export const ddexContractAddress_testnetPlatON = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-export const ddexContractAddress_testnetParastate = "0x1bd7fa41A509d016053eb6C67165d632321a20A9";
 export const ddexContractAddress_testnetAvalanche = "0x56c88e7ed9Aa4792119c66D71815A6bD9DE0A5E0";
 
 export const dNFTContractAddress_testnetHarmony = "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07";
-export const dNFTContractAddress_testnetPlatON = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-export const dNFTContractAddress_testnetParastate = "0x360570F7D60Df8BC670C2899002C44a2C382270E";
 export const dNFTContractAddress_testnetAvalanche = "0xCb0254502D84242f8ad477eb41723e99fdC6e847";
 
 export const tokenContractAddress_Local = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";

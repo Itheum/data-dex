@@ -8,11 +8,10 @@ import chainPol from "img/polygon-chain-logo.png";
 import chainBsc from "img/bsc-chain-logo.png";
 import chainAvln from "img/avalanche-chain-logo.png";
 import chainHrmy from "img/harmony-chain-logo.png";
-import chainParastate from "img/parastate-chain-logo.png";
 import chainElrond from "img/elrond-chain-logo.png";
 import logoSmlL from 'img/logo-sml-l.png';
 import logoSmlD from 'img/logo-sml-d.png';
-import launcherBG from 'img/launch-bg.png';
+import launcherBG from 'img/launch-bg-1.png';
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : 'version number unknown';
 
@@ -65,9 +64,6 @@ const AuthLauncher = ({ onLaunchMode }) => {
             </Tooltip>
             <Tooltip label="Live on Mumbai Testnet">
               <Image src={chainPol} boxSize="30px" borderRadius="lg" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Parastate (Polkadot) Testnet">
-              <Image src={chainParastate} boxSize="30px" width="25px" m="5px" />
             </Tooltip>
             <Tooltip label="Live on Harmony Testnet">
               <Image src={chainHrmy} boxSize="30px" m="5px" />

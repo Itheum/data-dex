@@ -15,12 +15,6 @@ import {
   tokenContractAddress_testnetHarmony,
   ddexContractAddress_testnetHarmony,
   dNFTContractAddress_testnetHarmony,
-  tokenContractAddress_testnetPlatON,
-  ddexContractAddress_testnetPlatON,
-  dNFTContractAddress_testnetPlatON,
-  tokenContractAddress_testnetParastate,
-  ddexContractAddress_testnetParastate,
-  dNFTContractAddress_testnetParastate,
   tokenContractAddress_testnetAvalanche,
   ddexContractAddress_testnetAvalanche,
   dNFTContractAddress_testnetAvalanche,
@@ -81,15 +75,6 @@ export const contractsForChain = (networkId) => {
       contracts.ddex = ddexContractAddress_testnetHarmony;
       contracts.dnft = dNFTContractAddress_testnetHarmony;
       break;
-    case 210309:
-      contracts.itheumToken = tokenContractAddress_testnetPlatON;
-      contracts.ddex = ddexContractAddress_testnetPlatON;
-      contracts.dnft = dNFTContractAddress_testnetPlatON;
-      break;
-    case 123:
-      contracts.itheumToken = tokenContractAddress_testnetParastate;
-      contracts.ddex = ddexContractAddress_testnetParastate;
-      contracts.dnft = dNFTContractAddress_testnetParastate;
       break;
     case 43113:
       contracts.itheumToken = tokenContractAddress_testnetAvalanche;
@@ -286,8 +271,6 @@ export const CHAINS = {
   97: "BSC - Chapel",
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
-  210309: "PlatON - Testnet",
-  123: "Parastate - Testnet",
   43113: "Avalanche - Testnet",
   E1: "Elrond - Mainnet",
   ED: "Elrond - Devnet",
@@ -306,8 +289,6 @@ export const CHAIN_NAMES = {
   97: "bsc testnet",
   56: "bsc",
   1666700000: "harmony testnet",
-  210309: "platON testnet",
-  123: "Parastate - Testnet",
   43113: "avalanche testnet",
 };
 
@@ -318,7 +299,7 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: "mumbai",
 };
 
-export const SUPPORTED_CHAINS = ['E1', 'ED', 3, 4, 80001, 97, 1666700000, 210309, 123, 43113];
+export const SUPPORTED_CHAINS = ['E1', 'ED', 3, 4, 80001, 97, 1666700000, 43113];
 
 export const WALLETS = {
   METAMASK: 'evm_metamask',
@@ -338,8 +319,6 @@ export function noChainSupport(menuItem, networkId) {
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
-    210309: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
-    123: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     'ED': [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
     'E1': [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
@@ -358,7 +337,6 @@ export const CHAIN_TX_VIEWER = {
   80001: "https://explorer-mumbai.maticvigil.com/tx/",
   97: "https://testnet.bscscan.com/tx/",
   1666700000: "https://explorer.pops.one/#/",
-  210309: "https://devnetscan.platon.network/trade-detail?txHash=",
   43113: "https://testnet.snowtrace.io/tx/",
 };
 
@@ -384,8 +362,6 @@ export const CHAIN_TOKEN_SYMBOL = (networkId) => {
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
     hITHEUM: [1666700000],
-    pITHEUM: [210309],
-    psITHEUM: [123],
     aITHEUM: [43113],
   };
 
