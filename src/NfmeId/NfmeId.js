@@ -45,7 +45,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
 
     // query-start block number
     // We can only query last 1000 blocks due to the limit of Mumbai Testnet
-    const fromBlockNumber = (await web3Provider.getBlockNumber()) - 1000;
+    const fromBlockNumber = (await web3Provider.getBlockNumber()) - 2000;
     console.log('fromBlockNumber', fromBlockNumber);
 
     let events = await identityFactory.current.queryFilter('IdentityDeployed', fromBlockNumber);
@@ -164,6 +164,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
 
   return (
     <>
+      {/* State 0: No Identity Contract */}
       {identityContainerState === 0 && (
         <ChainSupportedComponent>
           <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
@@ -175,6 +176,8 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
           </Box>
         </ChainSupportedComponent>
       )}
+
+      {/* State 1: Deploying */}
       {identityContainerState === 1 && (
         <ChainSupportedComponent>
           <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
@@ -184,6 +187,8 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
           </Box>
         </ChainSupportedComponent>
       )}
+
+      {/* State 2: Successfully Deployed */}
       {identityContainerState === 2 && (
         <ChainSupportedComponent>
           <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
@@ -191,8 +196,9 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
           </Box>
         </ChainSupportedComponent>
       )}
-      {identityContainerState === 3 && (<Stack>
 
+      {/* State 3: Show NFMe IDs and Claims */}
+      {identityContainerState === 3 && (<Stack>
           <HStack>
             <Box maxW="md" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
               <Heading size="lg">My NFMe ID</Heading>
@@ -246,17 +252,8 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
                     <Image height="120" src={imgLogo} alt="NFMe" />
                   </WrapItem>
                 ))}
-                {/* <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-                  <Image height="120" src={imgLogo} alt="NFMe" />
-                </WrapItem>
-                <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-                  <Image height="120" src={imgLogo} alt="NFMe" />
-                </WrapItem>
-                <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-                  <Image height="120" src={imgLogo} alt="NFMe" />
-                </WrapItem> */}
               </Wrap>
-              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {}}>Manage Claims</Button>
+              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => navigate('manageclaims')}>Manage Claims</Button>
             </Box>
             <Box maxW="sm" maxWidth="initial"  mt="12">
               <Heading size="md">My Badges</Heading>

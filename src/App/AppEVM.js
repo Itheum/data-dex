@@ -28,6 +28,7 @@ import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import NfmeId from 'NfmeId/NfmeId';
+import ManageClaims from 'NfmeId/ManageClaims';
 import { itheumTokenRoundUtil, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { ABIS } from 'EVM/ABIs';
@@ -571,7 +572,6 @@ function App({ appConfig }) {
                 <Routes>
                   <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
                   <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
-                  <Route path="nfmeid" element={<NfmeId key={rfKeys.nfmeid} onRfMount={() => handleRfMount('nfmeid')} setMenuItem={setMenuItem} onRefreshTokenBalance={handleRefreshTokenBalance} />} />
                   <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshTokenBalance={handleRefreshTokenBalance} />} />
@@ -595,6 +595,10 @@ function App({ appConfig }) {
                     <Route path="datastreams" element={<DataStreams />} />
                     <Route path="datavault" element={<DataVault />} />
                     <Route path="trustedcomputation" element={<TrustedComputation />} />
+                  </Route>
+                  <Route path="nfmeid" element={<Outlet />}>
+                    <Route path="" element={<NfmeId key={rfKeys.nfmeid} onRfMount={() => handleRfMount('nfmeid')} setMenuItem={setMenuItem} onRefreshTokenBalance={handleRefreshTokenBalance} />}  />
+                    <Route path="manageclaims" element={<ManageClaims />} />
                   </Route>
                 </Routes>
               </Box>
