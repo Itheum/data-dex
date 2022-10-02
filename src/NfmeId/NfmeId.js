@@ -248,7 +248,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
                   </Tag>
                 )}
                 {claims.length > 0 && claims.map((val, index) => (
-                  <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
+                  <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg" key={`nfmeid-claim-${index}`}>
                     <Image height="120" src={imgLogo} alt="NFMe" />
                   </WrapItem>
                 ))}
@@ -279,7 +279,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
               <Table variant="unstyled">
                 <Tbody>
                   {[1,2,3,4,5].map((i, index) => (
-                    <Tr>
+                    <Tr key={`nfmeid-wallet-${index}`}>
                       <Td>Wallet {`${i}`}:</Td>
                       <Td>{identityOwners.length > i - 1 && identityOwners[i - 1]}</Td>
                     </Tr>

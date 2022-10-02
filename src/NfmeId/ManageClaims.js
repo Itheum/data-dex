@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import imgNfmeId from 'img/nfme-id.png';
 import imgLogo from 'img/logo.png';
-import { sleep } from 'libs/util';
+import { sleep, debugui } from 'libs/util';
 
 export default function() {
   const navigate = useNavigate();
@@ -36,7 +36,60 @@ export default function() {
   
   let web3Signer = useRef();
   let identity = useRef();
-  
+
+  /////////////////////////////////////////////////////////
+  const DUMMY_CLAIMS = [
+    {
+      identifier: 'nfme_mint_allowed',
+      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
+      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
+      data: ethers.utils.formatBytes32String(''),
+      validFrom: 1664670523,
+      validTo: 0,
+    },
+    {
+      identifier: 'gamer_passport_alpha',
+      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
+      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
+      data: ethers.utils.formatBytes32String(''),
+      validFrom: 1664670523,
+      validTo: 1664680523,
+    },
+    {
+      identifier: 'nfme_mint_allowed',
+      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
+      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
+      data: ethers.utils.formatBytes32String(''),
+      validFrom: 1664670523,
+      validTo: 0,
+    },
+    {
+      identifier: 'gamer_passport_alpha',
+      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
+      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
+      data: ethers.utils.formatBytes32String(''),
+      validFrom: 1664670523,
+      validTo: 1664680523,
+    },
+    {
+      identifier: 'nfme_mint_allowed',
+      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
+      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
+      data: ethers.utils.formatBytes32String(''),
+      validFrom: 1664670523,
+      validTo: 0,
+    },
+    {
+      identifier: 'gamer_passport_alpha',
+      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
+      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
+      data: ethers.utils.formatBytes32String(''),
+      validFrom: 1664670523,
+      validTo: 1664680523,
+    },
+  ];
+  /////////////////////////////////////////////////////////
+
   console.log('manageClaimsState', manageClaimsState);
   const init = async () => {
     console.log('init');
@@ -48,13 +101,13 @@ export default function() {
     const fromBlockNumber = (await web3Provider.getBlockNumber()) - 1000;
     console.log('fromBlockNumber', fromBlockNumber);
 
-    let events = await identityFactory.current.queryFilter('IdentityDeployed', fromBlockNumber);
+    let events = await identityFactory.queryFilter('IdentityDeployed', fromBlockNumber);
     console.log('events', events);
     const identityDeployedEvents = events.filter(event => event.args[1].toLowerCase() === walletAddress.toLowerCase());
     let identityAddresses = identityDeployedEvents.length > 0 ? identityDeployedEvents.map(event => event.args[0]) : [];
 
     if (identityAddresses.length === 0) {
-      events = await identityFactory.current.queryFilter('AdditionalOwnerAction', fromBlockNumber);
+      events = await identityFactory.queryFilter('AdditionalOwnerAction', fromBlockNumber);
 
       const eventsForWalletAddress = events.filter(event => event.args[2].toLowerCase() === walletAddress.toLowerCase());
       const addingEvents = eventsForWalletAddress.filter(event => event.args[3] === 'added');
@@ -142,12 +195,55 @@ export default function() {
       {/* State 0: View and Delete */}
       {manageClaimsState === 0 && (
         <ChainSupportedComponent>
-          <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
+          <Box
+            borderWidth="1px"
+            borderRadius="lg"
+            p="9"
+          >
             <Heading size="lg">Manage Claims: View and Delete</Heading>
 
-            <Box fontSize="sm" mt="9" align="left" flex="1">Your first step is to deploy what we can an identity, this is a smart contract that can be used by you to store your web3 “reputation” and to hold your NFMe ID Souldbound token. You have FULL control over this identity container and you can choose to use it to “talk” with blockchain based DApps to expose your reputation or other data your have within the Itheum ecosystem. The DApps can then provide you personalized experiences. Think - gated features or immediate whitelists</Box>
+            <Wrap spacing="30px" mt="9">
+              {DUMMY_CLAIMS.map((val, index) => (
+                <WrapItem key={`manageclaims-claim-${index}`}>
+                  <Box
+                    w="sm"
+                    p="3"
+                    borderBottomWidth="2px"
+                    borderRadius="lg"
+                  >
+                    <Heading as="h6" size="md">{val.identifier}</Heading>
+                    <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
+                    <Text fontSize="sm">Itheum({val.to})</Text>
+                    <Heading as="h6" size="sm" mt="3">Issued On:</Heading>
+                    <Text fontSize="sm">{val.validFrom}</Text>
+                    <Heading as="h6" size="sm" mt="3">Expires On:</Heading>
+                    <Text fontSize="sm">{val.validTo}</Text>
 
-            <Button mt="12" colorScheme="teal" variant="outline" onClick={() => {}}>Add New Claims</Button>
+                    <Flex justify="flex-end">
+                      <Button
+                        size="sm"
+                        colorScheme="teal"
+                        variant="solid"
+                        onClick={() => {}}
+                      >
+                        Delete
+                      </Button>
+                    </Flex>
+                  </Box>
+                </WrapItem>
+              ))}
+            </Wrap>
+
+            <Flex justify="flex-end" mt="12">
+              <Button
+                colorScheme="teal"
+                variant="solid"
+                size="md"
+                onClick={() => {}}
+              >
+                Add New Claims
+              </Button>
+            </Flex>
           </Box>
         </ChainSupportedComponent>
       )}

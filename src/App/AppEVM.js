@@ -546,9 +546,65 @@ function App({ appConfig }) {
                           </Stack>
                         </AccordionPanel>
                       </AccordionItem>
+
+                      <AccordionItem>
+                        <AccordionButton>
+                          <Button flex="1" colorScheme="teal" variant="outline">
+                            NFMe ID
+                          </Button>
+                          <AccordionIcon />
+                        </AccordionButton>
+                        <AccordionPanel>
+                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
+                            <Button
+                              colorScheme="teal"
+                              isDisabled={menuItem === MENU.NFTMEID}
+                              onClick={() => {
+                                setMenuItem(MENU.NFTMEID);
+                                navigate('nfmeid');
+                                setShowMobileMenu(false);
+                              }}
+                            >
+                              Dashboard
+                            </Button>
+                            <Button
+                              colorScheme="teal"
+                              isDisabled={menuItem === MENU.MANAGECLAIMS}
+                              onClick={() => {
+                                setMenuItem(MENU.MANAGECLAIMS);
+                                navigate('nfmeid/manageclaims');
+                                setShowMobileMenu(false);
+                              }}
+                            >
+                              Manage Claims
+                            </Button>
+                            {/* <ChainSupportedInput feature={MENU.NFTMEID}>
+                              <Button
+                                colorScheme="teal"
+                                isDisabled={menuItem === MENU.MANAGECLAIMS}
+                                onClick={() => {
+                                  if (splashScreenShown[MENU.NFTMEID]) {
+                                    navigate('nfmeid/manageclaims');
+                                    setMenuItem(MENU.MANAGECLAIMS);
+                                    setShowMobileMenu(false);
+                                  } else {
+                                    doSplashScreenShown(MENU.NFTMEID);
+                                    navigate('nfmeid');
+                                    setMenuItem(MENU.NFTMEID);
+                                    setShowMobileMenu(false);
+                                  }
+                                }}
+                              >
+                                Dashboard
+                              </Button>
+                            </ChainSupportedInput> */}
+                          </Stack>
+                        </AccordionPanel>
+                      </AccordionItem>
+
                     </Accordion>
 
-                    <Stack ml="15px" spacing={4}>
+                    {/* <Stack ml="15px" spacing={4}>
                       <Button
                           rightIcon={<AiFillHome />}
                           w={menuButtonW}
@@ -563,7 +619,7 @@ function App({ appConfig }) {
                         >
                           NFMe ID
                         </Button>
-                    </Stack>
+                    </Stack> */}
                   </Flex>
                 </Stack>
               </Box>
@@ -597,8 +653,8 @@ function App({ appConfig }) {
                     <Route path="trustedcomputation" element={<TrustedComputation />} />
                   </Route>
                   <Route path="nfmeid" element={<Outlet />}>
-                    <Route path="" element={<NfmeId key={rfKeys.nfmeid} onRfMount={() => handleRfMount('nfmeid')} setMenuItem={setMenuItem} onRefreshTokenBalance={handleRefreshTokenBalance} />}  />
-                    <Route path="manageclaims" element={<ManageClaims />} />
+                    <Route path="" element={<NfmeId setMenuItem={setMenuItem} />}  />
+                    <Route path="manageclaims" element={<ManageClaims key="nfmeid-manageclaims" />} />
                   </Route>
                 </Routes>
               </Box>
