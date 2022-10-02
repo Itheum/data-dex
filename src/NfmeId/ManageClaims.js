@@ -6,6 +6,7 @@ import {
   Spinner, Wrap, WrapItem, Text,
   TableContainer, Table, Tbody, Tr, Td,
   Tag, TagLabel,
+  Editable, EditableInput, EditablePreview, Textarea,
 } from '@chakra-ui/react';
 import dataStreamIcon from 'img/data-stream-icon.png';
 import { ABIS } from 'EVM/ABIs';
@@ -30,7 +31,7 @@ export default function() {
   // 0 for View and Delete
   // 1 for Add
   // 2 for Manual Add
-  const [manageClaimsState, setManageClaimsState] = useState(0); 
+  const [manageClaimsState, setManageClaimsState] = useState(2); 
 
   const [claims, setClaims] = useState([]);
   
@@ -242,6 +243,134 @@ export default function() {
                 onClick={() => {}}
               >
                 Add New Claims
+              </Button>
+            </Flex>
+          </Box>
+        </ChainSupportedComponent>
+      )}
+
+      {/* State 1: Add */}
+      {manageClaimsState === 1 && (
+        <ChainSupportedComponent>
+          <Box
+            borderWidth="1px"
+            borderRadius="lg"
+            p="9"
+          >
+            <Heading size="lg">Manage Claims: Add</Heading>
+
+            <Wrap spacing="30px" mt="9">
+              <WrapItem>
+                <Box
+                  w="sm"
+                  p="3"
+                  borderBottomWidth="2px"
+                  borderRadius="lg"
+                >
+                  <Heading as="h6" size="md">Manual Add</Heading>
+                  <Text fontSize="sm">Have you received a claim offline? Use this option to verify and add the claim payload to your identity</Text>
+
+                  <Flex justify="flex-end" mt="6">
+                    <Button
+                      size="sm"
+                      colorScheme="teal"
+                      variant="solid"
+                      onClick={() => {}}
+                    >
+                      Manually Add Claim Payload
+                    </Button>
+                  </Flex>
+                </Box>
+              </WrapItem>
+
+              {DUMMY_CLAIMS.map((val, index) => (
+                <WrapItem key={`manageclaims-state-1-${index}`}>
+                  <Box
+                    w="sm"
+                    p="3"
+                    borderBottomWidth="2px"
+                    borderRadius="lg"
+                  >
+                    <Heading as="h6" size="md">{val.identifier}</Heading>
+                    <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
+                    <Text fontSize="sm">Itheum({val.to})</Text>
+
+                    <Flex justify="flex-end" mt="6">
+                      <Button
+                        size="sm"
+                        colorScheme="teal"
+                        variant="outline"
+                        onClick={() => {}}
+                      >
+                        How to Get
+                      </Button>
+                    </Flex>
+                  </Box>
+                </WrapItem>
+              ))}
+            </Wrap>
+          </Box>
+        </ChainSupportedComponent>
+      )}
+
+      {/* State 2: Manual Add */}
+      {manageClaimsState === 2 && (
+        <ChainSupportedComponent>
+          <Box
+            borderWidth="1px"
+            borderRadius="lg"
+            p="9"
+          >
+            <Heading size="lg">Manage Claims: Manual Add</Heading>
+
+            <Wrap spacing="30px" mt="9">
+              <WrapItem>
+                <Box
+                  w="md"
+                  p="3"
+                  h="100%"
+                >
+                  <Textarea 
+                    placeholder="Claim payload goes here..."
+                    h="100%"
+                  />
+                </Box>
+              </WrapItem>
+              <WrapItem>
+                <Box
+                  w="sm"
+                  p="3"
+                >
+                  <Heading as="h6" size="sm" color="teal">[Preview]</Heading>
+                  <Heading as="h6" size="md" mt="3">NFMe ID Mint Allowed</Heading>
+                  <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
+                  <Text fontSize="sm">Itheum(0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E)</Text>
+                  <Heading as="h6" size="sm" mt="3">Issued On:</Heading>
+                  <Text fontSize="sm">02/01/2022</Text>
+                  <Heading as="h6" size="sm" mt="3">Expires On:</Heading>
+                  <Text fontSize="sm">03/10/2024</Text>
+                </Box>
+              </WrapItem>
+            </Wrap>
+
+            <Flex justify="flex-end" mt="12" gap="6">
+              <Button
+                colorScheme="teal"
+                variant="outline"
+                size="md"
+                w="100px"
+                onClick={() => {}}
+              >
+                Cancel
+              </Button>
+              <Button
+                colorScheme="teal"
+                variant="solid"
+                size="md"
+                w="100px"
+                onClick={() => {}}
+              >
+                Add
               </Button>
             </Flex>
           </Box>
