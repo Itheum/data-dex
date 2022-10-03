@@ -29,6 +29,7 @@ import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import NfmeId from 'NfmeId/NfmeId';
 import ManageClaims from 'NfmeId/ManageClaims';
+import RecoveryWallets from 'NfmeId/RecoveryWallets';
 import { itheumTokenRoundUtil, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { ABIS } from 'EVM/ABIs';
@@ -572,54 +573,28 @@ function App({ appConfig }) {
                               isDisabled={menuItem === MENU.MANAGECLAIMS}
                               onClick={() => {
                                 setMenuItem(MENU.MANAGECLAIMS);
-                                navigate('nfmeid/manageclaims');
+                                navigate('nfmeid/reputation');
                                 setShowMobileMenu(false);
                               }}
                             >
                               Manage Claims
                             </Button>
-                            {/* <ChainSupportedInput feature={MENU.NFTMEID}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={menuItem === MENU.MANAGECLAIMS}
-                                onClick={() => {
-                                  if (splashScreenShown[MENU.NFTMEID]) {
-                                    navigate('nfmeid/manageclaims');
-                                    setMenuItem(MENU.MANAGECLAIMS);
-                                    setShowMobileMenu(false);
-                                  } else {
-                                    doSplashScreenShown(MENU.NFTMEID);
-                                    navigate('nfmeid');
-                                    setMenuItem(MENU.NFTMEID);
-                                    setShowMobileMenu(false);
-                                  }
-                                }}
-                              >
-                                Dashboard
-                              </Button>
-                            </ChainSupportedInput> */}
+                            <Button
+                              colorScheme="teal"
+                              isDisabled={menuItem === MENU.RECOVERYWALLETS}
+                              onClick={() => {
+                                setMenuItem(MENU.RECOVERYWALLETS);
+                                navigate('nfmeid/wallets');
+                                setShowMobileMenu(false);
+                              }}
+                            >
+                              Manage Claims
+                            </Button>
                           </Stack>
                         </AccordionPanel>
                       </AccordionItem>
 
                     </Accordion>
-
-                    {/* <Stack ml="15px" spacing={4}>
-                      <Button
-                          rightIcon={<AiFillHome />}
-                          w={menuButtonW}
-                          colorScheme="teal"
-                          isDisabled={menuItem === MENU.NFTMEID}
-                          variant="solid"
-                          onClick={() => {
-                            setMenuItem(MENU.NFTMEID);
-                            navigate('nfmeid');
-                            setShowMobileMenu(false);
-                          }}
-                        >
-                          NFMe ID
-                        </Button>
-                    </Stack> */}
                   </Flex>
                 </Stack>
               </Box>
@@ -653,8 +628,9 @@ function App({ appConfig }) {
                     <Route path="trustedcomputation" element={<TrustedComputation />} />
                   </Route>
                   <Route path="nfmeid" element={<Outlet />}>
-                    <Route path="" element={<NfmeId setMenuItem={setMenuItem} />}  />
-                    <Route path="manageclaims" element={<ManageClaims key="nfmeid-manageclaims" />} />
+                    <Route path="dashboard" element={<NfmeId setMenuItem={setMenuItem} />}  />
+                    <Route path="reputation" element={<ManageClaims key="nfmeid-reputation" />} />
+                    <Route path="wallets" element={<RecoveryWallets key="nfmeid-wallets" />} />
                   </Route>
                 </Routes>
               </Box>

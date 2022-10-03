@@ -243,6 +243,7 @@ export const MENU = {
   FAUCET: 14,
   NFMEID: 15,
   MANAGECLAIMS: 16,
+  RECOVERYWALLETS: 17,
 };
 
 export const PATHS = {
@@ -262,7 +263,8 @@ export const PATHS = {
   personaldataproof: [13,[0]],
   trustedcomputation:[14,[4]],
   nfmeid: [15,[-1]],
-  manageclaims: [16, [5]],
+  reputation: [16, [5]],
+  wallets: [17, [5]],
 };
 
 export const CHAINS = {
