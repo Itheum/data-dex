@@ -7,7 +7,7 @@ import {
   TableContainer, Table, Tbody, Tr, Td,
   Tag, TagLabel,
   Editable, EditableInput, EditablePreview, Textarea,
-  Radio, RadioGroup
+  Radio, RadioGroup, AlertDescription
 } from '@chakra-ui/react';
 import dataStreamIcon from 'img/data-stream-icon.png';
 import { ABIS } from 'EVM/ABIs';
@@ -34,12 +34,14 @@ export default function() {
   // 2 for Remove
   // 3 for Attach Success
   // 4 for Remove Success
-  const [recoverWalletsState, setRecoverWalletsState] = useState(4); 
+  const [recoverWalletsState, setRecoverWalletsState] = useState(0); 
 
   const [claims, setClaims] = useState([]);
   
   let web3Signer = useRef();
   let identity = useRef();
+
+  const [selectedWallet, setSelectedWallet] = useState('');
 
   /////////////////////////////////////////////////////////
   const DUMMY_ADDRESSES = [
@@ -107,40 +109,24 @@ export default function() {
     console.log('claims', claims);
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     console.log('identityAddresses, identityContainerState', identityAddresses, identityContainerState);
-  //     if (identityAddresses.length === 0) {
-  //       setIdentityContainerState(0);
-  //     } else {
-  //       if (identityContainerState === 1) { // if previous state is deploying, go to state 2 - show succesfully deployed
-  //         setIdentityContainerState(2);
-  //         console.log('sleep start');
-  //         await sleep(3); // sleep 3 seconds and go to state 3
-  //         console.log('sleep end');
-  //         setIdentityContainerState(3);
-  //       } else { // show NFMe IDs
-  //         setIdentityContainerState(3);
-  //       }
-  //     }
-  //   })();
-  // }, [identityAddresses]);
-
-  // const deployIdentity = async () => {
-  //   try {
-  //     const deployIdentityTx = await identityFactory.current.connect(web3Signer.current).deployIdentity();
-
-  //     // to show "Deploying"
-  //     setIdentityContainerState(1);
-
-  //     const txReceipt = await deployIdentityTx.wait();
-  //     console.log('txReceipt', txReceipt);
-  //     // load deployed identities
-  //     await init();
-  //   } catch (e) {
-  //     alert(e.reason);
-  //   }
-  // };
+  async function proposeForDeletion() {
+    if (_chainMeta?.networkId && user && isWeb3Enabled) {
+      try {
+        if (selectedWallet.length === 0) {
+          alert('Please select a wallet to be removed.');
+          return;
+        }
+        console.log('selectedWallet', selectedWallet);
+        const tx = await identity.current.connect(web3Signer.current).proposeAdditionalOwnerRemoval(selectedWallet);
+  
+        await tx.wait();
+  
+        init();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
 
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
@@ -166,13 +152,13 @@ export default function() {
             <TableContainer mt="9">
               <Table variant="unstyled">
                 <Tbody>
-                  {Array(5).fill('').map((_, index) => (
+                  {DUMMY_ADDRESSES.map((val, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {DUMMY_ADDRESSES[index]}
+                        {val}
 
-                        {index === 0 && (
+                        {val.toLowerCase() === walletAddress.toLowerCase() && (
                           <Button
                             colorScheme="teal"
                             variant="outline"
@@ -194,7 +180,7 @@ export default function() {
                 colorScheme="teal"
                 variant="solid"
                 size="md"
-                onClick={() => {}}
+                onClick={() => setRecoverWalletsState(2)} // go to state 2
               >
                 Remove Wallets
               </Button>
@@ -277,12 +263,12 @@ export default function() {
             <TableContainer mt="9">
               <Table variant="unstyled">
                 <Tbody>
-                  <RadioGroup>
-                  {Array(5).fill('').map((_, index) => (
+                  <RadioGroup onChange={setSelectedWallet} value={selectedWallet}>
+                  {DUMMY_ADDRESSES.map((val, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {DUMMY_ADDRESSES[index]}
+                        {val}
                       </Td>
                       <Td textAlign="left">
                         {index === 0 && (
@@ -297,7 +283,7 @@ export default function() {
 
                         {index !== 0 && (
                           <Radio
-                            value={index}
+                            value={val}
                           >
                             Mark for Deletion
                           </Radio>
@@ -310,14 +296,24 @@ export default function() {
               </Table>
             </TableContainer>
 
-            <Flex justify="flex-end" mt="12">
+            <Flex justify="flex-end" mt="12" gap="6">
+              <Button
+                colorScheme="teal"
+                variant="outline"
+                size="md"
+                w="180px"
+                onClick={() => setRecoverWalletsState(0)} // go to state 0
+              >
+                Cancel
+              </Button>
               <Button
                 colorScheme="teal"
                 variant="solid"
                 size="md"
-                onClick={() => {}}
+                w="180px"
+                onClick={proposeForDeletion}
               >
-                Remove Wallets
+                Propose for Deletion
               </Button>
             </Flex>
           </Box>
@@ -390,7 +386,7 @@ export default function() {
               <Table variant="unstyled">
                 <Tbody>
                   <RadioGroup>
-                  {Array(5).fill('').map((_, index) => (<>
+                  {DUMMY_ADDRESSES.map((val, index) => (<>
                     {index === 2 && (
                     <Tr
                       key={`recovery-wallets-state-0-${index}`}
@@ -400,13 +396,13 @@ export default function() {
                     >
                       <Td textAlign="left">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {DUMMY_ADDRESSES[index]}
+                        {val}
                       </Td>
 
                       <Td textAlign="left">
                         {index === 2 && (
                           <Radio
-                            value={index}
+                            value={val}
                           >
                             AGREE to Delete
                           </Radio>
@@ -416,7 +412,7 @@ export default function() {
                     {index !== 2 && (<Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {DUMMY_ADDRESSES[index]}
+                        {val}
                       </Td>
 
                       <Td textAlign="left">
