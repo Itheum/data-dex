@@ -137,7 +137,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
     })();
   }, [identityAddresses]);
 
-  const deployIdentity = async () => {
+  async function deployIdentity() {
     try {
       const deployIdentityTx = await identityFactory.current.connect(web3Signer.current).deployIdentity();
 
@@ -151,7 +151,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
     } catch (e) {
       alert(e.reason);
     }
-  };
+  }
 
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances

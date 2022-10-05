@@ -17,7 +17,17 @@ import { useNavigate } from 'react-router-dom';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import imgNfmeId from 'img/nfme-id.png';
 import imgLogo from 'img/logo.png';
-import { sleep, debugui } from 'libs/util';
+import { sleep, debugui, convertUnixTimestampToLocalDateTime } from 'libs/util';
+
+const EMPTY_CLAIM_PAYLOAD = {
+  identifier: '',
+  from: '',
+  to: '',
+  data: '',
+  validFrom: 0,
+  validTo: 0,
+  signature: '',
+};
 
 export default function() {
   const navigate = useNavigate();
@@ -31,9 +41,11 @@ export default function() {
   // 0 for View and Delete
   // 1 for Add
   // 2 for Manual Add
-  const [manageClaimsState, setManageClaimsState] = useState(2); 
+  const [manageClaimsState, setManageClaimsState] = useState(0); 
 
   const [claims, setClaims] = useState([]);
+  const [claimPayload, setClaimPayload] = useState('');
+  const [claimPayloadJson, setClaimPayloadJson] = useState(EMPTY_CLAIM_PAYLOAD);
   
   let web3Signer = useRef();
   let identity = useRef();
@@ -99,7 +111,7 @@ export default function() {
 
     // query-start block number
     // We can only query last 1000 blocks due to the limit of Mumbai Testnet
-    const fromBlockNumber = (await web3Provider.getBlockNumber()) - 1000;
+    const fromBlockNumber = (await web3Provider.getBlockNumber()) - 2000;
     console.log('fromBlockNumber', fromBlockNumber);
 
     let events = await identityFactory.queryFilter('IdentityDeployed', fromBlockNumber);
@@ -147,40 +159,46 @@ export default function() {
     console.log('claims', claims);
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     console.log('identityAddresses, identityContainerState', identityAddresses, identityContainerState);
-  //     if (identityAddresses.length === 0) {
-  //       setIdentityContainerState(0);
-  //     } else {
-  //       if (identityContainerState === 1) { // if previous state is deploying, go to state 2 - show succesfully deployed
-  //         setIdentityContainerState(2);
-  //         console.log('sleep start');
-  //         await sleep(3); // sleep 3 seconds and go to state 3
-  //         console.log('sleep end');
-  //         setIdentityContainerState(3);
-  //       } else { // show NFMe IDs
-  //         setIdentityContainerState(3);
-  //       }
-  //     }
-  //   })();
-  // }, [identityAddresses]);
+  async function removeClaim(identifier) {
+    try {
+      console.log('removeClaim: ', identifier);
+      const tx = await identity.current.connect(web3Signer.current).removeClaim(identifier);
 
-  // const deployIdentity = async () => {
-  //   try {
-  //     const deployIdentityTx = await identityFactory.current.connect(web3Signer.current).deployIdentity();
+      const txReceipt = await tx.wait();
+      console.log('txReceipt', txReceipt);
+      
+      // load claims again
+      await init();
+    } catch (e) {
+      alert(e.reason);
+    }
+  }
 
-  //     // to show "Deploying"
-  //     setIdentityContainerState(1);
+  function onChangeClaimPayload(payload) {
+    setClaimPayload(payload);
 
-  //     const txReceipt = await deployIdentityTx.wait();
-  //     console.log('txReceipt', txReceipt);
-  //     // load deployed identities
-  //     await init();
-  //   } catch (e) {
-  //     alert(e.reason);
-  //   }
-  // };
+    try {
+      const t = JSON.parse(payload);
+      console.log('t:', t);
+      setClaimPayloadJson(t);
+    } catch(e) {
+      setClaimPayloadJson(EMPTY_CLAIM_PAYLOAD);
+    }
+
+  }
+
+  async function addClaim() {
+    try {
+      console.log('claimPayloadJson', claimPayloadJson);
+      const addClaimTx = await identity.current.connect(web3Signer.current).addClaim(claimPayloadJson);
+
+      await addClaimTx.wait();
+
+      init();
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
@@ -216,16 +234,16 @@ export default function() {
                     <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
                     <Text fontSize="sm">Itheum({val.to})</Text>
                     <Heading as="h6" size="sm" mt="3">Issued On:</Heading>
-                    <Text fontSize="sm">{val.validFrom}</Text>
+                    <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(val.validFrom)}</Text>
                     <Heading as="h6" size="sm" mt="3">Expires On:</Heading>
-                    <Text fontSize="sm">{val.validTo}</Text>
+                    <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(val.validTo)}</Text>
 
                     <Flex justify="flex-end">
                       <Button
                         size="sm"
                         colorScheme="teal"
                         variant="solid"
-                        onClick={() => {}}
+                        onClick={() => removeClaim(val.identifier)}
                       >
                         Delete
                       </Button>
@@ -240,7 +258,7 @@ export default function() {
                 colorScheme="teal"
                 variant="solid"
                 size="md"
-                onClick={() => {}}
+                onClick={() => setManageClaimsState(1)} // go to state 1
               >
                 Add New Claims
               </Button>
@@ -275,7 +293,7 @@ export default function() {
                       size="sm"
                       colorScheme="teal"
                       variant="solid"
-                      onClick={() => {}}
+                      onClick={() => setManageClaimsState(2)} // go to state 2
                     >
                       Manually Add Claim Payload
                     </Button>
@@ -333,6 +351,8 @@ export default function() {
                   <Textarea 
                     placeholder="Claim payload goes here..."
                     h="100%"
+                    defaultValue={claimPayload}
+                    onChange={(e) => onChangeClaimPayload(e.target.value)}
                   />
                 </Box>
               </WrapItem>
@@ -342,13 +362,13 @@ export default function() {
                   p="3"
                 >
                   <Heading as="h6" size="sm" color="teal">[Preview]</Heading>
-                  <Heading as="h6" size="md" mt="3">NFMe ID Mint Allowed</Heading>
+                  <Heading as="h6" size="md" mt="3">{claimPayloadJson.identifier.length === 0 ? '-' : claimPayloadJson.identifier}</Heading>
                   <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
-                  <Text fontSize="sm">Itheum(0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E)</Text>
+                  <Text fontSize="sm">Itheum({claimPayloadJson.from})</Text>
                   <Heading as="h6" size="sm" mt="3">Issued On:</Heading>
-                  <Text fontSize="sm">02/01/2022</Text>
+                  <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claimPayloadJson.validFrom)}</Text>
                   <Heading as="h6" size="sm" mt="3">Expires On:</Heading>
-                  <Text fontSize="sm">03/10/2024</Text>
+                  <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claimPayloadJson.validTo)}</Text>
                 </Box>
               </WrapItem>
             </Wrap>
@@ -359,7 +379,7 @@ export default function() {
                 variant="outline"
                 size="md"
                 w="100px"
-                onClick={() => {}}
+                onClick={() => setManageClaimsState(0)} // go to state 0
               >
                 Cancel
               </Button>
@@ -368,7 +388,7 @@ export default function() {
                 variant="solid"
                 size="md"
                 w="100px"
-                onClick={() => {}}
+                onClick={addClaim}
               >
                 Add
               </Button>

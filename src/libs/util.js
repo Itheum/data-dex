@@ -459,3 +459,8 @@ export const clearAppSessions = () => {
     sessionStorage.removeItem('itm-launch-mode');
     sessionStorage.removeItem('itm-launch-env');
 }
+
+export const convertUnixTimestampToLocalDateTime = (unix_timestamp) => {
+  if (unix_timestamp === 0) return 'Never';
+  return (new Date(unix_timestamp * 1000)).toLocaleString();
+}

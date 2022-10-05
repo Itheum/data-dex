@@ -573,22 +573,22 @@ function App({ appConfig }) {
                               isDisabled={menuItem === MENU.MANAGECLAIMS}
                               onClick={() => {
                                 setMenuItem(MENU.MANAGECLAIMS);
-                                navigate('nfmeid/reputation');
+                                navigate('nfmeid/identity/reputation');
                                 setShowMobileMenu(false);
                               }}
                             >
-                              Manage Claims
+                              Reputation
                             </Button>
                             <Button
                               colorScheme="teal"
                               isDisabled={menuItem === MENU.RECOVERYWALLETS}
                               onClick={() => {
                                 setMenuItem(MENU.RECOVERYWALLETS);
-                                navigate('nfmeid/wallets');
+                                navigate('nfmeid/identity/wallets');
                                 setShowMobileMenu(false);
                               }}
                             >
-                              Manage Claims
+                              Wallets
                             </Button>
                           </Stack>
                         </AccordionPanel>
@@ -628,9 +628,9 @@ function App({ appConfig }) {
                     <Route path="trustedcomputation" element={<TrustedComputation />} />
                   </Route>
                   <Route path="nfmeid" element={<Outlet />}>
-                    <Route path="dashboard" element={<NfmeId setMenuItem={setMenuItem} />}  />
-                    <Route path="reputation" element={<ManageClaims key="nfmeid-reputation" />} />
-                    <Route path="wallets" element={<RecoveryWallets key="nfmeid-wallets" />} />
+                    <Route path="" element={<NfmeId setMenuItem={setMenuItem} />}  />
+                    <Route path="identity/reputation" element={<ManageClaims key="nfmeid-reputation" />} />
+                    <Route path="identity/wallets" element={<RecoveryWallets key="nfmeid-wallets" />} />
                   </Route>
                 </Routes>
               </Box>
