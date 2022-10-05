@@ -198,18 +198,19 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
       )}
 
       {/* State 3: Show NFMe IDs and Claims */}
-      {identityContainerState === 3 && (<Stack>
-          <HStack>
-            <Box maxW="md" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
+      {identityContainerState === 3 && (<>
+        <Wrap spacing="30px" mt="9">
+          <WrapItem>
+            <Box borderWidth="1px" p="10" borderRadius="lg">
               <Heading size="lg">My NFMe ID</Heading>
               <HStack mt="12">
                 <VStack
                   spacing={5}
                   align='stretch'
-                  maxW="md"
+                  // maxW="md"
                   h="420"
                   >
-                  <Image height="100%" src={imgNfmeId} alt="Itheum Data DEX" />
+                  <Image width="100%" src={imgNfmeId} alt="Itheum Data DEX" />
                 </VStack>
                 <VStack
                   spacing={5}
@@ -229,68 +230,75 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
                   </VStack>
               </HStack>
             </Box>
-
-            <Box maxW="md" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
+          </WrapItem>
+          <WrapItem>
+            <Box borderWidth="1px" p="10" borderRadius="lg">
               <Heading size="lg">Greenroom Protocal</Heading>
               <Button mt="12" colorScheme="teal" variant="outline" onClick={() => {}}>Teleport</Button>
             </Box>
-          </HStack>
-
-          <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
-            <Heading size="lg">Web3 Reputation</Heading>
-            <Box maxW="sm" maxWidth="initial" mt="12">
-              <Heading size="md">My Claims</Heading>
-              <Text fontSize="md" mt="9">Claims are issued by 3rd parties. They can be independently verified. They are NOT NFTs and can be revoked and can have expiry. The more reputation the 3rd party who has the more valuable a claim. An example of a claim can be a “Diver’s License” issues by the Department of Motor Vehicles or “Gamer Passport Alpha” participant claim issues by the Itheum Protocol</Text>
-              <Wrap mt="9">
-                {claims.length === 0 && (
-                  <Tag size='lg' colorScheme='red' borderRadius='full'>
-                    <TagLabel>You don't have any claims.</TagLabel>
-                  </Tag>
-                )}
-                {claims.length > 0 && claims.map((val, index) => (
-                  <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg" key={`nfmeid-claim-${index}`}>
+          </WrapItem>
+        </Wrap>
+        <Wrap spacing="30px" mt="9" align="stretch">
+          <WrapItem>
+            <Box maxW="xl"  borderWidth="1px" p="10" borderRadius="lg">
+              <Heading size="lg">Web3 Reputation</Heading>
+              <Box mt="12">
+                <Heading size="md">My Claims</Heading>
+                <Text fontSize="md" mt="9">Claims are issued by 3rd parties. They can be independently verified. They are NOT NFTs and can be revoked and can have expiry. The more reputation the 3rd party who has the more valuable a claim. An example of a claim can be a “Diver’s License” issues by the Department of Motor Vehicles or “Gamer Passport Alpha” participant claim issues by the Itheum Protocol</Text>
+                <Wrap mt="9">
+                  {claims.length === 0 && (
+                    <Tag size='lg' colorScheme='red' borderRadius='full'>
+                      <TagLabel>You don't have any claims.</TagLabel>
+                    </Tag>
+                  )}
+                  {claims.length > 0 && claims.map((val, index) => (
+                    <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg" key={`nfmeid-claim-${index}`}>
+                      <Image height="120" src={imgLogo} alt="NFMe" />
+                    </WrapItem>
+                  ))}
+                </Wrap>
+                <Button mt="9" colorScheme="teal" variant="outline" onClick={() => navigate('identity/reputation')}>Manage Claims</Button>
+              </Box>
+              <Box mt="12">
+                <Heading size="md">My Badges</Heading>
+                <Text fontSize="md" mt="9">Badges are more like “achievements” and are NFTs. POAPs, OATs etc are badges that you can send to your identity and build your achievement portfolio</Text>
+                <Wrap mt="9">
+                  <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
                     <Image height="120" src={imgLogo} alt="NFMe" />
                   </WrapItem>
-                ))}
-              </Wrap>
-              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => navigate('manageclaims')}>Manage Claims</Button>
+                  <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
+                    <Image height="120" src={imgLogo} alt="NFMe" />
+                  </WrapItem>
+                  <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
+                    <Image height="120" src={imgLogo} alt="NFMe" />
+                  </WrapItem>
+                </Wrap>
+                <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {}}>How to Get</Button>
+              </Box>
             </Box>
-            <Box maxW="sm" maxWidth="initial"  mt="12">
-              <Heading size="md">My Badges</Heading>
-              <Text fontSize="md" mt="9">Badges are more like “achievements” and are NFTs. POAPs, OATs etc are badges that you can send to your identity and build your achievement portfolio</Text>
-              <Wrap mt="9">
-                <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-                  <Image height="120" src={imgLogo} alt="NFMe" />
-                </WrapItem>
-                <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-                  <Image height="120" src={imgLogo} alt="NFMe" />
-                </WrapItem>
-                <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-                  <Image height="120" src={imgLogo} alt="NFMe" />
-                </WrapItem>
-              </Wrap>
-              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {}}>How to Get</Button>
+          </WrapItem>
+          <WrapItem>
+            <Box maxW="xl" borderWidth="1px" p="10" borderRadius="lg" overflow="auto">
+              <Heading size="lg">Recovery Wallets</Heading>
+
+              <TableContainer td="9">
+                <Table variant="unstyled">
+                  <Tbody>
+                    {[1,2,3,4,5].map((i, index) => (
+                      <Tr key={`nfmeid-wallet-${index}`}>
+                        <Td>Wallet {`${i}`}:</Td>
+                        <Td>{identityOwners.length > i - 1 && identityOwners[i - 1]}</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+
+              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => navigate('identity/wallets')}>Manage Wallets</Button>
             </Box>
-          </Box>
-          <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
-            <Heading size="lg">Recovery Wallets</Heading>
-
-            <TableContainer td="9">
-              <Table variant="unstyled">
-                <Tbody>
-                  {[1,2,3,4,5].map((i, index) => (
-                    <Tr key={`nfmeid-wallet-${index}`}>
-                      <Td>Wallet {`${i}`}:</Td>
-                      <Td>{identityOwners.length > i - 1 && identityOwners[i - 1]}</Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
-
-            <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {}}>Manage Wallets</Button>
-          </Box>
-      </Stack>)}
+          </WrapItem>
+        </Wrap>
+      </>)}
     </>
   );
 };
