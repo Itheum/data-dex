@@ -17,6 +17,9 @@ import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import imgNfmeId from 'img/nfme-id.png';
 import imgLogo from 'img/logo.png';
 import { sleep } from 'libs/util';
+import { IdentityFactory as SDKIdentityFactory } from 'poc-itheum-identity-sdk';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import './index.css';
 
 export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   const navigate = useNavigate();
@@ -27,7 +30,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction('loadTestData', {}, { autoFetch: false });
   const walletAddress = user.get('ethAddress');
 
-  const [identityContainerState, setIdentityContainerState] = useState(0); // 0 for not deployed, 1 for deploying, 2 for deployed, 3 for show my NFMe IDs
+  const [identityContainerState, setIdentityContainerState] = useState(1); // 0 for not deployed, 1 for deploying, 2 for deployed, 3 for show my NFMe IDs
   const [identityAddresses, setIdentityAddresses] = useState([]);
   const [identityOwners, setIdentityOwners] = useState([]);
   const [claims, setClaims] = useState([]);
@@ -36,102 +39,50 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   let identityFactory = useRef();
   let identity = useRef();
   
-  console.log('identityContainerState', identityContainerState);
-  console.log('identityAddresses', identityAddresses);
+  // console.log('identityContainerState', identityContainerState);
+  // console.log('identityAddresses', identityAddresses);
   const init = async () => {
-    console.log('init');
-    web3Signer.current = web3Provider.getSigner();
-    identityFactory.current = new ethers.Contract(_chainMeta.contracts.identityFactory, ABIS.ifactory, web3Signer.current);
+    identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
+    console.log('identityFactory.current', identityFactory.current);
+    const identities = await identityFactory.current.getIdentitiesByTheGraph();
+    const identityAddresses = identities.map(identity => identity.address);
 
-    // query-start block number
-    // We can only query last 1000 blocks due to the limit of Mumbai Testnet
-    const fromBlockNumber = (await web3Provider.getBlockNumber()) - 2000;
-    console.log('fromBlockNumber', fromBlockNumber);
-
-    let events = await identityFactory.current.queryFilter('IdentityDeployed', fromBlockNumber);
-    console.log('events', events);
-    const identityDeployedEvents = events.filter(event => event.args[1].toLowerCase() === walletAddress.toLowerCase());
-    let identityAddresses = identityDeployedEvents.length > 0 ? identityDeployedEvents.map(event => event.args[0]) : [];
-
-    if (identityAddresses.length === 0) {
-      events = await identityFactory.current.queryFilter('AdditionalOwnerAction', fromBlockNumber);
-
-      const eventsForWalletAddress = events.filter(event => event.args[2].toLowerCase() === walletAddress.toLowerCase());
-      const addingEvents = eventsForWalletAddress.filter(event => event.args[3] === 'added');
-      const removingEvents = eventsForWalletAddress.filter(event => event.args[3] === 'removed');
-
-      identityAddresses = addingEvents.map(event => event.args[0]);
-
-      removingEvents.map(event => event.args[0]).forEach(ele => {
-        const index = identityAddresses.findIndex(eleToFind => eleToFind === ele);
-        if (index >= 0) identityAddresses.splice(index, 1);
-      });
-    }
-
+    console.log('identities', identities);
     setIdentityAddresses(identityAddresses);
 
     if (identityAddresses.length === 0) {
       return;
     }
-    const identityAddress = identityAddresses[0];
+    
+    // identity.current = identities[0];
+    // console.log('identity.current', identity.current);
+    // const owners = await identity.current.getOwners();
+    // console.log('owners', owners);
+    // setIdentityOwners(owners);
 
-    // query owners of identity contract
-    identity.current = new ethers.Contract(identityAddress, ABIS.identity, web3Signer.current);
+    // const confirmations = await identity.current.getOwnerRemovalConfirmations();
+    // // setConfirmationState(confirmations);
 
-    const owners = [await identity.current.owner()];
-    const additionalOwnerAddedEvents = await identity.current.queryFilter('AdditionalOwnerAdded', fromBlockNumber);
-    const additionalOwnerRemovedEvents = await identity.current.queryFilter('AdditionalOwnerRemoved', fromBlockNumber);
-    owners.push(...additionalOwnerAddedEvents.map(ele => ele.args[1]));
+    // const claims = await identity.current.getClaims();
+    // setClaims(claims);
 
-    additionalOwnerRemovedEvents
-      .map(ele => ele.args[1])
-      .forEach(ele => {
-        const index = owners.findIndex(eleToFind => eleToFind === ele);
-        if (index >= 0) owners.splice(index, 1);
-    });
-    setIdentityOwners(owners);
-
-    // const confirmations = [];
-
-    // for (const owner of owners) {
-    //   const count = await identity.current.removeAdditionalOwnerConfirmationCount(owner);
-    //   confirmations.push(count);
-    // }
-
-    // setConfirmationState(confirmations);
-
-    const claims = [];
-    const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
-    const claimRemovedEvents = await identity.current.queryFilter('ClaimRemoved', fromBlockNumber);
-    claims.push(...claimAddedEvents.map(ele => ele.args[0]));
-
-    claimRemovedEvents
-      .map(ele => ele.args[0])
-      .forEach(ele => {
-        const index = claims.findIndex(eleToFind => eleToFind === ele);
-        if (index >= 0) claims.splice(index, 1);
-      });
-
-    setClaims(claims);
-
-    console.log('owners', owners);
-    console.log('claims', claims);
+    
+    // console.log('claims', claims);
   };
 
   useEffect(() => {
     (async () => {
-      console.log('identityAddresses, identityContainerState', identityAddresses, identityContainerState);
-      if (identityAddresses.length === 0) {
-        setIdentityContainerState(0);
-      } else {
-        if (identityContainerState === 1) { // if previous state is deploying, go to state 2 - show succesfully deployed
-          setIdentityContainerState(2);
-          console.log('sleep start');
-          await sleep(3); // sleep 3 seconds and go to state 3
-          console.log('sleep end');
-          setIdentityContainerState(3);
-        } else { // show NFMe IDs
-          setIdentityContainerState(3);
+      if (_chainMeta?.networkId && user && isWeb3Enabled) {
+        if (identityAddresses.length === 0) {
+          setIdentityContainerState(0);
+        } else {
+          if (identityContainerState === 1) { // if previous state is deploying, go to state 2 - show succesfully deployed
+            setIdentityContainerState(2);
+            await sleep(3); // sleep 3 seconds and go to state 3
+            setIdentityContainerState(3);
+          } else { // show NFMe IDs
+            setIdentityContainerState(3);
+          }
         }
       }
     })();
@@ -164,6 +115,9 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
 
   return (
     <>
+      {/* State -1: Loading */}
+      {identityContainerState === -1 && (<>{<SkeletonLoadingList /> || <Text>No data yet...</Text>}</>)}
+
       {/* State 0: No Identity Contract */}
       {identityContainerState === 0 && (
         <ChainSupportedComponent>
@@ -183,7 +137,14 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
           <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
             <Heading size="lg">Deploying Identity Containter...</Heading>
 
-            <Box fontSize="sm" mt="9" align="left" flex="1">Deploying</Box>
+            {/* Rotating Circle with inner text */}
+            <div class="wrapper">
+              <div class="spinner">
+                <span><em></em></span>
+              </div>
+              <div class="text">Deploying</div>
+            </div>
+
           </Box>
         </ChainSupportedComponent>
       )}
@@ -192,7 +153,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
       {identityContainerState === 2 && (
         <ChainSupportedComponent>
           <Box maxW="sm" borderWidth="1px" p="10" borderRadius="lg" maxWidth="initial">
-          <Heading size="lg">Identity Containter Successfuly Deployed!</Heading>
+            <Heading size="lg">Identity Containter Successfuly Deployed!</Heading>
           </Box>
         </ChainSupportedComponent>
       )}
@@ -201,7 +162,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
       {identityContainerState === 3 && (<>
         <Wrap spacing="30px" mt="9">
           <WrapItem>
-            <Box borderWidth="1px" p="10" borderRadius="lg">
+            <Box borderWidth="1px" p="10" borderRadius="lg" w="100%" h="100%">
               <Heading size="lg">My NFMe ID</Heading>
               <HStack mt="12">
                 <VStack
@@ -232,15 +193,15 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
             </Box>
           </WrapItem>
           <WrapItem>
-            <Box borderWidth="1px" p="10" borderRadius="lg">
-              <Heading size="lg">Greenroom Protocal</Heading>
+            <VStack borderWidth="1px" p="10" borderRadius="lg" w="100%" h="100%">
+              <Heading size="lg" h="100%">Greenroom Protocal</Heading>
               <Button mt="12" colorScheme="teal" variant="outline" onClick={() => {}}>Teleport</Button>
-            </Box>
+            </VStack>
           </WrapItem>
         </Wrap>
         <Wrap spacing="30px" mt="9" align="stretch">
           <WrapItem>
-            <Box maxW="xl"  borderWidth="1px" p="10" borderRadius="lg">
+            <Box maxW="xl"  borderWidth="1px" p="10" borderRadius="lg" w="100%" h="100%">
               <Heading size="lg">Web3 Reputation</Heading>
               <Box mt="12">
                 <Heading size="md">My Claims</Heading>
@@ -278,7 +239,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
             </Box>
           </WrapItem>
           <WrapItem>
-            <Box maxW="xl" borderWidth="1px" p="10" borderRadius="lg" overflow="auto">
+            <Box maxW="xl" borderWidth="1px" p="10" borderRadius="lg" overflow="auto" w="100%" h="100%">
               <Heading size="lg">Recovery Wallets</Heading>
 
               <TableContainer td="9">
