@@ -18,6 +18,7 @@ import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import imgNfmeId from 'img/nfme-id.png';
 import imgLogo from 'img/logo.png';
 import { sleep, debugui, convertUnixTimestampToLocalDateTime } from 'libs/util';
+import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 
 const EMPTY_CLAIM_PAYLOAD = {
   identifier: '',
@@ -38,10 +39,11 @@ export default function() {
   const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction('loadTestData', {}, { autoFetch: false });
   const walletAddress = user.get('ethAddress');
 
+  // -1 for Loading
   // 0 for View and Delete
   // 1 for Add
   // 2 for Manual Add
-  const [manageClaimsState, setManageClaimsState] = useState(0); 
+  const [manageClaimsState, setManageClaimsState] = useState(-1); 
 
   const [claims, setClaims] = useState([]);
   const [claimPayload, setClaimPayload] = useState('');
@@ -105,7 +107,9 @@ export default function() {
 
   console.log('manageClaimsState', manageClaimsState);
   const init = async () => {
-    console.log('init');
+    // show Loading
+    setManageClaimsState(-1);
+
     web3Signer.current = web3Provider.getSigner();
     const identityFactory = new ethers.Contract(_chainMeta.contracts.identityFactory, ABIS.ifactory, web3Signer.current);
 
@@ -133,6 +137,9 @@ export default function() {
         if (index >= 0) identityAddresses.splice(index, 1);
       });
     }
+
+    // Loading finished
+    setManageClaimsState(0);
 
     if (identityAddresses.length === 0) {
       return;
@@ -211,6 +218,9 @@ export default function() {
 
   return (
     <>
+      {/* State -1: Loading */}
+      {manageClaimsState === -1 && (<>{<SkeletonLoadingList /> || <Text>No data yet...</Text>}</>)}
+
       {/* State 0: View and Delete */}
       {manageClaimsState === 0 && (
         <ChainSupportedComponent>

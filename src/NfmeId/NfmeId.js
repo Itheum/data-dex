@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import imgNfmeId from 'img/nfme-id.png';
 import imgLogo from 'img/logo.png';
-import { sleep } from 'libs/util';
+import { MENU, sleep } from 'libs/util';
 import { IdentityFactory as SDKIdentityFactory } from 'poc-itheum-identity-sdk';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import './index.css';
@@ -42,6 +42,9 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   // console.log('identityContainerState', identityContainerState);
   // console.log('identityAddresses', identityAddresses);
   const init = async () => {
+    // show Loading
+    setIdentityContainerState(-1);
+
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
     console.log('identityFactory.current', identityFactory.current);
     const identities = await identityFactory.current.getIdentitiesByTheGraph();
@@ -54,8 +57,8 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
       return;
     }
     
-    // identity.current = identities[0];
-    // console.log('identity.current', identity.current);
+    identity.current = identities[0];
+    console.log('identity.current', identity.current);
     // const owners = await identity.current.getOwners();
     // console.log('owners', owners);
     // setIdentityOwners(owners);
@@ -218,7 +221,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
                     </WrapItem>
                   ))}
                 </Wrap>
-                <Button mt="9" colorScheme="teal" variant="outline" onClick={() => navigate('identity/reputation')}>Manage Claims</Button>
+                <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {setMenuItem(MENU.MANAGECLAIMS); navigate('identity/reputation');}}>Manage Claims</Button>
               </Box>
               <Box mt="12">
                 <Heading size="md">My Badges</Heading>
@@ -255,7 +258,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
                 </Table>
               </TableContainer>
 
-              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => navigate('identity/wallets')}>Manage Wallets</Button>
+              <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {setMenuItem(MENU.RECOVERYWALLETS); navigate('identity/wallets');}}>Manage Wallets</Button>
             </Box>
           </WrapItem>
         </Wrap>
