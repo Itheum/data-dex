@@ -7,7 +7,8 @@ import {
   TableContainer, Table, Tbody, Tr, Td,
   Tag, TagLabel,
   Editable, EditableInput, EditablePreview, Textarea,
-  Radio, RadioGroup, AlertDescription
+  Radio, RadioGroup, AlertDescription,
+  Input,
 } from '@chakra-ui/react';
 import dataStreamIcon from 'img/data-stream-icon.png';
 import { ABIS } from 'EVM/ABIs';
@@ -135,6 +136,14 @@ export default function() {
     }
   }
 
+  async function addOwner(newOwnerAddress) {
+    try {
+      await identity.current.addAdditionalOwner(newOwnerAddress);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
@@ -185,11 +194,21 @@ export default function() {
               </Table>
             </TableContainer>
 
-            <Flex justify="flex-end" mt="12">
+            <Flex justify="flex-end" mt="12" gap="6">
               <Button
                 colorScheme="teal"
                 variant="solid"
                 size="md"
+                width="140px"
+                onClick={() => setRecoverWalletsState(1)} // go to state 1
+              >
+                Add Wallets
+              </Button>
+              <Button
+                colorScheme="teal"
+                variant="solid"
+                size="md"
+                width="140px"
                 onClick={() => setRecoverWalletsState(2)} // go to state 2
               >
                 Remove Wallets
@@ -212,36 +231,44 @@ export default function() {
             <TableContainer mt="9">
               <Table variant="unstyled">
                 <Tbody>
-                  {Array(5).fill('').map((_, index) => (
+                  {Array(1).fill('').map((_, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
                         {DUMMY_ADDRESSES[index]}
-
+                      </Td>
+                      <Td>
                         {index === 0 && (
                           <Button
                             colorScheme="teal"
                             variant="outline"
                             size="sm"
-                            ml="6"
+                            // ml="6"
                           >
                             Currently Logged In
-                          </Button>
-                        )}
-
-                        {index === 1 && (
-                          <Button
-                            colorScheme="teal"
-                            variant="solid"
-                            size="sm"
-                            ml="6"
-                          >
-                            Attach
                           </Button>
                         )}
                       </Td>
                     </Tr>
                   ))}
+                  
+                  <Tr>
+                    <Td textAlign="left" pl="0">Wallet 3:</Td>
+                    <Td textAlign="left">
+                      <Input size="sm" maxW="100%" placeholder="Input a new owner address." />
+                    </Td>
+                    <Td textAlign="left">
+                      <Button
+                        colorScheme="teal"
+                        variant="solid"
+                        size="sm"
+                        px="3"
+                        onClick={(e) => addOwner(e.target.value)}
+                      >
+                        Attach
+                      </Button>
+                    </Td>
+                  </Tr>
                 </Tbody>
               </Table>
             </TableContainer>
@@ -251,9 +278,9 @@ export default function() {
                 colorScheme="teal"
                 variant="solid"
                 size="md"
-                onClick={() => {}}
+                onClick={() => setRecoverWalletsState(0)}
               >
-                Remove Wallets
+                Back
               </Button>
             </Flex>
           </Box>
@@ -344,7 +371,7 @@ export default function() {
               <Table variant="unstyled">
                 <Tbody>
                   <RadioGroup>
-                  {Array(5).fill('').map((_, index) => (
+                  {Array(2).fill('').map((_, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
