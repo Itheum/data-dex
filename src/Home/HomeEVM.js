@@ -9,7 +9,7 @@ import {
   WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
 import moment from 'moment';
 import ShortAddress from 'UtilComps/ShortAddress';
-import { progInfoMeta, uxConfig, sleep } from 'libs/util';
+import { progInfoMeta, uxConfig, sleep, noChainSupport } from 'libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
 import { ABIS } from 'EVM/ABIs';
 import imgProgGaPa from 'img/prog-gaming.jpg';
@@ -133,7 +133,9 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheu
     // this will trigger during component load/page load, so let's get the latest claims balances
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
-      web3_evmClaimsBalancesUpdate();
+      if (!noChainSupport(MENU.CLAIMS, _chainMeta.networkId)) { // only load this if chain support CLAIMS
+        web3_evmClaimsBalancesUpdate();
+      }
     }
   }, [user, isWeb3Enabled, _chainMeta]);
 

@@ -9,6 +9,9 @@ import {
   tokenContractAddress_Rink,
   ddexContractAddress_Rink,
   dNFTContractAddress_Rink,
+  tokenContractAddress_Goerli,
+  ddexContractAddress_Goerli,
+  dNFTContractAddress_Goerli,
   tokenContractAddress_testnetBSC,
   ddexContractAddress_testnetBSC,
   dNFTContractAddress_testnetBSC,
@@ -57,6 +60,11 @@ export const contractsForChain = (networkId) => {
       contracts.itheumToken = tokenContractAddress_Rink;
       contracts.ddex = ddexContractAddress_Rink;
       contracts.dnft = dNFTContractAddress_Rink;
+      break;
+    case 5:
+      contracts.itheumToken = tokenContractAddress_Goerli;
+      contracts.ddex = ddexContractAddress_Goerli;
+      contracts.dnft = dNFTContractAddress_Goerli;
       break;
     case 80001:
       contracts.itheumToken = tokenContractAddress_Matic;
@@ -262,8 +270,8 @@ export const CHAINS = {
   1: 'Eth - Mainnet',
   3: 'Eth - Ropsten',
   4: 'Eth - Rinkeby',
+  5: 'Eth - Goerli',
   42: 'Eth - Kovan',
-  420: 'Eth - Goerli',
   137: 'Matic - Mainnet',
   80001: 'Matic - Mumbai',
   97: 'BSC - Chapel',
@@ -281,7 +289,7 @@ export const CHAIN_NAMES = {
   3: 'ropsten',
   4: 'rinkeby',
   42: 'kovan',
-  420: 'goerli',
+  5: 'goerli',
   137: 'matic',
   80001: 'mumbai',
   97: 'bsc testnet',
@@ -297,7 +305,7 @@ export const OPENSEA_CHAIN_NAMES = {
   80001: 'mumbai',
 };
 
-export const SUPPORTED_CHAINS = ['E1', 'ED', 3, 4, 80001, 97, 1666700000, 43113];
+export const SUPPORTED_CHAINS = ['E1', 'ED', 3, 4, 5, 80001, 97, 1666700000, 43113];
 
 export const WALLETS = {
   METAMASK: 'evm_metamask',
@@ -314,6 +322,7 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
+    5: [MENU.CLAIMS, MENU.TX],
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
@@ -332,6 +341,7 @@ export function noChainSupport(menuItem, networkId) {
 export const CHAIN_TX_VIEWER = {
   3: 'https://ropsten.etherscan.io/tx/',
   4: 'https://rinkeby.etherscan.io/tx/',
+  5: 'https://goerli.etherscan.io/tx/',
   80001: 'https://explorer-mumbai.maticvigil.com/tx/',
   97: 'https://testnet.bscscan.com/tx/',
   1666700000: 'https://explorer.pops.one/#/',
@@ -356,7 +366,7 @@ export const CHAIN_TX_LIST = {
 export const CHAIN_TOKEN_SYMBOL = (networkId) => {
   const mapping = {
     ITHEUM: ['E1', 'ED'],
-    eITHEUM: [3, 4, 1],
+    eITHEUM: [3, 4, 5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
     hITHEUM: [1666700000],
