@@ -12,6 +12,7 @@ import {
   tokenContractAddress_Goerli,
   ddexContractAddress_Goerli,
   dNFTContractAddress_Goerli,
+  claimsContractAddress_Goerli,
   tokenContractAddress_testnetBSC,
   ddexContractAddress_testnetBSC,
   dNFTContractAddress_testnetBSC,
@@ -65,6 +66,7 @@ export const contractsForChain = (networkId) => {
       contracts.itheumToken = tokenContractAddress_Goerli;
       contracts.ddex = ddexContractAddress_Goerli;
       contracts.dnft = dNFTContractAddress_Goerli;
+      contracts.claims = claimsContractAddress_Goerli;
       break;
     case 80001:
       contracts.itheumToken = tokenContractAddress_Matic;
@@ -322,7 +324,7 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
-    5: [MENU.CLAIMS, MENU.TX],
+    5: [MENU.TX],
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
