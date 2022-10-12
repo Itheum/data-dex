@@ -53,17 +53,17 @@ const AuthLauncher = ({ onLaunchMode }) => {
             <Tooltip label="Live on Elrond Mainnet & Devnet">
               <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
             </Tooltip>
-            <Tooltip label="Live on Ropsten & Rinkeby Testnets">
+            <Tooltip label="Live on Görli Testnet">
               <Image src={chainEth} boxSize="30px" width="20px" m="5px" />
+            </Tooltip>
+            <Tooltip label="Live on Mumbai Testnet">
+              <Image src={chainPol} boxSize="30px" borderRadius="lg" m="5px" />
             </Tooltip>
             <Tooltip label="Live on Binance Smart Chain Testnet">
               <Image src={chainBsc} boxSize="30px" m="5px" />
             </Tooltip>
             <Tooltip label="Live on Avalanche C-Chain Testnet">
               <Image src={chainAvln} boxSize="30px" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Mumbai Testnet">
-              <Image src={chainPol} boxSize="30px" borderRadius="lg" m="5px" />
             </Tooltip>
             <Tooltip label="Live on Harmony Testnet">
               <Image src={chainHrmy} boxSize="30px" m="5px" />
