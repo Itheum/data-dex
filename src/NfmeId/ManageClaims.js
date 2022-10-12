@@ -7,6 +7,7 @@ import {
   TableContainer, Table, Tbody, Tr, Td,
   Tag, TagLabel,
   Editable, EditableInput, EditablePreview, Textarea,
+  Alert, AlertIcon, AlertTitle, CloseButton,
 } from '@chakra-ui/react';
 import dataStreamIcon from 'img/data-stream-icon.png';
 import { ABIS } from 'EVM/ABIs';
@@ -21,13 +22,13 @@ import { sleep, debugui, convertUnixTimestampToLocalDateTime } from 'libs/util';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 
 const EMPTY_CLAIM_PAYLOAD = {
-  identifier: '',
-  from: '',
-  to: '',
-  data: '',
-  validFrom: 0,
-  validTo: 0,
-  signature: '',
+  identifier: undefined,
+  from: undefined,
+  to: undefined,
+  data: undefined,
+  validFrom: undefined,
+  validTo: undefined,
+  signature: undefined,
 };
 
 export default function() {
@@ -43,7 +44,7 @@ export default function() {
   // 0 for View and Delete
   // 1 for Add
   // 2 for Manual Add
-  const [manageClaimsState, setManageClaimsState] = useState(-1); 
+  const [manageClaimsState, setManageClaimsState] = useState(2); 
 
   const [claims, setClaims] = useState([]);
   const [claimPayload, setClaimPayload] = useState('');
@@ -51,6 +52,11 @@ export default function() {
   
   let web3Signer = useRef();
   let identity = useRef();
+
+  const [errorMessage, setErrorMessage] = useState('');
+  function closeErrorMessage() {
+    setErrorMessage('');
+  }
 
   /////////////////////////////////////////////////////////
   const DUMMY_CLAIMS = [
@@ -177,18 +183,21 @@ export default function() {
       // load claims again
       await init();
     } catch (e) {
-      alert(e.reason);
+      setErrorMessage(e.reason);
     }
   }
 
   function onChangeClaimPayload(payload) {
+    payload = payload.toString();
     setClaimPayload(payload);
 
     try {
+      // console.log('payload', payload);
       const t = JSON.parse(payload);
-      console.log('t:', t);
+      // console.log('t:', t);
       setClaimPayloadJson(t);
     } catch(e) {
+      console.log(e);
       setClaimPayloadJson(EMPTY_CLAIM_PAYLOAD);
     }
 
@@ -198,12 +207,12 @@ export default function() {
     try {
       console.log('claimPayloadJson', claimPayloadJson);
       const addClaimTx = await identity.current.connect(web3Signer.current).addClaim(claimPayloadJson);
-
       await addClaimTx.wait();
 
       init();
     } catch (e) {
       console.log(e);
+      setErrorMessage(e.message);
     }
   }
 
@@ -212,12 +221,22 @@ export default function() {
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
     console.log('_chainMeta user isWeb3Enabled', _chainMeta, user, isWeb3Enabled);
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
-      init();
+      // init();
     }
   }, [user, isWeb3Enabled, _chainMeta]);
 
   return (
     <>
+      {errorMessage && 
+        <Alert status="error">
+          <Box flex="1">
+            {/* <AlertIcon /> */}
+            <AlertTitle>{errorMessage}</AlertTitle>
+          </Box>
+          <CloseButton position="absolute" right="8px" top="8px" onClick={closeErrorMessage} />
+        </Alert>
+      }
+
       {/* State -1: Loading */}
       {manageClaimsState === -1 && (<>{<SkeletonLoadingList /> || <Text>No data yet...</Text>}</>)}
 
@@ -372,13 +391,20 @@ export default function() {
                   p="3"
                 >
                   <Heading as="h6" size="sm" color="teal">[Preview]</Heading>
-                  <Heading as="h6" size="md" mt="3">{claimPayloadJson.identifier.length === 0 ? '-' : claimPayloadJson.identifier}</Heading>
+                  <Heading as="h6" size="md" mt="3">{claimPayloadJson.identifier && claimPayloadJson.identifier.length !== 0 ? claimPayloadJson.identifier : '-'}</Heading>
+                  <Text fontSize="xs" mt="1" color="red.600">{!(claimPayloadJson.identifier && claimPayloadJson.identifier.length !== 0) && '(Identifier cannot be empty.)'}</Text>
+
                   <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
-                  <Text fontSize="sm">Itheum({claimPayloadJson.from})</Text>
+                  <Text fontSize="sm">{claimPayloadJson.from ? `Itheum(${claimPayloadJson.from})` : '-'} </Text>
+                  <Text fontSize="xs" mt="1" color="red.600">{!claimPayloadJson.from && '(Issued By cannot be empty.)'}</Text>
+
                   <Heading as="h6" size="sm" mt="3">Issued On:</Heading>
-                  <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claimPayloadJson.validFrom)}</Text>
+                  <Text fontSize="sm">{claimPayloadJson.validFrom === undefined ? '-' : convertUnixTimestampToLocalDateTime(claimPayloadJson.validFrom)}</Text>
+                  <Text fontSize="xs" mt="1" color="red.600">{claimPayloadJson.validFrom === undefined && '(Issued On cannot be empty.)'}</Text>
+
                   <Heading as="h6" size="sm" mt="3">Expires On:</Heading>
-                  <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claimPayloadJson.validTo)}</Text>
+                  <Text fontSize="sm">{claimPayloadJson.validTo === undefined ? '-' : convertUnixTimestampToLocalDateTime(claimPayloadJson.validTo)}</Text>
+                  <Text fontSize="xs" mt="1" color="red.600">{claimPayloadJson.validTo === undefined && '(Expires On cannot be empty.)'}</Text>
                 </Box>
               </WrapItem>
             </Wrap>
