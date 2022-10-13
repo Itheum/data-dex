@@ -62,7 +62,7 @@ export default function() {
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
                   {' '}
-                  Live
+                  Coming Soon
                 </Badge>
               </Box>
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>

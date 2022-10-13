@@ -118,7 +118,7 @@ export const progInfoMeta = {
     url: 'https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae',
     dc: 'Gamer Passport Data',
     id: 'foo',
-    canJoin: 1,
+    canJoin: 0,
   },
   wfa: {
     name: 'Wearables Fitness and Activity',
