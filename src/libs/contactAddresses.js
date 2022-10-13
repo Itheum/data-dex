@@ -11,17 +11,11 @@ const contracts = {
   },
   ethereum: {
     dev: {
-      ropsten: {
-        itheumTokenContractAddress: '0xBDdb6B94d9B60Ac1D788676a287e8c474D68D44A',
-        ddexContractAddress: '0xD01A4bCeD9324034db6cb03E50b76F58496F5FB8',
-        dNFTContractAddress: '0x985A5c96663C9c44d46Ea061f4b7E50118180F8d',
-        claimsContractAddress: '0x159ea49EbF5DCd06efFce53b1fe851e9c2CCFd91',
-      },
-      rinkeby: {
-        itheumTokenContractAddress: '0xb38731CEC66340ff1c9F58B8ceCDEdb9B4Cb8f38',
-        ddexContractAddress: '0xaC0Dee3dd39e27470A8992aC9C94B09385C2f2A5',
-        dNFTContractAddress: '0xD77E137B6483bC8d392b73D02E733e3DE13Dd72d',
-        claimsContractAddress: '',
+      goerli: {
+        itheumTokenContractAddress: '0xaC9e9eA0d85641Fa176583215447C81eBB5eD7b3',
+        ddexContractAddress: '0x3be0986AE40de157FAEcfcE3F65b3990b54a5ccb',
+        dNFTContractAddress: '0xd742350dC29171670847Ba68858CC5865d1eC245',
+        claimsContractAddress: '0x14f008d74C42055334A21BFAA7231b4f57E4EFa5',
       },
     },
   },
@@ -54,14 +48,10 @@ export const dNFTContractAddress_Matic = contracts.matic[contractsMode].dNFTCont
 export const claimsContractAddress_Matic = contracts.matic[contractsMode].claimsContractAddress;
 
 // Ethereum Contracts
-export const tokenContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.itheumTokenContractAddress;
-export const ddexContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.ddexContractAddress;
-export const dNFTContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.dNFTContractAddress;
-export const claimsContractAddress_Rop = contracts.ethereum[contractsMode].ropsten.claimsContractAddress;
-
-export const tokenContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
-export const ddexContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
-export const dNFTContractAddress_Rink = contracts.ethereum[contractsMode].rinkeby.itheumTokenContractAddress;
+export const tokenContractAddress_Goerli = contracts.ethereum[contractsMode].goerli.itheumTokenContractAddress;
+export const ddexContractAddress_Goerli = contracts.ethereum[contractsMode].goerli.ddexContractAddress;
+export const dNFTContractAddress_Goerli = contracts.ethereum[contractsMode].goerli.dNFTContractAddress;
+export const claimsContractAddress_Goerli = contracts.ethereum[contractsMode].goerli.claimsContractAddress;
 
 // BSC contracts
 export const tokenContractAddress_testnetBSC = contracts.bsc[contractsMode].itheumTokenContractAddress;

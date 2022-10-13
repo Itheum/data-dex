@@ -94,9 +94,9 @@ export default function() {
         <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
-            <Flex justifyContent="center">
-              <Skeleton isLoaded={oneNFTImgLoaded}>
-                <Image src={item.nftImgUrl} alt={item.dataPreview} mt="1rem" onLoad={() => setOneNFTImgLoaded(true)} w={200} borderRadius="md" />
+            <Flex justifyContent="center" pt={5}>
+              <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
+                <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
               </Skeleton>
             </Flex>
 

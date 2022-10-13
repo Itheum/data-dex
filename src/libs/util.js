@@ -1,14 +1,11 @@
 import {
-  tokenContractAddress_Rop,
   tokenContractAddress_Matic,
-  ddexContractAddress_Rop,
   ddexContractAddress_Matic,
-  dNFTContractAddress_Rop,
-  claimsContractAddress_Rop,
   dNFTContractAddress_Matic,
-  tokenContractAddress_Rink,
-  ddexContractAddress_Rink,
-  dNFTContractAddress_Rink,
+  tokenContractAddress_Goerli,
+  ddexContractAddress_Goerli,
+  dNFTContractAddress_Goerli,
+  claimsContractAddress_Goerli,
   tokenContractAddress_testnetBSC,
   ddexContractAddress_testnetBSC,
   dNFTContractAddress_testnetBSC,
@@ -47,16 +44,11 @@ export const contractsForChain = (networkId) => {
       contracts.ddex = ddexContractAddress_Local;
       contracts.dnft = dNFTContractAddress_Local;
       break;
-    case 3:
-      contracts.itheumToken = tokenContractAddress_Rop;
-      contracts.ddex = ddexContractAddress_Rop;
-      contracts.dnft = dNFTContractAddress_Rop;
-      contracts.claims = claimsContractAddress_Rop;
-      break;
-    case 4:
-      contracts.itheumToken = tokenContractAddress_Rink;
-      contracts.ddex = ddexContractAddress_Rink;
-      contracts.dnft = dNFTContractAddress_Rink;
+    case 5:
+      contracts.itheumToken = tokenContractAddress_Goerli;
+      contracts.ddex = ddexContractAddress_Goerli;
+      contracts.dnft = dNFTContractAddress_Goerli;
+      contracts.claims = claimsContractAddress_Goerli;
       break;
     case 80001:
       contracts.itheumToken = tokenContractAddress_Matic;
@@ -260,10 +252,7 @@ export const PATHS = {
 export const CHAINS = {
   31337: 'Localhost',
   1: 'Eth - Mainnet',
-  3: 'Eth - Ropsten',
-  4: 'Eth - Rinkeby',
-  42: 'Eth - Kovan',
-  420: 'Eth - Goerli',
+  5: 'Eth - Görli',
   137: 'Matic - Mainnet',
   80001: 'Matic - Mumbai',
   97: 'BSC - Chapel',
@@ -278,10 +267,7 @@ export const CHAINS = {
 export const CHAIN_NAMES = {
   31337: 'localhost',
   1: 'eth',
-  3: 'ropsten',
-  4: 'rinkeby',
-  42: 'kovan',
-  420: 'goerli',
+  5: 'goerli',
   137: 'matic',
   80001: 'mumbai',
   97: 'bsc testnet',
@@ -292,12 +278,12 @@ export const CHAIN_NAMES = {
 
 export const OPENSEA_CHAIN_NAMES = {
   1: 'eth',
-  4: 'rinkeby',
+  5: 'goerli',
   137: 'matic',
   80001: 'mumbai',
 };
 
-export const SUPPORTED_CHAINS = ['E1', 'ED', 3, 4, 80001, 97, 1666700000, 43113];
+export const SUPPORTED_CHAINS = ['E1', 'ED', 5, 80001, 97, 1666700000, 43113];
 
 export const WALLETS = {
   METAMASK: 'evm_metamask',
@@ -314,6 +300,7 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 
 export function noChainSupport(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
+    5: [MENU.TX],
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
@@ -330,8 +317,7 @@ export function noChainSupport(menuItem, networkId) {
 }
 
 export const CHAIN_TX_VIEWER = {
-  3: 'https://ropsten.etherscan.io/tx/',
-  4: 'https://rinkeby.etherscan.io/tx/',
+  5: 'https://goerli.etherscan.io/tx/',
   80001: 'https://explorer-mumbai.maticvigil.com/tx/',
   97: 'https://testnet.bscscan.com/tx/',
   1666700000: 'https://explorer.pops.one/#/',
@@ -339,14 +325,6 @@ export const CHAIN_TX_VIEWER = {
 };
 
 export const CHAIN_TX_LIST = {
-  3: {
-    advertiseEvents: 'AdvertiseEventsA',
-    purchaseEvents: 'PurchaseEvents',
-  },
-  4: {
-    advertiseEvents: 'AdvertiseEventsA',
-    purchaseEvents: 'PurchaseEvents',
-  },
   80001: {
     advertiseEvents: 'AdvertiseEventsPA',
     purchaseEvents: 'PurchaseEventsPA',
@@ -356,7 +334,7 @@ export const CHAIN_TX_LIST = {
 export const CHAIN_TOKEN_SYMBOL = (networkId) => {
   const mapping = {
     ITHEUM: ['E1', 'ED'],
-    eITHEUM: [3, 4, 1],
+    eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
     hITHEUM: [1666700000],
