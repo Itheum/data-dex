@@ -10,7 +10,7 @@ import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } fr
 import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import { IoConstructOutline } from 'react-icons/io5';
-import SellData from 'DataPack/SellData';
+import SellData from 'AdvertiseData/SellData';
 import BuyData from 'DataPack/BuyData';
 import PurchasedData from 'DataPack/PurchasedData';
 import AdvertisedData from 'DataPack/AdvertisedData';

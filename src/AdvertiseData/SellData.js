@@ -16,8 +16,6 @@ import {
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { FaUncharted } from 'react-icons/fa';
 import { AiOutlinePicture } from 'react-icons/ai';
-import { GiVintageRobot } from 'react-icons/gi';
-import { MdOutlinePattern } from 'react-icons/md';
 
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
 import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from 'libs/util';
@@ -60,25 +58,32 @@ export default function ({ onRfMount, itheumAccount }) {
   const { web3: web3Provider, Moralis: { web3Library: ethers } } = useMoralis();
   const toast = useToast();
   const [sellerDataPreview, setSellerDataPreview] = useState('');
-  const [sellerDataNFTDesc, setSellerDataNFTDesc] = useState('');
-  const [dataNFTCopies, setDataNFTCopies] = useState(1);
-  const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
-  const [dataNFTFeeInMyda, setDataNFTFeeInMyda] = useState(0);
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
   const [termsOfUseId, setTermsOfUseId] = useState('2');
   const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0, s4: 0 });
   const [saveProgressNFT, setSaveProgressNFT] = useState({ n1: 0, n2: 0, n3: 0 });
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const { isOpen: isDrawerOpen, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
+  const { isOpen: isDrawerOpenTradeFile, onOpen: onOpenDrawerTradeFile, onClose: onCloseDrawerTradeFile } = useDisclosure();
+  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const [showCode, setShowCode] = useState(false);
   const [drawerInMintNFT, setDrawerInMintNFT] = useState(false);
-  const [NFTArtStyle, setNFTArtStyle] = useState(1);
+  
+  const [isStreamTrade, setIsStreamTrade] = useState(0);
+
+  const [newNFTId, setNewNFTId] = useState(null); // newly created token ID from blockchain
   const [dataNFTImg, setDataNFTImg] = useState(null);
-  const [newNFTId, setNewNFTId] = useState(null);
-  const [isStreamTrade, setIsStreamTrade] = useState(false);
+  const [dataNFTTitle, setDataNFTTitle] = useState('');
+  const [dataNFTDesc, setDataNFTDesc] = useState('');
+  const [dataNFTCopies, setDataNFTCopies] = useState(1);
+  const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
+  const [dataNFTFeeInTokens, setDataNFTFeeInTokens] = useState(1);
+  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54');
+  const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
+  const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/dataMarshal');
+
 
   // eth tx state
   const [txConfirmation, setTxConfirmation] = useState(0);
@@ -90,7 +95,11 @@ export default function ({ onRfMount, itheumAccount }) {
 
 
   const getDataForSale = (programId, isStreamTrade=false) => {
-    onOpenDrawer();
+    if (isStreamTrade) {
+      onOpenDrawerTradeStream();
+    } else {
+      onOpenDrawerTradeFile();
+    }
 
     if (programId) {
       const selObj = { ...itheumAccount.programsAllocation.find(i => i.program === programId), ...itheumAccount._lookups.programs[programId] };
@@ -120,7 +129,7 @@ export default function ({ onRfMount, itheumAccount }) {
       const previewStr = `${data.length} datapoints from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(uxConfig.dateStr)} to ${moment(selObj.toTs).format(uxConfig.dateStr)}`;
 
       setSellerDataPreview(previewStr);
-      setSellerDataNFTDesc(previewStr)
+      setDataNFTDesc(previewStr)
       setSellerData(JSON.stringify(data));
     }
 
@@ -232,9 +241,9 @@ export default function ({ onRfMount, itheumAccount }) {
           // create the dataNFT object
           const newDataNFT = {
             ...dataTemplates.dataNFT,
-            dataPreview: sellerDataNFTDesc,
-            nftName: sellerDataPreview,
-            feeInMyda: dataNFTFeeInMyda,
+            dataPreview: dataNFTDesc,
+            nftName: dataNFTTitle,
+            feeInMyda: dataNFTFeeInTokens,
             sellerEthAddress: user.get('ethAddress'),
             dataHash,
             dataFile: dataFileSave,
@@ -272,20 +281,14 @@ export default function ({ onRfMount, itheumAccount }) {
   // data NFT object saved to moralis
   useEffect(async () => {
     if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
-      // gen art demo
-      let NFTImgUrl = 'https://itheum.com/resources/gen-art.jpg';
-
-      // ... or robot
-      if (NFTArtStyle === 1) {
-        NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
-      }
+      const NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
 
       setDataNFTImg(NFTImgUrl);
 
       const newNFTMetaDataFile = {
         ...dataTemplates.dataNFTMetaDataFile,
-        name: sellerDataPreview,
-        description: sellerDataNFTDesc,
+        name: dataNFTTitle,
+        description: dataNFTDesc,
         image: NFTImgUrl,
         external_url: `https://datadex.itheum.com/datanfts/marketplace/${savedDataNFTMoralis.id}`
       };
@@ -313,7 +316,7 @@ export default function ({ onRfMount, itheumAccount }) {
   }, [txConfirmation, txHash, txError]);
 
   function validateBaseInput() {
-    if (!sellerDataPreview || sellerDataPreview === '') {
+    if (!dataNFTTitle || dataNFTTitle === '') {
       alert('You need to provide some data preview or NFT title!');
       return false;
     } else {
@@ -356,7 +359,7 @@ export default function ({ onRfMount, itheumAccount }) {
 
   const dataNFTSellSubmit = async () => {
     if (validateBaseInput()) {
-      if (!sellerDataNFTDesc) {
+      if (!dataNFTDesc) {
         alert('You need to provide some NFT Description!');
         return;
       }
@@ -459,10 +462,11 @@ export default function ({ onRfMount, itheumAccount }) {
     });
 
     onProgressModalClose();
-    onCloseDrawer();
+    onCloseDrawerTradeFile();
+    onCloseDrawerTradeStream();
 
     // remount the component
-    onRfMount();
+    //onRfMount();
   }
 
   const handleCodeShowToggle = () => setShowCode(!showCode);
@@ -588,7 +592,7 @@ export default function ({ onRfMount, itheumAccount }) {
                 Trade a Data Stream as a Data NFT
               </Box>
             </Box>
-            <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null, true)}>Advertise Data</Button>
+            <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null, 1)}>Advertise Data</Button>
           </Box>
         </Box>
 
@@ -629,7 +633,7 @@ export default function ({ onRfMount, itheumAccount }) {
         </Box>
       </Wrap>
 
-      <Drawer onClose={onRfMount} isOpen={isDrawerOpen} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+      <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeFile} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader>
@@ -642,15 +646,7 @@ export default function ({ onRfMount, itheumAccount }) {
             {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
 
               <Stack spacing={5} mt="5">
-
                 <Text fontWeight="bold">Trade Type</Text>
-
-                {/* <RadioGroup value={drawerInMintNFT} onChange={() => setDrawerInMintNFT(!drawerInMintNFT)}>
-                <Stack>
-                  <Radio value={false}>Data Pack (Unlimited Supply / No Resale / No Royalty)</Radio>
-                  <Radio value={true}>Data NFT (Limited Edition / Resale allowed with Royalty)</Radio>
-                </Stack>
-              </RadioGroup> */}
 
                 <HStack>
                   <IconButton
@@ -666,17 +662,17 @@ export default function ({ onRfMount, itheumAccount }) {
                     l2="(Limited Edition / Resale allowed with Royalty)"
                     selected={drawerInMintNFT}
                     onclickFunc={() => setDrawerInMintNFT(true)} />
-                </HStack>
-
-                <Text fontWeight="bold">{!drawerInMintNFT && 'Data Payload Preview/Summary:' || 'NFT Title'}</Text>
-                <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
+                </HStack>                
 
                 {drawerInMintNFT && <>
+                  <Text fontWeight="bold">NFT Title</Text>
+                  <Input placeholder="NFT Title" value={dataNFTTitle} onChange={(event) => setDataNFTTitle(event.currentTarget.value)} />
+
                   <Text fontWeight="bold">NFT Description</Text>
-                  <Textarea placeholder="Enter a detailed NFT description here" value={sellerDataNFTDesc} onChange={(event) => setSellerDataNFTDesc(event.currentTarget.value)} />
+                  <Textarea placeholder="Enter a detailed NFT description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} />
 
                   <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
-                  <NumberInput size="md" maxW={24} step={1} defaultValue={0} min={0} max={10} value={dataNFTFeeInMyda} onChange={(valueString) => setDataNFTFeeInMyda(parseInt(valueString))}>
+                  <NumberInput size="md" maxW={24} step={1} defaultValue={0} min={0} max={10} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -707,25 +703,9 @@ export default function ({ onRfMount, itheumAccount }) {
                     </NumberInputStepper>
                   </NumberInput>
                   <Text colorScheme="gray" fontSize="sm">Suggested: 0%, 10%, 20%, 30%</Text>
-
-                  <Text fontWeight="bold">Generative Art Style</Text>
-                  <HStack>
-                    <IconButton
-                      icon={<GiVintageRobot size="2.5rem" />}
-                      l1="Character Collectible"
-                      l2="(Algorithmic character generation)"
-                      selected={NFTArtStyle === 1}
-                      onclickFunc={() => setNFTArtStyle(1)} />
-
-                    <Tooltip label="Coming soon...">
-                      <IconButton
-                        disabled={true}
-                        icon={<MdOutlinePattern size="2.5rem" />}
-                        l1="Art Collectible"
-                        l2="(Algorithmic artistic generation)"
-                        selected={NFTArtStyle === 2} />
-                    </Tooltip>
-                  </HStack>
+                </> || <>
+                  <Text fontWeight="bold">{!drawerInMintNFT && 'Data Payload Preview/Summary:' || 'NFT Title'}</Text>
+                  <Input placeholder="Data Preview" value={sellerDataPreview} onChange={(event) => setSellerDataPreview(event.currentTarget.value)} />
                 </>}
 
                 <HStack>
@@ -778,6 +758,216 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Flex>
                   {!drawerInMintNFT && <ChainSupportedInput feature={MENU.BUY}><Button mt="5" mr="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataPackSellSubmit}>Place for Trade as Data Pack</Button></ChainSupportedInput>}
                   {drawerInMintNFT && <ChainSupportedInput feature={MENU.BUY}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>}
+                </Flex>
+              </Stack>}
+
+            <Modal
+              isOpen={isProgressModalOpen}
+              onClose={closeProgressModal}
+              closeOnEsc={false} closeOnOverlayClick={false}
+            >
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Data Advertising Progress</ModalHeader>
+                <ModalBody pb={6}>
+                  <Stack spacing={5}>
+                    <HStack>
+                      {!saveProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                      <Text>Building data file</Text>
+                    </HStack>
+
+                    <HStack>
+                      {!saveProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                      <Text>Generating unique tamper-proof data signature {drawerInMintNFT && 'and your unique NFT character'}</Text>
+                    </HStack>
+
+                    {dataNFTImg && <>
+                      <Image
+                        boxSize="200px"
+                        height="auto"
+                        src={dataNFTImg}
+                      />
+                      <Text fontSize="xs">This image was created using the unique data signature (it's one of a kind!) </Text>
+                    </>}
+
+                    {!drawerInMintNFT && <>
+                      <HStack>
+                        {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Saving to storage</Text>
+                      </HStack>
+
+                      <HStack>
+                        {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Advertising for trade on blockchain</Text>
+                      </HStack>
+
+                      {txError &&
+                        <Alert status="error">
+                          <AlertIcon />
+                          {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
+                        </Alert>
+                      }
+                    </>}
+
+                    {txHash && <Stack>
+                      <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmation} />
+
+                      <HStack>
+                        <Text fontSize="sm">Transaction </Text>
+                        <ShortAddress address={txHash} />
+                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                      </HStack>
+
+                      {txError &&
+                        <Alert status="error">
+                          <AlertIcon />
+                          {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
+                        </Alert>
+                      }
+                    </Stack>}
+
+                    {drawerInMintNFT && <>
+                      <HStack>
+                        {!saveProgressNFT.n1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Generating and saving NFT metadata file to IPFS</Text>
+                      </HStack>
+
+                      <HStack>
+                        {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Minting your new data NFT on blockchain</Text>
+                      </HStack>
+
+                      {txNFTHash &&
+                        <Stack>
+                          <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txNFTConfirmation} />
+
+                          <HStack>
+                            <Text fontSize="sm">Transaction </Text>
+                            <ShortAddress address={txNFTHash} />
+                            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                          </HStack>
+
+                          {txNFTError &&
+                            <Alert status="error">
+                              <AlertIcon />
+                              {txNFTError.message && <AlertTitle>{txNFTError.message}</AlertTitle>}
+                              <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
+                            </Alert>
+                          }
+                        </Stack>}
+
+                      <HStack>
+                        {!saveProgressNFT.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                        <Text>Advertising for trade as a Data NFT</Text>
+                      </HStack>
+                    </>}
+
+                    {errDataPackSave &&
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+
+                    {errDataNFTSave &&
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errDataNFTSave.message && <AlertTitle>{errDataNFTSave.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+
+                    {errCfHashData &&
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errCfHashData.message && <AlertTitle>{errCfHashData.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+
+                    {errFileSave &&
+                      <Alert status="error">
+                        <Box flex="1">
+                          <AlertIcon />
+                          {errFileSave.message && <AlertTitle>{errFileSave.message}</AlertTitle>}
+                        </Box>
+                      </Alert>
+                    }
+                  </Stack>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader>
+            <HStack spacing="5">
+              <CloseButton size="lg" onClick={onRfMount} />
+              {currSellObject && <Stack><Text fontSize="2xl">Trade data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
+            </HStack>
+          </DrawerHeader>
+          <DrawerBody>
+            {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
+
+              <Stack spacing={5} mt="5">
+                <Text fontWeight="bold">Trade a Data Stream as a Data NFT</Text>
+
+                <Text fontWeight="bold">Data Stream URL</Text>
+                <Input placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54" value={dataNFTStreamUrl} onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)} />
+
+                <Text fontWeight="bold">Data Preview URL</Text>
+                <Input placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1" value={dataNFTStreamPreviewUrl} onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)} />
+
+                <Text fontWeight="bold">Data Marshal Service</Text>
+                <Input placeholder="https://itheumapi.com/ddex/dataMarshal" value={dataNFTMarshalService} onChange={(event) => setDataNFTMarshalService(event.currentTarget.value)} />
+
+                <Text fontWeight="bold">NFT Title</Text>
+                <Input placeholder="NFT Title" value={dataNFTTitle} onChange={(event) => setDataNFTTitle(event.currentTarget.value)} />
+
+                <Text fontWeight="bold">NFT Description</Text>
+                <Textarea placeholder="Enter a detailed NFT description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} />
+
+                <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
+                <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={1000} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+
+                <Text fontWeight="bold">Number of copies</Text>
+                <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={20} value={dataNFTCopies} onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <Text colorScheme="gray" fontSize="sm">Limit the quality to increase value (rarity) - suggested: less than 20</Text>
+
+                <Text fontWeight="bold">Royalties</Text>
+                <NumberInput size="md" maxW={24} step={5} defaultValue={0} min={0} max={80} value={dataNFTRoyalty} onChange={(valueString) => setDataNFTRoyalty(parseInt(valueString))}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <Text colorScheme="gray" fontSize="sm">Suggested: 0%, 10%, 20%, 30%</Text>
+
+                <Flex>
+                  <ChainSupportedInput feature={MENU.BUY}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>
                 </Flex>
               </Stack>}
 

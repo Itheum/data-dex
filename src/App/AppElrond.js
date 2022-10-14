@@ -9,7 +9,7 @@ import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { AiFillHome } from 'react-icons/ai';
 import { IoConstructOutline } from 'react-icons/io5';
-import SellData from 'DataPack/SellData';
+import SellData from 'AdvertiseData/SellData';
 import BuyData from 'DataPack/BuyData';
 import PurchasedData from 'DataPack/PurchasedData';
 import AdvertisedData from 'DataPack/AdvertisedData';
