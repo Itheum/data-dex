@@ -167,6 +167,7 @@ export const dataTemplates = {
     txNFTId: null,
     txHash: null,
     txNetworkId: null,
+    type: null
   },
   dataOrder: {
     dataPackId: null,
@@ -184,6 +185,11 @@ export const dataTemplates = {
     external_url: '',
     properties: {
       data_dex_nft_id: '',
+      data_nft_type: '',
+      encryption_vector: '',
+      stream_url: '',
+      stream_preview_url: '',
+      data_marshal_service: '',
     },
   },
 };

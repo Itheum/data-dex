@@ -3,10 +3,10 @@ import { useDropzone } from 'react-dropzone';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useMoralis, useNewMoralisObject, useMoralisCloudFunction, useMoralisFile } from 'react-moralis';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
-import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon, ExternalLinkIcon, TimeIcon } from '@chakra-ui/icons';
 import {
-  Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress,
-  Alert, AlertIcon, AlertTitle, CloseButton, Link, Code, CircularProgress,
+  Button, Input, Text, HStack, Radio, RadioGroup, Spinner, Progress, Skeleton, Center,
+  Alert, AlertIcon, AlertTitle, AlertDescription, CloseButton, Link, Code, CircularProgress,
   Image, Badge, Wrap, Collapse, Flex, Textarea, Tooltip,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
@@ -73,6 +73,7 @@ export default function ({ onRfMount, itheumAccount }) {
   
   const [isStreamTrade, setIsStreamTrade] = useState(0);
 
+  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [newNFTId, setNewNFTId] = useState(null); // newly created token ID from blockchain
   const [dataNFTImg, setDataNFTImg] = useState(null);
   const [dataNFTTitle, setDataNFTTitle] = useState('');
@@ -82,8 +83,8 @@ export default function ({ onRfMount, itheumAccount }) {
   const [dataNFTFeeInTokens, setDataNFTFeeInTokens] = useState(1);
   const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54');
   const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
-  const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/dataMarshal');
-
+  const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
+  const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
 
   // eth tx state
   const [txConfirmation, setTxConfirmation] = useState(0);
@@ -169,10 +170,6 @@ export default function ({ onRfMount, itheumAccount }) {
     saveFile: saveNFTMetaDataFile,
   } = useMoralisFile();
 
-  useEffect(() => {
-    console.log('MOUNT Sell');
-  }, []);
-
   useEffect(async () => {
     if (dataFileSave && !loadingFileSave) {
       setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
@@ -217,30 +214,29 @@ export default function ({ onRfMount, itheumAccount }) {
       const { dataHash } = dataCfHashData;
 
       if (dataHash) {
-        if (!drawerInMintNFT) {
-          // create the datapack object
-          const newDataPack = {
-            ...dataTemplates.dataPack,
-            dataPreview: sellerDataPreview,
-            sellerEthAddress: user.get('ethAddress'),
-            dataHash,
-            dataFile: dataFileSave,
-            termsOfUseId,
-            txNetworkId: _chainMeta.networkId
-          };
-
-          // if core programID is available then link it
-          if (currSellObject) {
-            newDataPack.fromProgramId = currSellObject.program;
-          }
-
-          const newPack = await saveDataPack(newDataPack);
-
-          setSavedDataPackMoralis(newPack);
-        } else {
+        if (isStreamTrade) {
           // create the dataNFT object
           const newDataNFT = {
             ...dataTemplates.dataNFT,
+            type: 'datastream',
+            dataPreview: dataNFTStreamPreviewUrl,
+            nftName: dataNFTTitle,
+            feeInMyda: dataNFTFeeInTokens,
+            sellerEthAddress: user.get('ethAddress'),
+            dataHash,            
+            txNetworkId: _chainMeta.networkId,
+            txNFTContract: _chainMeta.contracts.dnft
+          };
+
+          const newMoralisNFT = await saveDataNFT(newDataNFT);
+
+          setSavedDataNFTMoralis(newMoralisNFT);
+        }
+        else if (drawerInMintNFT) {          
+           // create the dataNFT object
+           const newDataNFT = {
+            ...dataTemplates.dataNFT,
+            type: 'datapack',
             dataPreview: dataNFTDesc,
             nftName: dataNFTTitle,
             feeInMyda: dataNFTFeeInTokens,
@@ -260,6 +256,26 @@ export default function ({ onRfMount, itheumAccount }) {
           const newMoralisNFT = await saveDataNFT(newDataNFT);
 
           setSavedDataNFTMoralis(newMoralisNFT);
+        } else {
+          // create the datapack object
+          const newDataPack = {
+            ...dataTemplates.dataPack,
+            dataPreview: sellerDataPreview,
+            sellerEthAddress: user.get('ethAddress'),
+            dataHash,
+            dataFile: dataFileSave,
+            termsOfUseId,
+            txNetworkId: _chainMeta.networkId
+          };
+
+          // if core programID is available then link it
+          if (currSellObject) {
+          newDataPack.fromProgramId = currSellObject.program;
+          }
+
+          const newPack = await saveDataPack(newDataPack);
+
+          setSavedDataPackMoralis(newPack);
         }
       }
     }
@@ -294,6 +310,15 @@ export default function ({ onRfMount, itheumAccount }) {
       };
 
       newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
+      newNFTMetaDataFile.properties.data_nft_type = 'datapack';
+
+      if (isStreamTrade) {
+        newNFTMetaDataFile.properties.data_nft_type = 'datastream';
+        newNFTMetaDataFile.properties.encryption_vector = '';
+        newNFTMetaDataFile.properties.stream_url = dataNFTStreamUrl;
+        newNFTMetaDataFile.properties.stream_preview_url = dataNFTStreamPreviewUrl;
+        newNFTMetaDataFile.properties.data_marshal_service = dataNFTMarshalService;
+      }
 
       await saveNFTMetaDataFile('metadata.json', { base64: btoa(JSON.stringify(newNFTMetaDataFile)) });
     }
@@ -316,10 +341,23 @@ export default function ({ onRfMount, itheumAccount }) {
   }, [txConfirmation, txHash, txError]);
 
   function validateBaseInput() {
-    if (!dataNFTTitle || dataNFTTitle === '') {
-      alert('You need to provide some data preview or NFT title!');
+    if (!dataNFTTitle || dataNFTTitle.trim() === '') {
+      alert('You need to provide a NFT title!');
       return false;
+    } else if (!dataNFTDesc) {
+      alert('You need to provide a NFT Description!');
+      return false;
+    }
+
+    if (isStreamTrade) {
+      if (!dataNFTStreamUrl.includes('https://') || !dataNFTStreamPreviewUrl.includes('https://') || !dataNFTMarshalService.includes('https://')) {
+        alert('Your data stream url inputs dont seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it');
+        return false;
+      } else {
+        return true;
+      }
     } else {
+      // only need to validate json if it's not a stream trade
       try {
         JSON.parse(sellerData); // valid JSON check?
         return true;
@@ -331,7 +369,7 @@ export default function ({ onRfMount, itheumAccount }) {
   }
 
   const dataPackSellSubmit = async () => {
-    if (!sellerDataPreview || sellerDataPreview === '') {
+    if (!sellerDataPreview || sellerDataPreview.trim() === '') {
       alert('You need to provide some dataPreview!');
     } else {
       try {
@@ -359,23 +397,68 @@ export default function ({ onRfMount, itheumAccount }) {
 
   const dataNFTSellSubmit = async () => {
     if (validateBaseInput()) {
-      if (!dataNFTDesc) {
-        alert('You need to provide some NFT Description!');
-        return;
-      }
+      if (isStreamTrade) {
+        dataNFTDataStreamAdvertise();
+      } else {
+        dataNFTDataPackAdvertise();
+      }     
+    }
+  }
 
-      /*
-        1) Save the file and get a Moralis File Ref (s1)
-        2) Get a sha256 hash for the data and generate the robot img URL (s2)
+  const dataNFTDataPackAdvertise = async () => {
+    /*
+      1) Save the file and get a Moralis File Ref (s1)
+      2) Get a sha256 hash for the data and generate the robot img URL (s2)
         2.1) Save the Data NFT in Moralis and get the new moralis dataNFTId
-        3) Save the NFT Meta file to IPFS (use moralis file for now) and get the uri (n1)
-        3) Call the NFT contract with meta file URI and get the new NFT ID (n2)
-        4) Save a new Data NFT object in Moralis with all details of Data Pack + NFTId, Meta file URI and NFT contract address and NFT mint hash (n3)
-      */
+      3) Save the NFT Meta file to IPFS (use moralis file for now) and get the uri (n1)
+      4) Call the NFT contract with meta file URI and get the new NFT ID (n2)
+      5) Save a new Data NFT object in Moralis with all details of Data Pack + NFTId, Meta file URI and NFT contract address and NFT mint hash (n3)
+    */
 
-      onProgressModalOpen();
+    onProgressModalOpen();
 
-      await saveFile('sellerDatafile.json', { base64: btoa(sellerData) });
+    await saveFile('sellerDatafile.json', { base64: btoa(sellerData) });
+  }
+
+  const dataNFTDataStreamAdvertise = async () => {
+    /*
+      1) Call the data marshal and get a encrypted data stream url
+      2) Get a sha256 hash for the encrypted data stream url and generate the robot img URL (s2)
+        2.1) Save the Data NFT in Moralis and get the new moralis dataNFTId
+      3) Save the NFT Meta file to IPFS and get the uri (n1)
+      4) Call the NFT contract with meta file URI and get the new NFT ID (n2)
+      5) Save a new Data NFT object in Moralis with all details of Data Pack + NFTId, Meta file URI and NFT contract address and NFT mint hash (n3)
+    */
+
+    onProgressModalOpen();
+
+    const myHeaders = new Headers();
+    myHeaders.append('authorization', process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY);
+    myHeaders.append('cache-control', 'no-cache');
+    myHeaders.append('Content-Type', 'application/json');
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify({
+        dataNFTStreamUrl: dataNFTStreamUrl
+      })
+    };
+
+    const res = await fetch('http://localhost:4000/ddex/datamarshal/v1/services/generate', requestOptions);
+    const data = await res.json();
+
+    if (data && data.encryptedMessage && data.encryptionVector) {
+      setSellerData(data.encryptedMessage); // the data URL is the seller data in this case
+      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
+
+      await doCfHashData(); // get the hash of the url (sellerData is the url here)
+    } else {
+      if (data.success === false) {
+        setErrDataNFTStreamGeneric(new Error(`${data.error.code}, ${data.error.message}`));
+      } else {
+        setErrDataNFTStreamGeneric(new Error('Data Marshal responded with an unknown error trying to generate your encrypted links'));
+      }
     }
   }
 
@@ -455,9 +538,10 @@ export default function ({ onRfMount, itheumAccount }) {
 
   function closeProgressModal() {
     toast({
-      title: 'Data advertised for trade',
+      title: (drawerInMintNFT || isStreamTrade) ? 
+        'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT' : 
+        'Success! Data Pack advertised for trade',
       status: 'success',
-      duration: 4000,
       isClosable: true,
     });
 
@@ -465,8 +549,8 @@ export default function ({ onRfMount, itheumAccount }) {
     onCloseDrawerTradeFile();
     onCloseDrawerTradeStream();
 
-    // remount the component
-    //onRfMount();
+    // remount the component (quick way to rest all state to prestine)
+    onRfMount();
   }
 
   const handleCodeShowToggle = () => setShowCode(!showCode);
@@ -751,8 +835,7 @@ export default function ({ onRfMount, itheumAccount }) {
                   </Stack>
                 </Stack>
 
-                {!drawerInMintNFT && <Text fontSize="xl" fontWeight="bold">Estimated Earnings:
-                  <Badge ml="1" fontSize="0.8em" colorScheme="teal">2 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Badge>
+                {!drawerInMintNFT && <Text mt="10" fontSize="xl" fontWeight="bold">Estimated Earnings: 2 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Text>}
 
                 <Flex>
@@ -778,16 +861,16 @@ export default function ({ onRfMount, itheumAccount }) {
 
                     <HStack>
                       {!saveProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Generating unique tamper-proof data signature {drawerInMintNFT && 'and your unique NFT character'}</Text>
+                      <Text>Generating unique tamper-proof data signature {drawerInMintNFT && 'and your unique NFT image'}</Text>
                     </HStack>
 
                     {dataNFTImg && <>
-                      <Image
-                        boxSize="200px"
-                        height="auto"
-                        src={dataNFTImg}
-                      />
-                      <Text fontSize="xs">This image was created using the unique data signature (it's one of a kind!) </Text>
+                      <Skeleton isLoaded={oneNFTImgLoaded} h={200} margin="auto">
+                        <Center>
+                          <Image src={dataNFTImg} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
+                        </Center>
+                      </Skeleton>
+                      <Box textAlign="center"><Text fontSize="xs">This image was created using the unique data signature (it's one of a kind!)</Text></Box>
                     </>}
 
                     {!drawerInMintNFT && <>
@@ -983,104 +1066,57 @@ export default function ({ onRfMount, itheumAccount }) {
                   <Stack spacing={5}>
                     <HStack>
                       {!saveProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Building data file</Text>
+                      <Text>Generating encrypted data stream metadata</Text>
                     </HStack>
 
                     <HStack>
                       {!saveProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Generating unique tamper-proof data signature {drawerInMintNFT && 'and your unique NFT character'}</Text>
+                      <Text>Generating unique tamper-proof data stream signature</Text>
                     </HStack>
 
                     {dataNFTImg && <>
-                      <Image
-                        boxSize="200px"
-                        height="auto"
-                        src={dataNFTImg}
-                      />
-                      <Text fontSize="xs">This image was created using the unique data signature (it's one of a kind!) </Text>
+                      <Skeleton isLoaded={oneNFTImgLoaded} h={200} margin="auto">
+                        <Center>
+                          <Image src={dataNFTImg} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
+                        </Center>
+                      </Skeleton>
+                      <Box textAlign="center"><Text fontSize="xs">This image was created using the unique data signature (it's one of a kind!)</Text></Box>
                     </>}
 
-                    {!drawerInMintNFT && <>
-                      <HStack>
-                        {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Saving to storage</Text>
-                      </HStack>
+                    <HStack>
+                      {!saveProgressNFT.n1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                      <Text>Generating and saving NFT metadata file to IPFS</Text>
+                    </HStack>
 
-                      <HStack>
-                        {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Advertising for trade on blockchain</Text>
-                      </HStack>
+                    <HStack>
+                      {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                      <Text>Minting your new data NFT on blockchain</Text>
+                    </HStack>
 
-                      {txError &&
-                        <Alert status="error">
-                          <AlertIcon />
-                          {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
-                        </Alert>
-                      }
-                    </>}
+                    {txNFTHash &&
+                      <Stack>
+                        <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txNFTConfirmation} />
 
-                    {txHash && <Stack>
-                      <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmation} />
+                        <HStack>
+                          <Text fontSize="sm">Transaction </Text>
+                          <ShortAddress address={txNFTHash} />
+                          <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
+                        </HStack>
 
-                      <HStack>
-                        <Text fontSize="sm">Transaction </Text>
-                        <ShortAddress address={txHash} />
-                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
-                      </HStack>
-
-                      {txError &&
-                        <Alert status="error">
-                          <AlertIcon />
-                          {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
-                          <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
-                        </Alert>
-                      }
-                    </Stack>}
-
-                    {drawerInMintNFT && <>
-                      <HStack>
-                        {!saveProgressNFT.n1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Generating and saving NFT metadata file to IPFS</Text>
-                      </HStack>
-
-                      <HStack>
-                        {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Minting your new data NFT on blockchain</Text>
-                      </HStack>
-
-                      {txNFTHash &&
-                        <Stack>
-                          <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txNFTConfirmation} />
-
-                          <HStack>
-                            <Text fontSize="sm">Transaction </Text>
-                            <ShortAddress address={txNFTHash} />
-                            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txNFTHash}`} isExternal> <ExternalLinkIcon mx="2px" /></Link>
-                          </HStack>
-
-                          {txNFTError &&
-                            <Alert status="error">
-                              <AlertIcon />
-                              {txNFTError.message && <AlertTitle>{txNFTError.message}</AlertTitle>}
-                              <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
-                            </Alert>
-                          }
-                        </Stack>}
+                        {txNFTError &&
+                          <Alert status="error">
+                            <AlertIcon />
+                            {txNFTError.message && <AlertTitle>{txNFTError.message}</AlertTitle>}
+                            <CloseButton position="absolute" right="8px" top="8px" onClick={closeProgressModal} />
+                          </Alert>
+                        }
+                      </Stack>}
 
                       <HStack>
                         {!saveProgressNFT.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                         <Text>Advertising for trade as a Data NFT</Text>
                       </HStack>
-                    </>}
-
-                    {errDataPackSave &&
-                      <Alert status="error">
-                        <Box flex="1">
-                          <AlertIcon />
-                          {errDataPackSave.message && <AlertTitle>{errDataPackSave.message}</AlertTitle>}
-                        </Box>
-                      </Alert>
-                    }
+                    
 
                     {errDataNFTSave &&
                       <Alert status="error">
@@ -1100,13 +1136,15 @@ export default function ({ onRfMount, itheumAccount }) {
                       </Alert>
                     }
 
-                    {errFileSave &&
+                    {errDataNFTStreamGeneric &&
                       <Alert status="error">
-                        <Box flex="1">
-                          <AlertIcon />
-                          {errFileSave.message && <AlertTitle>{errFileSave.message}</AlertTitle>}
-                        </Box>
-                      </Alert>
+                      <Stack >
+                        <AlertTitle fontSize="md">
+                          <AlertIcon mb={2} />Process Error</AlertTitle>
+                          {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={onRfMount} />
+                      </Stack>
+                    </Alert>
                     }
                   </Stack>
                 </ModalBody>
