@@ -101,19 +101,21 @@ export default function() {
           <Flex wrap="wrap" spacing={5}>
 
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem">
-            <Flex justifyContent="center">
-              <Skeleton isLoaded={oneNFTImgLoaded}>
-                <Image src={item.nftImgUrl} alt={item.dataPreview} mt="1rem" onLoad={() => setOneNFTImgLoaded(true)} w={200} borderRadius="md" />
+            <Flex justifyContent="center" pt={5}>
+              <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
+                <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
               </Skeleton>
             </Flex>
 
-            <Flex p="3" direction="column" justify="space-between" height="360px">
+            <Flex p="3" direction="column" justify="space-between" height="250px">
               <Box
                 fontSize="sm"
                 mt="1"
                 fontWeight="semibold"
                 as="h4"
-                lineHeight="tight">
+                lineHeight="tight"
+                h="100px"
+                overflowX="scroll">
                 {item.nftName}
               </Box>
 

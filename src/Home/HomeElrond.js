@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import { 
-  Button, Badge, Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, 
-  Text, HStack, Heading, Wrap, Image, WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
+  Button, Spacer, Text, HStack, Heading, Wrap, Spinner,
+  useToast, useDisclosure } from '@chakra-ui/react';
 import { WarningTwoIcon } from '@chakra-ui/icons';
 import moment from 'moment';
-import { progInfoMeta, uxConfig, debugui } from 'libs/util';
+import { uxConfig, debugui } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
-import imgProgGaPa from 'img/prog-gaming.jpg';
-import imgProgRhc from 'img/prog-rhc.png';
-import imgProgWfh from 'img/prog-wfh.png';
 import myNFMe from 'img/my-nfme.png';
 import ClaimModalElrond from 'ClaimModel/ClaimModalElrond';
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
+import AppMarketplace from 'Home/AppMarketplace';
 import { FaucetContract } from 'Elrond/faucet';
 import { ClaimsContract } from 'Elrond/claims';
 import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
@@ -24,14 +22,12 @@ let elrondClaimsContract = null;
 
 export default function({ onRfMount }) {
   const toast = useToast();
-  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
   const { address: elrondAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isElrondLoggedIn } = useGetLoginInfo();
   
-  const [learnMoreProd, setLearnMoreProg] = useState(null);
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
@@ -147,11 +143,6 @@ export default function({ onRfMount }) {
     }
   }, [hasPendingTransactions]);
 
-  const handleLearnMoreProg = (progCode) => {
-    setLearnMoreProg(progCode);
-    onProgressModalOpen();
-  };
-
   // S: claims related logic
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
 
@@ -204,17 +195,18 @@ export default function({ onRfMount }) {
 
   debugui(`_chainMeta.networkId ${_chainMeta.networkId}`);
 
-  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+  const tileBoxMdW = '310px';
+  const tileBoxH = '360px';
 
   return (
     <Stack>
       <Heading size="lg">Home</Heading>
 
-      <Stack p="5">
-        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+      <Stack>
+        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={5}>
           <ChainSupportedComponent feature={MENU.FAUCET}>
-            <Box maxW="container.sm" minW="300px" borderWidth="1px" borderRadius="lg" >
-              <Stack p="5" h="360">
+            <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
+              <Stack p="5" h={tileBoxH}>
                 <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
                 <Text fontSize="sm" pb={5}>
                   Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
@@ -229,8 +221,8 @@ export default function({ onRfMount }) {
             </Box>
           </ChainSupportedComponent>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW="300px">
-            <Stack p="5" h="360" bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={tileBoxMdW}>
+            <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
               <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
               <Spacer />
               <Button disabled colorScheme="teal">Mint & Own NFT</Button>
@@ -239,8 +231,8 @@ export default function({ onRfMount }) {
           </Box>
 
           <ChainSupportedComponent feature={MENU.CLAIMS}>
-            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" minW={['300px', 'initial']}>
-              <Stack p="5" h="360">
+            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, 'initial']}>
+              <Stack p="5" h={tileBoxH}>
                 <Heading size="md">My Claims</Heading>
                 
                 <Spacer />
@@ -290,124 +282,8 @@ export default function({ onRfMount }) {
         </Wrap>
       </Stack>
 
-      <Stack p="5" h="360">
-        <Heading size="md">App Marketplace</Heading>
-        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
-        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
-            <Image src={imgProgGaPa} />
+      <AppMarketplace />
 
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Gamer Passport
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {' '}
-                  Live
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('gdc')}>
-                Learn More
-              </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae')}>
-                Join Now
-              </Button>
-            </Box>
-          </Box>
-          
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
-            <Image src={imgProgRhc} />
-
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Red Heart Challenge
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {' '}
-                  Live
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
-                Learn More
-              </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.com/redheartchallenge')}>
-                Join Now
-              </Button>
-            </Box>
-          </Box>
-
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
-            <Image src={imgProgWfh} />
-
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Wearables Fitness and Activity
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {' '}
-                  Coming Soon
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('wfa')}>
-                Learn More
-              </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
-                Join Now
-              </Button>
-            </Box>
-          </Box>
-        </Wrap>
-      </Stack>
-
-      {learnMoreProd && (
-        <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <Stack spacing="5">
-                <Text>{progInfoMeta[learnMoreProd].desc}</Text>
-                <Stack>
-                  <Text color="gray" as="b">
-                    Delivered Via:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].medium}</p>
-                </Stack>
-                <Stack>
-                  <Text color="gray" as="b">
-                    Data Collected:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].data}</p>
-                </Stack>
-                <Stack>
-                  <Text color="gray" as="b">
-                    App Outcome:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].outcome}</p>
-                </Stack>
-                <Stack>
-                  <Text color="gray" as="b">
-                    Target Buyers:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
-                </Stack>
-              </Stack>
-            </ModalBody>
-            <ModalFooter>
-              <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
-                Close
-              </Button>
-              <Button disabled={!progInfoMeta[learnMoreProd].canJoin} size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}`)}>
-                Join Now
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
     </Stack>
   );
 }

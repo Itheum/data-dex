@@ -780,7 +780,7 @@ export default function({ onRfMount, itheumAccount }) {
                         height="auto"
                         src={dataNFTImg}
                       />
-                      <Text fontSize="xs">This character was created using the unique data signature (it's one of a kind!) </Text>
+                      <Text fontSize="xs">This image was created using the unique data signature (it's one of a kind!) </Text>
                     </>}
 
                     {!drawerInMintNFT && <>
@@ -793,9 +793,16 @@ export default function({ onRfMount, itheumAccount }) {
                         {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                         <Text>Advertising for trade on blockchain</Text>
                       </HStack>
+
+                      {txError && 
+                        <Alert status="error">
+                          <AlertIcon />
+                          {txError.message && <AlertTitle>{txError.message}</AlertTitle>}
+                        </Alert>
+                      }  
                     </>}
 
-                    {txHash && <Stack>                      
+                    {txHash && <Stack>
                       <Progress colorScheme="teal" fontSize="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmation} />
 
                       <HStack>

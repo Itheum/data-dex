@@ -3,18 +3,13 @@ import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { Box, Stack } from '@chakra-ui/layout';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { 
-  Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, 
-  Spacer, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, 
-  ModalFooter, Text, HStack, Heading, CloseButton, Wrap, Image, 
-  WrapItem, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
+  Button, Link, Progress, Badge, Alert, AlertIcon, AlertTitle, AlertDescription, Spacer, 
+  Text, HStack, Heading, CloseButton, Wrap, Spinner, useToast, useDisclosure, useBreakpointValue } from '@chakra-ui/react';
 import moment from 'moment';
 import ShortAddress from 'UtilComps/ShortAddress';
-import { progInfoMeta, uxConfig, sleep } from 'libs/util';
+import { uxConfig, sleep, noChainSupport } from 'libs/util';
 import { CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
 import { ABIS } from 'EVM/ABIs';
-import imgProgGaPa from 'img/prog-gaming.jpg';
-import imgProgRhc from 'img/prog-rhc.png';
-import imgProgWfh from 'img/prog-wfh.png';
 import myNFMe from 'img/my-nfme.png';
 import ClaimModalEVM from 'ClaimModel/ClaimModalEVM';
 import { useUser } from 'store/UserContext';
@@ -22,10 +17,10 @@ import { useChainMeta } from 'store/ChainMetaContext';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useNavigate } from 'react-router-dom';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
+import AppMarketplace from 'Home/AppMarketplace';
 
 export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheumAccount, itheumAccount }) {
   const toast = useToast();
-  const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
@@ -34,7 +29,6 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheu
   const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction('loadTestData', {}, { autoFetch: false });
 
   const [faucetWorking, setFaucetWorking] = useState(false);
-  const [learnMoreProd, setLearnMoreProg] = useState(null);
   const [txConfirmationFaucet, setTxConfirmationFaucet] = useState(0);
   const [txHashFaucet, setTxHashFaucet] = useState(null);
   const [txErrorFaucet, setTxErrorFaucet] = useState(null);
@@ -133,7 +127,9 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheu
     // this will trigger during component load/page load, so let's get the latest claims balances
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
-      web3_evmClaimsBalancesUpdate();
+      if (!noChainSupport(MENU.CLAIMS, _chainMeta.networkId)) { // only load this if chain support CLAIMS
+        web3_evmClaimsBalancesUpdate();
+      }
     }
   }, [user, isWeb3Enabled, _chainMeta]);
 
@@ -186,11 +182,6 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheu
     }
   };
   // E: Claims
-
-  const handleLearnMoreProg = (progCode) => {
-    setLearnMoreProg(progCode);
-    onProgressModalOpen();
-  };
 
   // S: claims related logic
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
@@ -251,279 +242,168 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance, onItheu
   };
   // E: claims related logic
 
-  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+  const tileBoxMdW = '310px';
+  const tileBoxH = '360px';
 
   return (
     <Stack>
       <Heading size="lg">Home</Heading>
-
-      <Wrap>
-        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="5" h="360">
-            {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
-            {!itheumAccount && (
-              <Alert>
-                <Stack>
-                  <AlertTitle fontSize="md">
-                    <AlertIcon mb={2} /> Sorry! You don't seem to have a{' '}
-                    <Link href="https://itheum.com" isExternal>
-                      itheum.com
-                    </Link>{' '}
-                    Data CAT account
-                  </AlertTitle>
-                  <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
-                </Stack>
-              </Alert>
-            )}
-
-            {itheumAccount && (
-              <Stack>
-                <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
-                {itheumAccount.programsAllocation.map((item) => (
-                  <Stack direction="row" key={item.program}>
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      {itheumAccount._lookups.programs[item.program].programName}
-                    </Badge>
+      
+      <Stack>
+        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap">
+          <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
+            <Stack p="5" h={tileBoxH} w={tileBoxMdW}>
+              {!itheumAccount && <Heading size="md">Your Linked Itheum Account</Heading>}
+              {!itheumAccount && (
+                <Alert>
+                  <Stack>
+                    <AlertTitle fontSize="md">
+                      <AlertIcon mb={2} /> Sorry! You don't seem to have a{' '}
+                      <Link href="https://itheum.com" isExternal>
+                        itheum.com
+                      </Link>{' '}
+                      Data CAT account
+                    </AlertTitle>
+                    <AlertDescription fontSize="md">But don't fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
                   </Stack>
-                ))}
-              </Stack>
-            )}
-
-            <Spacer />
-
-            {!itheumAccount && (
-              <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>
-                Load Test Data
-              </Button>
-            )}
-
-            {itheumAccount && (
-              <Button
-                colorScheme="teal"
-                variant="outline"
-                onClick={() => {
-                  setMenuItem(2);
-                  navigate('/selldata');
-                }}
-              >
-                Trade My Data
-              </Button>
-            )}
-          </Stack>
-        </WrapItem>
-
-        <ChainSupportedComponent feature={MENU.FAUCET}>
-          <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-            <Stack p="5" h="360">
-              <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
-              <Text fontSize="sm" pb={5}>
-                Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
-              </Text>
-
-              {txHashFaucet && (
-                <Stack>
-                  <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationFaucet} />
-
-                  <HStack>
-                    <Text fontSize="sm">Transaction </Text>
-                    <ShortAddress address={txHashFaucet} />
-                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
-                      {' '}
-                      <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  </HStack>
-                </Stack>
-              )}
-
-              {txErrorFaucet && (
-                <Alert status="error">
-                  <AlertIcon />
-                  {txErrorFaucet.message && <AlertTitle fontSize="md">{txErrorFaucet.message}</AlertTitle>}
-                  <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
                 </Alert>
               )}
 
+              {itheumAccount && (
+                <Stack>
+                  <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+                  <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
+                  {itheumAccount.programsAllocation.map((item) => (
+                    <Stack direction="row" key={item.program}>
+                      <Badge borderRadius="full" px="2" colorScheme="teal">
+                        {itheumAccount._lookups.programs[item.program].programName}
+                      </Badge>
+                    </Stack>
+                  ))}
+                </Stack>
+              )}
+
               <Spacer />
 
-              <ChainSupportedInput feature={MENU.FAUCET}>
-                <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
-                  Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+              {!itheumAccount && (
+                <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doCfTestData}>
+                  Load Test Data
                 </Button>
-              </ChainSupportedInput>
+              )}
+
+              {itheumAccount && (
+                <Button
+                  colorScheme="teal"
+                  variant="outline"
+                  onClick={() => {
+                    setMenuItem(2);
+                    navigate('/selldata');
+                  }}
+                >
+                  Trade My Data
+                </Button>
+              )}
             </Stack>
-          </WrapItem>
-        </ChainSupportedComponent>
+          </Box>
 
-        <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-          <Stack p="5" h="360" bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
-            <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
-            <Spacer />
-            <Button disabled colorScheme="teal">Mint & Own NFT</Button>
-            <Text fontSize="sm" align="center">Coming Soon</Text>
-          </Stack>
-        </WrapItem>
+          <ChainSupportedComponent feature={MENU.FAUCET}>
+            <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
+              <Stack p="5" h={tileBoxH} w={tileBoxMdW}>
+                <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
+                <Text fontSize="sm" pb={5}>
+                  Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
+                </Text>
 
-        <ChainSupportedComponent feature={MENU.CLAIMS}>
-          <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg">
-            <Stack p="5" h="360">
-              <Heading size="md">My Claims</Heading>
+                {txHashFaucet && (
+                  <Stack>
+                    <Progress colorScheme="teal" size="sm" value={(100 / uxConfig.txConfirmationsNeededLrg) * txConfirmationFaucet} />
 
+                    <HStack>
+                      <Text fontSize="sm">Transaction </Text>
+                      <ShortAddress address={txHashFaucet} />
+                      <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}${txHashFaucet}`} isExternal>
+                        {' '}
+                        <ExternalLinkIcon mx="2px" />
+                      </Link>
+                    </HStack>
+                  </Stack>
+                )}
+
+                {txErrorFaucet && (
+                  <Alert status="error">
+                    <Stack >
+                      <AlertTitle fontSize="md">
+                        <AlertIcon mb={2} />Faucet Error</AlertTitle>
+                        {txErrorFaucet.message && <AlertDescription fontSize="md">{txErrorFaucet.message}</AlertDescription>}
+                        <CloseButton position="absolute" right="8px" top="8px" onClick={resetFauceState} />
+                    </Stack>
+                  </Alert>
+                )}
+
+                <Spacer />
+
+                <ChainSupportedInput feature={MENU.FAUCET}>
+                  <Button isLoading={faucetWorking} colorScheme="teal" variant="outline" onClick={handleOnChainFaucet}>
+                    Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                  </Button>
+                </ChainSupportedInput>
+              </Stack>
+            </Box>
+          </ChainSupportedComponent>
+
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, 'initial']}>
+            <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
+              <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
               <Spacer />
-              <HStack spacing={50}>
-                <Text>Rewards</Text>
-                <Button disabled={claimsBalances.claimBalanceValues[0] === '-1' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                  {claimsBalances.claimBalanceValues[0] !== '-1' ? claimsBalances.claimBalanceValues[0] : <Spinner size="xs" />}
-                </Button>
-                <ClaimModalEVM {...rewardsModalData} />
-              </HStack>
-
-              <Spacer />
-              <HStack spacing={50}>
-                <Text>Airdrops</Text>
-                <Button disabled={claimsBalances.claimBalanceValues[1] === '-1' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                  {claimsBalances.claimBalanceValues[1] !== '-1' ? claimsBalances.claimBalanceValues[1] : <Spinner size="xs" />}
-                </Button>
-                <ClaimModalEVM {...airdropsModalData} />
-              </HStack>
-              <Spacer />
-
-              {claimsBalances.claimBalanceValues[2] > 0 && 
-                <Box h="40px">
-                  <HStack spacing={30}>
-                <Text>Allocations</Text>
-                <Button disabled={claimsBalances.claimBalanceValues[2] === '-1' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                  {claimsBalances.claimBalanceValues[2] !== '-1' ? claimsBalances.claimBalanceValues[2] : <Spinner size="xs" />}
-                </Button>
-                <ClaimModalEVM {...allocationsModalData} />
-                  </HStack>
-                </Box> 
-              || <Box h="40px" />}
-
-              <Spacer />
+              <Button disabled colorScheme="teal">Mint & Own NFT</Button>
+              <Text fontSize="sm" align="center">Coming Soon</Text>
             </Stack>
-          </WrapItem>
-        </ChainSupportedComponent>
-      </Wrap>
-
-      <Stack p="5" h="360">
-        <Heading size="md">App Marketplace</Heading>
-        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
-        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-            <Image src={imgProgGaPa} />
-
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Gamer Passport
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {' '}
-                  Live
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('gdc')}>
-                Learn More
-              </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae')}>
-                Join Now
-              </Button>
-            </Box>
-          </Box>
-          
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-            <Image src={imgProgRhc} />
-
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Red Heart Challenge
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {' '}
-                  Live
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
-                Learn More
-              </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open(`https://itheum.com/redheartchallenge?dexUserId=${user.id}`)}>
-                Join Now
-              </Button>
-            </Box>
           </Box>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" w="300px">
-            <Image src={imgProgWfh} />
+          <ChainSupportedComponent feature={MENU.CLAIMS}>
+            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, 'initial']}>
+              <Stack p="5" h={tileBoxH}>
+                <Heading size="md">My Claims</Heading>
 
-            <Box p="3">
-              <Box d="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Wearables Fitness and Activity
-                </Box>
-                <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {' '}
-                  Coming Soon
-                </Badge>
-              </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('wfa')}>
-                Learn More
-              </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
-                Join Now
-              </Button>
+                <Spacer />
+                <HStack spacing={50}>
+                  <Text>Rewards</Text>
+                  <Button disabled={claimsBalances.claimBalanceValues[0] === '-1' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                    {claimsBalances.claimBalanceValues[0] !== '-1' ? claimsBalances.claimBalanceValues[0] : <Spinner size="xs" />}
+                  </Button>
+                  <ClaimModalEVM {...rewardsModalData} />
+                </HStack>
+
+                <Spacer />
+                <HStack spacing={50}>
+                  <Text>Airdrops</Text>
+                  <Button disabled={claimsBalances.claimBalanceValues[1] === '-1' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                    {claimsBalances.claimBalanceValues[1] !== '-1' ? claimsBalances.claimBalanceValues[1] : <Spinner size="xs" />}
+                  </Button>
+                  <ClaimModalEVM {...airdropsModalData} />
+                </HStack>
+                <Spacer />
+
+                {claimsBalances.claimBalanceValues[2] > 0 && 
+                  <Box h="40px">
+                    <HStack spacing={30}>
+                  <Text>Allocations</Text>
+                  <Button disabled={claimsBalances.claimBalanceValues[2] === '-1' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                    {claimsBalances.claimBalanceValues[2] !== '-1' ? claimsBalances.claimBalanceValues[2] : <Spinner size="xs" />}
+                  </Button>
+                  <ClaimModalEVM {...allocationsModalData} />
+                    </HStack>
+                  </Box> 
+                || <Box h="40px" />}
+
+                <Spacer />
+              </Stack>
             </Box>
-          </Box>
+          </ChainSupportedComponent>
         </Wrap>
       </Stack>
 
-      {learnMoreProd && (
-        <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <Stack spacing="5">
-                <Text>{progInfoMeta[learnMoreProd].desc}</Text>
-                <Stack>
-                  <Text color="gray" as="b">
-                    Delivered Via:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].medium}</p>
-                </Stack>
-                <Stack>
-                  <Text color="gray" as="b">
-                    Data Collected:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].data}</p>
-                </Stack>
-                <Stack>
-                  <Text color="gray" as="b">
-                    App Outcome:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].outcome}</p>
-                </Stack>
-                <Stack>
-                  <Text color="gray" as="b">
-                    Target Buyers:
-                  </Text>{' '}
-                  <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
-                </Stack>
-              </Stack>
-            </ModalBody>
-            <ModalFooter>
-              <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
-                Close
-              </Button>
-              <Button disabled={true} size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}?dexUserId=${user.id}`)}>
-                Join Now
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
+      <AppMarketplace />
     </Stack>
   );
 }
