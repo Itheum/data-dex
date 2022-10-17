@@ -21,6 +21,7 @@ import imgNfmeId from 'img/nfme-id.png';
 import imgLogo from 'img/logo.png';
 import { sleep, debugui } from 'libs/util';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
+import { IdentityFactory as SDKIdentityFactory } from 'poc-itheum-identity-sdk';
 
 export default function() {
   const navigate = useNavigate();
@@ -61,33 +62,10 @@ export default function() {
     // show Loading
     setRecoverWalletsState(-1);
 
-    web3Signer.current = web3Provider.getSigner();
-    const identityFactory = new ethers.Contract(_chainMeta.contracts.identityFactory, ABIS.ifactory, web3Signer.current);
-
-    // query-start block number
-    // We can only query last 1000 blocks due to the limit of Mumbai Testnet
-    const fromBlockNumber = (await web3Provider.getBlockNumber()) - 1000;
-    console.log('fromBlockNumber', fromBlockNumber);
-
-    let events = await identityFactory.queryFilter('IdentityDeployed', fromBlockNumber);
-    console.log('events', events);
-    const identityDeployedEvents = events.filter(event => event.args[1].toLowerCase() === walletAddress.toLowerCase());
-    let identityAddresses = identityDeployedEvents.length > 0 ? identityDeployedEvents.map(event => event.args[0]) : [];
-
-    if (identityAddresses.length === 0) {
-      events = await identityFactory.queryFilter('AdditionalOwnerAction', fromBlockNumber);
-
-      const eventsForWalletAddress = events.filter(event => event.args[2].toLowerCase() === walletAddress.toLowerCase());
-      const addingEvents = eventsForWalletAddress.filter(event => event.args[3] === 'added');
-      const removingEvents = eventsForWalletAddress.filter(event => event.args[3] === 'removed');
-
-      identityAddresses = addingEvents.map(event => event.args[0]);
-
-      removingEvents.map(event => event.args[0]).forEach(ele => {
-        const index = identityAddresses.findIndex(eleToFind => eleToFind === ele);
-        if (index >= 0) identityAddresses.splice(index, 1);
-      });
-    }
+    identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
+    console.log('identityFactory.current', identityFactory.current);
+    const identities = await identityFactory.current.getIdentitiesByTheGraph();
+    const identityAddresses = identities.map(identity => identity.address);
 
     // Loading finished
     setRecoverWalletsState(0);
@@ -95,26 +73,26 @@ export default function() {
     if (identityAddresses.length === 0) {
       return;
     }
-    const identityAddress = identityAddresses[0];
+    // const identityAddress = identityAddresses[0];
 
-    // query owners of identity contract
-    identity.current = new ethers.Contract(identityAddress, ABIS.identity, web3Signer.current);
+    // // query owners of identity contract
+    // identity.current = new ethers.Contract(identityAddress, ABIS.identity, web3Signer.current);
 
-    const claims = [];
-    const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
-    const claimRemovedEvents = await identity.current.queryFilter('ClaimRemoved', fromBlockNumber);
-    claims.push(...claimAddedEvents.map(ele => ele.args[0]));
+    // const claims = [];
+    // const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
+    // const claimRemovedEvents = await identity.current.queryFilter('ClaimRemoved', fromBlockNumber);
+    // claims.push(...claimAddedEvents.map(ele => ele.args[0]));
 
-    claimRemovedEvents
-      .map(ele => ele.args[0])
-      .forEach(ele => {
-        const index = claims.findIndex(eleToFind => eleToFind === ele);
-        if (index >= 0) claims.splice(index, 1);
-      });
+    // claimRemovedEvents
+    //   .map(ele => ele.args[0])
+    //   .forEach(ele => {
+    //     const index = claims.findIndex(eleToFind => eleToFind === ele);
+    //     if (index >= 0) claims.splice(index, 1);
+    //   });
 
-    setClaims(claims);
+    // setClaims(claims);
 
-    console.log('claims', claims);
+    // console.log('claims', claims);
   };
 
   async function proposeForDeletion() {
@@ -125,9 +103,9 @@ export default function() {
           return;
         }
         console.log('selectedWallet', selectedWallet);
-        const tx = await identity.current.connect(web3Signer.current).proposeAdditionalOwnerRemoval(selectedWallet);
-  
-        await tx.wait();
+        // const tx = await identity.current.connect(web3Signer.current).proposeAdditionalOwnerRemoval(selectedWallet);
+        // await tx.wait();
+        await identity.current.proposeOwnerRemoval(removeOwnerProposalState);
   
         init();
       } catch (e) {
@@ -138,7 +116,8 @@ export default function() {
 
   async function addOwner(newOwnerAddress) {
     try {
-      await identity.current.addAdditionalOwner(newOwnerAddress);
+      // await identity.current.addAdditionalOwner(newOwnerAddress);
+      await identity.current.addOwner(addingOwnerState);
     } catch (e) {
       console.log(e);
     }
