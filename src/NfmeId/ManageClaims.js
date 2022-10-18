@@ -53,6 +53,7 @@ export default function() {
   
   let web3Signer = useRef();
   let identity = useRef();
+  let identityFactory = useRef();
 
   const [errorMessage, setErrorMessage] = useState('');
   function closeErrorMessage() {

@@ -44,6 +44,7 @@ export default function() {
   
   let web3Signer = useRef();
   let identity = useRef();
+  let identityFactory = useRef();
 
   const [selectedWallet, setSelectedWallet] = useState('');
 
@@ -64,7 +65,7 @@ export default function() {
 
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
     console.log('identityFactory.current', identityFactory.current);
-    const identities = await identityFactory.current.getIdentitiesByTheGraph();
+    const identities = await identityFactory.current.getIdentities();
     const identityAddresses = identities.map(identity => identity.address);
 
     // Loading finished
@@ -73,10 +74,10 @@ export default function() {
     if (identityAddresses.length === 0) {
       return;
     }
-    // const identityAddress = identityAddresses[0];
+    const identityAddress = identityAddresses[0];
 
-    // // query owners of identity contract
-    // identity.current = new ethers.Contract(identityAddress, ABIS.identity, web3Signer.current);
+    // query owners of identity contract
+    identity.current = identities[0];
 
     // const claims = [];
     // const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
@@ -105,7 +106,7 @@ export default function() {
         console.log('selectedWallet', selectedWallet);
         // const tx = await identity.current.connect(web3Signer.current).proposeAdditionalOwnerRemoval(selectedWallet);
         // await tx.wait();
-        await identity.current.proposeOwnerRemoval(removeOwnerProposalState);
+        await identity.current.proposeOwnerRemoval(selectedWallet);
   
         init();
       } catch (e) {
@@ -117,7 +118,7 @@ export default function() {
   async function addOwner(newOwnerAddress) {
     try {
       // await identity.current.addAdditionalOwner(newOwnerAddress);
-      await identity.current.addOwner(addingOwnerState);
+      await identity.current.addOwner(newOwnerAddress);
     } catch (e) {
       console.log(e);
     }
