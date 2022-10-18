@@ -9,7 +9,7 @@ import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { AiFillHome } from 'react-icons/ai';
 import { IoConstructOutline } from 'react-icons/io5';
-import SellData from 'AdvertiseData/SellData';
+import SellDataElrond from 'AdvertiseData/SellDataElrond';
 import BuyData from 'DataPack/BuyData';
 import PurchasedData from 'DataPack/PurchasedData';
 import AdvertisedData from 'DataPack/AdvertisedData';
@@ -19,7 +19,7 @@ import HomeElrond from 'Home/HomeElrond';
 import ChainTransactions from 'Sections/ChainTransactions';
 import DataVault from 'Sections/DataVault';
 import DataNFTs from 'DataNFT/DataNFTs';
-import MyDataNFTs from 'DataNFT/MyDataNFTs';
+import MyDataNFTsElrond from 'DataNFT/MyDataNFTsElrond';
 import DataNFTMarketplace from 'DataNFT/DataNFTMarketplace';
 import DataStreams from 'Sections/DataStreams';
 import DataCoalitions from 'DataCoalition/DataCoalitions';
@@ -571,7 +571,7 @@ function App({ appConfig }) {
                 <Routes>
                   <Route path="/" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount('tools')}  />}/>
                   <Route path="home" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount('tools')}  />}/>
-                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} />} />
+                  <Route path="selldata" element={<SellDataElrond key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} />} />
                     <Route path="advertiseddata" element={<AdvertisedData />} />
@@ -580,7 +580,7 @@ function App({ appConfig }) {
                   </Route>
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                    <Route path="wallet" element={<MyDataNFTs />} />
+                    <Route path="wallet" element={<MyDataNFTsElrond />} />
                     <Route path="marketplace" element={<DataNFTMarketplace />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>

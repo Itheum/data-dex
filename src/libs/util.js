@@ -24,6 +24,7 @@ import {
   tokenContractAddress_Elrond_Devnet,
   claimsContractAddress_Elrond_Devnet,
   faucetContractAddress_Elrond_Devnet,
+  dataNftMintContractAddress_Elrond_Devnet,
   tokenContractAddress_Elrond_Mainnet,
   claimsContractAddress_Elrond_Mainnet,
   faucetContractAddress_Elrond_Mainnet,
@@ -76,6 +77,7 @@ export const contractsForChain = (networkId) => {
       contracts.itheumToken = tokenContractAddress_Elrond_Devnet;
       contracts.claims = claimsContractAddress_Elrond_Devnet;
       contracts.faucet = faucetContractAddress_Elrond_Devnet;
+      contracts.dataNftMint = dataNftMintContractAddress_Elrond_Devnet;
       break;
     case 'E1':
       contracts.itheumToken = tokenContractAddress_Elrond_Mainnet;
@@ -311,7 +313,7 @@ export function noChainSupport(menuItem, networkId) {
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
-    'ED': [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    'ED': [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     'E1': [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
   };
 

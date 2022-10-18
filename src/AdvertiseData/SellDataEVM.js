@@ -340,34 +340,6 @@ export default function ({ onRfMount, itheumAccount }) {
 
   }, [txConfirmation, txHash, txError]);
 
-  function validateBaseInput() {
-    if (!dataNFTTitle || dataNFTTitle.trim() === '') {
-      alert('You need to provide a NFT title!');
-      return false;
-    } else if (!dataNFTDesc) {
-      alert('You need to provide a NFT Description!');
-      return false;
-    }
-
-    if (isStreamTrade) {
-      if (!dataNFTStreamUrl.includes('https://') || !dataNFTStreamPreviewUrl.includes('https://') || !dataNFTMarshalService.includes('https://')) {
-        alert('Your data stream url inputs dont seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it');
-        return false;
-      } else {
-        return true;
-      }
-    } else {
-      // only need to validate json if it's not a stream trade
-      try {
-        JSON.parse(sellerData); // valid JSON check?
-        return true;
-      } catch (e) {
-        alert('You need to provide some valid JSON for data!');
-        return false;
-      }
-    }
-  }
-
   const dataPackSellSubmit = async () => {
     if (!sellerDataPreview || sellerDataPreview.trim() === '') {
       alert('You need to provide some dataPreview!');
@@ -536,7 +508,7 @@ export default function ({ onRfMount, itheumAccount }) {
     }
   }
 
-  function closeProgressModal() {
+  const closeProgressModal = () => {
     toast({
       title: (drawerInMintNFT || isStreamTrade) ? 
         'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT' : 
@@ -554,6 +526,34 @@ export default function ({ onRfMount, itheumAccount }) {
   }
 
   const handleCodeShowToggle = () => setShowCode(!showCode);
+
+  function validateBaseInput() {
+    if (!dataNFTTitle || dataNFTTitle.trim() === '') {
+      alert('You need to provide a NFT title!');
+      return false;
+    } else if (!dataNFTDesc) {
+      alert('You need to provide a NFT Description!');
+      return false;
+    }
+
+    if (isStreamTrade) {
+      if (!dataNFTStreamUrl.includes('https://') || !dataNFTStreamPreviewUrl.includes('https://') || !dataNFTMarshalService.includes('https://')) {
+        alert('Your data stream url inputs dont seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it');
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      // only need to validate json if it's not a stream trade
+      try {
+        JSON.parse(sellerData); // valid JSON check?
+        return true;
+      } catch (e) {
+        alert('You need to provide some valid JSON for data!');
+        return false;
+      }
+    }
+  }
 
   // S: File upload plugin
   function uploadedFileValidator(file) {
@@ -839,8 +839,8 @@ export default function ({ onRfMount, itheumAccount }) {
                 </Text>}
 
                 <Flex>
-                  {!drawerInMintNFT && <ChainSupportedInput feature={MENU.BUY}><Button mt="5" mr="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataPackSellSubmit}>Place for Trade as Data Pack</Button></ChainSupportedInput>}
-                  {drawerInMintNFT && <ChainSupportedInput feature={MENU.BUY}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>}
+                  {!drawerInMintNFT && <ChainSupportedInput feature={MENU.SELL}><Button mt="5" mr="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataPackSellSubmit}>Place for Trade as Data Pack</Button></ChainSupportedInput>}
+                  {drawerInMintNFT && <ChainSupportedInput feature={MENU.SELL}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>}
                 </Flex>
               </Stack>}
 
@@ -1050,7 +1050,7 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Text colorScheme="gray" fontSize="sm">Suggested: 0%, 10%, 20%, 30%</Text>
 
                 <Flex>
-                  <ChainSupportedInput feature={MENU.BUY}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>
+                  <ChainSupportedInput feature={MENU.SELL}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>
                 </Flex>
               </Stack>}
 
