@@ -1,5 +1,5 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue } from '@elrondnetwork/erdjs/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue } from '@elrondnetwork/erdjs/out';
 import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import jsonData from './ABIs/datanftmint.abi.json';
 import { contractsForChain } from 'libs/util';
@@ -32,17 +32,17 @@ export class DataNftMintContract {
       value: 0,
       data: TransactionPayload.contractCall()
         .setFunction(new ContractFunction('mint'))
-        .addArg(new BytesValue(name))
-        .addArg(new BytesValue(media))
-        .addArg(new BytesValue(data_marchal))
-        .addArg(new BytesValue(data_stream))
-        .addArg(new BytesValue(data_preview))
+        .addArg(new StringValue(name))
+        .addArg(new StringValue(media))
+        .addArg(new StringValue(data_marchal))
+        .addArg(new StringValue(data_stream))
+        .addArg(new StringValue(data_preview))
         .addArg(new BigUIntValue(royalties))
         .addArg(new BigUIntValue(amount))
         .build(),
       receiver: new Address(this.dataNftMintContractAddress),
       gasLimit: 6000000,
-      chainID: this.chainID
+      chainID: this.chainID,
     });
 
     await refreshAccount();

@@ -24,27 +24,28 @@ export const getTransactionLink = (networkId, txHash) => {
 // check token balance on Elrond
 export const checkBalance = async (token, address, networkId) => {
   const api = getApi(networkId);
-  
-  return new Promise((resolve, reject) => {
-    axios.get(`https://${api}/accounts/${address}/tokens/${token}`, { timeout: uxConfig.elrondAPITimeoutMs })
-    .then((resp) => {
-      resolve({ balance: resp.data.balance });
-    })
-    .catch((error) => {
-      if (error) {
-        console.error(error);
 
-        if (error.response) {
-          if (error.response.status === 404) {
-            resolve({ balance: 0 });  // user has no ITHEUM so API return 404 it seems
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`https://${api}/accounts/${address}/tokens/${token}`, { timeout: uxConfig.elrondAPITimeoutMs })
+      .then((resp) => {
+        resolve({ balance: resp.data.balance });
+      })
+      .catch((error) => {
+        if (error) {
+          console.error(error);
+
+          if (error.response) {
+            if (error.response.status === 404) {
+              resolve({ balance: 0 }); // user has no ITHEUM so API return 404 it seems
+            } else {
+              resolve({ error });
+            }
           } else {
             resolve({ error });
           }
-        } else {
-          resolve({ error });
-        } 
-      }     
-    });
+        }
+      });
   });
 };
 
@@ -107,6 +108,28 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
     }
 
     return transactions;
+  } catch (error) {
+    console.error(error);
+    return { error };
+  }
+};
+
+export const getNftsOfAnAccountFromACollection = async (address, collectionTicker, networkId) => {
+  const api = getApi(networkId);
+
+  try {
+    const nftsLink = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
+
+    const resp = await (await axios.get(nftsLink, { timeout: uxConfig.elrondAPITimeoutMs })).data;
+
+    const nfts = [];
+
+    for (const nft in resp) {
+      const parsedNft = {};
+      parsedNft['id'] = resp[nft]['identifier'];
+      parsedNft['nftImgUrl'] = resp[nft]['url'];
+    }
+    return nfts;
   } catch (error) {
     console.error(error);
     return { error };
