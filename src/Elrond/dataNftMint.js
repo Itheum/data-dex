@@ -1,5 +1,5 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue } from '@elrondnetwork/erdjs/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment } from '@elrondnetwork/erdjs/out';
 import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
 import jsonData from './ABIs/datanftmint.abi.json';
 import { contractsForChain } from 'libs/util';
@@ -29,7 +29,7 @@ export class DataNftMintContract {
 
   async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount }) {
     const mintTransaction = new Transaction({
-      value: 0,
+      value: TokenPayment.egldFromAmount(0.025).amountAsBigInteger,
       data: TransactionPayload.contractCall()
         .setFunction(new ContractFunction('mint'))
         .addArg(new StringValue(name))
@@ -41,7 +41,7 @@ export class DataNftMintContract {
         .addArg(new BigUIntValue(amount))
         .build(),
       receiver: new Address(this.dataNftMintContractAddress),
-      gasLimit: 6000000,
+      gasLimit: 60000000,
       chainID: this.chainID,
     });
 
