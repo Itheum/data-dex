@@ -10,7 +10,7 @@
       "contractCrate": {
           "name": "datanftmint",
           "version": "0.0.0",
-          "git_version": "83994dd"
+          "git_version": "8255666"
       },
       "framework": {
           "name": "elrond-wasm",
@@ -79,6 +79,10 @@
               },
               {
                   "name": "royalties",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "amount",
                   "type": "BigUint"
               }
           ],

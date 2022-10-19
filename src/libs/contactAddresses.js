@@ -32,7 +32,7 @@ const contracts = {
       itheumTokenContractAddress: 'ITHEUM-a61317',
       claimsContractAddress: 'erd1qqqqqqqqqqqqqpgqms979krpfug4r8p39d0j9p74g95r749afsxspcay83',
       faucetContractAddress: 'erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf',
-      dataNftMintContractAddress: 'erd1qqqqqqqqqqqqqpgq8c7z3hnayw3k4mqsh6rjexpp7g5fgr337yqs5ujrlz',
+      dataNftMintContractAddress: 'erd1qqqqqqqqqqqqqpgqmv94u0kush7umu9wfucrvf0clhzcqhzd7yqs0x2vpv',
     },
     mainnet: {
       itheumTokenContractAddress: 'ITHEUM-df6f26',

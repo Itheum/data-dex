@@ -16,7 +16,7 @@ export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { isAuthenticated, user, isInitialized, isWeb3Enabled } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
-  
+
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [onChainMetadataMap, setOnChainMetadataMap] = useState({});
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);

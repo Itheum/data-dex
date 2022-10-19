@@ -13,7 +13,7 @@ import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  
+
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -28,7 +28,27 @@ export default function() {
     (async() => {
       if (onChainNFTs !== null) {
         if (onChainNFTs.length > 0) {
-          // some logic...
+          /*
+            // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
+            const usersDataNFTCatalogLocal = [];
+
+            onChainNFTs.map(nft = > {
+              const dataNFT = {};
+              dataNFT.id = 'xxx'; // ID of NFT
+              dataNFT.nftImgUrl = 'https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=42eb8d1787539ceeaaa223517f05bf8f3b05fd7e1dfb7d0465946dd626a331b0ddddddsdds'; // image URL of of NFT
+              dataNFT.dataPreview = 'xxx'; // preview URL for NFT data stream
+              dataNFT.dataStream = 'xxx'; // data stream URL
+              dataNFT.dataMarshal = 'xx'; // data stream URL
+              dataNFT.tokenName = 'x'; // is this different to NFT ID?
+              dataNFT.txHash = 'xx'; // TX Hash for where NFT gt minted by user (possible?)
+              dataNFT.txNetworkId = 'ED' // devnet or mainet ID
+              dataNFT.feeInTokens = '100' // how much in ITHEUM tokens
+
+              usersDataNFTCatalogLocal.push(dataNFT);
+            })
+
+            setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
+          */
         } else {
           await sleep(5);
           setNoData(true);
@@ -68,7 +88,7 @@ export default function() {
               </Box>
 
               <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
-                {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`}
+                {`${item.feeInTokens} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`}
               </Box>
 
               <Box mt="5">
@@ -91,12 +111,6 @@ export default function() {
                   <ShortAddress address={item.txHash} />
                   <Link href={`${CHAIN_TX_VIEWER[item.txNetworkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
-
-                {OPENSEA_CHAIN_NAMES[item.txNetworkId] &&
-                  <HStack mt=".5">
-                    <Text fontSize="xs">OpenSea Listing: </Text>
-                    <Link onClick={() => buyOnOpenSea(item.txNFTId, contractsForChain(item.txNetworkId).dnft, item.txNetworkId)}><ExternalLinkIcon mx="2px" /></Link>
-                  </HStack>}
 
                 <HStack mt=".5">
                   <Text fontSize="xs">Download Data File</Text>

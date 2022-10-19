@@ -30,19 +30,18 @@ export default function ({ onRfMount, itheumAccount }) {
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
-  const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0, s4: 0 });
-  const [saveProgressNFT, setSaveProgressNFT] = useState({ n1: 0, n2: 0, n3: 0 });
+  const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0 });
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
-  
+
   const [isStreamTrade, setIsStreamTrade] = useState(0);
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [newNFTId, setNewNFTId] = useState(null); // newly created token ID from blockchain
   const [dataNFTImg, setDataNFTImg] = useState(null);
-  const [dataNFTTitle, setDataNFTTitle] = useState('');
+  const [dataNFTTokenName, setDataNFTTokenName] = useState('');
   const [dataNFTDesc, setDataNFTDesc] = useState('');
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
@@ -93,10 +92,12 @@ export default function ({ onRfMount, itheumAccount }) {
   }
 
   const dataNFTSellSubmit = async () => {
-    if (validateBaseInput()) {
-      if (isStreamTrade) {
-        dataNFTDataStreamAdvertise();
-      }   
+    if (elrondAddress) {
+      if (validateBaseInput()) {
+        if (isStreamTrade) {
+          dataNFTDataStreamAdvertise();
+        }   
+      }
     }
   }
 
@@ -105,9 +106,7 @@ export default function ({ onRfMount, itheumAccount }) {
       1) Call the data marshal and get a encrypted data stream url
       2) Get a sha256 hash for the encrypted data stream url and generate the robot img URL (s2)
         2.1) Save the Data NFT in Moralis and get the new moralis dataNFTId
-      3) Save the NFT Meta file to IPFS and get the uri (n1)
-      4) Call the NFT contract with meta file URI and get the new NFT ID (n2)
-      5) Save a new Data NFT object in Moralis with all details of Data Pack + NFTId, Meta file URI and NFT contract address and NFT mint hash (n3)
+      3) Call the NFT contract with meta file URI and get the new NFT ID (s3)
     */
 
     onProgressModalOpen();
@@ -126,16 +125,14 @@ export default function ({ onRfMount, itheumAccount }) {
     };
 
     try {
-      const res = await fetch('http://localhost:4000/ddex/datamarshal/v1/services/generate', requestOptions);
+      const res = await fetch('https://itheumapi.com/ddex/datamarshal/v1/services/generate', requestOptions);
       const data = await res.json();
-  
+
       if (data && data.encryptedMessage && data.encryptionVector) {
         setSellerData(data.encryptedMessage); // the data URL is the seller data in this case
         setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
   
-        //await doCfHashData(); // get the hash of the url (sellerData is the url here)
-        debugger;
-        handleOnChainMint();        
+        buildUniqueImage(data.messageHash);              
       } else {
         if (data.success === false) {
           setErrDataNFTStreamGeneric(new Error(`${data.error.code}, ${data.error.message}`));
@@ -148,19 +145,33 @@ export default function ({ onRfMount, itheumAccount }) {
     }
   }
 
-  const handleOnChainMint = () => {
-    if (elrondAddress) {
-      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+  const buildUniqueImage = async(dataNFTHash) => {
+    await sleep(3);
+    const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
 
-      elrondDataNftMintContract.sendMintTransaction({
-        name: 'token-XX', 
-        media: 'https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=42eb8d1787539ceeaaa223517f05bf8f3b05fd7e1dfb7d0465946dd626a331b0ddddddsdds', 
-        data_marchal: dataNFTMarshalService, 
-        data_stream: dataNFTStreamUrl, 
-        data_preview: dataNFTStreamPreviewUrl, 
-        royalties: dataNFTRoyalty
-      });
-    }
+    // @TODO we should now take newNFTImg and store the image in IPFS and get the CID for storing on the NFT
+
+    setDataNFTImg(newNFTImg);
+    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
+
+    handleOnChainMint(newNFTImg);
+  };
+
+  const handleOnChainMint = async(newNFTImg) => {
+    await sleep(3);
+    const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+
+    await elrondDataNftMintContract.sendMintTransaction({
+      name: dataNFTTokenName, 
+      media: newNFTImg,
+      data_marchal: dataNFTMarshalService, 
+      data_stream: dataNFTStreamUrl, 
+      data_preview: dataNFTStreamPreviewUrl, 
+      royalties: dataNFTRoyalty,
+      amount: dataNFTCopies
+    });
+
+    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 2 }));
   };
 
   const closeProgressModal = () => {
@@ -178,8 +189,8 @@ export default function ({ onRfMount, itheumAccount }) {
   }
 
   function validateBaseInput() {
-    if (!dataNFTTitle || dataNFTTitle.trim() === '') {
-      alert('You need to provide a NFT title!');
+    if (!dataNFTTokenName || dataNFTTokenName.trim() === '') {
+      alert('You need to provide a NFT token name!');
       return false;
     } else if (!dataNFTDesc) {
       alert('You need to provide a NFT Description!');
@@ -280,11 +291,11 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Text fontWeight="bold">Data Marshal Service</Text>
                 <Input placeholder="https://itheumapi.com/ddex/dataMarshal" value={dataNFTMarshalService} onChange={(event) => setDataNFTMarshalService(event.currentTarget.value)} />
 
-                <Text fontWeight="bold">NFT Title</Text>
-                <Input placeholder="NFT Title" value={dataNFTTitle} onChange={(event) => setDataNFTTitle(event.currentTarget.value)} />
+                <Text fontWeight="bold">NFT Token Name</Text>
+                <Input placeholder="NFT Token Name" value={dataNFTTokenName} onChange={(event) => setDataNFTTokenName(event.currentTarget.value)} />
 
                 <Text fontWeight="bold">NFT Description</Text>
-                <Textarea placeholder="Enter a detailed NFT description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} />
+                <Textarea placeholder="Enter a description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} />
 
                 <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
                 <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={1000} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
@@ -350,18 +361,8 @@ export default function ({ onRfMount, itheumAccount }) {
                     </>}
 
                     <HStack>
-                      {!saveProgressNFT.n1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Generating and saving NFT metadata file to IPFS</Text>
-                    </HStack>
-
-                    <HStack>
-                      {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                      {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                       <Text>Minting your new data NFT on blockchain</Text>
-                    </HStack>
-
-                    <HStack>
-                      {!saveProgressNFT.n3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Advertising for trade as a Data NFT</Text>
                     </HStack>
 
                     {errDataNFTStreamGeneric &&
