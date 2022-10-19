@@ -1,4 +1,6 @@
+import { AbiRegistry, SmartContractAbi } from '@elrondnetwork/erdjs/out';
 import axios from 'axios';
+import dataNftMintJson from './ABIs/datanftmint.abi.json';
 import { uxConfig } from 'libs/util';
 
 export const getApi = (networkId) => {
@@ -114,8 +116,12 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
   }
 };
 
-export const getNftsOfAnAccountFromACollection = async (address, collectionTicker, networkId) => {
+export const getDataNftsOfAnAccount = async (address, collectionTicker, networkId) => {
   const api = getApi(networkId);
+
+  const json = JSON.parse(JSON.stringify(dataNftMintJson));
+  const abiRegistry = AbiRegistry.create(json);
+  const abi = new SmartContractAbi(abiRegistry, ['DataNftMintContract']);
 
   try {
     const nftsLink = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;

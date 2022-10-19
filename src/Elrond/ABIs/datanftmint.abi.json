@@ -1,360 +1,390 @@
 {
-  "buildInfo": {
-      "rustc": {
-          "version": "1.63.0-nightly",
-          "commitHash": "21e9336fe81a1fce364349bb7a35a0347c369f34",
-          "commitDate": "2022-06-18",
-          "channel": "Nightly",
-          "short": "rustc 1.63.0-nightly (21e9336fe 2022-06-18)"
-      },
-      "contractCrate": {
-          "name": "datanftmint",
-          "version": "0.0.0",
-          "git_version": "8255666"
-      },
-      "framework": {
-          "name": "elrond-wasm",
-          "version": "0.35.0"
-      }
-  },
-  "name": "DataNftMint",
-  "constructor": {
-      "inputs": [],
-      "outputs": []
-  },
-  "endpoints": [
-      {
-          "name": "initializeContract",
-          "onlyOwner": true,
-          "mutability": "mutable",
-          "payableInTokens": [
-              "EGLD"
-          ],
-          "inputs": [
-              {
-                  "name": "collection_name",
-                  "type": "bytes"
-              },
-              {
-                  "name": "token_ticker",
-                  "type": "bytes"
-              },
-              {
-                  "name": "token_identifier",
-                  "type": "EgldOrEsdtTokenIdentifier"
-              },
-              {
-                  "name": "mint_price",
-                  "type": "BigUint"
-              }
-          ],
-          "outputs": []
-      },
-      {
-          "name": "mint",
-          "mutability": "mutable",
-          "payableInTokens": [
-              "*"
-          ],
-          "inputs": [
-              {
-                  "name": "name",
-                  "type": "bytes"
-              },
-              {
-                  "name": "media",
-                  "type": "bytes"
-              },
-              {
-                  "name": "data_marchal",
-                  "type": "bytes"
-              },
-              {
-                  "name": "data_stream",
-                  "type": "bytes"
-              },
-              {
-                  "name": "data_preview",
-                  "type": "bytes"
-              },
-              {
-                  "name": "royalties",
-                  "type": "BigUint"
-              },
-              {
-                  "name": "amount",
-                  "type": "BigUint"
-              }
-          ],
-          "outputs": []
-      },
-      {
-          "name": "setIsPaused",
-          "onlyOwner": true,
-          "mutability": "mutable",
-          "inputs": [
-              {
-                  "name": "is_paused",
-                  "type": "bool"
-              }
-          ],
-          "outputs": []
-      },
-      {
-          "name": "setWhiteListEnabled",
-          "onlyOwner": true,
-          "mutability": "mutable",
-          "inputs": [
-              {
-                  "name": "is_enabled",
-                  "type": "bool"
-              }
-          ],
-          "outputs": []
-      },
-      {
-          "name": "setMintPrice",
-          "onlyOwner": true,
-          "mutability": "mutable",
-          "inputs": [
-              {
-                  "name": "token_id",
-                  "type": "EgldOrEsdtTokenIdentifier"
-              },
-              {
-                  "name": "price",
-                  "type": "BigUint"
-              }
-          ],
-          "outputs": []
-      },
-      {
-          "name": "setWhiteListSpots",
-          "onlyOwner": true,
-          "mutability": "mutable",
-          "inputs": [
-              {
-                  "name": "whitelist",
-                  "type": "variadic<Address>",
-                  "multi_arg": true
-              }
-          ],
-          "outputs": []
-      },
-      {
-          "name": "getTokenId",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "TokenIdentifier"
-              }
-          ]
-      },
-      {
-          "name": "getMintedTokens",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "BigUint"
-              }
-          ]
-      },
-      {
-          "name": "getMintPrice",
-          "mutability": "readonly",
-          "inputs": [
-              {
-                  "name": "token",
-                  "type": "EgldOrEsdtTokenIdentifier"
-              }
-          ],
-          "outputs": [
-              {
-                  "type": "BigUint"
-              }
-          ]
-      },
-      {
-          "name": "getIsPaused",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "bool"
-              }
-          ]
-      },
-      {
-          "name": "getMintedPerAddress",
-          "mutability": "readonly",
-          "inputs": [
-              {
-                  "name": "address",
-                  "type": "Address"
-              }
-          ],
-          "outputs": [
-              {
-                  "type": "BigUint"
-              }
-          ]
-      },
-      {
-          "name": "getWhiteList",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "variadic<Address>",
-                  "multi_result": true
-              }
-          ]
-      },
-      {
-          "name": "isWhiteListEnabled",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "bool"
-              }
-          ]
-      },
-      {
-          "name": "getTokenCreatedNonce",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "u64"
-              }
-          ]
-      },
-      {
-          "name": "getContractInitialized",
-          "mutability": "readonly",
-          "inputs": [],
-          "outputs": [
-              {
-                  "type": "bool"
-              }
-          ]
-      }
-  ],
-  "events": [
-      {
-          "identifier": "mintPauseToggle",
-          "inputs": [
-              {
-                  "name": "pause_value",
-                  "type": "bool",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "whitelistEnableToggle",
-          "inputs": [
-              {
-                  "name": "enable_value",
-                  "type": "bool",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "privateSalePriceSet",
-          "inputs": [
-              {
-                  "name": "token",
-                  "type": "EgldOrEsdtTokenIdentifier",
-                  "indexed": true
-              },
-              {
-                  "name": "amount",
-                  "type": "BigUint",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "publicSalePriceSet",
-          "inputs": [
-              {
-                  "name": "token",
-                  "type": "EgldOrEsdtTokenIdentifier",
-                  "indexed": true
-              },
-              {
-                  "name": "amount",
-                  "type": "BigUint",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "maxPerAddressSet",
-          "inputs": [
-              {
-                  "name": "amount",
-                  "type": "BigUint",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "maxPerTxSet",
-          "inputs": [
-              {
-                  "name": "amount",
-                  "type": "BigUint",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "whitelistSpotSet",
-          "inputs": [
-              {
-                  "name": "address",
-                  "type": "Address",
-                  "indexed": true
-              },
-              {
-                  "name": "amount",
-                  "type": "BigUint",
-                  "indexed": true
-              }
-          ]
-      },
-      {
-          "identifier": "mint",
-          "inputs": [
-              {
-                  "name": "address",
-                  "type": "Address",
-                  "indexed": true
-              },
-              {
-                  "name": "amount",
-                  "type": "BigUint",
-                  "indexed": true
-              },
-              {
-                  "name": "token",
-                  "type": "EgldOrEsdtTokenIdentifier",
-                  "indexed": true
-              },
-              {
-                  "name": "price",
-                  "type": "BigUint",
-                  "indexed": true
-              }
-          ]
-      }
-  ],
-  "hasCallback": true,
-  "types": {}
+    "buildInfo": {
+        "rustc": {
+            "version": "1.64.0-nightly",
+            "commitHash": "6dba4ed215e7a60f0a2a19c04f3f73691f89c509",
+            "commitDate": "2022-07-09",
+            "channel": "Nightly",
+            "short": "rustc 1.64.0-nightly (6dba4ed21 2022-07-09)"
+        },
+        "contractCrate": {
+            "name": "datanftmint",
+            "version": "0.0.0",
+            "git_version": "35ad10e-modified"
+        },
+        "framework": {
+            "name": "elrond-wasm",
+            "version": "0.35.0"
+        }
+    },
+    "name": "DataNftMint",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "initializeContract",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "collection_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "token_ticker",
+                    "type": "bytes"
+                },
+                {
+                    "name": "token_identifier",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "mint_price",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "mint",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "media",
+                    "type": "bytes"
+                },
+                {
+                    "name": "data_marchal",
+                    "type": "bytes"
+                },
+                {
+                    "name": "data_stream",
+                    "type": "bytes"
+                },
+                {
+                    "name": "data_preview",
+                    "type": "bytes"
+                },
+                {
+                    "name": "royalties",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "DataNftAttributes"
+                }
+            ]
+        },
+        {
+            "name": "setIsPaused",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "is_paused",
+                    "type": "bool"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setWhiteListEnabled",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "is_enabled",
+                    "type": "bool"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setMintPrice",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "price",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setWhiteListSpots",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "whitelist",
+                    "type": "variadic<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getTokenId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getMintedTokens",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getMintPrice",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getIsPaused",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "getMintedPerAddress",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getWhiteList",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "isWhiteListEnabled",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "getTokenCreatedNonce",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "getContractInitialized",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "identifier": "mintPauseToggle",
+            "inputs": [
+                {
+                    "name": "pause_value",
+                    "type": "bool",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "whitelistEnableToggle",
+            "inputs": [
+                {
+                    "name": "enable_value",
+                    "type": "bool",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "privateSalePriceSet",
+            "inputs": [
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "publicSalePriceSet",
+            "inputs": [
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "maxPerAddressSet",
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "maxPerTxSet",
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "whitelistSpotSet",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "mint",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "price",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        }
+    ],
+    "hasCallback": true,
+    "types": {
+        "DataNftAttributes": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "data_stream_url",
+                    "type": "bytes"
+                },
+                {
+                    "name": "data_preview_url",
+                    "type": "bytes"
+                },
+                {
+                    "name": "data_marchal_url",
+                    "type": "bytes"
+                },
+                {
+                    "name": "creator",
+                    "type": "Address"
+                },
+                {
+                    "name": "creation_time",
+                    "type": "u64"
+                }
+            ]
+        }
+    }
 }
