@@ -30,7 +30,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   const { error: errCfTestData, isLoading: loadingCfTestData, fetch: doCfTestData, data: dataCfTestData } = useMoralisCloudFunction('loadTestData', {}, { autoFetch: false });
   const walletAddress = user.get('ethAddress');
 
-  const [identityContainerState, setIdentityContainerState] = useState(3); // 0 for not deployed, 1 for deploying, 2 for deployed, 3 for show my NFMe IDs
+  const [identityContainerState, setIdentityContainerState] = useState(-1); // 0 for not deployed, 1 for deploying, 2 for deployed, 3 for show my NFMe IDs
   const [identityAddresses, setIdentityAddresses] = useState([]);
   const [identityOwners, setIdentityOwners] = useState([]);
   const [claims, setClaims] = useState([]);
@@ -45,9 +45,11 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
     // show Loading
     setIdentityContainerState(-1);
 
+    console.log('_chainMeta.contracts.identityFactory', _chainMeta.contracts.identityFactory);
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
     console.log('identityFactory.current', identityFactory.current);
     const identities = await identityFactory.current.getIdentitiesByTheGraph();
+    // const identities = await identityFactory.current.getIdentities();
     const identityAddresses = identities.map(identity => identity.address);
 
     console.log('identities', identities);
@@ -57,8 +59,8 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
       return;
     }
     
-    // identity.current = identities[0];
-    // console.log('identity.current', identity.current);
+    identity.current = identities[0];
+    console.log('identity.current', identity.current);
     // const owners = await identity.current.getOwners();
     // console.log('owners', owners);
     // setIdentityOwners(owners);
@@ -73,35 +75,37 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
     // console.log('claims', claims);
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (_chainMeta?.networkId && user && isWeb3Enabled) {
-  //       if (identityAddresses.length === 0) {
-  //         setIdentityContainerState(0);
-  //       } else {
-  //         if (identityContainerState === 1) { // if previous state is deploying, go to state 2 - show succesfully deployed
-  //           setIdentityContainerState(2);
-  //           await sleep(3); // sleep 3 seconds and go to state 3
-  //           setIdentityContainerState(3);
-  //         } else { // show NFMe IDs
-  //           setIdentityContainerState(3);
-  //         }
-  //       }
-  //     }
-  //   })();
-  // }, [identityAddresses]);
+  useEffect(() => {
+    (async () => {
+      if (_chainMeta?.networkId && user && isWeb3Enabled) {
+        if (identityAddresses.length === 0) {
+          setIdentityContainerState(0);
+        } else {
+          if (identityContainerState === 1) { // if previous state is deploying, go to state 2 - show succesfully deployed
+            setIdentityContainerState(2);
+            await sleep(3); // sleep 3 seconds and go to state 3
+            setIdentityContainerState(3);
+          } else { // show NFMe IDs
+            setIdentityContainerState(3);
+          }
+        }
+      }
+    })();
+  }, [identityAddresses]);
 
   async function deployIdentity() {
     try {
       // const deployIdentityTx = await identityFactory.current.connect(web3Signer.current).deployIdentity();
-      const address = await identityFactory.current.deployIdentity();
-      console.log('address', address);
       
       // to show "Deploying"
-      // setIdentityContainerState(1);
+      setIdentityContainerState(1);
+
+      const address = await identityFactory.current.deployIdentity();
+      console.log('address', address);
 
       // const txReceipt = await deployIdentityTx.wait();
       // console.log('txReceipt', txReceipt);
+
       // load deployed identities
       await init();
     } catch (e) {
@@ -112,9 +116,8 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
-    console.log('_chainMeta user isWeb3Enabled', _chainMeta, user, isWeb3Enabled);
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
-      // init();
+      init();
     }
   }, [user, isWeb3Enabled, _chainMeta]);
 
