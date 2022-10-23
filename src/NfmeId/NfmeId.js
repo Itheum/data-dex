@@ -146,11 +146,11 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
             <Heading size="lg">Deploying Identity Containter...</Heading>
 
             {/* Rotating Circle with inner text */}
-            <div class="wrapper">
-              <div class="spinner">
+            <div className="wrapper">
+              <div className="spinner">
                 <span><em></em></span>
               </div>
-              <div class="text">Deploying</div>
+              <div className="text">Deploying</div>
             </div>
 
           </Box>
