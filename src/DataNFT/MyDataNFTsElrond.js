@@ -10,10 +10,14 @@ import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { sleep, buyOnOpenSea, contractsForChain } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
+import { getNftsOfAcollectionForAnAddress } from 'Elrond/api';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
+import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
 
-export default function() {
+export default function MyDataNFTsElrond() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-
+  const { address } = useGetAccountInfo();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -25,41 +29,49 @@ export default function() {
 
   // use this effect to parse  the raw data into a catalog that is easier to render in the UI
   useEffect(() => {
-    (async() => {
+    const parseOnChainNfts = async () => {
       if (onChainNFTs !== null) {
         if (onChainNFTs.length > 0) {
-          /*
+          const codec = new BinaryCodec();
+          const json = JSON.parse(JSON.stringify(dataNftMintJson));
+          const abiRegistry = AbiRegistry.create(json);
+          const abi = new SmartContractAbi(abiRegistry, ['DataNftMintContract']);
+          const dataNftAttributes = abiRegistry.getStruct('DataNftAttributes');
+          
             // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
             const usersDataNFTCatalogLocal = [];
 
-            onChainNFTs.map(nft = > {
-              const dataNFT = {};
-              dataNFT.id = 'xxx'; // ID of NFT
-              dataNFT.nftImgUrl = 'https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=42eb8d1787539ceeaaa223517f05bf8f3b05fd7e1dfb7d0465946dd626a331b0ddddddsdds'; // image URL of of NFT
-              dataNFT.dataPreview = 'xxx'; // preview URL for NFT data stream
-              dataNFT.dataStream = 'xxx'; // data stream URL
-              dataNFT.dataMarshal = 'xx'; // data stream URL
-              dataNFT.tokenName = 'x'; // is this different to NFT ID?
-              dataNFT.txHash = 'xx'; // TX Hash for where NFT gt minted by user (possible?)
-              dataNFT.txNetworkId = 'ED' // devnet or mainet ID
-              dataNFT.feeInTokens = '100' // how much in ITHEUM tokens
+            onChainNFTs.map(nft => {
+                  const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
+                  const dataNFT = {};
+                  dataNFT.id = nft['identifier']; // ID of NFT -> done
+                  dataNFT.nftImgUrl = nft['url']; // image URL of of NFT -> done
+                  dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
+                  dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
+                  dataNFT.dataMarshal = decodedAttributes['data_marchal_url'].toString(); // data stream URL -> done
+                  dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
+                  dataNFT.txHash = 'xx'; // TX Hash for where NFT gt minted by user (possible?) -> only possible if we do extra api calls
+                  dataNFT.txNetworkId = 'ED' // devnet or mainet ID -> done
+                  dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
+                  dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
+                  dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
 
-              usersDataNFTCatalogLocal.push(dataNFT);
+                  usersDataNFTCatalogLocal.push(dataNFT);
             })
-
             setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
-          */
         } else {
           await sleep(5);
           setNoData(true);
         }
       }
-    })();
+    };
+    parseOnChainNfts();
   }, [onChainNFTs]);
 
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async() => {
-    setOnChainNFTs([]);
+    const onChainNfts = await getNftsOfAcollectionForAnAddress(address,'DATANFTV1-5425ef','not_E1');
+    setOnChainNFTs(onChainNfts);
   }
 
   return (
