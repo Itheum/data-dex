@@ -18,7 +18,7 @@ const contracts = {
         ddexContractAddress: '0x3be0986AE40de157FAEcfcE3F65b3990b54a5ccb',
         dNFTContractAddress: '0xd742350dC29171670847Ba68858CC5865d1eC245',
         claimsContractAddress: '0x14f008d74C42055334A21BFAA7231b4f57E4EFa5',
-        identityFantoryContractAddress: '0x67f59f43e8b28c7e863998a3001b15f7682d5793',
+        identityFantoryContractAddress: '0x7191a062da155519dc1d1281bc2d0a8c823a1694',
       },
     },
   },

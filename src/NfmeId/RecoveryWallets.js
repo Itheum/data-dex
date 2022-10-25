@@ -95,7 +95,7 @@ export default function() {
 
     // console.log('claims', claims);
 
-    identity.current = identities[0];
+    identity.current = identities[identities.length - 1];
     console.log('identity.current', identity.current);
     const owners = await identity.current.getOwners();
     console.log('owners', owners);

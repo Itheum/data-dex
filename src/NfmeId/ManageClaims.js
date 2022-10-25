@@ -32,6 +32,50 @@ const EMPTY_CLAIM_PAYLOAD = {
   signature: undefined,
 };
 
+const ClaimItem = ({ identity, claimId, index, removeClaim }) => {
+  const [claim, setClaim] = useState();
+
+  useEffect(() => {
+    (async () => {
+      if (claimId && identity) {
+        console.log('identity', identity);
+        const claim = await identity.getClaimByIdentifier(claimId);
+        setClaim(claim);
+      }
+    })();
+  }, [claimId]);
+
+  return (
+    claim && identity ? (<WrapItem key={`manageclaims-claim-${index}`}>
+      <Box
+        w="sm"
+        p="3"
+        borderBottomWidth="2px"
+        borderRadius="lg"
+      >
+        <Heading as="h6" size="md">{claim.identifier}</Heading>
+        <Heading as="h6" size="sm" mt="3">Issued By:</Heading>
+        <Text fontSize="sm">Itheum({claim.to})</Text>
+        <Heading as="h6" size="sm" mt="3">Issued On:</Heading>
+        <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claim.validFrom)}</Text>
+        <Heading as="h6" size="sm" mt="3">Expires On:</Heading>
+        <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claim.validTo)}</Text>
+
+        <Flex justify="flex-end">
+          <Button
+            size="sm"
+            colorScheme="teal"
+            variant="solid"
+            onClick={() => removeClaim(claim.identifier)}
+          >
+            Delete
+          </Button>
+        </Flex>
+      </Box>
+    </WrapItem>) : <SkeletonLoadingList />
+  );
+}
+
 export default function() {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -130,7 +174,7 @@ export default function() {
       return;
     }
 
-    identity.current = identities[0];
+    identity.current = identities[identities.length - 1];
     console.log('identity.current', identity.current);
     const owners = await identity.current.getOwners();
     console.log('owners', owners);
@@ -246,7 +290,7 @@ export default function() {
             <Heading size="lg">Manage Claims: View and Delete</Heading>
 
             <Wrap spacing="30px" mt="9">
-              {DUMMY_CLAIMS.map((val, index) => (
+              {/* {DUMMY_CLAIMS.map((val, index) => (
                 <WrapItem key={`manageclaims-claim-${index}`}>
                   <Box
                     w="sm"
@@ -274,7 +318,10 @@ export default function() {
                     </Flex>
                   </Box>
                 </WrapItem>
-              ))}
+              ))} */}
+              {
+                claims.length > 0 && claims.map((claim, index) => <ClaimItem identity={identity.current} claimId={claim} index={index} removeClaim={removeClaim} />)
+              }
             </Wrap>
 
             <Flex justify="flex-end" mt="12">
