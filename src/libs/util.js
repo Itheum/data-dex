@@ -6,6 +6,7 @@ import {
   ddexContractAddress_Goerli,
   dNFTContractAddress_Goerli,
   claimsContractAddress_Goerli,
+  identityFantoryContractAddress_Goerli,
   tokenContractAddress_testnetBSC,
   ddexContractAddress_testnetBSC,
   dNFTContractAddress_testnetBSC,
@@ -39,6 +40,7 @@ export const contractsForChain = (networkId) => {
     dnft: null,
     faucet: null,
     claims: null,
+    identityFactory: null,
   };
 
   switch (networkId) {
@@ -52,6 +54,7 @@ export const contractsForChain = (networkId) => {
       contracts.ddex = ddexContractAddress_Goerli;
       contracts.dnft = dNFTContractAddress_Goerli;
       contracts.claims = claimsContractAddress_Goerli;
+      contracts.identityFactory = identityFantoryContractAddress_Goerli;
       break;
     case 80001:
       contracts.itheumToken = tokenContractAddress_Matic;
@@ -88,7 +91,7 @@ export const contractsForChain = (networkId) => {
       contracts.faucet = faucetContractAddress_Elrond_Mainnet;
       break;
   }
-
+  console.log('contracts',contracts);
   return contracts;
 };
 

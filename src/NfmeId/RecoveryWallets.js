@@ -39,7 +39,7 @@ export default function() {
   // 3 for Attach Success
   // 4 for Remove Success
   const [recoverWalletsState, setRecoverWalletsState] = useState(-1); 
-
+  const [identityOwners, setIdentityOwners] = useState([]);
   const [claims, setClaims] = useState([]);
   
   let web3Signer = useRef();
@@ -77,7 +77,7 @@ export default function() {
     const identityAddress = identityAddresses[0];
 
     // query owners of identity contract
-    identity.current = identities[0];
+    // identity.current = identities[0];
 
     // const claims = [];
     // const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
@@ -94,6 +94,21 @@ export default function() {
     // setClaims(claims);
 
     // console.log('claims', claims);
+
+    identity.current = identities[0];
+    console.log('identity.current', identity.current);
+    const owners = await identity.current.getOwners();
+    console.log('owners', owners);
+    setIdentityOwners(owners);
+
+    const confirmations = await identity.current.getOwnerRemovalConfirmations();
+    // setConfirmationState(confirmations);
+
+    const claims = await identity.current.getClaims();
+    setClaims(claims);
+
+    
+    console.log('claims', claims);
   };
 
   async function proposeForDeletion() {

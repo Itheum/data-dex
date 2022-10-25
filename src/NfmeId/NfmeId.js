@@ -45,6 +45,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
     // show Loading
     setIdentityContainerState(-1);
 
+    console.log('_chainMeta.contracts',_chainMeta.contracts);
     console.log('_chainMeta.contracts.identityFactory', _chainMeta.contracts.identityFactory);
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
     console.log('identityFactory.current', identityFactory.current);
@@ -59,20 +60,20 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
       return;
     }
     
-    identity.current = identities[0];
+    identity.current = identities[identities.length - 1];
     console.log('identity.current', identity.current);
-    // const owners = await identity.current.getOwners();
-    // console.log('owners', owners);
-    // setIdentityOwners(owners);
+    const owners = await identity.current.getOwners();
+    console.log('owners', owners);
+    setIdentityOwners(owners);
 
-    // const confirmations = await identity.current.getOwnerRemovalConfirmations();
-    // // setConfirmationState(confirmations);
+    const confirmations = await identity.current.getOwnerRemovalConfirmations();
+    // setConfirmationState(confirmations);
 
-    // const claims = await identity.current.getClaims();
-    // setClaims(claims);
+    const claims = await identity.current.getClaims();
+    setClaims(claims);
 
-    
-    // console.log('claims', claims);
+    console.log('claims', claims);
+    console.log(typeof(claims[0]))
   };
 
   useEffect(() => {
@@ -220,12 +221,20 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
                       <TagLabel>You don't have any claims.</TagLabel>
                     </Tag>
                   )}
-                  {claims.length > 0 && claims.map((val, index) => (
+                  {/* {claims.length > 0 && claims.map((val, index) => (
                     <WrapItem maxW="sm" borderWidth="1px" borderRadius="lg" key={`nfmeid-claim-${index}`}>
                       <Image height="120" src={imgLogo} alt="NFMe" />
                     </WrapItem>
-                  ))}
+                  ))} */}
                 </Wrap>
+                <UnorderedList ml='6'>
+                  {
+                    claims.length && claims.map((claim, index) => (
+                      <ListItem key={index}>{claim}</ListItem>
+                    ))
+                  }
+                </UnorderedList>
+
                 <Button mt="9" colorScheme="teal" variant="outline" onClick={() => {setMenuItem(MENU.MANAGECLAIMS); navigate('identity/reputation');}}>Manage Claims</Button>
               </Box>
               <Box mt="12">

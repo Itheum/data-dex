@@ -45,7 +45,7 @@ export default function() {
   // 0 for View and Delete
   // 1 for Add
   // 2 for Manual Add
-  const [manageClaimsState, setManageClaimsState] = useState(2); 
+  const [manageClaimsState, setManageClaimsState] = useState(-1); 
 
   const [claims, setClaims] = useState([]);
   const [claimPayload, setClaimPayload] = useState('');
@@ -126,12 +126,26 @@ export default function() {
     // Loading finished
     setManageClaimsState(0);
 
-    // if (identityAddresses.length === 0) {
-    //   return;
-    // }
-    // const identityAddress = identityAddresses[0];
+    if (identityAddresses.length === 0) {
+      return;
+    }
 
-    // // query owners of identity contract
+    identity.current = identities[0];
+    console.log('identity.current', identity.current);
+    const owners = await identity.current.getOwners();
+    console.log('owners', owners);
+    // setIdentityOwners(owners);
+
+    const confirmations = await identity.current.getOwnerRemovalConfirmations();
+    // setConfirmationState(confirmations);
+
+    const claims = await identity.current.getClaims();
+    setClaims(claims);
+
+    
+    console.log('claims', claims);
+
+    // query owners of identity contract
     // identity.current = new ethers.Contract(identityAddress, ABIS.identity, web3Signer.current);
 
     // const claims = [];
@@ -202,7 +216,7 @@ export default function() {
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
     console.log('_chainMeta user isWeb3Enabled', _chainMeta, user, isWeb3Enabled);
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
-      // init();
+      init();
     }
   }, [user, isWeb3Enabled, _chainMeta]);
 
