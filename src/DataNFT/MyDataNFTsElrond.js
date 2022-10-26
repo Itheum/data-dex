@@ -50,8 +50,6 @@ export default function MyDataNFTsElrond() {
                   dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
                   dataNFT.dataMarshal = decodedAttributes['data_marchal_url'].toString(); // data stream URL -> done
                   dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
-                  dataNFT.txHash = 'xx'; // TX Hash for where NFT gt minted by user (possible?) -> only possible if we do extra api calls
-                  dataNFT.txNetworkId = 'ED' // devnet or mainet ID -> done
                   dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
                   dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
                   dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
@@ -96,16 +94,16 @@ export default function MyDataNFTsElrond() {
                 fontWeight="semibold"
                 as="h4"
                 lineHeight="tight">
-                {item.nftName}
+                {item.tokenName}
               </Box>
 
               <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
-                {`${item.feeInTokens} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`}
+                {`Creator: ${item.creator}`}
               </Box>
 
               <Box mt="5">
-                {item.stillOwns && <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {item.originalOwner && 'you are the owner' || 'you are the creator & owner' }
+                {item.creator===address && <Badge borderRadius="full" px="2" colorScheme="teal">
+                  {item.creator===address && 'you are the owner' || 'you are the creator & owner' }
                 </Badge> || <Badge borderRadius="full" px="2" colorScheme="red" display="none">
                   sold
                 </Badge>}
@@ -119,14 +117,13 @@ export default function MyDataNFTsElrond() {
                 </Badge>
 
                 <HStack mt="5">
-                  <Text fontSize="xs">Mint TX: </Text>
-                  <ShortAddress address={item.txHash} />
-                  <Link href={`${CHAIN_TX_VIEWER[item.txNetworkId]}${item.txHash}`} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <Text fontSize="xs">Creation time: </Text>
+                  <Text>{item.creationTime}</Text>
                 </HStack>
 
                 <HStack mt=".5">
                   <Text fontSize="xs">Download Data File</Text>
-                    <Link href={item.stream_url} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                    <Link href={item.dataStream} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
               </Box>              
             </Flex>
