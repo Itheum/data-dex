@@ -106,12 +106,12 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
 
       // const txReceipt = await deployIdentityTx.wait();
       // console.log('txReceipt', txReceipt);
-
-      // load deployed identities
-      await init();
     } catch (e) {
       alert(e.reason);
     }
+
+    // load deployed identities
+    await init();
   }
 
   useEffect(() => {

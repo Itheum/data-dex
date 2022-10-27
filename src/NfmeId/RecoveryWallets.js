@@ -41,6 +41,7 @@ export default function() {
   const [recoverWalletsState, setRecoverWalletsState] = useState(-1); 
   const [identityOwners, setIdentityOwners] = useState([]);
   const [claims, setClaims] = useState([]);
+  const [newOwnerAddress, setNewOwnerAddress] = useState('');
   
   let web3Signer = useRef();
   let identity = useRef();
@@ -65,8 +66,11 @@ export default function() {
 
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
     console.log('identityFactory.current', identityFactory.current);
-    const identities = await identityFactory.current.getIdentities();
+    const identities = await identityFactory.current.getIdentitiesByTheGraph();
+    // const identities = await identityFactory.current.getIdentities();
     const identityAddresses = identities.map(identity => identity.address);
+
+    console.log('identities', identities);
 
     // Loading finished
     setRecoverWalletsState(0);
@@ -122,21 +126,22 @@ export default function() {
         // const tx = await identity.current.connect(web3Signer.current).proposeAdditionalOwnerRemoval(selectedWallet);
         // await tx.wait();
         await identity.current.proposeOwnerRemoval(selectedWallet);
-  
-        init();
       } catch (e) {
         console.log(e);
       }
+      init();
     }
   }
 
-  async function addOwner(newOwnerAddress) {
+  async function addOwner(address) {
     try {
       // await identity.current.addAdditionalOwner(newOwnerAddress);
-      await identity.current.addOwner(newOwnerAddress);
+      console.log('address', address);
+      await identity.current.addOwner(address);
     } catch (e) {
       console.log(e);
     }
+    init();
   }
 
   useEffect(() => {
@@ -166,7 +171,7 @@ export default function() {
             <TableContainer mt="9">
               <Table variant="unstyled">
                 <Tbody>
-                  {DUMMY_ADDRESSES.map((val, index) => (
+                  {identityOwners.map((val, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
@@ -230,7 +235,7 @@ export default function() {
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {DUMMY_ADDRESSES[index]}
+                        {identityOwners[index]}
                       </Td>
                       <Td>
                         {index === 0 && (
@@ -250,7 +255,7 @@ export default function() {
                   <Tr>
                     <Td textAlign="left" pl="0">Wallet 3:</Td>
                     <Td textAlign="left">
-                      <Input size="sm" maxW="100%" placeholder="Input a new owner address." />
+                      <Input size="sm" maxW="100%" placeholder="Input a new owner address." defaultValue={newOwnerAddress} onChange={e => setNewOwnerAddress(e.target.value)} />
                     </Td>
                     <Td textAlign="left">
                       <Button
@@ -258,7 +263,7 @@ export default function() {
                         variant="solid"
                         size="sm"
                         px="3"
-                        onClick={(e) => addOwner(e.target.value)}
+                        onClick={(e) => addOwner(newOwnerAddress)}
                       >
                         Attach
                       </Button>
@@ -296,7 +301,7 @@ export default function() {
               <Table variant="unstyled">
                 <Tbody>
                   <RadioGroup onChange={setSelectedWallet} value={selectedWallet}>
-                  {DUMMY_ADDRESSES.map((val, index) => (
+                  {identityOwners.map((val, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
@@ -370,7 +375,7 @@ export default function() {
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {DUMMY_ADDRESSES[index]}
+                        {identityOwners[index]}
                       </Td>
                       <Td textAlign="left">
                         {index === 0 && (
@@ -418,7 +423,7 @@ export default function() {
               <Table variant="unstyled">
                 <Tbody>
                   <RadioGroup>
-                  {DUMMY_ADDRESSES.map((val, index) => (<>
+                  {identityOwners.map((val, index) => (<>
                     {index === 2 && (
                     <Tr
                       key={`recovery-wallets-state-0-${index}`}

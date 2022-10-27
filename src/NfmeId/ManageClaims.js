@@ -212,16 +212,14 @@ export default function() {
   async function removeClaim(identifier) {
     try {
       console.log('removeClaim: ', identifier);
-      const tx = await identity.current.connect(web3Signer.current).removeClaim(identifier);
+      const tx = await identity.current.removeClaim(identifier);
 
-      const txReceipt = await tx.wait();
-      console.log('txReceipt', txReceipt);
-      
-      // load claims again
-      await init();
+      await tx.wait();
     } catch (e) {
       setErrorMessage(e.reason);
     }
+    // load claims again
+    await init();
   }
 
   function onChangeClaimPayload(payload) {
@@ -247,12 +245,12 @@ export default function() {
       // await addClaimTx.wait();
 
       await identity.current.addClaim(claimPayloadJson);
-
-      init();
     } catch (e) {
       console.log(e);
       setErrorMessage(e.message);
     }
+
+    init();
   }
 
   useEffect(() => {
