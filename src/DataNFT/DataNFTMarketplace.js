@@ -12,7 +12,7 @@ import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, 
 import { sleep, buyOnOpenSea, contractsForChain } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
-export default function() {
+export default function Marketplace() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { user } = useMoralis();
   const { web3 } = useMoralis();

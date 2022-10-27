@@ -1,0 +1,254 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.64.0-nightly",
+            "commitHash": "6dba4ed215e7a60f0a2a19c04f3f73691f89c509",
+            "commitDate": "2022-07-09",
+            "channel": "Nightly",
+            "short": "rustc 1.64.0-nightly (6dba4ed21 2022-07-09)"
+        },
+        "contractCrate": {
+            "name": "data_market",
+            "version": "0.0.0",
+            "git_version": "1acb144-modified"
+        },
+        "framework": {
+            "name": "elrond-wasm",
+            "version": "0.34.1"
+        }
+    },
+    "name": "DataMarket",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "setFees",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "adder_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "accepter_fee",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "addAcceptedToken",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "addAcceptedPayment",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "togglePause",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "addOffer",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "wanted_token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "wanted_token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "wanted_token_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "quantity",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "cancelOffer",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "acceptOffer",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "viewOffers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "from",
+                    "type": "u64"
+                },
+                {
+                    "name": "to",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "List<OfferOut>"
+                }
+            ]
+        },
+        {
+            "name": "viewOffer",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<OfferOut>"
+                }
+            ]
+        },
+        {
+            "name": "numberOfOffers",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "viewEmptyOfferIndexes",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<u64>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "viewHighestOfferIndex",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "viewIsPaused",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "OfferOut": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "index",
+                    "type": "u64"
+                },
+                {
+                    "name": "owner",
+                    "type": "Address"
+                },
+                {
+                    "name": "offered_token_identifier",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "offered_token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "offered_token_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "wanted_token_identifier",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "wanted_token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "wanted_token_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "quantity",
+                    "type": "BigUint"
+                }
+            ]
+        }
+    }
+}

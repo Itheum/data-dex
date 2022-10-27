@@ -33,6 +33,7 @@ const contracts = {
       claimsContractAddress: 'erd1qqqqqqqqqqqqqpgqms979krpfug4r8p39d0j9p74g95r749afsxspcay83',
       faucetContractAddress: 'erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf',
       dataNftMintContractAddress: 'erd1qqqqqqqqqqqqqpgqmv94u0kush7umu9wfucrvf0clhzcqhzd7yqs0x2vpv',
+      dataNftMarketContractAddress: 'erd1qqqqqqqqqqqqqpgq3l7g9fy2zelnlulsx4kqmsjtpr227meq7yqsfv6a5k'
     },
     mainnet: {
       itheumTokenContractAddress: 'ITHEUM-df6f26',
@@ -65,6 +66,7 @@ export const tokenContractAddress_Elrond_Devnet = contracts.elrond['devnet'].ith
 export const claimsContractAddress_Elrond_Devnet = contracts.elrond['devnet'].claimsContractAddress;
 export const faucetContractAddress_Elrond_Devnet = contracts.elrond['devnet'].faucetContractAddress;
 export const dataNftMintContractAddress_Elrond_Devnet = contracts.elrond['devnet'].dataNftMintContractAddress;
+export const dataNftMarketContractAddress_Elrond_Devnet = contracts.elrond['devnet'].dataNftMarketContractAddress;
 export const tokenContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].itheumTokenContractAddress;
 export const claimsContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].claimsContractAddress;
 export const faucetContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].faucetContractAddress;
