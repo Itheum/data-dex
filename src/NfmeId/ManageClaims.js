@@ -21,6 +21,7 @@ import imgLogo from 'img/logo.png';
 import { sleep, debugui, convertUnixTimestampToLocalDateTime } from 'libs/util';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { IdentityFactory as SDKIdentityFactory } from 'poc-itheum-identity-sdk';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const EMPTY_CLAIM_PAYLOAD = {
   identifier: undefined,
@@ -32,7 +33,7 @@ const EMPTY_CLAIM_PAYLOAD = {
   signature: undefined,
 };
 
-const ClaimItem = ({ identity, claimId, index, removeClaim }) => {
+const ClaimItem = ({ identity, claimId, index, removeClaim, howToGetLink }) => {
   const [claim, setClaim] = useState();
 
   useEffect(() => {
@@ -62,14 +63,28 @@ const ClaimItem = ({ identity, claimId, index, removeClaim }) => {
         <Text fontSize="sm">{convertUnixTimestampToLocalDateTime(claim.validTo)}</Text>
 
         <Flex justify="flex-end">
-          <Button
-            size="sm"
-            colorScheme="teal"
-            variant="solid"
-            onClick={() => removeClaim(claim.identifier)}
-          >
-            Delete
-          </Button>
+          {
+            howToGetLink ? (
+              <Link
+                size="sm"
+                colorScheme="teal"
+                variant="solid"
+                href={howToGetLink}
+                isExternal
+              >
+                How to Get <ExternalLinkIcon mx="2px" />
+              </Link>
+            ) : (
+              <Button
+                size="sm"
+                colorScheme="teal"
+                variant="solid"
+                onClick={() => removeClaim(claim.identifier)}
+              >
+                Delete
+              </Button>
+            )
+          }
         </Flex>
       </Box>
     </WrapItem>) : <SkeletonLoadingList />
@@ -343,7 +358,7 @@ export default function() {
                 </WrapItem>
               ))} */}
               {
-                claims.length > 0 && claims.map((claim, index) => <ClaimItem identity={identity.current} claimId={claim} index={index} removeClaim={removeClaim} />)
+                claims.length > 0 && claims.map((claim, index) => <ClaimItem identity={identity.current} claimId={claim} index={index} howToGetLink={'https://www.itheum.io/'} />)
               }
             </Wrap>
           </Box>

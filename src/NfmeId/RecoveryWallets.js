@@ -122,9 +122,13 @@ export default function() {
           alert('Please select a wallet to be removed.');
           return;
         }
-        console.log('selectedWallet', selectedWallet);
-        // const tx = await identity.current.connect(web3Signer.current).proposeAdditionalOwnerRemoval(selectedWallet);
-        // await tx.wait();
+
+        const shortAddress = selectedWallet.slice(0, 5) + '...' + selectedWallet.slice(-3);
+        const result = window.confirm(`Do you want to remove ${shortAddress} from Owners?`);
+        if (!result) {
+          return;
+        }
+
         await identity.current.proposeOwnerRemoval(selectedWallet);
       } catch (e) {
         console.log(e);
@@ -135,8 +139,10 @@ export default function() {
 
   async function addOwner(address) {
     try {
-      // await identity.current.addAdditionalOwner(newOwnerAddress);
-      console.log('address', address);
+      if (!address) {
+        alert('Input the address of the new Owner.');
+        return;
+      }
       await identity.current.addOwner(address);
     } catch (e) {
       console.log(e);
