@@ -231,7 +231,7 @@ export default function() {
             <TableContainer mt="9">
               <Table variant="unstyled">
                 <Tbody>
-                  {Array(1).fill('').map((_, index) => (
+                  {/* {Array(1).fill('').map((_, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
@@ -244,6 +244,26 @@ export default function() {
                             variant="outline"
                             size="sm"
                             // ml="6"
+                          >
+                            Currently Logged In
+                          </Button>
+                        )}
+                      </Td>
+                    </Tr>
+                  ))} */}
+
+                  {identityOwners.map((val, index) => (
+                    <Tr key={`recovery-wallets-state-0-${index}`}>
+                      <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
+                      <Td textAlign="left">
+                        {val}
+
+                        {val.toLowerCase() === walletAddress.toLowerCase() && (
+                          <Button
+                            colorScheme="teal"
+                            variant="outline"
+                            size="sm"
+                            ml="6"
                           >
                             Currently Logged In
                           </Button>
@@ -371,11 +391,30 @@ export default function() {
               <Table variant="unstyled">
                 <Tbody>
                   <RadioGroup>
-                  {Array(2).fill('').map((_, index) => (
+                  {/* {Array(2).fill('').map((_, index) => (
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
                         {identityOwners[index]}
+                      </Td>
+                      <Td textAlign="left">
+                        {index === 0 && (
+                          <Button
+                            colorScheme="teal"
+                            variant="outline"
+                            size="sm"
+                          >
+                            Currently Logged In
+                          </Button>
+                        )}
+                      </Td>
+                    </Tr>
+                  ))} */}
+                  {identityOwners.map((val, index) => (
+                    <Tr key={`recovery-wallets-state-0-${index}`}>
+                      <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
+                      <Td textAlign="left">
+                        {val}
                       </Td>
                       <Td textAlign="left">
                         {index === 0 && (

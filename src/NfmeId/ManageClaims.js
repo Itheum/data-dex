@@ -103,58 +103,6 @@ export default function() {
   function closeErrorMessage() {
     setErrorMessage('');
   }
-
-  /////////////////////////////////////////////////////////
-  const DUMMY_CLAIMS = [
-    {
-      identifier: 'nfme_mint_allowed',
-      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
-      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
-      data: ethers.utils.formatBytes32String(''),
-      validFrom: 1664670523,
-      validTo: 0,
-    },
-    {
-      identifier: 'gamer_passport_alpha',
-      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
-      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
-      data: ethers.utils.formatBytes32String(''),
-      validFrom: 1664670523,
-      validTo: 1664680523,
-    },
-    {
-      identifier: 'nfme_mint_allowed',
-      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
-      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
-      data: ethers.utils.formatBytes32String(''),
-      validFrom: 1664670523,
-      validTo: 0,
-    },
-    {
-      identifier: 'gamer_passport_alpha',
-      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
-      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
-      data: ethers.utils.formatBytes32String(''),
-      validFrom: 1664670523,
-      validTo: 1664680523,
-    },
-    {
-      identifier: 'nfme_mint_allowed',
-      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
-      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
-      data: ethers.utils.formatBytes32String(''),
-      validFrom: 1664670523,
-      validTo: 0,
-    },
-    {
-      identifier: 'gamer_passport_alpha',
-      from: '0xa838c28201aBb6613022eC02B97fcF6828B0862B',
-      to: '0x47C73B9eb64Ca3d7381Fb714f527F2eD16F2f02E',
-      data: ethers.utils.formatBytes32String(''),
-      validFrom: 1664670523,
-      validTo: 1664680523,
-    },
-  ];
   /////////////////////////////////////////////////////////
 
   console.log('manageClaimsState', manageClaimsState);
@@ -240,10 +188,6 @@ export default function() {
 
   async function addClaim() {
     try {
-      // console.log('claimPayloadJson', claimPayloadJson);
-      // const addClaimTx = await identity.current.connect(web3Signer.current).addClaim(claimPayloadJson);
-      // await addClaimTx.wait();
-
       await identity.current.addClaim(claimPayloadJson);
     } catch (e) {
       console.log(e);
@@ -353,11 +297,14 @@ export default function() {
                   p="3"
                   borderBottomWidth="2px"
                   borderRadius="lg"
+                  h='100%'
+                  display='flex'
+                  flexDirection='column'
                 >
                   <Heading as="h6" size="md">Manual Add</Heading>
-                  <Text fontSize="sm">Have you received a claim offline? Use this option to verify and add the claim payload to your identity</Text>
+                  <Text fontSize="sm" mt='4'>Have you received a claim offline? Use this option to verify and add the claim payload to your identity</Text>
 
-                  <Flex justify="flex-end" mt="6">
+                  <Flex justify="flex-end" mt="auto">
                     <Button
                       size="sm"
                       colorScheme="teal"
@@ -370,7 +317,7 @@ export default function() {
                 </Box>
               </WrapItem>
 
-              {DUMMY_CLAIMS.map((val, index) => (
+              {/* {DUMMY_CLAIMS.map((val, index) => (
                 <WrapItem key={`manageclaims-state-1-${index}`}>
                   <Box
                     w="sm"
@@ -394,7 +341,10 @@ export default function() {
                     </Flex>
                   </Box>
                 </WrapItem>
-              ))}
+              ))} */}
+              {
+                claims.length > 0 && claims.map((claim, index) => <ClaimItem identity={identity.current} claimId={claim} index={index} removeClaim={removeClaim} />)
+              }
             </Wrap>
           </Box>
         </ChainSupportedComponent>
