@@ -41,6 +41,7 @@ export default function() {
   const [recoverWalletsState, setRecoverWalletsState] = useState(-1); 
   const [identityOwners, setIdentityOwners] = useState([]);
   const [claims, setClaims] = useState([]);
+  const [confirmations, setConfirmations] = useState([]);
   const [newOwnerAddress, setNewOwnerAddress] = useState('');
   
   let web3Signer = useRef();
@@ -106,7 +107,8 @@ export default function() {
     setIdentityOwners(owners);
 
     const confirmations = await identity.current.getOwnerRemovalConfirmations();
-    // setConfirmationState(confirmations);
+    console.log('confirmations', confirmations);
+    setConfirmations(confirmations);
 
     const claims = await identity.current.getClaims();
     setClaims(claims);
@@ -331,7 +333,12 @@ export default function() {
                     <Tr key={`recovery-wallets-state-0-${index}`}>
                       <Td textAlign="left" pl="0">Wallet {`${index}`}:</Td>
                       <Td textAlign="left">
-                        {val}
+                        <Text textAlign='right'>{val}</Text>
+                        {
+                          confirmations.length > index && confirmations[index] > 0 && (
+                            <Text textAlign='right' color='red' fontSize='12px'>Marked for Deletion: {confirmations[index]} out of {confirmations.length} votes</Text>
+                          )
+                        }
                       </Td>
                       <Td textAlign="left">
                         {index === 0 && (
