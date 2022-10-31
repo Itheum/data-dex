@@ -37,6 +37,8 @@ export const contractsForChain = (networkId) => {
     dnft: null,
     faucet: null,
     claims: null,
+    market: null,
+    dataNftMint: null,
   };
 
   switch (networkId) {
@@ -78,7 +80,7 @@ export const contractsForChain = (networkId) => {
       contracts.claims = claimsContractAddress_Elrond_Devnet;
       contracts.faucet = faucetContractAddress_Elrond_Devnet;
       contracts.dataNftMint = dataNftMintContractAddress_Elrond_Devnet;
-      contracts.dataNftMarket = dataNftMintContractAddress_Elrond_Devnet;
+      contracts.market = dataNftMintContractAddress_Elrond_Devnet;
       break;
     case 'E1':
       contracts.itheumToken = tokenContractAddress_Elrond_Mainnet;
