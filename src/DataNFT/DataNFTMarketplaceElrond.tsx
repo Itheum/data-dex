@@ -5,32 +5,8 @@ import {
   transactionServices,
   useGetAccountInfo
 } from '@elrondnetwork/dapp-core';
-import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import {
-  AbiRegistry,
-  SmartContractAbi,
-  SmartContract,
-  Address,
-  ResultsParser,
-  BigUIntValue,
-  VariadicValue,
-  Transaction,
-  TransactionPayload,
-  ContractFunction,
-  List,
-  U64Value,
-  TokenPayment,
-  TokenIdentifierValue,
-  AddressValue,
-  StringValue,
-  TypedValue,
-  U32Value
-} from '@elrondnetwork/erdjs/out';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import jsonData from '../Elrond/ABIs/data_market.abi.json';
 import { DataNftMarketContract } from '../Elrond/dataNftMarket';
-import {roundDown, hexZero,getTokenWantedRepresentation,getTokenImgSrc,tokenDecimals} from '../Elrond/tokenUtils.js';
+import { roundDown, hexZero,getTokenWantedRepresentation,getTokenImgSrc,tokenDecimals } from '../Elrond/tokenUtils.js';
 
 const Shop = () => {
   const { address, hasPendingTransactions } = useGetAccountInfo();
@@ -69,7 +45,7 @@ const Shop = () => {
                 src={`https://api.elrond.com/nfts/${
                   token['have']['identifier']
                 }-${hexZero(token['have']['nonce'])}/thumbnail`}
-                alt='Card image'
+                alt='Data NFT'
               />
               <div className='card-body text-white d-flex flex-column justify-content-center align-items-center'>
                 <div className=''>Supply: {token['quantity']}</div>

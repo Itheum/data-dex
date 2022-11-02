@@ -118,7 +118,7 @@ export default function MyDataNFTsElrond() {
 
                 <HStack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
-                  <Text>{item.creationTime}</Text>
+                  <Text>{item.creationTime.toString()}</Text>
                 </HStack>
 
                 <HStack mt=".5">
