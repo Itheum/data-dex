@@ -20,7 +20,7 @@ import ChainTransactions from 'Sections/ChainTransactions';
 import DataVault from 'Sections/DataVault';
 import DataNFTs from 'DataNFT/DataNFTs';
 import MyDataNFTsElrond from 'DataNFT/MyDataNFTsElrond';
-import DataNFTMarketplace from 'DataNFT/DataNFTMarketplace';
+import DataNFTMarketplaceElrond from 'DataNFT/DataNFTMarketplaceElrond';
 import DataStreams from 'Sections/DataStreams';
 import DataCoalitions from 'DataCoalition/DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
@@ -581,7 +581,7 @@ function App({ appConfig }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsElrond />} />
-                    <Route path="marketplace" element={<DataNFTMarketplace />} />
+                    <Route path="marketplace" element={<DataNFTMarketplaceElrond />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
                     <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />

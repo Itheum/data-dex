@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
-  Skeleton, CloseButton, HStack, Badge,
+  Skeleton, Button, HStack, Badge,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
@@ -54,6 +54,10 @@ export default function MyDataNFTsElrond() {
                   dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
                   dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
                   dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
+                  dataNFT.supply = nft['supply'];
+                  dataNFT.royalties = nft['royalties'];
+                  dataNFT.nonce = nft['nonce'];
+                  dataNFT.collection = nft['collection'];
 
                   usersDataNFTCatalogLocal.push(dataNFT);
             });
@@ -80,6 +84,10 @@ export default function MyDataNFTsElrond() {
 
     setOnChainNFTs(onChainNfts);
   }
+
+  const handleListOnMarketplace = (config) => {
+    console.log(config);
+  };
 
   return (
     <Stack spacing={5}>
@@ -110,6 +118,8 @@ export default function MyDataNFTsElrond() {
                 {`Creator: ${item.creator}`}
               </Box> */}
 
+              
+
               <Box mt="5">
                 {item.creator===address && <Badge borderRadius="full" px="2" colorScheme="teal">
                   {item.creator===address && 'you are the owner' || 'you are the creator & owner' }
@@ -121,9 +131,9 @@ export default function MyDataNFTsElrond() {
                   Fully Transferable License
                 </Badge>
 
-                <Badge borderRadius="full" px="2" colorScheme="blue">
+                {/* <Badge borderRadius="full" px="2" colorScheme="blue">
                   Data Stream
-                </Badge>
+                </Badge> */}
 
                 <HStack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
@@ -134,6 +144,21 @@ export default function MyDataNFTsElrond() {
                   <Text fontSize="xs">View Data Stream</Text>
                   <Link href={item.dataStream} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
+
+                <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
+                  {`Supply: ${item.supply} Royalty: ${item.royalties * 100}%`}
+                </Box>
+
+                <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
+                  handleListOnMarketplace({
+                    collection: item.collection, 
+                    nonce: item.nonce,
+                    qty: 1,
+                    price: 10
+                  });
+                }}>
+                  List on Marketplace
+                </Button>
               </Box>              
             </Flex>
           </Box>)}
