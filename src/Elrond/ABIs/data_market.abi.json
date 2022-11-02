@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "data_market",
             "version": "0.0.0",
-            "git_version": "1acb144-modified"
+            "git_version": "8e9db0c-modified"
         },
         "framework": {
             "name": "elrond-wasm",
@@ -46,7 +46,7 @@
             "inputs": [
                 {
                     "name": "token_id",
-                    "type": "EgldOrEsdtTokenIdentifier"
+                    "type": "TokenIdentifier"
                 }
             ],
             "outputs": []
@@ -222,7 +222,7 @@
                 },
                 {
                     "name": "offered_token_identifier",
-                    "type": "EgldOrEsdtTokenIdentifier"
+                    "type": "TokenIdentifier"
                 },
                 {
                     "name": "offered_token_nonce",
