@@ -67,7 +67,7 @@ export default function MyDataNFTsElrond() {
                   dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
                   dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
                   dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
-                  dataNFT.supply = nft['supply'];
+                  dataNFT.balance = nft['balance'];
                   dataNFT.royalties = nft['royalties'];
                   dataNFT.nonce = nft['nonce'];
                   dataNFT.collection = nft['collection'];
@@ -162,7 +162,7 @@ export default function MyDataNFTsElrond() {
                 </HStack>
 
                 <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
-                  {`Supply: ${item.supply} Royalty: ${item.royalties * 100}%`}
+                  {`Balance: ${item.balance} Royalty: ${item.royalties * 100}%`}
                 </Box>
 
                 <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {

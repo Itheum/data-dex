@@ -272,9 +272,9 @@ export class DataNftMarketContract {
             await sendTransactions({
               transactions: addERewTx,
               transactionsDisplayInfo: {
-                processingMessage: 'Adding item to marketplace',
+                processingMessage: 'Adding Data NFT to marketplace',
                 errorMessage: 'Error occured',
-                successMessage: 'Item added'
+                successMessage: 'Data NFT added to marketplace'
               },
               redirectAfterSign: false
             });
