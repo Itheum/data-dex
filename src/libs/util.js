@@ -41,6 +41,7 @@ export const contractsForChain = (networkId) => {
     dataNftMint: null,
   };
 
+  // eslint-disable-next-line default-case
   switch (networkId) {
     case 31337:
       contracts.itheumToken = tokenContractAddress_Local;

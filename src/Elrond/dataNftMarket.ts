@@ -25,13 +25,13 @@ import { contractsForChain } from '../libs/util';
 
 export class DataNftMarketContract {
   timeout: number;
-  dataNftMintContractAddress: any;
+  dataNftMarketContractAddress: any;
   chainID: string;
   networkProvider: ProxyNetworkProvider;
   contract: SmartContract;
     constructor(networkId: string) {
       this.timeout = 5000;
-      this.dataNftMintContractAddress = contractsForChain(networkId).dataNftMint;
+      this.dataNftMarketContractAddress = contractsForChain(networkId).market;
       this.chainID = 'D';
   
       if (networkId === 'E1') {
@@ -46,7 +46,7 @@ export class DataNftMarketContract {
       const abi = new SmartContractAbi(abiRegistry, ['DataNftMintContract']);
   
       this.contract = new SmartContract({
-        address: new Address(this.dataNftMintContractAddress),
+        address: new Address(this.dataNftMarketContractAddress),
         abi: abi,
       });
     }
@@ -139,7 +139,7 @@ export class DataNftMarketContract {
               .addArg(new U64Value(index))
               .addArg(new BigUIntValue(amount))
               .build(),
-            receiver: new Address(this.dataNftMintContractAddress),
+            receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
             chainID: '1'
           });
@@ -167,7 +167,7 @@ export class DataNftMarketContract {
               .addArg(new TokenIdentifierValue(tokenId))
               .addArg(new U64Value(nonce))
               .addArg(new BigUIntValue(price * amount))
-              .addArg(new AddressValue(new Address(this.dataNftMintContractAddress)))
+              .addArg(new AddressValue(new Address(this.dataNftMarketContractAddress)))
               .addArg(new StringValue('acceptOffer'))
               .addArg(new U64Value(index))
               .addArg(new BigUIntValue(amount))
@@ -200,7 +200,7 @@ export class DataNftMarketContract {
               .addArg(new U64Value(index))
               .addArg(new BigUIntValue(amount))
               .build(),
-            receiver: new Address(this.dataNftMintContractAddress),
+            receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
             chainID: '1'
           });
@@ -227,7 +227,7 @@ export class DataNftMarketContract {
               .setFunction(new ContractFunction('cancelOffer'))
               .addArg(new U64Value(index))
               .build(),
-            receiver: new Address(this.dataNftMintContractAddress),
+            receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
             chainID: '1'
           });
@@ -246,4 +246,37 @@ export class DataNftMarketContract {
     
         return { sessionId, error };
       }
-  }
+
+      async addToMarket(addTokenCollection: string, addTokenNonce: number,addTokenQuantity: number, price: number, addressOfSender: string) {
+            const askDenominator = 10 ** 18;
+            const addERewTx = new Transaction({
+              value: 0,
+              data: TransactionPayload.contractCall()
+                .setFunction(new ContractFunction('ESDTNFTTransfer')) //method
+                .addArg(new TokenIdentifierValue(addTokenCollection)) //what token id to send
+                .addArg(new U64Value(addTokenNonce)) //what token nonce to send
+                .addArg(new BigUIntValue(addTokenQuantity)) //how many tokens to send
+                .addArg(new AddressValue(new Address(this.dataNftMarketContractAddress))) //address to send to
+                .addArg(new StringValue('addOffer')) //what method to call on the contract
+                .addArg(new TokenIdentifierValue('ITHEUM-a61317')) //what token id to ask for
+                .addArg(new U64Value(0)) //what nonce to ask for
+                .addArg(new BigUIntValue(price*10**18)) //how much to ask for
+                .addArg(new BigUIntValue(addTokenQuantity)) //how many times to divide the amount of tokens sent into
+                .build(),
+              receiver: new Address(addressOfSender),
+              sender: new Address(addressOfSender),
+              gasLimit: 12000000,
+              chainID: '1'
+            });
+            await refreshAccount();
+            await sendTransactions({
+              transactions: addERewTx,
+              transactionsDisplayInfo: {
+                processingMessage: 'Adding item to shop',
+                errorMessage: 'Error occured',
+                successMessage: 'Item added'
+              },
+              redirectAfterSign: false
+            });
+          }
+}
