@@ -42,7 +42,7 @@ const Shop = () => {
             >
               <img
                 className={'card-img-top'}
-                src={`https://api.elrond.com/nfts/${
+                src={`https://devnet-api.elrond.com/nfts/${
                   token['have']['identifier']
                 }-${hexZero(token['have']['nonce'])}/thumbnail`}
                 alt='Data NFT'

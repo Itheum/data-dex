@@ -134,3 +134,83 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
 .chakra-ui-light .dapp-core-ui-component .table {
   color: #fff;
 }
+
+.gallery-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.nft-card {
+  background-color: #18191ab3;
+  border-radius: 10px;
+}
+
+.minus {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 0.95em;
+  width: 2em;
+  height: 2em;
+  padding: 0.45em;
+  font-size: 1em;
+  font-size: 1em;
+  color: #f6f2f2;
+  border: 1px solid #f6f2f2;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 0 0.8em;
+}
+
+.amount {
+  font-size: 2em;
+  font-weight: bold;
+  color: #f6f2f2;
+  vertical-align: middle;
+}
+
+.plus {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 0.95em;
+  width: 2em;
+  height: 2em;
+  padding: 0.45em;
+  font-size: 1em;
+  color: #f6f2f2;
+  border: 1px solid #f6f2f2;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 0 0.8em;
+}
+
+.plus:active,
+.minus:active,
+.card-footer .btn:active,
+a.connect:active {
+  position: relative;
+  top: 2px;
+}
+
+.connect {
+  min-width: 8rem !important;
+  padding: 0.8rem;
+  cursor: pointer;
+  background-color: #f6f2f2;
+  border-radius: 10px;
+  border: none;
+  margin-top: 0;
+  color: black;
+  font-weight: bold;
+}
+
+.connect:hover {
+  color: black;
+}
