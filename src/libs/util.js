@@ -25,6 +25,7 @@ import {
   claimsContractAddress_Elrond_Devnet,
   faucetContractAddress_Elrond_Devnet,
   dataNftMintContractAddress_Elrond_Devnet,
+  dataNftMarketContractAddress_Elrond_Devnet,
   tokenContractAddress_Elrond_Mainnet,
   claimsContractAddress_Elrond_Mainnet,
   faucetContractAddress_Elrond_Mainnet,
@@ -81,7 +82,7 @@ export const contractsForChain = (networkId) => {
       contracts.claims = claimsContractAddress_Elrond_Devnet;
       contracts.faucet = faucetContractAddress_Elrond_Devnet;
       contracts.dataNftMint = dataNftMintContractAddress_Elrond_Devnet;
-      contracts.market = dataNftMintContractAddress_Elrond_Devnet;
+      contracts.market = dataNftMarketContractAddress_Elrond_Devnet;
       break;
     case 'E1':
       contracts.itheumToken = tokenContractAddress_Elrond_Mainnet;

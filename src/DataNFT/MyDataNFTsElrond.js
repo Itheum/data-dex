@@ -12,9 +12,11 @@ import { sleep, uxConfig, contractsForChain } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfAcollectionForAnAddress } from 'Elrond/api';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo, useGetPendingTransactions } from '@elrondnetwork/dapp-core';
 import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
 import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
+import { DataNftMarketContract } from 'Elrond/dataNftMarket';
+
 
 export default function MyDataNFTsElrond() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -24,9 +26,20 @@ export default function MyDataNFTsElrond() {
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
 
+  const contract = new DataNftMarketContract('ED');
+
+  // useEffect(() => {
+  //   getOnChainNFTs();
+  // }, []);
+
+  const { hasPendingTransactions } = useGetPendingTransactions();
+
   useEffect(() => {
-    getOnChainNFTs();
-  }, []);
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's 'false' we need to get balances    
+    if (!hasPendingTransactions) {
+      getOnChainNFTs();
+    }
+  }, [hasPendingTransactions]);
 
   // use this effect to parse  the raw data into a catalog that is easier to render in the UI
   useEffect(() => {
@@ -87,6 +100,9 @@ export default function MyDataNFTsElrond() {
 
   const handleListOnMarketplace = (config) => {
     console.log(config);
+    const { collection, nonce, price, qty } = config;
+
+    contract.addToMarket(collection, nonce, qty, price, address);
   };
 
   return (

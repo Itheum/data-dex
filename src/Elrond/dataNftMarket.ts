@@ -141,7 +141,7 @@ export class DataNftMarketContract {
               .build(),
             receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
-            chainID: '1'
+            chainID: 'D'
           });
     
         await refreshAccount();
@@ -174,7 +174,7 @@ export class DataNftMarketContract {
               .build(),
             receiver: new Address(senderAddress),
             gasLimit: 12000000,
-            chainID: '1'
+            chainID: 'D'
           });
     
         await refreshAccount();
@@ -202,7 +202,7 @@ export class DataNftMarketContract {
               .build(),
             receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
-            chainID: '1'
+            chainID: 'D'
           });
     
         await refreshAccount();
@@ -229,7 +229,7 @@ export class DataNftMarketContract {
               .build(),
             receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
-            chainID: '1'
+            chainID: 'D'
           });
     
         await refreshAccount();
@@ -266,13 +266,13 @@ export class DataNftMarketContract {
               receiver: new Address(addressOfSender),
               sender: new Address(addressOfSender),
               gasLimit: 12000000,
-              chainID: '1'
+              chainID: 'D'
             });
             await refreshAccount();
             await sendTransactions({
               transactions: addERewTx,
               transactionsDisplayInfo: {
-                processingMessage: 'Adding item to shop',
+                processingMessage: 'Adding item to marketplace',
                 errorMessage: 'Error occured',
                 successMessage: 'Item added'
               },
