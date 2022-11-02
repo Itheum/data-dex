@@ -22,6 +22,9 @@ import ShortAddress from 'UtilComps/ShortAddress';
 import IconButton from 'UtilComps/IconButton';
 import { useChainMeta } from 'store/ChainMetaContext';
 
+// import { useTrackTransactionStatus, useGetFailedTransactions, useGetSuccessfulTransactions } from '@elrondnetwork/dapp-core';
+import { transactionServices } from '@elrondnetwork/dapp-core';
+
 export default function ({ onRfMount, itheumAccount }) {
   const { address: elrondAddress } = useGetAccountInfo();
 
@@ -50,6 +53,40 @@ export default function ({ onRfMount, itheumAccount }) {
   const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
   const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
+
+
+  const mintTxFail = (foo) => {
+    console.log('mintTxFail', foo);
+    setErrDataNFTStreamGeneric(new Error('Transaction to mint data NFT has failed'));
+  }
+
+  const mintTxCancelled = (foo) => {
+    console.log('mintTxCancelled', foo);
+    setErrDataNFTStreamGeneric(new Error('Transaction to mint data NFT was cancelled'));
+  }
+
+  const mintTxSuccess = async(foo) => {
+    console.log('mintTxSuccess', foo);
+    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
+
+    await sleep(3);
+
+    closeProgressModal();
+  }
+
+
+  const [mintSessionId, setMintSessionId] = useState(null);
+  const mintTxStatus = transactionServices.useTrackTransactionStatus({
+    transactionId: mintSessionId,
+    onSuccess: mintTxSuccess,
+    onFail: mintTxFail,
+    onCancelled: mintTxCancelled,
+  });
+
+  // useEffect(() => {
+  //   console.log('mintTxStatus', mintTxStatus);
+  // }, [mintTxStatus]);
+
 
   const getDataForSale = (programId, isStreamTrade=false) => {
     if (isStreamTrade) {
@@ -154,6 +191,8 @@ export default function ({ onRfMount, itheumAccount }) {
     setDataNFTImg(newNFTImg);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
+    await sleep(3);
+    
     handleOnChainMint(newNFTImg);
   };
 
@@ -161,7 +200,7 @@ export default function ({ onRfMount, itheumAccount }) {
     await sleep(3);
     const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
-    await elrondDataNftMintContract.sendMintTransaction({
+    const status = await elrondDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName, 
       media: newNFTImg,
       data_marchal: dataNFTMarshalService, 
@@ -171,7 +210,9 @@ export default function ({ onRfMount, itheumAccount }) {
       amount: dataNFTCopies
     });
 
-    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 2 }));
+    console.log(status);
+
+    setMintSessionId(status.sessionId);    
   };
 
   const closeProgressModal = () => {

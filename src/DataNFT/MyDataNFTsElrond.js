@@ -55,7 +55,11 @@ export default function MyDataNFTsElrond() {
                   dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
 
                   usersDataNFTCatalogLocal.push(dataNFT);
-            })
+            });
+
+            console.log('usersDataNFTCatalogLocal');
+            console.log(usersDataNFTCatalogLocal);
+
             setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
         } else {
           await sleep(5);
@@ -69,6 +73,10 @@ export default function MyDataNFTsElrond() {
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async() => {
     const onChainNfts = await getNftsOfAcollectionForAnAddress(address,'DATANFTV1-5425ef','not_E1');
+
+    console.log('onChainNfts');
+    console.log(onChainNfts);
+
     setOnChainNFTs(onChainNfts);
   }
 
@@ -116,10 +124,10 @@ export default function MyDataNFTsElrond() {
                   Data Stream
                 </Badge>
 
-                <HStack mt="5">
+                <Stack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
-                  <Text>{item.creationTime.toString()}</Text>
-                </HStack>
+                  <Text fontSize="xs">{item.creationTime.toString()}</Text>
+                </Stack>
 
                 <HStack mt=".5">
                   <Text fontSize="xs">Download Data File</Text>
