@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge,
@@ -7,7 +8,7 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { sleep, buyOnOpenSea, contractsForChain } from 'libs/util';
+import { sleep, uxConfig, contractsForChain } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfAcollectionForAnAddress } from 'Elrond/api';
@@ -105,9 +106,9 @@ export default function MyDataNFTsElrond() {
                 {item.tokenName}
               </Box>
 
-              <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
+              {/* <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                 {`Creator: ${item.creator}`}
-              </Box>
+              </Box> */}
 
               <Box mt="5">
                 {item.creator===address && <Badge borderRadius="full" px="2" colorScheme="teal">
@@ -124,14 +125,14 @@ export default function MyDataNFTsElrond() {
                   Data Stream
                 </Badge>
 
-                <Stack mt="5">
+                <HStack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
-                  <Text fontSize="xs">{item.creationTime.toString()}</Text>
-                </Stack>
+                  <Text fontSize="xs">{moment(item.creationTime).format(uxConfig.dateStr)}</Text>
+                </HStack>
 
                 <HStack mt=".5">
-                  <Text fontSize="xs">Download Data File</Text>
-                    <Link href={item.dataStream} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  <Text fontSize="xs">View Data Stream</Text>
+                  <Link href={item.dataStream} isExternal><ExternalLinkIcon mx="2px" /></Link>
                 </HStack>
               </Box>              
             </Flex>

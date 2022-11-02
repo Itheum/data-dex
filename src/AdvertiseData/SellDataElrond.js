@@ -233,10 +233,11 @@ export default function ({ onRfMount, itheumAccount }) {
     if (!dataNFTTokenName || dataNFTTokenName.trim() === '') {
       alert('You need to provide a NFT token name!');
       return false;
-    } else if (!dataNFTDesc) {
-      alert('You need to provide a NFT Description!');
-      return false;
-    }
+    } 
+    // else if (!dataNFTDesc) {
+    //   alert('You need to provide a NFT Description!');
+    //   return false;
+    // }
 
     if (isStreamTrade) {
       if (!dataNFTStreamUrl.includes('https://') || !dataNFTStreamPreviewUrl.includes('https://') || !dataNFTMarshalService.includes('https://')) {
@@ -335,17 +336,17 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Text fontWeight="bold">NFT Token Name</Text>
                 <Input placeholder="NFT Token Name" value={dataNFTTokenName} onChange={(event) => setDataNFTTokenName(event.currentTarget.value)} />
 
-                <Text fontWeight="bold">NFT Description</Text>
-                <Textarea placeholder="Enter a description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} />
+                {/* <Text fontWeight="bold">NFT Description</Text>
+                <Textarea placeholder="Enter a description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} /> */}
 
-                <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
+                {/* <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
                 <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={1000} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
                     <NumberDecrementStepper />
                   </NumberInputStepper>
-                </NumberInput>
+                </NumberInput> */}
 
                 <Text fontWeight="bold">Number of copies</Text>
                 <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={20} value={dataNFTCopies} onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}>
