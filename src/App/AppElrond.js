@@ -20,7 +20,7 @@ import ChainTransactions from 'Sections/ChainTransactions';
 import DataVault from 'Sections/DataVault';
 import DataNFTs from 'DataNFT/DataNFTs';
 import MyDataNFTsElrond from 'DataNFT/MyDataNFTsElrond';
-import DataNFTMarketplaceElrond from 'DataNFT/DataNFTMarketplaceElrond';
+import DataNFTMarketplaceElrond from 'DataNFT/DataNFTMarketplaceElrondV2';
 import DataStreams from 'Sections/DataStreams';
 import DataCoalitions from 'DataCoalition/DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
