@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, Button, HStack, Badge,
-  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip
+  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
@@ -25,6 +25,8 @@ export default function MyDataNFTsElrond() {
   const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [amounts, setAmounts] = useState([]);
+  const [prices, setPrices] = useState([]);
 
   const contract = new DataNftMarketContract('ED');
 
@@ -54,7 +56,8 @@ export default function MyDataNFTsElrond() {
           
             // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
             const usersDataNFTCatalogLocal = [];
-
+            let amounts=[];
+            let prices=[];
             onChainNFTs.map(nft => {
                   const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
                   const dataNFT = {};
@@ -72,10 +75,12 @@ export default function MyDataNFTsElrond() {
                   dataNFT.royalties = nft['royalties'];
                   dataNFT.nonce = nft['nonce'];
                   dataNFT.collection = nft['collection'];
-
+                  amounts.push(1);
+                  prices.push(10);
                   usersDataNFTCatalogLocal.push(dataNFT);
             });
-
+            setAmounts(amounts);
+            setPrices(prices);
             console.log('usersDataNFTCatalogLocal');
             console.log(usersDataNFTCatalogLocal);
 
@@ -114,14 +119,14 @@ export default function MyDataNFTsElrond() {
       {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
         <>{!noData && <SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
-          {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
+          {usersDataNFTCatalog && usersDataNFTCatalog.map((item, index) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center" pt={5}>
               <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                 <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
               </Skeleton>
             </Flex>
 
-            <Flex p="3" direction="column" justify="space-between" height="250px">
+            <Flex p="3" direction="column" justify="space-between" height="300px">
               <Box
                 fontSize="sm"
                 mt="1"
@@ -165,16 +170,45 @@ export default function MyDataNFTsElrond() {
                 <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                   {`Balance: ${item.balance} out of ${item.supply}. Royalty: ${item.royalties * 100}%`}
                 </Box>
+                <HStack my={'2'}>
+                  <Text fontSize="xs">How many to list: </Text>
+                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={item.balance} value={amounts[index]} onChange={(valueString) => setAmounts((oldAmounts)=>{
+                  const newAmounts = [...oldAmounts];
+                  newAmounts[index] = Number(valueString);
+                  return newAmounts;
+                })}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                </HStack>
 
+                <HStack my={'2'}>
+                  <Text fontSize="xs">Listing price for each: </Text>
+                <NumberInput size="xs" maxW={16} step={5} defaultValue={10} min={1} max={999999999999} value={prices[index]} onChange={(valueString) => setPrices((oldPrices)=>{
+                  const newPrices = [...oldPrices];
+                  newPrices[index] = Number(valueString);
+                  return newPrices;
+                })}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                </HStack>
+                
                 <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
                   handleListOnMarketplace({
                     collection: item.collection, 
                     nonce: item.nonce,
-                    qty: 1,
-                    price: 10
+                    qty: amounts[index],
+                    price: prices[index]
                   });
                 }}>
-                  List on Marketplace for 10 ITHEUM
+                  List {amounts[index]} NFT{amounts[index]>1&&'s'} for {prices[index]} ITHEUM each
                 </Button>
               </Box>              
             </Flex>

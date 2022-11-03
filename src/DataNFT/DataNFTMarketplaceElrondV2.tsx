@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button,
-  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip
+  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from '@chakra-ui/react';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { useGetAccountInfo, useGetPendingTransactions } from '@elrondnetwork/dapp-core';
@@ -90,6 +90,20 @@ export default function Marketplace() {
                   </Text>
                 </Box>
               </Box>
+              <HStack>       
+                <Text fontSize='sm'>Amount to buy: </Text>
+                <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={token['quantity']} value={amountOfTokens[token.index]} onChange={(valueString) => setAmountOfTokens((oldAmounts: any)=>{
+                  const newAmounts = { ...oldAmounts };
+                  newAmounts[token.index] = Number(valueString);
+                  return newAmounts;
+                })}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                </HStack>
 
               <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
                 if (token['want']['identifier'] === 'EGLD') {
@@ -118,7 +132,7 @@ export default function Marketplace() {
                   }
                 }
               }}>
-                Buy for {(token['want']['amount'] *
+                Buy {amountOfTokens[token['index']]} NFT{amountOfTokens[token['index']]>1&&'s'} for {(token['want']['amount'] *
                   amountOfTokens[token['index']]) /
                   Math.pow(
                     10,
