@@ -72,7 +72,7 @@ export default function MyDataNFTsElrond() {
                   dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
                   dataNFT.supply = nft['supply'];
                   dataNFT.balance = nft['balance'];
-                  dataNFT.royalties = nft['royalties'];
+                  dataNFT.royalties = nft['royalties'] / 100;
                   dataNFT.nonce = nft['nonce'];
                   dataNFT.collection = nft['collection'];
                   amounts.push(1);
