@@ -5,13 +5,14 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip
 } from '@chakra-ui/react';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo, useGetPendingTransactions } from '@elrondnetwork/dapp-core';
 import { DataNftMarketContract } from '../Elrond/dataNftMarket';
 import { roundDown, hexZero, getTokenWantedRepresentation, getTokenImgSrc, tokenDecimals } from '../Elrond/tokenUtils.js';
 import { getApi } from 'Elrond/api';
 
 export default function Marketplace() {
-  const { address, hasPendingTransactions } = useGetAccountInfo();
+  const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const isLoggedIn = Boolean(address);
   const [tokensForSale, setTokensForSale] = useState<any[]>([]);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
