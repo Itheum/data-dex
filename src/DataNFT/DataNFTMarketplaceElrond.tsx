@@ -7,6 +7,7 @@ import {
 } from '@elrondnetwork/dapp-core';
 import { DataNftMarketContract } from '../Elrond/dataNftMarket';
 import { roundDown, hexZero,getTokenWantedRepresentation,getTokenImgSrc,tokenDecimals } from '../Elrond/tokenUtils.js';
+import { getApi } from 'Elrond/api';
 
 const Shop = () => {
   const { address, hasPendingTransactions } = useGetAccountInfo();
@@ -26,14 +27,23 @@ const Shop = () => {
   useEffect(() => {
     contract.getOffers(0,25).then((offers:any)=>{
         setTokensForSale(offers);
-        setAmountOfTokens(offers.map((_:any)=>1));
-    })
-  }, [currentPage, hasPendingTransactions]);
+        let amounts: any = {};
+        offers.forEach((offer:any)=>amounts[offer.index] = 1);
+        setAmountOfTokens(amounts);
+  })}, [currentPage, hasPendingTransactions]);
 
   return (
     <div className='gallery-container'>
       <div className='gallery'>
         {tokensForSale.map((token, ind) => {
+          console.log(amountOfTokens[token['index']]);
+          console.log((token['want']['amount'] *
+          amountOfTokens[token['index']]) /
+          Math.pow(
+            10,
+            tokenDecimals(token['want']['identifier'])
+          ) +
+          ' ')
           return (
             <div
               key={token['index']}
@@ -42,7 +52,7 @@ const Shop = () => {
             >
               <img
                 className={'card-img-top'}
-                src={`https://devnet-api.elrond.com/nfts/${
+                src={`${getApi('ED')}/nfts/${
                   token['have']['identifier']
                 }-${hexZero(token['have']['nonce'])}/thumbnail`}
                 alt='Data NFT'
