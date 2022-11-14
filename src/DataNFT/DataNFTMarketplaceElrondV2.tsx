@@ -53,8 +53,11 @@ export default function Marketplace() {
             <Flex justifyContent="center" pt={5}>
               <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                 <Image
-                  src={`https://${getApi('ED')}/nfts/${token['have']['identifier']}-${hexZero(token['have']['nonce'])}/thumbnail`}
+                  src={`https://devnet-api.elrond.com/nfts/${token['have']['identifier']}-${hexZero(token['have']['nonce'])}/thumbnail`}
                   alt={'item.dataPreview'} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
+                {/* <Image
+                  src={`https://${getApi('ED')}/nfts/${token['have']['identifier']}-${hexZero(token['have']['nonce'])}/thumbnail`}
+                  alt={'item.dataPreview'} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} /> */}
               </Skeleton>
             </Flex>
 

@@ -49,7 +49,7 @@ export default function ({ onRfMount, itheumAccount }) {
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
   const [dataNFTFeeInTokens, setDataNFTFeeInTokens] = useState(1);
-  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54');
+  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState('https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv');
   const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
   const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
@@ -325,10 +325,10 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Text fontWeight="bold">Trade a Data Stream as a Data NFT</Text>
 
                 <Text fontWeight="bold">Data Stream URL</Text>
-                <Input placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54" value={dataNFTStreamUrl} onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)} />
+                <Input placeholder="https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv" value={dataNFTStreamUrl} onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)} />
 
-                <Text fontWeight="bold">Data Preview URL</Text>
-                <Input placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1" value={dataNFTStreamPreviewUrl} onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)} />
+                {/* <Text fontWeight="bold">Data Preview URL</Text>
+                <Input placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1" value={dataNFTStreamPreviewUrl} onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)} /> */}
 
                 <Text fontWeight="bold">Data Marshal Service</Text>
                 <Input placeholder="https://itheumapi.com/ddex/dataMarshal" value={dataNFTMarshalService} onChange={(event) => setDataNFTMarshalService(event.currentTarget.value)} />
