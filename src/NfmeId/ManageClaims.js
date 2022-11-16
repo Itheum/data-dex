@@ -39,7 +39,6 @@ const ClaimItem = ({ identity, claimId, index, removeClaim, howToGetLink }) => {
   useEffect(() => {
     (async () => {
       if (claimId && identity) {
-        console.log('identity', identity);
         const claim = await identity.getClaimByIdentifier(claimId);
         setClaim(claim);
       }
@@ -91,7 +90,7 @@ const ClaimItem = ({ identity, claimId, index, removeClaim, howToGetLink }) => {
   );
 }
 
-export default function() {
+export default function ManageClaim() {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
@@ -120,13 +119,11 @@ export default function() {
   }
   /////////////////////////////////////////////////////////
 
-  console.log('manageClaimsState', manageClaimsState);
   const init = async () => {
     // show Loading
     setManageClaimsState(-1);
 
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
-    console.log('identityFactory.current', identityFactory.current);
     const identities = await identityFactory.current.getIdentitiesByTheGraph();
     const identityAddresses = identities.map(identity => identity.address);
 
@@ -138,9 +135,7 @@ export default function() {
     }
 
     identity.current = identities[identities.length - 1];
-    console.log('identity.current', identity.current);
     const owners = await identity.current.getOwners();
-    console.log('owners', owners);
     // setIdentityOwners(owners);
 
     const confirmations = await identity.current.getOwnerRemovalConfirmations();
@@ -148,33 +143,10 @@ export default function() {
 
     const claims = await identity.current.getClaims();
     setClaims(claims);
-
-    
-    console.log('claims', claims);
-
-    // query owners of identity contract
-    // identity.current = new ethers.Contract(identityAddress, ABIS.identity, web3Signer.current);
-
-    // const claims = [];
-    // const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
-    // const claimRemovedEvents = await identity.current.queryFilter('ClaimRemoved', fromBlockNumber);
-    // claims.push(...claimAddedEvents.map(ele => ele.args[0]));
-
-    // claimRemovedEvents
-    //   .map(ele => ele.args[0])
-    //   .forEach(ele => {
-    //     const index = claims.findIndex(eleToFind => eleToFind === ele);
-    //     if (index >= 0) claims.splice(index, 1);
-    //   });
-
-    // setClaims(claims);
-
-    // console.log('claims', claims);
   };
 
   async function removeClaim(identifier) {
     try {
-      console.log('removeClaim: ', identifier);
       const tx = await identity.current.removeClaim(identifier);
 
       await tx.wait();
@@ -190,9 +162,7 @@ export default function() {
     setClaimPayload(payload);
 
     try {
-      // console.log('payload', payload);
       const t = JSON.parse(payload);
-      // console.log('t:', t);
       setClaimPayloadJson(t);
     } catch(e) {
       console.log(e);
@@ -215,7 +185,6 @@ export default function() {
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
-    console.log('_chainMeta user isWeb3Enabled', _chainMeta, user, isWeb3Enabled);
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
       init();
     }

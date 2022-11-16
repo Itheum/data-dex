@@ -91,7 +91,6 @@ export const contractsForChain = (networkId) => {
       contracts.faucet = faucetContractAddress_Elrond_Mainnet;
       break;
   }
-  console.log('contracts',contracts);
   return contracts;
 };
 

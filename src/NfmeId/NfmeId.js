@@ -21,7 +21,7 @@ import { IdentityFactory as SDKIdentityFactory } from 'poc-itheum-identity-sdk';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import './index.css';
 
-export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
+export default function NfmeId({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
@@ -39,21 +39,16 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   let identityFactory = useRef();
   let identity = useRef();
   
-  // console.log('identityContainerState', identityContainerState);
-  // console.log('identityAddresses', identityAddresses);
   const init = async () => {
     // show Loading
     setIdentityContainerState(-1);
 
-    console.log('_chainMeta.contracts',_chainMeta.contracts);
-    console.log('_chainMeta.contracts.identityFactory', _chainMeta.contracts.identityFactory);
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
-    console.log('identityFactory.current', identityFactory.current);
+
     const identities = await identityFactory.current.getIdentitiesByTheGraph();
     // const identities = await identityFactory.current.getIdentities();
     const identityAddresses = identities.map(identity => identity.address);
 
-    console.log('identities', identities);
     setIdentityAddresses(identityAddresses);
 
     if (identityAddresses.length === 0) {
@@ -61,9 +56,7 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
     }
     
     identity.current = identities[identities.length - 1];
-    console.log('identity.current', identity.current);
     const owners = await identity.current.getOwners();
-    console.log('owners', owners);
     setIdentityOwners(owners);
 
     const confirmations = await identity.current.getOwnerRemovalConfirmations();
@@ -71,9 +64,6 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
 
     const claims = await identity.current.getClaims();
     setClaims(claims);
-
-    console.log('claims', claims);
-    console.log(typeof(claims[0]))
   };
 
   useEffect(() => {
@@ -95,17 +85,12 @@ export default function({ onRfMount, setMenuItem, onRefreshTokenBalance }) {
   }, [identityAddresses]);
 
   async function deployIdentity() {
-    try {
-      // const deployIdentityTx = await identityFactory.current.connect(web3Signer.current).deployIdentity();
-      
+    try {      
       // to show "Deploying"
       setIdentityContainerState(1);
 
       const address = await identityFactory.current.deployIdentity();
-      console.log('address', address);
 
-      // const txReceipt = await deployIdentityTx.wait();
-      // console.log('txReceipt', txReceipt);
     } catch (e) {
       alert(e.reason);
     }

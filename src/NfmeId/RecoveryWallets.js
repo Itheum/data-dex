@@ -23,7 +23,7 @@ import { sleep, debugui } from 'libs/util';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { IdentityFactory as SDKIdentityFactory } from 'poc-itheum-identity-sdk';
 
-export default function() {
+export default function RecoveryWallet() {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
@@ -60,18 +60,14 @@ export default function() {
   ];
   /////////////////////////////////////////////////////////
 
-  console.log('recoverWalletsState', recoverWalletsState);
   const init = async () => {
     // show Loading
     setRecoverWalletsState(-1);
 
     identityFactory.current = await SDKIdentityFactory.init(_chainMeta.contracts.identityFactory);
-    console.log('identityFactory.current', identityFactory.current);
     const identities = await identityFactory.current.getIdentitiesByTheGraph();
     // const identities = await identityFactory.current.getIdentities();
     const identityAddresses = identities.map(identity => identity.address);
-
-    console.log('identities', identities);
 
     // Loading finished
     setRecoverWalletsState(0);
@@ -81,40 +77,15 @@ export default function() {
     }
     const identityAddress = identityAddresses[0];
 
-    // query owners of identity contract
-    // identity.current = identities[0];
-
-    // const claims = [];
-    // const claimAddedEvents = await identity.current.queryFilter('ClaimAdded', fromBlockNumber);
-    // const claimRemovedEvents = await identity.current.queryFilter('ClaimRemoved', fromBlockNumber);
-    // claims.push(...claimAddedEvents.map(ele => ele.args[0]));
-
-    // claimRemovedEvents
-    //   .map(ele => ele.args[0])
-    //   .forEach(ele => {
-    //     const index = claims.findIndex(eleToFind => eleToFind === ele);
-    //     if (index >= 0) claims.splice(index, 1);
-    //   });
-
-    // setClaims(claims);
-
-    // console.log('claims', claims);
-
     identity.current = identities[identities.length - 1];
-    console.log('identity.current', identity.current);
     const owners = await identity.current.getOwners();
-    console.log('owners', owners);
     setIdentityOwners(owners);
 
     const confirmations = await identity.current.getOwnerRemovalConfirmations();
-    console.log('confirmations', confirmations);
     setConfirmations(confirmations);
 
     const claims = await identity.current.getClaims();
     setClaims(claims);
-
-    
-    console.log('claims', claims);
   };
 
   async function proposeForDeletion() {
@@ -155,7 +126,6 @@ export default function() {
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
     // ... we need to listed to _chainMeta event as well as it may get set after moralis responds
-    console.log('_chainMeta user isWeb3Enabled', _chainMeta, user, isWeb3Enabled);
     if (_chainMeta?.networkId && user && isWeb3Enabled) {
       init();
     }
