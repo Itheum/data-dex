@@ -122,7 +122,8 @@ const Shop = () => {
                           contract.sendAcceptOfferEgldTransaction(
                             token['index'],
                             token['want']['amount'],
-                            amountOfTokens[token['index']]
+                            amountOfTokens[token['index']],
+                            address
                           );
                         } else {
                           if (token['want']['nonce'] === 0) {
@@ -130,7 +131,8 @@ const Shop = () => {
                               token['index'],
                               token['want']['amount'],
                               token['want']['identifier'],
-                              amountOfTokens[token['index']]
+                              amountOfTokens[token['index']],
+                              address
                             );
                           } else {
                             contract.sendAcceptOfferNftEsdtTransaction(

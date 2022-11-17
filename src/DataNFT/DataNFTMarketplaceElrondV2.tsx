@@ -113,7 +113,8 @@ export default function Marketplace() {
                   contract.sendAcceptOfferEgldTransaction(
                     token['index'],
                     token['want']['amount'],
-                    amountOfTokens[token['index']]
+                    amountOfTokens[token['index']],
+                    address
                   );
                 } else {
                   if (token['want']['nonce'] === 0) {
@@ -121,7 +122,8 @@ export default function Marketplace() {
                       token['index'],
                       token['want']['amount'],
                       token['want']['identifier'],
-                      amountOfTokens[token['index']]
+                      amountOfTokens[token['index']],
+                      address
                     );
                   } else {
                     contract.sendAcceptOfferNftEsdtTransaction(

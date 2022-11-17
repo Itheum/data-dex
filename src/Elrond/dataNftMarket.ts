@@ -128,7 +128,7 @@ export class DataNftMarketContract {
         }
       }
   
-    async sendAcceptOfferEsdtTransaction(index:number,price:number,tokenId:string,amount:number) {
+    async sendAcceptOfferEsdtTransaction(index:number,price:number,tokenId:string,amount:number, sender: string) {
         const offerEsdtTx = new Transaction({
             value: 0,
             data: TransactionPayload.contractCall()
@@ -140,6 +140,7 @@ export class DataNftMarketContract {
               .addArg(new BigUIntValue(amount))
               .build(),
             receiver: new Address(this.dataNftMarketContractAddress),
+            sender: new Address(sender),
             gasLimit: 12000000,
             chainID: 'D'
           });
@@ -173,6 +174,7 @@ export class DataNftMarketContract {
               .addArg(new BigUIntValue(amount))
               .build(),
             receiver: new Address(senderAddress),
+            sender: new Address(senderAddress),
             gasLimit: 12000000,
             chainID: 'D'
           });
@@ -192,7 +194,7 @@ export class DataNftMarketContract {
         return { sessionId, error };
       }
 
-      async sendAcceptOfferEgldTransaction(index:number,price:number,amount:number) {
+      async sendAcceptOfferEgldTransaction(index:number,price:number,amount:number,senderAddress:string) {
         const offerEgldTx = new Transaction({
             value: TokenPayment.egldFromBigInteger(price * amount),
             data: TransactionPayload.contractCall()
@@ -202,6 +204,7 @@ export class DataNftMarketContract {
               .build(),
             receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
+            sender: new Address(senderAddress),
             chainID: 'D'
           });
     
@@ -220,7 +223,7 @@ export class DataNftMarketContract {
         return { sessionId, error };
       }
 
-      async sendCancelOfferTransaction(index:number) {
+      async sendCancelOfferTransaction(index:number,senderAddress:string) {
         const cancelTx = new Transaction({
             value: 0,
             data: TransactionPayload.contractCall()
@@ -229,6 +232,7 @@ export class DataNftMarketContract {
               .build(),
             receiver: new Address(this.dataNftMarketContractAddress),
             gasLimit: 12000000,
+            sender: new Address(senderAddress),
             chainID: 'D'
           });
     
