@@ -5,7 +5,8 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from '@chakra-ui/react';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { useGetAccountInfo, useGetPendingTransactions } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
 import { DataNftMarketContract } from '../Elrond/dataNftMarket';
 import { roundDown, hexZero, getTokenWantedRepresentation, getTokenImgSrc, tokenDecimals } from '../Elrond/tokenUtils.js';
 import { getApi } from 'Elrond/api';

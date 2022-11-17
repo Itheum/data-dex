@@ -12,18 +12,13 @@ import {
   useToast, useDisclosure
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { DataNftMintContract } from 'Elrond/dataNftMint';
 
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
-import { TERMS, CHAIN_TX_VIEWER, CHAIN_TOKEN_SYMBOL, MENU } from 'libs/util';
-import { ABIS } from 'EVM/ABIs';
-import ShortAddress from 'UtilComps/ShortAddress';
-import IconButton from 'UtilComps/IconButton';
+import { MENU } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
-// import { useTrackTransactionStatus, useGetFailedTransactions, useGetSuccessfulTransactions } from '@elrondnetwork/dapp-core';
-import { transactionServices } from '@elrondnetwork/dapp-core';
 
 export default function ({ onRfMount, itheumAccount }) {
   const { address: elrondAddress } = useGetAccountInfo();
@@ -76,12 +71,6 @@ export default function ({ onRfMount, itheumAccount }) {
 
 
   const [mintSessionId, setMintSessionId] = useState(null);
-  const mintTxStatus = transactionServices.useTrackTransactionStatus({
-    transactionId: mintSessionId,
-    onSuccess: mintTxSuccess,
-    onFail: mintTxFail,
-    onCancelled: mintTxCancelled,
-  });
 
   // useEffect(() => {
   //   console.log('mintTxStatus', mintTxStatus);

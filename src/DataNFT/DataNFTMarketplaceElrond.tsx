@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  refreshAccount,
-  sendTransactions,
-  transactionServices,
-  useGetAccountInfo
-} from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { DataNftMarketContract } from '../Elrond/dataNftMarket';
+import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
 import { roundDown, hexZero,getTokenWantedRepresentation,getTokenImgSrc,tokenDecimals } from '../Elrond/tokenUtils.js';
 import { getApi } from 'Elrond/api';
 
 const Shop = () => {
-  const { address, hasPendingTransactions } = useGetAccountInfo();
+  const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const isLoggedIn = Boolean(address);
   const [tokensForSale, setTokensForSale] = useState<any[]>([]);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});

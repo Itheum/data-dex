@@ -1,6 +1,7 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
 import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment } from '@elrondnetwork/erdjs/out';
-import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
+import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
+import { sendTransactions } from '@elrondnetwork/dapp-core/services';
 import jsonData from './ABIs/datanftmint.abi.json';
 import { contractsForChain } from 'libs/util';
 

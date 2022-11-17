@@ -2,7 +2,7 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, 
   HStack, Text, Spacer, Button, Stack, useBreakpointValue } from '@chakra-ui/react';
 import React from 'react';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 

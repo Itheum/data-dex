@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import React from 'react';
-import { DappProvider, DappUI } from '@elrondnetwork/dapp-core';
+import { DappProvider } from '@elrondnetwork/dapp-core/wrappers';
 import { MoralisProvider } from 'react-moralis';
 
 import AuthLauncher from 'Launch/AuthLauncher';
@@ -11,11 +11,11 @@ import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
 import { debugui, uxConfig } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 
-const {
+import {
   TransactionsToastList,
   SignTransactionsModals,
   NotificationModal,
-} = DappUI;
+} from '@elrondnetwork/dapp-core/UI';
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
