@@ -101,6 +101,7 @@ function App({ appConfig }) {
         ...baseUserContext,
         ..._user,
         isMoralisAuthenticated: isAuthenticated,
+        loggedInAddress: user.get('ethAddress')
       });
 
       enableWeb3(); // default to metamask

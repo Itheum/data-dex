@@ -8,12 +8,14 @@ import {
 import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
 import { progInfoMeta } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
+import { useUser } from 'store/UserContext';
 import imgProgGaPa from 'img/prog-gaming.jpg';
 import imgProgRhc from 'img/prog-rhc.png';
 import imgProgWfh from 'img/prog-wfh.png';
 
 export default function() {
   const { chainMeta: _chainMeta } = useChainMeta();
+  const { user: _user } = useUser();
   const [learnMoreProd, setLearnMoreProg] = useState(null);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
@@ -21,6 +23,16 @@ export default function() {
     setLearnMoreProg(progCode);
     onProgressModalOpen();
   };
+
+  const appendUserAddressAndRedirect = link => {
+    let updatedLink = link;
+
+    if (_user?.loggedInAddress) {
+      updatedLink = `${updatedLink}?ddexref=${window.btoa(`addr=${_user.loggedInAddress}`)}`;
+    }
+
+    window.open(updatedLink);
+  }
 
   const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
 
@@ -68,7 +80,7 @@ export default function() {
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.com/redheartchallenge')}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() =>appendUserAddressAndRedirect('https://itheum.com/redheartchallenge')}>
                 Join Now
               </Button>
             </Box>
@@ -137,7 +149,7 @@ export default function() {
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              <Button disabled={!progInfoMeta[learnMoreProd].canJoin} size="sm" colorScheme="teal" onClick={() => window.open(`${progInfoMeta[learnMoreProd].url}`)}>
+              <Button disabled={!progInfoMeta[learnMoreProd].canJoin} size="sm" colorScheme="teal" onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
                 Join Now
               </Button>
             </ModalFooter>

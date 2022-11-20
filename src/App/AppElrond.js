@@ -130,7 +130,8 @@ function App({ appConfig }) {
       setUser({
         ...baseUserContext,
         ..._user,
-        isElrondAuthenticated: true
+        isElrondAuthenticated: true,
+        loggedInAddress: elrondAddress
       });
 
       if (!SUPPORTED_CHAINS.includes(networkId)) {
