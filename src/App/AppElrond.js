@@ -219,7 +219,7 @@ function App({ appConfig }) {
   return (
     <>
       { _user.isElrondAuthenticated && (
-        <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
+        <Container maxW="container.xxl" h="100vh" display="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: 'column', md: 'column' }}>
             <HStack h="10vh" p="5">
               <Image boxSize="50px" height="auto" src={colorMode === 'light' ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
@@ -248,7 +248,7 @@ function App({ appConfig }) {
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
                   {screenBreakPoint === 'md' && <ShortAddress address={elrondAddress} fontSize="md" />}
-                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={['block', 'none']} />
+                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} display={['block', 'none']} />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup title='My Address Quick Copy'>

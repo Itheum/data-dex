@@ -8,6 +8,7 @@ import { WALLETS } from 'libs/util';
 import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 import { useNavigate } from 'react-router-dom';
+import './index.scss';
 
 function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   const navigate = useNavigate();
