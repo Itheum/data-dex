@@ -36,7 +36,9 @@ import logoSmlD from 'img/logo-sml-d.png';
 import logoSmlL from 'img/logo-sml-l.png';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 
-import { logout, useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
+import { logout } from '@elrondnetwork/dapp-core/utils';
+import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
+import { useGetAccountInfo, useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { checkBalance } from 'Elrond/api';
 
 const elrondLogout = logout;

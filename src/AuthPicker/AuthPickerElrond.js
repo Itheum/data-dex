@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Stack, Box, Text, Link, Wrap, Badge, Modal, ModalOverlay, ModalContent, 
   ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem, useBreakpointValue } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { DappUI } from '@elrondnetwork/dapp-core';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@elrondnetwork/dapp-core/UI';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { WALLETS } from 'libs/util';
 import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 
 function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   const navigate = useNavigate();
-  const { ExtensionLoginButton, WebWalletLoginButton, LedgerLoginButton, WalletConnectLoginButton } = DappUI;
   const { address: elrondAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
