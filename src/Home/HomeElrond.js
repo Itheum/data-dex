@@ -74,7 +74,7 @@ export default function({ onRfMount }) {
 
   const handleOnChainFaucet = async () => {
     if (elrondAddress && elrondFaucetContract) {
-      elrondFaucetContract.sendActivateFaucetTransaction();
+      elrondFaucetContract.sendActivateFaucetTransaction(elrondAddress);
     }
   };
   // E: Faucet
