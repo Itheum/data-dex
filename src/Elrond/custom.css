@@ -134,3 +134,23 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
 .chakra-ui-light .dapp-core-ui-component .table {
   color: #fff;
 }
+
+/* Ice */
+.dapp-wallet-connect-login, .dapp-extension-login, .dapp-web-wallet-login, .dapp-ledger-login {
+  background: none !important;
+  border: none !important;
+}
+
+.dapp-modal-dialog-content {
+  background-color: var(--chakra-colors-chakra-body-bg);
+  color: var(--chakra-colors-chakra-body-text);
+}
+
+.dapp-transaction-toast {
+  background-color: var(--chakra-colors-chakra-body-bg) !important;
+  color: var(--chakra-colors-chakra-body-text);
+}
+
+.dapp-core-component__transactionToast-styles__content .dapp-core-component__transactionToast-styles__right .dapp-core-component__transactionToast-styles__heading .dapp-core-component__transactionToast-styles__close {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
