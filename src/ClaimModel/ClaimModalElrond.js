@@ -17,7 +17,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
   const handleOnChainClaim = () => {
     if (elrondAddress) {
       onClose();
-      elrondClaimsContract.sendClaimRewardsTransaction(claimType - 1);
+      elrondClaimsContract.sendClaimRewardsTransaction(elrondAddress, claimType - 1);
     }
   };
 

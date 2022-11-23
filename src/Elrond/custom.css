@@ -141,14 +141,32 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
   border: none !important;
 }
 
-.dapp-modal-dialog-content {
+.dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-header, .dapp-modal-dialog-content-body, .dapp-modal-dialog-wrapper {
+  background-color: var(--chakra-colors-chakra-body-bg);
+  color: var(--chakra-colors-chakra-body-text);
+  border-color: var(--chakra-colors-teal-200);
+  z-index: 1500;
+}
+
+.dapp-core-component__main__card {
+  background-color: var(--chakra-colors-chakra-body-bg);
+  border: none;
+}
+
+.dapp-modal-dialog-close-button {
   background-color: var(--chakra-colors-chakra-body-bg);
   color: var(--chakra-colors-chakra-body-text);
 }
+.dapp-modal-dialog-close-button:hover {
+  background-color: var(--chakra-colors-chakra-body-bg);
+  color: var(--chakra-colors-chakra-border-color);
+}
 
-.dapp-transaction-toast {
+.dapp-transaction-toast, .dapp-failed-transaction-status-toast {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   color: var(--chakra-colors-chakra-body-text);
+  border-color: var(--chakra-colors-teal-200);
+  border-width: 1px;
 }
 
 .dapp-core-component__transactionToast-styles__content .dapp-core-component__transactionToast-styles__right .dapp-core-component__transactionToast-styles__heading .dapp-core-component__transactionToast-styles__close {

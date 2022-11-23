@@ -61,7 +61,7 @@ export class ClaimsContract {
     }
   }
 
-  async sendClaimRewardsTransaction(rewardType) {
+  async sendClaimRewardsTransaction(sender, rewardType) {
     const claimTransaction = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -69,6 +69,7 @@ export class ClaimsContract {
         .addArg(new U64Value(rewardType))
         .build(),
       receiver: new Address(this.claimsContractAddress),
+      sender: new Address(sender),
       gasLimit: 6000000,
       chainID: this.chainID
     });
