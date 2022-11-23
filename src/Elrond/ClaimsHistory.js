@@ -6,6 +6,7 @@ import {
 import { getClaimTransactions, getTransactionLink } from './api';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { formatNumberRoundFloor } from 'libs/util';
 
 export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseChaimsHistory }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
@@ -79,7 +80,7 @@ export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseCh
                       {item.status === 'success' ? '' : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
                     </Td>
                     <Td><Text fontSize="sm">{item.claimType}</Text></Td>
-                    <Td textAlign="center"><Text fontSize="sm">{item.amount / Math.pow(10, 18).toFixed(2)}</Text></Td>
+                    <Td textAlign="center"><Text fontSize="sm">{formatNumberRoundFloor(item.amount / Math.pow(10, 18))}</Text></Td>
                   </Tr>)}
                 </Tbody>
                 <Tfoot>

@@ -427,3 +427,8 @@ export const clearAppSessions = () => {
     sessionStorage.removeItem('itm-launch-mode');
     sessionStorage.removeItem('itm-launch-env');
 }
+
+export const formatNumberRoundFloor = (num, decimals = 2) => {
+  const factor = Math.pow(10, decimals);
+  return (Math.floor(num * factor) / factor).toFixed(2);
+}

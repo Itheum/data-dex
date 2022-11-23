@@ -40,6 +40,7 @@ import { logout } from '@elrondnetwork/dapp-core/utils';
 import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
 import { useGetAccountInfo, useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { checkBalance } from 'Elrond/api';
+import { formatNumberRoundFloor } from 'libs/util';
 
 const elrondLogout = logout;
 const _chainMetaLocal = {};
@@ -234,7 +235,7 @@ function App({ appConfig }) {
               <HStack>
                 <Box as="text" fontSize={['sm', 'md']} minWidth="5.5rem" align="center" p="11.3px" color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
                   {(tokenBal === -1) ? <Spinner size="xs" /> : 
-                      (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}</>
+                      (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {formatNumberRoundFloor(tokenBal)}</>
                   }
                 </Box>
 
