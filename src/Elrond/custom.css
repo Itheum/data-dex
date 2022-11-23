@@ -139,12 +139,16 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
 .dapp-wallet-connect-login, .dapp-extension-login, .dapp-web-wallet-login, .dapp-ledger-login {
   background: none !important;
   border: none !important;
+  box-shadow: none !important;
 }
 
-.dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-header, .dapp-modal-dialog-content-body, .dapp-modal-dialog-wrapper {
+.dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-header, .dapp-modal-dialog-content-body {
   background-color: var(--chakra-colors-chakra-body-bg);
   color: var(--chakra-colors-chakra-body-text);
   border-color: var(--chakra-colors-teal-200);
+}
+
+.dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-wrapper {
   z-index: 1500;
 }
 
@@ -171,4 +175,13 @@ body[data-rr-ui-modal-open] .modal-backdrop.show {
 
 .dapp-core-component__transactionToast-styles__content .dapp-core-component__transactionToast-styles__right .dapp-core-component__transactionToast-styles__heading .dapp-core-component__transactionToast-styles__close {
   color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.dapp-core-component__main__warning {
+  width: 60px;
+  height: 60px;
+}
+
+.dapp-core-component__customToast-styles__close {
+  color: var(--chakra-colors-chakra-body-text);
 }

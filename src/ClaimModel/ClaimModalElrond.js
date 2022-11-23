@@ -3,7 +3,7 @@ import {
   HStack, Text, Spacer, Button, Stack, useBreakpointValue } from '@chakra-ui/react';
 import React from 'react';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
+import { CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, elrondClaimsContract }) => {
@@ -37,7 +37,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
                 {tag1}:
               </Text>{' '}
               <Text fontSize="md">
-                {value1} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                {formatNumberRoundFloor(value1)} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Text>
             </Stack>
             <Stack>
