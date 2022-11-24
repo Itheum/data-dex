@@ -20,7 +20,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
   const { colorMode } = useColorMode();
 
   return (
-    <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
+    <Container maxW="container.xxl" h="100vh" display="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
       <Box p={['20px', null, '30px']} borderWidth="1px" borderRadius="lg" backgroundColor={colorMode === 'dark' && 'gray.800' || 'white'}>
         <Stack>
           <Image w={['70px', null, '90px']} h={['60px', null, '80px']} src={colorMode === 'dark' ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />

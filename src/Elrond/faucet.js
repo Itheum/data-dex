@@ -36,13 +36,14 @@ export class FaucetContract {
     return firstValue.valueOf().toNumber() * 1000;
   }
 
-  async sendActivateFaucetTransaction() {
+  async sendActivateFaucetTransaction(address) {
     const faucetTransaction = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
         .setFunction(new ContractFunction('activateFaucet'))
         .build(),
       receiver: new Address(this.claimsContractAddress),
+      sender: new Address(address),
       gasLimit: 20000000,
       chainID: 'D',
     });

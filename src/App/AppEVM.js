@@ -101,6 +101,7 @@ function App({ appConfig }) {
         ...baseUserContext,
         ..._user,
         isMoralisAuthenticated: isAuthenticated,
+        loggedInAddress: user.get('ethAddress')
       });
 
       enableWeb3(); // default to metamask
@@ -205,7 +206,7 @@ function App({ appConfig }) {
   return (
     <>
       {_user.isMoralisAuthenticated&& (
-        <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
+        <Container maxW="container.xxl" h="100vh" display="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: 'column', md: 'column' }}>
             <HStack h="10vh" p="5">
               <Image boxSize="50px" height="auto" src={colorMode === 'light' ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
@@ -234,7 +235,7 @@ function App({ appConfig }) {
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
                   {screenBreakPoint === 'md' && <ShortAddress address={user.get('ethAddress')} fontSize="md" />}
-                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={['block', 'none']} />
+                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} display={['block', 'none']} />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup title='My Address Quick Copy'>

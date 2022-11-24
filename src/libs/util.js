@@ -128,14 +128,14 @@ export const progInfoMeta = {
     canJoin: 0,
   },
   wfa: {
-    name: 'Wearables Fitness and Activity',
+    name: 'Strava Fitness',
     desc: 'This ongoing program will automatically connect to your Strava account and will download your latest activity from wearables like FitBit, Garmin, TomTom. Strava has a large global user base (76 million users) so dataset will be large and uniform and be worth a lot.',
     medium: 'Telegram App + Strava API',
     outcome: 'Data produced from this program is fully normalised and will be very valuable',
     targetBuyer: 'Researchers',
     data: 'Activity, Workouts',
     url: 'https://itheum.com/program',
-    dc: 'Wearables Fitness and Activity Data',
+    dc: 'Strava Fitness Data',
     id: 'foo',
     canJoin: 0,
   },
@@ -439,4 +439,9 @@ export const clearAppSessions = () => {
     
     sessionStorage.removeItem('itm-launch-mode');
     sessionStorage.removeItem('itm-launch-env');
+}
+
+export const formatNumberRoundFloor = (num, decimals = 2) => {
+  const factor = Math.pow(10, decimals);
+  return (Math.floor(num * factor) / factor).toFixed(2);
 }

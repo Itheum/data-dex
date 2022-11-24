@@ -10,12 +10,7 @@ import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
 import { debugui, uxConfig } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
-
-import {
-  TransactionsToastList,
-  SignTransactionsModals,
-  NotificationModal,
-} from '@elrondnetwork/dapp-core/UI';
+import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@elrondnetwork/dapp-core/UI';
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 

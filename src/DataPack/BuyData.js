@@ -59,45 +59,56 @@ export default function({ onRfMount, onRefreshBalance }) {
     })();
   }, [dataPacks]);
 
-  useEffect(async () => {
-    if (txErrorAllowance) {
-      console.error(txErrorAllowance);
-    } else if (txHashAllowance && (txConfirmationAllowance === uxConfig.txConfirmationsNeededLrg)) {
-      console.log('AUTHORISED');
-
-      setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s2: 1 }));
-
-      web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
-    }
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (txErrorAllowance) {
+        console.error(txErrorAllowance);
+      } else if (txHashAllowance && (txConfirmationAllowance === uxConfig.txConfirmationsNeededLrg)) {
+        console.log('AUTHORISED');
+  
+        setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s2: 1 }));
+  
+        web3_ddexBuyDataPack(currBuyObject.dataPackId, currBuyObject.cost);
+      }
+    };
+    
+    asyncFunc();
   }, [txConfirmationAllowance, txHashAllowance, txErrorAllowance]);
 
-  useEffect(async () => {
-    if (txErrorTransfer) {
-      console.error(txErrorTransfer);
-    } else if (txHashTransfer && (txConfirmationTransfer === uxConfig.txConfirmationsNeededLrg)) {
-      console.log('TRANSFERRED');
-
-      setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s3: 1 }));
-
-      finaliseSale();
-    }
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (txErrorTransfer) {
+        console.error(txErrorTransfer);
+      } else if (txHashTransfer && (txConfirmationTransfer === uxConfig.txConfirmationsNeededLrg)) {
+        console.log('TRANSFERRED');
+  
+        setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s3: 1 }));
+  
+        finaliseSale();
+      }
+    };
     
+    asyncFunc();    
   }, [txConfirmationTransfer, txHashTransfer, txErrorTransfer]);
 
-  useEffect(async() => {
-    if (currBuyObject) {
-      onProgressModalOpen();
-
-      const isVerified = await web3_ddexVerifyData(currBuyObject.dataPackId, currBuyObject.dataHash);
-
-      if (isVerified) {
-        setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s0: 1 }));
-
-        handleMinRequirementsCheck();
-      } else {
-        setbuyProgressErr('The data your are trying to purchase seems compromised (based on blockchain check)');
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (currBuyObject) {
+        onProgressModalOpen();
+  
+        const isVerified = await web3_ddexVerifyData(currBuyObject.dataPackId, currBuyObject.dataHash);
+  
+        if (isVerified) {
+          setbuyProgress(prevBuyProgress => ({ ...prevBuyProgress, s0: 1 }));
+  
+          handleMinRequirementsCheck();
+        } else {
+          setbuyProgressErr('The data your are trying to purchase seems compromised (based on blockchain check)');
+        }
       }
-    }
+    };
+    
+    asyncFunc();
   }, [currBuyObject]);
 
   const buyOrderSubmit = objectId => {
