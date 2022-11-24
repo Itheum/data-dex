@@ -92,7 +92,7 @@ export default function() {
             <Box p="3">
               <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Wearables Fitness and Activity
+                  Strava Fitness
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   {' '}

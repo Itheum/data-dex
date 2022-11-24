@@ -47,7 +47,6 @@ export class FaucetContract {
       gasLimit: 20000000,
       chainID: 'D',
     });
-    console.log('faucetTransaction', faucetTransaction);
 
     await refreshAccount();
 

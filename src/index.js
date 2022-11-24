@@ -10,7 +10,6 @@ import ErrorBoundary from 'UtilComps/ErrorBoundary';
 import { UserContextProvider } from './store/UserContext';
 import { ChainMetaContextProvider } from './store/ChainMetaContext';
 import { BrowserRouter as Router } from 'react-router-dom';
-import '../src/Elrond/elrond.css';
 import '../src/Elrond/custom.css';
 
 if (process.env.NODE_ENV === 'production') {
