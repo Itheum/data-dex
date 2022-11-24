@@ -16,36 +16,36 @@
   box-shadow: none !important;
 }
 
-.dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-header, .dapp-modal-dialog-content-body {
-  background-color: var(--chakra-colors-chakra-body-bg);
-  color: var(--chakra-colors-chakra-body-text);
-  border-color: var(--chakra-colors-teal-200);
+.dapp-modal-dialog-content, .dapp-modal-dialog-header, .dapp-modal-dialog-content-body {
+  background-color: var(--chakra-colors-chakra-body-bg) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
+  border-color: var(--chakra-colors-teal-200) !important;
 }
 
 .dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-wrapper {
-  z-index: 1500;
+  z-index: 1500 !important;
 }
 
 .dapp-core-component__main__card {
-  background-color: var(--chakra-colors-chakra-body-bg);
-  border: none;
+  background-color: var(--chakra-colors-chakra-body-bg) !important;
+  border: none !important;
 }
 
 .dapp-modal-dialog-close-button {
-  background-color: var(--chakra-colors-chakra-body-bg);
-  color: var(--chakra-colors-chakra-body-text);
+  background-color: var(--chakra-colors-chakra-body-bg) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-modal-dialog-close-button:hover {
-  background-color: var(--chakra-colors-chakra-body-bg);
-  color: var(--chakra-colors-chakra-border-color);
+  background-color: var(--chakra-colors-chakra-body-bg) !important;
+  color: var(--chakra-colors-chakra-border-color) !important;
 }
 
 .dapp-transaction-toast, .dapp-failed-transaction-status-toast {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
-  color: var(--chakra-colors-chakra-body-text);
-  border-color: var(--chakra-colors-teal-200);
-  border-width: 1px;
+  color: var(--chakra-colors-chakra-body-text) !important;
+  border-color: var(--chakra-colors-teal-200) !important;
+  border-width: 1px !important;
 }
 
 .dapp-core-component__transactionToast-styles__content .dapp-core-component__transactionToast-styles__right .dapp-core-component__transactionToast-styles__heading .dapp-core-component__transactionToast-styles__close {
@@ -53,10 +53,10 @@
 }
 
 .dapp-core-component__main__warning {
-  width: 60px;
-  height: 60px;
+  width: 60px !important;
+  height: 60px !important;
 }
 
 .dapp-core-component__customToast-styles__close {
-  color: var(--chakra-colors-chakra-body-text);
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
