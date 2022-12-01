@@ -9,7 +9,7 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
-  useToast, useDisclosure
+  useToast, useDisclosure, Checkbox, Tag,
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
@@ -31,6 +31,7 @@ export default function ({ onRfMount, itheumAccount }) {
   const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0 });
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
+  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
 
@@ -314,20 +315,61 @@ export default function ({ onRfMount, itheumAccount }) {
               <Stack spacing={5} mt="5">
                 <Text fontWeight="bold">Trade a Data Stream as a Data NFT</Text>
 
-                <Text fontWeight="bold">Data Stream URL</Text>
-                <Input placeholder="https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv" value={dataNFTStreamUrl} onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)} />
+                <Text fontSize='sm' color='gray.400'>* required fields</Text>
+                <Text fontSize='sm' color='gray.400' mt='0 !important'>+ click on an item's title to learn more</Text>
 
-                {/* <Text fontWeight="bold">Data Preview URL</Text>
-                <Input placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1" value={dataNFTStreamPreviewUrl} onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)} /> */}
+                <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>Data Asset Detail</Text>
 
-                <Text fontWeight="bold">Data Marshal Service</Text>
-                <Input placeholder="https://itheumapi.com/ddex/dataMarshal" value={dataNFTMarshalService} onChange={(event) => setDataNFTMarshalService(event.currentTarget.value)} />
+                <Text fontWeight="bold" fontSize='md'>Data Stream URL *</Text>
+                <Input
+                  mt='1 !important'
+                  placeholder="https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv"
+                  value={dataNFTStreamUrl}
+                  onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)}
+                />
 
-                <Text fontWeight="bold">NFT Token Name</Text>
-                <Input placeholder="NFT Token Name" value={dataNFTTokenName} onChange={(event) => setDataNFTTokenName(event.currentTarget.value)} />
+                <Text fontWeight="bold" fontSize='md'>Data Preview URL *</Text>
+                <Input
+                  mt='1 !important'
+                  placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1"
+                  value={dataNFTStreamPreviewUrl}
+                  onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)}
+                />
 
-                {/* <Text fontWeight="bold">NFT Description</Text>
-                <Textarea placeholder="Enter a description here" value={dataNFTDesc} onChange={(event) => setDataNFTDesc(event.currentTarget.value)} /> */}
+                <Text fontWeight="bold" fontSize='md'>Data Marshal Url *</Text>
+                <Input
+                  mt='1 !important'
+                  placeholder="https://itheumapi.com/ddex/dataMarshal"
+                  value={dataNFTMarshalService}
+                  onChange={(event) => setDataNFTMarshalService(event.currentTarget.value)}
+                />
+
+                <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>NFT Token Metadata</Text>
+
+                <Text fontWeight="bold" fontSize='md'>Token Name (Short Title) *</Text>
+                <Input
+                  mt='1 !important'
+                  placeholder="NFT Token Name"
+                  value={dataNFTTokenName}
+                  onChange={(event) => setDataNFTTokenName(event.currentTarget.value)}
+                />
+                <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 3 and 20 alphanumeric characters only</Text>
+
+                <Text fontWeight="bold" fontSize='md'>Dataset Title *</Text>
+                <Input
+                  mt='1 !important'
+                  placeholder="Dataset Title"
+                />
+                <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 50 alphanumeric characters only</Text>
+
+                <Text fontWeight="bold" fontSize='md'>Dataset Description *</Text>
+                <Textarea
+                  mt='1 !important'
+                  placeholder="Enter a description here"
+                  value={dataNFTDesc}
+                  onChange={(event) => setDataNFTDesc(event.currentTarget.value)}
+                />
+                <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.</Text>
 
                 {/* <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
                 <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={1000} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
@@ -338,25 +380,54 @@ export default function ({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput> */}
 
-                <Text fontWeight="bold">Number of copies</Text>
-                <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={20} value={dataNFTCopies} onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}>
+                <Text fontWeight="bold" fontSize='md'>Number of copies</Text>
+                <NumberInput
+                  mt='1 !important'
+                  size="md"
+                  maxW={24}
+                  step={1}
+                  defaultValue={1}
+                  min={1}
+                  max={20}
+                  value={dataNFTCopies}
+                  onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}
+                >
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <Text colorScheme="gray" fontSize="sm">Limit the quality to increase value (rarity) - suggested: less than 20</Text>
+                <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - suggested: less than 20</Text>
 
-                <Text fontWeight="bold">Royalties</Text>
-                <NumberInput size="md" maxW={24} step={5} defaultValue={0} min={0} max={80} value={dataNFTRoyalty} onChange={(valueString) => setDataNFTRoyalty(parseInt(valueString))}>
+                <Text fontWeight="bold" fontSize='md'>Royalties</Text>
+                <NumberInput
+                  mt='1 !important'
+                  size="md"
+                  maxW={24}
+                  step={5}
+                  defaultValue={0}
+                  min={0}
+                  max={80}
+                  value={dataNFTRoyalty}
+                  onChange={(valueString) => setDataNFTRoyalty(parseInt(valueString))}
+                >
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <Text colorScheme="gray" fontSize="sm">Suggested: 0%, 10%, 20%, 30%</Text>
+                <Text color="gray.400" fontSize="sm" mt='0 !important'>Suggested: 0%, 10%, 20%, 30%</Text>
+
+                <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>Terms and Fees</Text>
+                <Text fontSize='md' mt='4 !important'>Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online. Given it's an NFT, you also have limitations like not being able to update the title, description, royalty etc. But there are other condisiton too. Take some time to read these “terms of use” before you proceed. It's very important that you do.</Text>
+                <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read Terms of Use</Button></Flex>
+                <Checkbox size='md' mt='3 !important'>I have read all terms and agree to them</Checkbox>
+
+                <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing curation discovery by the Itheum DAO.</Text>
+                <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently 25 ITHEUM tokens</Tag></Flex>
+                <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
 
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>
@@ -415,6 +486,24 @@ export default function ({ onRfMount, itheumAccount }) {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      <Modal
+        isOpen={isReadTermsModalOpen}
+        onClose={onReadTermsModalClose}
+        closeOnEsc={false} closeOnOverlayClick={false}
+      >
+        <ModalOverlay
+          bg='blackAlpha.700'
+          backdropFilter='blur(10px) hue-rotate(90deg)'
+          />
+        <ModalContent>
+          <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
+          <ModalBody pb={6}>
+            <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
+            <Flex justifyContent='end' mt='6 !important'><Button colorScheme="teal" onClick={onReadTermsModalClose}>I have read this</Button></Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 };
