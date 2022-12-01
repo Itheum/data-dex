@@ -31,6 +31,25 @@
   border: none !important;
 }
 
+/* START LEDGER STYLING */
+.dapp-core-component__main__table{
+  color: var(--chakra-colors-chakra-body-text);
+  font-weight: 700;
+}
+
+thead.dapp-core-component__main__text-black-50{
+  color: var(--chakra-colors-chakra-body-text);
+}
+
+.dapp-core-component__dappModalStyles__dappModal{
+  padding-top: 0;
+}
+
+.dapp-core-component__dappModalStyles__dappModalContent{
+  max-width: fit-content;
+}
+/* STOP LEDGER STYLING */
+
 .dapp-modal-dialog-close-button {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
