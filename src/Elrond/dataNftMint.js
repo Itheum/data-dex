@@ -1,9 +1,9 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment } from '@elrondnetwork/erdjs/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment, ArgSerializer } from '@elrondnetwork/erdjs/out';
 import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
 import { sendTransactions } from '@elrondnetwork/dapp-core/services';
 import jsonData from './ABIs/datanftmint.abi.json';
-import { contractsForChain } from 'libs/util';
+import { contractsForChain, convertEsdtToWei } from 'libs/util';
 
 export class DataNftMintContract {
   constructor(networkId) {
@@ -28,19 +28,23 @@ export class DataNftMintContract {
     });
   }
 
-  async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount, sender }) {
+  async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount, sender, itheumToken, antiSpamTax }) {
+    const data = TransactionPayload.contractCall('')
+      .setFunction(new ContractFunction('ESDTTransfer'))
+      .addArg(new StringValue(itheumToken))
+      .addArg(new BigUIntValue(convertEsdtToWei(25))) // needs to be replaced by antiSpamTax
+      .addArg(new StringValue('mint'))
+      .addArg(new StringValue(name))
+      .addArg(new StringValue(media))
+      .addArg(new StringValue(data_marchal))
+      .addArg(new StringValue(data_stream))
+      .addArg(new StringValue(data_preview))
+      .addArg(new BigUIntValue(royalties))
+      .addArg(new BigUIntValue(amount))
+      .build();
+
     const mintTransaction = new Transaction({
-      value: TokenPayment.egldFromAmount(0.025).amountAsBigInteger,
-      data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction('mint'))
-        .addArg(new StringValue(name))
-        .addArg(new StringValue(media))
-        .addArg(new StringValue(data_marchal))
-        .addArg(new StringValue(data_stream))
-        .addArg(new StringValue(data_preview))
-        .addArg(new BigUIntValue(royalties))
-        .addArg(new BigUIntValue(amount))
-        .build(),
+      data,
       sender: new Address(sender),
       receiver: new Address(this.dataNftMintContractAddress),
       gasLimit: 60000000,

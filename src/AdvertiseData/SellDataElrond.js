@@ -19,8 +19,12 @@ import { useTrackTransactionStatus } from '@elrondnetwork/dapp-core/hooks';
 import { ResultsParser } from '@elrondnetwork/erdjs';
 import axios from 'axios';
 
-import { uxConfig, dataTemplates, sleep } from 'libs/util';
-import { MENU } from 'libs/util';
+import {
+  uxConfig,
+  sleep,
+  MENU,
+  convertWeiToEsdt,
+} from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
 
@@ -117,6 +121,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
   const [maxSupply, setMaxSupply] = useState(-1);
+  const [antiSpamTax, setAntiSpamTax] = useState(-1);
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
@@ -149,6 +154,16 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
       setMaxSupply(value.toNumber());
+    })();
+    (async() => {
+      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+      const interaction = elrondDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
+      const query = interaction.check().buildQuery();
+      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      const value = firstValue.valueOf();
+      setAntiSpamTax(convertWeiToEsdt(value).toNumber());
     })();
   }, []);
 
@@ -414,6 +429,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       royalties: Math.ceil(dataNFTRoyalty*100),
       amount: dataNFTCopies,
       sender: elrondAddress,
+
+      itheumToken: _chainMeta.contracts.itheumToken,
+      antiSpamTax: antiSpamTax,
     });
 
     setMintSessionId(sessionId);
@@ -493,6 +511,12 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     if (!error) {
+      if (datasetDescription.length < 3 || datasetDescription.length > 250) {
+        error = 'Length of Dataset Description must be between 3 and 250 characters';
+      }
+    }
+
+    if (!error) {
       if (dataNFTCopies < 1) {
         error = 'Number Of Compies cannot be zero';
       } else if (dataNFTCopies < 0) {
@@ -515,8 +539,10 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     if (!error) {
-      if (datasetDescription.length < 3 || datasetDescription.length > 250) {
-        error = 'Length of Dataset Description must be between 3 and 250 characters';
+      if (antiSpamTax < 0) {
+        error = 'Anti-Spam Tax is not retrieved from the Smart Contract yet';
+      } else if (antiSpamTax === 0) {
+        error = 'Anti-Spam Tax cannot be zero';
       }
     }
 
@@ -780,7 +806,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 >I have read all terms and agree to them</Checkbox>
 
                 <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing curation discovery by the Itheum DAO.</Text>
-                <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently 25 ITHEUM tokens</Tag></Flex>
+                <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently {antiSpamTax < 0 ? '?' : antiSpamTax} ITHEUM tokens</Tag></Flex>
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
 
                 <Flex>

@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 import {
   tokenContractAddress_Matic,
   ddexContractAddress_Matic,
@@ -445,3 +447,11 @@ export const formatNumberRoundFloor = (num, decimals = 2) => {
   const factor = Math.pow(10, decimals);
   return (Math.floor(num * factor) / factor).toFixed(2);
 }
+
+export const convertWeiToEsdt = (amount, decimals = 18, precision = 4) => {
+  return BigNumber(amount).shiftedBy(-decimals).decimalPlaces(precision);
+};
+
+export const convertEsdtToWei = (amount, decimals = 18) => {
+  return BigNumber(amount).shiftedBy(decimals);
+};
