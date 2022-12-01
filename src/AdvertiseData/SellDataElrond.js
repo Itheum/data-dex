@@ -167,7 +167,7 @@ export default function ({ onRfMount, itheumAccount }) {
     let error = '';
     if (value.length < 3 || value.length > 50) {
       error = 'Length of Dataset Title must be between 3 and 50 characters';
-    } else if (!value.match(/^[0-9a-zA-Z]+$/)) {
+    } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
       error = 'Dataset Title can only contain alphanumeric characters';
     }
 
@@ -411,7 +411,7 @@ export default function ({ onRfMount, itheumAccount }) {
     if (!error) {
       if (datasetTitle.length < 3 || datasetTitle.length > 50) {
         error = 'Length of Dataset Title must be between 3 and 50 characters';
-      } else if (!datasetTitle.match(/^[0-9a-zA-Z]+$/)) {
+      } else if (!datasetTitle.match(/^[0-9a-zA-Z\s]+$/)) {
         error = 'Dataset Title can only contain alphanumeric characters';
       }
     }
