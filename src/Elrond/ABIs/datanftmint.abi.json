@@ -1,20 +1,20 @@
 {
     "buildInfo": {
         "rustc": {
-            "version": "1.64.0-nightly",
-            "commitHash": "6dba4ed215e7a60f0a2a19c04f3f73691f89c509",
-            "commitDate": "2022-07-09",
+            "version": "1.66.0-nightly",
+            "commitHash": "1898c34e923bad763e723c68dd9f23a09f9eb0fc",
+            "commitDate": "2022-10-26",
             "channel": "Nightly",
-            "short": "rustc 1.64.0-nightly (6dba4ed21 2022-07-09)"
+            "short": "rustc 1.66.0-nightly (1898c34e9 2022-10-26)"
         },
         "contractCrate": {
             "name": "datanftmint",
             "version": "0.0.0",
-            "git_version": "35ad10e-modified"
+            "git_version": "c300049"
         },
         "framework": {
             "name": "elrond-wasm",
-            "version": "0.35.0"
+            "version": "0.36.1"
         }
     },
     "name": "DataNftMint",
@@ -44,8 +44,12 @@
                     "type": "EgldOrEsdtTokenIdentifier"
                 },
                 {
-                    "name": "mint_price",
+                    "name": "anti_spam_tax",
                     "type": "BigUint"
+                },
+                {
+                    "name": "mint_time_limit",
+                    "type": "u64"
                 }
             ],
             "outputs": []
@@ -66,7 +70,7 @@
                     "type": "bytes"
                 },
                 {
-                    "name": "data_marchal",
+                    "name": "data_marshal",
                     "type": "bytes"
                 },
                 {
@@ -82,8 +86,16 @@
                     "type": "BigUint"
                 },
                 {
-                    "name": "amount",
+                    "name": "supply",
                     "type": "BigUint"
+                },
+                {
+                    "name": "title",
+                    "type": "bytes"
+                },
+                {
+                    "name": "description",
+                    "type": "bytes"
                 }
             ],
             "outputs": [
@@ -93,13 +105,36 @@
             ]
         },
         {
+            "name": "burn",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
             "name": "setIsPaused",
-            "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
                     "name": "is_paused",
                     "type": "bool"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setAntiSpamTax",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "tax",
+                    "type": "BigUint"
                 }
             ],
             "outputs": []
@@ -117,30 +152,76 @@
             "outputs": []
         },
         {
-            "name": "setMintPrice",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "token_id",
-                    "type": "EgldOrEsdtTokenIdentifier"
-                },
-                {
-                    "name": "price",
-                    "type": "BigUint"
-                }
-            ],
-            "outputs": []
-        },
-        {
             "name": "setWhiteListSpots",
-            "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
                     "name": "whitelist",
                     "type": "variadic<Address>",
                     "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "removeWhiteListSpots",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "whitelist",
+                    "type": "variadic<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setMintTimeLimit",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "mint_time_limit",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setRoyaltiesLimits",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "min_royalties",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_royalties",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setMaxSupply",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "max_supply",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setAdministrator",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "administrator",
+                    "type": "Address"
                 }
             ],
             "outputs": []
@@ -166,7 +247,7 @@
             ]
         },
         {
-            "name": "getMintPrice",
+            "name": "getAntiSpamTax",
             "mutability": "readonly",
             "inputs": [
                 {
@@ -191,6 +272,36 @@
             ]
         },
         {
+            "name": "getMaxRoyalties",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getMinRoyalties",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getMaxSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
             "name": "getMintedPerAddress",
             "mutability": "readonly",
             "inputs": [
@@ -202,6 +313,41 @@
             "outputs": [
                 {
                     "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getContractInitialized",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "mintTimeLimit",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "lastMintTime",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u64"
                 }
             ]
         },
@@ -227,22 +373,31 @@
             ]
         },
         {
-            "name": "getTokenCreatedNonce",
+            "name": "getAdministrator",
             "mutability": "readonly",
             "inputs": [],
             "outputs": [
                 {
-                    "type": "u64"
+                    "type": "Address"
                 }
             ]
         },
         {
-            "name": "getContractInitialized",
+            "name": "getUserDataOut",
             "mutability": "readonly",
-            "inputs": [],
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                },
+                {
+                    "name": "tax_token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
             "outputs": [
                 {
-                    "type": "bool"
+                    "type": "UserDataOut"
                 }
             ]
         }
@@ -269,66 +424,81 @@
             ]
         },
         {
-            "identifier": "privateSalePriceSet",
-            "inputs": [
-                {
-                    "name": "token",
-                    "type": "EgldOrEsdtTokenIdentifier",
-                    "indexed": true
-                },
-                {
-                    "name": "amount",
-                    "type": "BigUint",
-                    "indexed": true
-                }
-            ]
-        },
-        {
-            "identifier": "publicSalePriceSet",
-            "inputs": [
-                {
-                    "name": "token",
-                    "type": "EgldOrEsdtTokenIdentifier",
-                    "indexed": true
-                },
-                {
-                    "name": "amount",
-                    "type": "BigUint",
-                    "indexed": true
-                }
-            ]
-        },
-        {
-            "identifier": "maxPerAddressSet",
-            "inputs": [
-                {
-                    "name": "amount",
-                    "type": "BigUint",
-                    "indexed": true
-                }
-            ]
-        },
-        {
-            "identifier": "maxPerTxSet",
-            "inputs": [
-                {
-                    "name": "amount",
-                    "type": "BigUint",
-                    "indexed": true
-                }
-            ]
-        },
-        {
             "identifier": "whitelistSpotSet",
             "inputs": [
                 {
                     "name": "address",
                     "type": "Address",
                     "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "whitelistSpotRemoved",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setRoyaltiesLimits",
+            "inputs": [
+                {
+                    "name": "min_royalties",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "max_royalties",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setMaxSupply",
+            "inputs": [
+                {
+                    "name": "max_supply",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "antiSpamTaxSet",
+            "inputs": [
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier",
+                    "indexed": true
                 },
                 {
                     "name": "amount",
                     "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "mintTimeLimitSet",
+            "inputs": [
+                {
+                    "name": "mint_time_limit",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setAdministrator",
+            "inputs": [
+                {
+                    "name": "administrator",
+                    "type": "Address",
                     "indexed": true
                 }
             ]
@@ -373,7 +543,7 @@
                     "type": "bytes"
                 },
                 {
-                    "name": "data_marchal_url",
+                    "name": "data_marshal_url",
                     "type": "bytes"
                 },
                 {
@@ -383,6 +553,55 @@
                 {
                     "name": "creation_time",
                     "type": "u64"
+                },
+                {
+                    "name": "title",
+                    "type": "bytes"
+                },
+                {
+                    "name": "description",
+                    "type": "bytes"
+                }
+            ]
+        },
+        "UserDataOut": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "anti_spam_tax_value",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "is_paused",
+                    "type": "bool"
+                },
+                {
+                    "name": "max_royalities",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "min_royalities",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "mint_time_limit",
+                    "type": "u64"
+                },
+                {
+                    "name": "last_mint_time",
+                    "type": "u64"
+                },
+                {
+                    "name": "whitelist_enabled",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_whitelisted",
+                    "type": "bool"
                 }
             ]
         }

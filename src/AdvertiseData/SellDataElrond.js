@@ -16,6 +16,7 @@ import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { DataNftMintContract } from 'Elrond/dataNftMint';
 import { useTrackTransactionStatus } from '@elrondnetwork/dapp-core/hooks';
+import { ResultsParser } from '@elrondnetwork/erdjs';
 import axios from 'axios';
 
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
@@ -80,7 +81,7 @@ const checkUrlReturns200 = async (url) => {
   }
 }
 
-export default function ({ onRfMount, itheumAccount }) {
+export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const { address: elrondAddress } = useGetAccountInfo();
 
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -112,6 +113,44 @@ export default function ({ onRfMount, itheumAccount }) {
   const [datasetTitle, setDatasetTitle] = useState('Sample Title');
   const [datasetDescription, setDatasetDescription] = useState('Sample Description');
   const [readTermsChecked, setReadTermsChecked] = useState(false);
+
+  const [minRoyalties, setMinRoyalties] = useState(-1);
+  const [maxRoyalties, setMaxRoyalties] = useState(-1);
+  const [maxSupply, setMaxSupply] = useState(-1);
+
+  // query settings from Data NFT Minter SC
+  useEffect(() => {
+    (async() => {
+      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+      const interaction = elrondDataNftMintContract.contract.methods.getMinRoyalties();
+      const query = interaction.check().buildQuery();
+      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      const value = firstValue.valueOf();
+      setMinRoyalties(value.toNumber() / 100);
+    })();
+    (async() => {
+      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+      const interaction = elrondDataNftMintContract.contract.methods.getMaxRoyalties();
+      const query = interaction.check().buildQuery();
+      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      const value = firstValue.valueOf();
+      setMaxRoyalties(value.toNumber() / 100);
+    })();
+    (async() => {
+      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+      const interaction = elrondDataNftMintContract.contract.methods.getMaxSupply();
+      const query = interaction.check().buildQuery();
+      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      const value = firstValue.valueOf();
+      setMaxSupply(value.toNumber());
+    })();
+  }, []);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // validation logic
@@ -185,6 +224,38 @@ export default function ({ onRfMount, itheumAccount }) {
 
     setDatasetDescriptionError(error);
     setDatasetDescription(value);
+  }
+
+  const [dataNFTCopiesError, setDataNFTCopiesError] = useState('');
+  const onChangeDataNFTCopies = (value) => {
+    let error = '';
+    if (value < 1) {
+      error = 'Number Of Compies cannot be zero';
+    } else if (maxSupply < 0) {
+      error = 'Max Supply is not retrieved from the Smart Contract yet';
+    } else if (value > maxSupply) {
+      error = `Number Of Compies cannot exceed ${maxSupply}`;
+    }
+
+    setDataNFTCopiesError(error);
+    setDataNFTCopies(value);
+  }
+
+  const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
+  const onChangeDataNFTRoyalty = (value) => {
+    let error = '';
+    if (minRoyalties < 0 || maxRoyalties < 0) {
+      error = 'Min Royalties and Max Royalties are not retrieved from the Smart Contract yet';
+    } else if (value < 0) {
+      error = 'Royalties cannot be negative';
+    } else if (value < minRoyalties) {
+      error = `Royalties cannot be lower than ${minRoyalties}`;
+    } else if (value > maxRoyalties) {
+      error = `Royalties cannot be higher than ${maxRoyalties}`;
+    }
+
+    setDataNFTRoyaltyError(error);
+    setDataNFTRoyalty(value);
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -422,6 +493,28 @@ export default function ({ onRfMount, itheumAccount }) {
     }
 
     if (!error) {
+      if (dataNFTCopies < 1) {
+        error = 'Number Of Compies cannot be zero';
+      } else if (dataNFTCopies < 0) {
+        error = 'Max Supply is not retrieved from the Smart Contract yet';
+      } else if (dataNFTCopies > maxSupply) {
+        error = `Number Of Compies cannot exceed ${maxSupply}`;
+      }
+    }
+
+    if (!error) {
+      if (minRoyalties < 0 || maxRoyalties < 0) {
+        error = 'Min Royalties and Max Royalties are not retrieved from the Smart Contract yet';
+      } else if (dataNFTRoyalty < 0) {
+        error = 'Royalties cannot be negative';
+      } else if (dataNFTRoyalty < minRoyalties) {
+        error = `Royalties cannot be lower than ${minRoyalties}`;
+      } else if (dataNFTRoyalty > maxRoyalties) {
+        error = `Royalties cannot be higher than ${maxRoyalties}`;
+      }
+    }
+
+    if (!error) {
       if (datasetDescription.length < 3 || datasetDescription.length > 250) {
         error = 'Length of Dataset Description must be between 3 and 250 characters';
       }
@@ -639,10 +732,8 @@ export default function ({ onRfMount, itheumAccount }) {
                   maxW={24}
                   step={1}
                   defaultValue={1}
-                  min={1}
-                  max={20}
                   value={dataNFTCopies}
-                  onChange={(valueString) => setDataNFTCopies(parseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTCopies(parseInt(valueString))}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -651,6 +742,9 @@ export default function ({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput>
                 <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - suggested: less than 20</Text>
+                {dataNFTCopiesError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTCopiesError}</Text>
+                )}
 
                 <InputLabelWithPopover tkey='royalties'>
                   <Text fontWeight="bold" fontSize='md'>Royalties</Text>
@@ -661,10 +755,8 @@ export default function ({ onRfMount, itheumAccount }) {
                   maxW={24}
                   step={5}
                   defaultValue={0}
-                  min={0}
-                  max={80}
                   value={dataNFTRoyalty}
-                  onChange={(valueString) => setDataNFTRoyalty(parseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTRoyalty(parseInt(valueString))}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -673,6 +765,9 @@ export default function ({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput>
                 <Text color="gray.400" fontSize="sm" mt='0 !important'>Suggested: 0%, 10%, 20%, 30%</Text>
+                {dataNFTRoyaltyError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTRoyaltyError}</Text>
+                )}
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>Terms and Fees</Text>
                 <Text fontSize='md' mt='4 !important'>Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online. Given it's an NFT, you also have limitations like not being able to update the title, description, royalty etc. But there are other condisiton too. Take some time to read these “terms of use” before you proceed. It's very important that you do.</Text>
