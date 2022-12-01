@@ -10,6 +10,7 @@ import {
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure, Checkbox, Tag,
+  Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
@@ -19,6 +20,53 @@ import { uxConfig, dataTemplates, sleep } from 'libs/util';
 import { MENU } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
+
+const InputLabelWithPopover = ({ children, tkey }) => {
+  let title = '', text = '';
+  if (tkey === 'data-stream-url') {
+    title = 'Data Stream URL';
+    text = 'You need to host your data asset and make sure that it\'s publicly accessible behind a secure domain (one that starts with https://).';
+  } else if (tkey === 'data-preview-url') {
+    title = 'Data Preview URL';
+    text = '-';
+  } else if (tkey === 'data-marshal-url') {
+    title = 'Data Marshal URL';
+    text = '-';
+  } else if (tkey === 'token-name') {
+    title = 'Token Name (Short Title)';
+    text = '-';
+  } else if (tkey === 'dataset-title') {
+    title = 'Dataset Title';
+    text = '-';
+  } else if (tkey === 'dataset-description') {
+    title = 'Dataset Description';
+    text = '-';
+  } else if (tkey === 'number-of-copies') {
+    title = 'Number of Copies';
+    text = '-';
+  } else if (tkey === 'royalties') {
+    title = 'Royalties';
+    text = '-';
+  }
+  
+  return (
+    <Flex>
+      <Popover trigger='hover' placement='auto'>
+        <PopoverTrigger>
+          {children}
+        </PopoverTrigger>
+        <PopoverContent>
+          <PopoverHeader fontWeight='semibold'>{title}</PopoverHeader>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverBody>
+            {text}
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
+    </Flex>
+  );
+}
 
 export default function ({ onRfMount, itheumAccount }) {
   const { address: elrondAddress } = useGetAccountInfo();
@@ -320,7 +368,10 @@ export default function ({ onRfMount, itheumAccount }) {
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>Data Asset Detail</Text>
 
-                <Text fontWeight="bold" fontSize='md'>Data Stream URL *</Text>
+                <InputLabelWithPopover tkey='data-stream-url'>
+                  <Text fontWeight="bold" fontSize='md'>Data Stream URL *</Text>
+                </InputLabelWithPopover>
+
                 <Input
                   mt='1 !important'
                   placeholder="https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv"
@@ -328,7 +379,9 @@ export default function ({ onRfMount, itheumAccount }) {
                   onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)}
                 />
 
-                <Text fontWeight="bold" fontSize='md'>Data Preview URL *</Text>
+                <InputLabelWithPopover tkey='data-preview-url'>
+                  <Text fontWeight="bold" fontSize='md'>Data Preview URL *</Text>
+                </InputLabelWithPopover>
                 <Input
                   mt='1 !important'
                   placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1"
@@ -336,7 +389,9 @@ export default function ({ onRfMount, itheumAccount }) {
                   onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)}
                 />
 
-                <Text fontWeight="bold" fontSize='md'>Data Marshal Url *</Text>
+                <InputLabelWithPopover tkey='data-marshal-url'>
+                  <Text fontWeight="bold" fontSize='md'>Data Marshal Url *</Text>
+                </InputLabelWithPopover>
                 <Input
                   mt='1 !important'
                   placeholder="https://itheumapi.com/ddex/dataMarshal"
@@ -346,7 +401,9 @@ export default function ({ onRfMount, itheumAccount }) {
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>NFT Token Metadata</Text>
 
-                <Text fontWeight="bold" fontSize='md'>Token Name (Short Title) *</Text>
+                <InputLabelWithPopover tkey='token-name'>
+                  <Text fontWeight="bold" fontSize='md'>Token Name (Short Title) *</Text>
+                </InputLabelWithPopover>
                 <Input
                   mt='1 !important'
                   placeholder="NFT Token Name"
@@ -355,14 +412,18 @@ export default function ({ onRfMount, itheumAccount }) {
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 3 and 20 alphanumeric characters only</Text>
 
-                <Text fontWeight="bold" fontSize='md'>Dataset Title *</Text>
+                <InputLabelWithPopover tkey='dataset-title'>
+                  <Text fontWeight="bold" fontSize='md'>Dataset Title *</Text>
+                </InputLabelWithPopover>
                 <Input
                   mt='1 !important'
                   placeholder="Dataset Title"
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 50 alphanumeric characters only</Text>
 
-                <Text fontWeight="bold" fontSize='md'>Dataset Description *</Text>
+                <InputLabelWithPopover tkey='dataset-description'>
+                  <Text fontWeight="bold" fontSize='md'>Dataset Description *</Text>
+                </InputLabelWithPopover>
                 <Textarea
                   mt='1 !important'
                   placeholder="Enter a description here"
@@ -380,7 +441,9 @@ export default function ({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput> */}
 
-                <Text fontWeight="bold" fontSize='md'>Number of copies</Text>
+                <InputLabelWithPopover tkey='number-of-copies'>
+                  <Text fontWeight="bold" fontSize='md'>Number of copies</Text>
+                </InputLabelWithPopover>
                 <NumberInput
                   mt='1 !important'
                   size="md"
@@ -400,7 +463,9 @@ export default function ({ onRfMount, itheumAccount }) {
                 </NumberInput>
                 <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - suggested: less than 20</Text>
 
-                <Text fontWeight="bold" fontSize='md'>Royalties</Text>
+                <InputLabelWithPopover tkey='royalties'>
+                  <Text fontWeight="bold" fontSize='md'>Royalties</Text>
+                </InputLabelWithPopover>
                 <NumberInput
                   mt='1 !important'
                   size="md"
