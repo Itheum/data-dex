@@ -28,7 +28,7 @@ export class DataNftMintContract {
     });
   }
 
-  async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount }) {
+  async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount, sender }) {
     const mintTransaction = new Transaction({
       value: TokenPayment.egldFromAmount(0.025).amountAsBigInteger,
       data: TransactionPayload.contractCall()
@@ -41,6 +41,7 @@ export class DataNftMintContract {
         .addArg(new BigUIntValue(royalties))
         .addArg(new BigUIntValue(amount))
         .build(),
+      sender: new Address(sender),
       receiver: new Address(this.dataNftMintContractAddress),
       gasLimit: 60000000,
       chainID: this.chainID,

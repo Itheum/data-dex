@@ -196,7 +196,8 @@ export default function ({ onRfMount, itheumAccount }) {
       data_stream: dataNFTStreamUrl, 
       data_preview: dataNFTStreamPreviewUrl, 
       royalties: Math.ceil(dataNFTRoyalty*100),
-      amount: dataNFTCopies
+      amount: dataNFTCopies,
+      sender: elrondAddress,
     });
 
     console.log(status);
