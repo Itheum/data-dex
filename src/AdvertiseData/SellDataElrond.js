@@ -15,6 +15,7 @@ import {
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { DataNftMintContract } from 'Elrond/dataNftMint';
+import { useTrackTransactionStatus } from '@elrondnetwork/dapp-core/hooks';
 import axios from 'axios';
 
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
@@ -99,7 +100,7 @@ export default function ({ onRfMount, itheumAccount }) {
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [newNFTId, setNewNFTId] = useState(null); // newly created token ID from blockchain
   const [dataNFTImg, setDataNFTImg] = useState(null);
-  const [dataNFTTokenName, setDataNFTTokenName] = useState('');
+  const [dataNFTTokenName, setDataNFTTokenName] = useState('SampleTokenName');
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
   const [dataNFTFeeInTokens, setDataNFTFeeInTokens] = useState(1);
@@ -108,8 +109,8 @@ export default function ({ onRfMount, itheumAccount }) {
   const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
 
-  const [datasetTitle, setDatasetTitle] = useState('');
-  const [datasetDescription, setDatasetDescription] = useState('');
+  const [datasetTitle, setDatasetTitle] = useState('Sample Title');
+  const [datasetDescription, setDatasetDescription] = useState('Sample Description');
   const [readTermsChecked, setReadTermsChecked] = useState(false);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +203,6 @@ export default function ({ onRfMount, itheumAccount }) {
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
-
     closeProgressModal();
   }
 
@@ -334,7 +334,7 @@ export default function ({ onRfMount, itheumAccount }) {
     await sleep(3);
     const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
-    const status = await elrondDataNftMintContract.sendMintTransaction({
+    const { sessionId, error } = await elrondDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName, 
       media: newNFTImg,
       data_marchal: dataNFTMarshalService, 
@@ -345,11 +345,16 @@ export default function ({ onRfMount, itheumAccount }) {
       sender: elrondAddress,
     });
 
-    console.log(status);
-
-    setMintSessionId(status.sessionId);    
+    setMintSessionId(sessionId);
   };
 
+  const transactionStatus = useTrackTransactionStatus({
+    transactionId: mintSessionId,
+    onSuccess: mintTxSuccess,
+    onFail: mintTxFail,
+    onCancelled: mintTxCancelled,
+  });
+  
   const closeProgressModal = () => {
     toast({
       title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
