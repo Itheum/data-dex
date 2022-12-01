@@ -15,6 +15,7 @@ import {
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { DataNftMintContract } from 'Elrond/dataNftMint';
+import axios from 'axios';
 
 import { uxConfig, dataTemplates, sleep } from 'libs/util';
 import { MENU } from 'libs/util';
@@ -68,6 +69,16 @@ const InputLabelWithPopover = ({ children, tkey }) => {
   );
 }
 
+const checkUrlReturns200 = async (url) => {
+  // check that URL returns 200 code
+  try {
+    const res = await axios.get(url);
+    return res.status === 200;
+  } catch (err) {
+    return false;
+  }
+}
+
 export default function ({ onRfMount, itheumAccount }) {
   const { address: elrondAddress } = useGetAccountInfo();
 
@@ -89,7 +100,6 @@ export default function ({ onRfMount, itheumAccount }) {
   const [newNFTId, setNewNFTId] = useState(null); // newly created token ID from blockchain
   const [dataNFTImg, setDataNFTImg] = useState(null);
   const [dataNFTTokenName, setDataNFTTokenName] = useState('');
-  const [dataNFTDesc, setDataNFTDesc] = useState('');
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
   const [dataNFTFeeInTokens, setDataNFTFeeInTokens] = useState(1);
@@ -98,6 +108,84 @@ export default function ({ onRfMount, itheumAccount }) {
   const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
 
+  const [datasetTitle, setDatasetTitle] = useState('');
+  const [datasetDescription, setDatasetDescription] = useState('');
+  const [readTermsChecked, setReadTermsChecked] = useState(false);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // validation logic
+
+  const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState('');
+  const onChangeDataNFTStreamUrl = (value) => {
+    let error = '';
+    if (!value.startsWith('https://')) {
+      error = 'Data Stream URL must start with \'https://\'';
+    } else if (value.includes(' ')) {
+      error = 'Data Stream URL cannot contain spaces';
+    } else if (value.length > 1000) {
+      error = 'Length of Data Stream URL cannot exceed 1000';
+    } else {
+      checkUrlReturns200(value).then(res => !res && setDataNFTStreamUrlError('Data Stream URL does not return 200 code'));
+    }
+
+    setDataNFTStreamUrlError(error);
+    setDataNFTStreamUrl(value);
+  }
+
+  const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState('');
+  const onChangeDataNFTStreamPreviewUrl = (value) => {
+    let error = '';
+    if (!value.startsWith('https://')) {
+      error = 'Data Preview URL must start with \'https://\'';
+    } else if (value.includes(' ')) {
+      error = 'Data Preview URL cannot contain spaces';
+    } else if (value.length > 1000) {
+      error = 'Length of Data Preview URL cannot exceed 1000';
+    } else {
+      checkUrlReturns200(value).then(res => !res && setDataNFTStreamPreviewUrlError('Data Preview URL does not return 200 code'));
+    }
+
+    setDataNFTStreamPreviewUrlError(error);
+    setDataNFTStreamPreviewUrl(value);
+  }
+
+  const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState('');
+  const onChangeDataNFTTokenName = (value) => {
+    let error = '';
+    if (value.length < 3 || value.length > 20) {
+      error = 'Length of Token Name must be between 3 and 20 characters';
+    } else if (!value.match(/^[0-9a-zA-Z]+$/)) {
+      error = 'Token Name can only contain alphanumeric characters';
+    }
+
+    setDataNFTTokenNameError(error);
+    setDataNFTTokenName(value);
+  }
+
+  const [datasetTitleError, setDatasetTitleError] = useState('');
+  const onChangeDatasetTitle = (value) => {
+    let error = '';
+    if (value.length < 3 || value.length > 50) {
+      error = 'Length of Dataset Title must be between 3 and 50 characters';
+    } else if (!value.match(/^[0-9a-zA-Z]+$/)) {
+      error = 'Dataset Title can only contain alphanumeric characters';
+    }
+
+    setDatasetTitleError(error);
+    setDatasetTitle(value);
+  }
+
+  const [datasetDescriptionError, setDatasetDescriptionError] = useState('');
+  const onChangeDatasetDescription = (value) => {
+    let error = '';
+    if (value.length < 3 || value.length > 250) {
+      error = 'Length of Dataset Description must be between 3 and 250 characters';
+    }
+
+    setDatasetDescriptionError(error);
+    setDatasetDescription(value);
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const mintTxFail = (foo) => {
     console.log('mintTxFail', foo);
@@ -159,7 +247,7 @@ export default function ({ onRfMount, itheumAccount }) {
       const previewStr = `${data.length} datapoints from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(uxConfig.dateStr)} to ${moment(selObj.toTs).format(uxConfig.dateStr)}`;
 
       setSellerDataPreview(previewStr);
-      setDataNFTDesc(previewStr)
+      setDatasetDescription(previewStr)
       setSellerData(JSON.stringify(data));
     }
 
@@ -167,11 +255,19 @@ export default function ({ onRfMount, itheumAccount }) {
   }
 
   const dataNFTSellSubmit = async () => {
-    if (elrondAddress) {
-      if (validateBaseInput()) {
-        if (isStreamTrade) {
-          dataNFTDataStreamAdvertise();
-        }   
+    if (!elrondAddress) {
+      toast({
+        title: 'Connect your wallet',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    const res = await validateBaseInput();
+    if (res) {
+      if (isStreamTrade) {
+        dataNFTDataStreamAdvertise();
       }
     }
   }
@@ -268,12 +364,84 @@ export default function ({ onRfMount, itheumAccount }) {
     onRfMount();
   }
 
-  function validateBaseInput() {
-    if (!dataNFTTokenName || dataNFTTokenName.trim() === '') {
-      alert('You need to provide a NFT token name!');
+  async function validateBaseInput() {
+    onChangeDataNFTStreamUrl(dataNFTStreamUrl);
+    onChangeDataNFTStreamPreviewUrl(dataNFTStreamPreviewUrl);
+    onChangeDataNFTTokenName(dataNFTTokenName);
+    onChangeDatasetTitle(datasetTitle);
+    onChangeDatasetDescription(datasetDescription);
+
+    let error = '';
+    if (!dataNFTStreamUrl.startsWith('https://')) {
+      error = 'Data Stream Url must start with \'https://\'';
+    } else if (dataNFTStreamUrl.includes(' ')) {
+      error = 'Data Stream Url cannot contain spaces';
+    } else if (dataNFTStreamUrl.length > 1000) {
+      error = 'Length of Data Stream Url cannot exceed 1000';
+    } else {
+      const res = await checkUrlReturns200(dataNFTStreamUrl);
+      if (!res) {
+        error = 'Data Stream URL does not return 200 code';
+      }
+    }
+
+    if (!error) {
+      if (!dataNFTStreamPreviewUrl.startsWith('https://')) {
+        error = 'Data Preview URL must start with \'https://\'';
+      } else if (dataNFTStreamPreviewUrl.includes(' ')) {
+        error = 'Data Preview URL cannot contain spaces';
+      } else if (dataNFTStreamPreviewUrl.length > 1000) {
+        error = 'Length of Data Preview URL cannot exceed 1000';
+      } else {
+        const res = await checkUrlReturns200(dataNFTStreamPreviewUrl);
+        if (!res) {
+          error = 'Data Preview URL does not return 200 code';
+        }
+      }
+    }
+
+    if (!error) {
+      if (dataNFTTokenName.length < 3 || dataNFTTokenName.length > 20) {
+        error = 'Length of Token Name must be between 3 and 20 characters';
+      } else if (!dataNFTTokenName.match(/^[0-9a-zA-Z]+$/)) {
+        error = 'Token Name can only contain alphanumeric characters';
+      }
+    }
+
+    if (!error) {
+      if (datasetTitle.length < 3 || datasetTitle.length > 50) {
+        error = 'Length of Dataset Title must be between 3 and 50 characters';
+      } else if (!datasetTitle.match(/^[0-9a-zA-Z]+$/)) {
+        error = 'Dataset Title can only contain alphanumeric characters';
+      }
+    }
+
+    if (!error) {
+      if (datasetDescription.length < 3 || datasetDescription.length > 250) {
+        error = 'Length of Dataset Description must be between 3 and 250 characters';
+      }
+    }
+
+    if (!error) {
+      if (!readTermsChecked) {
+        error = 'You must agree Terms of Use';
+      }
+    }
+
+    if (error) {
+      toast({
+        title: error,
+        status: 'error',
+        isClosable: true,
+      });
       return false;
-    } 
-    // else if (!dataNFTDesc) {
+    }
+
+    // if (!dataNFTTokenName || dataNFTTokenName.trim() === '') {
+    //   alert('You need to provide a NFT token name!');
+    //   return false;
+    // }
+    // else if (!datasetDescription) {
     //   alert('You need to provide a NFT Description!');
     //   return false;
     // }
@@ -371,13 +539,15 @@ export default function ({ onRfMount, itheumAccount }) {
                 <InputLabelWithPopover tkey='data-stream-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Stream URL *</Text>
                 </InputLabelWithPopover>
-
                 <Input
                   mt='1 !important'
                   placeholder="https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv"
                   value={dataNFTStreamUrl}
-                  onChange={(event) => setDataNFTStreamUrl(event.currentTarget.value)}
+                  onChange={(event) => onChangeDataNFTStreamUrl(event.currentTarget.value)}
                 />
+                {dataNFTStreamUrlError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamUrlError}</Text>
+                )}
 
                 <InputLabelWithPopover tkey='data-preview-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Preview URL *</Text>
@@ -386,8 +556,11 @@ export default function ({ onRfMount, itheumAccount }) {
                   mt='1 !important'
                   placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1"
                   value={dataNFTStreamPreviewUrl}
-                  onChange={(event) => setDataNFTStreamPreviewUrl(event.currentTarget.value)}
+                  onChange={(event) => onChangeDataNFTStreamPreviewUrl(event.currentTarget.value)}
                 />
+                {dataNFTStreamPreviewUrlError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamPreviewUrlError}</Text>
+                )}
 
                 <InputLabelWithPopover tkey='data-marshal-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Marshal Url *</Text>
@@ -408,9 +581,12 @@ export default function ({ onRfMount, itheumAccount }) {
                   mt='1 !important'
                   placeholder="NFT Token Name"
                   value={dataNFTTokenName}
-                  onChange={(event) => setDataNFTTokenName(event.currentTarget.value)}
+                  onChange={(event) => onChangeDataNFTTokenName(event.currentTarget.value)}
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 3 and 20 alphanumeric characters only</Text>
+                {dataNFTTokenNameError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTTokenNameError}</Text>
+                )}
 
                 <InputLabelWithPopover tkey='dataset-title'>
                   <Text fontWeight="bold" fontSize='md'>Dataset Title *</Text>
@@ -418,8 +594,13 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Input
                   mt='1 !important'
                   placeholder="Dataset Title"
+                  value={datasetTitle}
+                  onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 50 alphanumeric characters only</Text>
+                {datasetTitleError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{datasetTitleError}</Text>
+                )}
 
                 <InputLabelWithPopover tkey='dataset-description'>
                   <Text fontWeight="bold" fontSize='md'>Dataset Description *</Text>
@@ -427,10 +608,13 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Textarea
                   mt='1 !important'
                   placeholder="Enter a description here"
-                  value={dataNFTDesc}
-                  onChange={(event) => setDataNFTDesc(event.currentTarget.value)}
+                  value={datasetDescription}
+                  onChange={(event) => onChangeDatasetDescription(event.currentTarget.value)}
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.</Text>
+                {datasetDescriptionError && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>{datasetDescriptionError}</Text>
+                )}
 
                 {/* <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
                 <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={1000} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
@@ -488,7 +672,12 @@ export default function ({ onRfMount, itheumAccount }) {
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>Terms and Fees</Text>
                 <Text fontSize='md' mt='4 !important'>Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online. Given it's an NFT, you also have limitations like not being able to update the title, description, royalty etc. But there are other condisiton too. Take some time to read these “terms of use” before you proceed. It's very important that you do.</Text>
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read Terms of Use</Button></Flex>
-                <Checkbox size='md' mt='3 !important'>I have read all terms and agree to them</Checkbox>
+                <Checkbox
+                  size='md'
+                  mt='3 !important'
+                  isChecked={readTermsChecked}
+                  onChange={e => setReadTermsChecked(e.target.checked)}
+                >I have read all terms and agree to them</Checkbox>
 
                 <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing curation discovery by the Itheum DAO.</Text>
                 <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently 25 ITHEUM tokens</Tag></Flex>
