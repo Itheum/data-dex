@@ -18,6 +18,8 @@ import { DataNftMintContract } from 'Elrond/dataNftMint';
 import { useTrackTransactionStatus } from '@elrondnetwork/dapp-core/hooks';
 import { ResultsParser } from '@elrondnetwork/erdjs';
 import axios from 'axios';
+import { NFTStorage, File } from 'nft.storage'
+import mime from 'mime'
 
 import {
   uxConfig,
@@ -93,7 +95,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [sellerDataPreview, setSellerDataPreview] = useState('');
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
-  const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0 });
+  const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0, s4: 0 });
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
@@ -286,7 +288,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   const mintTxSuccess = async(foo) => {
     console.log('mintTxSuccess', foo);
-    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
+    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
 
     await sleep(3);
     closeProgressModal();
@@ -402,18 +404,42 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
   }
 
+  async function createFileFromUrl(url){
+    const res = await fetch(url);
+    const data = await res.blob();
+    const type = mime.getType(url)
+    return new File([data], 'test', { type });
+  }
+
   const buildUniqueImage = async(dataNFTHash) => {
     await sleep(3);
     const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
 
-    // @TODO we should now take newNFTImg and store the image in IPFS and get the CID for storing on the NFT
-
-    setDataNFTImg(newNFTImg);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
+
+    // @TODO we should now take newNFTImg and store the image in IPFS and get the CID for storing on the NFT
+    const image = await createFileFromUrl(newNFTImg);
+    const nftstorage = new NFTStorage({ token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY })
+    const res = await nftstorage.store({
+      image,
+      name: datasetTitle,
+      description: datasetDescription,
+    });
+    console.log('res', res);
+
+    if (!res.ipnft) {
+      setErrDataNFTStreamGeneric(new Error('Uploading the image on IPFS has failed'));
+      return;
+    }
+    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res.ipnft}`;
+    console.log('imageOnIpfsUrl', imageOnIpfsUrl);
+    
+    setDataNFTImg(newNFTImg);
+    setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
     
-    handleOnChainMint(newNFTImg);
+    handleOnChainMint(imageOnIpfsUrl);
   };
 
   const handleOnChainMint = async(newNFTImg) => {
@@ -849,6 +875,11 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
                     <HStack>
                       {!saveProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                      <Text>Saving NFT Metadata to IPFS</Text>
+                    </HStack>
+
+                    <HStack>
+                      {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                       <Text>Minting your new data NFT on blockchain</Text>
                     </HStack>
 
