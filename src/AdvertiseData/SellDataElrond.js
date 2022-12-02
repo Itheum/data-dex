@@ -431,9 +431,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setErrDataNFTStreamGeneric(new Error('Uploading the image on IPFS has failed'));
       return;
     }
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res.ipnft}`;
+    const imageOnIpfsUrl = `https://nftstorage.link/ipfs/${res.ipnft}`;
     console.log('imageOnIpfsUrl', imageOnIpfsUrl);
-    
+
     setDataNFTImg(newNFTImg);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
 
