@@ -29,11 +29,22 @@ export class DataNftMintContract {
   }
 
   async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount, sender, itheumToken, antiSpamTax }) {
-    const data = TransactionPayload.contractCall('')
+    const data = antiSpamTax > 0 ? TransactionPayload.contractCall()
       .setFunction(new ContractFunction('ESDTTransfer'))
       .addArg(new StringValue(itheumToken))
-      .addArg(new BigUIntValue(convertEsdtToWei(25))) // needs to be replaced by antiSpamTax
+      .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
       .addArg(new StringValue('mint'))
+      .addArg(new StringValue(name))
+      .addArg(new StringValue(media))
+      .addArg(new StringValue(data_marchal))
+      .addArg(new StringValue(data_stream))
+      .addArg(new StringValue(data_preview))
+      .addArg(new BigUIntValue(royalties))
+      .addArg(new BigUIntValue(amount))
+      .build()
+      // no fee
+      : TransactionPayload.contractCall()
+      .setFunction(new ContractFunction('mint'))
       .addArg(new StringValue(name))
       .addArg(new StringValue(media))
       .addArg(new StringValue(data_marchal))
