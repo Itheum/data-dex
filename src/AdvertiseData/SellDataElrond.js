@@ -428,6 +428,10 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       data_preview: dataNFTStreamPreviewUrl, 
       royalties: Math.ceil(dataNFTRoyalty*100),
       amount: dataNFTCopies,
+      
+      title: datasetTitle,
+      description: datasetDescription,
+
       sender: elrondAddress,
 
       itheumToken: _chainMeta.contracts.itheumToken,

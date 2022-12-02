@@ -28,7 +28,20 @@ export class DataNftMintContract {
     });
   }
 
-  async sendMintTransaction({ name, media, data_marchal, data_stream, data_preview, royalties, amount, sender, itheumToken, antiSpamTax }) {
+  async sendMintTransaction({
+    name,
+    media,
+    data_marchal,
+    data_stream,
+    data_preview,
+    royalties,
+    amount,
+    title,
+    description,
+    sender,
+    itheumToken,
+    antiSpamTax,
+  }) {
     const data = antiSpamTax > 0 ? TransactionPayload.contractCall()
       .setFunction(new ContractFunction('ESDTTransfer'))
       .addArg(new StringValue(itheumToken))
@@ -41,6 +54,8 @@ export class DataNftMintContract {
       .addArg(new StringValue(data_preview))
       .addArg(new BigUIntValue(royalties))
       .addArg(new BigUIntValue(amount))
+      .addArg(new StringValue(title))
+      .addArg(new StringValue(description))
       .build()
       // no fee
       : TransactionPayload.contractCall()
@@ -52,6 +67,8 @@ export class DataNftMintContract {
       .addArg(new StringValue(data_preview))
       .addArg(new BigUIntValue(royalties))
       .addArg(new BigUIntValue(amount))
+      .addArg(new StringValue(title))
+      .addArg(new StringValue(description))
       .build();
 
     const mintTransaction = new Transaction({
