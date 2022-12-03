@@ -406,14 +406,20 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   async function createFileFromUrl(url){
     const res = await fetch(url);
+    console.log('res', res);
     const data = await res.blob();
-    const type = mime.getType(url)
-    return new File([data], 'test', { type });
+    const type = mime.getType(data)
+    console.log('type', type);
+    const _file = new File([data], 'test', { type: 'image/png' });
+    console.log('file', _file);
+
+    return _file;
   }
 
   const buildUniqueImage = async(dataNFTHash) => {
     await sleep(3);
     const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
+    console.log('newNFTImg', newNFTImg);
 
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
