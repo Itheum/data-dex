@@ -46,7 +46,7 @@ export default function() {
             <Image src={imgProgGaPa} />
 
             <Box p="3">
-              <Box d="flex" alignItems="baseline">
+              <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
                   Gamer Passport
                 </Box>
@@ -68,7 +68,7 @@ export default function() {
             <Image src={imgProgRhc} />
 
             <Box p="3">
-              <Box d="flex" alignItems="baseline">
+              <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
                   Red Heart Challenge
                 </Box>
@@ -90,9 +90,9 @@ export default function() {
             <Image src={imgProgWfh} />
 
             <Box p="3">
-              <Box d="flex" alignItems="baseline">
+              <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-                  Wearables Fitness and Activity
+                  Strava Fitness
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   {' '}

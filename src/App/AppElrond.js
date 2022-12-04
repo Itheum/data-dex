@@ -36,8 +36,11 @@ import logoSmlD from 'img/logo-sml-d.png';
 import logoSmlL from 'img/logo-sml-l.png';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 
-import { logout, useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
+import { logout } from '@elrondnetwork/dapp-core/utils';
+import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
+import { useGetAccountInfo, useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { checkBalance } from 'Elrond/api';
+import { formatNumberRoundFloor } from 'libs/util';
 
 const elrondLogout = logout;
 const _chainMetaLocal = {};
@@ -217,7 +220,7 @@ function App({ appConfig }) {
   return (
     <>
       { _user.isElrondAuthenticated && (
-        <Container maxW="container.xxl" h="100vh" d="flex" justifyContent="center" alignItems="center">
+        <Container maxW="container.xxl" h="100vh" display="flex" justifyContent="center" alignItems="center">
           <Flex h="100vh" w="100vw" direction={{ base: 'column', md: 'column' }}>
             <HStack h="10vh" p="5">
               <Image boxSize="50px" height="auto" src={colorMode === 'light' ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
@@ -232,7 +235,7 @@ function App({ appConfig }) {
               <HStack>
                 <Box as="text" fontSize={['sm', 'md']} minWidth="5.5rem" align="center" p="11.3px" color="white" fontWeight="bold" borderRadius="md" bgGradient="linear(to-l, #7928CA, #FF0080)">
                   {(tokenBal === -1) ? <Spinner size="xs" /> : 
-                      (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {tokenBal}</>
+                      (tokenBal === -2) ? <WarningTwoIcon /> : <>{CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {formatNumberRoundFloor(tokenBal)}</>
                   }
                 </Box>
 
@@ -246,7 +249,7 @@ function App({ appConfig }) {
               <Menu>
                 <MenuButton as={Button} colorScheme='teal'>
                   {screenBreakPoint === 'md' && <ShortAddress address={elrondAddress} fontSize="md" />}
-                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} d={['block', 'none']} />
+                  <IconButton aria-label='Menu' icon={<HamburgerIcon />} display={['block', 'none']} />
                 </MenuButton>
                 <MenuList>
                   <MenuGroup title='My Address Quick Copy'>

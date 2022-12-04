@@ -1,6 +1,7 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
 import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@elrondnetwork/erdjs/out';
-import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
+import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
+import { sendTransactions } from '@elrondnetwork/dapp-core/services';
 import jsonData from './ABIs/devnetfaucet.abi.json';
 import { contractsForChain } from 'libs/util';
 
@@ -35,13 +36,14 @@ export class FaucetContract {
     return firstValue.valueOf().toNumber() * 1000;
   }
 
-  async sendActivateFaucetTransaction() {
+  async sendActivateFaucetTransaction(address) {
     const faucetTransaction = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
         .setFunction(new ContractFunction('activateFaucet'))
         .build(),
       receiver: new Address(this.claimsContractAddress),
+      sender: new Address(address),
       gasLimit: 20000000,
       chainID: 'D',
     });
@@ -51,9 +53,9 @@ export class FaucetContract {
     const { sessionId, error } = await sendTransactions({
       transactions: faucetTransaction,
       transactionsDisplayInfo: {
-        processingMessage: 'Getting ITHEUM through faucet',
-        errorMessage: 'Error occured during ITHEUM claiming',
-        successMessage: 'ITHEUM claimed successfully',
+        processingMessage: 'Getting faucet tokens',
+        errorMessage: 'Faucet error',
+        successMessage: 'Faucet tokens sent',
       },
       redirectAfterSign: false,
     });

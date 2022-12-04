@@ -1,6 +1,7 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
 import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@elrondnetwork/erdjs/out';
-import { refreshAccount, sendTransactions } from '@elrondnetwork/dapp-core';
+import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
+import { sendTransactions } from '@elrondnetwork/dapp-core/services';
 import jsonData from './ABIs/claims.abi.json';
 import { contractsForChain } from 'libs/util';
 
@@ -60,7 +61,7 @@ export class ClaimsContract {
     }
   }
 
-  async sendClaimRewardsTransaction(rewardType) {
+  async sendClaimRewardsTransaction(sender, rewardType) {
     const claimTransaction = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -68,6 +69,7 @@ export class ClaimsContract {
         .addArg(new U64Value(rewardType))
         .build(),
       receiver: new Address(this.claimsContractAddress),
+      sender: new Address(sender),
       gasLimit: 6000000,
       chainID: this.chainID
     });
@@ -78,8 +80,8 @@ export class ClaimsContract {
       transactions: claimTransaction,
       transactionsDisplayInfo: {
         processingMessage: 'Claiming ITHEUM',
-        errorMessage: 'Error occured during ITHEUM claiming',
-        successMessage: 'ITHEUM claimed successfully',
+        errorMessage: 'Claiming error',
+        successMessage: 'Claim tokens sent',
       },
       redirectAfterSign: false,
     });

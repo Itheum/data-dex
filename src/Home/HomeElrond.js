@@ -15,7 +15,10 @@ import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import AppMarketplace from 'Home/AppMarketplace';
 import { FaucetContract } from 'Elrond/faucet';
 import { ClaimsContract } from 'Elrond/claims';
-import { useGetAccountInfo, useGetPendingTransactions, useGetLoginInfo } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
+import { useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { formatNumberRoundFloor } from 'libs/util';
 
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
@@ -72,7 +75,7 @@ export default function({ onRfMount }) {
 
   const handleOnChainFaucet = async () => {
     if (elrondAddress && elrondFaucetContract) {
-      elrondFaucetContract.sendActivateFaucetTransaction();
+      elrondFaucetContract.sendActivateFaucetTransaction(elrondAddress);
     }
   };
   // E: Faucet
@@ -240,7 +243,7 @@ export default function({ onRfMount }) {
                   <Text>Rewards</Text>
                   <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === '-1' || claimsBalances.claimBalanceValues[0] === '-2' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                     {(claimsBalances.claimBalanceValues[0] !== '-1' && claimsBalances.claimBalanceValues[0] !== '-2') ? 
-                        claimsBalances.claimBalanceValues[0] : claimsBalances.claimBalanceValues[0] !== '-2' ? 
+                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[0]) : claimsBalances.claimBalanceValues[0] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
                     }
                   </Button>
@@ -252,7 +255,7 @@ export default function({ onRfMount }) {
                   <Text>Airdrops</Text>
                   <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === '-1' || claimsBalances.claimBalanceValues[1] === '-2' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                     {(claimsBalances.claimBalanceValues[1] !== '-1' && claimsBalances.claimBalanceValues[1] !== '-2') ? 
-                        claimsBalances.claimBalanceValues[1] : claimsBalances.claimBalanceValues[1] !== '-2' ? 
+                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[1]) : claimsBalances.claimBalanceValues[1] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
                     }
                   </Button>
@@ -266,7 +269,7 @@ export default function({ onRfMount }) {
                       <Text>Allocations</Text>
                       <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === '-1' || claimsBalances.claimBalanceValues[2] === '-2' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                         {(claimsBalances.claimBalanceValues[2] !== '-1' && claimsBalances.claimBalanceValues[2] !== '-2') ? 
-                            claimsBalances.claimBalanceValues[2] : claimsBalances.claimBalanceValues[2] !== '-2' ? 
+                            formatNumberRoundFloor(claimsBalances.claimBalanceValues[2]) : claimsBalances.claimBalanceValues[2] !== '-2' ? 
                               <Spinner size="xs" /> : <WarningTwoIcon />
                         }
                       </Button>

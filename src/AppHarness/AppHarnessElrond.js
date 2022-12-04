@@ -1,4 +1,4 @@
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core';
+import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import AppElrond from 'App/AppElrond';
 
 function AppHarnessElrond({ launchEnvironment }) {

@@ -161,20 +161,28 @@ export default function({ onRfMount, itheumAccount }) {
     console.log('MOUNT Sell');
   }, []);
 
-  useEffect(async () => {
-    if (dataFileSave && !loadingFileSave) {
-      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (dataFileSave && !loadingFileSave) {
+        setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
+  
+        await doCfHashData(); // get the hash of the file
+      }
+    };
 
-      await doCfHashData(); // get the hash of the file
-    }
+    asyncFunc();
   }, [dataFileSave, errFileSave, loadingFileSave]);
 
-  useEffect(async () => {
-    if (NFTMetaDataFile && !loadingNFTMetaDataFile) {
-      setSaveProgressNFT(prevSaveProgress => ({ ...prevSaveProgress, n1: 1 }));
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (NFTMetaDataFile && !loadingNFTMetaDataFile) {
+        setSaveProgressNFT(prevSaveProgress => ({ ...prevSaveProgress, n1: 1 }));
+  
+        await web3_dnftCreateNFT(NFTMetaDataFile.url());
+      }
+    };
 
-      await web3_dnftCreateNFT(NFTMetaDataFile.url());
-    }
+    asyncFunc();
   }, [NFTMetaDataFile, loadingNFTMetaDataFile]);
 
   useEffect(() => {
@@ -197,110 +205,124 @@ export default function({ onRfMount, itheumAccount }) {
     }
   }, [newNFTId]);
 
-  useEffect(async () => {
-    // if 1st time, then these vars come as [] or null
-    if (dataCfHashData && !Array.isArray(dataCfHashData)) {
-      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
+  useEffect(() => {
+    const asyncFunc = async () => {
+      // if 1st time, then these vars come as [] or null
+      if (dataCfHashData && !Array.isArray(dataCfHashData)) {
+        setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
-      const { dataHash } = dataCfHashData;
+        const { dataHash } = dataCfHashData;
 
-      if (dataHash) {
-        if (!drawerInMintNFT) {
-          // create the datapack object
-          const newDataPack = { ...dataTemplates.dataPack, 
-            dataPreview: sellerDataPreview,
-            sellerEthAddress: user.get('ethAddress'),
-            dataHash,
-            dataFile: dataFileSave,
-            termsOfUseId,
-            txNetworkId: _chainMeta.networkId };
+        if (dataHash) {
+          if (!drawerInMintNFT) {
+            // create the datapack object
+            const newDataPack = { ...dataTemplates.dataPack, 
+              dataPreview: sellerDataPreview,
+              sellerEthAddress: user.get('ethAddress'),
+              dataHash,
+              dataFile: dataFileSave,
+              termsOfUseId,
+              txNetworkId: _chainMeta.networkId };
 
-          // if core programID is available then link it
-          if (currSellObject) {
-            newDataPack.fromProgramId = currSellObject.program;
-          }
+            // if core programID is available then link it
+            if (currSellObject) {
+              newDataPack.fromProgramId = currSellObject.program;
+            }
 
-          const newPack = await saveDataPack(newDataPack);
+            const newPack = await saveDataPack(newDataPack);
 
-          setSavedDataPackMoralis(newPack);
-        } else {
-          // create the dataNFT object
-          const newDataNFT = { ...dataTemplates.dataNFT, 
-            dataPreview: sellerDataNFTDesc,
-            nftName: sellerDataPreview,
-            feeInMyda: dataNFTFeeInMyda,
-            sellerEthAddress: user.get('ethAddress'),
-            dataHash,
-            dataFile: dataFileSave,
-            termsOfUseId,
-            txNetworkId: _chainMeta.networkId,
-            txNFTContract: _chainMeta.contracts.dnft };
+            setSavedDataPackMoralis(newPack);
+          } else {
+            // create the dataNFT object
+            const newDataNFT = { ...dataTemplates.dataNFT, 
+              dataPreview: sellerDataNFTDesc,
+              nftName: sellerDataPreview,
+              feeInMyda: dataNFTFeeInMyda,
+              sellerEthAddress: user.get('ethAddress'),
+              dataHash,
+              dataFile: dataFileSave,
+              termsOfUseId,
+              txNetworkId: _chainMeta.networkId,
+              txNFTContract: _chainMeta.contracts.dnft };
 
-          // if core programID is available then link it
-          if (currSellObject) {
-            newDataNFT.fromProgramId = currSellObject.program;
-          }
+            // if core programID is available then link it
+            if (currSellObject) {
+              newDataNFT.fromProgramId = currSellObject.program;
+            }
 
-          const newMoralisNFT = await saveDataNFT(newDataNFT);
+            const newMoralisNFT = await saveDataNFT(newDataNFT);
 
-          setSavedDataNFTMoralis(newMoralisNFT);
-        }        
+            setSavedDataNFTMoralis(newMoralisNFT);
+          }        
+        }
       }
-    }
 
-    if (errCfHashData) { // there was an error
-      console.error('errCfHashData', errCfHashData);
-    }
+      if (errCfHashData) { // there was an error
+        console.error('errCfHashData', errCfHashData);
+      }
+    };
 
+    asyncFunc();
   }, [dataCfHashData, errCfHashData]);
 
-  useEffect(async () => {
-    if (savedDataPackMoralis && savedDataPackMoralis.id && savedDataPackMoralis.get('dataHash')) {
-      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
-
-      web3_ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
-    }
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (savedDataPackMoralis && savedDataPackMoralis.id && savedDataPackMoralis.get('dataHash')) {
+        setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
+  
+        web3_ddexAdvertiseForSale(savedDataPackMoralis.id, savedDataPackMoralis.get('dataHash'));
+      }
+    };
+    
+    asyncFunc();
   }, [savedDataPackMoralis]);
 
   // data NFT object saved to moralis
-  useEffect(async () => {
-    if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {      
-      // gen art demo
-      let NFTImgUrl = 'https://itheum.com/resources/gen-art.jpg';
-
-      // ... or robot
-      if (NFTArtStyle === 1) {
-        NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {      
+        // gen art demo
+        let NFTImgUrl = 'https://itheum.com/resources/gen-art.jpg';
+  
+        // ... or robot
+        if (NFTArtStyle === 1) {
+          NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+        }
+  
+        setDataNFTImg(NFTImgUrl);
+  
+        const newNFTMetaDataFile = { ...dataTemplates.dataNFTMetaDataFile, 
+          name: sellerDataPreview,
+          description: sellerDataNFTDesc,
+          image: NFTImgUrl,
+          external_url: `https://datadex.itheum.com/datanfts/marketplace/${savedDataNFTMoralis.id}` };
+  
+        newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
+  
+        await saveNFTMetaDataFile('metadata.json', { base64 : btoa(JSON.stringify(newNFTMetaDataFile)) });
       }
-
-      setDataNFTImg(NFTImgUrl);
-
-      const newNFTMetaDataFile = { ...dataTemplates.dataNFTMetaDataFile, 
-        name: sellerDataPreview,
-        description: sellerDataNFTDesc,
-        image: NFTImgUrl,
-        external_url: `https://datadex.itheum.com/datanfts/marketplace/${savedDataNFTMoralis.id}` };
-
-      newNFTMetaDataFile.properties.data_dex_nft_id = savedDataNFTMoralis.id;
-
-      await saveNFTMetaDataFile('metadata.json', { base64 : btoa(JSON.stringify(newNFTMetaDataFile)) });
-    }
+    };
+    
+    asyncFunc();
   }, [savedDataNFTMoralis]);
 
-  useEffect(async () => {
-    if (txError) {
-      console.error(txError);
-    } else if (txHash && txConfirmation === uxConfig.txConfirmationsNeededLrg) {
-      savedDataPackMoralis.set('txHash', txHash);      
-
-      await savedDataPackMoralis.save();
-      
-      setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
-
-      sleep(3);
-      closeProgressModal();
-    }
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (txError) {
+        console.error(txError);
+      } else if (txHash && txConfirmation === uxConfig.txConfirmationsNeededLrg) {
+        savedDataPackMoralis.set('txHash', txHash);      
+  
+        await savedDataPackMoralis.save();
+        
+        setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
+  
+        sleep(3);
+        closeProgressModal();
+      }
+    };
     
+    asyncFunc();
   }, [txConfirmation, txHash, txError]);
 
   function validateBaseInput() {
@@ -545,7 +567,7 @@ export default function({ onRfMount, itheumAccount }) {
               <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
               <Box p="6">
-                <Box d="flex" alignItems="baseline">
+                <Box display="flex" alignItems="baseline">
                   <Badge borderRadius="full" px="2" colorScheme="teal"> New</Badge>
                   <Box
                     mt="1"
@@ -569,7 +591,7 @@ export default function({ onRfMount, itheumAccount }) {
             <Image src="https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-any.png" alt="" />
 
             <Box p="6">
-              <Box d="flex" alignItems="baseline">
+              <Box display="flex" alignItems="baseline">
                 <Box
                   mt="1"
                   fontWeight="semibold"
@@ -587,7 +609,7 @@ export default function({ onRfMount, itheumAccount }) {
             <Image src="https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-any-fb.png" alt="" />
 
             <Box p="6">
-              <Box d="flex" alignItems="baseline">
+              <Box display="flex" alignItems="baseline">
                 <Box
                   mt="1"
                   fontWeight="semibold"
