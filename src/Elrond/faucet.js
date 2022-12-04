@@ -53,9 +53,9 @@ export class FaucetContract {
     const { sessionId, error } = await sendTransactions({
       transactions: faucetTransaction,
       transactionsDisplayInfo: {
-        processingMessage: 'Getting ITHEUM through faucet',
-        errorMessage: 'Error occured during ITHEUM claiming',
-        successMessage: 'ITHEUM claimed successfully',
+        processingMessage: 'Getting faucet tokens',
+        errorMessage: 'Faucet error',
+        successMessage: 'Faucet tokens sent',
       },
       redirectAfterSign: false,
     });
