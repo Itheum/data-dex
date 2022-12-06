@@ -15,7 +15,7 @@ import {
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { DataNftMintContract } from 'Elrond/dataNftMint';
-import { useTrackTransactionStatus } from '@elrondnetwork/dapp-core/hooks';
+import { useTrackTransactionStatus, useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks';
 import { ResultsParser } from '@elrondnetwork/erdjs';
 import axios from 'axios';
 import { NFTStorage, File } from 'nft.storage'
@@ -29,7 +29,7 @@ import {
 } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { set } from 'lodash';
-
+import { checkBalance } from 'Elrond/api';
 
 const InputLabelWithPopover = ({ children, tkey }) => {
   let title = '', text = '';
@@ -90,7 +90,7 @@ const checkUrlReturns200 = async (url) => {
 
 export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const { address: elrondAddress } = useGetAccountInfo();
-
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
   const [sellerDataPreview, setSellerDataPreview] = useState('');
@@ -127,6 +127,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [dataNFTStreamUrlValid, setDataNFTStreamUrlValid] = useState(false);
   const [dataNFTStreamPreviewUrlValid, setDataNFTStreamPreviewUrlValid] = useState(false);
   const [dataNFTMarshalServiceValid, setDataNFTMarshalServiceValid] = useState(false);
+
+  const [itheumBalance, setItheumBalance] = useState(0);
+  const [enoughForAntiSpamTax, setEnoughForAntiSpamTax] = useState(false);
 
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
 
@@ -173,6 +176,18 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setAntiSpamTax(convertWeiToEsdt(value).toNumber());
     })();
   }, []);
+
+  // query Itheum balance of User
+  useState(() => {
+    if (elrondAddress && _chainMeta) {
+      (async () => {
+        const data = await checkBalance(_chainMeta.contracts.itheumToken, elrondAddress, _chainMeta.networkId);
+        if (typeof data.balance !== 'undefined') {
+          setItheumBalance(convertWeiToEsdt(data.balance).toNumber());
+        }
+      })();
+    }
+  }, [elrondAddress, hasPendingTransactions]);
 
   // set initial states for validation
   useEffect(() => {
@@ -280,8 +295,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     let error = '';
     if (value < 1) {
       error = 'Number Of Compies cannot be zero';
-    } else if (maxSupply < 0) {
-      error = 'Max Supply is not retrieved from the Smart Contract yet';
     } else if (value > maxSupply) {
       error = `Number Of Compies cannot exceed ${maxSupply}`;
     }
@@ -295,9 +308,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
   const onChangeDataNFTRoyalty = (value) => {
     let error = '';
-    if (minRoyalties < 0 || maxRoyalties < 0) {
-      error = 'Min Royalties and Max Royalties are not retrieved from the Smart Contract yet';
-    } else if (value < 0) {
+    if (value < 0) {
       error = 'Royalties cannot be negative';
     } else if (value < minRoyalties) {
       error = `Royalties cannot be lower than ${minRoyalties}`;
@@ -310,6 +321,13 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setDataNFTRoyalty(value);
     }
   }
+
+  useEffect(() => {
+    onChangeDataNFTRoyalty(dataNFTRoyalty);
+  }, [minRoyalties, maxRoyalties]);
+  useEffect(() => {
+    onChangeDataNFTCopies(dataNFTCopies);
+  }, [maxSupply]);
 
   useEffect(() => {
     setMintDataNFTDisabled(
@@ -329,6 +347,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       || maxRoyalties < 0
       || maxSupply < 0
       || antiSpamTax < 0
+
+      || itheumBalance < antiSpamTax
     );
   }, [
     dataNFTStreamUrlError,
@@ -347,6 +367,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     maxRoyalties,
     maxSupply,
     antiSpamTax,
+
+    itheumBalance,
   ]);
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -818,6 +840,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
                 <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing curation discovery by the Itheum DAO.</Text>
                 <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently {antiSpamTax < 0 ? '?' : antiSpamTax} ITHEUM tokens</Tag></Flex>
+                {itheumBalance < antiSpamTax && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>You don't have enough ITHEUM for Anti-Spam Tax</Text>
+                )}
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
 
                 <Flex>
