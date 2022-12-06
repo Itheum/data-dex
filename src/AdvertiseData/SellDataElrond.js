@@ -28,6 +28,7 @@ import {
   convertWeiToEsdt,
 } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
+import { set } from 'lodash';
 
 
 const InputLabelWithPopover = ({ children, tkey }) => {
@@ -105,25 +106,29 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [isStreamTrade, setIsStreamTrade] = useState(0);
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [newNFTId, setNewNFTId] = useState(null); // newly created token ID from blockchain
   const [dataNFTImg, setDataNFTImg] = useState(null);
-  const [dataNFTTokenName, setDataNFTTokenName] = useState('SampleTokenName');
+  const [dataNFTTokenName, setDataNFTTokenName] = useState('');
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
-  const [dataNFTFeeInTokens, setDataNFTFeeInTokens] = useState(1);
-  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState('https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv');
-  const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
-  const [dataNFTMarshalService, setDataNFTMarshalService] = useState('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
+  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState('');
+  const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState('');
+  const [dataNFTMarshalService, setDataNFTMarshalService] = useState();
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
 
-  const [datasetTitle, setDatasetTitle] = useState('Sample Title');
-  const [datasetDescription, setDatasetDescription] = useState('Sample Description');
+  const [datasetTitle, setDatasetTitle] = useState('');
+  const [datasetDescription, setDatasetDescription] = useState('');
   const [readTermsChecked, setReadTermsChecked] = useState(false);
 
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
   const [maxSupply, setMaxSupply] = useState(-1);
   const [antiSpamTax, setAntiSpamTax] = useState(-1);
+
+  const [dataNFTStreamUrlValid, setDataNFTStreamUrlValid] = useState(false);
+  const [dataNFTStreamPreviewUrlValid, setDataNFTStreamPreviewUrlValid] = useState(false);
+  const [dataNFTMarshalServiceValid, setDataNFTMarshalServiceValid] = useState(false);
+
+  const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
@@ -169,6 +174,26 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     })();
   }, []);
 
+  // set initial states for validation
+  useEffect(() => {
+    onChangeDataNFTStreamUrl('https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv');
+    onChangeDataNFTStreamPreviewUrl('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
+    onChangeDataNFTMarshalService('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
+    // onChangeDataNFTTokenName('SampleTokenName');
+    // onChangeDatasetTitle('Sample Title');
+    // onChangeDatasetDescription('Sample Description');
+    onChangeDataNFTTokenName('');
+    onChangeDatasetTitle('');
+    onChangeDatasetDescription('');
+    onChangeDataNFTCopies(1);
+    onChangeDataNFTRoyalty(0);
+
+    setMinRoyalties(-2);
+    setMaxRoyalties(-2);
+    setMaxSupply(-2);
+    setAntiSpamTax(-2);
+  }, []);
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // validation logic
 
@@ -182,7 +207,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     } else if (value.length > 1000) {
       error = 'Length of Data Stream URL cannot exceed 1000';
     } else {
-      checkUrlReturns200(value).then(res => !res && setDataNFTStreamUrlError('Data Stream URL does not return 200 code'));
+      checkUrlReturns200(value).then(res => setDataNFTStreamUrlValid(res));
     }
 
     setDataNFTStreamUrlError(error);
@@ -199,13 +224,20 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     } else if (value.length > 1000) {
       error = 'Length of Data Preview URL cannot exceed 1000';
     } else {
-      checkUrlReturns200(value).then(res => !res && setDataNFTStreamPreviewUrlError('Data Preview URL does not return 200 code'));
+      checkUrlReturns200(value).then(res => setDataNFTStreamPreviewUrlValid(res));
     }
 
     setDataNFTStreamPreviewUrlError(error);
     setDataNFTStreamPreviewUrl(value);
   }
 
+  const onChangeDataNFTMarshalService = (value) => {
+    // checkUrlReturns200(value).then(res => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
+    setDataNFTMarshalServiceValid(true);
+
+    setDataNFTMarshalService(value);
+  }
+  
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState('');
   const onChangeDataNFTTokenName = (value) => {
     let error = '';
@@ -278,6 +310,44 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setDataNFTRoyalty(value);
     }
   }
+
+  useEffect(() => {
+    setMintDataNFTDisabled(
+      dataNFTStreamUrlError
+      || dataNFTStreamPreviewUrlError
+      || dataNFTTokenNameError
+      || datasetTitleError
+      || datasetDescriptionError
+      || dataNFTCopiesError
+      || dataNFTRoyaltyError
+      || !dataNFTStreamUrlValid
+      || !dataNFTStreamPreviewUrlValid
+      || !dataNFTMarshalServiceValid
+      || !readTermsChecked
+
+      || minRoyalties < 0
+      || maxRoyalties < 0
+      || maxSupply < 0
+      || antiSpamTax < 0
+    );
+  }, [
+    dataNFTStreamUrlError,
+    dataNFTStreamPreviewUrlError,
+    dataNFTTokenNameError,
+    datasetTitleError,
+    datasetDescriptionError,
+    dataNFTCopiesError,
+    dataNFTRoyaltyError,
+    dataNFTStreamUrlValid,
+    dataNFTStreamPreviewUrlValid,
+    dataNFTMarshalServiceValid,
+    readTermsChecked,
+
+    minRoyalties,
+    maxRoyalties,
+    maxSupply,
+    antiSpamTax,
+  ]);
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const mintTxFail = (foo) => {
@@ -298,13 +368,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     closeProgressModal();
   }
 
-
   const [mintSessionId, setMintSessionId] = useState(null);
-
-  // useEffect(() => {
-  //   console.log('mintTxStatus', mintTxStatus);
-  // }, [mintTxStatus]);
-
 
   const getDataForSale = (programId, isStreamTrade=false) => {
     if (isStreamTrade) {
@@ -499,120 +563,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   }
 
   async function validateBaseInput() {
-    onChangeDataNFTStreamUrl(dataNFTStreamUrl);
-    onChangeDataNFTStreamPreviewUrl(dataNFTStreamPreviewUrl);
-    onChangeDataNFTTokenName(dataNFTTokenName);
-    onChangeDatasetTitle(datasetTitle);
-    onChangeDatasetDescription(datasetDescription);
-
-    let error = '';
-    if (!dataNFTStreamUrl.startsWith('https://')) {
-      error = 'Data Stream Url must start with \'https://\'';
-    } else if (dataNFTStreamUrl.includes(' ')) {
-      error = 'Data Stream Url cannot contain spaces';
-    } else if (dataNFTStreamUrl.length > 1000) {
-      error = 'Length of Data Stream Url cannot exceed 1000';
-    } else {
-      const res = await checkUrlReturns200(dataNFTStreamUrl);
-      if (!res) {
-        error = 'Data Stream URL does not return 200 code';
-      }
-    }
-
-    if (!error) {
-      if (!dataNFTStreamPreviewUrl.startsWith('https://')) {
-        error = 'Data Preview URL must start with \'https://\'';
-      } else if (dataNFTStreamPreviewUrl.includes(' ')) {
-        error = 'Data Preview URL cannot contain spaces';
-      } else if (dataNFTStreamPreviewUrl.length > 1000) {
-        error = 'Length of Data Preview URL cannot exceed 1000';
-      } else {
-        const res = await checkUrlReturns200(dataNFTStreamPreviewUrl);
-        if (!res) {
-          error = 'Data Preview URL does not return 200 code';
-        }
-      }
-    }
-
-    if (!error) {
-      if (dataNFTTokenName.length < 3 || dataNFTTokenName.length > 20) {
-        error = 'Length of Token Name must be between 3 and 20 characters';
-      } else if (!dataNFTTokenName.match(/^[0-9a-zA-Z]+$/)) {
-        error = 'Token Name can only contain alphanumeric characters';
-      }
-    }
-
-    if (!error) {
-      if (datasetTitle.length < 10 || datasetTitle.length > 50) {
-        error = 'Length of Dataset Title must be between 10 and 50 characters';
-      } else if (!datasetTitle.match(/^[0-9a-zA-Z\s]+$/)) {
-        error = 'Dataset Title can only contain alphanumeric characters';
-      }
-    }
-
-    if (!error) {
-      if (datasetDescription.length < 10 || datasetDescription.length > 250) {
-        error = 'Length of Dataset Description must be between 10 and 250 characters';
-      }
-    }
-
-    if (!error) {
-      if (dataNFTCopies < 1) {
-        error = 'Number Of Compies cannot be zero';
-      } else if (dataNFTCopies < 0) {
-        error = 'Max Supply is not retrieved from the Smart Contract yet';
-      } else if (dataNFTCopies > maxSupply) {
-        error = `Number Of Compies cannot exceed ${maxSupply}`;
-      }
-    }
-
-    if (!error) {
-      if (minRoyalties < 0 || maxRoyalties < 0) {
-        error = 'Min Royalties and Max Royalties are not retrieved from the Smart Contract yet';
-      } else if (dataNFTRoyalty < 0) {
-        error = 'Royalties cannot be negative';
-      } else if (dataNFTRoyalty < minRoyalties) {
-        error = `Royalties cannot be lower than ${minRoyalties}`;
-      } else if (dataNFTRoyalty > maxRoyalties) {
-        error = `Royalties cannot be higher than ${maxRoyalties}`;
-      }
-    }
-
-    if (!error) {
-      if (antiSpamTax < 0) {
-        error = 'Anti-Spam Tax is not retrieved from the Smart Contract yet';
-      } else if (antiSpamTax === 0) {
-        error = 'Anti-Spam Tax cannot be zero';
-      }
-    }
-
-    if (!error) {
-      if (!readTermsChecked) {
-        error = 'You must agree Terms of Use';
-      }
-    }
-
-    if (error) {
-      toast({
-        title: error,
-        status: 'error',
-        isClosable: true,
-      });
-      return false;
-    }
-
-    // if (!dataNFTTokenName || dataNFTTokenName.trim() === '') {
-    //   alert('You need to provide a NFT token name!');
-    //   return false;
-    // }
-    // else if (!datasetDescription) {
-    //   alert('You need to provide a NFT Description!');
-    //   return false;
-    // }
-
     if (isStreamTrade) {
       if (!dataNFTStreamUrl.includes('https://') || !dataNFTStreamPreviewUrl.includes('https://') || !dataNFTMarshalService.includes('https://')) {
-        alert('Your data stream url inputs dont seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it');
+        toast('Your data stream url inputs dont seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it');
         return false;
       } else {
         return true;
@@ -623,7 +576,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
         JSON.parse(sellerData); // valid JSON check?
         return true;
       } catch (e) {
-        alert('You need to provide some valid JSON for data!');
+        toast('You need to provide some valid JSON for data!');
         return false;
       }
     }
@@ -695,6 +648,22 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
               <Stack spacing={5} mt="5">
                 <Text fontWeight="bold">Trade a Data Stream as a Data NFT</Text>
 
+                {
+                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0)
+                  && <Alert status="error">
+                    <Stack >
+                      <AlertTitle fontSize="md" mb={2}>
+                        <AlertIcon display='inline-block' />
+                        <Text display='inline-block' lineHeight='2' style={{ verticalAlign: 'middle' }}>Uptime Errors</Text>
+                      </AlertTitle>
+                      {minRoyalties < 0 && <AlertDescription fontSize="md">Min Royalties is not loaded from Smart Contract</AlertDescription>}
+                      {maxRoyalties < 0 && <AlertDescription fontSize="md">Max Royalties is not loaded from Smart Contract</AlertDescription>}
+                      {maxSupply < 0 && <AlertDescription fontSize="md">Max Supply is not loaded from Smart Contract</AlertDescription>}
+                      {antiSpamTax < 0 && <AlertDescription fontSize="md">Anti-Spam Tax is not loaded from Smart Contract</AlertDescription>}
+                    </Stack>
+                  </Alert>
+                }
+
                 <Text fontSize='sm' color='gray.400'>* required fields</Text>
                 <Text fontSize='sm' color='gray.400' mt='0 !important'>+ click on an item's title to learn more</Text>
 
@@ -712,6 +681,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 {dataNFTStreamUrlError && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamUrlError}</Text>
                 )}
+                {!dataNFTStreamUrlValid && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream URL does not return 200 code</Text>
+                )}
 
                 <InputLabelWithPopover tkey='data-preview-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Preview URL *</Text>
@@ -725,6 +697,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 {dataNFTStreamPreviewUrlError && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamPreviewUrlError}</Text>
                 )}
+                {!dataNFTStreamPreviewUrlValid && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream Preview URL does not return 200 code</Text>
+                )}
 
                 <InputLabelWithPopover tkey='data-marshal-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Marshal Url</Text>
@@ -734,6 +709,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   value={dataNFTMarshalService}
                   disabled
                 />
+                {!dataNFTMarshalServiceValid && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Marshal Service does not return 200 code</Text>
+                )}
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>NFT Token Metadata</Text>
 
@@ -779,15 +757,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{datasetDescriptionError}</Text>
                 )}
 
-                {/* <Text fontWeight="bold">Price (in {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)})</Text>
-                <NumberInput size="md" maxW={24} step={1} defaultValue={1} min={1} max={1000} value={dataNFTFeeInTokens} onChange={(valueString) => setDataNFTFeeInTokens(parseInt(valueString))}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput> */}
-
                 <InputLabelWithPopover tkey='number-of-copies'>
                   <Text fontWeight="bold" fontSize='md'>Number of copies</Text>
                 </InputLabelWithPopover>
@@ -806,7 +775,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - suggested: less than 20</Text>
+                <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}</Text>
                 {dataNFTCopiesError && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTCopiesError}</Text>
                 )}
@@ -829,7 +798,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <Text color="gray.400" fontSize="sm" mt='0 !important'>Suggested: 0%, 10%, 20%, 30%</Text>
+                <Text color="gray.400" fontSize="sm" mt='0 !important'>Min: {minRoyalties >= 0 ? minRoyalties : '-'}%, Max: {maxRoyalties >= 0 ? maxRoyalties : '-'}%</Text>
                 {dataNFTRoyaltyError && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTRoyaltyError}</Text>
                 )}
@@ -843,13 +812,26 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   isChecked={readTermsChecked}
                   onChange={e => setReadTermsChecked(e.target.checked)}
                 >I have read all terms and agree to them</Checkbox>
+                {!readTermsChecked && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>You must agree on Terms of Use</Text>
+                )}
 
                 <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing curation discovery by the Itheum DAO.</Text>
                 <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently {antiSpamTax < 0 ? '?' : antiSpamTax} ITHEUM tokens</Tag></Flex>
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
 
                 <Flex>
-                  <ChainSupportedInput feature={MENU.SELL}><Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>Mint and Trade as NFT</Button></ChainSupportedInput>
+                  <ChainSupportedInput feature={MENU.SELL}>
+                    <Button
+                      mt="5"
+                      colorScheme="teal"
+                      isLoading={isProgressModalOpen}
+                      onClick={dataNFTSellSubmit}
+                      disabled={mintDataNFTDisabled}
+                    >
+                      Mint and Trade as NFT
+                    </Button>
+                  </ChainSupportedInput>
                 </Flex>
               </Stack>}
 
