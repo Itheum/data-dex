@@ -222,8 +222,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [datasetTitleError, setDatasetTitleError] = useState('');
   const onChangeDatasetTitle = (value) => {
     let error = '';
-    if (value.length < 3 || value.length > 50) {
-      error = 'Length of Dataset Title must be between 3 and 50 characters';
+    if (value.length < 10 || value.length > 50) {
+      error = 'Length of Dataset Title must be between 10 and 50 characters';
     } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
       error = 'Dataset Title can only contain alphanumeric characters';
     }
@@ -235,8 +235,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [datasetDescriptionError, setDatasetDescriptionError] = useState('');
   const onChangeDatasetDescription = (value) => {
     let error = '';
-    if (value.length < 3 || value.length > 250) {
-      error = 'Length of Dataset Description must be between 3 and 250 characters';
+    if (value.length < 10 || value.length > 250) {
+      error = 'Length of Dataset Description must be between 10 and 250 characters';
     }
 
     setDatasetDescriptionError(error);
@@ -255,7 +255,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTCopiesError(error);
-    setDataNFTCopies(value);
+    if (!error) {
+      setDataNFTCopies(value);
+    }
   }
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
@@ -272,7 +274,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTRoyaltyError(error);
-    setDataNFTRoyalty(value);
+    if (!error) {
+      setDataNFTRoyalty(value);
+    }
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -539,16 +543,16 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     if (!error) {
-      if (datasetTitle.length < 3 || datasetTitle.length > 50) {
-        error = 'Length of Dataset Title must be between 3 and 50 characters';
+      if (datasetTitle.length < 10 || datasetTitle.length > 50) {
+        error = 'Length of Dataset Title must be between 10 and 50 characters';
       } else if (!datasetTitle.match(/^[0-9a-zA-Z\s]+$/)) {
         error = 'Dataset Title can only contain alphanumeric characters';
       }
     }
 
     if (!error) {
-      if (datasetDescription.length < 3 || datasetDescription.length > 250) {
-        error = 'Length of Dataset Description must be between 3 and 250 characters';
+      if (datasetDescription.length < 10 || datasetDescription.length > 250) {
+        error = 'Length of Dataset Description must be between 10 and 250 characters';
       }
     }
 
@@ -723,13 +727,12 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 )}
 
                 <InputLabelWithPopover tkey='data-marshal-url'>
-                  <Text fontWeight="bold" fontSize='md'>Data Marshal Url *</Text>
+                  <Text fontWeight="bold" fontSize='md'>Data Marshal Url</Text>
                 </InputLabelWithPopover>
                 <Input
                   mt='1 !important'
-                  placeholder="https://itheumapi.com/ddex/dataMarshal"
                   value={dataNFTMarshalService}
-                  onChange={(event) => setDataNFTMarshalService(event.currentTarget.value)}
+                  disabled
                 />
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>NFT Token Metadata</Text>
