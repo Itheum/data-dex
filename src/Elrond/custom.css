@@ -9,6 +9,14 @@
   height: 64px;
 }
 
+.chakra-ui-light .auth_wrap {
+  background-color: var(--chakra-colors-gray-200);
+}
+
+.auth_button {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
 /* Ice - #131 */
 .dapp-wallet-connect-login, .dapp-extension-login, .dapp-web-wallet-login, .dapp-ledger-login {
   background: none !important;
@@ -30,6 +38,25 @@
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   border: none !important;
 }
+
+/* START LEDGER STYLING */
+.dapp-core-component__main__table {
+  color: var(--chakra-colors-chakra-body-text) !important;
+  font-weight: 700 !important;
+}
+
+thead.dapp-core-component__main__text-black-50 {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.dapp-core-component__dappModalStyles__dappModal {
+  padding-top: 0 !important;
+}
+
+.dapp-core-component__dappModalStyles__dappModalContent {
+  max-width: fit-content !important;
+}
+/* STOP LEDGER STYLING */
 
 .dapp-modal-dialog-close-button {
   background-color: var(--chakra-colors-chakra-body-bg) !important;

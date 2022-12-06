@@ -80,8 +80,8 @@ export class ClaimsContract {
       transactions: claimTransaction,
       transactionsDisplayInfo: {
         processingMessage: 'Claiming ITHEUM',
-        errorMessage: 'Error occured during ITHEUM claiming',
-        successMessage: 'ITHEUM claimed successfully',
+        errorMessage: 'Claiming error',
+        successMessage: 'Claim tokens sent',
       },
       redirectAfterSign: false,
     });
