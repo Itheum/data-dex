@@ -40,21 +40,21 @@
 }
 
 /* START LEDGER STYLING */
-.dapp-core-component__main__table{
-  color: var(--chakra-colors-chakra-body-text);
-  font-weight: 700;
+.dapp-core-component__main__table {
+  color: var(--chakra-colors-chakra-body-text) !important;
+  font-weight: 700 !important;
 }
 
-thead.dapp-core-component__main__text-black-50{
-  color: var(--chakra-colors-chakra-body-text);
+thead.dapp-core-component__main__text-black-50 {
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.dapp-core-component__dappModalStyles__dappModal{
-  padding-top: 0;
+.dapp-core-component__dappModalStyles__dappModal {
+  padding-top: 0 !important;
 }
 
-.dapp-core-component__dappModalStyles__dappModalContent{
-  max-width: fit-content;
+.dapp-core-component__dappModalStyles__dappModalContent {
+  max-width: fit-content !important;
 }
 /* STOP LEDGER STYLING */
 
