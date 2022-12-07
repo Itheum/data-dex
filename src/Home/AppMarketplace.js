@@ -13,7 +13,7 @@ import imgProgGaPa from 'img/prog-gaming.jpg';
 import imgProgRhc from 'img/prog-rhc.png';
 import imgProgWfh from 'img/prog-wfh.png';
 
-export default function() {
+export default function AppMarketplace() {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
   const [learnMoreProd, setLearnMoreProg] = useState(null);
@@ -47,7 +47,7 @@ export default function() {
 
             <Box p="3">
               <Box display="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
                   Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
@@ -69,7 +69,7 @@ export default function() {
 
             <Box p="3">
               <Box display="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
                   Red Heart Challenge
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
@@ -91,7 +91,7 @@ export default function() {
 
             <Box p="3">
               <Box display="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
                   Strava Fitness
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">

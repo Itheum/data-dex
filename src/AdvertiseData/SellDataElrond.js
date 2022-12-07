@@ -616,7 +616,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
               <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt=""/>
 
               <Box p="6">
-                <Box d="flex" alignItems="baseline">
+                <Box display="flex" alignItems="baseline">
                   <Badge borderRadius="full" px="2" colorScheme="teal"> New</Badge>
                   <Box
                     mt="1"
@@ -624,7 +624,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                     fontWeight="semibold"
                     as="h4"
                     lineHeight="tight"
-                    isTruncated>
+                    noOfLines={1}>
                     {itheumAccount._lookups.programs[item.program].programName}
                   </Box>
                 </Box>
@@ -640,13 +640,13 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt=""/>
 
           <Box p="6">
-            <Box d="flex" alignItems="baseline">
+            <Box display="flex" alignItems="baseline">
               <Box
                 mt="1"
                 fontWeight="semibold"
                 as="h4"
                 lineHeight="tight"
-                isTruncated>
+                noOfLines={1}>
                 Trade a Data Stream as a Data NFT
               </Box>
             </Box>

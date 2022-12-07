@@ -23,7 +23,7 @@ import { formatNumberRoundFloor } from 'libs/util';
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
 
-export default function({ onRfMount }) {
+export default function HomeElrond({ onRfMount }) {
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();

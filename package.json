@@ -17,7 +17,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "0.27.2",
     "dotenv": "^16.0.1",
-    "framer-motion": "^4.1.6",
+    "framer-motion": "7.6.19",
     "mime": "^3.0.0",
     "moment": "^2.29.1",
     "moralis-v1": "^1.12.0",
