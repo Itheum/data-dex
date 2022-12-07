@@ -3,7 +3,9 @@ import moment from 'moment';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, Button, HStack, Badge,
-  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
+  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
@@ -28,6 +30,15 @@ export default function MyDataNFTsElrond() {
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState([]);
   const [prices, setPrices] = useState([]);
+
+  const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
+
+  const [burnNFTModalState, setBurnNFTModalState] = useState(1);  // 1 and 2
+  useEffect(() => {
+    if (!isBurnNFTOpen) {
+      setBurnNFTModalState(1);  // set state 1 when the modal is closed
+    }
+  }, [isBurnNFTOpen]);
 
   const contract = new DataNftMarketContract('ED');
 
@@ -60,17 +71,17 @@ export default function MyDataNFTsElrond() {
             let amounts=[];
             let prices=[];
             onChainNFTs.map(nft => {
-                  const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
+                  // const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
                   const dataNFT = {};
                   dataNFT.id = nft['identifier']; // ID of NFT -> done
                   dataNFT.nftImgUrl = nft['url']; // image URL of of NFT -> done
-                  dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
-                  dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
-                  dataNFT.dataMarshal = decodedAttributes['data_marchal_url'].toString(); // data stream URL -> done
-                  dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
-                  dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-                  dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
-                  dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
+                  // dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
+                  // dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
+                  // dataNFT.dataMarshal = decodedAttributes['data_marchal_url'].toString(); // data stream URL -> done
+                  // dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
+                  // dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
+                  // dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
+                  // dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
                   dataNFT.supply = nft['supply'];
                   dataNFT.balance = nft['balance'];
                   dataNFT.royalties = nft['royalties'] / 100;
@@ -127,15 +138,10 @@ export default function MyDataNFTsElrond() {
               </Skeleton>
             </Flex>
 
-            <Flex p="3" direction="column" justify="space-between" height="300px">
-              <Box
-                fontSize="sm"
-                mt="1"
-                fontWeight="semibold"
-                as="h4"
-                lineHeight="tight">
-                {item.tokenName}
-              </Box>
+            <Flex p="3" direction="column" justify="space-between" mt='2'>
+              <Text fontWeight="bold" fontSize='lg'>THOR_EcoGP_Race3</Text>
+              <Text fontSize='md'>Race data from race3 of eco GP</Text>
+              <Text fontSize='sm' mt='2' color='gray.300'>{'Lorem ipsum dolor sit amet. Est provident quaerat ut rerum omnis vel temporibus nulla sit natus quibusdam. Est repudiandae voluptatibus est doloremque dolore sit quisquam sunt ad praesentium inventore vel veritatis pariatur qui voluptatum soluta vel suscipit iusto.'.substring(0, 100) + ' ...'}</Text>
 
               {/* <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                 {`Creator: ${item.creator}`}
@@ -144,11 +150,14 @@ export default function MyDataNFTsElrond() {
               
 
               <Box mt="5">
-                {item.creator===address && <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {item.creator===address && 'you are the owner' || 'you are the creator & owner' }
-                </Badge> || <Badge borderRadius="full" px="2" colorScheme="red" display="none">
-                  sold
-                </Badge>}
+                {item.creator !== address &&
+                  <Box display='flex' justifyContent='space-between' alignItems='center'>
+                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                    YOU ARE THE OWNER
+                    </Badge>
+                    <Button size='sm' colorScheme='red' height='5' onClick={onBurnNFTOpen}>Burn</Button>
+                  </Box>
+                }
 
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   Fully Transferable License
@@ -163,14 +172,19 @@ export default function MyDataNFTsElrond() {
                   <Text fontSize="xs">{moment(item.creationTime).format(uxConfig.dateStr)}</Text>
                 </HStack>
 
-                <HStack mt=".5">
-                  <Text fontSize="xs">View Data Stream</Text>
-                  <Link href={item.dataStream} isExternal><ExternalLinkIcon mx="2px" /></Link>
-                </HStack>
-
                 <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                   {`Balance: ${item.balance} out of ${item.supply}. Royalty: ${item.royalties * 100}%`}
                 </Box>
+
+                <HStack mt="2">
+                  <Link href={item.dataStream} isExternal textDecoration='none' _hover={{ textDecoration: 'none' }}>
+                    <Button size='sm' colorScheme='teal' height='7'>View Data</Button>
+                  </Link>
+                  <Link href={item.dataStream} isExternal textDecoration='none' _hover={{ textDecoration: 'none' }}>
+                    <Button size='sm' colorScheme='teal' height='7' variant='outline'>Preview Data</Button>
+                  </Link>
+                </HStack>
+
                 <HStack my={'2'}>
                   <Text fontSize="xs">How many to list: </Text>
                   <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={item.balance} value={amounts[index]} onChange={(valueString) => setAmounts((oldAmounts)=>{
@@ -217,6 +231,48 @@ export default function MyDataNFTsElrond() {
           
         </Flex>
       }
+
+      <Modal
+        isOpen={isBurnNFTOpen}
+        onClose={onBurnNFTClose}
+        closeOnEsc={false} closeOnOverlayClick={false}
+      >
+        <ModalOverlay
+          bg='blackAlpha.700'
+          backdropFilter='blur(10px) hue-rotate(90deg)'
+          />
+        <ModalContent>
+          {
+            burnNFTModalState === 1 ? (<>
+              <ModalHeader>Burn My Data NFTs</ModalHeader>
+              <ModalBody pb={6}>
+                <Flex>
+                  <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
+                </Flex>
+                <Text color='red.500' fontSize='md' mt='4'>"Burning" Data NFTs means they are destroyed forever. You cannot receover them so preceed with caution.</Text>
+                <Text color='orange.300' fontSize='md' mt='4'>You have ownershipt of 6 Data NFTs (out of a total of 10). You can burn these 6 Data NFTs and remove them from your wallet. The remaining 4 NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
+                <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again</Text>
+                <Flex justifyContent='end' mt='6 !important'>
+                  <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my 6 Data NFTs</Button>
+                  <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
+                </Flex>
+              </ModalBody>
+            </>) : (<>
+              <ModalHeader>Are you sure?</ModalHeader>
+              <ModalBody pb={6}>
+                <Flex>
+                  <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
+                </Flex>
+                <Text fontSize='md'>Are you sure you want to preceed with burning the Data NFTs? You cannot undo this action.</Text>
+                <Flex justifyContent='end' mt='6 !important'>
+                  <Button colorScheme="teal" size='sm' mx='3' onClick={onBurnNFTClose}>Proceed</Button>
+                  <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
+                </Flex>
+              </ModalBody>
+            </>)
+          }
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 };
