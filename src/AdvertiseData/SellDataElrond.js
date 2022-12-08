@@ -191,8 +191,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   // set initial states for validation
   useEffect(() => {
-    onChangeDataNFTStreamUrl('https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv');
-    onChangeDataNFTStreamPreviewUrl('https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1');
+    onChangeDataNFTStreamUrl('');
+    onChangeDataNFTStreamPreviewUrl('');
     onChangeDataNFTMarshalService('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
     // onChangeDataNFTTokenName('SampleTokenName');
     // onChangeDatasetTitle('Sample Title');
