@@ -11,6 +11,7 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   useToast, useDisclosure, Checkbox, Tag,
   Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
+  Link,
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
@@ -97,6 +98,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [sellerData, setSellerData] = useState('');
   const [isArbirData, setIsArbirData] = useState(false);
   const [saveProgress, setSaveProgress] = useState({ s1: 0, s2: 0, s3: 0, s4: 0 });
+  const [mintingSuccessful, setMintingSuccessful] = useState(false);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
@@ -385,6 +387,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const mintTxSuccess = async(foo) => {
     console.log('mintTxSuccess', foo);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
+    setMintingSuccessful(true);
 
     await sleep(3);
     closeProgressModal();
@@ -458,6 +461,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       3) Call the NFT contract with meta file URI and get the new NFT ID (s3)
     */
 
+    setMintingSuccessful(false);
     onProgressModalOpen();
 
     const myHeaders = new Headers();
@@ -894,10 +898,22 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                       <Text>Saving NFT Metadata to IPFS</Text>
                     </HStack>
 
+                    
                     <HStack>
                       {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
                       <Text>Minting your new data NFT on blockchain</Text>
                     </HStack>
+                    {
+                      mintingSuccessful && <Box textAlign='center' mt='6'>
+                        <Alert status='success'>
+                          <Text colorScheme='teal'>Success, Your Data NFT has been minted on the MultiversX Blockchain</Text>
+                        </Alert>
+                        <Link href='datanfts/wallet' textDecoration='none' _hover={{ textDecoration: 'none' }}>
+                          <Button colorScheme='teal' mt='4'>Head over to your Data NFT Wallet to see it!</Button>
+                        </Link>
+                      </Box>
+                    }
+                    
 
                     {errDataNFTStreamGeneric &&
                       <Alert status="error">
