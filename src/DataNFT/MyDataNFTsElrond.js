@@ -6,6 +6,7 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   useDisclosure,
+  Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
@@ -141,7 +142,23 @@ export default function MyDataNFTsElrond() {
             <Flex p="3" direction="column" justify="space-between" mt='2'>
               <Text fontWeight="bold" fontSize='lg'>THOR_EcoGP_Race3</Text>
               <Text fontSize='md'>Race data from race3 of eco GP</Text>
-              <Text fontSize='sm' mt='2' color='gray.300'>{'Lorem ipsum dolor sit amet. Est provident quaerat ut rerum omnis vel temporibus nulla sit natus quibusdam. Est repudiandae voluptatibus est doloremque dolore sit quisquam sunt ad praesentium inventore vel veritatis pariatur qui voluptatum soluta vel suscipit iusto.'.substring(0, 100) + ' ...'}</Text>
+
+              <Flex>
+                <Popover trigger='hover' placement='auto'>
+                  <PopoverTrigger>
+                    <Text fontSize='sm' mt='2' color='gray.300'>{'Lorem ipsum dolor sit amet. Est provident quaerat ut rerum omnis vel temporibus nulla sit natus quibusdam. Est repudiandae voluptatibus est doloremque dolore sit quisquam sunt ad praesentium inventore vel veritatis pariatur qui voluptatum soluta vel suscipit iusto.'.substring(0, 100) + ' ...'}</Text>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverHeader fontWeight='semibold'>Lorem Ipsum</PopoverHeader>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody>
+                      <Text fontSize='sm' mt='2' color='gray.300'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Flex>
+              
 
               {/* <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                 {`Creator: ${item.creator}`}
@@ -252,6 +269,18 @@ export default function MyDataNFTsElrond() {
                 <Text color='red.500' fontSize='md' mt='4'>"Burning" Data NFTs means they are destroyed forever. You cannot receover them so preceed with caution.</Text>
                 <Text color='orange.300' fontSize='md' mt='4'>You have ownershipt of 6 Data NFTs (out of a total of 10). You can burn these 6 Data NFTs and remove them from your wallet. The remaining 4 NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
                 <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again</Text>
+
+                <HStack mt='4'>
+                  <Text fontSize='md'>How many to burn?</Text>
+                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={100}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </HStack>
+
                 <Flex justifyContent='end' mt='6 !important'>
                   <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my 6 Data NFTs</Button>
                   <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>

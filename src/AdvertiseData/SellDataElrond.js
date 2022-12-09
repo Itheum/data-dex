@@ -249,7 +249,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   }
 
   const onChangeDataNFTMarshalService = (value) => {
-    // checkUrlReturns200(value).then(res => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
+    // Itheum Data Marshal Service Check
+    checkUrlReturns200('https://itheumapi.com/health-check').then(res => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
     setDataNFTMarshalServiceValid(true);
 
     setDataNFTMarshalService(value);
