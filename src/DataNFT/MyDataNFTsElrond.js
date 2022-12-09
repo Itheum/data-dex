@@ -132,7 +132,7 @@ export default function MyDataNFTsElrond() {
       {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
         <>{!noData && <SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
-          {usersDataNFTCatalog && usersDataNFTCatalog.map((item, index) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
+          {usersDataNFTCatalog && usersDataNFTCatalog.map((item, index) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem" position='relative'>
             <Flex justifyContent="center" pt={5}>
               <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                 <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
@@ -244,6 +244,30 @@ export default function MyDataNFTsElrond() {
                 </Button>
               </Box>              
             </Flex>
+
+            <Box
+              position='absolute'
+              top='0'
+              bottom='0'
+              left='0'
+              right='0'
+              height='100%'
+              width='100%'
+              backgroundColor='blackAlpha.800'
+              visibility={index % 2 === 0 ? 'collapse' : 'visible'}
+            >
+              <Text
+                position='absolute'
+                top='50%'
+                // left='50%'
+                transfrom='translate(-50%, -50%)'
+                textAlign='center'
+                px='2'
+              >
+                - FROZEN - <br />
+                Data NFT is under investigation by the DAO as there was a complaint received against it
+              </Text>
+            </Box>
           </Box>)}
           
         </Flex>
