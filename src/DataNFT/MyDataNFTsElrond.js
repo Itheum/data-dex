@@ -64,7 +64,7 @@ export default function MyDataNFTsElrond() {
           const codec = new BinaryCodec();
           const json = JSON.parse(JSON.stringify(dataNftMintJson));
           const abiRegistry = AbiRegistry.create(json);
-          const abi = new SmartContractAbi(abiRegistry, ['DataNftMintContract']);
+          const abi = new SmartContractAbi(abiRegistry, ['DataNftMint']);
           const dataNftAttributes = abiRegistry.getStruct('DataNftAttributes');
           
             // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
@@ -294,7 +294,7 @@ export default function MyDataNFTsElrond() {
                   <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
                 </Flex>
                 <Text color='red.500' fontSize='md' mt='4'>"Burning" Data NFTs means they are destroyed forever. You cannot receover them so preceed with caution.</Text>
-                <Text color='orange.300' fontSize='md' mt='4'>You have ownershipt of 6 Data NFTs (out of a total of 10). You can burn these 6 Data NFTs and remove them from your wallet. The remaining 4 NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
+                <Text color='orange.300' fontSize='md' mt='4'>You have ownership of 6 Data NFTs (out of a total of 10). You can burn these 6 Data NFTs and remove them from your wallet. The remaining 4 NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
                 <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again</Text>
 
                 <HStack mt='4'>
