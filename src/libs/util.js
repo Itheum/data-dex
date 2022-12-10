@@ -31,7 +31,7 @@ import {
   tokenContractAddress_Elrond_Mainnet,
   claimsContractAddress_Elrond_Mainnet,
   faucetContractAddress_Elrond_Mainnet,
-} from './contactAddresses';
+} from './contractAddresses';
 
 export const contractsForChain = (networkId) => {
   const contracts = {

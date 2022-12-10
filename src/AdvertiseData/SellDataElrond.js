@@ -505,7 +505,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     const data = await res.blob();
     const type = mime.getType(data)
     console.log('type', type);
-    const _file = new File([data], 'test', { type: 'image/png' });
+    const _file = new File([data], 'image', { type: 'image/png' });
     console.log('file', _file);
 
     return _file;
@@ -521,18 +521,14 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     // @TODO we should now take newNFTImg and store the image in IPFS and get the CID for storing on the NFT
     const image = await createFileFromUrl(newNFTImg);
     const nftstorage = new NFTStorage({ token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY })
-    const res = await nftstorage.store({
-      image,
-      name: datasetTitle,
-      description: datasetDescription,
-    });
+    const res = await nftstorage.storeBlob(image);
     console.log('res', res);
 
-    if (!res.ipnft) {
+    if (!res) {
       setErrDataNFTStreamGeneric(new Error('Uploading the image on IPFS has failed'));
       return;
     }
-    const imageOnIpfsUrl = `https://nftstorage.link/ipfs/${res.ipnft}`;
+    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}`;
     console.log('imageOnIpfsUrl', imageOnIpfsUrl);
 
     setDataNFTImg(newNFTImg);

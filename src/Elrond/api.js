@@ -6,6 +6,7 @@ export const getApi = (networkId) => {
   if (networkId === 'E1') {
     return 'api.elrond.com';
   } else {
+    return 'devnet-api.elrond.com';
     return 'elrond-api-devnet.blastapi.io/0bc98858-cb7a-44c6-ad1b-8c8bfaec7128';
   }
 };

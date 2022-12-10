@@ -71,20 +71,23 @@ export default function MyDataNFTsElrond() {
             const usersDataNFTCatalogLocal = [];
             let amounts=[];
             let prices=[];
-            onChainNFTs.map(nft => {
-                  // const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
+            onChainNFTs.forEach(nft => {
+                  const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
                   const dataNFT = {};
+                  console.log(decodedAttributes);
                   dataNFT.id = nft['identifier']; // ID of NFT -> done
                   dataNFT.nftImgUrl = nft['url']; // image URL of of NFT -> done
-                  // dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
-                  // dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
-                  // dataNFT.dataMarshal = decodedAttributes['data_marchal_url'].toString(); // data stream URL -> done
-                  // dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
-                  // dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-                  // dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
-                  // dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
+                  dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
+                  dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
+                  dataNFT.dataMarshal = decodedAttributes['data_marshal_url'].toString(); // data stream URL -> done
+                  dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
+                  dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
+                  dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
+                  dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
                   dataNFT.supply = nft['supply'];
                   dataNFT.balance = nft['balance'];
+                  dataNFT.description = decodedAttributes['description'].toString();
+                  dataNFT.title = decodedAttributes['title'].toString();
                   dataNFT.royalties = nft['royalties'] / 100;
                   dataNFT.nonce = nft['nonce'];
                   dataNFT.collection = nft['collection'];
@@ -109,7 +112,7 @@ export default function MyDataNFTsElrond() {
 
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async() => {
-    const onChainNfts = await getNftsOfAcollectionForAnAddress(address,'DATANFTV1-5425ef','not_E1');
+    const onChainNfts = await getNftsOfAcollectionForAnAddress(address,'DATANFTV2-758cf1','not_E1');
 
     console.log('onChainNfts');
     console.log(onChainNfts);
@@ -140,29 +143,29 @@ export default function MyDataNFTsElrond() {
             </Flex>
 
             <Flex p="3" direction="column" justify="space-between" mt='2'>
-              <Text fontWeight="bold" fontSize='lg'>THOR_EcoGP_Race3</Text>
-              <Text fontSize='md'>Race data from race3 of eco GP</Text>
+              <Text fontWeight="bold" fontSize='lg'>{item.tokenName}</Text>
+              <Text fontSize='md'>{item.title}</Text>
 
               <Flex>
                 <Popover trigger='hover' placement='auto'>
                   <PopoverTrigger>
-                    <Text fontSize='sm' mt='2' color='gray.300'>{'Lorem ipsum dolor sit amet. Est provident quaerat ut rerum omnis vel temporibus nulla sit natus quibusdam. Est repudiandae voluptatibus est doloremque dolore sit quisquam sunt ad praesentium inventore vel veritatis pariatur qui voluptatum soluta vel suscipit iusto.'.substring(0, 100) + ' ...'}</Text>
+                    <Text fontSize='sm' mt='2' color='gray.300'>{item.description.substring(0, 100)!==item.description?item.description.substring(0, 100) + ' ...':item.description}</Text>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <PopoverHeader fontWeight='semibold'>Lorem Ipsum</PopoverHeader>
+                    <PopoverHeader fontWeight='semibold'>{item.tokenName}</PopoverHeader>
                     <PopoverArrow />
                     <PopoverCloseButton />
                     <PopoverBody>
-                      <Text fontSize='sm' mt='2' color='gray.300'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
+                      <Text fontSize='sm' mt='2' color='gray.300'>{item.description.substring(0, 100)!==item.description?item.description.substring(0, 100) + ' ...':item.description}</Text>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
               </Flex>
               
 
-              {/* <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
-                {`Creator: ${item.creator}`}
-              </Box> */}
+              <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
+                {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
+              </Box>
 
               
 
@@ -172,13 +175,13 @@ export default function MyDataNFTsElrond() {
                     <Badge borderRadius="full" px="2" colorScheme="teal">
                     YOU ARE THE OWNER
                     </Badge>
-                    <Button size='sm' colorScheme='red' height='5' onClick={onBurnNFTOpen}>Burn</Button>
                   </Box>
                 }
 
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   Fully Transferable License
                 </Badge>
+                <Button size='sm' colorScheme='red' height='5' ml={'1'} onClick={onBurnNFTOpen}>Burn</Button>
 
                 {/* <Badge borderRadius="full" px="2" colorScheme="blue">
                   Data Stream
@@ -254,7 +257,7 @@ export default function MyDataNFTsElrond() {
               height='100%'
               width='100%'
               backgroundColor='blackAlpha.800'
-              visibility={index % 2 === 0 ? 'collapse' : 'visible'}
+              visibility={'collapse'}
             >
               <Text
                 position='absolute'

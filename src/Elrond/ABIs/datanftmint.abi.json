@@ -1,20 +1,19 @@
 {
     "buildInfo": {
         "rustc": {
-            "version": "1.66.0-nightly",
-            "commitHash": "1898c34e923bad763e723c68dd9f23a09f9eb0fc",
-            "commitDate": "2022-10-26",
+            "version": "1.67.0-nightly",
+            "commitHash": "80a96467ec5675e9f69683b5c075a8b15950c341",
+            "commitDate": "2022-11-26",
             "channel": "Nightly",
-            "short": "rustc 1.66.0-nightly (1898c34e9 2022-10-26)"
+            "short": "rustc 1.67.0-nightly (80a96467e 2022-11-26)"
         },
         "contractCrate": {
             "name": "datanftmint",
-            "version": "0.0.0",
-            "git_version": "c300049"
+            "version": "0.0.0"
         },
         "framework": {
             "name": "elrond-wasm",
-            "version": "0.36.1"
+            "version": "0.37.0"
         }
     },
     "name": "DataNftMint",
@@ -141,7 +140,6 @@
         },
         {
             "name": "setWhiteListEnabled",
-            "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
@@ -189,7 +187,6 @@
         },
         {
             "name": "setRoyaltiesLimits",
-            "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
@@ -363,6 +360,17 @@
             ]
         },
         {
+            "name": "getBlackList",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
             "name": "isWhiteListEnabled",
             "mutability": "readonly",
             "inputs": [],
@@ -400,6 +408,92 @@
                     "type": "UserDataOut"
                 }
             ]
+        },
+        {
+            "name": "pause",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "unpause",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "freeze",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "unfreeze",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "freezeSingleNFT",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "unFreezeSingleNFT",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "wipeSingleNFT",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
         }
     ],
     "events": [
@@ -425,6 +519,26 @@
         },
         {
             "identifier": "whitelistSpotSet",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "blacklistSpotSet",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "blacklistSpotRemoved",
             "inputs": [
                 {
                     "name": "address",
@@ -499,6 +613,111 @@
                 {
                     "name": "administrator",
                     "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "pauseCollection",
+            "inputs": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "unpauseCollection",
+            "inputs": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "freeze",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "unfreeze",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "wipe",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "burn",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint",
                     "indexed": true
                 }
             ]
