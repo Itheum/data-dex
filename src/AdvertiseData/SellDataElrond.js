@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useMemo, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import {
@@ -36,28 +36,28 @@ const InputLabelWithPopover = ({ children, tkey }) => {
   let title = '', text = '';
   if (tkey === 'data-stream-url') {
     title = 'Data Stream URL';
-    text = 'You need to host your data asset and make sure that it\'s publicly accessible behind a secure domain (one that starts with https://).';
+    text = 'The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)';
   } else if (tkey === 'data-preview-url') {
     title = 'Data Preview URL';
-    text = '-';
+    text = 'A URL of a free preview of full data asset which should be publicly accessible behind a secure domain (one that starts with https://)';
   } else if (tkey === 'data-marshal-url') {
     title = 'Data Marshal URL';
-    text = '-';
+    text = 'The Data Marshal is the service that brokers the on-chain access control for your data asset';
   } else if (tkey === 'token-name') {
     title = 'Token Name (Short Title)';
-    text = '-';
+    text = 'A short title to describe your data asset. This will be used as the NFT token name';
   } else if (tkey === 'dataset-title') {
     title = 'Dataset Title';
-    text = '-';
+    text = 'A longer title to describe your data asset';
   } else if (tkey === 'dataset-description') {
     title = 'Dataset Description';
-    text = '-';
+    text = 'A description of your data asset';
   } else if (tkey === 'number-of-copies') {
     title = 'Number of Copies';
-    text = '-';
+    text = 'The total "supply" you would like to mint (i.e. individual copies of your data access license)';
   } else if (tkey === 'royalties') {
     title = 'Royalties';
-    text = '-';
+    text = 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace';
   }
   
   return (
@@ -134,6 +134,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [enoughForAntiSpamTax, setEnoughForAntiSpamTax] = useState(false);
 
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
+  const [userFocusedForm, setUserFocusedForm] = useState(false);
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
@@ -196,9 +197,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     onChangeDataNFTStreamUrl('');
     onChangeDataNFTStreamPreviewUrl('');
     onChangeDataNFTMarshalService('https://itheumapi.com/ddex/datamarshal/v1/services/generate');
-    // onChangeDataNFTTokenName('SampleTokenName');
-    // onChangeDatasetTitle('Sample Title');
-    // onChangeDatasetDescription('Sample Description');
     onChangeDataNFTTokenName('');
     onChangeDatasetTitle('');
     onChangeDatasetDescription('');
@@ -216,62 +214,77 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState('');
   const onChangeDataNFTStreamUrl = (value) => {
+    const trimmedValue = value.trim();
     let error = '';
-    if (!value.startsWith('https://')) {
+
+    if (!trimmedValue.startsWith('https://')) {
       error = 'Data Stream URL must start with \'https://\'';
-    } else if (value.includes(' ')) {
+    } else if (trimmedValue.includes(' ')) {
       error = 'Data Stream URL cannot contain spaces';
-    } else if (value.length > 1000) {
+    } else if (dataNFTStreamPreviewUrl === trimmedValue) {
+      error = 'Data Stream URL cannot be same as the Data Stream Preview URL';
+    } else if (trimmedValue.length > 1000) {
       error = 'Length of Data Stream URL cannot exceed 1000';
     } else {
-      checkUrlReturns200(value).then(res => setDataNFTStreamUrlValid(res));
+      checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamUrlValid(res));
     }
 
     setDataNFTStreamUrlError(error);
-    setDataNFTStreamUrl(value);
+    setDataNFTStreamUrl(trimmedValue);
   }
 
   const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState('');
   const onChangeDataNFTStreamPreviewUrl = (value) => {
+    const trimmedValue = value.trim();
     let error = '';
-    if (!value.startsWith('https://')) {
+    
+    if (!trimmedValue.startsWith('https://')) {
       error = 'Data Preview URL must start with \'https://\'';
-    } else if (value.includes(' ')) {
+    } else if (trimmedValue.includes(' ')) {
       error = 'Data Preview URL cannot contain spaces';
-    } else if (value.length > 1000) {
+    } else if (dataNFTStreamUrl === trimmedValue) {
+      error = 'Data Preview URL cannot be same as the Data Stream URL';
+    } else if (trimmedValue.length > 1000) {
+      error = 'Length of Data Preview URL cannot exceed 1000';
+    } else if (trimmedValue.length > 1000) {
       error = 'Length of Data Preview URL cannot exceed 1000';
     } else {
-      checkUrlReturns200(value).then(res => setDataNFTStreamPreviewUrlValid(res));
+      checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamPreviewUrlValid(res));
     }
 
     setDataNFTStreamPreviewUrlError(error);
-    setDataNFTStreamPreviewUrl(value);
+    setDataNFTStreamPreviewUrl(trimmedValue);
   }
 
   const onChangeDataNFTMarshalService = (value) => {
+    const trimmedValue = value.trim();
+
     // Itheum Data Marshal Service Check
     checkUrlReturns200('https://itheumapi.com/health-check').then(res => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
     setDataNFTMarshalServiceValid(true);
 
-    setDataNFTMarshalService(value);
+    setDataNFTMarshalService(trimmedValue);
   }
   
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState('');
   const onChangeDataNFTTokenName = (value) => {
+    const trimmedValue = value.trim();
     let error = '';
-    if (value.length < 3 || value.length > 20) {
+
+    if (trimmedValue.length < 3 || trimmedValue.length > 20) {
       error = 'Length of Token Name must be between 3 and 20 characters';
-    } else if (!value.match(/^[0-9a-zA-Z]+$/)) {
+    } else if (!trimmedValue.match(/^[0-9a-zA-Z]+$/)) {
       error = 'Token Name can only contain alphanumeric characters';
     }
 
     setDataNFTTokenNameError(error);
-    setDataNFTTokenName(value);
+    setDataNFTTokenName(trimmedValue);
   }
 
   const [datasetTitleError, setDatasetTitleError] = useState('');
   const onChangeDatasetTitle = (value) => {
     let error = '';
+
     if (value.length < 10 || value.length > 50) {
       error = 'Length of Dataset Title must be between 10 and 50 characters';
     } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
@@ -285,6 +298,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [datasetDescriptionError, setDatasetDescriptionError] = useState('');
   const onChangeDatasetDescription = (value) => {
     let error = '';
+
     if (value.length < 10 || value.length > 250) {
       error = 'Length of Dataset Description must be between 10 and 250 characters';
     }
@@ -297,9 +311,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const onChangeDataNFTCopies = (value) => {
     let error = '';
     if (value < 1) {
-      error = 'Number Of Compies cannot be zero';
+      error = 'Number of copies cannot be zero';
     } else if (value > maxSupply) {
-      error = `Number Of Compies cannot exceed ${maxSupply}`;
+      error = `Number of copies cannot exceed ${maxSupply}`;
     }
 
     setDataNFTCopiesError(error);
@@ -377,21 +391,20 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   const mintTxFail = (foo) => {
     console.log('mintTxFail', foo);
-    setErrDataNFTStreamGeneric(new Error('Transaction to mint data NFT has failed'));
+    setErrDataNFTStreamGeneric(new Error('Transaction to mint Data NFT has failed'));
   }
 
   const mintTxCancelled = (foo) => {
     console.log('mintTxCancelled', foo);
-    setErrDataNFTStreamGeneric(new Error('Transaction to mint data NFT was cancelled'));
+    setErrDataNFTStreamGeneric(new Error('Transaction to mint Data NFT was cancelled'));
   }
 
   const mintTxSuccess = async(foo) => {
     console.log('mintTxSuccess', foo);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
-    setMintingSuccessful(true);
-
     await sleep(3);
-    closeProgressModal();
+    
+    setMintingSuccessful(true);    
   }
 
   const [mintSessionId, setMintSessionId] = useState(null);
@@ -426,7 +439,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     const data = await res.json();
 
     if (data && data.length > 0) {
-      const previewStr = `${data.length} datapoints from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(uxConfig.dateStr)} to ${moment(selObj.toTs).format(uxConfig.dateStr)}`;
+      const previewStr = `${data.length} data points from the ${selObj.programName} program collected from ${moment(selObj.fromTs).format(uxConfig.dateStr)} to ${moment(selObj.toTs).format(uxConfig.dateStr)}`;
 
       setSellerDataPreview(previewStr);
       setDatasetDescription(previewStr)
@@ -456,10 +469,10 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   const dataNFTDataStreamAdvertise = async () => {
     /*
-      1) Call the data marshal and get a encrypted data stream url
-      2) Get a sha256 hash for the encrypted data stream url and generate the robot img URL (s2)
-        2.1) Save the Data NFT in Moralis and get the new moralis dataNFTId
-      3) Call the NFT contract with meta file URI and get the new NFT ID (s3)
+      1) Call the data marshal and get a encrypted data stream url and hash of url (s1)
+      2) Use the hash for to generate the robot img URL from the generative API (s2)
+        2.1) Save the new generative image to IPFS and get it's IPFS url (s3)
+      3) Mint the SFT via the Minter Contract (s4)
     */
 
     setMintingSuccessful(false);
@@ -581,7 +594,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     onProgressModalClose();
     onCloseDrawerTradeStream();
 
-    // remount the component (quick way to rest all state to prestine)
+    // remount the component (quick way to rest all state to pristine)
     onRfMount();
   }
 
@@ -648,7 +661,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 as="h4"
                 lineHeight="tight"
                 noOfLines={1}>
-                Trade a Data Stream as a Data NFT
+                Trade a Data Stream as a Data NFT-FT
               </Box>
             </Box>
             <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null, 1)}>Advertise Data</Button>
@@ -662,15 +675,22 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
           <DrawerHeader>
             <HStack spacing="5">
               <CloseButton size="lg" onClick={onRfMount} />
-              {currSellObject && <Stack><Text fontSize="2xl">Trade data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text></Stack>}
+              {currSellObject && 
+                <Stack>
+                  <Text fontSize="2xl">Trade data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text>
+                </Stack> || 
+                <Heading as='h4' size='lg'>Trade a Data Stream as a Data NFT-FT</Heading>
+              }
             </HStack>
           </DrawerHeader>
-          <DrawerBody>
+          <DrawerBody onClick={() => {
+              if (!userFocusedForm) {
+                setUserFocusedForm(true);
+              }
+            }}>
             {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
 
-              <Stack spacing={5} mt="5">
-                <Text fontWeight="bold">Trade a Data Stream as a Data NFT</Text>
-
+              <Stack spacing="5" mt="5">
                 {
                   (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0)
                   && <Alert status="error">
@@ -695,45 +715,48 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 <InputLabelWithPopover tkey='data-stream-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Stream URL *</Text>
                 </InputLabelWithPopover>
+
                 <Input
                   mt='1 !important'
-                  placeholder="https://itheum-resources.s3.ap-southeast-2.amazonaws.com/json/THOR_EcoGP_Race1.csv"
+                  placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                   value={dataNFTStreamUrl}
                   onChange={(event) => onChangeDataNFTStreamUrl(event.currentTarget.value)}
                 />
-                {dataNFTStreamUrlError && (
+                {(userFocusedForm && dataNFTStreamUrlError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamUrlError}</Text>
                 )}
-                {!dataNFTStreamUrlValid && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream URL does not return 200 code</Text>
+                {(userFocusedForm && !dataNFTStreamUrlValid) && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream URL must be a publicly accessible url</Text>
                 )}
 
                 <InputLabelWithPopover tkey='data-preview-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Preview URL *</Text>
                 </InputLabelWithPopover>
+
                 <Input
                   mt='1 !important'
-                  placeholder="https://itheumapi.com/readingsStream/a7d46790-bc9e-11e8-9158-a1b57f7315ac/70dc6bd0-59b0-11e8-8d54-2d562f6cba54?preview=1"
+                  placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                   value={dataNFTStreamPreviewUrl}
                   onChange={(event) => onChangeDataNFTStreamPreviewUrl(event.currentTarget.value)}
                 />
-                {dataNFTStreamPreviewUrlError && (
+                {(userFocusedForm && dataNFTStreamPreviewUrlError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamPreviewUrlError}</Text>
                 )}
-                {!dataNFTStreamPreviewUrlValid && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream Preview URL does not return 200 code</Text>
+                {(userFocusedForm && !dataNFTStreamPreviewUrlValid) && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream Preview URL must be a publicly accessible url</Text>
                 )}
 
                 <InputLabelWithPopover tkey='data-marshal-url'>
                   <Text fontWeight="bold" fontSize='md'>Data Marshal Url</Text>
                 </InputLabelWithPopover>
+
                 <Input
                   mt='1 !important'
                   value={dataNFTMarshalService}
                   disabled
                 />
-                {!dataNFTMarshalServiceValid && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Marshal Service does not return 200 code</Text>
+                {(userFocusedForm && !dataNFTMarshalServiceValid) && (
+                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Marshal Service is currently offline</Text>
                 )}
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>NFT Token Metadata</Text>
@@ -741,6 +764,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 <InputLabelWithPopover tkey='token-name'>
                   <Text fontWeight="bold" fontSize='md'>Token Name (Short Title) *</Text>
                 </InputLabelWithPopover>
+
                 <Input
                   mt='1 !important'
                   placeholder="NFT Token Name"
@@ -748,13 +772,14 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   onChange={(event) => onChangeDataNFTTokenName(event.currentTarget.value)}
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 3 and 20 alphanumeric characters only</Text>
-                {dataNFTTokenNameError && (
+                {(userFocusedForm && dataNFTTokenNameError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTTokenNameError}</Text>
                 )}
 
                 <InputLabelWithPopover tkey='dataset-title'>
                   <Text fontWeight="bold" fontSize='md'>Dataset Title *</Text>
                 </InputLabelWithPopover>
+
                 <Input
                   mt='1 !important'
                   placeholder="Dataset Title"
@@ -762,13 +787,14 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 50 alphanumeric characters only</Text>
-                {datasetTitleError && (
+                {(userFocusedForm && datasetTitleError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{datasetTitleError}</Text>
                 )}
 
                 <InputLabelWithPopover tkey='dataset-description'>
                   <Text fontWeight="bold" fontSize='md'>Dataset Description *</Text>
                 </InputLabelWithPopover>
+
                 <Textarea
                   mt='1 !important'
                   placeholder="Enter a description here"
@@ -776,13 +802,14 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   onChange={(event) => onChangeDatasetDescription(event.currentTarget.value)}
                 />
                 <Text color="gray.400" fontSize='sm' mt='0 !important'>Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.</Text>
-                {datasetDescriptionError && (
+                {(userFocusedForm && datasetDescriptionError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{datasetDescriptionError}</Text>
                 )}
 
                 <InputLabelWithPopover tkey='number-of-copies'>
                   <Text fontWeight="bold" fontSize='md'>Number of copies</Text>
                 </InputLabelWithPopover>
+                
                 <NumberInput
                   mt='1 !important'
                   size="md"
@@ -799,13 +826,14 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput>
                 <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}</Text>
-                {dataNFTCopiesError && (
+                {(userFocusedForm && dataNFTCopiesError )&& (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTCopiesError}</Text>
                 )}
 
                 <InputLabelWithPopover tkey='royalties'>
                   <Text fontWeight="bold" fontSize='md'>Royalties</Text>
                 </InputLabelWithPopover>
+
                 <NumberInput
                   mt='1 !important'
                   size="md"
@@ -822,12 +850,12 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput>
                 <Text color="gray.400" fontSize="sm" mt='0 !important'>Min: {minRoyalties >= 0 ? minRoyalties : '-'}%, Max: {maxRoyalties >= 0 ? maxRoyalties : '-'}%</Text>
-                {dataNFTRoyaltyError && (
+                {(userFocusedForm && dataNFTRoyaltyError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTRoyaltyError}</Text>
                 )}
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>Terms and Fees</Text>
-                <Text fontSize='md' mt='4 !important'>Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online. Given it's an NFT, you also have limitations like not being able to update the title, description, royalty etc. But there are other condisiton too. Take some time to read these “terms of use” before you proceed. It's very important that you do.</Text>
+                <Text fontSize='md' mt='4 !important'>Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online. Given it's an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there are other conditions too. Take some time to read these “terms of use” before you proceed and it's critical you understand the terms of use before proceeding.</Text>
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read Terms of Use</Button></Flex>
                 <Checkbox
                   size='md'
@@ -835,11 +863,11 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   isChecked={readTermsChecked}
                   onChange={e => setReadTermsChecked(e.target.checked)}
                 >I have read all terms and agree to them</Checkbox>
-                {!readTermsChecked && (
+                {(userFocusedForm && !readTermsChecked) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>You must agree on Terms of Use</Text>
                 )}
 
-                <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing curation discovery by the Itheum DAO.</Text>
+                <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.</Text>
                 <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently {antiSpamTax < 0 ? '?' : antiSpamTax} ITHEUM tokens</Tag></Flex>
                 {itheumBalance < antiSpamTax && (
                     <Text color='red.400' fontSize='sm' mt='1 !important'>You don't have enough ITHEUM for Anti-Spam Tax</Text>
@@ -895,23 +923,24 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                       <Text>Saving NFT Metadata to IPFS</Text>
                     </HStack>
 
-                    
                     <HStack>
                       {!saveProgress.s4 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Minting your new data NFT on blockchain</Text>
+                      <Text>Minting your new Data NFT on blockchain</Text>
                     </HStack>
                     {
                       mintingSuccessful && <Box textAlign='center' mt='6'>
                         <Alert status='success'>
-                          <Text colorScheme='teal'>Success, Your Data NFT has been minted on the MultiversX Blockchain</Text>
+                          <Text colorScheme='teal'>Success! Your Data NFT has been minted on the MultiversX Blockchain</Text>
                         </Alert>
-                        <Link href='datanfts/wallet' textDecoration='none' _hover={{ textDecoration: 'none' }}>
-                          <Button colorScheme='teal' mt='4'>Head over to your Data NFT Wallet to see it!</Button>
-                        </Link>
+                        <HStack mt='4'>
+                          <Link href='datanfts/wallet' textDecoration='none' _hover={{ textDecoration: 'none' }}>
+                            <Button colorScheme='teal'>Visit your Data NFT Wallet to see it!</Button>
+                          </Link>
+                          <Button colorScheme='teal' variant='outline' onClick={closeProgressModal}>Close & Return</Button>
+                        </HStack>
                       </Box>
                     }
                     
-
                     {errDataNFTStreamGeneric &&
                       <Alert status="error">
                       <Stack >

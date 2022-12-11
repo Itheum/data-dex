@@ -294,7 +294,7 @@ export default function ({ onRfMount, itheumAccount }) {
     }
   }, [savedDataPackMoralis]);
 
-  // data NFT object saved to moralis
+  // Data NFT object saved to moralis
   useEffect(async () => {
     if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
       const NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
@@ -918,7 +918,7 @@ export default function ({ onRfMount, itheumAccount }) {
 
                       <HStack>
                         {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Minting your new data NFT on blockchain</Text>
+                        <Text>Minting your new Data NFT on blockchain</Text>
                       </HStack>
 
                       {txNFTHash &&
@@ -1090,7 +1090,7 @@ export default function ({ onRfMount, itheumAccount }) {
 
                     <HStack>
                       {!saveProgressNFT.n2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                      <Text>Minting your new data NFT on blockchain</Text>
+                      <Text>Minting your new Data NFT on blockchain</Text>
                     </HStack>
 
                     {txNFTHash &&

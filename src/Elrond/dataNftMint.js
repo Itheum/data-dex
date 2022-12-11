@@ -85,7 +85,7 @@ export class DataNftMintContract {
       transactions: mintTransaction,
       transactionsDisplayInfo: {
         processingMessage: 'Minting Data NFT',
-        errorMessage: 'Error occured during Data NFT minting',
+        errorMessage: 'Data NFT minting error',
         successMessage: 'Data NFT minted successfully',
       },
       redirectAfterSign: false,
