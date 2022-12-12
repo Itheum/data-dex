@@ -495,7 +495,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const res = await fetch('https://itheumapi.com/ddex/datamarshal/v1/services/generate', requestOptions);
       const data = await res.json();
 
-      if (data && data.encryptedMessage && data.encryptionVector) {
+      if (data && data.encryptedMessage && data.messageHash) {
         setSellerData(data.encryptedMessage); // the data URL is the seller data in this case
         setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
   
