@@ -4,14 +4,14 @@ import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, Button, HStack, Badge,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, Spinner, AlertDescription, CloseButton,
   useDisclosure,
   Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
 } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { sleep, uxConfig, contractsForChain } from 'libs/util';
+import { sleep, uxConfig, contractsForChain, consoleNotice } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfAcollectionForAnAddress } from 'Elrond/api';
@@ -21,8 +21,7 @@ import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
 import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
 import { DataNftMarketContract } from 'Elrond/dataNftMarket';
 
-
-export default function MyDataNFTsElrond() {
+export default function MyDataNFTsElrond({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
@@ -31,8 +30,11 @@ export default function MyDataNFTsElrond() {
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState([]);
   const [prices, setPrices] = useState([]);
+  const [unlockAccessProgress, setUnlockAccessProgress] = useState({ s1: 0, s2: 0, s3: 0 });
+  const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState(null);
 
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
+  const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
 
   const [burnNFTModalState, setBurnNFTModalState] = useState(1);  // 1 and 2
   useEffect(() => {
@@ -41,11 +43,7 @@ export default function MyDataNFTsElrond() {
     }
   }, [isBurnNFTOpen]);
 
-  const contract = new DataNftMarketContract('ED');
-
-  // useEffect(() => {
-  //   getOnChainNFTs();
-  // }, []);
+  const contract = new DataNftMarketContract(_chainMeta.networkId);
 
   const { hasPendingTransactions } = useGetPendingTransactions();
 
@@ -66,41 +64,40 @@ export default function MyDataNFTsElrond() {
           const abiRegistry = AbiRegistry.create(json);
           const abi = new SmartContractAbi(abiRegistry, ['DataNftMint']);
           const dataNftAttributes = abiRegistry.getStruct('DataNftAttributes');
-          
-            // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
-            const usersDataNFTCatalogLocal = [];
-            let amounts=[];
-            let prices=[];
-            onChainNFTs.forEach(nft => {
-                  const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
-                  const dataNFT = {};
-                  console.log(decodedAttributes);
-                  dataNFT.id = nft['identifier']; // ID of NFT -> done
-                  dataNFT.nftImgUrl = nft['url']; // image URL of of NFT -> done
-                  dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
-                  dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
-                  dataNFT.dataMarshal = decodedAttributes['data_marshal_url'].toString(); // data stream URL -> done
-                  dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
-                  dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-                  dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
-                  dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time'])*1000); // initial creation time of NFT
-                  dataNFT.supply = nft['supply'];
-                  dataNFT.balance = nft['balance'];
-                  dataNFT.description = decodedAttributes['description'].toString();
-                  dataNFT.title = decodedAttributes['title'].toString();
-                  dataNFT.royalties = nft['royalties'] / 100;
-                  dataNFT.nonce = nft['nonce'];
-                  dataNFT.collection = nft['collection'];
-                  amounts.push(1);
-                  prices.push(10);
-                  usersDataNFTCatalogLocal.push(dataNFT);
-            });
-            setAmounts(amounts);
-            setPrices(prices);
-            console.log('usersDataNFTCatalogLocal');
-            console.log(usersDataNFTCatalogLocal);
 
-            setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
+          // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
+          const usersDataNFTCatalogLocal = [];
+          let amounts = [];
+          let prices = [];
+          onChainNFTs.forEach(nft => {
+            const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
+            const dataNFT = {};
+            dataNFT.id = nft['identifier']; // ID of NFT -> done
+            dataNFT.nftImgUrl = nft['url']; // image URL of of NFT -> done
+            dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
+            dataNFT.dataStream = decodedAttributes['data_stream_url'].toString(); // data stream URL -> done
+            dataNFT.dataMarshal = decodedAttributes['data_marshal_url'].toString(); // data stream URL -> done
+            dataNFT.tokenName = nft['name']; // is this different to NFT ID? -> yes, name can be chosen by the user
+            dataNFT.feeInTokens = '100' // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
+            dataNFT.creator = decodedAttributes['creator'].toString(); // initial creator of NFT
+            dataNFT.creationTime = new Date(Number(decodedAttributes['creation_time']) * 1000); // initial creation time of NFT
+            dataNFT.supply = nft['supply'];
+            dataNFT.balance = nft['balance'];
+            dataNFT.description = decodedAttributes['description'].toString();
+            dataNFT.title = decodedAttributes['title'].toString();
+            dataNFT.royalties = nft['royalties'] / 100;
+            dataNFT.nonce = nft['nonce'];
+            dataNFT.collection = nft['collection'];
+            amounts.push(1);
+            prices.push(10);
+            usersDataNFTCatalogLocal.push(dataNFT);
+          });
+          setAmounts(amounts);
+          setPrices(prices);
+          console.log('usersDataNFTCatalogLocal');
+          console.log(usersDataNFTCatalogLocal);
+
+          setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
         } else {
           await sleep(5);
           setNoData(true);
@@ -126,6 +123,54 @@ export default function MyDataNFTsElrond() {
 
     contract.addToMarket(collection, nonce, qty, price, address);
   };
+
+  const accessDataStream = async(nftid, myAddress) => {
+    console.log(_chainMeta);
+
+    /*
+      1) get a nonce from the data marshal (s1)
+      2) get user to sign the nonce and obtain signature (s2)
+      3) send the signature for verification from the marshal and open stream in new window (s3)
+    */
+
+    onAccessProgressModalOpen();
+
+    try {
+      const chainId = _chainMeta.networkId === 'ED' ? 'D' : 'E1';
+
+      const res = await fetch(`https://itheumapi.com/ddex/datamarshal/v1/services/preaccess?chainId=${chainId}`);
+      const data = await res.json();
+
+      if (data && data.nonce) {
+        setUnlockAccessProgress(prevProgress => ({ ...prevProgress, s1: 1 }));
+
+        await sleep(3);
+
+        // TODO - get the signature
+        
+        setUnlockAccessProgress(prevProgress => ({ ...prevProgress, s2: 1 }));
+
+        await sleep(3);
+
+        window.open(`https://itheumapi.com/ddex/datamarshal/v1/services/access?nonce=${data.nonce}=&nftid=${nftid}&signature=signature&txHash=txHash&chainId==${chainId}&accessRequesterAddr=${myAddress}`);
+
+        await sleep(3);
+
+        setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+        setErrUnlockAccessGeneric(null);
+        onAccessProgressModalClose();
+
+      } else {
+        if (data.success === false) {
+          setErrUnlockAccessGeneric(new Error(`${data.error.code}, ${data.error.message}`));
+        } else {
+          setErrUnlockAccessGeneric(new Error('Data Marshal responded with an unknown error trying to generate your encrypted links'));
+        }
+      }
+    } catch(e) {
+      setErrUnlockAccessGeneric(e);
+    }
+  }
 
   return (
     <Stack spacing={5}>
@@ -162,30 +207,21 @@ export default function MyDataNFTsElrond() {
                 </Popover>
               </Flex>
               
-
               <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                 {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
               </Box>
 
-              
-
               <Box mt="5">
-                {item.creator !== address &&
-                  <Box display='flex' justifyContent='space-between' alignItems='center'>
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                    YOU ARE THE OWNER
-                    </Badge>
-                  </Box>
-                }
+                <Box display='flex' justifyContent='space-between' alignItems='center'>
+                  <Badge borderRadius="full" px="2" colorScheme="teal">
+                    <Text>YOU ARE THE {item.creator !== address ? 'OWNER' : 'CREATOR'}</Text>
+                  </Badge>
+                </Box>
 
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   Fully Transferable License
                 </Badge>
                 <Button size='sm' colorScheme='red' height='5' ml={'1'} onClick={onBurnNFTOpen}>Burn</Button>
-
-                {/* <Badge borderRadius="full" px="2" colorScheme="blue">
-                  Data Stream
-                </Badge> */}
 
                 <HStack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
@@ -197,12 +233,13 @@ export default function MyDataNFTsElrond() {
                 </Box>
 
                 <HStack mt="2">
-                  <Link href={item.dataStream} isExternal textDecoration='none' _hover={{ textDecoration: 'none' }}>
-                    <Button size='sm' colorScheme='teal' height='7'>View Data</Button>
-                  </Link>
-                  <Link href={item.dataStream} isExternal textDecoration='none' _hover={{ textDecoration: 'none' }}>
-                    <Button size='sm' colorScheme='teal' height='7' variant='outline'>Preview Data</Button>
-                  </Link>
+                  <Button size='sm' colorScheme='teal' height='7' onClick={() => {
+                    // window.open(item.dataStream);
+                    accessDataStream(item.id, address);
+                  }}>View Data</Button>
+                  <Button size='sm' colorScheme='teal' height='7' variant='outline' onClick={() => {
+                    window.open(item.dataPreview);
+                  }}>Preview Data</Button>
                 </HStack>
 
                 <HStack my={'2'}>
@@ -327,6 +364,46 @@ export default function MyDataNFTsElrond() {
               </ModalBody>
             </>)
           }
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={isAccessProgressModalOpen}
+        onClose={onAccessProgressModalClose}
+        closeOnEsc={false} closeOnOverlayClick={false}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Data Access Unlock Progress</ModalHeader>
+          <ModalBody pb={6}>
+            <Stack spacing={5}>
+              <HStack>
+                {!unlockAccessProgress.s1 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Initiating handshake with Data Marshal</Text>
+              </HStack>
+
+              <HStack>
+                {!unlockAccessProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Completing handshake with Data Marshal</Text>
+              </HStack>
+
+              <HStack>
+                {!unlockAccessProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
+                <Text>Verifying data access rights and stream data</Text>
+              </HStack>
+
+              {errUnlockAccessGeneric &&
+                <Alert status="error">
+                  <Stack >
+                    <AlertTitle fontSize="md">
+                      <AlertIcon mb={2} />Process Error</AlertTitle>
+                    {errUnlockAccessGeneric.message && <AlertDescription fontSize="md">{errUnlockAccessGeneric.message}</AlertDescription>}
+                    <CloseButton position="absolute" right="8px" top="8px" onClick={onRfMount} />
+                  </Stack>
+                </Alert>
+              }
+            </Stack>
+          </ModalBody>
         </ModalContent>
       </Modal>
     </Stack>

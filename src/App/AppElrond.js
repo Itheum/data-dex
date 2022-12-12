@@ -70,6 +70,7 @@ function App({ appConfig }) {
     sellData: 0,
     buyData: 0,
     auth: 0,
+    dataNFTWallet: 0
   });
   const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
@@ -584,7 +585,7 @@ function App({ appConfig }) {
                   </Route>
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                    <Route path="wallet" element={<MyDataNFTsElrond />} />
+                    <Route path="wallet" element={<MyDataNFTsElrond key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount('dataNFTWallet')} />} />
                     <Route path="marketplace" element={<DataNFTMarketplaceElrond />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
