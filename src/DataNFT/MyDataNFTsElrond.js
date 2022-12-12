@@ -72,6 +72,7 @@ export default function MyDataNFTsElrond() {
             let amounts=[];
             let prices=[];
             onChainNFTs.forEach(nft => {
+              debugger;
                   const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
                   const dataNFT = {};
                   console.log(decodedAttributes);

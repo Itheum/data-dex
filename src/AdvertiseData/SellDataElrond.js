@@ -486,9 +486,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     const requestOptions = {
       method: 'POST',
       headers: myHeaders,
-      body: JSON.stringify({
-        dataNFTStreamUrl: dataNFTStreamUrl
-      })
+      body: JSON.stringify({ dataNFTStreamUrl })
     };
 
     try {
@@ -499,7 +497,10 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
         setSellerData(data.encryptedMessage); // the data URL is the seller data in this case
         setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
   
-        buildUniqueImage(data.messageHash);              
+        buildUniqueImage({
+          dataNFTHash: data.messageHash,
+          dataNFTStreamUrlEncrypted: data.encryptedMessage
+        });
       } else {
         if (data.success === false) {
           setErrDataNFTStreamGeneric(new Error(`${data.error.code}, ${data.error.message}`));
@@ -524,14 +525,13 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     return _file;
   }
 
-  const buildUniqueImage = async(dataNFTHash) => {
+  const buildUniqueImage = async({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
     const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
     console.log('newNFTImg', newNFTImg);
 
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
-    // @TODO we should now take newNFTImg and store the image in IPFS and get the CID for storing on the NFT
     const image = await createFileFromUrl(newNFTImg);
     const nftstorage = new NFTStorage({ token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY })
     const res = await nftstorage.storeBlob(image);
@@ -542,34 +542,31 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       return;
     }
     const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}`;
-    console.log('imageOnIpfsUrl', imageOnIpfsUrl);
+    // console.log('imageOnIpfsUrl', imageOnIpfsUrl);
 
     setDataNFTImg(newNFTImg);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
     
-    handleOnChainMint(imageOnIpfsUrl);
+    handleOnChainMint({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted });
   };
 
-  const handleOnChainMint = async(newNFTImg) => {
+  const handleOnChainMint = async({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
     const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
     const { sessionId, error } = await elrondDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName, 
-      media: newNFTImg,
+      media: imageOnIpfsUrl,
       data_marchal: dataNFTMarshalService, 
-      data_stream: dataNFTStreamUrl, 
+      data_stream: dataNFTStreamUrlEncrypted, 
       data_preview: dataNFTStreamPreviewUrl, 
       royalties: Math.ceil(dataNFTRoyalty*100),
-      amount: dataNFTCopies,
-      
+      amount: dataNFTCopies,      
       title: datasetTitle,
       description: datasetDescription,
-
       sender: elrondAddress,
-
       itheumToken: _chainMeta.contracts.itheumToken,
       antiSpamTax: antiSpamTax,
     });
