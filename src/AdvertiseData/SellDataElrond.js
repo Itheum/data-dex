@@ -146,7 +146,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
-      setMinRoyalties(value.toNumber() / 100);
+      // setMinRoyalties(value.toNumber() / 100);
     })();
     (async() => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
@@ -156,7 +156,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
-      setMaxRoyalties(value.toNumber() / 100);
+      // setMaxRoyalties(value.toNumber() / 100);
     })();
     (async() => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
@@ -689,17 +689,19 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
               <Stack spacing="5" mt="5">
                 {
-                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0)
+                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0 || !dataNFTMarshalServiceValid || !dataNFTStreamPreviewUrlValid)
                   && <Alert status="error">
                     <Stack >
                       <AlertTitle fontSize="md" mb={2}>
                         <AlertIcon display='inline-block' />
                         <Text display='inline-block' lineHeight='2' style={{ verticalAlign: 'middle' }}>Uptime Errors</Text>
                       </AlertTitle>
-                      {minRoyalties < 0 && <AlertDescription fontSize="md">Min Royalties is not loaded from Smart Contract</AlertDescription>}
-                      {maxRoyalties < 0 && <AlertDescription fontSize="md">Max Royalties is not loaded from Smart Contract</AlertDescription>}
-                      {maxSupply < 0 && <AlertDescription fontSize="md">Max Supply is not loaded from Smart Contract</AlertDescription>}
-                      {antiSpamTax < 0 && <AlertDescription fontSize="md">Anti-Spam Tax is not loaded from Smart Contract</AlertDescription>}
+                      {minRoyalties < 0 && <AlertDescription fontSize="md">Unable to read default value of Min Royalties</AlertDescription>}
+                      {maxRoyalties < 0 && <AlertDescription fontSize="md">Unable to read default value of Max Royalties</AlertDescription>}
+                      {maxSupply < 0 && <AlertDescription fontSize="md">Unable to read default value of Max Supply</AlertDescription>}
+                      {antiSpamTax < 0 && <AlertDescription fontSize="md">Unable to read default value of Anti-Spam Tax</AlertDescription>}
+                      {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Data Marshal service is not responding</AlertDescription>}
+                      {!dataNFTStreamPreviewUrlValid && <AlertDescription fontSize="md">Generative image generation service is not responding</AlertDescription>}
                     </Stack>
                   </Alert>
                 }
