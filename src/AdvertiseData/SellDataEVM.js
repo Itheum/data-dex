@@ -417,7 +417,7 @@ export default function ({ onRfMount, itheumAccount }) {
       })
     };
 
-    const res = await fetch('http://localhost:4000/ddex/datamarshal/v1/services/generate', requestOptions);
+    const res = await fetch('https://itheumapi.com/ddex/datamarshal/v1/services/generate', requestOptions);
     const data = await res.json();
 
     if (data && data.encryptedMessage && data.messageHash) {

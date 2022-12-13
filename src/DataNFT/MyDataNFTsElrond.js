@@ -4,7 +4,7 @@ import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, Button, HStack, Badge,
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, Spinner, AlertDescription, CloseButton,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, Spinner, AlertDescription, CloseButton, ModalCloseButton,
   useDisclosure,
   Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
   useToast,
@@ -20,6 +20,7 @@ import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
 import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
 import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
+import { signMessage } from '@elrondnetwork/dapp-core/utils/account';
 import { DataNftMarketContract } from 'Elrond/dataNftMarket';
 import { DataNftMintContract } from 'Elrond/dataNftMint';
 
@@ -172,9 +173,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
     contract.addToMarket(collection, nonce, qty, price, address);
   };
 
-  const accessDataStream = async(nftid, myAddress) => {
-    console.log(_chainMeta);
-
+  const accessDataStream = async (NFTid, myAddress) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -194,20 +193,20 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
         await sleep(3);
 
-        // TODO - get the signature
-        
-        setUnlockAccessProgress(prevProgress => ({ ...prevProgress, s2: 1 }));
+        const signResult = await fetchAccountSignature(data.nonce);
 
-        await sleep(3);
+        if (signResult.success === false) {
+          setErrUnlockAccessGeneric(signResult.exception);
+        } else {
+          setUnlockAccessProgress(prevProgress => ({ ...prevProgress, s2: 1 }));
+          await sleep(3);
 
-        window.open(`https://itheumapi.com/ddex/datamarshal/v1/services/access?nonce=${data.nonce}=&nftid=${nftid}&signature=signature&txHash=txHash&chainId==${chainId}&accessRequesterAddr=${myAddress}`);
+          window.open(`https://itheumapi.com/ddex/datamarshal/v1/services/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId==${chainId}&accessRequesterAddr=${signResult.addrInHex}`);
 
-        await sleep(3);
+          await sleep(3);
 
-        setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
-        setErrUnlockAccessGeneric(null);
-        onAccessProgressModalClose();
-
+          cleanupAccessDataStreamProcess();
+        }
       } else {
         if (data.success === false) {
           setErrUnlockAccessGeneric(new Error(`${data.error.code}, ${data.error.message}`));
@@ -215,16 +214,53 @@ export default function MyDataNFTsElrond({ onRfMount }) {
           setErrUnlockAccessGeneric(new Error('Data Marshal responded with an unknown error trying to generate your encrypted links'));
         }
       }
-    } catch(e) {
+    } catch (e) {
       setErrUnlockAccessGeneric(e);
     }
+  }
+
+  const fetchAccountSignature = async (message) => {
+    const signResult = {
+      signature: null,
+      addrInHex: null
+    }
+
+    try {
+      const signatureObj = await signMessage({ message });
+      console.log('signatureObj');
+      console.log(signatureObj);
+
+      if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) {
+        signResult.signature = signatureObj.signature.value;
+        signResult.addrInHex = signatureObj.address.valueHex;
+      } else {
+        signResult.success = false;
+        signResult.exception = new Error('Signature result from wallet was malformed');
+      }
+    } catch (e) {
+      signResult.success = false;
+      signResult.exception = e;
+    }
+
+    if (signResult.signature === null || signResult.addrInHex === null) {
+      signResult.success = false;
+      signResult.exception = new Error('Signature result not received from wallet');
+    }
+
+    return signResult;
+  }
+
+  const cleanupAccessDataStreamProcess = () => {
+    setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    setErrUnlockAccessGeneric(null);
+    onAccessProgressModalClose();
   }
 
   return (
     <Stack spacing={5}>
       <Heading size="lg">Data NFT Wallet</Heading>
       <Heading size="xs" opacity=".7">Below are the Data NFTs you created and/or purchased on the current chain</Heading>
-
+      
       {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
         <>{!noData && <SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
@@ -282,7 +318,6 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
                 <HStack mt="2">
                   <Button size='sm' colorScheme='teal' height='7' onClick={() => {
-                    // window.open(item.dataStream);
                     accessDataStream(item.id, address);
                   }}>View Data</Button>
                   <Button size='sm' colorScheme='teal' height='7' variant='outline' onClick={() => {
@@ -430,12 +465,13 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
       <Modal
         isOpen={isAccessProgressModalOpen}
-        onClose={onAccessProgressModalClose}
+        onClose={cleanupAccessDataStreamProcess}
         closeOnEsc={false} closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Data Access Unlock Progress</ModalHeader>
+          <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing={5}>
               <HStack>
@@ -445,12 +481,15 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
               <HStack>
                 {!unlockAccessProgress.s2 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                <Text>Completing handshake with Data Marshal</Text>
+                <Stack>
+                  <Text>Please sign transaction to complete handshake</Text>
+                  <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
+                </Stack>
               </HStack>
 
               <HStack>
                 {!unlockAccessProgress.s3 && <Spinner size="md" /> || <CheckCircleIcon w={6} h={6} />}
-                <Text>Verifying data access rights and stream data</Text>
+                <Text>Verifying data access rights to unlock data stream</Text>
               </HStack>
 
               {errUnlockAccessGeneric &&
@@ -459,7 +498,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                     <AlertTitle fontSize="md">
                       <AlertIcon mb={2} />Process Error</AlertTitle>
                     {errUnlockAccessGeneric.message && <AlertDescription fontSize="md">{errUnlockAccessGeneric.message}</AlertDescription>}
-                    <CloseButton position="absolute" right="8px" top="8px" onClick={onRfMount} />
+                    <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                   </Stack>
                 </Alert>
               }
