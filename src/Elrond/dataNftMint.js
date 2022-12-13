@@ -1,5 +1,5 @@
 import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment, ArgSerializer } from '@elrondnetwork/erdjs/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment, ArgSerializer, TokenIdentifierValue, U64Value, AddressValue } from '@elrondnetwork/erdjs/out';
 import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
 import { sendTransactions } from '@elrondnetwork/dapp-core/services';
 import jsonData from './ABIs/datanftmint.abi.json';
@@ -92,5 +92,33 @@ export class DataNftMintContract {
     });
 
     return { sessionId, error };
+  }
+
+  async burnDataNft(sender, collection, nonce, quantity) {
+    const tx = new Transaction({
+      value: 0,
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction('ESDTNFTTransfer')) //method
+        .addArg(new TokenIdentifierValue(collection)) //what token id to send
+        .addArg(new U64Value(nonce)) //what token nonce to send
+        .addArg(new BigUIntValue(quantity)) //how many tokens to send
+        .addArg(new AddressValue(new Address(this.dataNftMintContractAddress))) //address to send to
+        .addArg(new StringValue('burn')) //what method to call on the contract
+        .build(),
+      receiver: new Address(sender),
+      sender: new Address(sender),
+      gasLimit: 12_000_000,
+      chainID: 'D'
+    });
+    await refreshAccount();
+    await sendTransactions({
+      transactions: tx,
+      transactionsDisplayInfo: {
+        processingMessage: 'Burning Data NFT',
+        errorMessage: 'Error occured',
+        successMessage: 'Data NFT burnt'
+      },
+      redirectAfterSign: false
+    });
   }
 }

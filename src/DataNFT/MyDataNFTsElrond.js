@@ -7,6 +7,7 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, Spinner, AlertDescription, CloseButton,
   useDisclosure,
   Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
+  useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
@@ -20,10 +21,12 @@ import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transa
 import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
 import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
 import { DataNftMarketContract } from 'Elrond/dataNftMarket';
+import { DataNftMintContract } from 'Elrond/dataNftMint';
 
 export default function MyDataNFTsElrond({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
+  const toast = useToast();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
   const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState(null);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -35,18 +38,63 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
-
   const [burnNFTModalState, setBurnNFTModalState] = useState(1);  // 1 and 2
-  useEffect(() => {
-    if (!isBurnNFTOpen) {
-      setBurnNFTModalState(1);  // set state 1 when the modal is closed
+
+  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
+  const [selectedDataNft, setSelectedDataNft] = useState(null);
+  const onChangeDataNftBurnAmount = (newValue) => {
+    if (newValue > selectedDataNft.balance) {
+      toast({
+        title: 'Not enough balance',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
     }
-  }, [isBurnNFTOpen]);
+    if (newValue < 1) {
+      toast({
+        title: 'Burn Amount cannot be zero',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    setDataNftBurnAmount(newValue);
+  };
+  const onBurnButtonClick = (nft) => {
+    setSelectedDataNft(nft);
+    setDataNftBurnAmount(1); // init
+    setBurnNFTModalState(1); // set state 1 when the modal is closed
+    onBurnNFTOpen();
+  };
+  console.log('selectedDataNft', selectedDataNft);
+  const onBurn = () => {
+    if (!address) {
+      toast({
+        title: 'Connect your wallet',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    if (!selectedDataNft) {
+      toast({
+        title: 'No NFT is selected',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+    elrondDataNftMintContract.burnDataNft(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+
+    // close modal
+    onBurnNFTClose();
+  };
 
   const contract = new DataNftMarketContract(_chainMeta.networkId);
-
   const { hasPendingTransactions } = useGetPendingTransactions();
-
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's 'false' we need to get balances    
     if (!hasPendingTransactions) {
@@ -221,7 +269,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   Fully Transferable License
                 </Badge>
-                <Button size='sm' colorScheme='red' height='5' ml={'1'} onClick={onBurnNFTOpen}>Burn</Button>
+                <Button size='sm' colorScheme='red' height='5' ml={'1'} onClick={e => onBurnButtonClick(item)}>Burn</Button>
 
                 <HStack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
@@ -336,7 +384,15 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
                 <HStack mt='4'>
                   <Text fontSize='md'>How many to burn?</Text>
-                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={100}>
+                  <NumberInput
+                    size="xs"
+                    maxW={16}
+                    step={1}
+                    defaultValue={1}
+                    min={1}
+                    value={dataNftBurnAmount}
+                    onChange={value => onChangeDataNftBurnAmount(Number(value))}
+                  >
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -346,7 +402,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                 </HStack>
 
                 <Flex justifyContent='end' mt='6 !important'>
-                  <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my 6 Data NFTs</Button>
+                  <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my {dataNftBurnAmount} Data NFTs</Button>
                   <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
                 </Flex>
               </ModalBody>
@@ -354,11 +410,16 @@ export default function MyDataNFTsElrond({ onRfMount }) {
               <ModalHeader>Are you sure?</ModalHeader>
               <ModalBody pb={6}>
                 <Flex>
-                  <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
+                  <Text fontWeight="bold" fontSize='md' px='1'>Data NFT Title: &nbsp;</Text>
+                  <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>{selectedDataNft.title}</Text>
                 </Flex>
-                <Text fontSize='md'>Are you sure you want to preceed with burning the Data NFTs? You cannot undo this action.</Text>
+                <Flex mt='1'>
+                  <Text fontWeight="bold" fontSize='md' px='1'>Burn Amount: &nbsp;&nbsp;</Text>
+                  <Text  fontSize='sm' backgroundColor='blackAlpha.300' px='1'>{dataNftBurnAmount}</Text>
+                </Flex>
+                <Text fontSize='md' mt='2'>Are you sure you want to preceed with burning the Data NFTs? You cannot undo this action.</Text>
                 <Flex justifyContent='end' mt='6 !important'>
-                  <Button colorScheme="teal" size='sm' mx='3' onClick={onBurnNFTClose}>Proceed</Button>
+                  <Button colorScheme="teal" size='sm' mx='3' onClick={onBurn}>Proceed</Button>
                   <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
                 </Flex>
               </ModalBody>
