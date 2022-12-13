@@ -191,12 +191,12 @@ export default function MyDataNFTsElrond({ onRfMount }) {
               <Text fontWeight="bold" fontSize='lg'>{item.tokenName}</Text>
               <Text fontSize='md'>{item.title}</Text>
 
-              <Flex>
+              <Flex height='4rem'>
                 <Popover trigger='hover' placement='auto'>
                   <PopoverTrigger>
                     <Text fontSize='sm' mt='2' color='gray.300'>{item.description.substring(0, 100)!==item.description?item.description.substring(0, 100) + ' ...':item.description}</Text>
                   </PopoverTrigger>
-                  <PopoverContent mx='2' width='220px'>
+                  <PopoverContent mx='2' width='220px' mt='-7'>
                     <PopoverHeader fontWeight='semibold'>{item.tokenName}</PopoverHeader>
                     <PopoverArrow />
                     <PopoverCloseButton />
