@@ -21,14 +21,14 @@ const AuthLauncher = ({ onLaunchMode }) => {
 
   return (
     <Container maxW="container.xxl" h="100vh" display="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
-      <Box p={['20px', null, '30px']} borderWidth="1px" borderRadius="lg" backgroundColor={colorMode === 'dark' && 'gray.800' || 'white'}>
+      <Box minW={[null, null, '460px']} p={['20px', null, '30px']} borderWidth="1px" borderRadius="lg" backgroundColor={colorMode === 'dark' && 'gray.800' || 'white'}>
         <Stack>
           <Image w={['70px', null, '90px']} h={['60px', null, '80px']} src={colorMode === 'dark' ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />
           <Heading size="md" textAlign="center">
             Itheum Data DEX
           </Heading>
           <Text fontSize="sm" textAlign="center">
-            Multi-chain Web3 tools for personal data ownership and trade
+            Own and trade your personal data in the Web3 Multiverse
           </Text>
           <Spacer />
 
@@ -38,37 +38,41 @@ const AuthLauncher = ({ onLaunchMode }) => {
               hideTerms={true}
               onElrondEnvPick={onLaunchMode} />
 
-            <Spacer pt={5} display={['block', 'none']} />
+            <Box display="none">
+              <Spacer pt={5} display={['block', 'none']} />
 
-            <Button onClick={() => onLaunchMode('evm')}>
-              Connect EVM Wallet
-            </Button>
+              <Button onClick={() => onLaunchMode('evm')}>
+                Connect EVM Wallet
+              </Button>
+            </Box>
           </HStack>
 
-          <Text textAlign="center" fontSize="sm">
-            Supported Chains
-          </Text>
+          <Box display="none">
+            <Text textAlign="center" fontSize="sm">
+              Supported Chains
+            </Text>
 
-          <Flex wrap={['wrap', 'nowrap']} direction="row" justify="space-around" w={['300px', '500px']} align="center">
-            <Tooltip label="Live on Elrond Mainnet & Devnet">
-              <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Görli Testnet">
-              <Image src={chainEth} boxSize="30px" width="20px" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Mumbai Testnet">
-              <Image src={chainPol} boxSize="30px" borderRadius="lg" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Binance Smart Chain Testnet">
-              <Image src={chainBsc} boxSize="30px" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Avalanche C-Chain Testnet">
-              <Image src={chainAvln} boxSize="30px" m="5px" />
-            </Tooltip>
-            <Tooltip label="Live on Harmony Testnet">
-              <Image src={chainHrmy} boxSize="30px" m="5px" />
-            </Tooltip>
-          </Flex>
+            <Flex wrap={['wrap', 'nowrap']} direction="row" justify="space-around" w={['300px', '500px']} align="center">
+              <Tooltip label="Live on Elrond Mainnet & Devnet">
+                <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
+              </Tooltip>
+              <Tooltip label="Live on Görli Testnet">
+                <Image src={chainEth} boxSize="30px" width="20px" m="5px" />
+              </Tooltip>
+              <Tooltip label="Live on Mumbai Testnet">
+                <Image src={chainPol} boxSize="30px" borderRadius="lg" m="5px" />
+              </Tooltip>
+              <Tooltip label="Live on Binance Smart Chain Testnet">
+                <Image src={chainBsc} boxSize="30px" m="5px" />
+              </Tooltip>
+              <Tooltip label="Live on Avalanche C-Chain Testnet">
+                <Image src={chainAvln} boxSize="30px" m="5px" />
+              </Tooltip>
+              <Tooltip label="Live on Harmony Testnet">
+                <Image src={chainHrmy} boxSize="30px" m="5px" />
+              </Tooltip>
+            </Flex>
+          </Box>
 
           <Text textAlign="center" fontSize="xx-small">
             {dataDexVersion}
@@ -93,7 +97,7 @@ const PopupChainSelectorForWallet = ({ onElrondEnvPick }) => {
       lazyBehavior='keepMounted'>
         <HStack>              
           <PopoverTrigger>
-            <Button>Connect Elrond Wallet</Button>
+            <Button>Connect MultiversX Wallet</Button>
           </PopoverTrigger>
         </HStack>
 
@@ -101,7 +105,7 @@ const PopupChainSelectorForWallet = ({ onElrondEnvPick }) => {
           <PopoverArrow />
           <PopoverCloseButton />
           <PopoverHeader>
-            <Text fontSize="md">Please pick an Elrond environment</Text>            
+            <Text fontSize="md">Please pick a MultiversX environment</Text>            
           </PopoverHeader>
           <PopoverBody>
               <Button size="sm" onClick={() => {

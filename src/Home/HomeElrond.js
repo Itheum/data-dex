@@ -115,7 +115,7 @@ export default function({ onRfMount }) {
           if (!toast.isActive('er2')) {
             toast({
               id: 'er2',
-              title: 'ER2: Could not get your claims information from the elrond blockchain.',
+              title: 'ER2: Could not get your claims information from the multiversX blockchain.',
               status: 'error',
               isClosable: true,
               duration: null

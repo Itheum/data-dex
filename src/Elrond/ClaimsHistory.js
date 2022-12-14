@@ -24,7 +24,7 @@ export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseCh
     
     if (transactions.error) {
       toast({
-        title: 'ER4: Could not get your recent transactions from the elrond blockchain.',
+        title: 'ER4: Could not get your recent transactions from the MultiversX blockchain.',
         status: 'error',
         isClosable: true,
         duration: null

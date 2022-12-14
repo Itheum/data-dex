@@ -61,7 +61,7 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
       <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select a <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{launchEnvironment}</Badge> Elrond Wallet</ModalHeader>
+          <ModalHeader>Select a <Badge mb="1" mr="1" ml="1" variant='outline' fontSize='0.8em' colorScheme="teal">{launchEnvironment}</Badge> MultiversX Wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack spacing="5">

@@ -1,5 +1,5 @@
 # Itheum Data DEX
-The Itheum Data DEX enables you to trade your personal data using web3 & blockchain technology. It is multi-chain by default and supports Elrond and key EVM compatible chains. 
+The Itheum Data DEX enables you to trade your personal data using web3 & blockchain technology. It is multi-chain by default and supports MultiversX (Previously Elrond) and will support key EVM compatible chains in the near future.
 
 ![Itheum Data DEX](https://raw.githubusercontent.com/Itheum/data-dex/main/itheum-dex-hero.png)
 
