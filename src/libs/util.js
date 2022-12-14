@@ -274,8 +274,8 @@ export const CHAINS = {
   56: 'BSC - Mainnet',
   1666700000: 'Harmony - Testnet',
   43113: 'Avalanche - Testnet',
-  E1: 'Elrond - Mainnet',
-  ED: 'Elrond - Devnet',
+  E1: 'MultiversX - Mainnet',
+  ED: 'MultiversX - Devnet',
 };
 
 // these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)

@@ -175,7 +175,7 @@ function App({ appConfig }) {
         if (!toast.isActive('er1')) {
           toast({
             id: 'er1',
-            title: 'ER1: Could not get your token information from the elrond blockchain.',
+            title: 'ER1: Could not get your token information from the MultiversX blockchain.',
             status: 'error',
             isClosable: true,
             duration: null
