@@ -146,7 +146,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
-      // setMinRoyalties(value.toNumber() / 100);
+      setMinRoyalties(value.toNumber() / 100);
     })();
     (async() => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
@@ -156,7 +156,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
-      // setMaxRoyalties(value.toNumber() / 100);
+      setMaxRoyalties(value.toNumber() / 100);
     })();
     (async() => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
@@ -312,7 +312,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     let error = '';
     if (value < 1) {
       error = 'Number of copies cannot be zero';
-    } else if (value > maxSupply) {
+    } else if (maxSupply >= 0 && value > maxSupply) {
       error = `Number of copies cannot exceed ${maxSupply}`;
     }
 
@@ -327,9 +327,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     let error = '';
     if (value < 0) {
       error = 'Royalties cannot be negative';
-    } else if (value < minRoyalties) {
+    } else if (minRoyalties >= 0 && value < minRoyalties) {
       error = `Royalties cannot be lower than ${minRoyalties}`;
-    } else if (value > maxRoyalties) {
+    } else if (maxRoyalties >= 0 && value > maxRoyalties) {
       error = `Royalties cannot be higher than ${maxRoyalties}`;
     }
 
