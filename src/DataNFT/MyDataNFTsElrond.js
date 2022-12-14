@@ -396,72 +396,74 @@ export default function MyDataNFTsElrond({ onRfMount }) {
         </Flex>
       }
 
-      <Modal
-        isOpen={isBurnNFTOpen}
-        onClose={onBurnNFTClose}
-        closeOnEsc={false} closeOnOverlayClick={false}
-      >
-        <ModalOverlay
-          bg='blackAlpha.700'
-          backdropFilter='blur(10px) hue-rotate(90deg)'
-          />
-        <ModalContent>
-          {
-            burnNFTModalState === 1 ? (<>
-              <ModalHeader>Burn My Data NFTs</ModalHeader>
-              <ModalBody pb={6}>
-                <Flex>
-                  <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
-                </Flex>
-                <Text color='red.500' fontSize='md' mt='4'>"Burning" Data NFTs means they are destroyed forever. You cannot receover them so preceed with caution.</Text>
-                <Text color='orange.300' fontSize='md' mt='4'>You have ownership of 6 Data NFTs (out of a total of 10). You can burn these 6 Data NFTs and remove them from your wallet. The remaining 4 NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
-                <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again</Text>
+      {
+        selectedDataNft && <Modal
+          isOpen={isBurnNFTOpen}
+          onClose={onBurnNFTClose}
+          closeOnEsc={false} closeOnOverlayClick={false}
+        >
+          <ModalOverlay
+            bg='blackAlpha.700'
+            backdropFilter='blur(10px) hue-rotate(90deg)'
+            />
+          <ModalContent>
+            {
+              burnNFTModalState === 1 ? (<>
+                <ModalHeader>Burn My Data NFTs</ModalHeader>
+                <ModalBody pb={6}>
+                  <Flex>
+                    <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
+                  </Flex>
+                  <Text color='red.500' fontSize='md' mt='4'>"Burning" Data NFTs means they are destroyed forever. You cannot receover them so preceed with caution.</Text>
+                  <Text color='orange.300' fontSize='md' mt='4'>You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these {selectedDataNft.balance} Data NFTs and remove them from your wallet. The remaining {selectedDataNft.supply - selectedDataNft.balance} NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
+                  <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again</Text>
 
-                <HStack mt='4'>
-                  <Text fontSize='md'>How many to burn?</Text>
-                  <NumberInput
-                    size="xs"
-                    maxW={16}
-                    step={1}
-                    defaultValue={1}
-                    min={1}
-                    value={dataNftBurnAmount}
-                    onChange={value => onChangeDataNftBurnAmount(Number(value))}
-                  >
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </HStack>
+                  <HStack mt='4'>
+                    <Text fontSize='md'>How many to burn?</Text>
+                    <NumberInput
+                      size="xs"
+                      maxW={16}
+                      step={1}
+                      defaultValue={1}
+                      min={1}
+                      value={dataNftBurnAmount}
+                      onChange={value => onChangeDataNftBurnAmount(Number(value))}
+                    >
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </HStack>
 
-                <Flex justifyContent='end' mt='6 !important'>
-                  <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my {dataNftBurnAmount} Data NFTs</Button>
-                  <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
-                </Flex>
-              </ModalBody>
-            </>) : (<>
-              <ModalHeader>Are you sure?</ModalHeader>
-              <ModalBody pb={6}>
-                <Flex>
-                  <Text fontWeight="bold" fontSize='md' px='1'>Data NFT Title: &nbsp;</Text>
-                  <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>{selectedDataNft.title}</Text>
-                </Flex>
-                <Flex mt='1'>
-                  <Text fontWeight="bold" fontSize='md' px='1'>Burn Amount: &nbsp;&nbsp;</Text>
-                  <Text  fontSize='sm' backgroundColor='blackAlpha.300' px='1'>{dataNftBurnAmount}</Text>
-                </Flex>
-                <Text fontSize='md' mt='2'>Are you sure you want to preceed with burning the Data NFTs? You cannot undo this action.</Text>
-                <Flex justifyContent='end' mt='6 !important'>
-                  <Button colorScheme="teal" size='sm' mx='3' onClick={onBurn}>Proceed</Button>
-                  <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
-                </Flex>
-              </ModalBody>
-            </>)
-          }
-        </ModalContent>
-      </Modal>
+                  <Flex justifyContent='end' mt='6 !important'>
+                    <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my {dataNftBurnAmount} Data NFTs</Button>
+                    <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
+                  </Flex>
+                </ModalBody>
+              </>) : (<>
+                <ModalHeader>Are you sure?</ModalHeader>
+                <ModalBody pb={6}>
+                  <Flex>
+                    <Text fontWeight="bold" fontSize='md' px='1'>Data NFT Title: &nbsp;</Text>
+                    <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>{selectedDataNft.title}</Text>
+                  </Flex>
+                  <Flex mt='1'>
+                    <Text fontWeight="bold" fontSize='md' px='1'>Burn Amount: &nbsp;&nbsp;</Text>
+                    <Text  fontSize='sm' backgroundColor='blackAlpha.300' px='1'>{dataNftBurnAmount}</Text>
+                  </Flex>
+                  <Text fontSize='md' mt='2'>Are you sure you want to preceed with burning the Data NFTs? You cannot undo this action.</Text>
+                  <Flex justifyContent='end' mt='6 !important'>
+                    <Button colorScheme="teal" size='sm' mx='3' onClick={onBurn}>Proceed</Button>
+                    <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
+                  </Flex>
+                </ModalBody>
+              </>)
+            }
+          </ModalContent>
+        </Modal>
+      }
 
       <Modal
         isOpen={isAccessProgressModalOpen}
