@@ -131,7 +131,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [dataNFTMarshalServiceValid, setDataNFTMarshalServiceValid] = useState(false);
 
   const [itheumBalance, setItheumBalance] = useState(0);
-  const [enoughForAntiSpamTax, setEnoughForAntiSpamTax] = useState(false);
 
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
@@ -515,12 +514,12 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   async function createFileFromUrl(url){
     const res = await fetch(url);
-    console.log('res', res);
+    // console.log('res', res);
     const data = await res.blob();
     const type = mime.getType(data)
-    console.log('type', type);
+    // console.log('type', type);
     const _file = new File([data], 'image', { type: 'image/png' });
-    console.log('file', _file);
+    // console.log('file', _file);
 
     return _file;
   }
@@ -528,14 +527,14 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const buildUniqueImage = async({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
     const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
-    console.log('newNFTImg', newNFTImg);
+    // console.log('newNFTImg', newNFTImg);
 
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
     const image = await createFileFromUrl(newNFTImg);
     const nftstorage = new NFTStorage({ token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY })
     const res = await nftstorage.storeBlob(image);
-    console.log('res', res);
+    // console.log('res', res);
 
     if (!res) {
       setErrDataNFTStreamGeneric(new Error('Uploading the image on IPFS has failed'));
@@ -689,7 +688,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
               <Stack spacing="5" mt="5">
                 {
-                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0 || !dataNFTMarshalServiceValid || !dataNFTStreamPreviewUrlValid)
+                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0 || !dataNFTMarshalServiceValid)
                   && <Alert status="error">
                     <Stack >
                       <AlertTitle fontSize="md" mb={2}>
@@ -701,7 +700,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                       {maxSupply < 0 && <AlertDescription fontSize="md">Unable to read default value of Max Supply</AlertDescription>}
                       {antiSpamTax < 0 && <AlertDescription fontSize="md">Unable to read default value of Anti-Spam Tax</AlertDescription>}
                       {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Data Marshal service is not responding</AlertDescription>}
-                      {!dataNFTStreamPreviewUrlValid && <AlertDescription fontSize="md">Generative image generation service is not responding</AlertDescription>}
+                      {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Generative image generation service is not responding</AlertDescription>}
                     </Stack>
                   </Alert>
                 }

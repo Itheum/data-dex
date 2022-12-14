@@ -409,17 +409,27 @@ export default function MyDataNFTsElrond({ onRfMount }) {
           <ModalContent>
             {
               burnNFTModalState === 1 ? (<>
-                <ModalHeader>Burn My Data NFTs</ModalHeader>
+                <ModalHeader>Burn Supply from my Data NFT</ModalHeader>
                 <ModalBody pb={6}>
-                  <Flex>
-                    <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1'>THOR_EcoGP_Race3</Text>
-                  </Flex>
-                  <Text color='red.500' fontSize='md' mt='4'>"Burning" Data NFTs means they are destroyed forever. You cannot receover them so preceed with caution.</Text>
-                  <Text color='orange.300' fontSize='md' mt='4'>You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these {selectedDataNft.balance} Data NFTs and remove them from your wallet. The remaining {selectedDataNft.supply - selectedDataNft.balance} NFTs have already been purchased and they no longer belong to you so you CANNOT burn them</Text>
-                  <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again</Text>
+                  <HStack spacing="5" alignItems="center">                    
+                    <Box flex="1.1">
+                      <Stack>
+                        <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
+                        <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1' textAlign="center">{selectedDataNft.tokenName}</Text>
+                      </Stack>
+                    </Box>
+                    <Box flex="1.9" alignContent="center">
+                      <Text color='orange.300' fontSize='sm'>
+                        You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these {selectedDataNft.balance} Data NFTs and remove them from your wallet. 
+                        {selectedDataNft.supply - selectedDataNft.balance > 0 && ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
+                      </Text>
+                    </Box>
+                  </HStack>
+                  
+                  <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again.</Text>
 
-                  <HStack mt='4'>
-                    <Text fontSize='md'>How many to burn?</Text>
+                  <HStack mt='8'>
+                    <Text fontSize='md'>How many do you want to burn?</Text>
                     <NumberInput
                       size="xs"
                       maxW={16}
@@ -437,7 +447,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                     </NumberInput>
                   </HStack>
 
-                  <Flex justifyContent='end' mt='6 !important'>
+                  <Flex justifyContent='end' mt='8 !important'>
                     <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my {dataNftBurnAmount} Data NFTs</Button>
                     <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
                   </Flex>
