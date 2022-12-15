@@ -225,7 +225,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     } else if (trimmedValue.length > 1000) {
       error = 'Length of Data Stream URL cannot exceed 1000';
     } else {
-      checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamUrlValid(res));
+      // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
+      //checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamUrlValid(res));
+      setDataNFTStreamUrlValid(true);
     }
 
     setDataNFTStreamUrlError(error);
@@ -248,7 +250,9 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     } else if (trimmedValue.length > 1000) {
       error = 'Length of Data Preview URL cannot exceed 1000';
     } else {
-      checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamPreviewUrlValid(res));
+      // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
+      //checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamPreviewUrlValid(res));
+      setDataNFTStreamPreviewUrlValid(true);
     }
 
     setDataNFTStreamPreviewUrlError(error);
@@ -724,7 +728,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamUrlError}</Text>
                 )}
                 {(userFocusedForm && !dataNFTStreamUrlValid) && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream URL must be a publicly accessible url</Text>
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream URL must be a publicly accessible url</Text>
                 )}
 
                 <InputLabelWithPopover tkey='data-preview-url'>

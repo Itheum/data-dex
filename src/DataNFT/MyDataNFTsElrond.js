@@ -15,7 +15,7 @@ import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { sleep, uxConfig, contractsForChain, consoleNotice } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
-import { getNftsOfAcollectionForAnAddress } from 'Elrond/api';
+import { getNftsOfACollectionForAnAddress } from 'Elrond/api';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
 import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
@@ -158,7 +158,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async() => {
-    const onChainNfts = await getNftsOfAcollectionForAnAddress(address,'DATANFTV2-758cf1','not_E1');
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address,'DATANFTV2-758cf1','not_E1');
 
     console.log('onChainNfts');
     console.log(onChainNfts);
@@ -201,7 +201,10 @@ export default function MyDataNFTsElrond({ onRfMount }) {
           setUnlockAccessProgress(prevProgress => ({ ...prevProgress, s2: 1 }));
           await sleep(3);
 
-          window.open(`https://itheumapi.com/ddex/datamarshal/v1/services/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId==${chainId}&accessRequesterAddr=${signResult.addrInHex}`);
+          // auto download the file without ever exposing the url
+          const link = document.createElement('a');
+          link.href = `https://itheumapi.com/ddex/datamarshal/v1/services/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId==${chainId}&accessRequesterAddr=${signResult.addrInHex}`;
+          link.dispatchEvent(new MouseEvent('click'));
 
           await sleep(3);
 
