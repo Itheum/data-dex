@@ -594,6 +594,10 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     onProgressModalClose();
     onCloseDrawerTradeStream();
 
+    // initialize modal status
+    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    setMintingSuccessful(false);
+
     // remount the component (quick way to rest all state to pristine)
     onRfMount();
   }
