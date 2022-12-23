@@ -157,8 +157,8 @@ export default function MyDataNFTsElrond({ onRfMount }) {
   }, [onChainNFTs]);
 
   // get the raw NFT data from the blockchain for the user
-  const getOnChainNFTs = async() => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address,'DATANFTV2-758cf1','not_E1');
+  const getOnChainNFTs = async () => {
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, 'DATANFTV2-758cf1', 'not_E1');
 
     console.log('onChainNfts');
     console.log(onChainNfts);
@@ -263,7 +263,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
     <Stack spacing={5}>
       <Heading size="lg">Data NFT Wallet</Heading>
       <Heading size="xs" opacity=".7">Below are the Data NFTs you created and/or purchased on the current chain</Heading>
-      
+
       {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
         <>{!noData && <SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
@@ -281,7 +281,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
               <Flex height='4rem'>
                 <Popover trigger='hover' placement='auto'>
                   <PopoverTrigger>
-                    <Text fontSize='sm' mt='2' color='gray.300'>{item.description.substring(0, 100)!==item.description?item.description.substring(0, 100) + ' ...':item.description}</Text>
+                    <Text fontSize='sm' mt='2' color='gray.300'>{item.description.substring(0, 100) !== item.description ? item.description.substring(0, 100) + ' ...' : item.description}</Text>
                   </PopoverTrigger>
                   <PopoverContent mx='2' width='220px' mt='-7'>
                     <PopoverHeader fontWeight='semibold'>{item.tokenName}</PopoverHeader>
@@ -293,7 +293,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                   </PopoverContent>
                 </Popover>
               </Flex>
-              
+
               <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
                 {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
               </Box>
@@ -330,45 +330,45 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
                 <HStack my={'2'}>
                   <Text fontSize="xs">How many to list: </Text>
-                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={item.balance} value={amounts[index]} onChange={(valueString) => setAmounts((oldAmounts)=>{
-                  const newAmounts = [...oldAmounts];
-                  newAmounts[index] = Number(valueString);
-                  return newAmounts;
-                })}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={item.balance} value={amounts[index]} onChange={(valueString) => setAmounts((oldAmounts) => {
+                    const newAmounts = [...oldAmounts];
+                    newAmounts[index] = Number(valueString);
+                    return newAmounts;
+                  })}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
                 </HStack>
 
                 <HStack my={'2'}>
                   <Text fontSize="xs">Listing price for each: </Text>
-                <NumberInput size="xs" maxW={16} step={5} defaultValue={10} min={1} max={999999999999} value={prices[index]} onChange={(valueString) => setPrices((oldPrices)=>{
-                  const newPrices = [...oldPrices];
-                  newPrices[index] = Number(valueString);
-                  return newPrices;
-                })}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  <NumberInput size="xs" maxW={16} step={5} defaultValue={10} min={1} max={999999999999} value={prices[index]} onChange={(valueString) => setPrices((oldPrices) => {
+                    const newPrices = [...oldPrices];
+                    newPrices[index] = Number(valueString);
+                    return newPrices;
+                  })}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
                 </HStack>
-                
+
                 <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
                   handleListOnMarketplace({
-                    collection: item.collection, 
+                    collection: item.collection,
                     nonce: item.nonce,
                     qty: amounts[index],
                     price: prices[index]
                   });
                 }}>
-                  List {amounts[index]} NFT{amounts[index]>1&&'s'} for {prices[index]} ITHEUM each
+                  List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index]} ITHEUM each
                 </Button>
-              </Box>              
+              </Box>
             </Flex>
 
             <Box
@@ -395,7 +395,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
               </Text>
             </Box>
           </Box>)}
-          
+
         </Flex>
       }
 
@@ -408,13 +408,13 @@ export default function MyDataNFTsElrond({ onRfMount }) {
           <ModalOverlay
             bg='blackAlpha.700'
             backdropFilter='blur(10px) hue-rotate(90deg)'
-            />
+          />
           <ModalContent>
             {
               burnNFTModalState === 1 ? (<>
                 <ModalHeader>Burn Supply from my Data NFT</ModalHeader>
                 <ModalBody pb={6}>
-                  <HStack spacing="5" alignItems="center">                    
+                  <HStack spacing="5" alignItems="center">
                     <Box flex="1.1">
                       <Stack>
                         <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
@@ -423,12 +423,12 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                     </Box>
                     <Box flex="1.9" alignContent="center">
                       <Text color='orange.300' fontSize='sm'>
-                        You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these {selectedDataNft.balance} Data NFTs and remove them from your wallet. 
+                        You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 && ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
                       </Text>
                     </Box>
                   </HStack>
-                  
+
                   <Text fontSize='md' mt='4'>Please note that Data NFTs not listed in the Data NFT marketplace are "NOT public" and are "Private" to only you so on one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them again.</Text>
 
                   <HStack mt='8'>
@@ -464,9 +464,9 @@ export default function MyDataNFTsElrond({ onRfMount }) {
                   </Flex>
                   <Flex mt='1'>
                     <Text fontWeight="bold" fontSize='md' px='1'>Burn Amount: &nbsp;&nbsp;</Text>
-                    <Text  fontSize='sm' backgroundColor='blackAlpha.300' px='1'>{dataNftBurnAmount}</Text>
+                    <Text fontSize='sm' backgroundColor='blackAlpha.300' px='1'>{dataNftBurnAmount}</Text>
                   </Flex>
-                  <Text fontSize='md' mt='2'>Are you sure you want to preceed with burning the Data NFTs? You cannot undo this action.</Text>
+                  <Text fontSize='md' mt='2'>Are you sure you want to proceed with burning the Data NFTs? You cannot undo this action.</Text>
                   <Flex justifyContent='end' mt='6 !important'>
                     <Button colorScheme="teal" size='sm' mx='3' onClick={onBurn}>Proceed</Button>
                     <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>

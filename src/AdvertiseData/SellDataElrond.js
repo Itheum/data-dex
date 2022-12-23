@@ -5,7 +5,7 @@ import { CheckCircleIcon } from '@chakra-ui/icons';
 import {
   Button, Input, Text, HStack, Spinner, Skeleton, Center,
   Alert, AlertIcon, AlertTitle, AlertDescription, CloseButton, CircularProgress,
-  Image, Badge, Wrap, Flex, Textarea, 
+  Image, Badge, Wrap, Flex, Textarea,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
@@ -59,7 +59,7 @@ const InputLabelWithPopover = ({ children, tkey }) => {
     title = 'Royalties';
     text = 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace';
   }
-  
+
   return (
     <Flex>
       <Popover trigger='hover' placement='auto'>
@@ -137,7 +137,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
-    (async() => {
+    (async () => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
@@ -147,7 +147,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const value = firstValue.valueOf();
       setMinRoyalties(value.toNumber() / 100);
     })();
-    (async() => {
+    (async () => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
@@ -157,7 +157,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const value = firstValue.valueOf();
       setMaxRoyalties(value.toNumber() / 100);
     })();
-    (async() => {
+    (async () => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
@@ -167,7 +167,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       const value = firstValue.valueOf();
       setMaxSupply(value.toNumber());
     })();
-    (async() => {
+    (async () => {
       const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
@@ -226,8 +226,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       error = 'Length of Data Stream URL cannot exceed 1000';
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      //checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamUrlValid(res));
-      setDataNFTStreamUrlValid(true);
+      checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamUrlValid(res));
     }
 
     setDataNFTStreamUrlError(error);
@@ -238,7 +237,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const onChangeDataNFTStreamPreviewUrl = (value) => {
     const trimmedValue = value.trim();
     let error = '';
-    
+
     if (!trimmedValue.startsWith('https://')) {
       error = 'Data Preview URL must start with \'https://\'';
     } else if (trimmedValue.includes(' ')) {
@@ -251,8 +250,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       error = 'Length of Data Preview URL cannot exceed 1000';
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      //checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamPreviewUrlValid(res));
-      setDataNFTStreamPreviewUrlValid(true);
+      checkUrlReturns200(trimmedValue).then(res => setDataNFTStreamPreviewUrlValid(res));
     }
 
     setDataNFTStreamPreviewUrlError(error);
@@ -268,7 +266,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
     setDataNFTMarshalService(trimmedValue);
   }
-  
+
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState('');
   const onChangeDataNFTTokenName = (value) => {
     const trimmedValue = value.trim();
@@ -402,17 +400,17 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     setErrDataNFTStreamGeneric(new Error('Transaction to mint Data NFT was cancelled'));
   }
 
-  const mintTxSuccess = async(foo) => {
+  const mintTxSuccess = async (foo) => {
     console.log('mintTxSuccess', foo);
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s4: 1 }));
     await sleep(3);
-    
-    setMintingSuccessful(true);    
+
+    setMintingSuccessful(true);
   }
 
   const [mintSessionId, setMintSessionId] = useState(null);
 
-  const getDataForSale = (programId, isStreamTrade=false) => {
+  const getDataForSale = (programId, isStreamTrade = false) => {
     if (isStreamTrade) {
       onOpenDrawerTradeStream();
     }
@@ -425,7 +423,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     } else {
       setIsArbirData(true);
     }
-    
+
     setIsStreamTrade(isStreamTrade)
   }
 
@@ -499,7 +497,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       if (data && data.encryptedMessage && data.messageHash) {
         setSellerData(data.encryptedMessage); // the data URL is the seller data in this case
         setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s1: 1 }));
-  
+
         buildUniqueImage({
           dataNFTHash: data.messageHash,
           dataNFTStreamUrlEncrypted: data.encryptedMessage
@@ -511,12 +509,12 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
           setErrDataNFTStreamGeneric(new Error('Data Marshal responded with an unknown error trying to generate your encrypted links'));
         }
       }
-    } catch(e) {
+    } catch (e) {
       setErrDataNFTStreamGeneric(e);
     }
   }
 
-  async function createFileFromUrl(url){
+  async function createFileFromUrl(url) {
     const res = await fetch(url);
     // console.log('res', res);
     const data = await res.blob();
@@ -528,7 +526,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     return _file;
   }
 
-  const buildUniqueImage = async({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
+  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
     const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
     // console.log('newNFTImg', newNFTImg);
@@ -551,22 +549,22 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
-    
+
     handleOnChainMint({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted });
   };
 
-  const handleOnChainMint = async({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
+  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
     const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
     const { sessionId, error } = await elrondDataNftMintContract.sendMintTransaction({
-      name: dataNFTTokenName, 
+      name: dataNFTTokenName,
       media: imageOnIpfsUrl,
-      data_marchal: dataNFTMarshalService, 
-      data_stream: dataNFTStreamUrlEncrypted, 
-      data_preview: dataNFTStreamPreviewUrl, 
-      royalties: Math.ceil(dataNFTRoyalty*100),
-      amount: dataNFTCopies,      
+      data_marchal: dataNFTMarshalService,
+      data_stream: dataNFTStreamUrlEncrypted,
+      data_preview: dataNFTStreamPreviewUrl,
+      royalties: Math.ceil(dataNFTRoyalty * 100),
+      amount: dataNFTCopies,
       title: datasetTitle,
       description: datasetDescription,
       sender: elrondAddress,
@@ -583,7 +581,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     onFail: mintTxFail,
     onCancelled: mintTxCancelled,
   });
-  
+
   const closeProgressModal = () => {
     toast({
       title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
@@ -631,7 +629,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
           {itheumAccount.programsAllocation.map(item => (
             <Box key={item.program} maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt=""/>
+              <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
               <Box p="6">
                 <Box display="flex" alignItems="baseline">
@@ -655,7 +653,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
       <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
         <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt=""/>
+          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" />
 
           <Box p="6">
             <Box display="flex" alignItems="baseline">
@@ -679,19 +677,19 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
           <DrawerHeader>
             <HStack spacing="5">
               <CloseButton size="lg" onClick={onRfMount} />
-              {currSellObject && 
+              {currSellObject &&
                 <Stack>
                   <Text fontSize="2xl">Trade data from your <Text color="teal" fontSize="2xl">{currSellObject.programName}</Text> program</Text>
-                </Stack> || 
+                </Stack> ||
                 <Heading as='h4' size='lg'>Trade a Data Stream as a Data NFT-FT</Heading>
               }
             </HStack>
           </DrawerHeader>
           <DrawerBody onClick={() => {
-              if (!userFocusedForm) {
-                setUserFocusedForm(true);
-              }
-            }}>
+            if (!userFocusedForm) {
+              setUserFocusedForm(true);
+            }
+          }}>
             {(fetchDataLoading && !isArbirData) && <CircularProgress isIndeterminate color="teal" size="100" thickness="5px" /> ||
 
               <Stack spacing="5" mt="5">
@@ -749,7 +747,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTStreamPreviewUrlError}</Text>
                 )}
                 {(userFocusedForm && !dataNFTStreamPreviewUrlValid) && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream Preview URL must be a publicly accessible url</Text>
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>Data Stream Preview URL must be a publicly accessible url</Text>
                 )}
 
                 <InputLabelWithPopover tkey='data-marshal-url'>
@@ -762,7 +760,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   disabled
                 />
                 {(userFocusedForm && !dataNFTMarshalServiceValid) && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>Data Marshal Service is currently offline</Text>
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>Data Marshal Service is currently offline</Text>
                 )}
 
                 <Text fontWeight="bold" color="teal.200" fontSize='xl' mt='8 !important'>NFT Token Metadata</Text>
@@ -815,7 +813,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 <InputLabelWithPopover tkey='number-of-copies'>
                   <Text fontWeight="bold" fontSize='md'>Number of copies</Text>
                 </InputLabelWithPopover>
-                
+
                 <NumberInput
                   mt='1 !important'
                   size="md"
@@ -832,7 +830,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   </NumberInputStepper>
                 </NumberInput>
                 <Text color="gray.400" fontSize="sm" mt='0 !important'>Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}</Text>
-                {(userFocusedForm && dataNFTCopiesError )&& (
+                {(userFocusedForm && dataNFTCopiesError) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>{dataNFTCopiesError}</Text>
                 )}
 
@@ -876,7 +874,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                 <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.</Text>
                 <Flex mt='3 !important'><Tag variant='solid' colorScheme='teal'>Anti-Spam Fee is currently {antiSpamTax < 0 ? '?' : antiSpamTax} ITHEUM tokens</Tag></Flex>
                 {itheumBalance < antiSpamTax && (
-                    <Text color='red.400' fontSize='sm' mt='1 !important'>You don't have enough ITHEUM for Anti-Spam Tax</Text>
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>You don't have enough ITHEUM for Anti-Spam Tax</Text>
                 )}
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
 
@@ -946,16 +944,16 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                         </HStack>
                       </Box>
                     }
-                    
+
                     {errDataNFTStreamGeneric &&
                       <Alert status="error">
-                      <Stack >
-                        <AlertTitle fontSize="md">
-                          <AlertIcon mb={2} />Process Error</AlertTitle>
+                        <Stack >
+                          <AlertTitle fontSize="md">
+                            <AlertIcon mb={2} />Process Error</AlertTitle>
                           {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
                           <CloseButton position="absolute" right="8px" top="8px" onClick={onRfMount} />
-                      </Stack>
-                    </Alert>
+                        </Stack>
+                      </Alert>
                     }
                   </Stack>
                 </ModalBody>
@@ -974,7 +972,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
         <ModalOverlay
           bg='blackAlpha.700'
           backdropFilter='blur(10px) hue-rotate(90deg)'
-          />
+        />
         <ModalContent>
           <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
           <ModalBody pb={6}>
