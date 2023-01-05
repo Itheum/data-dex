@@ -37,6 +37,7 @@ export default function HomeElrond({ onRfMount }) {
     claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
     claimBalanceDates: [0, 0, 0]
   });
+  const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
@@ -130,6 +131,22 @@ export default function HomeElrond({ onRfMount }) {
       }
     }
   }
+
+  useEffect(() => {
+    // this will trigger during component load/page load, so let's get the latest claims balances
+    if (elrondClaimsContract && !hasPendingTransactions) {
+      getAndSetElrondClaimsIsPaused();
+    }
+  }, [elrondAddress]);
+
+  const getAndSetElrondClaimsIsPaused = async() => {
+    if (elrondAddress && isElrondLoggedIn) {
+      const isPaused = await elrondClaimsContract.isClaimsContractPaused();
+      setClaimContractPauseValue(isPaused);
+      return isPaused;
+    }
+  }
+
   // E: Claims
 
   useEffect(() => {
@@ -145,6 +162,10 @@ export default function HomeElrond({ onRfMount }) {
       setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }
   }, [hasPendingTransactions]);
+
+  const shouldClaimButtonBeDisabled = (claimTypeIndex) => {
+    return claimContractPauseValue || isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[claimTypeIndex] === '-1' || claimsBalances.claimBalanceValues[claimTypeIndex] === '-2' || !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
+  }
 
   // S: claims related logic
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
@@ -241,7 +262,7 @@ export default function HomeElrond({ onRfMount }) {
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Rewards</Text>
-                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === '-1' || claimsBalances.claimBalanceValues[0] === '-2' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  <Button disabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                     {(claimsBalances.claimBalanceValues[0] !== '-1' && claimsBalances.claimBalanceValues[0] !== '-2') ? 
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[0]) : claimsBalances.claimBalanceValues[0] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
@@ -253,7 +274,7 @@ export default function HomeElrond({ onRfMount }) {
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Airdrops</Text>
-                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === '-1' || claimsBalances.claimBalanceValues[1] === '-2' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  <Button disabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                     {(claimsBalances.claimBalanceValues[1] !== '-1' && claimsBalances.claimBalanceValues[1] !== '-2') ? 
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[1]) : claimsBalances.claimBalanceValues[1] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
@@ -267,7 +288,7 @@ export default function HomeElrond({ onRfMount }) {
                   <Box h="40px">
                     <HStack spacing={30}>
                       <Text>Allocations</Text>
-                      <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === '-1' || claimsBalances.claimBalanceValues[2] === '-2' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                      <Button disabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                         {(claimsBalances.claimBalanceValues[2] !== '-1' && claimsBalances.claimBalanceValues[2] !== '-2') ? 
                             formatNumberRoundFloor(claimsBalances.claimBalanceValues[2]) : claimsBalances.claimBalanceValues[2] !== '-2' ? 
                               <Spinner size="xs" /> : <WarningTwoIcon />
