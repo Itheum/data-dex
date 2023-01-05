@@ -23,7 +23,7 @@ import { formatNumberRoundFloor } from 'libs/util';
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
 
-export default function({ onRfMount }) {
+export default function HomeElrond({ onRfMount }) {
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
@@ -218,7 +218,7 @@ export default function({ onRfMount }) {
                 <Spacer />
 
                 <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
-                  Send me 10 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                  Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Button>
               </Stack>
             </Box>
