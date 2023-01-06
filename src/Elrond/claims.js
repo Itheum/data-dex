@@ -61,6 +61,34 @@ export class ClaimsContract {
     }
   }
 
+  async isClaimsContractPaused(){
+    const interaction = this.contract.methods.isPaused();
+    const query = interaction.buildQuery();
+    let result = false;
+
+    try {
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+
+      const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (returnCode && returnCode.isSuccess()) {
+        result = firstValue.valueOf();
+
+        return result;
+      } else {
+        const nonOKErr = new Error('isPaused returnCode returned a non OK value');
+        console.error(nonOKErr);
+
+        return false; // boundary case: treat err as not-paused, and let user proceed as it will fail in TX
+      }
+    } catch (error) {
+      console.error(error);
+      
+      return false; // boundary case: as above...
+    }
+  }
+
   async sendClaimRewardsTransaction(sender, rewardType) {
     const claimTransaction = new Transaction({
       value: 0,
