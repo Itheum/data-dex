@@ -79,11 +79,13 @@ export class ClaimsContract {
       } else {
         const nonOKErr = new Error('isPaused returnCode returned a non OK value');
         console.error(nonOKErr);
-        return { error: nonOKErr };
+
+        return false; // boundary case: treat err as not-paused, and let user proceed as it will fail in TX
       }
     } catch (error) {
       console.error(error);
-      return { error };
+      
+      return false; // boundary case: as above...
     }
   }
 

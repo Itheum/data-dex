@@ -20,7 +20,6 @@ import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transa
 import { useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { formatNumberRoundFloor } from 'libs/util';
 
-
 let elrondFaucetContract = null;
 let elrondClaimsContract = null;
 
@@ -134,7 +133,7 @@ export default function HomeElrond({ onRfMount }) {
   }
 
   useEffect(() => {
-    // this will trigger during component load/page load, so let's get the latest claims balances
+    // check if claims contract is paused, freeze ui so user does not waste gas
     if (elrondClaimsContract && !hasPendingTransactions) {
       getAndSetElrondClaimsIsPaused();
     }
@@ -147,7 +146,6 @@ export default function HomeElrond({ onRfMount }) {
       return isPaused;
     }
   }
-
   // E: Claims
 
   useEffect(() => {
@@ -165,7 +163,9 @@ export default function HomeElrond({ onRfMount }) {
   }, [hasPendingTransactions]);
 
   const shouldClaimButtonBeDisabled = (claimTypeIndex) => {
-    return claimContractPauseValue || isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[claimTypeIndex] === '-1' || claimsBalances.claimBalanceValues[claimTypeIndex] === '-2' || !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
+    return claimContractPauseValue || 
+        isOnChainInteractionDisabled || 
+          claimsBalances.claimBalanceValues[claimTypeIndex] === '-1' || claimsBalances.claimBalanceValues[claimTypeIndex] === '-2' || !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
   }
 
   // S: claims related logic
