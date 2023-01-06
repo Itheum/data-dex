@@ -87,3 +87,19 @@ thead.dapp-core-component__main__text-black-50 {
 .dapp-core-component__customToast-styles__close {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
+
+.dapp-wallet-connect-login-modal .dapp-modal-dialog-header, .dapp-ledger-login-container .dapp-modal-dialog-header {
+  margin-top: 10px;
+}
+
+.dapp-ledger-login-container .dapp-core-component__main__text-danger {
+  margin-bottom: 5px;
+}
+
+.dapp-modal-dialog-header .dapp-modal-dialog-close-button {
+  margin-top: 5px;
+}
+
+.dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper{
+  position: fixed !important;
+}

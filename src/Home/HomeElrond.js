@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import { 
   Button, Spacer, Text, HStack, Heading, Wrap, Spinner,
-  useToast, useDisclosure } from '@chakra-ui/react';
+  useToast, useDisclosure, Tooltip } from '@chakra-ui/react';
 import { WarningTwoIcon } from '@chakra-ui/icons';
 import moment from 'moment';
 import { uxConfig, debugui } from 'libs/util';
@@ -37,6 +37,7 @@ export default function HomeElrond({ onRfMount }) {
     claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
     claimBalanceDates: [0, 0, 0]
   });
+  const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
@@ -130,6 +131,21 @@ export default function HomeElrond({ onRfMount }) {
       }
     }
   }
+
+  useEffect(() => {
+    // check if claims contract is paused, freeze ui so user does not waste gas
+    if (elrondClaimsContract && !hasPendingTransactions) {
+      getAndSetElrondClaimsIsPaused();
+    }
+  }, [elrondAddress]);
+
+  const getAndSetElrondClaimsIsPaused = async() => {
+    if (elrondAddress && isElrondLoggedIn) {
+      const isPaused = await elrondClaimsContract.isClaimsContractPaused();
+      setClaimContractPauseValue(isPaused);
+      return isPaused;
+    }
+  }
   // E: Claims
 
   useEffect(() => {
@@ -145,6 +161,12 @@ export default function HomeElrond({ onRfMount }) {
       setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }
   }, [hasPendingTransactions]);
+
+  const shouldClaimButtonBeDisabled = (claimTypeIndex) => {
+    return claimContractPauseValue || 
+        isOnChainInteractionDisabled || 
+          claimsBalances.claimBalanceValues[claimTypeIndex] === '-1' || claimsBalances.claimBalanceValues[claimTypeIndex] === '-2' || !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
+  }
 
   // S: claims related logic
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
@@ -218,7 +240,7 @@ export default function HomeElrond({ onRfMount }) {
                 <Spacer />
 
                 <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
-                  Send me 10 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                  Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Button>
               </Stack>
             </Box>
@@ -241,24 +263,30 @@ export default function HomeElrond({ onRfMount }) {
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Rewards</Text>
-                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[0] === '-1' || claimsBalances.claimBalanceValues[0] === '-2' || !claimsBalances.claimBalanceValues[0] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                     {(claimsBalances.claimBalanceValues[0] !== '-1' && claimsBalances.claimBalanceValues[0] !== '-2') ? 
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[0]) : claimsBalances.claimBalanceValues[0] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
                     }
-                  </Button>
+                    </Button>
+                  </Tooltip>
+
                   <ClaimModalElrond {...rewardsModalData} />
                 </HStack>
                 
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Airdrops</Text>
-                  <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[1] === '-1' || claimsBalances.claimBalanceValues[1] === '-2' || !claimsBalances.claimBalanceValues[1] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                     {(claimsBalances.claimBalanceValues[1] !== '-1' && claimsBalances.claimBalanceValues[1] !== '-2') ? 
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[1]) : claimsBalances.claimBalanceValues[1] !== '-2' ? 
                           <Spinner size="xs" /> : <WarningTwoIcon />
                     }
-                  </Button>
+                    </Button>
+                  </Tooltip>
+
                   <ClaimModalElrond {...airdropsModalData} />
                 </HStack>
                 <Spacer />
@@ -267,12 +295,14 @@ export default function HomeElrond({ onRfMount }) {
                   <Box h="40px">
                     <HStack spacing={30}>
                       <Text>Allocations</Text>
-                      <Button disabled={isOnChainInteractionDisabled || claimsBalances.claimBalanceValues[2] === '-1' || claimsBalances.claimBalanceValues[2] === '-2' || !claimsBalances.claimBalanceValues[2] > 0} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                        {(claimsBalances.claimBalanceValues[2] !== '-1' && claimsBalances.claimBalanceValues[2] !== '-2') ? 
-                            formatNumberRoundFloor(claimsBalances.claimBalanceValues[2]) : claimsBalances.claimBalanceValues[2] !== '-2' ? 
-                              <Spinner size="xs" /> : <WarningTwoIcon />
-                        }
-                      </Button>
+                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                        <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                          {(claimsBalances.claimBalanceValues[2] !== '-1' && claimsBalances.claimBalanceValues[2] !== '-2') ? 
+                              formatNumberRoundFloor(claimsBalances.claimBalanceValues[2]) : claimsBalances.claimBalanceValues[2] !== '-2' ? 
+                                <Spinner size="xs" /> : <WarningTwoIcon />
+                          }
+                        </Button>
+                      </Tooltip>
                       <ClaimModalElrond {...allocationsModalData} />
                     </HStack>
                   </Box>
