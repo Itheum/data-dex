@@ -99,3 +99,7 @@ thead.dapp-core-component__main__text-black-50 {
 .dapp-modal-dialog-header .dapp-modal-dialog-close-button {
   margin-top: 5px;
 }
+
+.dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper{
+  position: fixed !important;
+}
