@@ -12,7 +12,7 @@ import {
 import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { sleep, uxConfig, contractsForChain, consoleNotice } from 'libs/util';
+import { sleep, uxConfig, consoleNotice } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfACollectionForAnAddress } from 'Elrond/api';
@@ -158,7 +158,9 @@ export default function MyDataNFTsElrond({ onRfMount }) {
 
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, 'DATANFTV2-758cf1', 'not_E1');
+    const chainId = _chainMeta.networkId === 'ED' ? 'D' : 'E1';
+
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
 
     console.log('onChainNfts');
     console.log(onChainNfts);

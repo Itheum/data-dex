@@ -118,6 +118,7 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
 
 export const getNftsOfACollectionForAnAddress = async (address, collectionTicker, networkId) => {
   const api = getApi(networkId);
+  
   try {
     const nftsLink = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
 
