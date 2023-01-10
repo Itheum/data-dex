@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heading, Box, Stack } from '@chakra-ui/layout';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import {
@@ -27,6 +27,7 @@ import {
   sleep,
   MENU,
   convertWeiToEsdt,
+  tryParseInt,
 } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { set } from 'lodash';
@@ -821,7 +822,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   step={1}
                   defaultValue={1}
                   value={dataNFTCopies}
-                  onChange={(valueString) => onChangeDataNFTCopies(parseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTCopies(tryParseInt(valueString))}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -845,7 +846,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   step={5}
                   defaultValue={0}
                   value={dataNFTRoyalty}
-                  onChange={(valueString) => onChangeDataNFTRoyalty(parseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTRoyalty(tryParseInt(valueString))}
                 >
                   <NumberInputField />
                   <NumberInputStepper>

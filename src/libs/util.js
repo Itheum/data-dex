@@ -457,3 +457,8 @@ export const convertWeiToEsdt = (amount, decimals = 18, precision = 4) => {
 export const convertEsdtToWei = (amount, decimals = 18) => {
   return BigNumber(amount).shiftedBy(decimals);
 };
+
+export const tryParseInt = (value) => {
+  const intValue = parseInt(value);
+  return Number.isNaN(intValue) ? 0 : intValue;
+};
