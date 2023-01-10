@@ -386,13 +386,44 @@
           ]
       },
       {
-          "name": "getBlackList",
+          "name": "getCollectionFreezedList",
           "mutability": "readonly",
           "inputs": [],
           "outputs": [
               {
                   "type": "variadic<Address>",
                   "multi_result": true
+              }
+          ]
+      },
+      {
+          "name": "getSftsFreezedForAddress",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "variadic<u64>",
+                  "multi_result": true
+              }
+          ]
+      },
+      {
+          "name": "getFreezedCount",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "u32"
               }
           ]
       },
@@ -561,7 +592,7 @@
           ]
       },
       {
-          "identifier": "blacklistSpotSet",
+          "identifier": "collectionFreezeListSpotSet",
           "inputs": [
               {
                   "name": "address",
@@ -571,7 +602,37 @@
           ]
       },
       {
-          "identifier": "blacklistSpotRemoved",
+          "identifier": "freezedSftsPerAddress",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "unFreezedSftsPerAddress",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "collectionFreezeListRemoved",
           "inputs": [
               {
                   "name": "address",
@@ -862,6 +923,14 @@
               {
                   "name": "total_minted",
                   "type": "BigUint"
+              },
+              {
+                  "name": "frozen",
+                  "type": "bool"
+              },
+              {
+                  "name": "frozen_nonces",
+                  "type": "List<u64>"
               }
           ]
       }
