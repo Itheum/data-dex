@@ -136,19 +136,19 @@ export class DataNftMintContract {
       if (returnCode && returnCode.isSuccess()) {
         const userData = firstValue.valueOf();
         const returnData = {
-          'anitSpamTaxValue': userData.anti_spam_tax_value.toNumber(),
-          'addressFrozen': userData.frozen,
-          'frozenNonces': userData.frozen_nonces,
-          'contractPaused': userData.is_paused,
-          'userWhitelistedForMint': userData.is_whitelisted,
-          'lastUserMintTime': userData.last_mint_time*1000,
-          'maxRoyalties': userData.max_royalties.toNumber(),
-          'maxSupply': userData.max_supply.toNumber(),
-          'minRoyalties': userData.min_royalties.toNumber(),
-          'mintTimeLimit': userData.mint_time_limit*1000,
-          'numberOfMintsForUser': userData.minted_per_user.toNumber(),
-          'totalNumberOfMints': userData.total_minted.toNumber(),
-          'contractWhitelistEnabled': userData.whitelist_enabled,
+          anitSpamTaxValue: userData.anti_spam_tax_value.toNumber(),
+          addressFrozen: userData.frozen,
+          frozenNonces: userData.frozen_nonces.map(v => v.toNumber()),
+          contractPaused: userData.is_paused,
+          userWhitelistedForMint: userData.is_whitelisted,
+          lastUserMintTime: userData.last_mint_time*1000,
+          maxRoyalties: userData.max_royalties.toNumber(),
+          maxSupply: userData.max_supply.toNumber(),
+          minRoyalties: userData.min_royalties.toNumber(),
+          mintTimeLimit: userData.mint_time_limit*1000,
+          numberOfMintsForUser: userData.minted_per_user.toNumber(),
+          totalNumberOfMints: userData.total_minted.toNumber(),
+          contractWhitelistEnabled: userData.whitelist_enabled,
         }
 
         return returnData;
