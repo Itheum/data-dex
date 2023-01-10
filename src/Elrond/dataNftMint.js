@@ -121,4 +121,48 @@ export class DataNftMintContract {
       redirectAfterSign: false
     });
   }
+
+  async getUserDataOut(address, spamTaxTokenId) {
+    const interaction = this.contract.methods.getUserDataOut([new Address(address), spamTaxTokenId]);
+    const query = interaction.buildQuery();
+    const result = [];
+
+    try {
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+
+      const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (returnCode && returnCode.isSuccess()) {
+        const userData = firstValue.valueOf();
+        const returnData = {
+          'anitSpamTaxValue': userData.anti_spam_tax_value.toNumber(),
+          'addressFrozen': userData.frozen,
+          'frozenNonces': userData.frozen_nonces,
+          'contractPaused': userData.is_paused,
+          'userWhitelistedForMint': userData.is_whitelisted,
+          'lastUserMintTime': userData.last_mint_time*1000,
+          'maxRoyalties': userData.max_royalties.toNumber(),
+          'maxSupply': userData.max_supply.toNumber(),
+          'minRoyalties': userData.min_royalties.toNumber(),
+          'mintTimeLimit': userData.mint_time_limit*1000,
+          'numberOfMintsForUser': userData.minted_per_user.toNumber(),
+          'totalNumberOfMints': userData.total_minted.toNumber(),
+          'contractWhitelistEnabled': userData.whitelist_enabled,
+        }
+
+        return returnData;
+      } else {
+        const nonOKErr = new Error('getUserDataOut returnCode returned a non OK value');
+        console.error(nonOKErr);
+        
+        return { error: nonOKErr };
+      }
+    } catch (error) {
+      console.error(error);
+
+      return { error };
+    }
+  }
+
 }

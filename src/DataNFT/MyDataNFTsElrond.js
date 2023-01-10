@@ -87,20 +87,27 @@ export default function MyDataNFTsElrond({ onRfMount }) {
       return;
     }
 
-    const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
-    elrondDataNftMintContract.burnDataNft(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+    mintContract.burnDataNft(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
 
     // close modal
     onBurnNFTClose();
   };
-
-  const contract = new DataNftMarketContract(_chainMeta.networkId);
+  const mintContract = new DataNftMintContract(_chainMeta.networkId);
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's 'false' we need to get balances    
     if (!hasPendingTransactions) {
       getOnChainNFTs();
     }
+  }, [hasPendingTransactions]);
+
+  const getUserData = async() => {
+    const userData = await mintContract.getUserDataOut(address,_chainMeta.contracts.itheumToken);
+  }
+
+  useEffect(() => {
+    getUserData();
   }, [hasPendingTransactions]);
 
   // use this effect to parse  the raw data into a catalog that is easier to render in the UI
@@ -172,7 +179,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
     console.log(config);
     const { collection, nonce, price, qty } = config;
 
-    contract.addToMarket(collection, nonce, qty, price, address);
+    marketContract.addToMarket(collection, nonce, qty, price, address);
   };
 
   const accessDataStream = async (NFTid, myAddress) => {
