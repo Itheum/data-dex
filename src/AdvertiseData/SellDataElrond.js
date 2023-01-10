@@ -319,9 +319,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTCopiesError(error);
-    if (!error) {
-      setDataNFTCopies(value);
-    }
+    setDataNFTCopies(value);
   }
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
@@ -336,9 +334,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTRoyaltyError(error);
-    if (!error) {
-      setDataNFTRoyalty(value);
-    }
+    setDataNFTRoyalty(value);
   }
 
   useEffect(() => {
@@ -846,7 +842,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                   step={5}
                   defaultValue={0}
                   value={dataNFTRoyalty}
-                  onChange={(valueString) => onChangeDataNFTRoyalty(tryParseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTRoyalty(tryParseInt(valueString, minRoyalties))}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
