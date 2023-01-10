@@ -30,10 +30,10 @@ const contracts = {
   elrond: {
     devnet: {
       itheumTokenContractAddress: 'ITHEUM-a61317',
-      dataNFTFTTicker: 'DATANFTFT-ad2376',
+      dataNFTFTTicker: 'DATANFTFT1-9c435a',
       claimsContractAddress: 'erd1qqqqqqqqqqqqqpgqms979krpfug4r8p39d0j9p74g95r749afsxspcay83',
       faucetContractAddress: 'erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf',
-      dataNftMintContractAddress: 'erd1qqqqqqqqqqqqqpgqcmvar0jsdhpvezenusunf88u3rzk9cnhfsxsvdxqsh',
+      dataNftMintContractAddress: 'erd1qqqqqqqqqqqqqpgq9x94xr2gzjqelw28gk9x8pz8m8kwet56fsxs8p46nx',
       dataNftMarketContractAddress: 'erd1qqqqqqqqqqqqqpgq5plrv9wz56rexgatrf37sxl6daw8hqr97yqszsw2au'
     },
     mainnet: {
