@@ -172,7 +172,7 @@ export default function Marketplace() {
               height='100%'
               width='100%'
               backgroundColor='blackAlpha.800'
-              visibility={userData.frozenNonces && userData.frozenNonces.includes(token.have.nonce) ? 'visible' : 'collapse'}
+              visibility={userData.addressFrozen || userData.frozenNonces && userData.frozenNonces.includes(token.have.nonce) ? 'visible' : 'collapse'}
             >
               <Text
                 position='absolute'

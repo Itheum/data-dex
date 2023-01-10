@@ -530,10 +530,16 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
-    const image = await createFileFromUrl(newNFTImg);
-    const nftstorage = new NFTStorage({ token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY })
-    const res = await nftstorage.storeBlob(image);
-    // console.log('res', res);
+    let res;
+    // catch IPFS error
+    try {
+      const image = await createFileFromUrl(newNFTImg);
+      const nftstorage = new NFTStorage({ token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY })
+      res = await nftstorage.storeBlob(image);
+    } catch (e) {
+      setErrDataNFTStreamGeneric(new Error('Uploading the image on IPFS has failed'));
+      return;
+    }
 
     if (!res) {
       setErrDataNFTStreamGeneric(new Error('Uploading the image on IPFS has failed'));
