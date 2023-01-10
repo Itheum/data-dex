@@ -14,28 +14,28 @@ import { DataNftMintContract } from 'Elrond/dataNftMint';
 import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function Marketplace() {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const isLoggedIn = Boolean(address);
-  const [tokensForSale, setTokensForSale] = useState([]);
-  const [amountOfTokens, setAmountOfTokens] = useState({});
-  const [numberOfPages, setNumberOfPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [tokensForSale, setTokensForSale] = useState<any[]>([]);
+  const [amountOfTokens, setAmountOfTokens] = useState<any>({});
+  const [numberOfPages, setNumberOfPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const contract = new DataNftMarketContract('ED');
 
   useEffect(() => {
-    contract.getNumberOfOffers().then((nr) => {
+    contract.getNumberOfOffers().then((nr:any) => {
       setNumberOfPages(Math.ceil(nr / 25));
     })
   }, [hasPendingTransactions]);
 
   useEffect(() => {
-    contract.getOffers(0, 25).then((offers) => {
+    contract.getOffers(0, 25).then((offers:any) => {
       setTokensForSale(offers);
 
-      const amounts = {};
-      offers.forEach((offer)=>amounts[offer.index] = 1);
+      let amounts: any = {};
+      offers.forEach((offer:any)=>amounts[offer.index] = 1);
       setAmountOfTokens(amounts);
     })
   }, [currentPage, hasPendingTransactions]);
@@ -43,7 +43,7 @@ export default function Marketplace() {
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
 
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState<any>({});
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const getUserData = async() => {
     if (address && !hasPendingTransactions) {
@@ -111,7 +111,7 @@ export default function Marketplace() {
               </Box>
               <HStack>       
                 <Text fontSize='sm'>Amount to buy: </Text>
-                <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={token['quantity']} value={amountOfTokens[token.index]} onChange={(valueString) => setAmountOfTokens((oldAmounts)=>{
+                <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={token['quantity']} value={amountOfTokens[token.index]} onChange={(valueString) => setAmountOfTokens((oldAmounts:any)=>{
                   const newAmounts = { ...oldAmounts };
                   newAmounts[token.index] = Number(valueString);
                   return newAmounts;
