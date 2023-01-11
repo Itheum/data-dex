@@ -200,6 +200,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   useEffect(() => {
     getUserData();
   }, [elrondAddress, hasPendingTransactions]);
+  console.log('userData', userData);
 
   // set initial states for validation
   useEffect(() => {
@@ -373,6 +374,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       || antiSpamTax < 0
 
       || itheumBalance < antiSpamTax
+
+      || (userData && !userData.userWhitelistedForMint)
     );
   }, [
     dataNFTStreamUrlError,
@@ -393,6 +396,8 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
     antiSpamTax,
 
     itheumBalance,
+
+    userData,
   ]);
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -714,7 +719,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
               <Stack spacing="5" mt="5">
                 {
-                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0 || !dataNFTMarshalServiceValid)
+                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0 || !dataNFTMarshalServiceValid || (userData && !userData.userWhitelistedForMint))
                   && <Alert status="error">
                     <Stack >
                       <AlertTitle fontSize="md" mb={2}>
@@ -727,6 +732,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
                       {antiSpamTax < 0 && <AlertDescription fontSize="md">Unable to read default value of Anti-Spam Tax</AlertDescription>}
                       {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Data Marshal service is not responding</AlertDescription>}
                       {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Generative image generation service is not responding</AlertDescription>}
+                      {(userData && !userData.userWhitelistedForMint) && <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>}
                     </Stack>
                   </Alert>
                 }
