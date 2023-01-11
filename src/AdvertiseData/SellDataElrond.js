@@ -136,10 +136,10 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
 
+  const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
   // query settings from Data NFT Minter SC
   useEffect(() => {
     (async () => {
-      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
@@ -149,7 +149,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setMinRoyalties(value.toNumber() / 100);
     })();
     (async () => {
-      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
@@ -159,7 +158,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setMaxRoyalties(value.toNumber() / 100);
     })();
     (async () => {
-      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
@@ -169,7 +167,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       setMaxSupply(value.toNumber());
     })();
     (async () => {
-      const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
       const interaction = elrondDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
@@ -190,6 +187,18 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
         }
       })();
     }
+  }, [elrondAddress, hasPendingTransactions]);
+
+  //
+  const [userData, setUserData] = useState({});
+  const getUserData = async() => {
+    if (elrondAddress && !hasPendingTransactions) {
+      const _userData = await elrondDataNftMintContract.getUserDataOut(elrondAddress, _chainMeta.contracts.itheumToken);
+      setUserData(_userData);
+    }
+  };
+  useEffect(() => {
+    getUserData();
   }, [elrondAddress, hasPendingTransactions]);
 
   // set initial states for validation
@@ -457,6 +466,15 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       return;
     }
 
+    if (userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
+      toast({
+        title: `You can mint next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
     const res = await validateBaseInput();
     if (res) {
       if (isStreamTrade) {
@@ -558,7 +576,6 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
-    const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
     const { sessionId, error } = await elrondDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
