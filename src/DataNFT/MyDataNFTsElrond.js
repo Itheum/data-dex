@@ -273,7 +273,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
       <Heading size="lg">Data NFT Wallet</Heading>
       <Heading size="xs" opacity=".7">Below are the Data NFTs you created and/or purchased on the current chain</Heading>
 
-      {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
+      {usersDataNFTCatalog.length === 0 &&
         <>{!noData && <SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item, index) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem" position='relative'>
