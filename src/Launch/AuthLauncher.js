@@ -8,7 +8,7 @@ import chainPol from 'img/polygon-chain-logo.png';
 import chainBsc from 'img/bsc-chain-logo.png';
 import chainAvln from 'img/avalanche-chain-logo.png';
 import chainHrmy from 'img/harmony-chain-logo.png';
-import chainElrond from 'img/elrond-chain-logo.png';
+import chainMx from 'img/elrond-chain-logo.png';
 import logoSmlL from 'img/logo-sml-l.png';
 import logoSmlD from 'img/logo-sml-d.png';
 import launcherBG from 'img/launch-bg-1.png';
@@ -36,7 +36,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
             <PopupChainSelectorForWallet
               lrgButtonSize={true}
               hideTerms={true}
-              onElrondEnvPick={onLaunchMode} />
+              onMxEnvPick={onLaunchMode} />
 
             <Box display="none">
               <Spacer pt={5} display={['block', 'none']} />
@@ -53,8 +53,8 @@ const AuthLauncher = ({ onLaunchMode }) => {
             </Text>
 
             <Flex wrap={['wrap', 'nowrap']} direction="row" justify="space-around" w={['300px', '500px']} align="center">
-              <Tooltip label="Live on Elrond Mainnet & Devnet">
-                <Image src={chainElrond} boxSize="30px" borderRadius="lg" m="5px" />
+              <Tooltip label="Live on MultiversX Mainnet & Devnet">
+                <Image src={chainMx} boxSize="30px" borderRadius="lg" m="5px" />
               </Tooltip>
               <Tooltip label="Live on Görli Testnet">
                 <Image src={chainEth} boxSize="30px" width="20px" m="5px" />
@@ -84,14 +84,14 @@ const AuthLauncher = ({ onLaunchMode }) => {
   );
 };
 
-const PopupChainSelectorForWallet = ({ onElrondEnvPick }) => {
-  const [showElrondEnvPicker, setShowElrondEnvPicker] = useState(false);
+const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
+  const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
 
   return (
     <Popover
-      isOpen={showElrondEnvPicker}
-      onOpen={() => setShowElrondEnvPicker(true)}
-      onClose={() => setShowElrondEnvPicker(false)}
+      isOpen={showMxEnvPicker}
+      onOpen={() => setShowMxEnvPicker(true)}
+      onClose={() => setShowMxEnvPicker(false)}
       closeOnBlur={true}
       isLazy
       lazyBehavior='keepMounted'>
@@ -109,14 +109,14 @@ const PopupChainSelectorForWallet = ({ onElrondEnvPick }) => {
           </PopoverHeader>
           <PopoverBody>
               <Button size="sm" onClick={() => {
-                setShowElrondEnvPicker(false);
-                onElrondEnvPick('elrond', 'mainnet');
+                setShowMxEnvPicker(false);
+                onMxEnvPick('mx', 'mainnet');
               }}> Mainnet
               </Button>
 
               <Button size="sm" ml="2" onClick={() => {
-                setShowElrondEnvPicker(false);
-                onElrondEnvPick('elrond', 'devnet');
+                setShowMxEnvPicker(false);
+                onMxEnvPick('mx', 'devnet');
               }}> Devnet
               </Button>
           </PopoverBody>

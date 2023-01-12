@@ -4,18 +4,18 @@ import { uxConfig } from 'libs/util';
 
 export const getApi = (networkId) => {
   if (networkId === 'E1') {
-    return 'api.elrond.com';
+    return 'api.multiversx.com';
   } else {
-    return 'devnet-api.elrond.com';
+    return 'devnet-api.multiversx.com';
     return 'elrond-api-devnet.blastapi.io/0bc98858-cb7a-44c6-ad1b-8c8bfaec7128';
   }
 };
 
 export const getExplorer = (networkId) => {
   if (networkId === 'E1') {
-    return 'explorer.elrond.com';
+    return 'explorer.multiversx.com';
   } else {
-    return 'devnet-explorer.elrond.com';
+    return 'devnet-explorer.multiversx.com';
   }
 };
 
@@ -23,13 +23,13 @@ export const getTransactionLink = (networkId, txHash) => {
   return `https://${getExplorer(networkId)}/transactions/${txHash}`;
 };
 
-// check token balance on Elrond
+// check token balance on Mx
 export const checkBalance = async (token, address, networkId) => {
   const api = getApi(networkId);
 
   return new Promise((resolve, reject) => {
     axios
-      .get(`https://${api}/accounts/${address}/tokens/${token}`, { timeout: uxConfig.elrondAPITimeoutMs })
+      .get(`https://${api}/accounts/${address}/tokens/${token}`, { timeout: uxConfig.mxAPITimeoutMs })
       .then((resp) => {
         resolve({ balance: resp.data.balance });
       })
@@ -57,7 +57,7 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
   try {
     const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
 
-    const resp = await (await axios.get(allTxs, { timeout: uxConfig.elrondAPITimeoutMs })).data
+    const resp = await (await axios.get(allTxs, { timeout: uxConfig.mxAPITimeoutMs })).data
       .filter((tx) => {
         return tx.function === 'claim';
       })
@@ -118,11 +118,10 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
 
 export const getNftsOfACollectionForAnAddress = async (address, collectionTicker, networkId) => {
   const api = getApi(networkId);
-  
   try {
     const nftsLink = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
 
-    const resp = await (await axios.get(nftsLink, { timeout: uxConfig.elrondAPITimeoutMs })).data;
+    const resp = await (await axios.get(nftsLink, { timeout: uxConfig.mxAPITimeoutMs })).data;
     return resp;
   } catch (error) {
     console.error(error);

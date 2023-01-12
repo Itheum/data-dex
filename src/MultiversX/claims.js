@@ -12,10 +12,10 @@ export class ClaimsContract {
     this.chainID = 'D';
 
     if (networkId === 'E1') {
-      this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://gateway.multiversx.com', { timeout: this.timeout });
       this.chainID = '1';
     } else {
-      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com', { timeout: this.timeout });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));

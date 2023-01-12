@@ -10,21 +10,19 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
-import ShortAddress from 'UtilComps/ShortAddress';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { sleep, uxConfig, consoleNotice } from 'libs/util';
-import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
-import { getNftsOfACollectionForAnAddress } from 'Elrond/api';
+import { getNftsOfACollectionForAnAddress } from 'MultiversX/api';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import dataNftMintJson from '../Elrond/ABIs/datanftmint.abi.json';
+import dataNftMintJson from '../MultiversX/ABIs/datanftmint.abi.json';
 import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
 import { signMessage } from '@elrondnetwork/dapp-core/utils/account';
-import { DataNftMarketContract } from 'Elrond/dataNftMarket';
-import { DataNftMintContract } from 'Elrond/dataNftMint';
+import { DataNftMarketContract } from 'MultiversX/dataNftMarket';
+import { DataNftMintContract } from 'MultiversX/dataNftMint';
 
-export default function MyDataNFTsElrond({ onRfMount }) {
+export default function MyDataNFTsMx({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
@@ -36,7 +34,6 @@ export default function MyDataNFTsElrond({ onRfMount }) {
   const [prices, setPrices] = useState([]);
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({ s1: 0, s2: 0, s3: 0 });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState(null);
-
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [burnNFTModalState, setBurnNFTModalState] = useState(1);  // 1 and 2
@@ -68,7 +65,6 @@ export default function MyDataNFTsElrond({ onRfMount }) {
     setBurnNFTModalState(1); // set state 1 when the modal is closed
     onBurnNFTOpen();
   };
-  console.log('selectedDataNft', selectedDataNft);
   const onBurn = () => {
     if (!address) {
       toast({
@@ -87,7 +83,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
       return;
     }
 
-    mintContract.burnDataNft(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+    mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
 
     // close modal
     onBurnNFTClose();
@@ -100,14 +96,6 @@ export default function MyDataNFTsElrond({ onRfMount }) {
     if (!hasPendingTransactions) {
       getOnChainNFTs();
     }
-  }, [hasPendingTransactions]);
-
-  const getUserData = async() => {
-    const userData = await mintContract.getUserDataOut(address,_chainMeta.contracts.itheumToken);
-  }
-
-  useEffect(() => {
-    getUserData();
   }, [hasPendingTransactions]);
 
   // use this effect to parse  the raw data into a catalog that is easier to render in the UI
@@ -147,6 +135,7 @@ export default function MyDataNFTsElrond({ onRfMount }) {
             amounts.push(1);
             prices.push(10);
             usersDataNFTCatalogLocal.push(dataNFT);
+            console.log('test')
           });
           setAmounts(amounts);
           setPrices(prices);
@@ -176,7 +165,6 @@ export default function MyDataNFTsElrond({ onRfMount }) {
   }
 
   const handleListOnMarketplace = (config) => {
-    console.log(config);
     const { collection, nonce, price, qty } = config;
 
     marketContract.addToMarket(collection, nonce, qty, price, address);

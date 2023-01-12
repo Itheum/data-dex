@@ -27,7 +27,7 @@ const contracts = {
       claimsContractAddress: '0x985A5c96663C9c44d46Ea061f4b7E50118180F8d',
     },
   },
-  elrond: {
+  mx: {
     devnet: {
       itheumTokenContractAddress: 'ITHEUM-a61317',
       dataNFTFTTicker: 'DATANFTFT1-9c435a',
@@ -62,16 +62,16 @@ export const ddexContractAddress_testnetBSC = contracts.bsc[contractsMode].ddexC
 export const dNFTContractAddress_testnetBSC = contracts.bsc[contractsMode].dNFTContractAddress;
 export const claimsContractAddress_testnetBSC = contracts.bsc[contractsMode].claimsContractAddress;
 
-// Elrond contracts
-export const tokenContractAddress_Elrond_Devnet = contracts.elrond['devnet'].itheumTokenContractAddress;
-export const dataNFTFTTicker_Elrond_Devnet = contracts.elrond['devnet'].dataNFTFTTicker;
-export const claimsContractAddress_Elrond_Devnet = contracts.elrond['devnet'].claimsContractAddress;
-export const faucetContractAddress_Elrond_Devnet = contracts.elrond['devnet'].faucetContractAddress;
-export const dataNftMintContractAddress_Elrond_Devnet = contracts.elrond['devnet'].dataNftMintContractAddress;
-export const dataNftMarketContractAddress_Elrond_Devnet = contracts.elrond['devnet'].dataNftMarketContractAddress;
-export const tokenContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].itheumTokenContractAddress;
-export const claimsContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].claimsContractAddress;
-export const faucetContractAddress_Elrond_Mainnet = contracts.elrond['mainnet'].faucetContractAddress;
+// Mx contracts
+export const tokenContractAddress_Mx_Devnet = contracts.mx['devnet'].itheumTokenContractAddress;
+export const dataNFTFTTicker_Mx_Devnet = contracts.mx['devnet'].dataNFTFTTicker;
+export const claimsContractAddress_Mx_Devnet = contracts.mx['devnet'].claimsContractAddress;
+export const faucetContractAddress_Mx_Devnet = contracts.mx['devnet'].faucetContractAddress;
+export const dataNftMintContractAddress_Mx_Devnet = contracts.mx['devnet'].dataNftMintContractAddress;
+export const dataNftMarketContractAddress_Mx_Devnet = contracts.mx['devnet'].dataNftMarketContractAddress;
+export const tokenContractAddress_Mx_Mainnet = contracts.mx['mainnet'].itheumTokenContractAddress;
+export const claimsContractAddress_Mx_Mainnet = contracts.mx['mainnet'].claimsContractAddress;
+export const faucetContractAddress_Mx_Mainnet = contracts.mx['mainnet'].faucetContractAddress;
 
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = '0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc';

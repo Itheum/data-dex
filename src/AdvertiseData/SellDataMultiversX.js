@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { DataNftMintContract } from 'Elrond/dataNftMint';
+import { DataNftMintContract } from 'MultiversX/dataNftMint';
 import { useTrackTransactionStatus, useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks';
 import { ResultsParser } from '@elrondnetwork/erdjs';
 import axios from 'axios';
@@ -31,7 +31,7 @@ import {
 } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { set } from 'lodash';
-import { checkBalance } from 'Elrond/api';
+import { checkBalance } from 'MultiversX/api';
 
 const InputLabelWithPopover = ({ children, tkey }) => {
   let title = '', text = '';
@@ -90,8 +90,8 @@ const checkUrlReturns200 = async (url) => {
   }
 }
 
-export default function SellDataElrond({ onRfMount, itheumAccount }) {
-  const { address: elrondAddress } = useGetAccountInfo();
+export default function SellDataMX({ onRfMount, itheumAccount }) {
+  const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
@@ -136,40 +136,40 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
 
-  const elrondDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+  const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
   // query settings from Data NFT Minter SC
   useEffect(() => {
     (async () => {
-      const interaction = elrondDataNftMintContract.contract.methods.getMinRoyalties();
+      const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
-      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
       setMinRoyalties(value.toNumber() / 100);
     })();
     (async () => {
-      const interaction = elrondDataNftMintContract.contract.methods.getMaxRoyalties();
+      const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
-      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
       setMaxRoyalties(value.toNumber() / 100);
     })();
     (async () => {
-      const interaction = elrondDataNftMintContract.contract.methods.getMaxSupply();
+      const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
-      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
       setMaxSupply(value.toNumber());
     })();
     (async () => {
-      const interaction = elrondDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
-      const queryResponse = await elrondDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       const value = firstValue.valueOf();
@@ -179,27 +179,27 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
 
   // query Itheum balance of User
   useState(() => {
-    if (elrondAddress && _chainMeta) {
+    if (mxAddress && _chainMeta) {
       (async () => {
-        const data = await checkBalance(_chainMeta.contracts.itheumToken, elrondAddress, _chainMeta.networkId);
+        const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
         if (typeof data.balance !== 'undefined') {
           setItheumBalance(convertWeiToEsdt(data.balance).toNumber());
         }
       })();
     }
-  }, [elrondAddress, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions]);
 
   //
   const [userData, setUserData] = useState({});
   const getUserData = async() => {
-    if (elrondAddress && !hasPendingTransactions) {
-      const _userData = await elrondDataNftMintContract.getUserDataOut(elrondAddress, _chainMeta.contracts.itheumToken);
+    if (mxAddress && !hasPendingTransactions) {
+      const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
   };
   useEffect(() => {
     getUserData();
-  }, [elrondAddress, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions]);
   console.log('userData', userData);
 
   // set initial states for validation
@@ -462,7 +462,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   }
 
   const dataNFTSellSubmit = async () => {
-    if (!elrondAddress) {
+    if (!mxAddress) {
       toast({
         title: 'Connect your wallet',
         status: 'error',
@@ -582,7 +582,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
   const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
 
-    const { sessionId, error } = await elrondDataNftMintContract.sendMintTransaction({
+    const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
       media: imageOnIpfsUrl,
       data_marchal: dataNFTMarshalService,
@@ -592,7 +592,7 @@ export default function SellDataElrond({ onRfMount, itheumAccount }) {
       amount: dataNFTCopies,
       title: datasetTitle,
       description: datasetDescription,
-      sender: elrondAddress,
+      sender: mxAddress,
       itheumToken: _chainMeta.contracts.itheumToken,
       antiSpamTax: antiSpamTax,
     });

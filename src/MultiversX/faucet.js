@@ -13,7 +13,7 @@ export class FaucetContract {
     if (networkId === 'E1') {
       throw new Error('Faucet not available on MultiversX mainnet');
     } else {
-      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com', { timeout: this.timeout });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));

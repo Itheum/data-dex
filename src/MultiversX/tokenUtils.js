@@ -28,11 +28,11 @@ export const getTokenWantedRepresentation = (token, nonce) => {
   
 export const getTokenImgSrc = (token_identifier, token_nonce) => {
     if (token_nonce > 0 && !token_identifier.includes('LKMEX')) {
-      return `https://api.elrond.com/nfts/${token_identifier}-${hexZero(
+      return `https://api.multiversx.com/nfts/${token_identifier}-${hexZero(
         token_nonce
       )}/thumbnail`;
     } else {
-      return `https://media.elrond.com/tokens/asset/${token_identifier}/logo.png`;
+      return `https://media.multiversx.com/tokens/asset/${token_identifier}/logo.png`;
     }
   };
   

@@ -42,7 +42,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 
 const baseUserContext = {
   isMoralisAuthenticated: false,
-  isElrondAuthenticated: false,
+  isMxAuthenticated: false,
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
 function App({ appConfig }) {

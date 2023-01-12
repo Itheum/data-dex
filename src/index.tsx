@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import Launcher from './Launch/Launcher';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { createBreakpoints } from '@chakra-ui/theme-tools';
@@ -11,7 +11,7 @@ import { UserContextProvider } from './store/UserContext';
 import { ChainMetaContextProvider } from './store/ChainMetaContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
-import '../src/Elrond/custom.css';
+import '../src/MultiversX/custom.css';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -49,13 +49,10 @@ const theme = extendTheme({
   }
 });
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-
+const container = document.getElementById('root');
+const root = createRoot(container as HTMLElement);
 root.render(
   <React.StrictMode>
-  {/* <ErrorBoundary> */}
     <ChakraProvider theme={theme}>
       <ChainMetaContextProvider>
         <UserContextProvider>
@@ -65,8 +62,7 @@ root.render(
         </UserContextProvider>
       </ChainMetaContextProvider>
     </ChakraProvider>
-  {/* </ErrorBoundary> */}
-</React.StrictMode>
+</React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

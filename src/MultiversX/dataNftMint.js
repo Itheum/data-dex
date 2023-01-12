@@ -12,10 +12,10 @@ export class DataNftMintContract {
     this.chainID = 'D';
 
     if (networkId === 'E1') {
-      this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://gateway.multiversx.com', { timeout: this.timeout });
       this.chainID = '1';
     } else {
-      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com', { timeout: this.timeout });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -94,7 +94,7 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  async burnDataNft(sender, collection, nonce, quantity) {
+  async sendBurnTransaction(sender, collection, nonce, quantity) {
     const tx = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -164,5 +164,4 @@ export class DataNftMintContract {
       return { error };
     }
   }
-
 }

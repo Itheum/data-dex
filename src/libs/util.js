@@ -23,15 +23,15 @@ import {
   claimsContractAddress_Matic,
   claimsContractAddress_testnetBSC,
 
-  tokenContractAddress_Elrond_Devnet,
-  dataNFTFTTicker_Elrond_Devnet,
-  claimsContractAddress_Elrond_Devnet,
-  faucetContractAddress_Elrond_Devnet,
-  dataNftMintContractAddress_Elrond_Devnet,
-  dataNftMarketContractAddress_Elrond_Devnet,
-  tokenContractAddress_Elrond_Mainnet,
-  claimsContractAddress_Elrond_Mainnet,
-  faucetContractAddress_Elrond_Mainnet,
+  tokenContractAddress_Mx_Devnet,
+  dataNFTFTTicker_Mx_Devnet,
+  claimsContractAddress_Mx_Devnet,
+  faucetContractAddress_Mx_Devnet,
+  dataNftMintContractAddress_Mx_Devnet,
+  dataNftMarketContractAddress_Mx_Devnet,
+  tokenContractAddress_Mx_Mainnet,
+  claimsContractAddress_Mx_Mainnet,
+  faucetContractAddress_Mx_Mainnet,
 } from './contractAddresses';
 
 export const contractsForChain = (networkId) => {
@@ -81,17 +81,17 @@ export const contractsForChain = (networkId) => {
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
     case 'ED':
-      contracts.itheumToken = tokenContractAddress_Elrond_Devnet;
-      contracts.dataNFTFTTicker = dataNFTFTTicker_Elrond_Devnet;
-      contracts.claims = claimsContractAddress_Elrond_Devnet;
-      contracts.faucet = faucetContractAddress_Elrond_Devnet;
-      contracts.dataNftMint = dataNftMintContractAddress_Elrond_Devnet;
-      contracts.market = dataNftMarketContractAddress_Elrond_Devnet;
+      contracts.itheumToken = tokenContractAddress_Mx_Devnet;
+      contracts.dataNFTFTTicker = dataNFTFTTicker_Mx_Devnet;
+      contracts.claims = claimsContractAddress_Mx_Devnet;
+      contracts.faucet = faucetContractAddress_Mx_Devnet;
+      contracts.dataNftMint = dataNftMintContractAddress_Mx_Devnet;
+      contracts.market = dataNftMarketContractAddress_Mx_Devnet;
       break;
     case 'E1':
-      contracts.itheumToken = tokenContractAddress_Elrond_Mainnet;
-      contracts.claims = claimsContractAddress_Elrond_Mainnet;
-      contracts.faucet = faucetContractAddress_Elrond_Mainnet;
+      contracts.itheumToken = tokenContractAddress_Mx_Mainnet;
+      contracts.claims = claimsContractAddress_Mx_Mainnet;
+      contracts.faucet = faucetContractAddress_Mx_Mainnet;
       break;
   }
 
@@ -103,7 +103,7 @@ export const uxConfig = {
   txConfirmationsNeededLrg: 2,
   dateStr: 'MMM Do YYYY',
   dateStrTm: 'MMM Do YYYY LT',
-  elrondAPITimeoutMs: 10000
+  mxAPITimeoutMs: 10000
 };
 
 export const progInfoMeta = {
@@ -305,10 +305,10 @@ export const SUPPORTED_CHAINS = ['E1', 'ED', 5, 80001, 97, 1666700000, 43113];
 export const WALLETS = {
   METAMASK: 'evm_metamask',
   WC: 'evm_wc',
-  ELROND_MAIARAPP: 'el_maiar',
-  ELROND_DEFI: 'el_defi',
-  ELROND_WEBWALLET: 'el_webwallet',
-  ELROND_LEDGER: 'el_ledger',
+  MX_MAIARAPP: 'el_maiar',
+  MX_DEFI: 'el_defi',
+  MX_WEBWALLET: 'el_webwallet',
+  MX_LEDGER: 'el_ledger',
 };
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
@@ -437,7 +437,7 @@ export const debugui = (text) => {
 };
 
 export const clearAppSessions = () => {
-  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
+  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in mx)
     // ... so we explictely remove 'itm-wallet-used' here
     sessionStorage.removeItem('itm-wallet-used');
     

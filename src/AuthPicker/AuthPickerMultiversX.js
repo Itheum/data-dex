@@ -9,9 +9,9 @@ import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 import { useNavigate } from 'react-router-dom';
 
-function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
+function AuthPickerMx ({ launchEnvironment, resetLaunchMode }) {
   const navigate = useNavigate();
-  const { address: elrondAddress } = useGetAccountInfo();
+  const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
 
@@ -33,21 +33,21 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   }, []);
 
   useEffect(() => {
-    if (elrondAddress) {
+    if (mxAddress) {
       handleProgressModalClose();
     }
-  }, [elrondAddress]);
+  }, [mxAddress]);
 
   const handleProgressModalClose = () => {
     onProgressModalClose();
 
-    // only reset host page to elrond vs evm wallet selector IF user did NOT just already log in successfully
-    if (!elrondAddress) {
+    // only reset host page to mx vs evm wallet selector IF user did NOT just already log in successfully
+    if (!mxAddress) {
       resetLaunchMode();
     }
   };
 
-  const goElrondLogin = (wallet) => {
+  const goMxLogin = (wallet) => {
     gtagGo('auth', 'login', wallet);
 
     setWalletUsedSession(wallet);
@@ -57,7 +57,7 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
 
   return (
     <>
-      {!elrondAddress && <Stack spacing={6} p="5">
+      {!mxAddress && <Stack spacing={6} p="5">
       <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
@@ -68,19 +68,19 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
               <Box p="5px">
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
-                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_MAIARAPP)} className="auth_wrap">
+                    <WrapItem onClick={() => goMxLogin(WALLETS.MX_MAIARAPP)} className="auth_wrap">
                       <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">
+                    <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
                       <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_WEBWALLET)} className="auth_wrap">
+                    <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
                       <WebWalletLoginButton callbackRoute={'/'} loginButtonText={'Web Wallet'} buttonClassName="auth_button"></WebWalletLoginButton>
                     </WrapItem>
 
-                    <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_LEDGER)} className="auth_wrap">
+                    <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
                       <LedgerLoginButton callbackRoute={'/'} loginButtonText={'Ledger'} buttonClassName="auth_button"></LedgerLoginButton>
                     </WrapItem>
                   </Wrap>
@@ -106,4 +106,4 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   );
 };
 
-export default AuthPickerElrond;
+export default AuthPickerMx;

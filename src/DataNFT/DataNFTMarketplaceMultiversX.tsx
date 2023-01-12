@@ -7,10 +7,10 @@ import {
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
 import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import { DataNftMarketContract } from '../Elrond/dataNftMarket';
-import { roundDown, hexZero, getTokenWantedRepresentation, getTokenImgSrc, tokenDecimals } from '../Elrond/tokenUtils.js';
-import { getApi } from 'Elrond/api';
-import { DataNftMintContract } from 'Elrond/dataNftMint';
+import { DataNftMarketContract } from '../MultiversX/dataNftMarket';
+import { roundDown, hexZero, getTokenWantedRepresentation, getTokenImgSrc, tokenDecimals } from '../MultiversX/tokenUtils.js';
+import { getApi } from 'MultiversX/api';
+import { DataNftMintContract } from 'MultiversX/dataNftMint';
 import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function Marketplace() {
@@ -69,11 +69,8 @@ export default function Marketplace() {
             <Flex justifyContent="center" pt={5}>
               <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                 <Image
-                  src={`https://devnet-api.elrond.com/nfts/${token['have']['identifier']}-${hexZero(token['have']['nonce'])}/thumbnail`}
-                  alt={'item.dataPreview'} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
-                {/* <Image
                   src={`https://${getApi('ED')}/nfts/${token['have']['identifier']}-${hexZero(token['have']['nonce'])}/thumbnail`}
-                  alt={'item.dataPreview'} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} /> */}
+                  alt={'item.dataPreview'} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
               </Skeleton>
             </Flex>
 
