@@ -27,7 +27,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const [onChainNFTs, setOnChainNFTs] = useState(null);
-  const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState(null);
+  const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState([]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState([]);
@@ -144,7 +144,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
           setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
         } else {
-          await sleep(5);
+          await sleep(4);
           setNoData(true);
         }
       }
@@ -155,7 +155,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async () => {
     const chainId = _chainMeta.networkId === 'ED' ? 'D' : 'E1';
-
     const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
 
     console.log('onChainNfts');
