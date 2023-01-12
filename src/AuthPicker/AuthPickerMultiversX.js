@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Stack, Box, Text, Link, Wrap, Badge, Modal, ModalOverlay, ModalContent, 
   ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem, useBreakpointValue } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@elrondnetwork/dapp-core/UI';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@multiversx/sdk-dapp/UI';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { WALLETS } from 'libs/util';
 import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
@@ -16,7 +16,7 @@ function AuthPickerMx ({ launchEnvironment, resetLaunchMode }) {
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage('itm-wallet-used', null);
 
   useEffect(() => {
-    async function cleanOutRemoteMaiarAppWalletDisconnect() {
+    async function cleanOutRemoteXPortalAppWalletDisconnect() {
       clearAppSessions();
 
       await sleep(1);
@@ -24,9 +24,9 @@ function AuthPickerMx ({ launchEnvironment, resetLaunchMode }) {
     }
 
     if (window.location.pathname === '/unlock') {
-      // if a user disconnects the mobile maiar app, it logs out user 
+      // if a user disconnects the mobile xPortal app, it logs out user 
       //... via dapp-core internally but redirects to a /unlock. We need to clean out the sessions correctly in this case
-      cleanOutRemoteMaiarAppWalletDisconnect();
+      cleanOutRemoteXPortalAppWalletDisconnect();
     } else {
       onProgressModalOpen();
     }
@@ -68,12 +68,12 @@ function AuthPickerMx ({ launchEnvironment, resetLaunchMode }) {
               <Box p="5px">
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
-                    <WrapItem onClick={() => goMxLogin(WALLETS.MX_MAIARAPP)} className="auth_wrap">
-                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button"></WalletConnectLoginButton>
+                    <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
+                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'xPortal App'} buttonClassName="auth_button"></WalletConnectLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
-                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
+                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'MultiversX DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">

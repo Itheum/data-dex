@@ -14,11 +14,11 @@ import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { sleep, uxConfig, consoleNotice } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfACollectionForAnAddress } from 'MultiversX/api';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
 import dataNftMintJson from '../MultiversX/ABIs/datanftmint.abi.json';
-import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@elrondnetwork/erdjs/out';
-import { signMessage } from '@elrondnetwork/dapp-core/utils/account';
+import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from '@multiversx/sdk-core/out';
+import { signMessage } from '@multiversx/sdk-dapp/utils/account';
 import { DataNftMarketContract } from 'MultiversX/dataNftMarket';
 import { DataNftMintContract } from 'MultiversX/dataNftMint';
 

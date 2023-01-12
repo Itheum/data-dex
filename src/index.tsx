@@ -5,8 +5,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import Launcher from './Launch/Launcher';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { createBreakpoints } from '@chakra-ui/theme-tools';
-import ErrorBoundary from 'UtilComps/ErrorBoundary';
 import { UserContextProvider } from './store/UserContext';
 import { ChainMetaContextProvider } from './store/ChainMetaContext';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -23,13 +21,13 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const breakpoints = createBreakpoints({
+const breakpoints = {
   sm: '30em',
   md: '48em',
   lg: '62em',
   xl: '80em',
   '2xl': '96em',
-});
+};
 
 const theme = extendTheme({
   breakpoints,

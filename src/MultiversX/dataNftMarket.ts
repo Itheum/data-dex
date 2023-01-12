@@ -1,4 +1,4 @@
-import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
+import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
 import {
     AbiRegistry,
     SmartContractAbi,
@@ -18,9 +18,9 @@ import {
     StringValue,
     TypedValue,
     U32Value
-  } from '@elrondnetwork/erdjs/out';
-import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
-import { sendTransactions } from '@elrondnetwork/dapp-core/services';
+  } from '@multiversx/sdk-core/out';
+import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
+import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/data_market.abi.json';
 import { contractsForChain } from '../libs/util';
 

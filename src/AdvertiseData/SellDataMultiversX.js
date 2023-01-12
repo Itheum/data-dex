@@ -14,10 +14,10 @@ import {
   Link,
 } from '@chakra-ui/react';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { DataNftMintContract } from 'MultiversX/dataNftMint';
-import { useTrackTransactionStatus, useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks';
-import { ResultsParser } from '@elrondnetwork/erdjs';
+import { useTrackTransactionStatus, useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks';
+import { ResultsParser } from '@multiversx/sdk-core';
 import axios from 'axios';
 import { NFTStorage, File } from 'nft.storage'
 import mime from 'mime'

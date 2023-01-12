@@ -305,7 +305,7 @@ export const SUPPORTED_CHAINS = ['E1', 'ED', 5, 80001, 97, 1666700000, 43113];
 export const WALLETS = {
   METAMASK: 'evm_metamask',
   WC: 'evm_wc',
-  MX_MAIARAPP: 'el_maiar',
+  MX_XPORTALAPP: 'el_maiar',
   MX_DEFI: 'el_defi',
   MX_WEBWALLET: 'el_webwallet',
   MX_LEDGER: 'el_ledger',
@@ -400,7 +400,7 @@ export const gtagGo = (category, action, label, value) => {
   Category: 'Auth', Action: 'Login - Success', Label: 'Metamask'
   Category: 'Auth', Action: 'Login', Label: 'DeFi'
   Category: 'Auth', Action: 'Login', Label: 'Ledger'
-  Category: 'Auth', Action: 'Login', Label: 'MaiarApp'
+  Category: 'Auth', Action: 'Login', Label: 'xPortalApp'
   Category: 'Auth', Action: 'Login', Label: 'WebWallet'
 
   Category: 'Auth', Action: 'Logout', Label: 'WebWallet'

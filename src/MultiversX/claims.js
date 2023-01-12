@@ -1,7 +1,7 @@
-import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@elrondnetwork/erdjs/out';
-import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
-import { sendTransactions } from '@elrondnetwork/dapp-core/services';
+import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@multiversx/sdk-core/out';
+import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
+import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/claims.abi.json';
 import { contractsForChain } from 'libs/util';
 

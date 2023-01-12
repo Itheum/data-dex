@@ -5,8 +5,8 @@ import {
   Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from '@chakra-ui/react';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
 import { DataNftMarketContract } from '../MultiversX/dataNftMarket';
 import { roundDown, hexZero, getTokenWantedRepresentation, getTokenImgSrc, tokenDecimals } from '../MultiversX/tokenUtils.js';
 import { getApi } from 'MultiversX/api';

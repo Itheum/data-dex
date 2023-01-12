@@ -36,9 +36,9 @@ import logoSmlD from 'img/logo-sml-d.png';
 import logoSmlL from 'img/logo-sml-l.png';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 
-import { logout } from '@elrondnetwork/dapp-core/utils';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import { useGetAccountInfo, useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { logout } from '@multiversx/sdk-dapp/utils';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
+import { useGetAccountInfo, useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { checkBalance } from 'MultiversX/api';
 import { formatNumberRoundFloor } from 'libs/util';
 
@@ -101,14 +101,14 @@ function App({ appConfig }) {
     // Mx authenticated for 1st time or is a reload.
     // ... get account token balance and claims
     async function mxSessionInit() {
-      // when user disconnects in Maiar App, it comes to this route. So we need to logout the user
+      // when user disconnects in xPortal App, it comes to this route. So we need to logout the user
       // ... also do the loggedInActiveMxWallet check to make sure mx addresses didnt swap midway (see below for why)
       if (path === 'unlock' || (loggedInActiveMxWallet !== null && loggedInActiveMxWallet !== mxAddress)) {
         handleLogout();
         return;
       }
 
-      // we set the 'active mx wallet', we can use this to prevent the Maiar App delayed approve bug 
+      // we set the 'active mx wallet', we can use this to prevent the xPortal App delayed approve bug 
       // ... where wallets sessions can be swapped - https://github.com/Itheum/data-dex/issues/95
       // ... if we detect loggedInActiveMxWallet is NOT null then we abort and logout the user (see above)
       setLoggedInActiveMxWallet(mxAddress);

@@ -15,9 +15,9 @@ import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import AppMarketplace from 'Home/AppMarketplace';
 import { FaucetContract } from 'MultiversX/faucet';
 import { ClaimsContract } from 'MultiversX/claims';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import { useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
+import { useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { formatNumberRoundFloor } from 'libs/util';
 
 let mxFaucetContract = null;

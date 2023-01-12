@@ -1,4 +1,4 @@
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import AppMx from 'App/AppMultiversX';
 
 function AppHarnessMx({ launchEnvironment }) {

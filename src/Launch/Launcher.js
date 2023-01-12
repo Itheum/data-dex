@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import React from 'react';
-import { DappProvider } from '@elrondnetwork/dapp-core/wrappers';
+import { DappProvider } from '@multiversx/sdk-dapp/wrappers';
 import { MoralisProvider } from 'react-moralis';
 
 import AuthLauncher from 'Launch/AuthLauncher';
@@ -10,7 +10,7 @@ import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerMx from 'AuthPicker/AuthPickerMultiversX';
 import { debugui, uxConfig } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
-import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@elrondnetwork/dapp-core/UI';
+import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@multiversx/sdk-dapp/UI';
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
