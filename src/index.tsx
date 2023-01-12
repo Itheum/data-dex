@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Launcher from './Launch/Launcher';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { createBreakpoints } from '@chakra-ui/theme-tools';
@@ -49,7 +49,9 @@ const theme = extendTheme({
   }
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container as HTMLElement);
+root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <ChainMetaContextProvider>
@@ -60,8 +62,7 @@ ReactDOM.render(
         </UserContextProvider>
       </ChainMetaContextProvider>
     </ChakraProvider>
-</React.StrictMode>,
-document.getElementById('root')
+</React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

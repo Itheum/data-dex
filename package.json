@@ -5,7 +5,7 @@
   "dependencies": {
     "@chakra-ui/icons": "2.0.13",
     "@chakra-ui/react": "2.4.3",
-    "@elrondnetwork/dapp-core": "2.2.5",
+    "@elrondnetwork/dapp-core": "2.2.4",
     "@elrondnetwork/erdjs": "11.1.2",
     "@elrondnetwork/erdjs-network-providers": "1.2.0",
     "@emotion/react": "11.10.5",
