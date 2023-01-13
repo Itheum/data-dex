@@ -329,7 +329,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTCopiesError(error);
-    setDataNFTCopies(value);
+
+    if (!error) {
+      setDataNFTCopies(value);
+    }
   }
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
@@ -344,14 +347,19 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTRoyaltyError(error);
-    setDataNFTRoyalty(value);
+
+    if (!error) {
+      setDataNFTRoyalty(value);
+    }
   }
 
   useEffect(() => {
-    onChangeDataNFTRoyalty(dataNFTRoyalty);
+    // init value
+    onChangeDataNFTRoyalty(minRoyalties);
   }, [minRoyalties, maxRoyalties]);
   useEffect(() => {
-    onChangeDataNFTCopies(dataNFTCopies);
+    // init value
+    onChangeDataNFTCopies(1);
   }, [maxSupply]);
 
   useEffect(() => {

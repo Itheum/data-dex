@@ -152,6 +152,18 @@ export default function MyDataNFTsMx({ onRfMount }) {
     parseOnChainNfts();
   }, [onChainNFTs]);
 
+  const [userData, setUserData] = useState({});
+  const getUserData = async() => {
+    if (address && !hasPendingTransactions) {
+      const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
+      setUserData(_userData);
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, [address, hasPendingTransactions]);
+
   // get the raw NFT data from the blockchain for the user
   const getOnChainNFTs = async () => {
     const chainId = _chainMeta.networkId === 'ED' ? 'D' : 'E1';
@@ -376,7 +388,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
               height='100%'
               width='100%'
               backgroundColor='blackAlpha.800'
-              visibility={'collapse'}
+              visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce)) ? 'visible' : 'collapse'}
             >
               <Text
                 position='absolute'
