@@ -136,7 +136,7 @@ export class DataNftMintContract {
       if (returnCode && returnCode.isSuccess()) {
         const userData = firstValue.valueOf();
         const returnData = {
-          anitSpamTaxValue: userData.anti_spam_tax_value.toNumber(),
+          antiSpamTaxValue: userData.anti_spam_tax_value.toNumber(),
           addressFrozen: userData.frozen,
           frozenNonces: userData.frozen_nonces.map(v => v.toNumber()),
           contractPaused: userData.is_paused,

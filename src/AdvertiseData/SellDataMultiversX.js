@@ -376,6 +376,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       || itheumBalance < antiSpamTax
 
       || (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
+    
+      || (userData && userData.contractPaused)
     );
   }, [
     dataNFTStreamUrlError,
@@ -719,20 +721,29 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
               <Stack spacing="5" mt="5">
                 {
-                  (minRoyalties < 0 || maxRoyalties < 0 || maxSupply < 0 || antiSpamTax < 0 || !dataNFTMarshalServiceValid || (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint))
+                  (minRoyalties < 0 
+                    || maxRoyalties < 0 
+                      || maxSupply < 0 
+                        || antiSpamTax < 0 
+                          || !dataNFTMarshalServiceValid 
+                            || (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint)                            
+                              || (userData && userData.contractPaused))
                   && <Alert status="error">
                     <Stack >
                       <AlertTitle fontSize="md" mb={2}>
                         <AlertIcon display='inline-block' />
                         <Text display='inline-block' lineHeight='2' style={{ verticalAlign: 'middle' }}>Uptime Errors</Text>
                       </AlertTitle>
-                      {minRoyalties < 0 && <AlertDescription fontSize="md">Unable to read default value of Min Royalties</AlertDescription>}
-                      {maxRoyalties < 0 && <AlertDescription fontSize="md">Unable to read default value of Max Royalties</AlertDescription>}
-                      {maxSupply < 0 && <AlertDescription fontSize="md">Unable to read default value of Max Supply</AlertDescription>}
-                      {antiSpamTax < 0 && <AlertDescription fontSize="md">Unable to read default value of Anti-Spam Tax</AlertDescription>}
-                      {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Data Marshal service is not responding</AlertDescription>}
-                      {!dataNFTMarshalServiceValid && <AlertDescription fontSize="md">Generative image generation service is not responding</AlertDescription>}
-                      {(userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) && <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>}
+                      <AlertDescription>
+                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                        {(userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) && <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>}
+                        {(userData && userData.contractPaused) && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                      </AlertDescription>
                     </Stack>
                   </Alert>
                 }
