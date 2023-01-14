@@ -8,7 +8,7 @@ import EVMAppHarness from 'AppHarness/AppHarnessEVM';
 import MxAppHarness from 'AppHarness/AppHarnessMultiversX';
 import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerMx from 'AuthPicker/AuthPickerMultiversX';
-import { debugui, uxConfig } from 'libs/util';
+import { debugui, uxConfig, walletConnectV2ProjectId } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@multiversx/sdk-dapp/UI';
 
@@ -49,7 +49,13 @@ function Launcher() {
       </>}
 
       {launchMode === 'mx' && <>      
-        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: 'customConfig', apiTimeout: uxConfig.mxAPITimeoutMs }}>
+        <DappProvider 
+          environment={launchEnvironment} 
+          customNetworkConfig={{ 
+            name: 'customConfig', 
+            apiTimeout: uxConfig.mxAPITimeoutMs,
+            walletConnectV2ProjectId
+          }}>
           <TransactionsToastList />
           <NotificationModal />
           <SignTransactionsModals className="itheum-data-dex-elrond-modals"/>

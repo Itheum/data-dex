@@ -241,7 +241,10 @@ export default function MyDataNFTsMx({ onRfMount }) {
       console.log('signatureObj');
       console.log(signatureObj);
 
-      if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) {
+      if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) { // Maiar App V2
+        signResult.signature = signatureObj.signature.buffer.toString();
+        signResult.addrInHex = signatureObj.address.valueHex;
+      } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) { // Defi Wallet
         signResult.signature = signatureObj.signature.value;
         signResult.addrInHex = signatureObj.address.valueHex;
       } else {
@@ -252,6 +255,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
       signResult.success = false;
       signResult.exception = e;
     }
+
+    console.log('signResult');
+    console.log(signResult);
 
     if (signResult.signature === null || signResult.addrInHex === null) {
       signResult.success = false;

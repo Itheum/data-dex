@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@multiversx/sdk-dapp/UI';
 import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { WALLETS } from 'libs/util';
-import { gtagGo, clearAppSessions, sleep } from 'libs/util';
+import { gtagGo, clearAppSessions, sleep, walletConnectV2ProjectId } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 import { useNavigate } from 'react-router-dom';
 
@@ -69,7 +69,14 @@ function AuthPickerMx ({ launchEnvironment, resetLaunchMode }) {
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
                     <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
-                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'xPortal App'} buttonClassName="auth_button"></WalletConnectLoginButton>
+                        <WalletConnectLoginButton
+                          callbackRoute={'/'}
+                          loginButtonText={'xPortal App'}
+                          buttonClassName="auth_button"
+                          {...(walletConnectV2ProjectId
+                            ? { isWalletConnectV2: true }
+                            : {})}
+                        ></WalletConnectLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">

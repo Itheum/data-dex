@@ -463,3 +463,5 @@ export const tryParseInt = (value, defaultValue = 0) => {
   const intValue = parseInt(value);
   return Number.isNaN(intValue) ? defaultValue : intValue;
 };
+
+export const walletConnectV2ProjectId = process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID;
