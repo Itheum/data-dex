@@ -1,20 +1,19 @@
 {
     "buildInfo": {
         "rustc": {
-            "version": "1.64.0-nightly",
-            "commitHash": "6dba4ed215e7a60f0a2a19c04f3f73691f89c509",
-            "commitDate": "2022-07-09",
+            "version": "1.68.0-nightly",
+            "commitHash": "ad8ae0504c54bc2bd8306abfcfe8546c1bb16a49",
+            "commitDate": "2022-12-29",
             "channel": "Nightly",
-            "short": "rustc 1.64.0-nightly (6dba4ed21 2022-07-09)"
+            "short": "rustc 1.68.0-nightly (ad8ae0504 2022-12-29)"
         },
         "contractCrate": {
             "name": "data_market",
-            "version": "0.0.0",
-            "git_version": "8e9db0c-modified"
+            "version": "0.0.0"
         },
         "framework": {
             "name": "elrond-wasm",
-            "version": "0.34.1"
+            "version": "0.38.0"
         }
     },
     "name": "DataMarket",
@@ -24,16 +23,50 @@
     },
     "endpoints": [
         {
-            "name": "setFees",
+            "name": "initializeContract",
             "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
-                    "name": "adder_fee",
+                    "name": "accepted_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "payment_token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "treasury_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setDiscounts",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "seller_discount",
                     "type": "BigUint"
                 },
                 {
-                    "name": "accepter_fee",
+                    "name": "buyer_discount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setFees",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "seller_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "buyer_fee",
                     "type": "BigUint"
                 }
             ],
@@ -41,7 +74,6 @@
         },
         {
             "name": "addAcceptedToken",
-            "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
@@ -53,7 +85,6 @@
         },
         {
             "name": "addAcceptedPayment",
-            "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
@@ -64,10 +95,25 @@
             "outputs": []
         },
         {
-            "name": "togglePause",
-            "onlyOwner": true,
+            "name": "setMaximumPaymentFee",
             "mutability": "mutable",
-            "inputs": [],
+            "inputs": [
+                {
+                    "name": "maximum_payment_fee",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setIsPaused",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "is_paused",
+                    "type": "bool"
+                }
+            ],
             "outputs": []
         },
         {
@@ -78,28 +124,24 @@
             ],
             "inputs": [
                 {
-                    "name": "wanted_token_id",
+                    "name": "payment_token_id",
                     "type": "EgldOrEsdtTokenIdentifier"
                 },
                 {
-                    "name": "wanted_token_nonce",
+                    "name": "payment_token_nonce",
                     "type": "u64"
                 },
                 {
-                    "name": "wanted_token_amount",
+                    "name": "payment_token_fee",
                     "type": "BigUint"
                 },
                 {
-                    "name": "quantity",
+                    "name": "opt_quantity",
                     "type": "optional<BigUint>",
                     "multi_arg": true
                 }
             ],
-            "outputs": [
-                {
-                    "type": "u64"
-                }
-            ]
+            "outputs": []
         },
         {
             "name": "cancelOffer",
@@ -129,6 +171,81 @@
                 }
             ],
             "outputs": []
+        },
+        {
+            "name": "setTreasuryAddress",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setAdministrator",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "administrator",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "viewEmptyOfferIndexes",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<u64>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "viewHighestOfferIndex",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "viewIsPaused",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "getTreasuryAddress",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getAdministrator",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
         },
         {
             "name": "viewOffers",
@@ -173,42 +290,202 @@
                     "type": "u32"
                 }
             ]
-        },
+        }
+    ],
+    "events": [
         {
-            "name": "viewEmptyOfferIndexes",
-            "mutability": "readonly",
-            "inputs": [],
-            "outputs": [
+            "identifier": "setMintPauseToggle",
+            "inputs": [
                 {
-                    "type": "variadic<u64>",
-                    "multi_result": true
+                    "name": "is_paused",
+                    "type": "bool",
+                    "indexed": true
                 }
             ]
         },
         {
-            "name": "viewHighestOfferIndex",
-            "mutability": "readonly",
-            "inputs": [],
-            "outputs": [
+            "identifier": "setTreasuryAddress",
+            "inputs": [
                 {
-                    "type": "u64"
+                    "name": "treasury_address",
+                    "type": "Address",
+                    "indexed": true
                 }
             ]
         },
         {
-            "name": "viewIsPaused",
-            "mutability": "readonly",
-            "inputs": [],
-            "outputs": [
+            "identifier": "setAdministrator",
+            "inputs": [
                 {
-                    "type": "bool"
+                    "name": "administrator",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setDiscounts",
+            "inputs": [
+                {
+                    "name": "discount_fee_percentage_seller",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "discount_fee_percentage_buyer",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setPercentageCuts",
+            "inputs": [
+                {
+                    "name": "percentage_cut_from_seller",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "percentage_cut_from_buyer",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setAcceptedToken",
+            "inputs": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setAcceptedPaymentToken",
+            "inputs": [
+                {
+                    "name": "token_identifier",
+                    "type": "EgldOrEsdtTokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "setMaxSftFee",
+            "inputs": [
+                {
+                    "name": "max_sft_fee",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "addedOffer",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "offer",
+                    "type": "Offer",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "cancelledOffer",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "acceptedOffer",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "buyer",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "quantity",
+                    "type": "BigUint",
+                    "indexed": true
                 }
             ]
         }
     ],
-    "events": [],
     "hasCallback": false,
     "types": {
+        "EgldOrEsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "EsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "Offer": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "Address"
+                },
+                {
+                    "name": "offered_token",
+                    "type": "EsdtTokenPayment"
+                },
+                {
+                    "name": "wanted_token",
+                    "type": "EgldOrEsdtTokenPayment"
+                },
+                {
+                    "name": "quantity",
+                    "type": "BigUint"
+                }
+            ]
+        },
         "OfferOut": {
             "type": "struct",
             "fields": [
