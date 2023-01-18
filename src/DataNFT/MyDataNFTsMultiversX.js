@@ -35,6 +35,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({ s1: 0, s2: 0, s3: 0 });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState(null);
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
+  const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [burnNFTModalState, setBurnNFTModalState] = useState(1);  // 1 and 2
 
@@ -65,29 +66,11 @@ export default function MyDataNFTsMx({ onRfMount }) {
     setBurnNFTModalState(1); // set state 1 when the modal is closed
     onBurnNFTOpen();
   };
-  const onBurn = () => {
-    if (!address) {
-      toast({
-        title: 'Connect your wallet',
-        status: 'error',
-        isClosable: true,
-      });
-      return;
-    }
-    if (!selectedDataNft) {
-      toast({
-        title: 'No NFT is selected',
-        status: 'error',
-        isClosable: true,
-      });
-      return;
-    }
-
-    mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
-
-    // close modal
-    onBurnNFTClose();
+  const onListButtonClick = (nft) => {
+    setSelectedDataNft(nft);
+    onListNFTOpen();
   };
+  
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -113,9 +96,10 @@ export default function MyDataNFTsMx({ onRfMount }) {
           const usersDataNFTCatalogLocal = [];
           let amounts = [];
           let prices = [];
-          onChainNFTs.forEach(nft => {
+          onChainNFTs.forEach((nft, index) => {
             const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft['attributes'], 'base64'), dataNftAttributes).valueOf();
             const dataNFT = {};
+            dataNFT.index = index; // only for view & query
             dataNFT.id = nft['identifier']; // ID of NFT -> done
             dataNFT.nftImgUrl = nft['url']; // image URL of of NFT -> done
             dataNFT.dataPreview = decodedAttributes['data_preview_url'].toString(); // preview URL for NFT data stream -> done
@@ -174,12 +158,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
     setOnChainNFTs(onChainNfts);
   }
-
-  const handleListOnMarketplace = (config) => {
-    const { collection, nonce, price, qty } = config;
-
-    marketContract.addToMarket(collection, nonce, qty, price, address);
-  };
 
   const accessDataStream = async (NFTid, myAddress) => {
     /*
@@ -272,6 +250,54 @@ export default function MyDataNFTsMx({ onRfMount }) {
     setErrUnlockAccessGeneric(null);
     onAccessProgressModalClose();
   }
+
+  const onBurn = () => {
+    if (!address) {
+      toast({
+        title: 'Connect your wallet',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    if (!selectedDataNft) {
+      toast({
+        title: 'No NFT is selected',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+
+    // close modal
+    onBurnNFTClose();
+  };
+
+  const onList = () => {
+    if (!address) {
+      toast({
+        title: 'Connect your wallet',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    if (!selectedDataNft) {
+      toast({
+        title: 'No NFT is selected',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    marketContract.addToMarket(selectedDataNft.collection, selectedDataNft.nonce, amounts[selectedDataNft.index], prices[selectedDataNft.index], address);
+
+    //
+    onListNFTClose();
+  };
 
   return (
     <Stack spacing={5}>
@@ -372,7 +398,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   </NumberInput>
                 </HStack>
 
-                <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
+                {/* <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
                   handleListOnMarketplace({
                     collection: item.collection,
                     nonce: item.nonce,
@@ -380,6 +406,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     price: prices[index]
                   });
                 }}>
+                  List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index]} ITHEUM each
+                </Button> */}
+                <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => onListButtonClick(item)}>
                   List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index]} ITHEUM each
                 </Button>
               </Box>
@@ -488,6 +517,42 @@ export default function MyDataNFTsMx({ onRfMount }) {
                 </ModalBody>
               </>)
             }
+          </ModalContent>
+        </Modal>
+      }
+
+      {
+        selectedDataNft && <Modal
+          isOpen={isListNFTOpen}
+          onClose={onListNFTClose}
+          closeOnEsc={false} closeOnOverlayClick={false}
+        >
+          <ModalOverlay
+            bg='blackAlpha.700'
+            backdropFilter='blur(10px) hue-rotate(90deg)'
+          />
+          <ModalContent>
+            <ModalBody py={6}>
+              <HStack spacing="5" alignItems="center">
+                <Box flex="4" alignContent="center">
+                  <Text fontSize='lg'>List my Data NFT on the Public Marketplace</Text>
+                  <Flex mt='1'>
+                    <Text fontWeight="bold" fontSize='md' backgroundColor='blackAlpha.300' px='1' textAlign="center">{selectedDataNft.tokenName}</Text>
+                  </Flex>
+                </Box>
+                <Box flex="1">
+                  <Image src={selectedDataNft.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                </Box>
+              </HStack>
+
+              <Text fontSize='md' mt='4'>How many to list: {amounts[selectedDataNft.index]}</Text>
+              <Text fontSize='md' mt='2'>Listing fee per NFT: {prices[selectedDataNft.index]} ITHEUM</Text>
+
+              <Flex justifyContent='end' mt='8 !important'>
+                <Button colorScheme="teal" size='sm' mx='3' onClick={onList}>Proceed</Button>
+                <Button colorScheme="teal" size='sm' variant='outline' onClick={onListNFTClose}>Cancel</Button>
+              </Flex>
+            </ModalBody>
           </ModalContent>
         </Modal>
       }

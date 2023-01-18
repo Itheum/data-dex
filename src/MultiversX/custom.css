@@ -68,7 +68,7 @@ thead.dapp-core-component__main__text-black-50 {
   color: var(--chakra-colors-chakra-border-color) !important;
 }
 
-.dapp-transaction-toast, .dapp-failed-transaction-status-toast {
+.dapp-transaction-toast, .dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
   border-color: var(--chakra-colors-teal-200) !important;
