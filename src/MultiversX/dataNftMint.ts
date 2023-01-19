@@ -1,14 +1,24 @@
 import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment, ArgSerializer, TokenIdentifierValue, U64Value, AddressValue } from '@multiversx/sdk-core/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, BigUIntValue, BytesValue, StringValue, TokenPayment, ArgSerializer, TokenIdentifierValue, U64Value, AddressValue, BinaryCodec } from '@multiversx/sdk-core/out';
 import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
 import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/datanftmint.abi.json';
 import { contractsForChain, convertEsdtToWei } from 'libs/util';
+import { NftType } from '@multiversx/sdk-dapp/types/tokens.types';
+import { DataNftMetadataType } from './types';
 
 export class DataNftMintContract {
-  constructor(networkId) {
+  timeout: number;
+  dataNftMarketContractAddress: any;
+  chainID: string;
+  networkProvider: ProxyNetworkProvider;
+  contract: SmartContract;
+  abiRegistry: AbiRegistry;
+  dataNftMintContractAddress: string;
+
+  constructor(networkId: string) {
     this.timeout = 5000;
-    this.dataNftMintContractAddress = contractsForChain(networkId).dataNftMint;
+    this.dataNftMintContractAddress = contractsForChain(networkId).dataNftMint || '';
     this.chainID = 'D';
 
     if (networkId === 'E1') {
@@ -19,8 +29,8 @@ export class DataNftMintContract {
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
-    const abiRegistry = AbiRegistry.create(json);
-    const abi = new SmartContractAbi(abiRegistry, ['DataNftMintContract']);
+    this.abiRegistry = AbiRegistry.create(json);
+    const abi = new SmartContractAbi(this.abiRegistry, ['DataNftMintContract']);
 
     this.contract = new SmartContract({
       address: new Address(this.dataNftMintContractAddress),
@@ -41,6 +51,19 @@ export class DataNftMintContract {
     sender,
     itheumToken,
     antiSpamTax,
+  } : {
+    name: string,
+    media: string,
+    data_marchal: string,
+    data_stream: string,
+    data_preview: string,
+    royalties: number,
+    amount: number,
+    title: string,
+    description: string,
+    sender: string,
+    itheumToken: string,
+    antiSpamTax: number,
   }) {
     const data = antiSpamTax > 0 ? TransactionPayload.contractCall()
       .setFunction(new ContractFunction('ESDTTransfer'))
@@ -94,7 +117,7 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  async sendBurnTransaction(sender, collection, nonce, quantity) {
+  async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number) {
     const tx = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -122,7 +145,7 @@ export class DataNftMintContract {
     });
   }
 
-  async getUserDataOut(address, spamTaxTokenId) {
+  async getUserDataOut(address: string, spamTaxTokenId: string) {
     const interaction = this.contract.methods.getUserDataOut([new Address(address), spamTaxTokenId]);
     const query = interaction.buildQuery();
     const result = [];
@@ -133,12 +156,12 @@ export class DataNftMintContract {
 
       const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
-      if (returnCode && returnCode.isSuccess()) {
+      if (returnCode && returnCode.isSuccess() && firstValue) {
         const userData = firstValue.valueOf();
         const returnData = {
           antiSpamTaxValue: userData.anti_spam_tax_value.toNumber(),
           addressFrozen: userData.frozen,
-          frozenNonces: userData.frozen_nonces.map(v => v.toNumber()),
+          frozenNonces: userData.frozen_nonces.map((v: any) => v.toNumber()),
           contractPaused: userData.is_paused,
           userWhitelistedForMint: userData.is_whitelisted,
           lastUserMintTime: userData.last_mint_time*1000,
@@ -163,5 +186,30 @@ export class DataNftMintContract {
 
       return { error };
     }
+  }
+
+  decodeNftAttributes(nft: NftType, index: number): DataNftMetadataType {
+    const dataNftAttributes = this.abiRegistry.getStruct('DataNftAttributes');
+    const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, 'base64'), dataNftAttributes).valueOf();
+    const dataNFT: DataNftMetadataType = {
+      index, // only for view & query
+      id: nft.identifier, // ID of NFT -> done
+      nftImgUrl: nft.url, // image URL of of NFT -> done
+      dataPreview: decodedAttributes['data_preview_url'].toString(), // preview URL for NFT data stream -> done
+      dataStream: decodedAttributes['data_stream_url'].toString(), // data stream URL -> done
+      dataMarshal: decodedAttributes['data_marshal_url'].toString(), // data stream URL -> done
+      tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
+      creator: decodedAttributes['creator'].toString(), // initial creator of NFT
+      creationTime: new Date(Number(decodedAttributes['creation_time']) * 1000), // initial creation time of NFT
+      supply: nft.supply ? Number(nft.supply) : 0,
+      description: decodedAttributes['description'].toString(),
+      title: decodedAttributes['title'].toString(),
+      royalties: nft.royalties / 100,
+      nonce: nft.nonce,
+      collection: nft.collection,
+      balance: 0,
+    };
+    
+    return dataNFT;
   }
 }

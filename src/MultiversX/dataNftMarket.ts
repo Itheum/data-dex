@@ -119,14 +119,12 @@ export class DataNftMarketContract {
           } else {
             const nonOKErr = new Error('getOffers returnCode returned a non OK value');
             console.error(nonOKErr);
-            
-            return { error: nonOKErr };
           }
         } catch (error) {
           console.error(error);
-    
-          return { error };
         }
+
+        return [];
       }
   
     async sendAcceptOfferEsdtTransaction(index:number,price:number,tokenId:string,amount:number, sender: string) {

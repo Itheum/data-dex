@@ -12,6 +12,8 @@ import { roundDown, hexZero, getTokenWantedRepresentation, getTokenImgSrc, token
 import { getApi } from 'MultiversX/api';
 import { DataNftMintContract } from 'MultiversX/dataNftMint';
 import { useChainMeta } from 'store/ChainMetaContext';
+import { getNftsByIds } from 'MultiversX/api2';
+import { DataNftMetadataType } from 'MultiversX/types';
 
 export default function Marketplace() {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -24,9 +26,16 @@ export default function Marketplace() {
   const [numberOfPages, setNumberOfPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedItem, setSelectedItem] = useState<any>({});
+  const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const contract = new DataNftMarketContract('ED');
   
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
+
+  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+  const [noData, setNoData] = useState(false);
+
+  const [userData, setUserData] = useState<any>({});
+  const mintContract = new DataNftMintContract(_chainMeta.networkId);
 
   useEffect(() => {
     contract.getNumberOfOffers().then((nr:any) => {
@@ -35,20 +44,27 @@ export default function Marketplace() {
   }, [hasPendingTransactions]);
 
   useEffect(() => {
-    contract.getOffers(0, 25).then((offers:any) => {
-      setTokensForSale(offers);
-
+    (async () => {
+      const _offers: any[] = await contract.getOffers(0, 25);
+      setTokensForSale(_offers);
+  
       let amounts: any = {};
-      offers.forEach((offer:any)=>amounts[offer.index] = 1);
+      for (const offer of _offers) {
+        amounts[offer.index] = 1;
+      }
       setAmountOfTokens(amounts);
-    })
+
+      const nftIds = _offers.map(offer => `${offer.have.identifier}-${hexZero(offer.have.nonce)}`);
+      const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
+      const _metadatas: DataNftMetadataType[] = [];
+      for (let i = 0; i < _nfts.length; i++) {
+        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
+      }
+      console.log('_metadatas', _metadatas);
+      setNftMetadatas(_metadatas);
+    })();
   }, [currentPage, hasPendingTransactions]);
-
-  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [noData, setNoData] = useState(false);
-
-  const [userData, setUserData] = useState<any>({});
-  const mintContract = new DataNftMintContract(_chainMeta.networkId);
+  
   const getUserData = async() => {
     if (address && !hasPendingTransactions) {
       const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
