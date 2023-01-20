@@ -36,6 +36,10 @@
                     "type": "EgldOrEsdtTokenIdentifier"
                 },
                 {
+                    "name": "maximum_payment_fee",
+                    "type": "BigUint"
+                },
+                {
                     "name": "treasury_address",
                     "type": "Address"
                 }
@@ -90,16 +94,9 @@
                 {
                     "name": "token_id",
                     "type": "EgldOrEsdtTokenIdentifier"
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "setMaximumPaymentFee",
-            "mutability": "mutable",
-            "inputs": [
+                },
                 {
-                    "name": "maximum_payment_fee",
+                    "name": "maximum_fee",
                     "type": "BigUint"
                 }
             ],
@@ -197,7 +194,80 @@
             "outputs": []
         },
         {
-            "name": "viewEmptyOfferIndexes",
+            "name": "getOffers",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<multi<u64,Offer>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getAcceptedTokens",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<TokenIdentifier>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getAcceptedTokenPayments",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<multi<EgldOrEsdtTokenIdentifier,BigUint>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getDiscountFeePercentageBuyer",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getDiscountFeePercentageSeller",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getPercentageCutFromSeller",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getPercentageCutFromBuyer",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getEmptyOfferIndexes",
             "mutability": "readonly",
             "inputs": [],
             "outputs": [
@@ -208,7 +278,7 @@
             ]
         },
         {
-            "name": "viewHighestOfferIndex",
+            "name": "getHighestOfferIndex",
             "mutability": "readonly",
             "inputs": [],
             "outputs": [
@@ -218,7 +288,7 @@
             ]
         },
         {
-            "name": "viewIsPaused",
+            "name": "getIsPaused",
             "mutability": "readonly",
             "inputs": [],
             "outputs": [
@@ -248,6 +318,16 @@
             ]
         },
         {
+            "name": "getRequirements",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "MarketPlaceRequirements"
+                }
+            ]
+        },
+        {
             "name": "viewOffers",
             "mutability": "readonly",
             "inputs": [
@@ -258,6 +338,11 @@
                 {
                     "name": "to",
                     "type": "u64"
+                },
+                {
+                    "name": "opt_address",
+                    "type": "optional<Address>",
+                    "multi_arg": true
                 }
             ],
             "outputs": [
@@ -370,6 +455,11 @@
                     "name": "token_identifier",
                     "type": "EgldOrEsdtTokenIdentifier",
                     "indexed": true
+                },
+                {
+                    "name": "max_payment_fee",
+                    "type": "BigUint",
+                    "indexed": true
                 }
             ]
         },
@@ -461,6 +551,39 @@
                 },
                 {
                     "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "MarketPlaceRequirements": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "accepted_tokens",
+                    "type": "List<TokenIdentifier>"
+                },
+                {
+                    "name": "accepted_payments",
+                    "type": "List<EgldOrEsdtTokenIdentifier>"
+                },
+                {
+                    "name": "maximum_payment_fees",
+                    "type": "List<BigUint>"
+                },
+                {
+                    "name": "discount_fee_percentage_buyer",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "discount_fee_percentage_seller",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "percentage_cut_from_buyer",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "percentage_cut_from_seller",
                     "type": "BigUint"
                 }
             ]
