@@ -282,4 +282,32 @@ export class DataNftMarketContract {
               redirectAfterSign: false
             });
           }
+
+  async delistDataNft(index: number, senderAddress: string) {
+    const tx = new Transaction({
+      value: '0',
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction('cancelOffer'))
+        .addArg(new U64Value(index))
+        .build(),
+      receiver: new Address(this.dataNftMarketContractAddress),
+      gasLimit: 12000000,
+      sender: new Address(senderAddress),
+      chainID: 'D'
+    });
+
+    await refreshAccount();
+
+    const { sessionId, error } = await sendTransactions({
+      transactions: tx,
+      transactionsDisplayInfo: {
+        processingMessage: 'De-Listing offer',
+        errorMessage: 'Error occured during de-listing offer',
+        successMessage: 'Offer de-listed successfuly'
+      },
+      redirectAfterSign: false
+    });
+
+    return { sessionId, error };
+  }
 }

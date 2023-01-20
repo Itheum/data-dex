@@ -35,6 +35,7 @@ export default function Marketplace() {
   
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
+  const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -143,6 +144,32 @@ export default function Marketplace() {
     onProcureModalClose();
   };
 
+  const onDelist = async () => {
+    if (!address) {
+      toast({
+        title: 'Connect your wallet',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    if (tokensForSale.length <= selectedNftIndex) {
+      toast({
+        title: 'No NFT data',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    const token = tokensForSale[selectedNftIndex];
+    contract.delistDataNft(token['index'], address);
+
+    // a small delay for visual effect
+    await sleep(0.5);
+    onDelistModalClose();
+  };
+
   return (
     <>
       <Stack spacing={5}>
@@ -249,25 +276,9 @@ export default function Marketplace() {
                     </>)
                   }
 
-                  {/* <Box as="span" fontSize="sm">
-                    {(
-                      token['have']['amount'] /
-                      Math.pow(10, tokenDecimals(token['have']['identifier']))
-                    ).toLocaleString() + ' '}{' '}
-                    x{' '}
-                    {getTokenWantedRepresentation(
-                      token['have']['identifier'],
-                      token['have']['nonce']
-                    )}
-                  </Box>
-
-                  <Box as="span" fontSize="sm">
-                    <Text>Supply: {token['quantity']}</Text>
-                  </Box> */}
-
-                  {/* Hide Procure part if NFT is owned by User */}
+                  {/* Public Marketplace: Hide Procure part if NFT is owned by User */}
                   {
-                    address && address != token.owner && (<>
+                    tabState === 1 && address && address != token.owner && (<>
                       <Box fontSize="xs" mt='2'>
                         <Text>
                           Fee per NFT:
@@ -310,43 +321,23 @@ export default function Marketplace() {
                     </>)
                   }
 
-                  {/* <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
-                    if (token['want']['identifier'] === 'EGLD') {
-                      contract.sendAcceptOfferEgldTransaction(
-                        token['index'],
-                        token['want']['amount'],
-                        amountOfTokens[token['index']],
-                        address
-                      );
-                    } else {
-                      if (token['want']['nonce'] === 0) {
-                        contract.sendAcceptOfferEsdtTransaction(
-                          token['index'],
-                          token['want']['amount'],
-                          token['want']['identifier'],
-                          amountOfTokens[token['index']],
-                          address
-                        );
-                      } else {
-                        contract.sendAcceptOfferNftEsdtTransaction(
-                          token['index'],
-                          token['want']['amount'],
-                          token['want']['identifier'],
-                          token['want']['nonce'],
-                          amountOfTokens[token['index']],
-                          address
-                        );
-                      }
-                    }
-                  }}>
-                    Buy {amountOfTokens[token['index']]} NFT{amountOfTokens[token['index']]>1&&'s'} for {(token['want']['amount'] *
-                      amountOfTokens[token['index']]) /
-                      Math.pow(
-                        10,
-                        tokenDecimals(token['want']['identifier'])
-                      ) +
-                      ' '}
-                  </Button> */}
+                  {
+                    tabState === 2 && address && (<>
+                      <Flex mt='2'>
+                        <Button
+                          size="xs"
+                          colorScheme="teal"
+                          width="72px"
+                          onClick={() => {
+                            setSelectedNftIndex(index);
+                            onDelistModalOpen();
+                          }}
+                        >
+                          De-List
+                        </Button>
+                      </Flex>
+                    </>)
+                  }
                 </Box>
 
                 <Box
@@ -491,6 +482,31 @@ export default function Marketplace() {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {
+        selectedNftIndex < tokensForSale.length && (
+          <Modal
+            isOpen={isDelistModalOpen}
+            onClose={onDelistModalClose}
+            closeOnEsc={false} closeOnOverlayClick={false}
+          >
+            <ModalOverlay
+              bg='blackAlpha.700'
+              backdropFilter='blur(10px) hue-rotate(90deg)'
+            />
+            <ModalContent>
+              <ModalHeader>Are you sure?</ModalHeader>
+              <ModalBody pb={6}>
+                <Text fontSize='md' mt='2'>You are about to de-list {tokensForSale[selectedNftIndex]['quantity']} Data NFTs from the Public Marketplace.</Text>
+                <Flex justifyContent='end' mt='6 !important'>
+                  <Button colorScheme="teal" size='sm' mx='3' onClick={onDelist}>Proceed</Button>
+                  <Button colorScheme="teal" size='sm' variant='outline' onClick={onDelistModalClose}>Cancel</Button>
+                </Flex>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )
+      }
     </>
   );
 };
