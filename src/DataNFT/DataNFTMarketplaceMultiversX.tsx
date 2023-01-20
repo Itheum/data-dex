@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Stack } from '@chakra-ui/layout';
 import {
   Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button,
-  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody, useDisclosure, ModalOverlay, ModalContent, Modal, ModalHeader, ModalBody, useToast
+  Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text, Tooltip, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody, useDisclosure, ModalOverlay, ModalContent, Modal, ModalHeader, ModalBody, useToast, Checkbox
 } from '@chakra-ui/react';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
 import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
@@ -34,6 +34,8 @@ export default function Marketplace() {
   const contract = new DataNftMarketContract('ED');
   
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
+  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
+  const [readTermsChecked, setReadTermsChecked] = useState(false);
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
@@ -93,6 +95,14 @@ export default function Marketplace() {
     if (tokensForSale.length <= selectedNftIndex) {
       toast({
         title: 'No NFT data',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    if (!readTermsChecked) {
+      toast({
+        title: 'You must agree on Terms of Use',
         status: 'error',
         isClosable: true,
       });
@@ -442,7 +452,20 @@ export default function Marketplace() {
                 </Box>
               </Flex>
 
-              <Flex justifyContent='end' mt='8 !important'>
+              <Flex mt='4 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read Terms of Use</Button></Flex>
+              <Checkbox
+                size='sm'
+                mt='3 !important'
+                isChecked={readTermsChecked}
+                onChange={(e: any) => setReadTermsChecked(e.target.checked)}
+              >
+                I have read all terms and agree to them
+              </Checkbox>
+              {!readTermsChecked && (
+                <Text color='red.400' fontSize='xs' mt='1 !important'>You must agree on Terms of Use</Text>
+              )}
+
+              <Flex justifyContent='end' mt='4 !important'>
                 <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure}>Proceed</Button>
                 <Button colorScheme="teal" size='sm' variant='outline' onClick={onProcureModalClose}>Cancel</Button>
               </Flex>
@@ -450,6 +473,24 @@ export default function Marketplace() {
           </ModalContent>
         </Modal>
       }
+
+      <Modal
+        isOpen={isReadTermsModalOpen}
+        onClose={onReadTermsModalClose}
+        closeOnEsc={false} closeOnOverlayClick={false}
+      >
+        <ModalOverlay
+          bg='blackAlpha.700'
+          backdropFilter='blur(10px) hue-rotate(90deg)'
+        />
+        <ModalContent>
+          <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
+          <ModalBody pb={6}>
+            <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
+            <Flex justifyContent='end' mt='6 !important'><Button colorScheme="teal" onClick={onReadTermsModalClose}>I have read this</Button></Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
