@@ -13,7 +13,7 @@ import { getApi } from 'MultiversX/api';
 import { DataNftMintContract } from 'MultiversX/dataNftMint';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsByIds } from 'MultiversX/api2';
-import { DataNftMetadataType } from 'MultiversX/types';
+import { DataNftMetadataType, MarketplaceRequirementsType } from 'MultiversX/types';
 import moment from 'moment';
 import { sleep, uxConfig } from 'libs/util';
 
@@ -41,9 +41,18 @@ export default function Marketplace() {
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
-
   const [userData, setUserData] = useState<any>({});
+  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
+
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
+
+  useEffect(() => {
+    (async () => {
+      const _marketRequirements = await contract.getRequirements();
+      console.log('_marketRequirements', _marketRequirements);
+      setMarketRequirements(_marketRequirements);
+    })();
+  }, []);
 
   useEffect(() => {
     contract.getNumberOfOffers().then((nr:any) => {

@@ -25,6 +25,7 @@ import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
 import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/data_market.abi.json';
 import { contractsForChain } from '../libs/util';
+import { MarketplaceRequirementsType } from './types';
 
 export class DataNftMarketContract {
   timeout: number;
@@ -318,5 +319,37 @@ export class DataNftMarketContract {
     });
 
     return { sessionId, error };
+  }
+
+  async getRequirements(): Promise<MarketplaceRequirementsType | undefined> {
+    const interaction = this.contract.methodsExplicit.getRequirements();
+    const query = interaction.buildQuery();
+  
+    try {
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (!firstValue || !returnCode.isSuccess()) {
+        console.error(returnMessage);
+        return undefined;
+      }
+
+      const value = firstValue.valueOf();
+      const decoded = {
+        accepted_tokens: value.accepted_tokens.map((v: any) => v.toString()),
+        accepted_payments:value.accepted_payments.map((v: any) => v.toString()),
+        maximum_payment_fees: value.maximum_payment_fees.map((v: any) => v.toFixed()),
+        discount_fee_percentage_buyer: value.discount_fee_percentage_buyer.toNumber(),
+        discount_fee_percentage_seller: value.discount_fee_percentage_seller.toNumber(),
+        percentage_cut_from_buyer: value.percentage_cut_from_buyer.toNumber(),
+        percentage_cut_from_seller: value.percentage_cut_from_seller.toNumber(),
+      };
+
+      return decoded;
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
   }
 }
