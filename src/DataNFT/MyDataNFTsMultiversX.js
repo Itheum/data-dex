@@ -8,6 +8,7 @@ import {
   useDisclosure,
   Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody,
   useToast,
+  Select,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
@@ -547,6 +548,14 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
               <Text fontSize='md' mt='4'>How many to list: {amounts[selectedDataNft.index]}</Text>
               <Text fontSize='md' mt='2'>Listing fee per NFT: {prices[selectedDataNft.index]} ITHEUM</Text>
+
+              <Text fontSize='md' mt='8'>Advanced:</Text>
+              <Flex mt='2' justifyContent='flex-start' alignItems='center' gap='4'>
+                <Text fontSize='md'>Access Time Limit per SFT: </Text>
+                <Select size='sm' width='120px' defaultValue='unlimited'>
+                  <option value='unlimited'>Unlimited</option>
+                </Select>
+              </Flex>
 
               <Flex justifyContent='end' mt='8 !important'>
                 <Button colorScheme="teal" size='sm' mx='3' onClick={onList}>Proceed</Button>
