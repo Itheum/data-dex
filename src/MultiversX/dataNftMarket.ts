@@ -17,7 +17,9 @@ import {
     AddressValue,
     StringValue,
     TypedValue,
-    U32Value
+    U32Value,
+    AddressType,
+    OptionalValue
   } from '@multiversx/sdk-core/out';
 import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
 import { sendTransactions } from '@multiversx/sdk-dapp/services';
@@ -78,15 +80,19 @@ export class DataNftMarketContract {
         }
       }
 
-    async getOffers(startIndex:number,stopIndex:number) {
-        const interaction = this.contract.methods.viewOffers([startIndex,stopIndex]);
+    async getOffers(startIndex: number, stopIndex: number, userAddress?: string) {
+        const interaction = this.contract.methodsExplicit.viewOffers([
+          new U64Value(startIndex),
+          new U64Value(stopIndex),
+          userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing()
+        ]);
         const query = interaction.buildQuery();
     
         try {
           const res = await this.networkProvider.queryContract(query);
           const endpointDefinition = interaction.getEndpoint();
     
-          const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+          const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
     
           if (returnCode && returnCode.isSuccess()) {
             const firstValueAsStruct = firstValue as List;
@@ -117,6 +123,7 @@ export class DataNftMarketContract {
         });
         return tempTokens;
           } else {
+            console.error(returnMessage);
             const nonOKErr = new Error('getOffers returnCode returned a non OK value');
             console.error(nonOKErr);
           }

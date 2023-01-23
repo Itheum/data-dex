@@ -26,6 +26,7 @@ export default function Marketplace() {
 
   const [tabState, setTabState] = useState<number>(1);  // 1 for "Public Marketplace", 2 for "My Data NFTs"
   const [tokensForSale, setTokensForSale] = useState<any[]>([]);
+  const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [numberOfPages, setNumberOfPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -52,9 +53,13 @@ export default function Marketplace() {
 
   useEffect(() => {
     (async () => {
-      const _offers: any[] = await contract.getOffers(0, 25);
+      // start loading offers
+      setLoadingOffers(true);
+      const _offers: any[] = await contract.getOffers(0, 25, tabState === 1 ? '' : address);
       console.log('_offers', _offers);
       setTokensForSale(_offers);
+      // end loading offers
+      setLoadingOffers(false);
   
       let amounts: any = {};
       for (let i = 0; i < _offers.length; i++) {
@@ -71,7 +76,7 @@ export default function Marketplace() {
       console.log('_metadatas', _metadatas);
       setNftMetadatas(_metadatas);
     })();
-  }, [currentPage, hasPendingTransactions]);
+  }, [currentPage, hasPendingTransactions, tabState]);
   
   const getUserData = async() => {
     if (address && !hasPendingTransactions) {
@@ -198,10 +203,9 @@ export default function Marketplace() {
           </Button>
         </Flex>
 
-        {(!tokensForSale || tokensForSale && tokensForSale.length === 0) &&
-          <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> ||
-          <Flex wrap="wrap">
-
+        {loadingOffers ? <SkeletonLoadingList />
+          : tokensForSale.length === 0 ? <Text>No data yet...</Text>
+          : <Flex wrap="wrap">
             {tokensForSale && tokensForSale.map((token, index) => (
               <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem" position="relative">
                 <Flex justifyContent="center" pt={5}>
