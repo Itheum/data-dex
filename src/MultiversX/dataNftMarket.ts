@@ -81,58 +81,60 @@ export class DataNftMarketContract {
       }
 
     async getOffers(startIndex: number, stopIndex: number, userAddress?: string) {
-        const interaction = this.contract.methodsExplicit.viewOffers([
-          new U64Value(startIndex),
-          new U64Value(stopIndex),
-          userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing()
-        ]);
-        const query = interaction.buildQuery();
+      const interaction = this.contract.methodsExplicit.viewOffers([
+        new U64Value(startIndex),
+        new U64Value(stopIndex),
+        userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing()
+      ]);
+      const query = interaction.buildQuery();
     
-        try {
-          const res = await this.networkProvider.queryContract(query);
-          const endpointDefinition = interaction.getEndpoint();
-    
-          const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-    
-          if (returnCode && returnCode.isSuccess()) {
-            const firstValueAsStruct = firstValue as List;
-            const tempTokens: {
+      try {
+        const res = await this.networkProvider.queryContract(query);
+        const endpointDefinition = interaction.getEndpoint();
+  
+        const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+  
+        if (returnCode && returnCode.isSuccess()) {
+          const firstValueParsed = (firstValue as List).valueOf();
+          const tempTokens: {
             index: number;
             owner: Address;
             quantity: number;
             have: { identifier: string; nonce: number; amount: number };
             want: { identifier: string; nonce: number; amount: number };
-        }[] = [];
-        firstValueAsStruct.valueOf().forEach((token: any) => {
-          const parsedToken = {
-            index: token['index'].toNumber(),
-            owner: token['owner'],
-            have: {
-              identifier: token['offered_token_identifier'],
-              nonce: token['offered_token_nonce'].toNumber(),
-              amount: token['offered_token_amount'].toNumber()
-            },
-            want: {
-              identifier: token['wanted_token_identifier'],
-              nonce: token['wanted_token_nonce'].toNumber(),
-              amount: token['wanted_token_amount'].toNumber()
-            },
-            quantity: token['quantity'].toNumber()
-          };
-          tempTokens.push(parsedToken);
-        });
-        return tempTokens;
-          } else {
-            console.error(returnMessage);
-            const nonOKErr = new Error('getOffers returnCode returned a non OK value');
-            console.error(nonOKErr);
-          }
-        } catch (error) {
-          console.error(error);
-        }
+          }[] = [];
 
-        return [];
+          firstValueParsed.forEach((token: any) => {
+            const parsedToken = {
+              index: token['index'].toNumber(),
+              owner: token['owner'],
+              have: {
+                identifier: token['offered_token_identifier'],
+                nonce: token['offered_token_nonce'].toNumber(),
+                amount: token['offered_token_amount'].toNumber()
+              },
+              want: {
+                identifier: token['wanted_token_identifier'],
+                nonce: token['wanted_token_nonce'].toNumber(),
+                amount: token['wanted_token_amount'].toNumber()
+              },
+              quantity: token['quantity'].toNumber()
+            };
+            tempTokens.push(parsedToken);
+          });
+        
+          return tempTokens;
+        } else {
+          console.error(returnMessage);
+          const nonOKErr = new Error('getOffers returnCode returned a non OK value');
+          console.error(nonOKErr);
+        }
+      } catch (error) {
+        console.error(error);
       }
+
+      return [];
+    }
   
     async sendAcceptOfferEsdtTransaction(index:number,price:number,tokenId:string,amount:number, sender: string) {
         const offerEsdtTx = new Transaction({

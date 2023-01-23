@@ -30,7 +30,7 @@ export default function Marketplace() {
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [numberOfPages, setNumberOfPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [selectedNftIndex, setSelectedNftIndex] = useState<number>(0);
+  const [selectedNftIndex, setSelectedNftIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const contract = new DataNftMarketContract('ED');
   
@@ -53,6 +53,9 @@ export default function Marketplace() {
 
   useEffect(() => {
     (async () => {
+      // init - no selection
+      setSelectedNftIndex(-1);
+
       // start loading offers
       setLoadingOffers(true);
       const _offers: any[] = await contract.getOffers(0, 25, tabState === 1 ? '' : address);
@@ -98,7 +101,7 @@ export default function Marketplace() {
       });
       return;
     }
-    if (tokensForSale.length <= selectedNftIndex) {
+    if (selectedNftIndex < 0 || tokensForSale.length <= selectedNftIndex) {
       toast({
         title: 'No NFT data',
         status: 'error',
@@ -158,7 +161,7 @@ export default function Marketplace() {
       });
       return;
     }
-    if (tokensForSale.length <= selectedNftIndex) {
+    if (selectedNftIndex < 0 || tokensForSale.length <= selectedNftIndex) {
       toast({
         title: 'No NFT data',
         status: 'error',
@@ -375,7 +378,7 @@ export default function Marketplace() {
       </Stack>
 
       {
-        nftMetadatas.length > selectedNftIndex && <Modal
+        selectedNftIndex >= 0 && nftMetadatas.length > selectedNftIndex && <Modal
           isOpen={isProcureModalOpen}
           onClose={onProcureModalClose}
           closeOnEsc={false} closeOnOverlayClick={false}
@@ -488,7 +491,7 @@ export default function Marketplace() {
       </Modal>
 
       {
-        selectedNftIndex < tokensForSale.length && (
+        selectedNftIndex >= 0 && selectedNftIndex < tokensForSale.length && (
           <Modal
             isOpen={isDelistModalOpen}
             onClose={onDelistModalClose}
