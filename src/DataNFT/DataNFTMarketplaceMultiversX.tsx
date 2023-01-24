@@ -15,14 +15,12 @@ import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsByIds } from 'MultiversX/api2';
 import { DataNftMetadataType, MarketplaceRequirementsType } from 'MultiversX/types';
 import moment from 'moment';
-import { convertWeiToEsdt, sleep, uxConfig } from 'libs/util';
-
+import { sleep, uxConfig } from 'libs/util';
 export default function Marketplace() {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
-
   const [tabState, setTabState] = useState<number>(1);  // 1 for "Public Marketplace", 2 for "My Data NFTs"
   const [tokensForSale, setTokensForSale] = useState<any[]>([]);
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
@@ -32,19 +30,15 @@ export default function Marketplace() {
   const [selectedNftIndex, setSelectedNftIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const contract = new DataNftMarketContract('ED');
-
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
-
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
   const [userData, setUserData] = useState<any>({});
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
-
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
-
   useEffect(() => {
     (async () => {
       const _marketRequirements = await contract.getRequirements();
@@ -52,22 +46,15 @@ export default function Marketplace() {
       setMarketRequirements(_marketRequirements);
     })();
   }, []);
-
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     contract.getNumberOfOffers().then((nr: any) => {
       setNumberOfPages(Math.ceil(nr / 25));
     })
   }, [hasPendingTransactions]);
-
   useEffect(() => {
     (async () => {
-      if (hasPendingTransactions) return;
-
       // init - no selection
       setSelectedNftIndex(-1);
-
       // start loading offers
       setLoadingOffers(true);
       const _offers: any[] = await contract.getOffers(0, 25, tabState === 1 ? '' : address);
@@ -75,13 +62,11 @@ export default function Marketplace() {
       setTokensForSale(_offers);
       // end loading offers
       setLoadingOffers(false);
-
       let amounts: any = {};
       for (let i = 0; i < _offers.length; i++) {
         amounts[i] = 1;
       }
       setAmountOfTokens(amounts);
-
       const nftIds = _offers.map(offer => `${offer.have.identifier}-${hexZero(offer.have.nonce)}`);
       const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
       const _metadatas: DataNftMetadataType[] = [];
@@ -92,32 +77,19 @@ export default function Marketplace() {
       setNftMetadatas(_metadatas);
     })();
   }, [currentPage, hasPendingTransactions, tabState]);
-
   const getUserData = async () => {
     if (address && !hasPendingTransactions) {
       const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
   };
-
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     getUserData();
   }, [address, hasPendingTransactions]);
-
   const onProcure = async () => {
     if (!address) {
       toast({
         title: 'Connect your wallet',
-        status: 'error',
-        isClosable: true,
-      });
-      return;
-    }
-    if (!marketRequirements) {
-      toast({
-        title: 'Data is not loaded',
         status: 'error',
         isClosable: true,
       });
@@ -133,19 +105,17 @@ export default function Marketplace() {
     }
     if (!readTermsChecked) {
       toast({
-        title: 'You must READ and Agree on Terms of Use',
+        title: 'You must agree on Terms of Use',
         status: 'error',
         isClosable: true,
       });
       return;
     }
-
     const token = tokensForSale[selectedNftIndex];
-    const paymentAmount = token['want']['amount'] * amountOfTokens[selectedNftIndex];
     if (token['want']['identifier'] === 'EGLD') {
       contract.sendAcceptOfferEgldTransaction(
         token['index'],
-        paymentAmount,
+        token['want']['amount'],
         amountOfTokens[selectedNftIndex],
         address
       );
@@ -153,7 +123,7 @@ export default function Marketplace() {
       if (token['want']['nonce'] === 0) {
         contract.sendAcceptOfferEsdtTransaction(
           token['index'],
-          paymentAmount,
+          token['want']['amount'],
           token['want']['identifier'],
           amountOfTokens[selectedNftIndex],
           address
@@ -161,7 +131,7 @@ export default function Marketplace() {
       } else {
         contract.sendAcceptOfferNftEsdtTransaction(
           token['index'],
-          paymentAmount,
+          token['want']['amount'],
           token['want']['identifier'],
           token['want']['nonce'],
           amountOfTokens[selectedNftIndex],
@@ -169,12 +139,10 @@ export default function Marketplace() {
         );
       }
     }
-
     // a small delay for visual effect
     await sleep(0.5);
     onProcureModalClose();
   };
-
   const onDelist = async () => {
     if (!address) {
       toast({
@@ -192,15 +160,12 @@ export default function Marketplace() {
       });
       return;
     }
-
     const token = tokensForSale[selectedNftIndex];
     contract.delistDataNft(token['index'], address);
-
     // a small delay for visual effect
     await sleep(0.5);
     onDelistModalClose();
   };
-
   return (
     <>
       <Stack spacing={5}>
@@ -228,7 +193,6 @@ export default function Marketplace() {
             My Data NFTs
           </Button>
         </Flex>
-
         {loadingOffers ? <SkeletonLoadingList />
           : tokensForSale.length === 0 ? <Text>No data yet...</Text>
             : <Flex wrap="wrap">
@@ -241,13 +205,11 @@ export default function Marketplace() {
                         alt={'item.dataPreview'} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
                     </Skeleton>
                   </Flex>
-
-                  <Box p="3" mt="2" height="336px">
+                  <Box p="3" mt="2" height="320px">
                     {
                       nftMetadatas[index] && (<>
                         <Text fontWeight="bold" fontSize='lg'>{nftMetadatas[index].tokenName}</Text>
                         <Text fontSize='md'>{nftMetadatas[index].title}</Text>
-
                         <Flex height='4rem'>
                           <Popover trigger='hover' placement='auto'>
                             <PopoverTrigger>
@@ -265,11 +227,9 @@ export default function Marketplace() {
                             </PopoverContent>
                           </Popover>
                         </Flex>
-
                         <Box color="gray.600" fontSize="sm" flexGrow="1">
                           {`Creator: ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
                         </Box>
-
                         <Box
                           display='flex'
                           flexDirection='column'
@@ -280,14 +240,14 @@ export default function Marketplace() {
                           height='56px'
                         >
                           {
-                            address && address == nftMetadatas[index].creator && (
+                            address && address === nftMetadatas[index].creator && (
                               <Badge borderRadius="full" px="2" colorScheme="teal">
                                 <Text>YOU ARE THE CREATOR</Text>
                               </Badge>
                             )
                           }
                           {
-                            address && address == token.owner && (
+                            address && address === token.owner && (
                               <Badge borderRadius="full" px="2" colorScheme="teal">
                                 <Text>YOU ARE THE OWNER</Text>
                               </Badge>
@@ -297,20 +257,17 @@ export default function Marketplace() {
                             Fully Transferable License
                           </Badge>
                         </Box>
-
                         <Box display='flex' justifyContent='flex-start' mt='2'>
                           <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
                         </Box>
-
                         <Box color="gray.600" fontSize="sm" flexGrow="1">
                           {`Balance: ${token['quantity']} out of ${nftMetadatas[index].supply}. Royalty: ${nftMetadatas[index].royalties * 100}%`}
                         </Box>
                       </>)
                     }
-
                     {/* Public Marketplace: Hide Procure part if NFT is owned by User */}
                     {
-                      tabState === 1 && address && address != token.owner && (!nftMetadatas[index] || address != nftMetadatas[index].creator) && (<>
+                      tabState === 1 && address && address !== token.owner && (<>
                         <Box fontSize="xs" mt='2'>
                           <Text>
                             Fee per NFT:
@@ -324,7 +281,6 @@ export default function Marketplace() {
                             )}
                           </Text>
                         </Box>
-
                         <HStack mt='2'>
                           <Text fontSize='xs'>How many to procure access to </Text>
                           <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={token['quantity']} value={amountOfTokens[index]} onChange={(valueString) => setAmountOfTokens((oldAmounts: any) => {
@@ -353,7 +309,6 @@ export default function Marketplace() {
                         </HStack>
                       </>)
                     }
-
                     {
                       tabState === 2 && address && (<>
                         <Flex mt='2'>
@@ -372,7 +327,6 @@ export default function Marketplace() {
                       </>)
                     }
                   </Box>
-
                   <Box
                     position='absolute'
                     top='0'
@@ -402,7 +356,6 @@ export default function Marketplace() {
             </Flex>
         }
       </Stack>
-
       {
         selectedNftIndex >= 0 && nftMetadatas.length > selectedNftIndex && <Modal
           isOpen={isProcureModalOpen}
@@ -433,60 +386,48 @@ export default function Marketplace() {
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Fee per NFT</Box>
                 <Box>
-                  {
-                    marketRequirements ? <>
-                      {': ' + convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * 10000 / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber() + ' '}
-                      {getTokenWantedRepresentation(
-                        tokensForSale[selectedNftIndex]['want']['identifier'],
-                        tokensForSale[selectedNftIndex]['want']['nonce']
-                      )}
-                    </> : '-'
-                  }
+                  {': ' +
+                    tokensForSale[selectedNftIndex]['want']['amount'] /
+                    Math.pow(10, tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])) +
+                    ' '}
+                  {getTokenWantedRepresentation(
+                    tokensForSale[selectedNftIndex]['want']['identifier'],
+                    tokensForSale[selectedNftIndex]['want']['nonce']
+                  )}
                 </Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Buyer Fee</Box>
-                <Box>: {marketRequirements ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * marketRequirements.buyer_fee / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber()} ${getTokenWantedRepresentation(tokensForSale[selectedNftIndex]['want']['identifier'], tokensForSale[selectedNftIndex]['want']['nonce'])})` : '-'}</Box>
+                <Box>: 2%</Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Total Fee</Box>
                 <Box>
-                  {': '}
-                  {
-                    marketRequirements ? <>
-                    {convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex], tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber() +
-                      ' '}
-                    {getTokenWantedRepresentation(
-                      tokensForSale[selectedNftIndex]['want']['identifier'],
-                      tokensForSale[selectedNftIndex]['want']['nonce']
-                    )}
-                    </> : '-'
-                  }
+                  {': ' +
+                    tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] /
+                    Math.pow(10, tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])) +
+                    ' '}
+                  {getTokenWantedRepresentation(
+                    tokensForSale[selectedNftIndex]['want']['identifier'],
+                    tokensForSale[selectedNftIndex]['want']['nonce']
+                  )}
                 </Box>
               </Flex>
               <Flex fontSize='xs' mt='0'>
                 <Box w='106px'></Box>
                 <Box>
-                  {
-                    marketRequirements ? <>
-                      {' ' + convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] * 10000 / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber() +
-                        ' '}
-                      {getTokenWantedRepresentation(
-                        tokensForSale[selectedNftIndex]['want']['identifier'],
-                        tokensForSale[selectedNftIndex]['want']['nonce']
-                      )}
-                      {' + '}
-                      {convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] * marketRequirements.buyer_fee / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber()}
-                      {' ' + getTokenWantedRepresentation(
-                        tokensForSale[selectedNftIndex]['want']['identifier'],
-                        tokensForSale[selectedNftIndex]['want']['nonce']
-                      )}
-                      </>
-                    : '-'
-                  }
+                  {' ' +
+                    tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] /
+                    Math.pow(10, tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])) +
+                    ' '}
+                  {getTokenWantedRepresentation(
+                    tokensForSale[selectedNftIndex]['want']['identifier'],
+                    tokensForSale[selectedNftIndex]['want']['nonce']
+                  )}
+                  {' + '}
+                  {'1.2 ITHEUM'}
                 </Box>
               </Flex>
-
               <Flex mt='4 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read Terms of Use</Button></Flex>
               <Checkbox
                 size='sm'
@@ -497,18 +438,16 @@ export default function Marketplace() {
                 I have read all terms and agree to them
               </Checkbox>
               {!readTermsChecked && (
-                <Text color='red.400' fontSize='xs' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
+                <Text color='red.400' fontSize='xs' mt='1 !important'>You must agree on Terms of Use</Text>
               )}
-
               <Flex justifyContent='end' mt='4 !important'>
-                <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure} disabled={!readTermsChecked}>Proceed</Button>
+                <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure}>Proceed</Button>
                 <Button colorScheme="teal" size='sm' variant='outline' onClick={onProcureModalClose}>Cancel</Button>
               </Flex>
             </ModalBody>
           </ModalContent>
         </Modal>
       }
-
       <Modal
         isOpen={isReadTermsModalOpen}
         onClose={onReadTermsModalClose}
@@ -526,7 +465,6 @@ export default function Marketplace() {
           </ModalBody>
         </ModalContent>
       </Modal>
-
       {
         selectedNftIndex >= 0 && selectedNftIndex < tokensForSale.length && (
           <Modal
