@@ -328,6 +328,7 @@ export default function Marketplace() {
                             colorScheme="teal"
                             width="72px"
                             onClick={() => {
+                              setReadTermsChecked(false);
                               setSelectedNftIndex(index);
                               onProcureModalOpen();
                             }}
