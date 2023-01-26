@@ -25,4 +25,5 @@ export interface MarketplaceRequirementsType {
   discount_fee_percentage_seller: number,
   percentage_cut_from_buyer: number,
   percentage_cut_from_seller: number,
+  buyer_fee: number,
 }

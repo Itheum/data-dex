@@ -15,7 +15,7 @@ import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsByIds } from 'MultiversX/api2';
 import { DataNftMetadataType, MarketplaceRequirementsType } from 'MultiversX/types';
 import moment from 'moment';
-import { sleep, uxConfig } from 'libs/util';
+import { convertWeiToEsdt, sleep, uxConfig } from 'libs/util';
 
 export default function Marketplace() {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -54,6 +54,8 @@ export default function Marketplace() {
   }, []);
 
   useEffect(() => {
+    if (hasPendingTransactions) return;
+
     contract.getNumberOfOffers().then((nr: any) => {
       setNumberOfPages(Math.ceil(nr / 25));
     })
@@ -61,6 +63,8 @@ export default function Marketplace() {
 
   useEffect(() => {
     (async () => {
+      if (hasPendingTransactions) return;
+
       // init - no selection
       setSelectedNftIndex(-1);
 
@@ -97,6 +101,8 @@ export default function Marketplace() {
   };
 
   useEffect(() => {
+    if (hasPendingTransactions) return;
+
     getUserData();
   }, [address, hasPendingTransactions]);
 
@@ -104,6 +110,14 @@ export default function Marketplace() {
     if (!address) {
       toast({
         title: 'Connect your wallet',
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+    if (!marketRequirements) {
+      toast({
+        title: 'Data is not loaded',
         status: 'error',
         isClosable: true,
       });
@@ -127,10 +141,11 @@ export default function Marketplace() {
     }
 
     const token = tokensForSale[selectedNftIndex];
+    const paymentAmount = token['want']['amount'] * amountOfTokens[selectedNftIndex];
     if (token['want']['identifier'] === 'EGLD') {
       contract.sendAcceptOfferEgldTransaction(
         token['index'],
-        token['want']['amount'],
+        paymentAmount,
         amountOfTokens[selectedNftIndex],
         address
       );
@@ -138,7 +153,7 @@ export default function Marketplace() {
       if (token['want']['nonce'] === 0) {
         contract.sendAcceptOfferEsdtTransaction(
           token['index'],
-          token['want']['amount'],
+          paymentAmount,
           token['want']['identifier'],
           amountOfTokens[selectedNftIndex],
           address
@@ -146,7 +161,7 @@ export default function Marketplace() {
       } else {
         contract.sendAcceptOfferNftEsdtTransaction(
           token['index'],
-          token['want']['amount'],
+          paymentAmount,
           token['want']['identifier'],
           token['want']['nonce'],
           amountOfTokens[selectedNftIndex],
@@ -418,46 +433,57 @@ export default function Marketplace() {
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Fee per NFT</Box>
                 <Box>
-                  {': ' +
-                    tokensForSale[selectedNftIndex]['want']['amount'] /
-                    Math.pow(10, tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])) +
-                    ' '}
-                  {getTokenWantedRepresentation(
-                    tokensForSale[selectedNftIndex]['want']['identifier'],
-                    tokensForSale[selectedNftIndex]['want']['nonce']
-                  )}
+                  {
+                    marketRequirements ? <>
+                      {': ' + convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * 10000 / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber() + ' '}
+                      {getTokenWantedRepresentation(
+                        tokensForSale[selectedNftIndex]['want']['identifier'],
+                        tokensForSale[selectedNftIndex]['want']['nonce']
+                      )}
+                    </> : '-'
+                  }
                 </Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Buyer Fee</Box>
-                <Box>: 2%</Box>
+                <Box>: {marketRequirements ? marketRequirements.buyer_fee / 100 : '-'}%</Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Total Fee</Box>
                 <Box>
-                  {': ' +
-                    tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] /
-                    Math.pow(10, tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])) +
-                    ' '}
-                  {getTokenWantedRepresentation(
-                    tokensForSale[selectedNftIndex]['want']['identifier'],
-                    tokensForSale[selectedNftIndex]['want']['nonce']
-                  )}
+                  {': '}
+                  {
+                    marketRequirements ? <>
+                    {convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex], tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber() +
+                      ' '}
+                    {getTokenWantedRepresentation(
+                      tokensForSale[selectedNftIndex]['want']['identifier'],
+                      tokensForSale[selectedNftIndex]['want']['nonce']
+                    )}
+                    </> : '-'
+                  }
                 </Box>
               </Flex>
               <Flex fontSize='xs' mt='0'>
                 <Box w='106px'></Box>
                 <Box>
-                  {' ' +
-                    tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] /
-                    Math.pow(10, tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])) +
-                    ' '}
-                  {getTokenWantedRepresentation(
-                    tokensForSale[selectedNftIndex]['want']['identifier'],
-                    tokensForSale[selectedNftIndex]['want']['nonce']
-                  )}
-                  {' + '}
-                  {'1.2 ITHEUM'}
+                  {
+                    marketRequirements ? <>
+                      {' ' + convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] * 10000 / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber() +
+                        ' '}
+                      {getTokenWantedRepresentation(
+                        tokensForSale[selectedNftIndex]['want']['identifier'],
+                        tokensForSale[selectedNftIndex]['want']['nonce']
+                      )}
+                      {' + '}
+                      {convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * amountOfTokens[selectedNftIndex] * marketRequirements.buyer_fee / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber()}
+                      {' ' + getTokenWantedRepresentation(
+                        tokensForSale[selectedNftIndex]['want']['identifier'],
+                        tokensForSale[selectedNftIndex]['want']['nonce']
+                      )}
+                      </>
+                    : '-'
+                  }
                 </Box>
               </Flex>
 
