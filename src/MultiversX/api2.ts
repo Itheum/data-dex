@@ -13,7 +13,7 @@ export const getApi = (networkId: string) => {
 export const getNftsByIds = async (nftIds: string[], networkId: string): Promise<NftType[]> => {
   const api = getApi(networkId);
   try {
-    const url = `https://${api}/nfts?identifiers=${nftIds.join(',')}`;
+    const url = `https://${api}/nfts?withSupply=true&identifiers=${nftIds.join(',')}`;
     const { data } = await axios.get<NftType[]>(url, { timeout: uxConfig.mxAPITimeoutMs });
 
     // match input and output order

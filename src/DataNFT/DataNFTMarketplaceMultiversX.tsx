@@ -475,7 +475,7 @@ export default function Marketplace() {
               )}
 
               <Flex justifyContent='end' mt='4 !important'>
-                <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure}>Proceed</Button>
+                <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure} disabled={!readTermsChecked}>Proceed</Button>
                 <Button colorScheme="teal" size='sm' variant='outline' onClick={onProcureModalClose}>Cancel</Button>
               </Flex>
             </ModalBody>
