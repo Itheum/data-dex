@@ -137,13 +137,13 @@ export class DataNftMarketContract {
       return [];
     }
   
-    async sendAcceptOfferEsdtTransaction(index:number,price:number,tokenId:string,amount:number, sender: string) {
+    async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: number, tokenId: string, amount: number, sender: string) {
         const offerEsdtTx = new Transaction({
             value: 0,
             data: TransactionPayload.contractCall()
               .setFunction(new ContractFunction('ESDTTransfer'))
               .addArg(new TokenIdentifierValue(tokenId))
-              .addArg(new BigUIntValue(price * amount))
+              .addArg(new BigUIntValue(paymentAmount))
               .addArg(new StringValue('acceptOffer'))
               .addArg(new U64Value(index))
               .addArg(new BigUIntValue(amount))
@@ -169,14 +169,14 @@ export class DataNftMarketContract {
         return { sessionId, error };
       }
 
-      async sendAcceptOfferNftEsdtTransaction(index:number,price:number,tokenId:string,nonce:number,amount:number,senderAddress:string) {
+      async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: number, tokenId: string, nonce: number, amount: number, senderAddress: string) {
         const offerEsdtTx = new Transaction({
             value: 0,
             data: TransactionPayload.contractCall()
               .setFunction(new ContractFunction('ESDTNFTTransfer'))
               .addArg(new TokenIdentifierValue(tokenId))
               .addArg(new U64Value(nonce))
-              .addArg(new BigUIntValue(price * amount))
+              .addArg(new BigUIntValue(paymentAmount))
               .addArg(new AddressValue(new Address(this.dataNftMarketContractAddress)))
               .addArg(new StringValue('acceptOffer'))
               .addArg(new U64Value(index))
@@ -203,9 +203,9 @@ export class DataNftMarketContract {
         return { sessionId, error };
       }
 
-      async sendAcceptOfferEgldTransaction(index:number,price:number,amount:number,senderAddress:string) {
+      async sendAcceptOfferEgldTransaction(index: number, paymentAmount: number, amount: number, senderAddress: string) {
         const offerEgldTx = new Transaction({
-            value: TokenPayment.egldFromBigInteger(price * amount),
+            value: paymentAmount,
             data: TransactionPayload.contractCall()
               .setFunction(new ContractFunction('acceptOffer'))
               .addArg(new U64Value(index))
@@ -344,7 +344,9 @@ export class DataNftMarketContract {
         discount_fee_percentage_seller: value.discount_fee_percentage_seller.toNumber(),
         percentage_cut_from_buyer: value.percentage_cut_from_buyer.toNumber(),
         percentage_cut_from_seller: value.percentage_cut_from_seller.toNumber(),
+        buyer_fee: 0,
       };
+      decoded.buyer_fee = decoded.percentage_cut_from_buyer - decoded.discount_fee_percentage_buyer;
 
       return decoded;
     } catch (e) {
