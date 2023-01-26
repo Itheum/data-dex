@@ -442,7 +442,7 @@ export default function Marketplace() {
                 <Text color='red.400' fontSize='xs' mt='1 !important'>You must agree on Terms of Use</Text>
               )}
               <Flex justifyContent='end' mt='4 !important'>
-                <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure}>Proceed</Button>
+                <Button colorScheme="teal" size='sm' mx='3' onClick={onProcure} disabled={!readTermsChecked}>Proceed</Button>
                 <Button colorScheme="teal" size='sm' variant='outline' onClick={onProcureModalClose}>Cancel</Button>
               </Flex>
             </ModalBody>
