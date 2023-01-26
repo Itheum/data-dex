@@ -227,7 +227,7 @@ export default function Marketplace() {
                     </Skeleton>
                   </Flex>
 
-                  <Box p="3" mt="2" height="320px">
+                  <Box p="3" mt="2" height="336px">
                     {
                       nftMetadatas[index] && (<>
                         <Text fontWeight="bold" fontSize='lg'>{nftMetadatas[index].tokenName}</Text>
@@ -265,14 +265,14 @@ export default function Marketplace() {
                           height='56px'
                         >
                           {
-                            address && address === nftMetadatas[index].creator && (
+                            address && address == nftMetadatas[index].creator && (
                               <Badge borderRadius="full" px="2" colorScheme="teal">
                                 <Text>YOU ARE THE CREATOR</Text>
                               </Badge>
                             )
                           }
                           {
-                            address && address === token.owner && (
+                            address && address == token.owner && (
                               <Badge borderRadius="full" px="2" colorScheme="teal">
                                 <Text>YOU ARE THE OWNER</Text>
                               </Badge>
@@ -295,7 +295,7 @@ export default function Marketplace() {
 
                     {/* Public Marketplace: Hide Procure part if NFT is owned by User */}
                     {
-                      tabState === 1 && address && address !== token.owner && (<>
+                      tabState === 1 && address && address != token.owner && (!nftMetadatas[index] || address != nftMetadatas[index].creator) && (<>
                         <Box fontSize="xs" mt='2'>
                           <Text>
                             Fee per NFT:
