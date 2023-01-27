@@ -913,7 +913,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChange={e => setReadTermsChecked(e.target.checked)}
                 >I have read all terms and agree to them</Checkbox>
                 {(userFocusedForm && !readTermsChecked) && (
-                  <Text color='red.400' fontSize='sm' mt='1 !important'>You must agree on Terms of Use</Text>
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
                 )}
 
                 <Text fontSize='md' mt='8 !important'>An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.</Text>

@@ -133,7 +133,7 @@ export default function Marketplace() {
     }
     if (!readTermsChecked) {
       toast({
-        title: 'You must agree on Terms of Use',
+        title: 'You must READ and Agree on Terms of Use',
         status: 'error',
         isClosable: true,
       });
@@ -446,7 +446,7 @@ export default function Marketplace() {
               </Flex>
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Buyer Fee</Box>
-                <Box>: {marketRequirements ? marketRequirements.buyer_fee / 100 : '-'}%</Box>
+                <Box>: {marketRequirements ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(tokensForSale[selectedNftIndex]['want']['amount'] * marketRequirements.buyer_fee / (10000 + marketRequirements.buyer_fee), tokenDecimals(tokensForSale[selectedNftIndex]['want']['identifier'])).toNumber()} ${getTokenWantedRepresentation(tokensForSale[selectedNftIndex]['want']['identifier'], tokensForSale[selectedNftIndex]['want']['nonce'])})` : '-'}</Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
                 <Box w='100px'>Total Fee</Box>
@@ -497,7 +497,7 @@ export default function Marketplace() {
                 I have read all terms and agree to them
               </Checkbox>
               {!readTermsChecked && (
-                <Text color='red.400' fontSize='xs' mt='1 !important'>You must agree on Terms of Use</Text>
+                <Text color='red.400' fontSize='xs' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
               )}
 
               <Flex justifyContent='end' mt='4 !important'>
