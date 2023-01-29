@@ -1,11 +1,11 @@
 {
     "buildInfo": {
         "rustc": {
-            "version": "1.68.0-nightly",
-            "commitHash": "ad8ae0504c54bc2bd8306abfcfe8546c1bb16a49",
-            "commitDate": "2022-12-29",
+            "version": "1.69.0-nightly",
+            "commitHash": "d7948c843de94245c794e8c63dd4301a78bb5ba3",
+            "commitDate": "2023-01-26",
             "channel": "Nightly",
-            "short": "rustc 1.68.0-nightly (ad8ae0504 2022-12-29)"
+            "short": "rustc 1.69.0-nightly (d7948c843 2023-01-26)"
         },
         "contractCrate": {
             "name": "data_market",
@@ -328,7 +328,7 @@
             ]
         },
         {
-            "name": "viewOffers",
+            "name": "viewPagedOffers",
             "mutability": "readonly",
             "inputs": [
                 {
@@ -342,6 +342,22 @@
                 {
                     "name": "opt_address",
                     "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "List<OfferOut>"
+                }
+            ]
+        },
+        {
+            "name": "viewOffers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "indexes",
+                    "type": "variadic<u64>",
                     "multi_arg": true
                 }
             ],
@@ -458,16 +474,6 @@
                 },
                 {
                     "name": "max_payment_fee",
-                    "type": "BigUint",
-                    "indexed": true
-                }
-            ]
-        },
-        {
-            "identifier": "setMaxSftFee",
-            "inputs": [
-                {
-                    "name": "max_sft_fee",
                     "type": "BigUint",
                     "indexed": true
                 }
