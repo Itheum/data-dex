@@ -1,14 +1,7 @@
 import axios from 'axios';
 import { NftType } from '@multiversx/sdk-dapp/types/tokens.types';
 import { uxConfig } from 'libs/util';
-
-export const getApi = (networkId: string) => {
-  if (networkId === 'E1') {
-    return 'api.multiversx.com';
-  } else {
-    return 'devnet-api.multiversx.com';
-  }
-};
+import { getApi } from './api';
 
 export const getNftsByIds = async (nftIds: string[], networkId: string): Promise<NftType[]> => {
   const api = getApi(networkId);
