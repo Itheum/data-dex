@@ -67,7 +67,12 @@ export default function Marketplace() {
     if (hasPendingTransactions) return;
 
     (async () => {
-      const _numberOfOffers = await contract.getNumberOfOffers();
+      let _numberOfOffers = 0;
+      if (tabState === 0) { // global offers
+        _numberOfOffers = await contract.getNumberOfOffers();
+      } else {  // offers of User
+        _numberOfOffers = await contract.getUserTotalOffers(address);
+      }
       console.log('_numberOfOffers', _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       setPageCount(_pageCount);
