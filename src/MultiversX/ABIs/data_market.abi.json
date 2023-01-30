@@ -12,8 +12,8 @@
             "version": "0.0.0"
         },
         "framework": {
-            "name": "elrond-wasm",
-            "version": "0.38.0"
+            "name": "multiversx-sc",
+            "version": "0.39.4"
         }
     },
     "name": "DataMarket",
@@ -205,6 +205,22 @@
             ]
         },
         {
+            "name": "getUserListedOffers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<u64>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
             "name": "getAcceptedTokens",
             "mutability": "readonly",
             "inputs": [],
@@ -343,6 +359,36 @@
                     "name": "opt_address",
                     "type": "optional<Address>",
                     "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "List<OfferOut>"
+                }
+            ]
+        },
+        {
+            "name": "getUserTotalOffers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "viewUserListedOffers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
                 }
             ],
             "outputs": [
