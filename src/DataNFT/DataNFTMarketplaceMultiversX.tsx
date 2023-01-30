@@ -68,6 +68,7 @@ export default function Marketplace() {
 
     (async () => {
       const _numberOfOffers = await contract.getNumberOfOffers();
+      console.log('_numberOfOffers', _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       setPageCount(_pageCount);
 
@@ -444,6 +445,18 @@ export default function Marketplace() {
                 </Box>
               ))}
             </Flex>
+        }
+
+        { /* show bottom pagination only if offers exist */
+          offers.length > 0 && <Flex justifyContent='center' alignItems='center'>
+            <CustomPagination
+              pageCount={pageCount}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+              gotoPage={onGotoPage}
+              // setPageSize={() => (() => {})}
+            />
+          </Flex>
         }
       </Stack>
       {
