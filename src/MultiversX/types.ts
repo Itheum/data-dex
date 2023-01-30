@@ -27,3 +27,15 @@ export interface MarketplaceRequirementsType {
   percentage_cut_from_seller: number,
   buyer_fee: number,
 }
+
+export interface OfferType {
+  index: number,
+  owner: string,
+  offered_token_identifier: string,
+  offered_token_nonce: number,
+  offered_token_amount: string,
+  wanted_token_identifier: string,
+  wanted_token_nonce: number,
+  wanted_token_amount: string,
+  quantity: number,
+}

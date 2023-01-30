@@ -25,7 +25,7 @@ import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
 import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/data_market.abi.json';
 import { contractsForChain } from '../libs/util';
-import { MarketplaceRequirementsType } from './types';
+import { MarketplaceRequirementsType, OfferType } from './types';
 
 export class DataNftMarketContract {
   timeout: number;
@@ -72,12 +72,12 @@ export class DataNftMarketContract {
             const nonOKErr = new Error('getNumberOfOffers returnCode returned a non OK value');
             console.error(nonOKErr);
             
-            return { error: nonOKErr };
+            return 0;
           }
         } catch (error) {
           console.error(error);
     
-          return { error };
+          return 0;
         }
       }
 
@@ -137,7 +137,7 @@ export class DataNftMarketContract {
       return [];
     }
   
-    async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: number, tokenId: string, amount: number, sender: string) {
+    async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
         const offerEsdtTx = new Transaction({
             value: 0,
             data: TransactionPayload.contractCall()
@@ -169,7 +169,7 @@ export class DataNftMarketContract {
         return { sessionId, error };
       }
 
-      async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: number, tokenId: string, nonce: number, amount: number, senderAddress: string) {
+      async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: string, tokenId: string, nonce: number, amount: number, senderAddress: string) {
         const offerEsdtTx = new Transaction({
             value: 0,
             data: TransactionPayload.contractCall()
@@ -203,7 +203,7 @@ export class DataNftMarketContract {
         return { sessionId, error };
       }
 
-      async sendAcceptOfferEgldTransaction(index: number, paymentAmount: number, amount: number, senderAddress: string) {
+      async sendAcceptOfferEgldTransaction(index: number, paymentAmount: string, amount: number, senderAddress: string) {
         const offerEgldTx = new Transaction({
             value: paymentAmount,
             data: TransactionPayload.contractCall()
@@ -352,6 +352,44 @@ export class DataNftMarketContract {
     } catch (e) {
       console.error(e);
       return undefined;
+    }
+  }
+
+  async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<OfferType[]> {
+    const interaction = this.contract.methodsExplicit.viewPagedOffers([
+      new U64Value(startIndex),
+      new U64Value(stopIndex),
+      userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing()
+    ]);
+    const query = interaction.buildQuery();
+  
+    try {
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (!firstValue || !returnCode.isSuccess()) {
+        console.error(returnMessage);
+        return [];
+      }
+
+      const values = firstValue.valueOf();
+      const decoded = values.map((value: any) => ({
+        index: value.index.toNumber(),
+        owner: value.owner.toString(),
+        offered_token_identifier: value.offered_token_identifier.toString(),
+        offered_token_nonce: value.offered_token_nonce.toNumber(),
+        offered_token_amount: value.offered_token_amount.toFixed(),
+        wanted_token_identifier: value.wanted_token_identifier.toString(),
+        wanted_token_nonce: value.wanted_token_nonce.toNumber(),
+        wanted_token_amount: value.wanted_token_amount.toFixed(),
+        quantity: value.quantity.toNumber(),
+      }));
+
+      return decoded;
+    } catch (e) {
+      console.error(e);
+      return [];
     }
   }
 }
