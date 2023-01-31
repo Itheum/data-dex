@@ -8,19 +8,19 @@ import { useChainMeta } from 'store/ChainMetaContext';
 import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { formatNumberRoundFloor } from 'libs/util';
 
-export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseChaimsHistory }) {
+export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaimsHistory }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
-  const [elrondClaims, setElrondClaims] = useState([]);
+  const [mxClaims, setMxClaims] = useState([]);
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
 
   useEffect(() => {
-    fetchElrondClaims();
+    fetchMxClaims();
   }, []);
 
-  const fetchElrondClaims = async () => {
-    const transactions = await getClaimTransactions(elrondAddress, _chainMeta.contracts.claims, networkId);
+  const fetchMxClaims = async () => {
+    const transactions = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
     
     if (transactions.error) {
       toast({
@@ -32,7 +32,7 @@ export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseCh
 
       setLoadingClaims(-2);
     } else {
-      setElrondClaims(transactions);
+      setMxClaims(transactions);
       setLoadingClaims(0);
     }
 
@@ -57,7 +57,7 @@ export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseCh
             </Box> 
           || 
             <>
-            {elrondClaims.length > 0 && 
+            {mxClaims.length > 0 && 
               <TableContainer>
               <Table variant="striped" size="sm">
                 <Thead>
@@ -69,7 +69,7 @@ export default function ChaimsHistory({ elrondAddress, networkId, onAfterCloseCh
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {elrondClaims.map((item) => <Tr key={item.hash}>
+                  {mxClaims.map((item) => <Tr key={item.hash}>
                     <Td><Text fontSize="xs">                      
                       {new Date(item.timestamp).toLocaleString()}                      
                     </Text></Td>

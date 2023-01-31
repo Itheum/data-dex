@@ -59,7 +59,9 @@ function generateDataNFTUiObject(currDataNFT, options = {}) {
   dataNFT.feeInMyda = currDataNFT.get('feeInMyda');
 
   if (!hideFileUrl) {
-    dataNFT.dataFileUrl = currDataNFT.get('dataFile').url();
+    if (!currDataNFT.get('type') || currDataNFT.get('type') !== 'datastream') {
+      dataNFT.dataFileUrl = currDataNFT.get('dataFile').url();
+    }
   }
 
   return dataNFT;

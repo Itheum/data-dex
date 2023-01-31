@@ -14,12 +14,11 @@ import { useChainMeta } from 'store/ChainMetaContext';
 
 export default function() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const { user } = useMoralis();
-  const { web3 } = useMoralis();
+  const { isAuthenticated, user, isInitialized, isWeb3Enabled } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
-  
-  const { isInitialized, Moralis } = useMoralis();
+
   const [onChainNFTs, setOnChainNFTs] = useState(null);
+  const [onChainMetadataMap, setOnChainMetadataMap] = useState({});
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
 
@@ -34,11 +33,37 @@ export default function() {
   }, { autoFetch: false });
 
   useEffect(() => {
-    console.log('MOUNT MyDataNFTs');
-  }, []);
+    if (isInitialized) {
+      getOnChainNFTs();
+    }
+  }, [user, isWeb3Enabled, isAuthenticated]);
 
   useEffect(() => {
-    async function getOnChainNFTs () {
+    (async() => {
+      if (onChainNFTs !== null) {
+        if (onChainNFTs.length > 0) {
+          const onChainMetadataMap = {};
+    
+          onChainNFTs.map(i => {
+            const nftMetadata = JSON.parse(i.metadata);
+            onChainMetadataMap[nftMetadata?.properties?.data_dex_nft_id] = nftMetadata;
+          });
+    
+          setOnChainMetadataMap(onChainMetadataMap);
+    
+          // we now have all data to call the CF
+          cf_getUserDataNFTCatalog();
+        } else {
+          await sleep(5);
+          setNoData(true);
+        }
+      }
+    })();
+  }, [onChainNFTs]);
+
+  const getOnChainNFTs = async() => {
+    if (user && isWeb3Enabled && isAuthenticated) {
+      console.log(Web3Api.account);
       const myNFTs = await Web3Api.account.getNFTs({
         chain: CHAIN_NAMES[_chainMeta.networkId]
       });
@@ -47,33 +72,7 @@ export default function() {
 
       setOnChainNFTs(myNFTs.result);
     }
-
-    if (isInitialized) {
-      getOnChainNFTs();
-    }
-  }, [isInitialized, Moralis]);
-
-  useEffect(() => {
-    console.log('onChainNFTs');
-    console.log(onChainNFTs);
-
-    if (onChainNFTs !== null) {
-      // we now have all data to call the CF
-      cf_getUserDataNFTCatalog();
-    }
-  }, [onChainNFTs]);
-
-  useEffect(() => {
-    (async() => {
-      console.log('usersDataNFTCatalog');
-      console.log(usersDataNFTCatalog);
-
-      if (usersDataNFTCatalog && usersDataNFTCatalog.length === 0) {
-        await sleep(5);
-        setNoData(true);
-      }
-    })();
-  }, [usersDataNFTCatalog]);
+  }
 
   return (
     <Stack spacing={5}>
@@ -91,7 +90,7 @@ export default function() {
       }
 
       {(!usersDataNFTCatalog || usersDataNFTCatalog && usersDataNFTCatalog.length === 0) &&
-        <>{!noData && <SkeletonLoadingList /> || <Text>No data yet...</Text>}</> ||
+        <>{!noData && <SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> ||
         <Flex wrap="wrap" spacing={5}>
           {usersDataNFTCatalog && usersDataNFTCatalog.map((item) => <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem">
             <Flex justifyContent="center" pt={5}>
@@ -114,12 +113,20 @@ export default function() {
                 {`${item.feeInMyda} ${CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}`}
               </Box>
 
-              <Box mt="5">  
+              <Box mt="5">
                 {item.stillOwns && <Badge borderRadius="full" px="2" colorScheme="teal">
                   {item.originalOwner && 'you are the owner' || 'you are the creator & owner' }
                 </Badge> || <Badge borderRadius="full" px="2" colorScheme="red" display="none">
                   sold
                 </Badge>}
+
+                <Badge borderRadius="full" px="2" colorScheme="blue">
+                  Fully Transferable License
+                </Badge>
+
+                <Badge borderRadius="full" px="2" colorScheme="blue">
+                  {onChainMetadataMap[item.id]?.properties?.data_nft_type === 'datastream' ? 'Data Stream' : 'Data File'}
+                </Badge>
 
                 <HStack mt="5">
                   <Text fontSize="xs">Mint TX: </Text>
@@ -135,7 +142,11 @@ export default function() {
 
                 <HStack mt=".5">
                   <Text fontSize="xs">Download Data File</Text>
-                  <Link href={item.dataFileUrl} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  {onChainMetadataMap[item.id]?.properties?.data_nft_type === 'datastream' ? 
+                    <Link href={onChainMetadataMap[item.id]?.properties?.stream_url} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  : 
+                    <Link href={item.dataFileUrl} isExternal><ExternalLinkIcon mx="2px" /></Link>
+                  }
                 </HStack>
               </Box>              
             </Flex>

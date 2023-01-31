@@ -63,7 +63,7 @@ function AuthPickerEVM({ resetLaunchMode }) {
     setAuthErrorUi(null);
     onProgressModalClose();
 
-    // only reset host page to elrond vs evm wallet selector IF user did NOT just already log in successfully
+    // only reset host page to mx vs evm wallet selector IF user did NOT just already log in successfully
     if (!isAuthenticated && !user) {
       resetLaunchMode();
     }

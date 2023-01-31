@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 import {
   tokenContractAddress_Matic,
   ddexContractAddress_Matic,
@@ -21,13 +23,16 @@ import {
   claimsContractAddress_Matic,
   claimsContractAddress_testnetBSC,
 
-  tokenContractAddress_Elrond_Devnet,
-  claimsContractAddress_Elrond_Devnet,
-  faucetContractAddress_Elrond_Devnet,
-  tokenContractAddress_Elrond_Mainnet,
-  claimsContractAddress_Elrond_Mainnet,
-  faucetContractAddress_Elrond_Mainnet,
-} from './contactAddresses';
+  tokenContractAddress_Mx_Devnet,
+  dataNFTFTTicker_Mx_Devnet,
+  claimsContractAddress_Mx_Devnet,
+  faucetContractAddress_Mx_Devnet,
+  dataNftMintContractAddress_Mx_Devnet,
+  dataNftMarketContractAddress_Mx_Devnet,
+  tokenContractAddress_Mx_Mainnet,
+  claimsContractAddress_Mx_Mainnet,
+  faucetContractAddress_Mx_Mainnet,
+} from './contractAddresses';
 
 export const contractsForChain = (networkId) => {
   const contracts = {
@@ -36,8 +41,11 @@ export const contractsForChain = (networkId) => {
     dnft: null,
     faucet: null,
     claims: null,
+    market: null,
+    dataNftMint: null,
   };
 
+  // eslint-disable-next-line default-case
   switch (networkId) {
     case 31337:
       contracts.itheumToken = tokenContractAddress_Local;
@@ -73,14 +81,17 @@ export const contractsForChain = (networkId) => {
       contracts.dnft = dNFTContractAddress_testnetAvalanche;
       break;
     case 'ED':
-      contracts.itheumToken = tokenContractAddress_Elrond_Devnet;
-      contracts.claims = claimsContractAddress_Elrond_Devnet;
-      contracts.faucet = faucetContractAddress_Elrond_Devnet;
+      contracts.itheumToken = tokenContractAddress_Mx_Devnet;
+      contracts.dataNFTFTTicker = dataNFTFTTicker_Mx_Devnet;
+      contracts.claims = claimsContractAddress_Mx_Devnet;
+      contracts.faucet = faucetContractAddress_Mx_Devnet;
+      contracts.dataNftMint = dataNftMintContractAddress_Mx_Devnet;
+      contracts.market = dataNftMarketContractAddress_Mx_Devnet;
       break;
     case 'E1':
-      contracts.itheumToken = tokenContractAddress_Elrond_Mainnet;
-      contracts.claims = claimsContractAddress_Elrond_Mainnet;
-      contracts.faucet = faucetContractAddress_Elrond_Mainnet;
+      contracts.itheumToken = tokenContractAddress_Mx_Mainnet;
+      contracts.claims = claimsContractAddress_Mx_Mainnet;
+      contracts.faucet = faucetContractAddress_Mx_Mainnet;
       break;
   }
 
@@ -92,7 +103,7 @@ export const uxConfig = {
   txConfirmationsNeededLrg: 2,
   dateStr: 'MMM Do YYYY',
   dateStrTm: 'MMM Do YYYY LT',
-  elrondAPITimeoutMs: 10000
+  mxAPITimeoutMs: 10000
 };
 
 export const progInfoMeta = {
@@ -118,7 +129,7 @@ export const progInfoMeta = {
     url: 'https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae',
     dc: 'Gamer Passport Data',
     id: 'foo',
-    canJoin: 1,
+    canJoin: 0,
   },
   wfa: {
     name: 'Strava Fitness',
@@ -167,6 +178,7 @@ export const dataTemplates = {
     txNFTId: null,
     txHash: null,
     txNetworkId: null,
+    type: null
   },
   dataOrder: {
     dataPackId: null,
@@ -184,6 +196,11 @@ export const dataTemplates = {
     external_url: '',
     properties: {
       data_dex_nft_id: '',
+      data_nft_type: '',
+      encryption_vector: '',
+      stream_url: '',
+      stream_preview_url: '',
+      data_marshal_service: '',
     },
   },
 };
@@ -288,10 +305,10 @@ export const SUPPORTED_CHAINS = ['E1', 'ED', 5, 80001, 97, 1666700000, 43113];
 export const WALLETS = {
   METAMASK: 'evm_metamask',
   WC: 'evm_wc',
-  ELROND_MAIARAPP: 'el_maiar',
-  ELROND_DEFI: 'el_defi',
-  ELROND_WEBWALLET: 'el_webwallet',
-  ELROND_LEDGER: 'el_ledger',
+  MX_XPORTALAPP: 'el_maiar',
+  MX_DEFI: 'el_defi',
+  MX_WEBWALLET: 'el_webwallet',
+  MX_LEDGER: 'el_ledger',
 };
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
@@ -305,7 +322,7 @@ export function noChainSupport(menuItem, networkId) {
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
-    'ED': [MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    'ED': [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     'E1': [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
   };
 
@@ -383,7 +400,7 @@ export const gtagGo = (category, action, label, value) => {
   Category: 'Auth', Action: 'Login - Success', Label: 'Metamask'
   Category: 'Auth', Action: 'Login', Label: 'DeFi'
   Category: 'Auth', Action: 'Login', Label: 'Ledger'
-  Category: 'Auth', Action: 'Login', Label: 'MaiarApp'
+  Category: 'Auth', Action: 'Login', Label: 'xPortalApp'
   Category: 'Auth', Action: 'Login', Label: 'WebWallet'
 
   Category: 'Auth', Action: 'Logout', Label: 'WebWallet'
@@ -420,7 +437,7 @@ export const debugui = (text) => {
 };
 
 export const clearAppSessions = () => {
-  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in elrond)
+  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in mx)
     // ... so we explictely remove 'itm-wallet-used' here
     sessionStorage.removeItem('itm-wallet-used');
     
@@ -432,3 +449,19 @@ export const formatNumberRoundFloor = (num, decimals = 2) => {
   const factor = Math.pow(10, decimals);
   return (Math.floor(num * factor) / factor).toFixed(2);
 }
+
+export const convertWeiToEsdt = (amount, decimals = 18, precision = 4) => {
+  return BigNumber(amount).shiftedBy(-decimals).decimalPlaces(precision);
+};
+
+export const convertEsdtToWei = (amount, decimals = 18) => {
+  return BigNumber(amount).shiftedBy(decimals);
+};
+
+export const tryParseInt = (value, defaultValue = 0) => {
+  if (defaultValue < 0) defaultValue = 0;
+  const intValue = parseInt(value);
+  return Number.isNaN(intValue) ? defaultValue : intValue;
+};
+
+export const walletConnectV2ProjectId = process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID;

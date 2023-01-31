@@ -2,15 +2,14 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Launcher from './Launch/Launcher';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { createBreakpoints } from '@chakra-ui/theme-tools';
-import ErrorBoundary from 'UtilComps/ErrorBoundary';
 import { UserContextProvider } from './store/UserContext';
 import { ChainMetaContextProvider } from './store/ChainMetaContext';
 import { BrowserRouter as Router } from 'react-router-dom';
-import '../src/Elrond/custom.css';
+import reportWebVitals from './reportWebVitals';
+import '../src/MultiversX/custom.css';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -22,13 +21,13 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const breakpoints = createBreakpoints({
+const breakpoints = {
   sm: '30em',
   md: '48em',
   lg: '62em',
   xl: '80em',
   '2xl': '96em',
-});
+};
 
 const theme = extendTheme({
   breakpoints,
@@ -48,19 +47,23 @@ const theme = extendTheme({
   }
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container as HTMLElement);
+root.render(
   <React.StrictMode>
-    {/* <ErrorBoundary> */}
-      <ChakraProvider theme={theme}>
-        <ChainMetaContextProvider>
-          <UserContextProvider>
-            <Router>
-              <Launcher />
-            </Router>
-          </UserContextProvider>
-        </ChainMetaContextProvider>
-      </ChakraProvider>
-    {/* </ErrorBoundary> */}
-  </React.StrictMode>,
-  document.getElementById('root')
+    <ChakraProvider theme={theme}>
+      <ChainMetaContextProvider>
+        <UserContextProvider>
+          <Router>
+            <Launcher />
+          </Router>
+        </UserContextProvider>
+      </ChainMetaContextProvider>
+    </ChakraProvider>
+</React.StrictMode>
 );
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();

@@ -8,31 +8,31 @@ import moment from 'moment';
 import { uxConfig, debugui } from 'libs/util';
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
 import myNFMe from 'img/my-nfme.png';
-import ClaimModalElrond from 'ClaimModel/ClaimModalElrond';
+import ClaimModalMx from 'ClaimModel/ClaimModalMultiversX';
 import { useUser } from 'store/UserContext';
 import { useChainMeta } from 'store/ChainMetaContext';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import AppMarketplace from 'Home/AppMarketplace';
-import { FaucetContract } from 'Elrond/faucet';
-import { ClaimsContract } from 'Elrond/claims';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import { useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { FaucetContract } from 'MultiversX/faucet';
+import { ClaimsContract } from 'MultiversX/claims';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
+import { useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { formatNumberRoundFloor } from 'libs/util';
 
-let elrondFaucetContract = null;
-let elrondClaimsContract = null;
+let mxFaucetContract = null;
+let mxClaimsContract = null;
 
-export default function HomeElrond({ onRfMount }) {
+export default function HomeMx({ onRfMount }) {
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
-  const { address: elrondAddress } = useGetAccountInfo();
+  const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { isLoggedIn: isElrondLoggedIn } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
-  const [isElrondFaucetDisabled, setIsElrondFaucetDisabled] = useState(false);
+  const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
     claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
     claimBalanceDates: [0, 0, 0]
@@ -40,14 +40,14 @@ export default function HomeElrond({ onRfMount }) {
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
   useEffect(() => {
-    if (_chainMeta?.networkId && _user?.isElrondAuthenticated) {
+    if (_chainMeta?.networkId && _user?.isMxAuthenticated) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         try {
-          elrondFaucetContract = new FaucetContract(_chainMeta.networkId);
+          mxFaucetContract = new FaucetContract(_chainMeta.networkId);
         } catch(e) {
           console.log(e);
         }
-        elrondClaimsContract = new ClaimsContract(_chainMeta.networkId);
+        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
       }
     }
   }, [_chainMeta]);
@@ -56,27 +56,27 @@ export default function HomeElrond({ onRfMount }) {
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done... 
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (elrondAddress && elrondFaucetContract && !hasPendingTransactions) {
-      elrondFaucetContract.getFaucetTime(elrondAddress).then((lastUsedTime) => {
+    if (mxAddress && mxFaucetContract && !hasPendingTransactions) {
+      mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
         if (lastUsedTime + 120000 > timeNow) {
-          setIsElrondFaucetDisabled(true);
+          setIsMxFaucetDisabled(true);
 
           // after 2 min wait we reenable the button on the UI automatically
           setTimeout(() => {
-            setIsElrondFaucetDisabled(false);
+            setIsMxFaucetDisabled(false);
           }, lastUsedTime + 120000 + 1000 - timeNow);
         } else {
-          setIsElrondFaucetDisabled(false);
+          setIsMxFaucetDisabled(false);
         }
       });
     }
-  }, [elrondAddress, hasPendingTransactions, elrondFaucetContract]);
+  }, [mxAddress, hasPendingTransactions, mxFaucetContract]);
 
   const handleOnChainFaucet = async () => {
-    if (elrondAddress && elrondFaucetContract) {
-      elrondFaucetContract.sendActivateFaucetTransaction(elrondAddress);
+    if (mxAddress && mxFaucetContract) {
+      mxFaucetContract.sendActivateFaucetTransaction(mxAddress);
     }
   };
   // E: Faucet
@@ -85,14 +85,14 @@ export default function HomeElrond({ onRfMount }) {
   // S: Claims
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
-    if (elrondClaimsContract && !hasPendingTransactions) {
-      elrondClaimsBalancesUpdate();
+    if (mxClaimsContract && !hasPendingTransactions) {
+      mxClaimsBalancesUpdate();
     }
-  }, [elrondAddress, hasPendingTransactions, elrondClaimsContract]);
+  }, [mxAddress, hasPendingTransactions, mxClaimsContract]);
 
   // utility func to get claims balances from chain
-  const elrondClaimsBalancesUpdate = async() => {
-    if (elrondAddress && isElrondLoggedIn) {
+  const mxClaimsBalancesUpdate = async() => {
+    if (mxAddress && isMxLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         let claims = [
           { amount: 0, date: 0 },
@@ -103,7 +103,7 @@ export default function HomeElrond({ onRfMount }) {
         const claimBalanceValues = [];
         const claimBalanceDates = [];
 
-        claims = await elrondClaimsContract.getClaims(elrondAddress);
+        claims = await mxClaimsContract.getClaims(mxAddress);
 
         if (!claims.error) {
           claims.forEach((claim) => {
@@ -134,14 +134,14 @@ export default function HomeElrond({ onRfMount }) {
 
   useEffect(() => {
     // check if claims contract is paused, freeze ui so user does not waste gas
-    if (elrondClaimsContract && !hasPendingTransactions) {
-      getAndSetElrondClaimsIsPaused();
+    if (mxClaimsContract && !hasPendingTransactions) {
+      getAndSetMxClaimsIsPaused();
     }
-  }, [elrondAddress]);
+  }, [mxAddress]);
 
-  const getAndSetElrondClaimsIsPaused = async() => {
-    if (elrondAddress && isElrondLoggedIn) {
-      const isPaused = await elrondClaimsContract.isClaimsContractPaused();
+  const getAndSetMxClaimsIsPaused = async() => {
+    if (mxAddress && isMxLoggedIn) {
+      const isPaused = await mxClaimsContract.isClaimsContractPaused();
       setClaimContractPauseValue(isPaused);
       return isPaused;
     }
@@ -154,9 +154,9 @@ export default function HomeElrond({ onRfMount }) {
       setIsOnChainInteractionDisabled(true);
 
       // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
-      setIsElrondFaucetDisabled(true);
+      setIsMxFaucetDisabled(true);
     } else {
-      elrondClaimsBalancesUpdate(); // get latest claims balances from on-chain as well
+      mxClaimsBalancesUpdate(); // get latest claims balances from on-chain as well
 
       setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }
@@ -182,7 +182,7 @@ export default function HomeElrond({ onRfMount }) {
     tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
-    elrondClaimsContract
+    mxClaimsContract
   };
 
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
@@ -198,7 +198,7 @@ export default function HomeElrond({ onRfMount }) {
     tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
-    elrondClaimsContract
+    mxClaimsContract
   };
 
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
@@ -214,7 +214,7 @@ export default function HomeElrond({ onRfMount }) {
     tag2: 'Last Deposited on',
     value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
-    elrondClaimsContract
+    mxClaimsContract
   };
   // E: claims related logic
 
@@ -239,7 +239,7 @@ export default function HomeElrond({ onRfMount }) {
 
                 <Spacer />
 
-                <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isElrondFaucetDisabled}>
+                <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isMxFaucetDisabled}>
                   Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Button>
               </Stack>
@@ -272,7 +272,7 @@ export default function HomeElrond({ onRfMount }) {
                     </Button>
                   </Tooltip>
 
-                  <ClaimModalElrond {...rewardsModalData} />
+                  <ClaimModalMx {...rewardsModalData} />
                 </HStack>
                 
                 <Spacer />
@@ -287,7 +287,7 @@ export default function HomeElrond({ onRfMount }) {
                     </Button>
                   </Tooltip>
 
-                  <ClaimModalElrond {...airdropsModalData} />
+                  <ClaimModalMx {...airdropsModalData} />
                 </HStack>
                 <Spacer />
                 
@@ -303,7 +303,7 @@ export default function HomeElrond({ onRfMount }) {
                           }
                         </Button>
                       </Tooltip>
-                      <ClaimModalElrond {...allocationsModalData} />
+                      <ClaimModalMx {...allocationsModalData} />
                     </HStack>
                   </Box>
                 || <Box h="40px" />}

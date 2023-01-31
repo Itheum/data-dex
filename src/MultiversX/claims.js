@@ -1,7 +1,7 @@
-import { ProxyNetworkProvider } from '@elrondnetwork/erdjs-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@elrondnetwork/erdjs/out';
-import { refreshAccount } from '@elrondnetwork/dapp-core/utils/account';
-import { sendTransactions } from '@elrondnetwork/dapp-core/services';
+import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
+import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@multiversx/sdk-core/out';
+import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
+import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/claims.abi.json';
 import { contractsForChain } from 'libs/util';
 
@@ -12,10 +12,10 @@ export class ClaimsContract {
     this.chainID = 'D';
 
     if (networkId === 'E1') {
-      this.networkProvider = new ProxyNetworkProvider('https://gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://gateway.multiversx.com', { timeout: this.timeout });
       this.chainID = '1';
     } else {
-      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com', { timeout: this.timeout });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));

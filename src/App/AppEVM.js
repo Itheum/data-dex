@@ -10,7 +10,7 @@ import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } fr
 import { GiReceiveMoney } from 'react-icons/gi';
 import { AiFillHome } from 'react-icons/ai';
 import { IoConstructOutline } from 'react-icons/io5';
-import SellData from 'DataPack/SellData';
+import SellDataEVM from 'AdvertiseData/SellDataEVM';
 import BuyData from 'DataPack/BuyData';
 import PurchasedData from 'DataPack/PurchasedData';
 import AdvertisedData from 'DataPack/AdvertisedData';
@@ -20,7 +20,7 @@ import HomeEVM from 'Home/HomeEVM';
 import ChainTransactions from 'Sections/ChainTransactions';
 import DataVault from 'Sections/DataVault';
 import DataNFTs from 'DataNFT/DataNFTs';
-import MyDataNFTs from 'DataNFT/MyDataNFTs';
+import MyDataNFTsEVM from 'DataNFT/MyDataNFTsEVM';
 import DataNFTMarketplace from 'DataNFT/DataNFTMarketplace';
 import DataStreams from 'Sections/DataStreams';
 import DataCoalitions from 'DataCoalition/DataCoalitions';
@@ -42,7 +42,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 
 const baseUserContext = {
   isMoralisAuthenticated: false,
-  isElrondAuthenticated: false,
+  isMxAuthenticated: false,
 }; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
 
 function App({ appConfig }) {
@@ -554,7 +554,7 @@ function App({ appConfig }) {
                 <Routes>
                   <Route path="/" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
                   <Route path="home" element={<HomeEVM key={rfKeys.tools} onRfMount={() => handleRfMount('tools')} setMenuItem={setMenuItem} itheumAccount={itheumAccount} onRefreshTokenBalance={handleRefreshTokenBalance} onItheumAccount={setItheumAccount} />}/>
-                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />} />
+                  <Route path="selldata" element={<SellDataEVM key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} itheumAccount={itheumAccount} />} />
                   <Route path="datapacks" element={<Outlet />}>
                     <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} onRefreshTokenBalance={handleRefreshTokenBalance} />} />
                     <Route path="advertiseddata" element={<AdvertisedData />} />
@@ -563,7 +563,7 @@ function App({ appConfig }) {
                   </Route>
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                    <Route path="wallet" element={<MyDataNFTs />} />
+                    <Route path="wallet" element={<MyDataNFTsEVM />} />
                     <Route path="marketplace" element={<DataNFTMarketplace />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>

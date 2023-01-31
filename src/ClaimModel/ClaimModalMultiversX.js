@@ -2,12 +2,12 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, 
   HStack, Text, Spacer, Button, Stack, useBreakpointValue } from '@chakra-ui/react';
 import React from 'react';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 
-const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, elrondClaimsContract }) => {
-  const { address: elrondAddress } = useGetAccountInfo();
+const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }) => {
+  const { address: mxAddress } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta();
 
   const resetClaimState = () => {
@@ -15,9 +15,9 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
   };
 
   const handleOnChainClaim = () => {
-    if (elrondAddress) {
+    if (mxAddress) {
       onClose();
-      elrondClaimsContract.sendClaimRewardsTransaction(elrondAddress, claimType - 1);
+      mxClaimsContract.sendClaimRewardsTransaction(mxAddress, claimType - 1);
     }
   };
 

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import React from 'react';
-import { DappProvider } from '@elrondnetwork/dapp-core/wrappers';
+import { DappProvider } from '@multiversx/sdk-dapp/wrappers';
 import { MoralisProvider } from 'react-moralis';
 
 import AuthLauncher from 'Launch/AuthLauncher';
 import EVMAppHarness from 'AppHarness/AppHarnessEVM';
-import ElrondAppHarness from 'AppHarness/AppHarnessElrond';
+import MxAppHarness from 'AppHarness/AppHarnessMultiversX';
 import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
-import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
-import { debugui, uxConfig } from 'libs/util';
+import AuthPickerMx from 'AuthPicker/AuthPickerMultiversX';
+import { debugui, uxConfig, walletConnectV2ProjectId } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
-import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@elrondnetwork/dapp-core/UI';
+import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@multiversx/sdk-dapp/UI';
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
@@ -19,11 +19,10 @@ function Launcher() {
   const [launchEnvSession, setLaunchEnvSession] = useSessionStorage('itm-launch-env', null); // ... as above
   const [launchMode, setLaunchMode] = useState(launchModeSession || 'auth');
   const [launchEnvironment, setLaunchEnvironment] = useState(launchEnvSession || 'devnet');
-
+  console.log(launchMode);
   const handleLaunchMode = (option, environment) => {   
     setLaunchMode(option);
     setLaunchModeSession(option);
-
     if (environment) {
       setLaunchEnvironment(environment);
       setLaunchEnvSession(environment);
@@ -49,14 +48,20 @@ function Launcher() {
         </MoralisProvider>
       </>}
 
-      {launchMode === 'elrond' && <>      
-        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: 'customConfig', apiTimeout: uxConfig.elrondAPITimeoutMs }}>
+      {launchMode === 'mx' && <>      
+        <DappProvider 
+          environment={launchEnvironment} 
+          customNetworkConfig={{ 
+            name: 'customConfig', 
+            apiTimeout: uxConfig.mxAPITimeoutMs,
+            walletConnectV2ProjectId
+          }}>
           <TransactionsToastList />
           <NotificationModal />
-          <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
+          <SignTransactionsModals className="itheum-data-dex-elrond-modals"/>
 
-          <AuthPickerElrond launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
-          <ElrondAppHarness launchEnvironment={launchEnvironment} />          
+          <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode('auth', 'devnet')} />
+          <MxAppHarness launchEnvironment={launchEnvironment} />          
         </DappProvider>
       </>}
     </>

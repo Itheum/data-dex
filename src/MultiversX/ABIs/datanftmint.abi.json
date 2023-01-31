@@ -1,0 +1,938 @@
+{
+  "buildInfo": {
+      "rustc": {
+          "version": "1.68.0-nightly",
+          "commitHash": "ce85c98575e3016cf2007d90a85be321e592aa96",
+          "commitDate": "2022-12-30",
+          "channel": "Nightly",
+          "short": "rustc 1.68.0-nightly (ce85c9857 2022-12-30)"
+      },
+      "contractCrate": {
+          "name": "datanftmint",
+          "version": "0.0.0"
+      },
+      "framework": {
+          "name": "elrond-wasm",
+          "version": "0.38.0"
+      }
+  },
+  "name": "DataNftMint",
+  "constructor": {
+      "inputs": [],
+      "outputs": []
+  },
+  "endpoints": [
+      {
+          "name": "initializeContract",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "payableInTokens": [
+              "EGLD"
+          ],
+          "inputs": [
+              {
+                  "name": "collection_name",
+                  "type": "bytes"
+              },
+              {
+                  "name": "token_ticker",
+                  "type": "bytes"
+              },
+              {
+                  "name": "anti_spam_tax_token",
+                  "type": "EgldOrEsdtTokenIdentifier"
+              },
+              {
+                  "name": "anti_spam_tax_value",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "mint_time_limit",
+                  "type": "u64"
+              },
+              {
+                  "name": "treasury_address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "mint",
+          "mutability": "mutable",
+          "payableInTokens": [
+              "*"
+          ],
+          "inputs": [
+              {
+                  "name": "name",
+                  "type": "bytes"
+              },
+              {
+                  "name": "media",
+                  "type": "bytes"
+              },
+              {
+                  "name": "data_marshal",
+                  "type": "bytes"
+              },
+              {
+                  "name": "data_stream",
+                  "type": "bytes"
+              },
+              {
+                  "name": "data_preview",
+                  "type": "bytes"
+              },
+              {
+                  "name": "royalties",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "supply",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "title",
+                  "type": "bytes"
+              },
+              {
+                  "name": "description",
+                  "type": "bytes"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "DataNftAttributes"
+              }
+          ]
+      },
+      {
+          "name": "burn",
+          "mutability": "mutable",
+          "payableInTokens": [
+              "*"
+          ],
+          "inputs": [],
+          "outputs": []
+      },
+      {
+          "name": "setTreasuryAddress",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setIsPaused",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "is_paused",
+                  "type": "bool"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setAntiSpamTax",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "token_id",
+                  "type": "EgldOrEsdtTokenIdentifier"
+              },
+              {
+                  "name": "tax",
+                  "type": "BigUint"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setWhiteListEnabled",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "is_enabled",
+                  "type": "bool"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setWhiteListSpots",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "whitelist",
+                  "type": "variadic<Address>",
+                  "multi_arg": true
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "removeWhiteListSpots",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "whitelist",
+                  "type": "variadic<Address>",
+                  "multi_arg": true
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setMintTimeLimit",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "mint_time_limit",
+                  "type": "u64"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setRoyaltiesLimits",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "min_royalties",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "max_royalties",
+                  "type": "BigUint"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setMaxSupply",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "max_supply",
+                  "type": "BigUint"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setAdministrator",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "administrator",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "getTokenId",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "TokenIdentifier"
+              }
+          ]
+      },
+      {
+          "name": "getTreasuryAddress",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "Address"
+              }
+          ]
+      },
+      {
+          "name": "getMintedTokens",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getAntiSpamTax",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "token",
+                  "type": "EgldOrEsdtTokenIdentifier"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getIsPaused",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "bool"
+              }
+          ]
+      },
+      {
+          "name": "getMaxRoyalties",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getMinRoyalties",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getMaxSupply",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getMintedPerAddress",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getContractInitialized",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "bool"
+              }
+          ]
+      },
+      {
+          "name": "mintTimeLimit",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "u64"
+              }
+          ]
+      },
+      {
+          "name": "lastMintTime",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "u64"
+              }
+          ]
+      },
+      {
+          "name": "getWhiteList",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "variadic<Address>",
+                  "multi_result": true
+              }
+          ]
+      },
+      {
+          "name": "getCollectionFreezedList",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "variadic<Address>",
+                  "multi_result": true
+              }
+          ]
+      },
+      {
+          "name": "getSftsFreezedForAddress",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "variadic<u64>",
+                  "multi_result": true
+              }
+          ]
+      },
+      {
+          "name": "getFreezedCount",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "u32"
+              }
+          ]
+      },
+      {
+          "name": "isWhiteListEnabled",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "bool"
+              }
+          ]
+      },
+      {
+          "name": "getAdministrator",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "Address"
+              }
+          ]
+      },
+      {
+          "name": "getUserDataOut",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              },
+              {
+                  "name": "tax_token",
+                  "type": "EgldOrEsdtTokenIdentifier"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "UserDataOut"
+              }
+          ]
+      },
+      {
+          "name": "pause",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [],
+          "outputs": []
+      },
+      {
+          "name": "unpause",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [],
+          "outputs": []
+      },
+      {
+          "name": "freeze",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "unfreeze",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "freezeSingleNFT",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "nonce",
+                  "type": "u64"
+              },
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "unFreezeSingleNFT",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "nonce",
+                  "type": "u64"
+              },
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "wipeSingleNFT",
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "nonce",
+                  "type": "u64"
+              },
+              {
+                  "name": "address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      }
+  ],
+  "events": [
+      {
+          "identifier": "mintPauseToggle",
+          "inputs": [
+              {
+                  "name": "pause_value",
+                  "type": "bool",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "setTreasuryAddress",
+          "inputs": [
+              {
+                  "name": "treasury_address",
+                  "type": "Address",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "whitelistEnableToggle",
+          "inputs": [
+              {
+                  "name": "enable_value",
+                  "type": "bool",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "whitelistSpotSet",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "collectionFreezeListSpotSet",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "freezedSftsPerAddress",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "unFreezedSftsPerAddress",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "collectionFreezeListRemoved",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "whitelistSpotRemoved",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "setRoyaltiesLimits",
+          "inputs": [
+              {
+                  "name": "min_royalties",
+                  "type": "BigUint",
+                  "indexed": true
+              },
+              {
+                  "name": "max_royalties",
+                  "type": "BigUint",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "setMaxSupply",
+          "inputs": [
+              {
+                  "name": "max_supply",
+                  "type": "BigUint",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "antiSpamTaxSet",
+          "inputs": [
+              {
+                  "name": "token",
+                  "type": "EgldOrEsdtTokenIdentifier",
+                  "indexed": true
+              },
+              {
+                  "name": "amount",
+                  "type": "BigUint",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "mintTimeLimitSet",
+          "inputs": [
+              {
+                  "name": "mint_time_limit",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "setAdministrator",
+          "inputs": [
+              {
+                  "name": "administrator",
+                  "type": "Address",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "pauseCollection",
+          "inputs": [
+              {
+                  "name": "token_identifier",
+                  "type": "TokenIdentifier",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "unpauseCollection",
+          "inputs": [
+              {
+                  "name": "token_identifier",
+                  "type": "TokenIdentifier",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "freeze",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "token_identifier",
+                  "type": "TokenIdentifier",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "unfreeze",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "token_identifier",
+                  "type": "TokenIdentifier",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "wipe",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "token_identifier",
+                  "type": "TokenIdentifier",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "burn",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "token_identifier",
+                  "type": "TokenIdentifier",
+                  "indexed": true
+              },
+              {
+                  "name": "nonce",
+                  "type": "u64",
+                  "indexed": true
+              },
+              {
+                  "name": "amount",
+                  "type": "BigUint",
+                  "indexed": true
+              }
+          ]
+      },
+      {
+          "identifier": "mint",
+          "inputs": [
+              {
+                  "name": "address",
+                  "type": "Address",
+                  "indexed": true
+              },
+              {
+                  "name": "amount",
+                  "type": "BigUint",
+                  "indexed": true
+              },
+              {
+                  "name": "token",
+                  "type": "EgldOrEsdtTokenIdentifier",
+                  "indexed": true
+              },
+              {
+                  "name": "price",
+                  "type": "BigUint",
+                  "indexed": true
+              }
+          ]
+      }
+  ],
+  "hasCallback": true,
+  "types": {
+      "DataNftAttributes": {
+          "type": "struct",
+          "fields": [
+              {
+                  "name": "data_stream_url",
+                  "type": "bytes"
+              },
+              {
+                  "name": "data_preview_url",
+                  "type": "bytes"
+              },
+              {
+                  "name": "data_marshal_url",
+                  "type": "bytes"
+              },
+              {
+                  "name": "creator",
+                  "type": "Address"
+              },
+              {
+                  "name": "creation_time",
+                  "type": "u64"
+              },
+              {
+                  "name": "title",
+                  "type": "bytes"
+              },
+              {
+                  "name": "description",
+                  "type": "bytes"
+              }
+          ]
+      },
+      "UserDataOut": {
+          "type": "struct",
+          "fields": [
+              {
+                  "name": "anti_spam_tax_value",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "is_paused",
+                  "type": "bool"
+              },
+              {
+                  "name": "max_royalties",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "min_royalties",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "max_supply",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "mint_time_limit",
+                  "type": "u64"
+              },
+              {
+                  "name": "last_mint_time",
+                  "type": "u64"
+              },
+              {
+                  "name": "whitelist_enabled",
+                  "type": "bool"
+              },
+              {
+                  "name": "is_whitelisted",
+                  "type": "bool"
+              },
+              {
+                  "name": "minted_per_user",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "total_minted",
+                  "type": "BigUint"
+              },
+              {
+                  "name": "frozen",
+                  "type": "bool"
+              },
+              {
+                  "name": "frozen_nonces",
+                  "type": "List<u64>"
+              }
+          ]
+      }
+  }
+}

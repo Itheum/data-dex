@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 
 export const useLocalStorage = (storageKey, fallbackState) => {
-  // https://www.robinwieruch.de/local-storage-react/
   const [value, setValue] = useState(
     JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState
   );

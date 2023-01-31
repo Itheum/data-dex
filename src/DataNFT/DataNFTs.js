@@ -6,11 +6,13 @@ import {
   HStack, Heading, Center, Text
 } from '@chakra-ui/react';
 import { MENU } from 'libs/util';
+import { useChainMeta } from 'store/ChainMetaContext';
 import openSeaLogoIcon from 'img/opensea-logo.png';
 import dataNFTIcon from 'img/data-nft-icon.png';
 
 export default function({ setMenuItem }) {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+  const { chainMeta: _chainMeta } = useChainMeta();
   
   return (
     <Stack spacing={5}>      
@@ -31,10 +33,10 @@ export default function({ setMenuItem }) {
               <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTALL); navigate('marketplace');}}>Data NFT Marketplace</Button>
             </HStack>
 
-            <Stack mt="10" align="center">
+            {_chainMeta.networkId !== 'ED' && <Stack mt="10" align="center">
               <Text fontSize="sm">Our Cross-Chain NFT Marketplace is Powered by OpenSea</Text>
               <Image src={openSeaLogoIcon} w="150px" />
-            </Stack>
+            </Stack>}
             
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-nfts-1" isExternal>
               <Button size="xs" colorScheme="teal" variant="outline">Read about Data NFTs in our Whitepaper</Button>
