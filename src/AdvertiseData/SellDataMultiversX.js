@@ -996,7 +996,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                           <AlertTitle fontSize="md">
                             <AlertIcon mb={2} />Process Error</AlertTitle>
                           {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-                          <CloseButton position="absolute" right="8px" top="8px" onClick={onRfMount} />
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => onProgressModalClose()} />
                         </Stack>
                       </Alert>
                     }
