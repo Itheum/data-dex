@@ -316,7 +316,8 @@ function App({ appConfig }) {
                         w={menuButtonW}
                         colorScheme="teal"
                         isDisabled={menuItem === MENU.HOME}
-                        variant="solid"
+                        _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                        opacity='.4'
                         onClick={() => {
                           setMenuItem(MENU.HOME);
                           navigate('home');
@@ -331,7 +332,8 @@ function App({ appConfig }) {
                           w={menuButtonW}
                           colorScheme="teal"
                           isDisabled={menuItem === MENU.SELL}
-                          variant="solid"
+                          _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                          opacity='.4'
                           onClick={() => {
                             setMenuItem(MENU.SELL);
                             navigate('selldata');
@@ -421,6 +423,8 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.NFTMINE}>
                               <Button
                                 colorScheme="teal"
+                                _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                                opacity='.4'
                                 isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
@@ -442,6 +446,8 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.NFTALL}>
                               <Button
                                 colorScheme="teal"
+                                _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                                opacity='.4'
                                 isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
@@ -533,6 +539,8 @@ function App({ appConfig }) {
                           <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                             <Button
                               colorScheme="teal"
+                              _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                              opacity='.4'
                               isDisabled={menuItem === MENU.VAULT}
                               onClick={() => {
                                 setMenuItem(MENU.VAULT);
@@ -544,6 +552,8 @@ function App({ appConfig }) {
                             </Button>
                             <Button
                               colorScheme="teal"
+                              _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                              opacity='.4'
                               isDisabled={menuItem === MENU.STREAM}
                               onClick={() => {
                                 setMenuItem(MENU.STREAM);
@@ -555,6 +565,8 @@ function App({ appConfig }) {
                             </Button>
                             <Button
                               colorScheme="teal"
+                              _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+                              opacity='.4'
                               isDisabled={menuItem === MENU.TRUSTEDCOMP}
                               onClick={() => {
                                 setMenuItem(MENU.TRUSTEDCOMP);
