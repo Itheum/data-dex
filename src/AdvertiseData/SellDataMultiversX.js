@@ -121,6 +121,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [datasetTitle, setDatasetTitle] = useState('');
   const [datasetDescription, setDatasetDescription] = useState('');
   const [readTermsChecked, setReadTermsChecked] = useState(false);
+  const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState(false);
 
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
@@ -375,6 +376,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       || !dataNFTStreamPreviewUrlValid
       || !dataNFTMarshalServiceValid
       || !readTermsChecked
+      || !readAntiSpamFeeChecked
 
       || minRoyalties < 0
       || maxRoyalties < 0
@@ -399,6 +401,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     dataNFTStreamPreviewUrlValid,
     dataNFTMarshalServiceValid,
     readTermsChecked,
+    readAntiSpamFeeChecked,
 
     minRoyalties,
     maxRoyalties,
@@ -911,7 +914,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   mt='3 !important'
                   isChecked={readTermsChecked}
                   onChange={e => setReadTermsChecked(e.target.checked)}
-                >I have read all terms and agree to them</Checkbox>
+                >I have read and I agree to the Terms of Use</Checkbox>
                 {(userFocusedForm && !readTermsChecked) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
                 )}
@@ -922,6 +925,15 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   <Text color='red.400' fontSize='sm' mt='1 !important'>You don't have enough ITHEUM for Anti-Spam Tax</Text>
                 )}
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
+                <Checkbox
+                  size='md'
+                  mt='3 !important'
+                  isChecked={readAntiSpamFeeChecked}
+                  onChange={e => setReadAntiSpamFeeChecked(e.target.checked)}
+                >I accept the deduction of the anti-spam minting fee from my wallet</Checkbox>
+                {(userFocusedForm && !readAntiSpamFeeChecked) && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
+                )}
 
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}>
