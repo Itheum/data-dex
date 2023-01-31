@@ -489,11 +489,11 @@ export default function Marketplace() {
                 </Box>
               </HStack>
               <Flex fontSize='md' mt='2'>
-                <Box w='100px'>How many</Box>
+                <Box w='140px'>How many</Box>
                 <Box>: {amountOfTokens[selectedNftIndex]}</Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
-                <Box w='100px'>Fee per NFT</Box>
+                <Box w='140px'>Fee per NFT</Box>
                 <Box>
                   {
                     marketRequirements ? <>
@@ -507,11 +507,11 @@ export default function Marketplace() {
                 </Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
-                <Box w='100px'>Buyer Fee</Box>
+                <Box w='140px'>Buyer Fee (per NFT)</Box>
                 <Box>: {marketRequirements ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(BigNumber(offers[selectedNftIndex].wanted_token_amount).multipliedBy(marketRequirements.buyer_fee).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offers[selectedNftIndex].wanted_token_identifier)).toNumber()} ${getTokenWantedRepresentation(offers[selectedNftIndex].wanted_token_identifier, offers[selectedNftIndex].wanted_token_nonce)})` : '-'}</Box>
               </Flex>
               <Flex fontSize='md' mt='2'>
-                <Box w='100px'>Total Fee</Box>
+                <Box w='140px'>Total Fee</Box>
                 <Box>
                   {': '}
                   {
@@ -527,7 +527,7 @@ export default function Marketplace() {
                 </Box>
               </Flex>
               <Flex fontSize='xs' mt='0'>
-                <Box w='106px'></Box>
+                <Box w='146px'></Box>
                 <Box>
                   {
                     marketRequirements ? <>
