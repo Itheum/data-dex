@@ -324,16 +324,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const onChangeDataNFTCopies = (value) => {
     let error = '';
     if (value < 1) {
-      error = 'Number of copies cannot be zero';
+      error = 'Number of copies cannot be negative';
     } else if (maxSupply >= 0 && value > maxSupply) {
       error = `Number of copies cannot exceed ${maxSupply}`;
     }
 
     setDataNFTCopiesError(error);
-
-    if (!error) {
-      setDataNFTCopies(value);
-    }
+    setDataNFTCopies(value);
   }
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
@@ -348,10 +345,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTRoyaltyError(error);
-
-    if (!error) {
-      setDataNFTRoyalty(value);
-    }
+    setDataNFTRoyalty(value);
   }
 
   useEffect(() => {
@@ -868,8 +862,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   maxW={24}
                   step={1}
                   defaultValue={1}
+                  min={1}
+                  max={maxSupply > 0 ? maxSupply : 1}
                   value={dataNFTCopies}
-                  onChange={(valueString) => onChangeDataNFTCopies(tryParseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTCopies(tryParseInt(valueString, 1))}
+                  keepWithinRange={false}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -892,8 +889,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   maxW={24}
                   step={5}
                   defaultValue={0}
+                  min={minRoyalties > 0 ? minRoyalties : 0}
+                  max={maxRoyalties > 0 ? maxRoyalties : 0}
                   value={dataNFTRoyalty}
                   onChange={(valueString) => onChangeDataNFTRoyalty(tryParseInt(valueString, minRoyalties))}
+                  keepWithinRange={false}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
