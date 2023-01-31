@@ -41,24 +41,17 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const [burnNFTModalState, setBurnNFTModalState] = useState(1);  // 1 and 2
 
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
+  const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState('');
   const [selectedDataNft, setSelectedDataNft] = useState(null);
   const onChangeDataNftBurnAmount = (newValue) => {
+    let error = ''
     if (newValue > selectedDataNft.balance) {
-      toast({
-        title: 'Not enough balance',
-        status: 'error',
-        isClosable: true,
-      });
-      return;
+      error = 'Not enough balance';
+    } else if (newValue < 1) {
+      error = 'Burn Amount cannot be zero';
     }
-    if (newValue < 1) {
-      toast({
-        title: 'Burn Amount cannot be zero',
-        status: 'error',
-        isClosable: true,
-      });
-      return;
-    }
+
+    setDataNftBurnAmountError(error);
     setDataNftBurnAmount(newValue);
   };
   const onBurnButtonClick = (nft) => {
@@ -489,8 +482,10 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       step={1}
                       defaultValue={1}
                       min={1}
+                      max={selectedDataNft.balance}
                       value={dataNftBurnAmount}
                       onChange={value => onChangeDataNftBurnAmount(Number(value))}
+                      keepWithinRange={false}
                     >
                       <NumberInputField />
                       <NumberInputStepper>
@@ -499,9 +494,20 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       </NumberInputStepper>
                     </NumberInput>
                   </HStack>
+                  {dataNftBurnAmountError && (
+                    <Text ml='208px' color='red.400' fontSize='sm' mt='1 !important'>{dataNftBurnAmountError}</Text>
+                  )}
 
                   <Flex justifyContent='end' mt='8 !important'>
-                    <Button colorScheme="teal" size='sm' mx='3' onClick={() => setBurnNFTModalState(2)}>I want to Burn my {dataNftBurnAmount} Data NFTs</Button>
+                    <Button
+                      colorScheme="teal"
+                      size='sm'
+                      mx='3'
+                      onClick={() => setBurnNFTModalState(2)}
+                      disabled={!!dataNftBurnAmountError}
+                    >
+                      I want to Burn my {dataNftBurnAmount} Data NFTs
+                    </Button>
                     <Button colorScheme="teal" size='sm' variant='outline' onClick={onBurnNFTClose}>Cancel</Button>
                   </Flex>
                 </ModalBody>
