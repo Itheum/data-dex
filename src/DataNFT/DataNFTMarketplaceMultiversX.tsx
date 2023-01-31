@@ -362,21 +362,20 @@ export default function Marketplace() {
                         </Box>
                       </>)
                     }
-                    {/* Public Marketplace: Hide Procure part if NFT is owned by User */}
-                    {
+
+                    <Box fontSize="xs" mt='2'>
+                      <Text>
+                        Fee per NFT:
+                        {
+                          marketRequirements ? <>
+                            {' ' + convertWeiToEsdt(BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offer.wanted_token_identifier)).toNumber() + ' ' + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          </> : ' -'
+                        }
+                      </Text>
+                    </Box>
+
+                    { /* Public Marketplace: Hide Procure part if NFT is owned by User */
                       tabState === 1 && address && address != offer.owner && (!nftMetadatas[index] || address != nftMetadatas[index].creator) && (<>
-                        <Box fontSize="xs" mt='2'>
-                          <Text>
-                            Fee per NFT:
-                            {' ' +
-                              convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber() +
-                              ' '}
-                            {getTokenWantedRepresentation(
-                              offer.wanted_token_identifier,
-                              offer.wanted_token_nonce
-                            )}
-                          </Text>
-                        </Box>
                         <HStack mt='2'>
                           <Text fontSize='xs'>How many to procure access to </Text>
                           <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={offer.quantity} value={amountOfTokens[index]} onChange={(valueString) => setAmountOfTokens((oldAmounts: any) => {
