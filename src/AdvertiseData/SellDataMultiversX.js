@@ -178,7 +178,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   }, []);
 
   // query Itheum balance of User
-  useState(() => {
+  useEffect(() => {
     if (mxAddress && _chainMeta) {
       (async () => {
         const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
