@@ -349,7 +349,16 @@ export default function MyDataNFTsMx({ onRfMount }) {
                 <Badge borderRadius="full" px="2" colorScheme="blue">
                   Fully Transferable License
                 </Badge>
-                <Button size='sm' colorScheme='red' height='5' ml={'1'} onClick={e => onBurnButtonClick(item)}>Burn</Button>
+                <Button
+                  size='sm'
+                  colorScheme='red'
+                  height='5'
+                  ml={'1'}
+                  disabled={hasPendingTransactions}
+                  onClick={e => onBurnButtonClick(item)}
+                >
+                  Burn
+                </Button>
 
                 <HStack mt="5">
                   <Text fontSize="xs">Creation time: </Text>
@@ -399,17 +408,14 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   </NumberInput>
                 </HStack>
 
-                {/* <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => {
-                  handleListOnMarketplace({
-                    collection: item.collection,
-                    nonce: item.nonce,
-                    qty: amounts[index],
-                    price: prices[index]
-                  });
-                }}>
-                  List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index]} ITHEUM each
-                </Button> */}
-                <Button size="xs" mt={3} colorScheme="teal" variant="outline" onClick={() => onListButtonClick(item)}>
+                <Button
+                  size="xs"
+                  mt={3}
+                  colorScheme="teal"
+                  variant="outline"
+                  disabled={hasPendingTransactions}
+                  onClick={() => onListButtonClick(item)}
+                >
                   List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index]} ITHEUM each
                 </Button>
               </Box>

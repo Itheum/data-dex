@@ -375,7 +375,7 @@ export default function Marketplace() {
                     </Box>
 
                     { /* Public Marketplace: Hide Procure part if NFT is owned by User */
-                      tabState === 1 && address && address != offer.owner && (!nftMetadatas[index] || address != nftMetadatas[index].creator) && (<>
+                      tabState === 1 && address && address != offer.owner && (<>
                         <HStack mt='2'>
                           <Text fontSize='xs'>How many to procure access to </Text>
                           <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={offer.quantity} value={amountOfTokens[index]} onChange={(valueString) => setAmountOfTokens((oldAmounts: any) => {
@@ -393,6 +393,7 @@ export default function Marketplace() {
                             size="xs"
                             colorScheme="teal"
                             width="72px"
+                            disabled={hasPendingTransactions}
                             onClick={() => {
                               setReadTermsChecked(false);
                               setSelectedNftIndex(index);
@@ -411,6 +412,7 @@ export default function Marketplace() {
                             size="xs"
                             colorScheme="teal"
                             width="72px"
+                            disabled={hasPendingTransactions}
                             onClick={() => {
                               setSelectedNftIndex(index);
                               onDelistModalOpen();
