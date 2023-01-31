@@ -121,6 +121,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [datasetTitle, setDatasetTitle] = useState('');
   const [datasetDescription, setDatasetDescription] = useState('');
   const [readTermsChecked, setReadTermsChecked] = useState(false);
+  const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState(false);
 
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
@@ -323,16 +324,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const onChangeDataNFTCopies = (value) => {
     let error = '';
     if (value < 1) {
-      error = 'Number of copies cannot be zero';
+      error = 'Number of copies cannot be negative';
     } else if (maxSupply >= 0 && value > maxSupply) {
       error = `Number of copies cannot exceed ${maxSupply}`;
     }
 
     setDataNFTCopiesError(error);
-
-    if (!error) {
-      setDataNFTCopies(value);
-    }
+    setDataNFTCopies(value);
   }
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
@@ -347,10 +345,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
 
     setDataNFTRoyaltyError(error);
-
-    if (!error) {
-      setDataNFTRoyalty(value);
-    }
+    setDataNFTRoyalty(value);
   }
 
   useEffect(() => {
@@ -375,6 +370,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       || !dataNFTStreamPreviewUrlValid
       || !dataNFTMarshalServiceValid
       || !readTermsChecked
+      || !readAntiSpamFeeChecked
 
       || minRoyalties < 0
       || maxRoyalties < 0
@@ -399,6 +395,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     dataNFTStreamPreviewUrlValid,
     dataNFTMarshalServiceValid,
     readTermsChecked,
+    readAntiSpamFeeChecked,
 
     minRoyalties,
     maxRoyalties,
@@ -865,8 +862,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   maxW={24}
                   step={1}
                   defaultValue={1}
+                  min={1}
+                  max={maxSupply > 0 ? maxSupply : 1}
                   value={dataNFTCopies}
-                  onChange={(valueString) => onChangeDataNFTCopies(tryParseInt(valueString))}
+                  onChange={(valueString) => onChangeDataNFTCopies(tryParseInt(valueString, 1))}
+                  keepWithinRange={false}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -889,8 +889,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   maxW={24}
                   step={5}
                   defaultValue={0}
+                  min={minRoyalties > 0 ? minRoyalties : 0}
+                  max={maxRoyalties > 0 ? maxRoyalties : 0}
                   value={dataNFTRoyalty}
                   onChange={(valueString) => onChangeDataNFTRoyalty(tryParseInt(valueString, minRoyalties))}
+                  keepWithinRange={false}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -911,7 +914,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   mt='3 !important'
                   isChecked={readTermsChecked}
                   onChange={e => setReadTermsChecked(e.target.checked)}
-                >I have read all terms and agree to them</Checkbox>
+                >I have read and I agree to the Terms of Use</Checkbox>
                 {(userFocusedForm && !readTermsChecked) && (
                   <Text color='red.400' fontSize='sm' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
                 )}
@@ -922,6 +925,15 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   <Text color='red.400' fontSize='sm' mt='1 !important'>You don't have enough ITHEUM for Anti-Spam Tax</Text>
                 )}
                 <Flex mt='3 !important'><Button colorScheme="teal" variant='outline' size='sm' onClick={onReadTermsModalOpen}>Read about the Anti-Spam fee</Button></Flex>
+                <Checkbox
+                  size='md'
+                  mt='3 !important'
+                  isChecked={readAntiSpamFeeChecked}
+                  onChange={e => setReadAntiSpamFeeChecked(e.target.checked)}
+                >I accept the deduction of the anti-spam minting fee from my wallet</Checkbox>
+                {(userFocusedForm && !readAntiSpamFeeChecked) && (
+                  <Text color='red.400' fontSize='sm' mt='1 !important'>You must READ and Agree on Terms of Use</Text>
+                )}
 
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}>
@@ -996,7 +1008,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                           <AlertTitle fontSize="md">
                             <AlertIcon mb={2} />Process Error</AlertTitle>
                           {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-                          <CloseButton position="absolute" right="8px" top="8px" onClick={onRfMount} />
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => onProgressModalClose()} />
                         </Stack>
                       </Alert>
                     }
