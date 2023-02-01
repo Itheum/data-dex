@@ -41,6 +41,7 @@ import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactio
 import { useGetAccountInfo, useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { checkBalance } from 'MultiversX/api';
 import { formatNumberRoundFloor } from 'libs/util';
+import { style } from '@motionone/dom';
 
 const mxLogout = logout;
 const _chainMetaLocal = {};
@@ -218,6 +219,23 @@ function App({ appConfig }) {
   const menuButtonW = '180px';
   const screenBreakPoint = useBreakpointValue({ base: 'base', md: 'md' });
 
+  const isMenuItemSelected = (currentMenuItem) => {
+    return menuItem === currentMenuItem;
+  }
+
+  const menuButtonDisabledStyle = (currentMenuItem) => {
+    let styleProps = {
+      cursor: 'not-allowed',
+    }
+    if(isMenuItemSelected(currentMenuItem)) {
+      styleProps = {
+        opacity: 1,
+        ...styleProps
+      }
+    }
+    return styleProps;
+  }
+
   return (
     <>
       { _user.isMxAuthenticated && (
@@ -288,13 +306,13 @@ function App({ appConfig }) {
               </Menu>
             </HStack>
 
-            <HStack alignItems={['center', , 'flex-start']} flexDirection={['column', , 'row']} pt={5}>
+            <HStack alignItems={['center', 'flex-start']} flexDirection={['column', 'row']} pt={5}>
               <Box>
-                <Button display={['block', null, 'none']} colorScheme="teal" variant="solid" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                <Button display={['block', null, 'none']} colorScheme="teal" m="auto" mb={5} onClick={() => setShowMobileMenu(!showMobileMenu)}>
                   Main menu
                 </Button>
 
-                <Stack direction="column" spacing={4} display={[(showMobileMenu && 'block') || 'none', , 'block']}>
+                <Stack direction="column" spacing={4} display={[(showMobileMenu && 'block') || 'none', 'block']}>
                   <HStack pl="3">
                     <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                       Terms of Use <ExternalLinkIcon mx="2px" />
@@ -312,12 +330,12 @@ function App({ appConfig }) {
                       </HStack>
 
                       <Button
-                        rightIcon={<AiFillHome />}
+                        leftIcon={<AiFillHome />}
                         w={menuButtonW}
                         colorScheme="teal"
-                        isDisabled={menuItem === MENU.HOME}
-                        _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                        opacity='.4'
+                        isDisabled={isMenuItemSelected(MENU.HOME)}  
+                        _disabled={menuButtonDisabledStyle(MENU.HOME)}
+                        opacity={.6}
                         onClick={() => {
                           setMenuItem(MENU.HOME);
                           navigate('home');
@@ -331,9 +349,9 @@ function App({ appConfig }) {
                         <Button
                           w={menuButtonW}
                           colorScheme="teal"
-                          isDisabled={menuItem === MENU.SELL}
-                          _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                          opacity='.4'
+                          isDisabled={isMenuItemSelected(MENU.SELL)} 
+                          _disabled={menuButtonDisabledStyle(MENU.SELL)}
+                          opacity={.6}
                           onClick={() => {
                             setMenuItem(MENU.SELL);
                             navigate('selldata');
@@ -358,7 +376,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.BUY}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.BUY}
+                                isDisabled={isMenuItemSelected(MENU.BUY)} 
+                                _disabled={menuButtonDisabledStyle(MENU.BUY)}
+                                opacity={.6}
                                 onClick={() => {
                                   setMenuItem(MENU.BUY);
                                   navigate('datapacks/buydata');
@@ -371,7 +391,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.ADVERTISED}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.ADVERTISED}
+                                isDisabled={isMenuItemSelected(MENU.ADVERTISED)} 
+                                _disabled={menuButtonDisabledStyle(MENU.ADVERTISED)}
+                                opacity={.6}
                                 onClick={() => {
                                   setMenuItem(MENU.ADVERTISED);
                                   navigate('datapacks/advertiseddata');
@@ -384,7 +406,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.PURCHASED}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.PURCHASED}
+                                isDisabled={isMenuItemSelected(MENU.PURCHASED)} 
+                                _disabled={menuButtonDisabledStyle(MENU.PURCHASED)}
+                                opacity={.6}
                                 onClick={() => {
                                   setMenuItem(MENU.PURCHASED);
                                   navigate('datapacks/purchaseddata');
@@ -397,7 +421,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.DATAPROOFS}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.DATAPROOFS}
+                                isDisabled={isMenuItemSelected(MENU.DATAPROOFS)} 
+                                _disabled={menuButtonDisabledStyle(MENU.DATAPROOFS)}
+                                opacity={.6}
                                 onClick={() => {
                                   setMenuItem(MENU.DATAPROOFS);
                                   navigate('datapacks/personaldataproof');
@@ -423,9 +449,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.NFTMINE}>
                               <Button
                                 colorScheme="teal"
-                                _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                                opacity='.4'
-                                isDisabled={menuItem === MENU.NFTMINE || notSupportedOnChain(MENU.NFTMINE, _chainMetaLocal.networkId)}
+                                isDisabled={isMenuItemSelected(MENU.NFTMINE)} 
+                                _disabled={menuButtonDisabledStyle(MENU.NFTMINE)}
+                                opacity={.6}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
                                     navigate('datanfts/wallet');
@@ -446,9 +472,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.NFTALL}>
                               <Button
                                 colorScheme="teal"
-                                _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                                opacity='.4'
-                                isDisabled={menuItem === MENU.NFTALL || notSupportedOnChain(MENU.NFTALL, _chainMetaLocal.networkId)}
+                                isDisabled={isMenuItemSelected(MENU.NFTALL)}
+                                _disabled={menuButtonDisabledStyle(MENU.NFTALL)}
+                                opacity={.6}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
                                     navigate('datanfts/marketplace');
@@ -481,7 +507,9 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.COALITION}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.COALITIONALL}
+                                isDisabled={isMenuItemSelected(MENU.COALITIONALL)}
+                                _disabled={menuButtonDisabledStyle(MENU.COALITIONALL)}
+                                opacity={.6}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.COALITION]) {
                                     navigate('datacoalitions/viewcoalitions');
@@ -513,8 +541,10 @@ function App({ appConfig }) {
                           <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                             <ChainSupportedInput feature={MENU.TX}>
                               <Button
-                                disabled={notSupportedOnChain(MENU.TX, _chainMetaLocal.networkId)}
                                 colorScheme="teal"
+                                isDisabled={isMenuItemSelected(MENU.TX)}
+                                _disabled={menuButtonDisabledStyle(MENU.TX)}
+                                opacity={.6}
                                 onClick={() => {
                                   setMenuItem(MENU.TX);
                                   navigate('utils/chaintransactions');
@@ -537,24 +567,26 @@ function App({ appConfig }) {
                         </AccordionButton>
                         <AccordionPanel>
                           <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
+                            <ChainSupportedInput feature={MENU.VAULT}>
+                              <Button
+                                colorScheme="teal"
+                                isDisabled={isMenuItemSelected(MENU.VAULT)}
+                                _disabled={menuButtonDisabledStyle(MENU.VAULT)}
+                                opacity={.6}
+                                onClick={() => {
+                                  setMenuItem(MENU.VAULT);
+                                  navigate('labs/datavault');
+                                  setShowMobileMenu(false);
+                                }}
+                              >
+                                Data Vault
+                              </Button>
+                            </ChainSupportedInput>
                             <Button
                               colorScheme="teal"
-                              _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                              opacity='.4'
-                              isDisabled={menuItem === MENU.VAULT}
-                              onClick={() => {
-                                setMenuItem(MENU.VAULT);
-                                navigate('labs/datavault');
-                                setShowMobileMenu(false);
-                              }}
-                            >
-                              Data Vault
-                            </Button>
-                            <Button
-                              colorScheme="teal"
-                              _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                              opacity='.4'
-                              isDisabled={menuItem === MENU.STREAM}
+                              isDisabled={isMenuItemSelected(MENU.STREAM)}
+                              _disabled={menuButtonDisabledStyle(MENU.STREAM)}
+                              opacity={.6}
                               onClick={() => {
                                 setMenuItem(MENU.STREAM);
                                 navigate('labs/datastreams');
@@ -565,9 +597,9 @@ function App({ appConfig }) {
                             </Button>
                             <Button
                               colorScheme="teal"
-                              _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-                              opacity='.4'
-                              isDisabled={menuItem === MENU.TRUSTEDCOMP}
+                              isDisabled={isMenuItemSelected(MENU.TRUSTEDCOMP)}
+                              _disabled={menuButtonDisabledStyle(MENU.TRUSTEDCOMP)}
+                              opacity={.6}
                               onClick={() => {
                                 setMenuItem(MENU.TRUSTEDCOMP);
                                 navigate('labs/trustedcomputation');

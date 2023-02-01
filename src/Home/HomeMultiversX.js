@@ -116,7 +116,7 @@ export default function HomeMx({ onRfMount }) {
           if (!toast.isActive('er2')) {
             toast({
               id: 'er2',
-              title: 'ER2: Could not get your claims information from the multiversX blockchain.',
+              title: 'ER2: Could not get your claims information from the MultiversX blockchain.',
               status: 'error',
               isClosable: true,
               duration: null

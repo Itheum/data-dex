@@ -18,7 +18,14 @@ export default function ChainSupportedInput({ feature, children }) {
       return React.cloneElement(children, {
         leftIcon: <IoConstructOutline />,
         disabled: true,
-        isDisabled: true
+        isDisabled: true,
+        variant: 'outline',
+        _disabled: 
+          { ...children.props._disabled,
+          cursor: 'not-allowed',
+          opacity: 0.6
+        },
+
       });
 
     } 
