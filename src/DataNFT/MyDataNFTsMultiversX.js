@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { sleep, uxConfig, consoleNotice } from 'libs/util';
+import { sleep, uxConfig, consoleNotice, convertWeiToEsdt } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfACollectionForAnAddress } from 'MultiversX/api';
 import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
@@ -22,6 +22,7 @@ import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, S
 import { signMessage } from '@multiversx/sdk-dapp/utils/account';
 import { DataNftMarketContract } from 'MultiversX/dataNftMarket';
 import { DataNftMintContract } from 'MultiversX/dataNftMint';
+import { tokenDecimals } from '../MultiversX/tokenUtils.js';
 
 export default function MyDataNFTsMx({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -43,6 +44,25 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState('');
   const [selectedDataNft, setSelectedDataNft] = useState(null);
+  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState({});
+
+  const mintContract = new DataNftMintContract(_chainMeta.networkId);
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
+  const { hasPendingTransactions } = useGetPendingTransactions();
+
+  //
+  useEffect(() => {
+    (async () => {
+      const _marketRequirements = await marketContract.getRequirements();
+      console.log('_marketRequirements', _marketRequirements);
+      const _maxPaymentFeeMap = {};
+      for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
+        _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(_marketRequirements.maximum_payment_fees[i], tokenDecimals(_marketRequirements.accepted_payments[i])).toNumber();
+      }
+      setMaxPaymentFeeMap(_maxPaymentFeeMap);
+    })();
+  }, []);
+
   const onChangeDataNftBurnAmount = (newValue) => {
     let error = ''
     if (newValue > selectedDataNft.balance) {
@@ -65,9 +85,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
     onListNFTOpen();
   };
   
-  const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
-  const { hasPendingTransactions } = useGetPendingTransactions();
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's 'false' we need to get balances    
     if (!hasPendingTransactions) {
@@ -388,11 +405,20 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
                 <HStack my={'2'}>
                   <Text fontSize="xs">Listing price for each: </Text>
-                  <NumberInput size="xs" maxW={16} step={5} defaultValue={10} min={1} max={999999999999} value={prices[index]} onChange={(valueString) => setPrices((oldPrices) => {
-                    const newPrices = [...oldPrices];
-                    newPrices[index] = Number(valueString);
-                    return newPrices;
-                  })}>
+                  <NumberInput
+                    size="xs"
+                    maxW={16}
+                    step={5}
+                    defaultValue={10}
+                    min={0}
+                    max={maxPaymentFeeMap['ITHEUM-a61317'] ? maxPaymentFeeMap['ITHEUM-a61317'] : 0} // need to update hardcoded tokenId
+                    value={prices[index]}
+                    onChange={(valueString) => setPrices((oldPrices) => {
+                      const newPrices = [...oldPrices];
+                      newPrices[index] = Number(valueString);
+                      return newPrices;
+                    })}
+                  >
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
