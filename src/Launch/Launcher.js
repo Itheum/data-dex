@@ -8,10 +8,10 @@ import EVMAppHarness from 'AppHarness/AppHarnessEVM';
 import MxAppHarness from 'AppHarness/AppHarnessMultiversX';
 import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerMx from 'AuthPicker/AuthPickerMultiversX';
-import { debugui, uxConfig, walletConnectV2ProjectId } from 'libs/util';
+import { debugui, uxConfig } from 'libs/util';
+import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from 'libs/mxConstants';
 import { useSessionStorage } from 'libs/hooks';
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@multiversx/sdk-dapp/UI';
-import { MX_TOAST_LIFETIME_IN_MS } from 'libs/constants';
 
 const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 

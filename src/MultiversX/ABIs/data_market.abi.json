@@ -141,12 +141,31 @@
             "outputs": []
         },
         {
+            "name": "changeOfferPrice",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64"
+                },
+                {
+                    "name": "new_fee",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "cancelOffer",
             "mutability": "mutable",
             "inputs": [
                 {
                     "name": "index",
                     "type": "u64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "BigUint"
                 }
             ],
             "outputs": []
@@ -536,6 +555,21 @@
                 {
                     "name": "offer",
                     "type": "Offer",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "identifier": "updatedOfferPrice",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "price",
+                    "type": "BigUint",
                     "indexed": true
                 }
             ]

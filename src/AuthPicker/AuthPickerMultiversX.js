@@ -5,7 +5,8 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@multiversx/sdk-dapp/UI';
 import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { WALLETS } from 'libs/util';
-import { gtagGo, clearAppSessions, sleep, walletConnectV2ProjectId } from 'libs/util';
+import { gtagGo, clearAppSessions, sleep } from 'libs/util';
+import { walletConnectV2ProjectId } from 'libs/mxConstants';
 import { useSessionStorage } from 'libs/hooks';
 import { useNavigate } from 'react-router-dom';
 

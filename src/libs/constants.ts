@@ -1,1 +1,0 @@
-export const MX_TOAST_LIFETIME_IN_MS = 10000;
