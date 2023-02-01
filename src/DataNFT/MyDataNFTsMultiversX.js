@@ -409,7 +409,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   disabled={hasPendingTransactions}
                   onClick={() => onListButtonClick(item)}
                 >
-                  List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index]} ITHEUM each
+                  List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? 'each' : ''}` : 'Free'}
                 </Button>
               </Box>
             </Flex>
@@ -559,7 +559,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
               </HStack>
 
               <Text fontSize='md' mt='4'>How many to list: {amounts[selectedDataNft.index]}</Text>
-              <Text fontSize='md' mt='2'>Listing fee per NFT: {prices[selectedDataNft.index]} ITHEUM</Text>
+              <Text fontSize='md' mt='2'>Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : 'FREE'} </Text>
 
               <Text fontSize='md' mt='8'>Advanced:</Text>
               <Flex mt='2' justifyContent='flex-start' alignItems='center' gap='4'>
