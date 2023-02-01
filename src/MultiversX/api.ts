@@ -39,8 +39,8 @@ export const checkBalance = async (token: string, address: string, networkId: st
           console.error(error);
 
           if (error.response) {
-            if (error.response.status === 404) {
-              resolve({ balance: 0 }); // user has no ITHEUM so API return 404 it seems
+            if (error.response.status === 404 || error.response.status === 500) {
+              resolve({ balance: 0 }); // no ITHEUM => 404, nonce account 0 => 500
             } else {
               resolve({ error });
             }
