@@ -315,7 +315,7 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
 -----------------------------------------`;
 
-export function noChainSupport(menuItem, networkId) {
+export function notSupportedOnChain(menuItem, networkId) {
   const UNSUPPORTED_CHAIN_FEATURES = {
     5: [MENU.TX],
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],

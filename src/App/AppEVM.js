@@ -27,7 +27,7 @@ import DataCoalitions from 'DataCoalition/DataCoalitions';
 import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
-import { itheumTokenRoundUtil, contractsForChain, noChainSupport, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
+import { itheumTokenRoundUtil, contractsForChain, notSupportedOnChain, consoleNotice, gtagGo, debugui, clearAppSessions } from 'libs/util';
 import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from 'libs/util';
 import { ABIS } from 'EVM/ABIs';
 import { useUser } from 'store/UserContext';
@@ -399,7 +399,7 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.NFTMINE}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.NFTMINE || noChainSupport(MENU.NFTMINE, _chainMetaLocal.networkId)}
+                                isDisabled={menuItem === MENU.NFTMINE || notSupportedOnChain(MENU.NFTMINE, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
                                     navigate('datanfts/wallet');
@@ -420,7 +420,7 @@ function App({ appConfig }) {
                             <ChainSupportedInput feature={MENU.NFTALL}>
                               <Button
                                 colorScheme="teal"
-                                isDisabled={menuItem === MENU.NFTALL || noChainSupport(MENU.NFTALL, _chainMetaLocal.networkId)}
+                                isDisabled={menuItem === MENU.NFTALL || notSupportedOnChain(MENU.NFTALL, _chainMetaLocal.networkId)}
                                 onClick={() => {
                                   if (splashScreenShown[MENU.NFT]) {
                                     navigate('datanfts/marketplace');
@@ -485,7 +485,7 @@ function App({ appConfig }) {
                           <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
                             <ChainSupportedInput feature={MENU.TX}>
                               <Button
-                                disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)}
+                                disabled={notSupportedOnChain(MENU.TX, _chainMetaLocal.networkId)}
                                 colorScheme="teal"
                                 onClick={() => {
                                   setMenuItem(MENU.TX);
