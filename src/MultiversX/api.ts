@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 import { uxConfig } from 'libs/util';
+import { NftType } from '@multiversx/sdk-dapp/types/tokens.types';
 
-export const getApi = (networkId) => {
+export const getApi = (networkId: string) => {
   if (networkId === 'E1') {
     return 'api.multiversx.com';
   } else {
@@ -11,7 +12,7 @@ export const getApi = (networkId) => {
   }
 };
 
-export const getExplorer = (networkId) => {
+export const getExplorer = (networkId: string) => {
   if (networkId === 'E1') {
     return 'explorer.multiversx.com';
   } else {
@@ -19,12 +20,12 @@ export const getExplorer = (networkId) => {
   }
 };
 
-export const getTransactionLink = (networkId, txHash) => {
+export const getTransactionLink = (networkId: string, txHash: string) => {
   return `https://${getExplorer(networkId)}/transactions/${txHash}`;
 };
 
 // check token balance on Mx
-export const checkBalance = async (token, address, networkId) => {
+export const checkBalance = async (token: string, address: string, networkId: string) => {
   const api = getApi(networkId);
 
   return new Promise((resolve, reject) => {
@@ -51,25 +52,25 @@ export const checkBalance = async (token, address, networkId) => {
   });
 };
 
-export const getClaimTransactions = async (address, smartContractAddress, networkId) => {
+export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: string) => {
   const api = getApi(networkId);
 
   try {
     const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
 
     const resp = await (await axios.get(allTxs, { timeout: uxConfig.mxAPITimeoutMs })).data
-      .filter((tx) => {
+      .filter((tx: any) => {
         return tx.function === 'claim';
       })
       .slice(0, 25);
 
     const transactions = [];
 
-    for (const tx in resp) {
-      const transaction = {};
-      transaction['timestamp'] = parseInt(resp[tx]['timestamp']) * 1000;
-      transaction['hash'] = resp[tx]['txHash'];
-      transaction['status'] = resp[tx]['status'];
+    for (const tx of resp) {
+      const transaction: any = {};
+      transaction['timestamp'] = parseInt(tx['timestamp']) * 1000;
+      transaction['hash'] = tx['txHash'];
+      transaction['status'] = tx['status'];
 
       const data = Buffer.from(resp[tx]['data'], 'base64')
         .toString('ascii')
@@ -116,7 +117,7 @@ export const getClaimTransactions = async (address, smartContractAddress, networ
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address, collectionTicker, networkId) => {
+export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string, networkId: string) => {
   const api = getApi(networkId);
   try {
     const nftsLink = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
@@ -126,5 +127,35 @@ export const getNftsOfACollectionForAnAddress = async (address, collectionTicker
   } catch (error) {
     console.error(error);
     return { error };
+  }
+};
+
+export const getNftsByIds = async (nftIds: string[], networkId: string): Promise<NftType[]> => {
+  const api = getApi(networkId);
+  try {
+    const url = `https://${api}/nfts?withSupply=true&identifiers=${nftIds.join(',')}`;
+    const { data } = await axios.get<NftType[]>(url, { timeout: uxConfig.mxAPITimeoutMs });
+
+    // match input and output order
+    const sorted: NftType[] = [];
+    for (const nftId of nftIds) {
+      for (const nft of data) {
+        if (nftId === nft.identifier) {
+          sorted.push(nft);
+          break;
+        }
+      }
+    }
+
+    // check length of input and output match
+    if (nftIds.length !== sorted.length) {
+      console.error('getNftsByIds failed');
+      return [];
+    }
+
+    return sorted;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

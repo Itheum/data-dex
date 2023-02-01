@@ -13,7 +13,7 @@ import { hexZero, getTokenWantedRepresentation, tokenDecimals } from '../Multive
 import { getApi } from 'MultiversX/api';
 import { DataNftMintContract } from 'MultiversX/dataNftMint';
 import { useChainMeta } from 'store/ChainMetaContext';
-import { getNftsByIds } from 'MultiversX/api2';
+import { getNftsByIds } from 'MultiversX/api';
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from 'MultiversX/types';
 import moment from 'moment';
 import { convertWeiToEsdt, sleep, uxConfig } from 'libs/util';
