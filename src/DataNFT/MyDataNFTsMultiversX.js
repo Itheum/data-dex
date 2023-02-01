@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import SkeletonLoadingList from 'UtilComps/SkeletonLoadingList';
-import { sleep, uxConfig, consoleNotice, convertWeiToEsdt } from 'libs/util';
+import { sleep, uxConfig, consoleNotice, convertWeiToEsdt, isValidNumericCharacter } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsOfACollectionForAnAddress } from 'MultiversX/api';
 import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
@@ -390,7 +390,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
                 <HStack my={'2'}>
                   <Text fontSize="xs">How many to list: </Text>
-                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={item.balance} value={amounts[index]} onChange={(valueString) => setAmounts((oldAmounts) => {
+                  <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={item.balance} isValidCharacter={isValidNumericCharacter} value={amounts[index]} onChange={(valueString) => setAmounts((oldAmounts) => {
                     const newAmounts = [...oldAmounts];
                     newAmounts[index] = Number(valueString);
                     return newAmounts;
@@ -411,6 +411,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     step={5}
                     defaultValue={10}
                     min={0}
+                    isValidCharacter={isValidNumericCharacter}
                     max={maxPaymentFeeMap['ITHEUM-a61317'] ? maxPaymentFeeMap['ITHEUM-a61317'] : 0} // need to update hardcoded tokenId
                     value={prices[index]}
                     onChange={(valueString) => setPrices((oldPrices) => {
@@ -509,8 +510,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       defaultValue={1}
                       min={1}
                       max={selectedDataNft.balance}
+                      isValidCharacter={isValidNumericCharacter}
                       value={dataNftBurnAmount}
-                      onChange={value => onChangeDataNftBurnAmount(Number(value))}
+                      onChange={onChangeDataNftBurnAmount}
                       keepWithinRange={false}
                     >
                       <NumberInputField />

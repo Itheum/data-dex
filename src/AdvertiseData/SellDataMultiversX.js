@@ -28,6 +28,7 @@ import {
   MENU,
   convertWeiToEsdt,
   tryParseInt,
+  isValidNumericCharacter,
 } from 'libs/util';
 import { useChainMeta } from 'store/ChainMetaContext';
 import { set } from 'lodash';
@@ -201,7 +202,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   useEffect(() => {
     getUserData();
   }, [mxAddress, hasPendingTransactions]);
-  console.log('userData', userData);
 
   // set initial states for validation
   useEffect(() => {
@@ -211,8 +211,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     onChangeDataNFTTokenName('');
     onChangeDatasetTitle('');
     onChangeDatasetDescription('');
-    onChangeDataNFTCopies(1);
-    onChangeDataNFTRoyalty(0);
+    handleChangeDataNftCopies(1);
+    handleChangeDataNftRoyalties(0);
 
     setMinRoyalties(-2);
     setMaxRoyalties(-2);
@@ -321,7 +321,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   }
 
   const [dataNFTCopiesError, setDataNFTCopiesError] = useState('');
-  const onChangeDataNFTCopies = (value) => {
+  const handleChangeDataNftCopies = (value) => {
     let error = '';
     if (value < 1) {
       error = 'Number of copies cannot be negative';
@@ -334,7 +334,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   }
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState('');
-  const onChangeDataNFTRoyalty = (value) => {
+  const handleChangeDataNftRoyalties = (value) => {
     let error = '';
     if (value < 0) {
       error = 'Royalties cannot be negative';
@@ -350,11 +350,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   useEffect(() => {
     // init value
-    onChangeDataNFTRoyalty(minRoyalties);
+    handleChangeDataNftRoyalties(minRoyalties);
   }, [minRoyalties, maxRoyalties]);
   useEffect(() => {
     // init value
-    onChangeDataNFTCopies(1);
+    handleChangeDataNftCopies(1);
   }, [maxSupply]);
 
   useEffect(() => {
@@ -865,8 +865,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   min={1}
                   max={maxSupply > 0 ? maxSupply : 1}
                   value={dataNFTCopies}
-                  onChange={(valueString) => onChangeDataNFTCopies(tryParseInt(valueString, 1))}
-                  keepWithinRange={false}
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={handleChangeDataNftCopies}
                 >
                   <NumberInputField />
                   <NumberInputStepper>
@@ -888,12 +888,12 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   size="md"
                   maxW={24}
                   step={5}
-                  defaultValue={0}
+                  defaultValue={minRoyalties}
                   min={minRoyalties > 0 ? minRoyalties : 0}
                   max={maxRoyalties > 0 ? maxRoyalties : 0}
+                  isValidCharacter={isValidNumericCharacter}
                   value={dataNFTRoyalty}
-                  onChange={(valueString) => onChangeDataNFTRoyalty(tryParseInt(valueString, minRoyalties))}
-                  keepWithinRange={false}
+                  onChange={handleChangeDataNftRoyalties}
                 >
                   <NumberInputField />
                   <NumberInputStepper>

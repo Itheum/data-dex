@@ -71,41 +71,6 @@ export const CustomPagination: FC<PropsType> = ({
             </Text>
           </Text>
           {' '}
-          {/* <NumberInput
-            colorScheme="teal"
-            size='sm'
-            ml={2}
-            mr={2}
-            w={20}
-            min={1}
-            max={pageCount}
-            onChange={(valueAsString: string, valueAsNumber: number) => {
-              const page = valueAsNumber ? valueAsNumber - 1 : 0;
-              gotoPage(page);
-            }}
-            defaultValue={pageIndex + 1}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <Select
-            colorScheme="teal"
-            size='sm'
-            w={32}
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-          >
-            {PAGE_SIZES.map((ps: number) => (
-              <option key={ps} value={ps}>
-                Show {ps}
-              </option>
-            ))}
-          </Select> */}
         </Flex>
 
         <Flex>

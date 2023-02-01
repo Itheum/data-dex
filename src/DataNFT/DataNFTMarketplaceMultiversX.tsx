@@ -16,7 +16,7 @@ import { useChainMeta } from 'store/ChainMetaContext';
 import { getNftsByIds } from 'MultiversX/api';
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from 'MultiversX/types';
 import moment from 'moment';
-import { convertWeiToEsdt, sleep, uxConfig } from 'libs/util';
+import { convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from 'libs/util';
 import { CustomPagination } from './CustomPagination';
 
 export default function Marketplace() {
@@ -358,7 +358,7 @@ export default function Marketplace() {
                       tabState === 1 && address && address != offer.owner && (<>
                         <HStack mt='2'>
                           <Text fontSize='xs'>How many to procure access to </Text>
-                          <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={offer.quantity} value={amountOfTokens[index]} onChange={(valueString) => setAmountOfTokens((oldAmounts: any) => {
+                          <NumberInput size="xs" maxW={16} step={1} defaultValue={1} min={1} max={offer.quantity} isValidCharacter={isValidNumericCharacter} value={amountOfTokens[index]} onChange={(valueString) => setAmountOfTokens((oldAmounts: any) => {
                             const newAmounts = { ...oldAmounts };
                             newAmounts[index] = Number(valueString);
                             return newAmounts;

@@ -463,3 +463,7 @@ export const tryParseInt = (value, defaultValue = 0) => {
   const intValue = parseInt(value);
   return Number.isNaN(intValue) ? defaultValue : intValue;
 };
+
+export const isValidNumericCharacter = (char) => {
+  return char.match(/[0-9]/);
+};
