@@ -347,7 +347,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   colorScheme='red'
                   height='5'
                   ml={'1'}
-                  disabled={hasPendingTransactions}
+                  isDisabled={hasPendingTransactions}
                   onClick={e => onBurnButtonClick(item)}
                 >
                   Burn
@@ -406,7 +406,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   mt={3}
                   colorScheme="teal"
                   variant="outline"
-                  disabled={hasPendingTransactions}
+                  isDisabled={hasPendingTransactions}
                   onClick={() => onListButtonClick(item)}
                 >
                   List {amounts[index]} NFT{amounts[index] > 1 && 's'} for {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? 'each' : ''}` : 'Free'}
@@ -504,7 +504,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       size='sm'
                       mx='3'
                       onClick={() => setBurnNFTModalState(2)}
-                      disabled={!!dataNftBurnAmountError}
+                      isDisabled={!!dataNftBurnAmountError}
                     >
                       I want to Burn my {dataNftBurnAmount} Data NFTs
                     </Button>

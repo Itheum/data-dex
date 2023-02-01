@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { uxConfig } from 'libs/util';
-import { NftType } from '@multiversx/sdk-dapp/types/tokens.types';
+import { NftType, TokenType } from '@multiversx/sdk-dapp/types/tokens.types';
 
 export const getApi = (networkId: string) => {
   if (networkId === 'E1') {
@@ -157,5 +157,18 @@ export const getNftsByIds = async (nftIds: string[], networkId: string): Promise
   } catch (error) {
     console.error(error);
     return [];
+  }
+};
+
+export const getAccountTokenFromApi = async (address: string, tokenId: string, networkId: string): Promise<TokenType | undefined> => {
+  const api = getApi(networkId);
+  try {
+    const url = `https://${api}/accounts/${address}/tokens/${tokenId}`;
+    const { data } = await axios.get<TokenType>(url, { timeout: uxConfig.mxAPITimeoutMs });
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return undefined;
   }
 };
