@@ -10,20 +10,14 @@ import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } fr
 import { AiFillHome } from 'react-icons/ai';
 import { IoConstructOutline } from 'react-icons/io5';
 import SellDataMX from 'AdvertiseData/SellDataMultiversX';
-import BuyData from 'DataPack/BuyData';
-import PurchasedData from 'DataPack/PurchasedData';
-import AdvertisedData from 'DataPack/AdvertisedData';
-import PersonalDataProofs from 'DataPack/PersonalDataProofs';
 import ShortAddress from 'UtilComps/ShortAddress';
 import HomeMx from 'Home/HomeMultiversX';
-import ChainTransactions from 'Sections/ChainTransactions';
 import DataVault from 'Sections/DataVault';
 import DataNFTs from 'DataNFT/DataNFTs';
 import MyDataNFTsMx from 'DataNFT/MyDataNFTsMultiversX';
 import DataNFTMarketplaceMultiversX from 'DataNFT/DataNFTMarketplaceMultiversX';
 import DataStreams from 'Sections/DataStreams';
 import DataCoalitions from 'DataCoalition/DataCoalitions';
-import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import ClaimsHistory from 'MultiversX/ClaimsHistory';
@@ -367,79 +361,6 @@ function App({ appConfig }) {
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
-                            Data Packs
-                          </Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <ChainSupportedInput feature={MENU.BUY}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={isMenuItemSelected(MENU.BUY)} 
-                                _disabled={menuButtonDisabledStyle(MENU.BUY)}
-                                opacity={.6}
-                                onClick={() => {
-                                  setMenuItem(MENU.BUY);
-                                  navigate('datapacks/buydata');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Buy Data
-                              </Button>
-                            </ChainSupportedInput>
-                            <ChainSupportedInput feature={MENU.ADVERTISED}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={isMenuItemSelected(MENU.ADVERTISED)} 
-                                _disabled={menuButtonDisabledStyle(MENU.ADVERTISED)}
-                                opacity={.6}
-                                onClick={() => {
-                                  setMenuItem(MENU.ADVERTISED);
-                                  navigate('datapacks/advertiseddata');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Advertised Data
-                              </Button>
-                            </ChainSupportedInput>
-                            <ChainSupportedInput feature={MENU.PURCHASED}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={isMenuItemSelected(MENU.PURCHASED)} 
-                                _disabled={menuButtonDisabledStyle(MENU.PURCHASED)}
-                                opacity={.6}
-                                onClick={() => {
-                                  setMenuItem(MENU.PURCHASED);
-                                  navigate('datapacks/purchaseddata');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Purchased Data
-                              </Button>
-                            </ChainSupportedInput>
-                            <ChainSupportedInput feature={MENU.DATAPROOFS}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={isMenuItemSelected(MENU.DATAPROOFS)} 
-                                _disabled={menuButtonDisabledStyle(MENU.DATAPROOFS)}
-                                opacity={.6}
-                                onClick={() => {
-                                  setMenuItem(MENU.DATAPROOFS);
-                                  navigate('datapacks/personaldataproof');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Personal Data Proofs
-                              </Button>
-                            </ChainSupportedInput>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">
                             Data NFTs
                           </Button>
                           <AccordionIcon />
@@ -533,34 +454,6 @@ function App({ appConfig }) {
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
-                            Utils
-                          </Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <ChainSupportedInput feature={MENU.TX}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={isMenuItemSelected(MENU.TX)}
-                                _disabled={menuButtonDisabledStyle(MENU.TX)}
-                                opacity={.6}
-                                onClick={() => {
-                                  setMenuItem(MENU.TX);
-                                  navigate('utils/chaintransactions');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Chain Transactions
-                              </Button>
-                            </ChainSupportedInput>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">
                             Labs
                           </Button>
                           <AccordionIcon />
@@ -621,12 +514,6 @@ function App({ appConfig }) {
                   <Route path="/" element={<HomeMx key={rfKeys.tools} onRfMount={() => handleRfMount('tools')}  />}/>
                   <Route path="home" element={<HomeMx key={rfKeys.tools} onRfMount={() => handleRfMount('tools')}  />}/>
                   <Route path="selldata" element={<SellDataMX key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} />} />
-                  <Route path="datapacks" element={<Outlet />}>
-                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} />} />
-                    <Route path="advertiseddata" element={<AdvertisedData />} />
-                    <Route path="purchaseddata" element={<PurchasedData />} />
-                    <Route path="personaldataproof" element={<PersonalDataProofs />} />
-                  </Route>
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount('dataNFTWallet')} />} />
@@ -634,10 +521,6 @@ function App({ appConfig }) {
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
                     <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
-                    <Route path="viewcoalitions" element={<DataCoalitionsViewAll />} />
-                  </Route>
-                  <Route paths="utils" element={<Outlet />}>
-                    <Route path="chaintransactions" element={<ChainTransactions />} />
                   </Route>
                   <Route path="labs" element={<Outlet />}>
                     <Route path="datastreams" element={<DataStreams />} />

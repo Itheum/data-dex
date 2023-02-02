@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import React from 'react';
 import { DappProvider } from '@multiversx/sdk-dapp/wrappers';
-import { MoralisProvider } from 'react-moralis';
 
 import AuthLauncher from 'Launch/AuthLauncher';
-import EVMAppHarness from 'AppHarness/AppHarnessEVM';
 import MxAppHarness from 'AppHarness/AppHarnessMultiversX';
-import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerMx from 'AuthPicker/AuthPickerMultiversX';
 import { debugui, uxConfig } from 'libs/util';
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from 'libs/mxConstants';
 import { useSessionStorage } from 'libs/hooks';
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@multiversx/sdk-dapp/UI';
-
-const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useSessionStorage('itm-launch-mode', null); // let's us support, browser refresh session recovery if user is logged in
@@ -41,13 +36,6 @@ function Launcher() {
       {launchMode === 'auth' && 
         <AuthLauncher onLaunchMode={handleLaunchMode} />
       }
-
-      {launchMode === 'evm' && <>
-        <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
-          <AuthPickerEVM resetLaunchMode={() => handleLaunchMode('auth')} />
-          <EVMAppHarness resetLaunchMode={() => handleLaunchMode('auth')} />
-        </MoralisProvider>
-      </>}
 
       {launchMode === 'mx' && <>      
         <DappProvider 
