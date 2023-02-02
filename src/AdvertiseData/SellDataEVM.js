@@ -297,7 +297,7 @@ export default function ({ onRfMount, itheumAccount }) {
   // Data NFT object saved to moralis
   useEffect(async () => {
     if (savedDataNFTMoralis && savedDataNFTMoralis.id && savedDataNFTMoralis.get('dataHash')) {
-      const NFTImgUrl = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
+      const NFTImgUrl = `https://d37x5igq4vw5mq.cloudfront.net/datadexapi/v1/generateNFTArt?hash=${savedDataNFTMoralis.get('dataHash')}`;
 
       setDataNFTImg(NFTImgUrl);
 

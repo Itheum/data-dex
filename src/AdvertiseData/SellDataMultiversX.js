@@ -555,8 +555,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
-    const newNFTImg = `https://itheumapi.com/bespoke/ddex/generateNFTArt?hash=${dataNFTHash}`;
-    // console.log('newNFTImg', newNFTImg);
+    const newNFTImg = `https://d37x5igq4vw5mq.cloudfront.net/datadexapi/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress(prevSaveProgress => ({ ...prevSaveProgress, s2: 1 }));
 
