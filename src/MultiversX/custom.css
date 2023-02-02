@@ -18,19 +18,26 @@
 }
 
 /* Ice - #131 */
-.dapp-wallet-connect-login, .dapp-extension-login, .dapp-web-wallet-login, .dapp-ledger-login {
+.dapp-wallet-connect-login,
+.dapp-extension-login,
+.dapp-web-wallet-login,
+.dapp-ledger-login {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-.dapp-modal-dialog-content, .dapp-modal-dialog-header, .dapp-modal-dialog-content-body {
+.dapp-modal-dialog-content,
+.dapp-modal-dialog-header,
+.dapp-modal-dialog-content-body {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
   border-color: var(--chakra-colors-teal-200) !important;
 }
 
-.dapp-wallet-connect-login-modal, .dapp-modal-dialog-content, .dapp-modal-dialog-wrapper {
+.dapp-wallet-connect-login-modal,
+.dapp-modal-dialog-content,
+.dapp-modal-dialog-wrapper {
   z-index: 1500 !important;
 }
 
@@ -68,14 +75,18 @@ thead.dapp-core-component__main__text-black-50 {
   color: var(--chakra-colors-chakra-border-color) !important;
 }
 
-.dapp-transaction-toast, .dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper {
+.dapp-transaction-toast,
+.dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
   border-color: var(--chakra-colors-teal-200) !important;
   border-width: 1px !important;
 }
 
-.dapp-core-component__transactionToast-styles__content .dapp-core-component__transactionToast-styles__right .dapp-core-component__transactionToast-styles__heading .dapp-core-component__transactionToast-styles__close {
+.dapp-core-component__transactionToast-styles__content
+  .dapp-core-component__transactionToast-styles__right
+  .dapp-core-component__transactionToast-styles__heading
+  .dapp-core-component__transactionToast-styles__close {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
@@ -88,7 +99,8 @@ thead.dapp-core-component__main__text-black-50 {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.dapp-wallet-connect-login-modal .dapp-modal-dialog-header, .dapp-ledger-login-container .dapp-modal-dialog-header {
+.dapp-wallet-connect-login-modal .dapp-modal-dialog-header,
+.dapp-ledger-login-container .dapp-modal-dialog-header {
   margin-top: 10px;
 }
 
@@ -100,6 +112,6 @@ thead.dapp-core-component__main__text-black-50 {
   margin-top: 5px;
 }
 
-.dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper{
+.dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper {
   position: fixed !important;
 }

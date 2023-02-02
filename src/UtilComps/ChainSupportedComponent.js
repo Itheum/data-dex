@@ -1,5 +1,5 @@
-import { notSupportedOnChain } from 'libs/util';
-import { useChainMeta } from 'store/ChainMetaContext';
+import { notSupportedOnChain } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
 
 export default function ChainSupportedComponent({ feature, children }) {
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -9,9 +9,9 @@ export default function ChainSupportedComponent({ feature, children }) {
       return children;
     } else {
       // NOTE: only supports 1 child nested under parent ChainSupportedInput. e.g. <ChainSupportedInput><Comp {...props} /></ChainSupportedInput>
-      return null
+      return null;
     }
-  } else {  
-    return children;  
+  } else {
+    return children;
   }
 }

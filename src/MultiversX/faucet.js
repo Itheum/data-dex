@@ -1,24 +1,33 @@
-import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction, U64Value } from '@multiversx/sdk-core/out';
-import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
-import { sendTransactions } from '@multiversx/sdk-dapp/services';
-import jsonData from './ABIs/devnetfaucet.abi.json';
-import { contractsForChain } from 'libs/util';
+import {
+  AbiRegistry,
+  SmartContractAbi,
+  SmartContract,
+  Address,
+  ResultsParser,
+  Transaction,
+  TransactionPayload,
+  ContractFunction,
+} from "@multiversx/sdk-core/out";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
+import { contractsForChain } from "libs/util";
+import jsonData from "./ABIs/devnetfaucet.abi.json";
 
 export class FaucetContract {
   constructor(networkId) {
     this.timeout = 5000;
     this.claimsContractAddress = contractsForChain(networkId).faucet;
 
-    if (networkId === 'E1') {
-      throw new Error('Faucet not available on MultiversX mainnet');
+    if (networkId === "E1") {
+      throw new Error("Faucet not available on MultiversX mainnet");
     } else {
-      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.multiversx.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { timeout: this.timeout });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
-    const abi = new SmartContractAbi(abiRegistry, ['DevNetFaucet']);
+    const abi = new SmartContractAbi(abiRegistry, ["DevNetFaucet"]);
 
     this.contract = new SmartContract({
       address: new Address(this.claimsContractAddress),
@@ -39,13 +48,11 @@ export class FaucetContract {
   async sendActivateFaucetTransaction(address) {
     const faucetTransaction = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction('activateFaucet'))
-        .build(),
+      data: TransactionPayload.contractCall().setFunction(new ContractFunction("activateFaucet")).build(),
       receiver: new Address(this.claimsContractAddress),
       sender: new Address(address),
       gasLimit: 20000000,
-      chainID: 'D',
+      chainID: "D",
     });
 
     await refreshAccount();
@@ -53,9 +60,9 @@ export class FaucetContract {
     const { sessionId, error } = await sendTransactions({
       transactions: faucetTransaction,
       transactionsDisplayInfo: {
-        processingMessage: 'Getting faucet tokens',
-        errorMessage: 'Faucet error',
-        successMessage: 'Faucet tokens sent',
+        processingMessage: "Getting faucet tokens",
+        errorMessage: "Faucet error",
+        successMessage: "Faucet tokens sent",
       },
       redirectAfterSign: false,
     });

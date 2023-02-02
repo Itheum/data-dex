@@ -1,5 +1,6 @@
-import { Stack, Box } from '@chakra-ui/layout';
-import { Skeleton } from '@chakra-ui/react';
+import React from "react";
+import { Stack, Box } from "@chakra-ui/layout";
+import { Skeleton } from "@chakra-ui/react";
 
 export default function SkeletonLoadingList() {
   return (
@@ -24,4 +25,3 @@ export default function SkeletonLoadingList() {
     </Stack>
   );
 }
-

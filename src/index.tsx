@@ -1,17 +1,17 @@
-import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import React from "react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import * as Sentry from "@sentry/react";
+import { BrowserTracing } from "@sentry/tracing";
 
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import Launcher from './Launch/Launcher';
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { UserContextProvider } from './store/UserContext';
-import { ChainMetaContextProvider } from './store/ChainMetaContext';
-import { BrowserRouter as Router } from 'react-router-dom';
-import reportWebVitals from './reportWebVitals';
-import '../src/MultiversX/custom.css';
+import { createRoot } from "react-dom/client";
+import { BrowserRouter as Router } from "react-router-dom";
+import Launcher from "./Launch/Launcher";
+import reportWebVitals from "./reportWebVitals";
+import { ChainMetaContextProvider } from "./store/ChainMetaContext";
+import { UserContextProvider } from "./store/UserContext";
+import "../src/MultiversX/custom.css";
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   Sentry.init({
     dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
     integrations: [new BrowserTracing()],
@@ -22,32 +22,32 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const breakpoints = {
-  sm: '30em',
-  md: '48em',
-  lg: '62em',
-  xl: '80em',
-  '2xl': '96em',
+  sm: "30em",
+  md: "48em",
+  lg: "62em",
+  xl: "80em",
+  "2xl": "96em",
 };
 
 const theme = extendTheme({
   breakpoints,
   config: {
-    initialColorMode: 'dark',
+    initialColorMode: "dark",
   },
   fontSizes: {
-    xs: '0.65rem',
-    sm: '0.75rem',
-    md: '0.85rem',
-    lg: '0.95rem',
-    xl: '1.05rem',
-    '2xl': '1.15rem',
+    xs: "0.65rem",
+    sm: "0.75rem",
+    md: "0.85rem",
+    lg: "0.95rem",
+    xl: "1.05rem",
+    "2xl": "1.15rem",
   },
   Toast: {
-    colorScheme: 'teal',
-  }
+    colorScheme: "teal",
+  },
 });
 
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 const root = createRoot(container as HTMLElement);
 root.render(
   <React.StrictMode>
@@ -60,7 +60,7 @@ root.render(
         </UserContextProvider>
       </ChainMetaContextProvider>
     </ChakraProvider>
-</React.StrictMode>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

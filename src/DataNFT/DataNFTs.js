@@ -1,49 +1,77 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Stack } from '@chakra-ui/layout';
-import {
-  Button, Link, Badge, Flex, Image, StackDivider,
-  HStack, Heading, Center, Text
-} from '@chakra-ui/react';
-import { MENU } from 'libs/util';
-import { useChainMeta } from 'store/ChainMetaContext';
-import openSeaLogoIcon from 'img/opensea-logo.png';
-import dataNFTIcon from 'img/data-nft-icon.png';
+import React from "react";
+import { Box, Stack } from "@chakra-ui/layout";
+import { Button, Link, Badge, Flex, Image, StackDivider, HStack, Heading, Center, Text } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import dataNFTIcon from "img/data-nft-icon.png";
+import openSeaLogoIcon from "img/opensea-logo.png";
+import { MENU } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
 
-export default function({ setMenuItem }) {
+export default function ({ setMenuItem }) {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
-  
+
   return (
-    <Stack spacing={5}>      
+    <Stack spacing={5}>
       <Flex align="top" spacing={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="80%" maxWidth="initial">
           <Center flexDirection="column">
-            <Heading size="lg">Data NFTs <Badge colorScheme="teal" fontSize="0.5em">Beta</Badge></Heading>
+            <Heading size="lg">
+              Data NFTs{" "}
+              <Badge colorScheme="teal" fontSize="0.5em">
+                Beta
+              </Badge>
+            </Heading>
             <Image src={dataNFTIcon} boxSize="150px" m={5} borderRadius="md" />
-            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={['column', 'initial']}>
-              <Box fontSize="sm" align="center" flex="1">Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability</Box>
-              <Box fontSize="sm" align="center" flex="1">Allow for resale in secondary markets (like OpenSea) and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn a % as royalty</Box>
-              <Box fontSize="sm" align="center" flex="1">To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.                
+            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
+              <Box fontSize="sm" align="center" flex="1">
+                Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability
+              </Box>
+              <Box fontSize="sm" align="center" flex="1">
+                Allow for resale in secondary markets (like OpenSea) and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn
+                a % as royalty
+              </Box>
+              <Box fontSize="sm" align="center" flex="1">
+                To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.
               </Box>
             </HStack>
-            
+
             <HStack spacing="5" mt="10">
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTMINE); navigate('wallet');}}>Data NFT Wallet</Button>
-              <Button colorScheme="teal" onClick={() => {setMenuItem(MENU.NFTALL); navigate('marketplace');}}>Data NFT Marketplace</Button>
+              <Button
+                colorScheme="teal"
+                onClick={() => {
+                  setMenuItem(MENU.NFTMINE);
+                  navigate("wallet");
+                }}
+              >
+                Data NFT Wallet
+              </Button>
+              <Button
+                colorScheme="teal"
+                onClick={() => {
+                  setMenuItem(MENU.NFTALL);
+                  navigate("marketplace");
+                }}
+              >
+                Data NFT Marketplace
+              </Button>
             </HStack>
 
-            {_chainMeta.networkId !== 'ED' && <Stack mt="10" align="center">
-              <Text fontSize="sm">Our Cross-Chain NFT Marketplace is Powered by OpenSea</Text>
-              <Image src={openSeaLogoIcon} w="150px" />
-            </Stack>}
-            
+            {_chainMeta.networkId !== "ED" && (
+              <Stack mt="10" align="center">
+                <Text fontSize="sm">Our Cross-Chain NFT Marketplace is Powered by OpenSea</Text>
+                <Image src={openSeaLogoIcon} w="150px" />
+              </Stack>
+            )}
+
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-nfts-1" isExternal>
-              <Button size="xs" colorScheme="teal" variant="outline">Read about Data NFTs in our Whitepaper</Button>
+              <Button size="xs" colorScheme="teal" variant="outline">
+                Read about Data NFTs in our Whitepaper
+              </Button>
             </Link>
           </Center>
-        </Box>        
+        </Box>
       </Flex>
     </Stack>
   );
-};
+}
