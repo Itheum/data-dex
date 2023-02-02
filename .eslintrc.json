@@ -62,9 +62,9 @@
       }
     ],
     "prettier/prettier": [
-      "error",
+      "off",
       {
-        "endOfLine": "lf"
+        "endOfLine": "auto"
       }
     ],
     "@typescript-eslint/indent": "off",
@@ -75,7 +75,7 @@
     "react/prop-types": "off",
     "react/display-name": "off",
     "indent": "off",
-    "linebreak-style": ["error", "unix"],
+    // "linebreak-style": ["error", "unix"],
     "quotes": "off",
     "semi": ["error", "always"],
     "object-curly-newline": "off",

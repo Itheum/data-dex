@@ -290,10 +290,17 @@ export class DataNftMarketContract {
     });
   }
 
-  async delistDataNft(index: number, senderAddress: string) {
+  async delistDataNft(index: number, delistAmount: number, senderAddress: string) {
+    const data = TransactionPayload
+      .contractCall()
+      .setFunction(new ContractFunction("cancelOffer"))
+      .addArg(new U64Value(index))
+      .addArg(new BigUIntValue(delistAmount))
+      .build();
+
     const tx = new Transaction({
       value: "0",
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("cancelOffer")).addArg(new U64Value(index)).build(),
+      data,
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),

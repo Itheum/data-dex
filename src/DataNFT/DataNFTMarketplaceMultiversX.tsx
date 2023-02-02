@@ -58,7 +58,6 @@ export default function Marketplace() {
   const contract = new DataNftMarketContract("ED");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
-  const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
@@ -69,6 +68,11 @@ export default function Marketplace() {
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
+
+  //
+  const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
+  const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
+  const [delistAmount, setDelistAmount] = useState<number>(1);
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
@@ -249,20 +253,35 @@ export default function Marketplace() {
       return;
     }
 
-    contract.delistDataNft(offers[selectedOfferIndex].index, address);
+    contract.delistDataNft(offers[selectedOfferIndex].index, delistAmount, address);
     // a small delay for visual effect
     await sleep(0.5);
     onDelistModalClose();
+    setDelistModalState(0);
   };
   return (
     <>
       <Stack spacing={5}>
         <Heading size="lg">Data NFT Marketplace</Heading>
         <Flex mt="5" gap="12px" justifyContent={{ base: "center", md: "flex-start" }} flexDirection={{ base: "row", md: "row" }}>
-          <Button colorScheme="teal" width={{ base: "160px", md: "160px" }} isDisabled={tabState === 1} onClick={() => setTabState(1)}>
+          <Button
+            colorScheme="teal"
+            width={{ base: "160px", md: "160px" }}
+            isDisabled={tabState === 1}
+            _disabled={{ opacity: 1 }}
+            opacity={0.4}
+            onClick={() => setTabState(1)}
+          >
             Public Marketplace
           </Button>
-          <Button colorScheme="teal" width={{ base: "160px", md: "160px" }} isDisabled={tabState === 2} onClick={() => setTabState(2)}>
+          <Button
+            colorScheme="teal"
+            width={{ base: "160px", md: "160px" }}
+            isDisabled={tabState === 2}
+            _disabled={{ opacity: 1 }}
+            opacity={0.4}
+            onClick={() => setTabState(2)}
+          >
             My Data NFTs
           </Button>
         </Flex>
@@ -421,7 +440,7 @@ export default function Marketplace() {
                     }
                     {tabState === 2 && address && (
                       <>
-                        <Flex mt="2">
+                        <Flex mt="2" gap={2}>
                           <Button
                             size="xs"
                             colorScheme="teal"
@@ -429,10 +448,34 @@ export default function Marketplace() {
                             isDisabled={hasPendingTransactions}
                             onClick={() => {
                               setSelectedOfferIndex(index);
+                              setDelistAmount(offers[index].quantity);
+                              setDelistModalState(1);
                               onDelistModalOpen();
                             }}
                           >
-                            De-List
+                            De-List All
+                          </Button>
+                          <Button
+                            size="xs"
+                            colorScheme="teal"
+                            width="72px"
+                            isDisabled={hasPendingTransactions}
+                            onClick={() => {
+                              setSelectedOfferIndex(index);
+                              setDelistAmount(1);
+                              setDelistModalState(0);
+                              onDelistModalOpen();
+                            }}
+                          >
+                            De-List Some
+                          </Button>
+                          <Button
+                            size="xs"
+                            colorScheme="teal"
+                            width="72px"
+                            isDisabled={hasPendingTransactions}
+                          >
+                            Update Price
                           </Button>
                         </Flex>
                       </>
@@ -656,20 +699,70 @@ export default function Marketplace() {
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
           <ModalContent>
-            <ModalHeader>Are you sure?</ModalHeader>
-            <ModalBody pb={6}>
-              <Text fontSize="md" mt="2">
-                You are about to de-list {offers[selectedOfferIndex].quantity} Data NFTs from the Public Marketplace.
-              </Text>
-              <Flex justifyContent="end" mt="6 !important">
-                <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
-                  Proceed
-                </Button>
-                <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
-                  Cancel
-                </Button>
-              </Flex>
-            </ModalBody>
+            {
+              delistModalState === 0 ? <>
+                <ModalBody py={6}>
+                  <HStack spacing={5} alignItems="center">
+                    <Box flex="4" alignContent="center">
+                      <Text fontSize="lg">Procure Access to Data NFTs</Text>
+                      <Flex mt="1">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                          {nftMetadatas[selectedOfferIndex].tokenName}
+                        </Text>
+                      </Flex>
+                    </Box>
+                    <Box flex="1">
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                    </Box>
+                  </HStack>
+                  <Flex mt="8" justifyContent='flex-start' alignItems='center'>
+                    <Text width='160px' fontSize="md">How many would you like to delist?</Text>
+                    <NumberInput
+                      size="xs"
+                      ml='30px'
+                      maxW={16}
+                      step={1}
+                      defaultValue={1}
+                      min={1}
+                      max={offers[selectedOfferIndex].quantity}
+                      isValidCharacter={isValidNumericCharacter}
+                      value={delistAmount}
+                      onChange={(valueAsString, valueAsNumber) => setDelistAmount(valueAsNumber)}
+                      keepWithinRange={true}
+                    >
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Flex>
+                  <Flex justifyContent="end" mt="6 !important">
+                    <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
+                      Proceed
+                    </Button>
+                    <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
+                      Cancel
+                    </Button>
+                  </Flex>
+                </ModalBody>
+              </> : <>
+                <ModalHeader>Are you sure?</ModalHeader>
+                <ModalBody pb={6}>
+                  <Text fontSize="md" mt="2">
+                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? 's' : ''} from the Public Marketplace.
+                  </Text>
+                  <Flex justifyContent="end" mt="6 !important">
+                    <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
+                      Proceed
+                    </Button>
+                    <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
+                      Cancel
+                    </Button>
+                  </Flex>
+                </ModalBody>
+              </>
+            }
           </ModalContent>
         </Modal>
       )}
