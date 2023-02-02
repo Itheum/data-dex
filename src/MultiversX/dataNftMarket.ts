@@ -417,4 +417,36 @@ export class DataNftMarketContract {
       return 0;
     }
   }
+
+  async updateOfferPrice(index: number, newPrice: string, senderAddress: string) {
+    const data = TransactionPayload
+      .contractCall()
+      .setFunction(new ContractFunction("changeOfferPrice"))
+      .addArg(new U64Value(index))
+      .addArg(new BigUIntValue(newPrice))
+      .build();
+
+    const tx = new Transaction({
+      value: "0",
+      data,
+      receiver: new Address(this.dataNftMarketContractAddress),
+      gasLimit: 12000000,
+      sender: new Address(senderAddress),
+      chainID: "D",
+    });
+
+    await refreshAccount();
+
+    const { sessionId, error } = await sendTransactions({
+      transactions: tx,
+      transactionsDisplayInfo: {
+        processingMessage: "Updating price",
+        errorMessage: "Error occured during updating price",
+        successMessage: "Price updated successfuly",
+      },
+      redirectAfterSign: false,
+    });
+
+    return { sessionId, error };
+  }
 }

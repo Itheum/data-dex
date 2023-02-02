@@ -34,7 +34,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { getAccountTokenFromApi, getApi } from "MultiversX/api";
 import { getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -63,6 +63,7 @@ export default function Marketplace() {
   const [noData, setNoData] = useState(false);
   const [userData, setUserData] = useState<any>({});
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
+  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
 
   //
@@ -73,6 +74,10 @@ export default function Marketplace() {
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
   const [delistAmount, setDelistAmount] = useState<number>(1);
+
+  //
+  const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
+  const [newListingPrice, setNewListingPrice] = useState<number>(0);
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
@@ -90,6 +95,19 @@ export default function Marketplace() {
       const _marketRequirements = await contract.getRequirements();
       console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
+
+      if (_marketRequirements) {
+        const _maxPaymentFeeMap: Record<string, number> = {};
+        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
+          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
+            _marketRequirements.maximum_payment_fees[i],
+            tokenDecimals(_marketRequirements.accepted_payments[i])
+          ).toNumber();
+        }
+        setMaxPaymentFeeMap(_maxPaymentFeeMap);
+      } else {
+        setMaxPaymentFeeMap({});
+      }
     })();
   }, []);
   useEffect(() => {
@@ -259,6 +277,32 @@ export default function Marketplace() {
     onDelistModalClose();
     setDelistModalState(0);
   };
+
+  const onUpdatePrice = async () => {
+    if (!address) {
+      toast({
+        title: "Connect your wallet",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+    if (selectedOfferIndex < 0 || offers.length <= selectedOfferIndex) {
+      toast({
+        title: "No NFT data",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
+    contract.updateOfferPrice(offers[selectedOfferIndex].index, convertEsdtToWei(newListingPrice, tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)).toFixed(), address);
+
+    // a small delay for visual effect
+    await sleep(0.5);
+    onUpdatePriceModalClose();
+  };
+
   return (
     <>
       <Stack spacing={5}>
@@ -402,7 +446,6 @@ export default function Marketplace() {
                               size="xs"
                               maxW={16}
                               step={1}
-                              defaultValue={1}
                               min={1}
                               max={offer.quantity}
                               isValidCharacter={isValidNumericCharacter}
@@ -474,6 +517,11 @@ export default function Marketplace() {
                             colorScheme="teal"
                             width="72px"
                             isDisabled={hasPendingTransactions}
+                            onClick={() => {
+                              setSelectedOfferIndex(index);
+                              setNewListingPrice(0);
+                              onUpdatePriceModalOpen();
+                            }}
                           >
                             Update Price
                           </Button>
@@ -722,7 +770,6 @@ export default function Marketplace() {
                       ml='30px'
                       maxW={16}
                       step={1}
-                      defaultValue={1}
                       min={1}
                       max={offers[selectedOfferIndex].quantity}
                       isValidCharacter={isValidNumericCharacter}
@@ -763,6 +810,73 @@ export default function Marketplace() {
                 </ModalBody>
               </>
             }
+          </ModalContent>
+        </Modal>
+      )}
+
+      {selectedOfferIndex >= 0 && selectedOfferIndex < offers.length && marketRequirements && (
+        <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalContent>
+            <ModalBody py={6}>
+              <HStack spacing={5} alignItems="center">
+                <Box flex="4" alignContent="center">
+                  <Text fontSize="lg">Update Listing Price for Each</Text>
+                  <Flex mt="1">
+                    <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                      {nftMetadatas[selectedOfferIndex].tokenName}
+                    </Text>
+                  </Flex>
+                </Box>
+                <Box flex="1">
+                  <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                </Box>
+              </HStack>
+              <Box mt="8">
+                <Flex justifyContent='flex-start' alignItems='center'>
+                  <Text width='160px' fontSize="md">Current Price per Data NFT</Text>
+                  <Box>
+                    : {convertWeiToEsdt(
+                          BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                            .multipliedBy(amountOfTokens[selectedOfferIndex])
+                            .multipliedBy(10000)
+                            .div(10000 + marketRequirements.buyer_fee),
+                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                        ).toNumber()}
+                      {' '}
+                      {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                  </Box>
+                </Flex>
+                <Flex justifyContent='flex-start' alignItems='center'>
+                  <Text width='160px' fontSize="md">New Price</Text>
+                  <NumberInput
+                    size="xs"
+                    maxW={16}
+                    step={5}
+                    min={0}
+                    max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
+                    isValidCharacter={isValidNumericCharacter}
+                    value={newListingPrice}
+                    onChange={(valueAsString, valueAsNumber) => setNewListingPrice(valueAsNumber)}
+                    keepWithinRange={false}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </Flex>
+              </Box>
+              <Flex justifyContent="end" mt="6 !important">
+                <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>
+                  Proceed
+                </Button>
+                <Button colorScheme="teal" size="sm" variant="outline" onClick={onUpdatePriceModalClose}>
+                  Cancel
+                </Button>
+              </Flex>
+            </ModalBody>
           </ModalContent>
         </Modal>
       )}
