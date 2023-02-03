@@ -291,8 +291,7 @@ export class DataNftMarketContract {
   }
 
   async delistDataNft(index: number, delistAmount: number, senderAddress: string) {
-    const data = TransactionPayload
-      .contractCall()
+    const data = TransactionPayload.contractCall()
       .setFunction(new ContractFunction("cancelOffer"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(delistAmount))
@@ -419,8 +418,7 @@ export class DataNftMarketContract {
   }
 
   async updateOfferPrice(index: number, newPrice: string, senderAddress: string) {
-    const data = TransactionPayload
-      .contractCall()
+    const data = TransactionPayload.contractCall()
       .setFunction(new ContractFunction("changeOfferPrice"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(newPrice))
