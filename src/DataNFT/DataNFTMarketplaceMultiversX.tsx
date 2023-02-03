@@ -45,6 +45,11 @@ import { CustomPagination } from "./CustomPagination";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils.js";
 
+function printPrice(price: number, token: string): string {
+  console.log('price', price);
+  return price <= 0 ? 'FREE' : `${price} ${token}`;
+}
+
 export default function Marketplace() {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { address } = useGetAccountInfo();
@@ -420,15 +425,15 @@ export default function Marketplace() {
                         Fee per NFT:
                         {marketRequirements ? (
                           <>
-                            {" " +
-                              convertWeiToEsdt(
+                            {" "}
+                            {
+                              printPrice(convertWeiToEsdt(
                                 BigNumber(offer.wanted_token_amount)
                                   .multipliedBy(10000)
                                   .div(10000 + marketRequirements.buyer_fee),
                                 tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber() +
-                              " " +
-                              getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                              ).toNumber(), getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce))
+                            }
                           </>
                         ) : (
                           " -"
@@ -498,6 +503,22 @@ export default function Marketplace() {
                           >
                             De-List All
                           </Button>
+                          {
+                            offers[index].quantity > 1 && <Button
+                              size="xs"
+                              colorScheme="teal"
+                              width="72px"
+                              isDisabled={hasPendingTransactions}
+                              onClick={() => {
+                                setSelectedOfferIndex(index);
+                                setDelistAmount(1);
+                                setDelistModalState(0);
+                                onDelistModalOpen();
+                              }}
+                            >
+                              De-List Some
+                            </Button>
+                          }
                           <Button
                             size="xs"
                             colorScheme="teal"
@@ -505,21 +526,17 @@ export default function Marketplace() {
                             isDisabled={hasPendingTransactions}
                             onClick={() => {
                               setSelectedOfferIndex(index);
-                              setDelistAmount(1);
-                              setDelistModalState(0);
-                              onDelistModalOpen();
-                            }}
-                          >
-                            De-List Some
-                          </Button>
-                          <Button
-                            size="xs"
-                            colorScheme="teal"
-                            width="72px"
-                            isDisabled={hasPendingTransactions}
-                            onClick={() => {
-                              setSelectedOfferIndex(index);
-                              setNewListingPrice(0);
+                              if (marketRequirements) {
+                                setNewListingPrice(convertWeiToEsdt(
+                                  BigNumber(offers[index].wanted_token_amount)
+                                    .multipliedBy(amountOfTokens[index])
+                                    .multipliedBy(10000)
+                                    .div(10000 + marketRequirements.buyer_fee),
+                                  tokenDecimals(offers[index].wanted_token_identifier)
+                                ).toNumber());
+                              } else {
+                                setNewListingPrice(0);
+                              }
                               onUpdatePriceModalOpen();
                             }}
                           >
@@ -602,15 +619,13 @@ export default function Marketplace() {
                 <Box>
                   {marketRequirements ? (
                     <>
-                      {": " +
-                        convertWeiToEsdt(
+                      {": "}
+                      {printPrice(convertWeiToEsdt(
                           BigNumber(offers[selectedOfferIndex].wanted_token_amount)
                             .multipliedBy(10000)
                             .div(10000 + marketRequirements.buyer_fee),
                           tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber() +
-                        " "}
-                      {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                        ).toNumber(), getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce))}
                     </>
                   ) : (
                     "-"
@@ -648,11 +663,12 @@ export default function Marketplace() {
                   {": "}
                   {marketRequirements ? (
                     <>
-                      {convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber() + " "}
-                      {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                      {
+                        printPrice(convertWeiToEsdt(
+                          BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),
+                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                        ).toNumber(), getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce))
+                      }
                     </>
                   ) : (
                     "-"
@@ -664,25 +680,30 @@ export default function Marketplace() {
                 <Box>
                   {marketRequirements ? (
                     <>
-                      {" " +
-                        convertWeiToEsdt(
-                          BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                            .multipliedBy(amountOfTokens[selectedOfferIndex])
-                            .multipliedBy(10000)
-                            .div(10000 + marketRequirements.buyer_fee),
-                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber() +
-                        " "}
-                      {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
-                      {" + "}
-                      {convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                          .multipliedBy(amountOfTokens[selectedOfferIndex])
-                          .multipliedBy(marketRequirements.buyer_fee)
-                          .div(10000 + marketRequirements.buyer_fee),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber()}
-                      {" " + getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                      {
+                        BigNumber(offers[selectedOfferIndex].wanted_token_amount).comparedTo(0) <= 0 ? ''
+                          : <>
+                            {" " +
+                              convertWeiToEsdt(
+                                BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                                  .multipliedBy(amountOfTokens[selectedOfferIndex])
+                                  .multipliedBy(10000)
+                                  .div(10000 + marketRequirements.buyer_fee),
+                                tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                              ).toNumber() +
+                              " "}
+                            {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                            {" + "}
+                            {convertWeiToEsdt(
+                              BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                                .multipliedBy(amountOfTokens[selectedOfferIndex])
+                                .multipliedBy(marketRequirements.buyer_fee)
+                                .div(10000 + marketRequirements.buyer_fee),
+                              tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                            ).toNumber()}
+                            {" " + getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                          </>
+                      }
                     </>
                   ) : (
                     "-"
