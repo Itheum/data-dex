@@ -46,8 +46,8 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils.js";
 
 function printPrice(price: number, token: string): string {
-  console.log('price', price);
-  return price <= 0 ? 'FREE' : `${price} ${token}`;
+  console.log("price", price);
+  return price <= 0 ? "FREE" : `${price} ${token}`;
 }
 
 export default function Marketplace() {
@@ -301,7 +301,11 @@ export default function Marketplace() {
       return;
     }
 
-    contract.updateOfferPrice(offers[selectedOfferIndex].index, convertEsdtToWei(newListingPrice, tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)).toFixed(), address);
+    contract.updateOfferPrice(
+      offers[selectedOfferIndex].index,
+      convertEsdtToWei(newListingPrice, tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)).toFixed(),
+      address
+    );
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -331,7 +335,7 @@ export default function Marketplace() {
             opacity={0.4}
             onClick={() => setTabState(2)}
           >
-            My Data NFTs
+            My Listed Data NFTs
           </Button>
         </Flex>
 
@@ -426,14 +430,15 @@ export default function Marketplace() {
                         {marketRequirements ? (
                           <>
                             {" "}
-                            {
-                              printPrice(convertWeiToEsdt(
+                            {printPrice(
+                              convertWeiToEsdt(
                                 BigNumber(offer.wanted_token_amount)
                                   .multipliedBy(10000)
                                   .div(10000 + marketRequirements.buyer_fee),
                                 tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber(), getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce))
-                            }
+                              ).toNumber(),
+                              getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                            )}
                           </>
                         ) : (
                           " -"
@@ -503,8 +508,8 @@ export default function Marketplace() {
                           >
                             De-List All
                           </Button>
-                          {
-                            offers[index].quantity > 1 && <Button
+                          {offers[index].quantity > 1 && (
+                            <Button
                               size="xs"
                               colorScheme="teal"
                               width="72px"
@@ -518,7 +523,7 @@ export default function Marketplace() {
                             >
                               De-List Some
                             </Button>
-                          }
+                          )}
                           <Button
                             size="xs"
                             colorScheme="teal"
@@ -527,13 +532,15 @@ export default function Marketplace() {
                             onClick={() => {
                               setSelectedOfferIndex(index);
                               if (marketRequirements) {
-                                setNewListingPrice(convertWeiToEsdt(
-                                  BigNumber(offers[index].wanted_token_amount)
-                                    .multipliedBy(amountOfTokens[index])
-                                    .multipliedBy(10000)
-                                    .div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offers[index].wanted_token_identifier)
-                                ).toNumber());
+                                setNewListingPrice(
+                                  convertWeiToEsdt(
+                                    BigNumber(offers[index].wanted_token_amount)
+                                      .multipliedBy(amountOfTokens[index])
+                                      .multipliedBy(10000)
+                                      .div(10000 + marketRequirements.buyer_fee),
+                                    tokenDecimals(offers[index].wanted_token_identifier)
+                                  ).toNumber()
+                                );
                               } else {
                                 setNewListingPrice(0);
                               }
@@ -620,12 +627,15 @@ export default function Marketplace() {
                   {marketRequirements ? (
                     <>
                       {": "}
-                      {printPrice(convertWeiToEsdt(
+                      {printPrice(
+                        convertWeiToEsdt(
                           BigNumber(offers[selectedOfferIndex].wanted_token_amount)
                             .multipliedBy(10000)
                             .div(10000 + marketRequirements.buyer_fee),
                           tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber(), getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce))}
+                        ).toNumber(),
+                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
+                      )}
                     </>
                   ) : (
                     "-"
@@ -663,12 +673,13 @@ export default function Marketplace() {
                   {": "}
                   {marketRequirements ? (
                     <>
-                      {
-                        printPrice(convertWeiToEsdt(
+                      {printPrice(
+                        convertWeiToEsdt(
                           BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),
                           tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber(), getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce))
-                      }
+                        ).toNumber(),
+                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
+                      )}
                     </>
                   ) : (
                     "-"
@@ -680,30 +691,32 @@ export default function Marketplace() {
                 <Box>
                   {marketRequirements ? (
                     <>
-                      {
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount).comparedTo(0) <= 0 ? ''
-                          : <>
-                            {" " +
-                              convertWeiToEsdt(
-                                BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                                  .multipliedBy(amountOfTokens[selectedOfferIndex])
-                                  .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
-                                tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                              ).toNumber() +
-                              " "}
-                            {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
-                            {" + "}
-                            {convertWeiToEsdt(
+                      {BigNumber(offers[selectedOfferIndex].wanted_token_amount).comparedTo(0) <= 0 ? (
+                        ""
+                      ) : (
+                        <>
+                          {" " +
+                            convertWeiToEsdt(
                               BigNumber(offers[selectedOfferIndex].wanted_token_amount)
                                 .multipliedBy(amountOfTokens[selectedOfferIndex])
-                                .multipliedBy(marketRequirements.buyer_fee)
+                                .multipliedBy(10000)
                                 .div(10000 + marketRequirements.buyer_fee),
                               tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                            ).toNumber()}
-                            {" " + getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
-                          </>
-                      }
+                            ).toNumber() +
+                            " "}
+                          {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                          {" + "}
+                          {convertWeiToEsdt(
+                            BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                              .multipliedBy(amountOfTokens[selectedOfferIndex])
+                              .multipliedBy(marketRequirements.buyer_fee)
+                              .div(10000 + marketRequirements.buyer_fee),
+                            tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                          ).toNumber()}
+                          {" " +
+                            getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                        </>
+                      )}
                     </>
                   ) : (
                     "-"
@@ -768,8 +781,8 @@ export default function Marketplace() {
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
           <ModalContent>
-            {
-              delistModalState === 0 ? <>
+            {delistModalState === 0 ? (
+              <>
                 <ModalBody py={6}>
                   <HStack spacing={5} alignItems="center">
                     <Box flex="4" alignContent="center">
@@ -784,11 +797,13 @@ export default function Marketplace() {
                       <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
-                  <Flex mt="8" justifyContent='flex-start' alignItems='center'>
-                    <Text width='160px' fontSize="md">How many would you like to delist?</Text>
+                  <Flex mt="8" justifyContent="flex-start" alignItems="center">
+                    <Text width="160px" fontSize="md">
+                      How many would you like to delist?
+                    </Text>
                     <NumberInput
                       size="xs"
-                      ml='30px'
+                      ml="30px"
                       maxW={16}
                       step={1}
                       min={1}
@@ -814,11 +829,13 @@ export default function Marketplace() {
                     </Button>
                   </Flex>
                 </ModalBody>
-              </> : <>
+              </>
+            ) : (
+              <>
                 <ModalHeader>Are you sure?</ModalHeader>
                 <ModalBody pb={6}>
                   <Text fontSize="md" mt="2">
-                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? 's' : ''} from the Public Marketplace.
+                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
@@ -830,7 +847,7 @@ export default function Marketplace() {
                   </Flex>
                 </ModalBody>
               </>
-            }
+            )}
           </ModalContent>
         </Modal>
       )}
@@ -854,22 +871,26 @@ export default function Marketplace() {
                 </Box>
               </HStack>
               <Box mt="8">
-                <Flex justifyContent='flex-start' alignItems='center'>
-                  <Text width='160px' fontSize="md">Current Price per Data NFT</Text>
+                <Flex justifyContent="flex-start" alignItems="center">
+                  <Text width="160px" fontSize="md">
+                    Current Price per Data NFT
+                  </Text>
                   <Box>
-                    : {convertWeiToEsdt(
-                          BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                            .multipliedBy(amountOfTokens[selectedOfferIndex])
-                            .multipliedBy(10000)
-                            .div(10000 + marketRequirements.buyer_fee),
-                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber()}
-                      {' '}
-                      {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                    :{" "}
+                    {convertWeiToEsdt(
+                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                        .multipliedBy(amountOfTokens[selectedOfferIndex])
+                        .multipliedBy(10000)
+                        .div(10000 + marketRequirements.buyer_fee),
+                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                    ).toNumber()}{" "}
+                    {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
                   </Box>
                 </Flex>
-                <Flex justifyContent='flex-start' alignItems='center'>
-                  <Text width='160px' fontSize="md">New Price</Text>
+                <Flex justifyContent="flex-start" alignItems="center">
+                  <Text width="160px" fontSize="md">
+                    New Price
+                  </Text>
                   <NumberInput
                     size="xs"
                     maxW={16}

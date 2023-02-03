@@ -75,7 +75,6 @@
     "react/prop-types": "off",
     "react/display-name": "off",
     "indent": "off",
-    // "linebreak-style": ["error", "unix"],
     "quotes": "off",
     "semi": ["error", "always"],
     "object-curly-newline": "off",
@@ -83,7 +82,6 @@
     "react/jsx-props-no-spreading": "off",
     "implicit-arrow-linebreak": "off",
     "func-names": "off",
-
     "operator-linebreak": "off",
     "function-paren-newline": "off",
     "react/require-default-props": "off",
