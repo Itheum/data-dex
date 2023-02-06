@@ -217,9 +217,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
     onAccessProgressModalOpen();
 
     try {
-      const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
-
-      const res = await fetch(`https://itheumapi.com/ddex/datamarshal/v1/services/preaccess?chainId=${chainId}`);
+      // const chainId = _chainMeta.networkId;
+      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -240,7 +239,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
-          link.href = `https://itheumapi.com/ddex/datamarshal/v1/services/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId==${chainId}&accessRequesterAddr=${signResult.addrInHex}`;
+          link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
           await sleep(3);
@@ -251,7 +250,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
         if (data.success === false) {
           setErrUnlockAccessGeneric(new Error(`${data.error.code}, ${data.error.message}`));
         } else {
-          setErrUnlockAccessGeneric(new Error("Data Marshal responded with an unknown error trying to generate your encrypted links"));
+          setErrUnlockAccessGeneric(new Error("Data Marshal responded with an unknown error trying to generate your access links"));
         }
       }
     } catch (e) {

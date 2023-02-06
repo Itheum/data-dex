@@ -239,7 +239,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   useEffect(() => {
     onChangeDataNFTStreamUrl("");
     onChangeDataNFTStreamPreviewUrl("");
-    onChangeDataNFTMarshalService("https://itheumapi.com/ddex/datamarshal/v1/services/generate");
+    onChangeDataNFTMarshalService(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/generate`);
     onChangeDataNFTTokenName("");
     onChangeDatasetTitle("");
     onChangeDatasetDescription("");
@@ -303,7 +303,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200("https://itheumapi.com/health-check").then((res) => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
     setDataNFTMarshalServiceValid(true);
 
     setDataNFTMarshalService(trimmedValue);
@@ -553,7 +553,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     };
 
     try {
-      const res = await fetch("https://itheumapi.com/ddex/datamarshal/v1/services/generate", requestOptions);
+      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/generate`, requestOptions);
       const data = await res.json();
 
       if (data && data.encryptedMessage && data.messageHash) {
