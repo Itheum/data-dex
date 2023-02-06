@@ -389,13 +389,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   useEffect(() => {
     setMintDataNFTDisabled(
-      dataNFTStreamUrlError ||
-        dataNFTStreamPreviewUrlError ||
-        dataNFTTokenNameError ||
-        datasetTitleError ||
-        datasetDescriptionError ||
-        dataNFTCopiesError ||
-        dataNFTRoyaltyError ||
+      !!dataNFTStreamUrlError ||
+        !!dataNFTStreamPreviewUrlError ||
+        !!dataNFTTokenNameError ||
+        !!datasetTitleError ||
+        !!datasetDescriptionError ||
+        !!dataNFTCopiesError ||
+        !!dataNFTRoyaltyError ||
         !dataNFTStreamUrlValid ||
         !dataNFTStreamPreviewUrlValid ||
         !dataNFTMarshalServiceValid ||
@@ -1051,13 +1051,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 </Checkbox>
                 {userFocusedForm && !readAntiSpamFeeChecked && (
                   <Text color="red.400" fontSize="sm" mt="1 !important">
-                    You must READ and Agree on Terms of Use
+                    You need to agree to anti-spam deduction to mint
                   </Text>
                 )}
 
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}>
-                    <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} disabled={mintDataNFTDisabled}>
+                    <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} isDisabled={mintDataNFTDisabled}>
                       Mint and Trade as NFT
                     </Button>
                   </ChainSupportedInput>
