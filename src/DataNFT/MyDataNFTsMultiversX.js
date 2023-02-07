@@ -53,6 +53,7 @@ import { useChainMeta } from "store/ChainMetaContext";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
+import { useSessionStorage } from "libs/hooks";
 
 export default function MyDataNFTsMx({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -84,7 +85,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
-  //
+  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
+  
   useEffect(() => {
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
@@ -264,34 +266,43 @@ export default function MyDataNFTsMx({ onRfMount }) {
       addrInHex: null,
     };
 
-    try {
-      const signatureObj = await signMessage({ message });
-      console.log("signatureObj");
-      console.log(signatureObj);
+    let customError = 'Signature result not received from wallet';
 
-      if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) {
-        // Maiar App V2
-        signResult.signature = signatureObj.signature.buffer.toString();
-        signResult.addrInHex = signatureObj.address.valueHex;
-      } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) {
-        // Defi Wallet
-        signResult.signature = signatureObj.signature.value;
-        signResult.addrInHex = signatureObj.address.valueHex;
-      } else {
+    if (walletUsedSession === 'el_webwallet') { // web wallet not supported
+      customError = 'Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
+    } else {
+      try {
+        const signatureObj = await signMessage({ message });
+        console.log("signatureObj");
+        console.log(signatureObj);
+
+        if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) { // Maiar App V2 / Ledger
+          signResult.addrInHex = signatureObj.address.valueHex;
+
+          if (signatureObj.signature.buffer instanceof Uint8Array) { // Ledger
+            customError = 'Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
+          } else { // Maiar (it will be string)
+            signResult.signature = signatureObj.signature.buffer.toString();
+          }        
+        } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) { // Defi Wallet      
+          signResult.signature = signatureObj.signature.value;
+          signResult.addrInHex = signatureObj.address.valueHex;
+        } else {
+          signResult.success = false;
+          signResult.exception = new Error("Signature result from wallet was malformed");
+        }
+      } catch (e) {
         signResult.success = false;
-        signResult.exception = new Error("Signature result from wallet was malformed");
+        signResult.exception = e;
       }
-    } catch (e) {
-      signResult.success = false;
-      signResult.exception = e;
-    }
 
-    console.log("signResult");
-    console.log(signResult);
+      console.log("signResult");
+      console.log(signResult);
+    }
 
     if (signResult.signature === null || signResult.addrInHex === null) {
       signResult.success = false;
-      signResult.exception = new Error("Signature result not received from wallet");
+      signResult.exception = new Error(customError);
     }
 
     return signResult;

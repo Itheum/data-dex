@@ -31,7 +31,7 @@ import {
   useColorMode,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { style } from "@motionone/dom";
+// import { style } from "@motionone/dom";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
