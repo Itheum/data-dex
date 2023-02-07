@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Stack } from '@chakra-ui/layout';
-import { 
-  Button, Spacer, Text, HStack, Heading, Wrap, Spinner,
-  useToast, useDisclosure, Tooltip } from '@chakra-ui/react';
-import { WarningTwoIcon } from '@chakra-ui/icons';
-import moment from 'moment';
-import { uxConfig, debugui } from 'libs/util';
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from 'libs/util';
-import myNFMe from 'img/my-nfme.png';
-import ClaimModalMx from 'ClaimModel/ClaimModalMultiversX';
-import { useUser } from 'store/UserContext';
-import { useChainMeta } from 'store/ChainMetaContext';
-import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
-import AppMarketplace from 'Home/AppMarketplace';
-import { FaucetContract } from 'MultiversX/faucet';
-import { ClaimsContract } from 'MultiversX/claims';
-import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
-import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
-import { useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
-import { formatNumberRoundFloor } from 'libs/util';
+import React, { useState, useEffect } from "react";
+import { WarningTwoIcon } from "@chakra-ui/icons";
+import { Box, Stack } from "@chakra-ui/layout";
+import { Button, Spacer, Text, HStack, Heading, Wrap, Spinner, useToast, useDisclosure, Tooltip } from "@chakra-ui/react";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import moment from "moment";
+import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
+import AppMarketplace from "Home/AppMarketplace";
+import myNFMe from "img/my-nfme.png";
+import { uxConfig, debugui } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
+import { formatNumberRoundFloor } from "libs/util";
+import { ClaimsContract } from "MultiversX/claims";
+import { FaucetContract } from "MultiversX/faucet";
+import { useChainMeta } from "store/ChainMetaContext";
+import { useUser } from "store/UserContext";
+import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 let mxFaucetContract = null;
 let mxClaimsContract = null;
@@ -30,12 +28,12 @@ export default function HomeMx({ onRfMount }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  
+
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
-    claimBalanceValues: ['-1', '-1', '-1'], // -1 is loading, -2 is error
-    claimBalanceDates: [0, 0, 0]
+    claimBalanceValues: ["-1", "-1", "-1"], // -1 is loading, -2 is error
+    claimBalanceDates: [0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
@@ -44,7 +42,7 @@ export default function HomeMx({ onRfMount }) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         try {
           mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-        } catch(e) {
+        } catch (e) {
           console.log(e);
         }
         mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
@@ -54,7 +52,7 @@ export default function HomeMx({ onRfMount }) {
 
   // S: Faucet
   useEffect(() => {
-    // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done... 
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
     if (mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
@@ -81,7 +79,6 @@ export default function HomeMx({ onRfMount }) {
   };
   // E: Faucet
 
-
   // S: Claims
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
@@ -91,7 +88,7 @@ export default function HomeMx({ onRfMount }) {
   }, [mxAddress, hasPendingTransactions, mxClaimsContract]);
 
   // utility func to get claims balances from chain
-  const mxClaimsBalancesUpdate = async() => {
+  const mxClaimsBalancesUpdate = async () => {
     if (mxAddress && isMxLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         let claims = [
@@ -111,26 +108,26 @@ export default function HomeMx({ onRfMount }) {
             claimBalanceDates.push(claim.date);
           });
         } else if (claims.error) {
-          claimBalanceValues.push('-2', '-2', '-2'); // errors
-          
-          if (!toast.isActive('er2')) {
+          claimBalanceValues.push("-2", "-2", "-2"); // errors
+
+          if (!toast.isActive("er2")) {
             toast({
-              id: 'er2',
-              title: 'ER2: Could not get your claims information from the multiversX blockchain.',
-              status: 'error',
+              id: "er2",
+              title: "ER2: Could not get your claims information from the MultiversX blockchain.",
+              status: "error",
               isClosable: true,
-              duration: null
+              duration: null,
             });
           }
-        } 
+        }
 
         setClaimsBalances({
           claimBalanceValues,
-          claimBalanceDates
+          claimBalanceDates,
         });
       }
     }
-  }
+  };
 
   useEffect(() => {
     // check if claims contract is paused, freeze ui so user does not waste gas
@@ -139,13 +136,13 @@ export default function HomeMx({ onRfMount }) {
     }
   }, [mxAddress]);
 
-  const getAndSetMxClaimsIsPaused = async() => {
+  const getAndSetMxClaimsIsPaused = async () => {
     if (mxAddress && isMxLoggedIn) {
       const isPaused = await mxClaimsContract.isClaimsContractPaused();
       setClaimContractPauseValue(isPaused);
       return isPaused;
     }
-  }
+  };
   // E: Claims
 
   useEffect(() => {
@@ -163,10 +160,14 @@ export default function HomeMx({ onRfMount }) {
   }, [hasPendingTransactions]);
 
   const shouldClaimButtonBeDisabled = (claimTypeIndex) => {
-    return claimContractPauseValue || 
-        isOnChainInteractionDisabled || 
-          claimsBalances.claimBalanceValues[claimTypeIndex] === '-1' || claimsBalances.claimBalanceValues[claimTypeIndex] === '-2' || !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
-  }
+    return (
+      claimContractPauseValue ||
+      isOnChainInteractionDisabled ||
+      claimsBalances.claimBalanceValues[claimTypeIndex] === "-1" ||
+      claimsBalances.claimBalanceValues[claimTypeIndex] === "-2" ||
+      !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
+    );
+  };
 
   // S: claims related logic
   const { isOpen: isRewardsOpen, onOpen: onRewardsOpen, onClose: onRewardsClose } = useDisclosure();
@@ -176,13 +177,13 @@ export default function HomeMx({ onRfMount }) {
     onClose: () => {
       onRewardsClose();
     },
-    title: 'Rewards',
-    tag1: 'Total Available',
+    title: "Rewards",
+    tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[0],
-    tag2: 'Last Deposited on',
+    tag2: "Last Deposited on",
     value2: moment(claimsBalances.claimBalanceDates[0]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.REWARDS,
-    mxClaimsContract
+    mxClaimsContract,
   };
 
   const { isOpen: isAirdropsOpen, onOpen: onAirdropsOpen, onClose: onAirdropClose } = useDisclosure();
@@ -192,13 +193,13 @@ export default function HomeMx({ onRfMount }) {
     onClose: () => {
       onAirdropClose();
     },
-    title: 'Airdrops',
-    tag1: 'Total Available',
+    title: "Airdrops",
+    tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[1],
-    tag2: 'Last Deposited on',
+    tag2: "Last Deposited on",
     value2: moment(claimsBalances.claimBalanceDates[1]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.AIRDROPS,
-    mxClaimsContract
+    mxClaimsContract,
   };
 
   const { isOpen: isAllocationsOpen, onOpen: onAllocationsOpen, onClose: onAllocationsClose } = useDisclosure();
@@ -208,20 +209,20 @@ export default function HomeMx({ onRfMount }) {
     onClose: () => {
       onAllocationsClose();
     },
-    title: 'Allocations',
-    tag1: 'Total Available',
+    title: "Allocations",
+    tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[2],
-    tag2: 'Last Deposited on',
+    tag2: "Last Deposited on",
     value2: moment(claimsBalances.claimBalanceDates[2]).format(uxConfig.dateStrTm),
     claimType: CLAIM_TYPES.ALLOCATIONS,
-    mxClaimsContract
+    mxClaimsContract,
   };
   // E: claims related logic
 
   debugui(`_chainMeta.networkId ${_chainMeta.networkId}`);
 
-  const tileBoxMdW = '310px';
-  const tileBoxH = '360px';
+  const tileBoxMdW = "310px";
+  const tileBoxH = "360px";
 
   return (
     <Stack>
@@ -248,65 +249,80 @@ export default function HomeMx({ onRfMount }) {
 
           <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={tileBoxMdW}>
             <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
-              <Heading size="md" align="center">NFMe ID Avatar</Heading>                  
+              <Heading size="md" align="center">
+                NFMe ID Avatar
+              </Heading>
               <Spacer />
-              <Button disabled colorScheme="teal">Mint & Own NFT</Button>
-              <Text fontSize="sm" align="center">Coming Soon</Text>
+              <Button disabled colorScheme="teal">
+                Mint & Own NFT
+              </Button>
+              <Text fontSize="sm" align="center">
+                Coming Soon
+              </Text>
             </Stack>
           </Box>
 
           <ChainSupportedComponent feature={MENU.CLAIMS}>
-            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, 'initial']}>
+            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, "initial"]}>
               <Stack p="5" h={tileBoxH}>
                 <Heading size="md">My Claims</Heading>
-                
+
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Rewards</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                    {(claimsBalances.claimBalanceValues[0] !== '-1' && claimsBalances.claimBalanceValues[0] !== '-2') ? 
-                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[0]) : claimsBalances.claimBalanceValues[0] !== '-2' ? 
-                          <Spinner size="xs" /> : <WarningTwoIcon />
-                    }
+                      {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
+                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[0])
+                      ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
+                        <Spinner size="xs" />
+                      ) : (
+                        <WarningTwoIcon />
+                      )}
                     </Button>
                   </Tooltip>
 
                   <ClaimModalMx {...rewardsModalData} />
                 </HStack>
-                
+
                 <Spacer />
                 <HStack spacing={50}>
                   <Text>Airdrops</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                    {(claimsBalances.claimBalanceValues[1] !== '-1' && claimsBalances.claimBalanceValues[1] !== '-2') ? 
-                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[1]) : claimsBalances.claimBalanceValues[1] !== '-2' ? 
-                          <Spinner size="xs" /> : <WarningTwoIcon />
-                    }
+                      {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[1])
+                      ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                        <Spinner size="xs" />
+                      ) : (
+                        <WarningTwoIcon />
+                      )}
                     </Button>
                   </Tooltip>
 
                   <ClaimModalMx {...airdropsModalData} />
                 </HStack>
                 <Spacer />
-                
-                {claimsBalances.claimBalanceValues[2] > 0 && 
+
+                {(claimsBalances.claimBalanceValues[2] > 0 && (
                   <Box h="40px">
                     <HStack spacing={30}>
                       <Text>Allocations</Text>
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                          {(claimsBalances.claimBalanceValues[2] !== '-1' && claimsBalances.claimBalanceValues[2] !== '-2') ? 
-                              formatNumberRoundFloor(claimsBalances.claimBalanceValues[2]) : claimsBalances.claimBalanceValues[2] !== '-2' ? 
-                                <Spinner size="xs" /> : <WarningTwoIcon />
-                          }
+                          {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                            formatNumberRoundFloor(claimsBalances.claimBalanceValues[2])
+                          ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                            <Spinner size="xs" />
+                          ) : (
+                            <WarningTwoIcon />
+                          )}
                         </Button>
                       </Tooltip>
                       <ClaimModalMx {...allocationsModalData} />
                     </HStack>
                   </Box>
-                || <Box h="40px" />}
+                )) || <Box h="40px" />}
 
                 <Spacer />
               </Stack>
@@ -316,7 +332,6 @@ export default function HomeMx({ onRfMount }) {
       </Stack>
 
       <AppMarketplace />
-
     </Stack>
   );
 }

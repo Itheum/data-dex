@@ -5,10 +5,7 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Welcome to the Itheum Data DEX"
-    />
+    <meta name="description" content="Welcome to the Itheum Data DEX" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -30,10 +27,12 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SGCGN7X0E5"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('js', new Date());
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-      gtag('config', 'G-SGCGN7X0E5');
+      gtag("config", "G-SGCGN7X0E5");
     </script>
   </head>
   <body>
@@ -49,6 +48,22 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <div id="debugui" style="display:none;position:fixed;left: 0;top: 0;background-color:black;padding:2px;font-size:.5rem;color:#fff;max-height: 400px;overflow: auto;">Debug<br/></div>
+    <div
+      id="debugui"
+      style="
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background-color: black;
+        padding: 2px;
+        font-size: 0.5rem;
+        color: #fff;
+        max-height: 400px;
+        overflow: auto;
+      "
+    >
+      Debug<br />
+    </div>
   </body>
 </html>

@@ -1,80 +1,80 @@
 {
-    "buildInfo": {
-        "rustc": {
-            "version": "1.61.0-nightly",
-            "commitHash": "38a0b81b1c32764d6a583a5efb6f306b8c44c503",
-            "commitDate": "2022-03-06",
-            "channel": "Nightly",
-            "short": "rustc 1.61.0-nightly (38a0b81b1 2022-03-06)"
-        },
-        "contractCrate": {
-            "name": "devnetfaucet",
-            "version": "0.0.0"
-        },
-        "framework": {
-            "name": "elrond-wasm",
-            "version": "0.30.0"
-        }
+  "buildInfo": {
+    "rustc": {
+      "version": "1.61.0-nightly",
+      "commitHash": "38a0b81b1c32764d6a583a5efb6f306b8c44c503",
+      "commitDate": "2022-03-06",
+      "channel": "Nightly",
+      "short": "rustc 1.61.0-nightly (38a0b81b1 2022-03-06)"
     },
-    "name": "DevNetFaucet",
-    "constructor": {
-        "inputs": [],
-        "outputs": []
+    "contractCrate": {
+      "name": "devnetfaucet",
+      "version": "0.0.0"
     },
-    "endpoints": [
+    "framework": {
+      "name": "elrond-wasm",
+      "version": "0.30.0"
+    }
+  },
+  "name": "DevNetFaucet",
+  "constructor": {
+    "inputs": [],
+    "outputs": []
+  },
+  "endpoints": [
+    {
+      "name": "setClaimsAddress",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
         {
-            "name": "setClaimsAddress",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "changeClaimsOwnership",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [],
-            "outputs": []
-        },
-        {
-            "name": "setRewardToken",
-            "onlyOwner": true,
-            "mutability": "mutable",
-            "inputs": [
-                {
-                    "name": "token_id",
-                    "type": "TokenIdentifier"
-                }
-            ],
-            "outputs": []
-        },
-        {
-            "name": "activateFaucet",
-            "mutability": "mutable",
-            "inputs": [],
-            "outputs": []
-        },
-        {
-            "name": "getLastFaucet",
-            "mutability": "readonly",
-            "inputs": [
-                {
-                    "name": "address",
-                    "type": "Address"
-                }
-            ],
-            "outputs": [
-                {
-                    "type": "u64"
-                }
-            ]
+          "name": "address",
+          "type": "Address"
         }
-    ],
-    "hasCallback": false,
-    "types": {}
+      ],
+      "outputs": []
+    },
+    {
+      "name": "changeClaimsOwnership",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "name": "setRewardToken",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "TokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "activateFaucet",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "name": "getLastFaucet",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "hasCallback": false,
+  "types": {}
 }

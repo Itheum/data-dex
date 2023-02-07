@@ -1,10 +1,22 @@
-import { 
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, 
-  HStack, Text, Spacer, Button, Stack, useBreakpointValue } from '@chakra-ui/react';
-import React from 'react';
-import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
-import { CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor } from 'libs/util';
-import { useChainMeta } from 'store/ChainMetaContext';
+import React from "react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  HStack,
+  Text,
+  Spacer,
+  Button,
+  Stack,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
 
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }) => {
   const { address: mxAddress } = useGetAccountInfo();
@@ -21,7 +33,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
     }
   };
 
-  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+  const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   return (
     <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState({})} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
@@ -35,7 +47,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
             <Stack>
               <Text color="gray" as="b" fontSize="md">
                 {tag1}:
-              </Text>{' '}
+              </Text>{" "}
               <Text fontSize="md">
                 {formatNumberRoundFloor(value1)} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Text>
@@ -43,7 +55,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
             <Stack>
               <Text color="gray" as="b" fontSize="md">
                 {tag2}:
-              </Text>{' '}
+              </Text>{" "}
               <Text fontSize="md">{value2}</Text>
             </Stack>
           </Stack>

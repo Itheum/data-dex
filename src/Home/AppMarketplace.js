@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
-import { Box, Stack } from '@chakra-ui/layout';
+import React, { useState } from "react";
+import { Box, Stack } from "@chakra-ui/layout";
 import {
-  Button, Badge, Image, Heading, Text, Wrap,
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter,
-  useDisclosure, useBreakpointValue, 
-} from '@chakra-ui/react';
-import { CHAIN_TOKEN_SYMBOL } from 'libs/util';
-import { progInfoMeta } from 'libs/util';
-import { useChainMeta } from 'store/ChainMetaContext';
-import { useUser } from 'store/UserContext';
-import imgProgGaPa from 'img/prog-gaming.jpg';
-import imgProgRhc from 'img/prog-rhc.png';
-import imgProgWfh from 'img/prog-wfh.png';
+  Button,
+  Badge,
+  Image,
+  Heading,
+  Text,
+  Wrap,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import imgProgGaPa from "img/prog-gaming.jpg";
+import imgProgRhc from "img/prog-rhc.png";
+import imgProgWfh from "img/prog-wfh.png";
+import { CHAIN_TOKEN_SYMBOL } from "libs/util";
+import { progInfoMeta } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
+import { useUser } from "store/UserContext";
 
 export default function AppMarketplace() {
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -24,7 +36,7 @@ export default function AppMarketplace() {
     onProgressModalOpen();
   };
 
-  const appendUserAddressAndRedirect = link => {
+  const appendUserAddressAndRedirect = (link) => {
     let updatedLink = link;
 
     if (_user?.loggedInAddress) {
@@ -32,9 +44,9 @@ export default function AppMarketplace() {
     }
 
     window.open(updatedLink);
-  }
+  };
 
-  const modelSize = useBreakpointValue({ base: 'xs', md: 'xl' });
+  const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   return (
     <>
@@ -51,14 +63,19 @@ export default function AppMarketplace() {
                   Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {' '}
+                  {" "}
                   Live
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('gdc')}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => window.open('https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae')}>
+              <Button
+                size="sm"
+                mt="3"
+                colorScheme="teal"
+                onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}
+              >
                 Join Now
               </Button>
             </Box>
@@ -73,14 +90,14 @@ export default function AppMarketplace() {
                   Red Heart Challenge
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
-                  {' '}
+                  {" "}
                   Coming Soon
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('rhc')}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() =>appendUserAddressAndRedirect('https://itheum.com/redheartchallenge')}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => appendUserAddressAndRedirect("https://itheum.com/redheartchallenge")}>
                 Join Now
               </Button>
             </Box>
@@ -95,14 +112,14 @@ export default function AppMarketplace() {
                   Strava Fitness
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="blue">
-                  {' '}
+                  {" "}
                   Coming Soon
                 </Badge>
               </Box>
-              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg('wfa')}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
                 Learn More
               </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open('')}>
+              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
                 Join Now
               </Button>
             </Box>
@@ -122,25 +139,25 @@ export default function AppMarketplace() {
                 <Stack>
                   <Text color="gray" as="b">
                     Delivered Via:
-                  </Text>{' '}
+                  </Text>{" "}
                   <p>{progInfoMeta[learnMoreProd].medium}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Data Collected:
-                  </Text>{' '}
+                  </Text>{" "}
                   <p>{progInfoMeta[learnMoreProd].data}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     App Outcome:
-                  </Text>{' '}
+                  </Text>{" "}
                   <p>{progInfoMeta[learnMoreProd].outcome}</p>
                 </Stack>
                 <Stack>
                   <Text color="gray" as="b">
                     Target Buyers:
-                  </Text>{' '}
+                  </Text>{" "}
                   <p>{progInfoMeta[learnMoreProd].targetBuyer}</p>
                 </Stack>
               </Stack>
@@ -149,12 +166,18 @@ export default function AppMarketplace() {
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              <Button disabled={!progInfoMeta[learnMoreProd].canJoin} size="sm" colorScheme="teal" onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
+              <Button
+                disabled={!progInfoMeta[learnMoreProd].canJoin}
+                size="sm"
+                colorScheme="teal"
+                onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}
+              >
                 Join Now
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
       )}
-    </>);
-};
+    </>
+  );
+}

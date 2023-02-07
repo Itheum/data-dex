@@ -1,0 +1,7 @@
+{
+  "printWidth": 160,
+  "singleQuote": false,
+  "quoteProps": "preserve",
+  "trailingComma": "es5",
+  "editor.formatOnSave": true
+}

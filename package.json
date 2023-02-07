@@ -1,15 +1,15 @@
 {
   "name": "data-dex",
-  "version": "0.8.1-alpha",
+  "version": "0.9.2-alpha",
   "description": "The Itheum Data DEX enables you to trade your personal data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.0.17",
     "@chakra-ui/react": "2.4.9",
-    "@multiversx/sdk-dapp": "2.3.1",
-    "@multiversx/sdk-core": "11.2.0",
-    "@multiversx/sdk-network-providers": "1.3.0",
     "@emotion/react": "11.10.5",
     "@emotion/styled": "11.10.5",
+    "@multiversx/sdk-core": "11.2.0",
+    "@multiversx/sdk-dapp": "2.3.1",
+    "@multiversx/sdk-network-providers": "1.3.0",
     "@sentry/react": "7.34.0",
     "@sentry/tracing": "7.34.0",
     "@testing-library/jest-dom": "5.16.5",
@@ -20,13 +20,11 @@
     "framer-motion": "8.5.5",
     "mime": "3.0.0",
     "moment": "2.29.4",
-    "moralis-v1": "1.12.0",
     "nft.storage": "7.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
     "react-icons": "4.7.1",
-    "react-moralis": "1.4.2",
     "react-router-dom": "6.8.0",
     "react-scripts": "5.0.1",
     "web-vitals": "3.1.1"
@@ -39,30 +37,13 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-flat": "npx http-server -o /flat",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "lint": "eslint src --ext .js,.ts,.tsx",
+    "format": "prettier --write . && npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Itheum/data-dex.git"
-  },
-  "eslintConfig": {
-    "rules": {
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "no-debugger": [
-        "warn"
-      ],
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ]
-    },
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -81,16 +62,20 @@
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "@types/react-router-dom": "5.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "eslint": "8.33.0",
     "eslint-config-prettier": "8.6.0",
     "eslint-config-react-app": "7.0.1",
     "eslint-config-standard": "17.0.0",
-    "eslint-import-resolver-typescript": "3.5.3",
+    "eslint-import-resolver-typescript": "^3.5.3",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-promise": "6.1.1",
-    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "prettier": "2.8.3",
+    "react-error-overlay": "^6.0.11",
     "react-scripts": "5.0.1",
     "sass": "1.57.1",
     "typescript": "4.9.5"
