@@ -164,6 +164,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [dataNFTStreamUrlValid, setDataNFTStreamUrlValid] = useState(false);
   const [dataNFTStreamPreviewUrlValid, setDataNFTStreamPreviewUrlValid] = useState(false);
   const [dataNFTMarshalServiceValid, setDataNFTMarshalServiceValid] = useState(false);
+  const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const [itheumBalance, setItheumBalance] = useState(0);
 
@@ -240,6 +241,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     onChangeDataNFTStreamUrl("");
     onChangeDataNFTStreamPreviewUrl("");
     onChangeDataNFTMarshalService(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/generate`);
+    onChangeDataNFTImageGenService();
     onChangeDataNFTTokenName("");
     onChangeDatasetTitle("");
     onChangeDatasetDescription("");
@@ -303,10 +305,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) => setDataNFTMarshalServiceValid(res)); // does not return 200 :(
-    setDataNFTMarshalServiceValid(true);
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) => setDataNFTMarshalServiceValid(res));
 
     setDataNFTMarshalService(trimmedValue);
+  };
+
+  const onChangeDataNFTImageGenService = () => {
+    // Itheum Image Gen Service Check (Data DEX API healthcheck)
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then((res) => setDataNFTImgGenService(res));
   };
 
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
@@ -399,6 +405,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         !dataNFTStreamUrlValid ||
         !dataNFTStreamPreviewUrlValid ||
         !dataNFTMarshalServiceValid ||
+        !dataNFTImgGenServiceValid ||
         !readTermsChecked ||
         !readAntiSpamFeeChecked ||
         minRoyalties < 0 ||
@@ -421,9 +428,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     dataNFTStreamUrlValid,
     dataNFTStreamPreviewUrlValid,
     dataNFTMarshalServiceValid,
+    dataNFTImgGenServiceValid,
     readTermsChecked,
     readAntiSpamFeeChecked,
-
     minRoyalties,
     maxRoyalties,
     maxSupply,
@@ -774,6 +781,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   maxSupply < 0 ||
                   antiSpamTax < 0 ||
                   !dataNFTMarshalServiceValid ||
+                  !dataNFTImgGenServiceValid ||
                   (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
                   (userData && userData.contractPaused)) && (
                   <Alert status="error">
@@ -790,7 +798,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                         {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
                         {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
                         {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
-                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
                         {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
                           <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
                         )}
