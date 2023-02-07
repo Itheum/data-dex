@@ -46,7 +46,6 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils.js";
 
 function printPrice(price: number, token: string): string {
-  console.log("price", price);
   return price <= 0 ? "FREE" : `${price} ${token}`;
 }
 
@@ -65,7 +64,6 @@ export default function Marketplace() {
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [noData, setNoData] = useState(false);
   const [userData, setUserData] = useState<any>({});
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
@@ -120,7 +118,7 @@ export default function Marketplace() {
 
     (async () => {
       let _numberOfOffers = 0;
-      if (tabState === 0) {
+      if (tabState === 1) {
         // global offers
         _numberOfOffers = await contract.getNumberOfOffers();
       } else {
