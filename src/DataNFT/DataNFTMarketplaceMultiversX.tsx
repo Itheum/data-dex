@@ -134,7 +134,7 @@ export default function Marketplace() {
         onGotoPage(0);
       }
     })();
-  }, [hasPendingTransactions]);
+  }, [hasPendingTransactions, tabState]);
 
   useEffect(() => {
     if (hasPendingTransactions) return;
