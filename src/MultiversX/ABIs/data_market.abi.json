@@ -2,10 +2,10 @@
   "buildInfo": {
     "rustc": {
       "version": "1.69.0-nightly",
-      "commitHash": "d7948c843de94245c794e8c63dd4301a78bb5ba3",
-      "commitDate": "2023-01-26",
+      "commitHash": "75a0be98f25a4b9de5afa0e15eb016e7f9627032",
+      "commitDate": "2023-02-05",
       "channel": "Nightly",
-      "short": "rustc 1.69.0-nightly (d7948c843 2023-01-26)"
+      "short": "rustc 1.69.0-nightly (75a0be98f 2023-02-05)"
     },
     "contractCrate": {
       "name": "data_market",
