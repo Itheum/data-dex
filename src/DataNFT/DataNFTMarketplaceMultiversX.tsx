@@ -114,8 +114,6 @@ export default function Marketplace() {
     })();
   }, []);
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     (async () => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
@@ -137,8 +135,6 @@ export default function Marketplace() {
   }, [hasPendingTransactions, tabState]);
 
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     (async () => {
       // init - no selection
       setSelectedOfferIndex(-1);
@@ -172,7 +168,7 @@ export default function Marketplace() {
 
   useEffect(() => {
     (async () => {
-      if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length && !hasPendingTransactions)) return;
+      if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
 
       // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
       const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
@@ -185,14 +181,12 @@ export default function Marketplace() {
   }, [address, offers, selectedOfferIndex, hasPendingTransactions]);
 
   const getUserData = async () => {
-    if (address && !hasPendingTransactions) {
+    if (address) {
       const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
   };
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     getUserData();
   }, [address, hasPendingTransactions]);
   const onProcure = async () => {

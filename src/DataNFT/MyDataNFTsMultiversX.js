@@ -45,6 +45,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
+import { useSessionStorage } from "libs/hooks";
 import { sleep, uxConfig, consoleNotice, convertWeiToEsdt, isValidNumericCharacter } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -53,7 +54,6 @@ import { useChainMeta } from "store/ChainMetaContext";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
-import { useSessionStorage } from "libs/hooks";
 
 export default function MyDataNFTsMx({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -65,6 +65,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState([]);
   const [prices, setPrices] = useState([]);
+  const [priceErrors, setPriceErrors] = useState([]);
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
     s2: 0,
@@ -115,8 +116,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
   };
   const onBurnButtonClick = (nft) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(1); // init
-    setBurnNFTModalState(1); // set state 1 when the modal is closed
+    setDataNftBurnAmount(nft.balance); // init
+    setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
   const onListButtonClick = (nft) => {
@@ -146,6 +147,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
           const usersDataNFTCatalogLocal = [];
           let localAmounts = [];
           let localPrices = [];
+          let localErrors = [];
           onChainNFTs.forEach((nft, index) => {
             const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft["attributes"], "base64"), dataNftAttributes).valueOf();
             const dataNFT = {};
@@ -168,11 +170,13 @@ export default function MyDataNFTsMx({ onRfMount }) {
             dataNFT.collection = nft["collection"];
             localAmounts.push(1);
             localPrices.push(10);
+            localErrors.push('');
             usersDataNFTCatalogLocal.push(dataNFT);
             console.log("test");
           });
           setAmounts(localAmounts);
           setPrices(localPrices);
+          setPriceErrors(localErrors);
           console.log("usersDataNFTCatalogLocal");
           console.log(usersDataNFTCatalogLocal);
 
@@ -384,12 +388,12 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   <Text fontWeight="bold" fontSize="lg">
                     {item.tokenName}
                   </Text>
-                  <Text fontSize="md">{item.title}</Text>
+                  <Text fontSize="md" height="3rem" overflow="hidden">{item.title}</Text>
 
                   <Flex height="4rem">
                     <Popover trigger="hover" placement="auto">
                       <PopoverTrigger>
-                        <Text fontSize="sm" mt="2" color="gray.300">
+                        <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
                           {item.description.substring(0, 100) !== item.description ? item.description.substring(0, 100) + " ..." : item.description}
                         </Text>
                       </PopoverTrigger>
@@ -495,13 +499,21 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         isValidCharacter={isValidNumericCharacter}
                         max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
                         value={prices[index]}
-                        onChange={(valueString) =>
+                        onChange={(valueString, valueAsNumber) => {
+                          let error = '';
+                          if (valueAsNumber < 0) error = 'Cannot be negative';
+                          if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
+                          setPriceErrors((oldErrors) => {
+                            const newErrors = [...oldErrors];
+                            newErrors[index] = error;
+                            return newErrors;
+                          });
                           setPrices((oldPrices) => {
                             const newPrices = [...oldPrices];
-                            newPrices[index] = Number(valueString);
+                            newPrices[index] = valueAsNumber;
                             return newPrices;
-                          })
-                        }
+                          });
+                        }}
                       >
                         <NumberInputField />
                         <NumberInputStepper>
@@ -510,6 +522,11 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         </NumberInputStepper>
                       </NumberInput>
                     </HStack>
+                    {priceErrors[index] && (
+                      <Text color="red.400" fontSize="xs">
+                        {priceErrors[index]}
+                      </Text>
+                    )}
 
                     <Button size="xs" mt={3} colorScheme="teal" variant="outline" isDisabled={hasPendingTransactions} onClick={() => onListButtonClick(item)}>
                       List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
@@ -587,7 +604,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       size="xs"
                       maxW={16}
                       step={1}
-                      defaultValue={1}
                       min={1}
                       max={selectedDataNft.balance}
                       isValidCharacter={isValidNumericCharacter}
