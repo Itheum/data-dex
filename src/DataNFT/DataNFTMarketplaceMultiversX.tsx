@@ -81,6 +81,7 @@ export default function Marketplace() {
   //
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
+  const [newListingPriceError, setNewListingPriceError] = useState<string>('');
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
@@ -891,8 +892,14 @@ export default function Marketplace() {
                     max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
                     isValidCharacter={isValidNumericCharacter}
                     value={newListingPrice}
-                    onChange={(valueAsString, valueAsNumber) => setNewListingPrice(valueAsNumber)}
-                    keepWithinRange={false}
+                    onChange={(valueAsString, valueAsNumber) => {
+                      let error = '';
+                      if (valueAsNumber < 0) error = 'Cannot be negative';
+                      if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
+                      setNewListingPriceError(error);
+                      setNewListingPrice(valueAsNumber);
+                    }}
+                    keepWithinRange={true}
                   >
                     <NumberInputField />
                     <NumberInputStepper>
@@ -901,6 +908,11 @@ export default function Marketplace() {
                     </NumberInputStepper>
                   </NumberInput>
                 </Flex>
+                {newListingPriceError && (
+                  <Text color="red.400" fontSize="xs" ml="164px" mt="1">
+                    {newListingPriceError}
+                  </Text>
+                )}
               </Box>
               <Flex justifyContent="end" mt="6 !important">
                 <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>
