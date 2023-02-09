@@ -105,15 +105,16 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
   const onChangeDataNftBurnAmount = (newValue) => {
     let error = "";
-    if (newValue > selectedDataNft.balance) {
-      error = "Not enough balance";
-    } else if (newValue < 1) {
-      error = "Burn Amount cannot be zero";
+    if (Number(newValue) > Number(selectedDataNft.balance)) {
+      error = "Data NFT balance exceeded";
+    } else if (Number(newValue) < 1) {
+      error = "Burn Amount cannot be zero or negative";
     }
 
     setDataNftBurnAmountError(error);
     setDataNftBurnAmount(newValue);
   };
+
   const onBurnButtonClick = (nft) => {
     setSelectedDataNft(nft);
     setDataNftBurnAmount(nft.balance); // init
@@ -609,7 +610,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       isValidCharacter={isValidNumericCharacter}
                       value={dataNftBurnAmount}
                       onChange={onChangeDataNftBurnAmount}
-                      keepWithinRange={false}
+                      keepWithinRange={true}
                     >
                       <NumberInputField />
                       <NumberInputStepper>
