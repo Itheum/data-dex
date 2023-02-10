@@ -463,7 +463,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     </HStack>
 
                     <HStack my={"2"}>
-                      <Text fontSize="xs">How many to list: </Text>
+                      <Text fontSize="xs" w='108px'>How many to list: </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -490,7 +490,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     </HStack>
 
                     <HStack my={"2"}>
-                      <Text fontSize="xs">Listing price for each: </Text>
+                      <Text fontSize="xs" w='108px'>Listing price for each: </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -511,10 +511,11 @@ export default function MyDataNFTsMx({ onRfMount }) {
                           });
                           setPrices((oldPrices) => {
                             const newPrices = [...oldPrices];
-                            newPrices[index] = valueAsNumber;
+                            newPrices[index] = !valueAsNumber ? 0 : valueAsNumber;
                             return newPrices;
                           });
                         }}
+                        keepWithinRange={true}
                       >
                         <NumberInputField />
                         <NumberInputStepper>

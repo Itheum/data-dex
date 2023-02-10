@@ -895,7 +895,7 @@ export default function Marketplace() {
                       if (valueAsNumber < 0) error = 'Cannot be negative';
                       if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
                       setNewListingPriceError(error);
-                      setNewListingPrice(valueAsNumber);
+                      setNewListingPrice(!valueAsNumber ? 0 : valueAsNumber);
                     }}
                     keepWithinRange={true}
                   >
