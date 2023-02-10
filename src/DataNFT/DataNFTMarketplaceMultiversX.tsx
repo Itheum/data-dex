@@ -425,9 +425,7 @@ export default function Marketplace() {
                             {" "}
                             {printPrice(
                               convertWeiToEsdt(
-                                BigNumber(offer.wanted_token_amount)
-                                  .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
+                                offer.wanted_token_amount,
                                 tokenDecimals(offer.wanted_token_identifier)
                               ).toNumber(),
                               getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
