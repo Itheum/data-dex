@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Spacer, Text, HStack, Heading, Wrap, Spinner, useToast, useDisclosure, Tooltip } from "@chakra-ui/react";
+import { Button, Alert, AlertTitle, Link, Badge, AlertIcon, AlertDescription, Spacer, Text, HStack, Heading, Wrap, Spinner, useToast, useDisclosure, Tooltip } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { uxConfig, debugui } from "libs/util";
+import { uxConfig, debugui, sleep, dataCATDemoUserData } from "libs/util";
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
 import { formatNumberRoundFloor } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
@@ -21,7 +22,7 @@ import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 let mxFaucetContract = null;
 let mxClaimsContract = null;
 
-export default function HomeMx({ onRfMount }) {
+export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheumAccount }) {
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
@@ -36,6 +37,9 @@ export default function HomeMx({ onRfMount }) {
     claimBalanceDates: [0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
+
+  const [loadingCfTestData, setLoadingDataCatTestUser] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (_chainMeta?.networkId && _user?.isMxAuthenticated) {
@@ -219,6 +223,24 @@ export default function HomeMx({ onRfMount }) {
   };
   // E: claims related logic
 
+  const doDataCatTestUser = async () => {
+    setLoadingDataCatTestUser(true);
+
+    await sleep(1);
+
+    setLoadingDataCatTestUser(false);
+
+    toast({
+      title: 'Congrats! an Itheum Data CAT test account has been linked',
+      description: 'You can now advertise your data for trade on the Data DEX',
+      status: 'success',
+      duration: 6000,
+      isClosable: true,
+    });
+
+    onItheumAccount(dataCATDemoUserData);
+  };
+
   debugui(`_chainMeta.networkId ${_chainMeta.networkId}`);
 
   const tileBoxMdW = "310px";
@@ -230,6 +252,61 @@ export default function HomeMx({ onRfMount }) {
 
       <Stack>
         <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={5}>
+          <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
+            <Stack p="5" h={tileBoxH} w={tileBoxMdW}>
+              {!itheumAccount && <Heading size="md">Linked Itheum Data CAT Account</Heading>}
+              {!itheumAccount && (
+                <Alert>
+                  <Stack>
+                    <AlertTitle fontSize="md">
+                      <AlertIcon mb={2} /> Sorry! You don&apos;t seem to have a{' '}
+                      <Link href="https://itheum.com" isExternal>
+                        itheum.com
+                      </Link>{' '}
+                      Data CAT account
+                    </AlertTitle>
+                    <AlertDescription fontSize="md">But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
+
+              {itheumAccount && (
+                <Stack>
+                  <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
+                  <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
+                  {itheumAccount.programsAllocation.map((item) => (
+                    <Stack direction="row" key={item.program}>
+                      <Badge borderRadius="full" px="2" colorScheme="teal">
+                        {itheumAccount._lookups.programs[item.program].programName}
+                      </Badge>
+                    </Stack>
+                  ))}
+                </Stack>
+              )}
+
+              <Spacer />
+
+              {!itheumAccount && (
+                <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doDataCatTestUser}>
+                  Load Test Data
+                </Button>
+              )}
+
+              {itheumAccount && (
+                <Button
+                  colorScheme="teal"
+                  variant="outline"
+                  onClick={() => {
+                    setMenuItem(2);
+                    navigate('/selldata');
+                  }}
+                >
+                  Trade My Data
+                </Button>
+              )}
+            </Stack>
+          </Box>
+
           <ChainSupportedComponent feature={MENU.FAUCET}>
             <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
               <Stack p="5" h={tileBoxH}>
