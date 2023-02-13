@@ -338,6 +338,8 @@ export const CHAIN_TX_VIEWER = {
   97: "https://testnet.bscscan.com/tx/",
   1666700000: "https://explorer.pops.one/#/",
   43113: "https://testnet.snowtrace.io/tx/",
+  E1: "https://explorer.multiversx.com",
+  ED: "https://devnet-explorer.multiversx.com",
 };
 
 export const CHAIN_TX_LIST = {
