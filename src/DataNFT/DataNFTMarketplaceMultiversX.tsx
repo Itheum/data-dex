@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Stack } from "@chakra-ui/layout";
 import {
   Skeleton,
@@ -27,6 +28,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
+  Link,
   useToast,
   Checkbox,
 } from "@chakra-ui/react";
@@ -35,6 +37,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { CHAIN_TX_VIEWER } from "libs/util";
 import { getAccountTokenFromApi, getApi } from "MultiversX/api";
 import { getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -81,6 +84,7 @@ export default function Marketplace() {
   //
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
+  const [newListingPriceError, setNewListingPriceError] = useState<string>('');
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
@@ -114,8 +118,6 @@ export default function Marketplace() {
     })();
   }, []);
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     (async () => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
@@ -137,8 +139,6 @@ export default function Marketplace() {
   }, [hasPendingTransactions, tabState]);
 
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     (async () => {
       // init - no selection
       setSelectedOfferIndex(-1);
@@ -172,7 +172,7 @@ export default function Marketplace() {
 
   useEffect(() => {
     (async () => {
-      if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length && !hasPendingTransactions)) return;
+      if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
 
       // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
       const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
@@ -185,14 +185,12 @@ export default function Marketplace() {
   }, [address, offers, selectedOfferIndex, hasPendingTransactions]);
 
   const getUserData = async () => {
-    if (address && !hasPendingTransactions) {
+    if (address) {
       const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
   };
   useEffect(() => {
-    if (hasPendingTransactions) return;
-
     getUserData();
   }, [address, hasPendingTransactions]);
   const onProcure = async () => {
@@ -310,6 +308,8 @@ export default function Marketplace() {
     onUpdatePriceModalClose();
   };
 
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+
   return (
     <>
       <Stack spacing={5}>
@@ -355,7 +355,7 @@ export default function Marketplace() {
           <Flex wrap="wrap">
             {offers.length > 0 &&
               offers.map((offer, index) => (
-                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" w="250px" mb="1rem" position="relative">
+                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" mb="1rem" position="relative" w="15.5rem">
                   <Flex justifyContent="center" pt={5}>
                     <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                       <Image
@@ -369,14 +369,20 @@ export default function Marketplace() {
                     </Skeleton>
                   </Flex>
 
-                  <Box p="3" mt="2" height="336px">
+                  <Flex h="30rem" p="3" direction="column" justify="space-between">
                     {nftMetadatas[index] && (
                       <>
-                        <Text fontWeight="bold" fontSize="lg">
-                          {nftMetadatas[index].tokenName}
+                        <Text fontSize="xs">
+                          <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
+                            {nftMetadatas[index].tokenName} <ExternalLinkIcon mx='2px' />
+                          </Link>
                         </Text>
-                        <Text fontSize="md">{nftMetadatas[index].title}</Text>
-                        <Flex height="4rem">
+
+                        <Text fontWeight="bold" fontSize="lg" mt="2">                       
+                          {nftMetadatas[index].title}
+                        </Text>
+                        
+                        <Flex flexGrow="1">
                           <Popover trigger="hover" placement="auto">
                             <PopoverTrigger>
                               <Text fontSize="sm" mt="2" color="gray.300" noOfLines={[1, 2, 3]}>
@@ -395,28 +401,38 @@ export default function Marketplace() {
                             </PopoverContent>
                           </Popover>
                         </Flex>
-                        <Box color="gray.600" fontSize="sm" flexGrow="1">
+
+                        <Box color="gray.600" fontSize="sm">
                           {`Creator: ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+
+                          <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                            <ExternalLinkIcon mx='2px' />
+                          </Link>
                         </Box>
-                        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="56px">
+
+                        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
                           {address && address == nftMetadatas[index].creator && (
                             <Badge borderRadius="full" px="2" colorScheme="teal">
-                              <Text>YOU ARE THE CREATOR</Text>
+                              <Text>You are the Creator</Text>
                             </Badge>
                           )}
+
                           {address && address == offer.owner && (
                             <Badge borderRadius="full" px="2" colorScheme="teal">
-                              <Text>YOU ARE THE OWNER</Text>
+                              <Text>You are the Owner</Text>
                             </Badge>
                           )}
+
                           <Badge borderRadius="full" px="2" colorScheme="blue">
                             Fully Transferable License
                           </Badge>
                         </Box>
+
                         <Box display="flex" justifyContent="flex-start" mt="2">
                           <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
                         </Box>
-                        <Box color="gray.600" fontSize="sm" flexGrow="1">
+
+                        <Box color="gray.600" fontSize="sm">
                           {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${nftMetadatas[index].royalties * 100}%`}
                         </Box>
                       </>
@@ -430,9 +446,7 @@ export default function Marketplace() {
                             {" "}
                             {printPrice(
                               convertWeiToEsdt(
-                                BigNumber(offer.wanted_token_amount)
-                                  .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
+                                offer.wanted_token_amount,
                                 tokenDecimals(offer.wanted_token_identifier)
                               ).toNumber(),
                               getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
@@ -448,8 +462,8 @@ export default function Marketplace() {
                       /* Public Marketplace: Hide Procure part if NFT is owned by User */
                       tabState === 1 && address && address != offer.owner && (
                         <>
-                          <HStack mt="2">
-                            <Text fontSize="xs">How many to procure access to </Text>
+                          <HStack mt="2" h="3rem">
+                            <Text fontSize="xs">How many to procure </Text>
                             <NumberInput
                               size="xs"
                               maxW={16}
@@ -487,26 +501,13 @@ export default function Marketplace() {
                             </Button>
                           </HStack>
                         </>
-                      )
+                      ) || <Box mt="2" h="3rem" />
                     }
-                    {tabState === 2 && address && (
-                      <>
-                        <Flex mt="2" gap={2}>
-                          <Button
-                            size="xs"
-                            colorScheme="teal"
-                            width="72px"
-                            isDisabled={hasPendingTransactions}
-                            onClick={() => {
-                              setSelectedOfferIndex(index);
-                              setDelistAmount(offers[index].quantity);
-                              setDelistModalState(1);
-                              onDelistModalOpen();
-                            }}
-                          >
-                            De-List All
-                          </Button>
-                          {offers[index].quantity > 1 && (
+
+                    {
+                      tabState === 2 && address && (
+                        <>
+                          <Flex mt="2" gap="2" >
                             <Button
                               size="xs"
                               colorScheme="teal"
@@ -514,43 +515,60 @@ export default function Marketplace() {
                               isDisabled={hasPendingTransactions}
                               onClick={() => {
                                 setSelectedOfferIndex(index);
-                                setDelistAmount(1);
-                                setDelistModalState(0);
+                                setDelistAmount(offers[index].quantity);
+                                setDelistModalState(1);
                                 onDelistModalOpen();
                               }}
                             >
-                              De-List Some
+                              De-List All
                             </Button>
-                          )}
-                          <Button
-                            size="xs"
-                            colorScheme="teal"
-                            width="72px"
-                            isDisabled={hasPendingTransactions}
-                            onClick={() => {
-                              setSelectedOfferIndex(index);
-                              if (marketRequirements) {
-                                setNewListingPrice(
-                                  convertWeiToEsdt(
-                                    BigNumber(offers[index].wanted_token_amount)
-                                      .multipliedBy(amountOfTokens[index])
-                                      .multipliedBy(10000)
-                                      .div(10000 + marketRequirements.buyer_fee),
-                                    tokenDecimals(offers[index].wanted_token_identifier)
-                                  ).toNumber()
-                                );
-                              } else {
-                                setNewListingPrice(0);
-                              }
-                              onUpdatePriceModalOpen();
-                            }}
-                          >
-                            Update Price
-                          </Button>
-                        </Flex>
-                      </>
-                    )}
-                  </Box>
+                            {offers[index].quantity > 1 && (
+                              <Button
+                                size="xs"
+                                colorScheme="teal"
+                                width="72px"
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => {
+                                  setSelectedOfferIndex(index);
+                                  setDelistAmount(1);
+                                  setDelistModalState(0);
+                                  onDelistModalOpen();
+                                }}
+                              >
+                                De-List Some
+                              </Button>
+                            )}
+                            <Button
+                              size="xs"
+                              colorScheme="teal"
+                              width="72px"
+                              isDisabled={hasPendingTransactions}
+                              onClick={() => {
+                                setSelectedOfferIndex(index);
+                                if (marketRequirements) {
+                                  setNewListingPrice(
+                                    convertWeiToEsdt(
+                                      BigNumber(offers[index].wanted_token_amount)
+                                        .multipliedBy(amountOfTokens[index])
+                                        .multipliedBy(10000)
+                                        .div(10000 + marketRequirements.buyer_fee),
+                                      tokenDecimals(offers[index].wanted_token_identifier)
+                                    ).toNumber()
+                                  );
+                                } else {
+                                  setNewListingPrice(0);
+                                }
+                                onUpdatePriceModalOpen();
+                              }}
+                            >
+                              Update Price
+                            </Button>
+                          </Flex>
+                        </>
+                      )
+                    }
+                  </Flex>
+                  
                   <Box
                     position="absolute"
                     top="0"
@@ -565,12 +583,10 @@ export default function Marketplace() {
                     }
                   >
                     <Text
-                      position="absolute"
-                      top="50%"
-                      // left='50%'
-                      // transform='translate(-50%, -50%)'
-                      textAlign="center"
                       fontSize="md"
+                      position="absolute"
+                      top="45%"
+                      textAlign="center"
                       px="2"
                     >
                       - FROZEN - <br />
@@ -897,8 +913,14 @@ export default function Marketplace() {
                     max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
                     isValidCharacter={isValidNumericCharacter}
                     value={newListingPrice}
-                    onChange={(valueAsString, valueAsNumber) => setNewListingPrice(valueAsNumber)}
-                    keepWithinRange={false}
+                    onChange={(valueAsString, valueAsNumber) => {
+                      let error = '';
+                      if (valueAsNumber < 0) error = 'Cannot be negative';
+                      if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
+                      setNewListingPriceError(error);
+                      setNewListingPrice(!valueAsNumber ? 0 : valueAsNumber);
+                    }}
+                    keepWithinRange={true}
                   >
                     <NumberInputField />
                     <NumberInputStepper>
@@ -907,6 +929,11 @@ export default function Marketplace() {
                     </NumberInputStepper>
                   </NumberInput>
                 </Flex>
+                {newListingPriceError && (
+                  <Text color="red.400" fontSize="xs" ml="164px" mt="1">
+                    {newListingPriceError}
+                  </Text>
+                )}
               </Box>
               <Flex justifyContent="end" mt="6 !important">
                 <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>

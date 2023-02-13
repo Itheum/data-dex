@@ -68,7 +68,7 @@ const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP
 const baseUserContext = {
   isMoralisAuthenticated: false,
   isMxAuthenticated: false,
-}; // this is needed as context is updating aync in this comp using _user is out of sync - @TODO improve pattern
+}; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
 
 function App({ appConfig }) {
   const { address: mxAddress } = useGetAccountInfo();
@@ -97,6 +97,8 @@ function App({ appConfig }) {
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState(null);
+
+  const [itheumAccount, setItheumAccount] = useState(null);
 
   // context hooks
   const { user: _user, setUser } = useUser();
@@ -577,9 +579,28 @@ function App({ appConfig }) {
 
               <Box w={[null, "full"]}>
                 <Routes>
-                  <Route path="/" element={<HomeMx key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} />} />
-                  <Route path="home" element={<HomeMx key={rfKeys.tools} onRfMount={() => handleRfMount("tools")} />} />
-                  <Route path="selldata" element={<SellDataMX key={rfKeys.sellData} onRfMount={() => handleRfMount("sellData")} />} />
+                  <Route path="/"
+                    element={<HomeMx
+                      key={rfKeys.tools}
+                      onRfMount={() => handleRfMount("tools")}
+                      setMenuItem={setMenuItem}
+                      itheumAccount={itheumAccount}
+                      onItheumAccount={setItheumAccount} />}
+                  />
+                  <Route path="home"
+                    element={<HomeMx
+                      key={rfKeys.tools}
+                      onRfMount={() => handleRfMount("tools")}
+                      setMenuItem={setMenuItem}
+                      itheumAccount={itheumAccount}
+                      onItheumAccount={setItheumAccount} />}
+                  />
+                  <Route path="selldata"
+                    element={<SellDataMX
+                      key={rfKeys.sellData}
+                      itheumAccount={itheumAccount}
+                      onRfMount={() => handleRfMount("sellData")} />}
+                  />
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />

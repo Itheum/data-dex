@@ -45,7 +45,9 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
+import { useSessionStorage } from "libs/hooks";
 import { sleep, uxConfig, consoleNotice, convertWeiToEsdt, isValidNumericCharacter } from "libs/util";
+import { CHAIN_TX_VIEWER } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -53,7 +55,6 @@ import { useChainMeta } from "store/ChainMetaContext";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
-import { useSessionStorage } from "libs/hooks";
 
 export default function MyDataNFTsMx({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -65,6 +66,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState([]);
   const [prices, setPrices] = useState([]);
+  const [priceErrors, setPriceErrors] = useState([]);
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
     s2: 0,
@@ -86,7 +88,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
-  
   useEffect(() => {
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
@@ -104,19 +105,20 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
   const onChangeDataNftBurnAmount = (newValue) => {
     let error = "";
-    if (newValue > selectedDataNft.balance) {
-      error = "Not enough balance";
-    } else if (newValue < 1) {
-      error = "Burn Amount cannot be zero";
+    if (Number(newValue) > Number(selectedDataNft.balance)) {
+      error = "Data NFT balance exceeded";
+    } else if (Number(newValue) < 1) {
+      error = "Burn Amount cannot be zero or negative";
     }
 
     setDataNftBurnAmountError(error);
     setDataNftBurnAmount(newValue);
   };
+
   const onBurnButtonClick = (nft) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(1); // init
-    setBurnNFTModalState(1); // set state 1 when the modal is closed
+    setDataNftBurnAmount(nft.balance); // init
+    setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
   const onListButtonClick = (nft) => {
@@ -146,6 +148,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
           const usersDataNFTCatalogLocal = [];
           let localAmounts = [];
           let localPrices = [];
+          let localErrors = [];
           onChainNFTs.forEach((nft, index) => {
             const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft["attributes"], "base64"), dataNftAttributes).valueOf();
             const dataNFT = {};
@@ -168,11 +171,13 @@ export default function MyDataNFTsMx({ onRfMount }) {
             dataNFT.collection = nft["collection"];
             localAmounts.push(1);
             localPrices.push(10);
+            localErrors.push('');
             usersDataNFTCatalogLocal.push(dataNFT);
             console.log("test");
           });
           setAmounts(localAmounts);
           setPrices(localPrices);
+          setPriceErrors(localErrors);
           console.log("usersDataNFTCatalogLocal");
           console.log(usersDataNFTCatalogLocal);
 
@@ -241,6 +246,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
+          link.target = '_blank';
+          link.setAttribute('target', '_blank');
           link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
@@ -283,7 +290,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
             customError = 'Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
           } else { // Maiar (it will be string)
             signResult.signature = signatureObj.signature.buffer.toString();
-          }        
+          }
         } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) { // Defi Wallet      
           signResult.signature = signatureObj.signature.value;
           signResult.addrInHex = signatureObj.address.valueHex;
@@ -373,23 +380,34 @@ export default function MyDataNFTsMx({ onRfMount }) {
         <Flex wrap="wrap" spacing={5}>
           {usersDataNFTCatalog &&
             usersDataNFTCatalog.map((item, index) => (
-              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" w="250px" mb="1rem" position="relative">
+              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" mb="1rem" position="relative" w="15.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
-                    <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
+                    <Image
+                      src={item.nftImgUrl}
+                      alt={item.dataPreview}
+                      h={200}
+                      w={200}
+                      borderRadius="md"
+                      onLoad={() => setOneNFTImgLoaded(true)} />
                   </Skeleton>
                 </Flex>
 
-                <Flex p="3" direction="column" justify="space-between" mt="2">
-                  <Text fontWeight="bold" fontSize="lg">
-                    {item.tokenName}
+                <Flex h="30rem" p="3" direction="column" justify="space-between">
+                  <Text fontSize="xs">
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/nfts/${item.id}`} isExternal>
+                      {item.tokenName} <ExternalLinkIcon mx='2px' />
+                    </Link>
                   </Text>
-                  <Text fontSize="md">{item.title}</Text>
 
-                  <Flex height="4rem">
+                  <Text fontWeight="bold" fontSize="lg" mt="2">
+                    {item.title}
+                  </Text>
+
+                  <Flex flexGrow="1">
                     <Popover trigger="hover" placement="auto">
                       <PopoverTrigger>
-                        <Text fontSize="sm" mt="2" color="gray.300">
+                        <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
                           {item.description.substring(0, 100) !== item.description ? item.description.substring(0, 100) + " ..." : item.description}
                         </Text>
                       </PopoverTrigger>
@@ -406,30 +424,31 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     </Popover>
                   </Flex>
 
-                  <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
-                    {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
-                  </Box>
+                  <Box mt="4">
+                    {item.creator !== address && <Box color="gray.600" fontSize="sm">
+                      {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
+                      <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/accounts/${item.creator}`} isExternal>
+                        <ExternalLinkIcon mx='2px' />
+                      </Link>
+                    </Box>}
 
-                  <Box mt="5">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>YOU ARE THE {item.creator !== address ? "OWNER" : "CREATOR"}</Text>
-                      </Badge>
+                    <Box color="gray.600" fontSize="sm">
+                      {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
                     </Box>
+
+                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                      <Text>You are the {item.creator !== address ? "Owner" : "Creator"}</Text>
+                    </Badge>
 
                     <Badge borderRadius="full" px="2" colorScheme="blue">
                       Fully Transferable License
                     </Badge>
-                    <Button size="sm" colorScheme="red" height="5" ml={"1"} isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
+
+                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
                       Burn
                     </Button>
 
-                    <HStack mt="5">
-                      <Text fontSize="xs">Creation time: </Text>
-                      <Text fontSize="xs">{moment(item.creationTime).format(uxConfig.dateStr)}</Text>
-                    </HStack>
-
-                    <Box as="span" color="gray.600" fontSize="sm" flexGrow="1">
+                    <Box fontSize="sm" mt="5">
                       {`Balance: ${item.balance} out of ${item.supply}. Royalty: ${item.royalties * 100}%`}
                     </Box>
 
@@ -457,8 +476,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       </Button>
                     </HStack>
 
-                    <HStack my={"2"}>
-                      <Text fontSize="xs">How many to list: </Text>
+                    <HStack mt="5">
+                      <Text fontSize="xs" w='110px'>How many to list: </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -484,8 +503,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       </NumberInput>
                     </HStack>
 
-                    <HStack my={"2"}>
-                      <Text fontSize="xs">Listing price for each: </Text>
+                    <HStack mt="2">
+                      <Text fontSize="xs" w='110px'>Listing price for each: </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -495,13 +514,22 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         isValidCharacter={isValidNumericCharacter}
                         max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
                         value={prices[index]}
-                        onChange={(valueString) =>
+                        onChange={(valueString, valueAsNumber) => {
+                          let error = '';
+                          if (valueAsNumber < 0) error = 'Cannot be negative';
+                          if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
+                          setPriceErrors((oldErrors) => {
+                            const newErrors = [...oldErrors];
+                            newErrors[index] = error;
+                            return newErrors;
+                          });
                           setPrices((oldPrices) => {
                             const newPrices = [...oldPrices];
-                            newPrices[index] = Number(valueString);
+                            newPrices[index] = !valueAsNumber ? 0 : valueAsNumber;
                             return newPrices;
-                          })
-                        }
+                          });
+                        }}
+                        keepWithinRange={true}
                       >
                         <NumberInputField />
                         <NumberInputStepper>
@@ -510,6 +538,11 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         </NumberInputStepper>
                       </NumberInput>
                     </HStack>
+                    {priceErrors[index] && (
+                      <Text color="red.400" fontSize="xs">
+                        {priceErrors[index]}
+                      </Text>
+                    )}
 
                     <Button size="xs" mt={3} colorScheme="teal" variant="outline" isDisabled={hasPendingTransactions} onClick={() => onListButtonClick(item)}>
                       List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
@@ -530,10 +563,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce)) ? "visible" : "collapse"}
                 >
                   <Text
+                    fontSize="md"
                     position="absolute"
-                    top="50%"
-                    // left='50%'
-                    transfrom="translate(-50%, -50%)"
+                    top="45%"
                     textAlign="center"
                     px="2"
                   >
@@ -568,8 +600,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                         {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${
-                            selectedDataNft.supply - selectedDataNft.balance
+                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance
                           } have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
                       </Text>
                     </Box>
@@ -587,13 +618,12 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       size="xs"
                       maxW={16}
                       step={1}
-                      defaultValue={1}
                       min={1}
                       max={selectedDataNft.balance}
                       isValidCharacter={isValidNumericCharacter}
                       value={dataNftBurnAmount}
                       onChange={onChangeDataNftBurnAmount}
-                      keepWithinRange={false}
+                      keepWithinRange={true}
                     >
                       <NumberInputField />
                       <NumberInputStepper>
