@@ -87,7 +87,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
-  
+
   useEffect(() => {
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
@@ -242,10 +242,13 @@ export default function MyDataNFTsMx({ onRfMount }) {
             ...prevProgress,
             s2: 1,
           }));
+
           await sleep(3);
 
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
+          link.target = '_blank';
+          link.setAttribute('target', '_blank');
           link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
@@ -288,7 +291,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
             customError = 'Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
           } else { // Maiar (it will be string)
             signResult.signature = signatureObj.signature.buffer.toString();
-          }        
+          }
         } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) { // Defi Wallet      
           signResult.signature = signatureObj.signature.value;
           signResult.addrInHex = signatureObj.address.valueHex;
@@ -587,8 +590,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                         {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${
-                            selectedDataNft.supply - selectedDataNft.balance
+                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance
                           } have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
                       </Text>
                     </Box>
