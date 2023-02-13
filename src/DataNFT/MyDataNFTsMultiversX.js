@@ -14,7 +14,6 @@ import {
   Flex,
   Link,
   Text,
-  Tooltip,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -46,7 +45,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import { useSessionStorage } from "libs/hooks";
-import { sleep, uxConfig, consoleNotice, convertWeiToEsdt, isValidNumericCharacter } from "libs/util";
+import { sleep, uxConfig, convertWeiToEsdt, isValidNumericCharacter } from "libs/util";
 import { CHAIN_TX_VIEWER } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
