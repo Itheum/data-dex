@@ -658,7 +658,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   async function validateBaseInput() {
     if (!dataNFTStreamUrl.includes("https://") || !dataNFTStreamPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
-      toast("Your data stream url inputs dont seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it");
+      toast({
+        title: "Your data stream url inputs don't seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it",
+        status: "error",
+        isClosable: true,
+      });
       return false;
     } else {
       return true;
