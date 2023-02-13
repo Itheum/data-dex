@@ -87,7 +87,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
-
   useEffect(() => {
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
@@ -242,7 +241,6 @@ export default function MyDataNFTsMx({ onRfMount }) {
             ...prevProgress,
             s2: 1,
           }));
-
           await sleep(3);
 
           // auto download the file without ever exposing the url
