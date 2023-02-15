@@ -175,6 +175,7 @@ export const CLAIM_TYPES = {
   REWARDS: 1,
   AIRDROPS: 2,
   ALLOCATIONS: 3,
+  ROYALTIES: 4,
 };
 
 export const MENU = {

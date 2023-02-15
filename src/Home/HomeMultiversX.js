@@ -221,6 +221,22 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     claimType: CLAIM_TYPES.ALLOCATIONS,
     mxClaimsContract,
   };
+
+  const { isOpen: isRoyaltiesOpen, onOpen: onRoyaltiesOpen, onClose: onRoyaltiesClose } = useDisclosure();
+
+  const royaltiesModalData = {
+    isOpen: isRoyaltiesOpen,
+    onClose: () => {
+      onRoyaltiesClose();
+    },
+    title: "Rewards",
+    tag1: "Total Available",
+    value1: claimsBalances.claimBalanceValues[3],
+    tag2: "Last Deposited on",
+    value2: moment(claimsBalances.claimBalanceDates[3]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.ROYALTIES,
+    mxClaimsContract,
+  };
   // E: claims related logic
 
   const doDataCatTestUser = async () => {
@@ -245,6 +261,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
   const tileBoxMdW = "310px";
   const tileBoxH = "360px";
+  const claimsStackMinW = "220px";
 
   return (
     <Stack>
@@ -341,11 +358,11 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
           <ChainSupportedComponent feature={MENU.CLAIMS}>
             <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, "initial"]}>
-              <Stack p="5" h={tileBoxH}>
+              <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                 <Heading size="md">My Claims</Heading>
 
                 <Spacer />
-                <HStack spacing={50}>
+                <HStack justifyContent={"space-between"}>
                   <Text>Rewards</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
@@ -363,7 +380,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 </HStack>
 
                 <Spacer />
-                <HStack spacing={50}>
+                <HStack justifyContent={"space-between"}>
                   <Text>Airdrops</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
@@ -381,9 +398,27 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 </HStack>
                 <Spacer />
 
+                <HStack justifyContent={"space-between"}>
+                  <Text>Royalties</Text>
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
+                      {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[3])
+                      ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                        <Spinner size="xs" />
+                      ) : (
+                        <WarningTwoIcon />
+                      )}
+                    </Button>
+                  </Tooltip>
+
+                  <ClaimModalMx {...royaltiesModalData} />
+                </HStack>
+                <Spacer />
+
                 {(claimsBalances.claimBalanceValues[2] > 0 && (
                   <Box h="40px">
-                    <HStack spacing={30}>
+                    <HStack justifyContent={"space-between"}>
                       <Text>Allocations</Text>
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
