@@ -1,29 +1,29 @@
-import React, { useState } from "react";
-import { Box, Stack } from "@chakra-ui/layout";
+import React, {useState} from "react";
 import {
-  Button,
   Badge,
-  Image,
+  Box,
+  Button,
   Heading,
-  Text,
-  Wrap,
+  Image,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
   ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter,
-  useDisclosure,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Text,
   useBreakpointValue,
+  useDisclosure,
+  Wrap,
 } from "@chakra-ui/react";
 import imgProgGaPa from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
 import imgProgWfh from "img/prog-wfh.png";
-import { CHAIN_TOKEN_SYMBOL } from "libs/util";
-import { progInfoMeta } from "libs/util";
-import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
+import {CHAIN_TOKEN_SYMBOL, progInfoMeta} from "libs/util";
+import {useChainMeta} from "store/ChainMetaContext";
+import {useUser} from "store/UserContext";
 
 export default function AppMarketplace() {
   const { chainMeta: _chainMeta } = useChainMeta();

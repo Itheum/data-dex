@@ -1,52 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Stack } from "@chakra-ui/layout";
+import React, {useEffect, useState} from "react";
+import {ExternalLinkIcon} from "@chakra-ui/icons";
 import {
-  Skeleton,
-  HStack,
   Badge,
+  Box,
   Button,
-  Heading,
-  Image,
+  Checkbox,
   Flex,
-  Text,
+  Heading,
+  HStack,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Popover,
-  PopoverTrigger,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
+  PopoverTrigger,
+  Skeleton,
+  Stack,
+  Text,
   useDisclosure,
-  ModalOverlay,
-  ModalContent,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Link,
   useToast,
-  Checkbox,
 } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
+import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
-import { CHAIN_TX_VIEWER } from "libs/util";
-import { getAccountTokenFromApi, getApi } from "MultiversX/api";
-import { getNftsByIds } from "MultiversX/api";
-import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
-import { useChainMeta } from "store/ChainMetaContext";
+import {CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig} from "libs/util";
+import {getAccountTokenFromApi, getApi, getNftsByIds} from "MultiversX/api";
+import {DataNftMintContract} from "MultiversX/dataNftMint";
+import {DataNftMetadataType, MarketplaceRequirementsType, OfferType} from "MultiversX/types";
+import {useChainMeta} from "store/ChainMetaContext";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
-import { CustomPagination } from "./CustomPagination";
-import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import { hexZero, getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import {CustomPagination} from "./CustomPagination";
+import {DataNftMarketContract} from "../MultiversX/dataNftMarket";
+import {getTokenWantedRepresentation, hexZero, tokenDecimals} from "../MultiversX/tokenUtils.js";
 
 function printPrice(price: number, token: string): string {
   return price <= 0 ? "FREE" : `${price} ${token}`;

@@ -1,19 +1,4 @@
-import { useState, React } from "react";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
-import {
-  Button,
-  Text,
-  Image,
-  Tooltip,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverArrow,
-  useColorMode,
-} from "@chakra-ui/react";
+import React, { useState } from "react";
 import chainAvln from "img/avalanche-chain-logo.png";
 import chainBsc from "img/bsc-chain-logo.png";
 import chainMx from "img/elrond-chain-logo.png";
@@ -23,6 +8,27 @@ import launcherBG from "img/launch-bg-1.png";
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
 import chainPol from "img/polygon-chain-logo.png";
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Spacer,
+  Stack,
+  Text,
+  Tooltip,
+  useColorMode,
+} from "@chakra-ui/react";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 

@@ -1,43 +1,48 @@
-import { useEffect, useState, useRef, React } from "react";
-import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from "@chakra-ui/layout";
+import React, {useEffect, useRef, useState} from "react";
+import {ExternalLinkIcon, HamburgerIcon, MoonIcon, SunIcon, WarningTwoIcon} from "@chakra-ui/icons";
 import {
-  Button,
-  Text,
-  Image,
-  AlertDialog,
-  Badge,
-  Spinner,
-  IconButton,
   Accordion,
-  AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  AlertDialog,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
+  Badge,
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Image,
   Link,
   Menu,
   MenuButton,
-  MenuList,
-  MenuItem,
-  MenuGroup,
   MenuDivider,
+  MenuGroup,
+  MenuItem,
   MenuItemOption,
-  useToast,
-  useColorMode,
+  MenuList,
+  Spacer,
+  Spinner,
+  Stack,
+  Text,
   useBreakpointValue,
+  useColorMode,
+  useToast,
 } from "@chakra-ui/react";
-// import { style } from "@motionone/dom";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { logout } from "@multiversx/sdk-dapp/utils";
-import { AiFillHome } from "react-icons/ai";
-import { IoConstructOutline } from "react-icons/io5";
-import { Outlet, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import {useGetAccountInfo, useGetLoginInfo} from "@multiversx/sdk-dapp/hooks/account";
+import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
+import {logout} from "@multiversx/sdk-dapp/utils";
+import {AiFillHome} from "react-icons/ai";
+import {IoConstructOutline} from "react-icons/io5";
+import {Outlet, Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
@@ -46,18 +51,27 @@ import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
-import { useSessionStorage } from "libs/hooks";
-import { MENU, CHAINS, SUPPORTED_CHAINS, CHAIN_TOKEN_SYMBOL, PATHS } from "libs/util";
-import { contractsForChain, notSupportedOnChain, consoleNotice, gtagGo, debugui, clearAppSessions } from "libs/util";
-
-import { formatNumberRoundFloor } from "libs/util";
-import { checkBalance } from "MultiversX/api";
+import {useSessionStorage} from "libs/hooks";
+import {
+  CHAIN_TOKEN_SYMBOL,
+  CHAINS,
+  clearAppSessions,
+  consoleNotice,
+  contractsForChain,
+  debugui,
+  formatNumberRoundFloor,
+  gtagGo,
+  MENU,
+  PATHS,
+  SUPPORTED_CHAINS
+} from "libs/util";
+import {checkBalance} from "MultiversX/api";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
-import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
+import {useChainMeta} from "store/ChainMetaContext";
+import {useUser} from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 import ShortAddress from "UtilComps/ShortAddress";
