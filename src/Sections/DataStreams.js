@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Link, Badge, Flex, Image, StackDivider, HStack, Heading, Center } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider } from "@chakra-ui/react";
 import dataStreamIcon from "img/data-stream-icon.png";
 
 export default function () {

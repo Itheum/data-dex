@@ -1,4 +1,4 @@
-import { useEffect, React } from "react";
+import React, { useEffect } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Stack,

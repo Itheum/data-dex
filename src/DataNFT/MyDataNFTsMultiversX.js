@@ -1,52 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { ExternalLinkIcon, CheckCircleIcon } from "@chakra-ui/icons";
-import { Box, Stack } from "@chakra-ui/layout";
+import React, { useEffect, useState } from "react";
+import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Skeleton,
-  Button,
-  HStack,
-  Badge,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  Heading,
-  Image,
+  Badge,
+  Box,
+  Button,
+  CloseButton,
   Flex,
+  Heading,
+  HStack,
+  Image,
   Link,
-  Text,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  Spinner,
-  AlertDescription,
-  CloseButton,
-  ModalCloseButton,
-  useDisclosure,
   Popover,
-  PopoverTrigger,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  useToast,
+  PopoverTrigger,
   Select,
+  Skeleton,
+  Spinner,
+  Stack,
+  Text,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from "@multiversx/sdk-core/out";
+import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import { useSessionStorage } from "libs/hooks";
-import { sleep, uxConfig, convertWeiToEsdt, isValidNumericCharacter } from "libs/util";
-import { CHAIN_TX_VIEWER } from "libs/util";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -170,7 +170,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
             dataNFT.collection = nft["collection"];
             localAmounts.push(1);
             localPrices.push(10);
-            localErrors.push('');
+            localErrors.push("");
             usersDataNFTCatalogLocal.push(dataNFT);
             console.log("test");
           });
@@ -245,8 +245,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
-          link.target = '_blank';
-          link.setAttribute('target', '_blank');
+          link.target = "_blank";
+          link.setAttribute("target", "_blank");
           link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
@@ -272,25 +272,30 @@ export default function MyDataNFTsMx({ onRfMount }) {
       addrInHex: null,
     };
 
-    let customError = 'Signature result not received from wallet';
+    let customError = "Signature result not received from wallet";
 
-    if (walletUsedSession === 'el_webwallet') { // web wallet not supported
-      customError = 'Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
+    if (walletUsedSession === "el_webwallet") {
+      // web wallet not supported
+      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
     } else {
       try {
         const signatureObj = await signMessage({ message });
         console.log("signatureObj");
         console.log(signatureObj);
 
-        if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) { // Maiar App V2 / Ledger
+        if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) {
+          // Maiar App V2 / Ledger
           signResult.addrInHex = signatureObj.address.valueHex;
 
-          if (signatureObj.signature.buffer instanceof Uint8Array) { // Ledger
-            customError = 'Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
-          } else { // Maiar (it will be string)
+          if (signatureObj.signature.buffer instanceof Uint8Array) {
+            // Ledger
+            customError = "Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
+          } else {
+            // Maiar (it will be string)
             signResult.signature = signatureObj.signature.buffer.toString();
           }
-        } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) { // Defi Wallet      
+        } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) {
+          // Defi Wallet
           signResult.signature = signatureObj.signature.value;
           signResult.addrInHex = signatureObj.address.valueHex;
         } else {
@@ -382,20 +387,14 @@ export default function MyDataNFTsMx({ onRfMount }) {
               <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" mb="1rem" position="relative" w="15.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
-                    <Image
-                      src={item.nftImgUrl}
-                      alt={item.dataPreview}
-                      h={200}
-                      w={200}
-                      borderRadius="md"
-                      onLoad={() => setOneNFTImgLoaded(true)} />
+                    <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
                   </Skeleton>
                 </Flex>
 
                 <Flex h="30rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
                     <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/nfts/${item.id}`} isExternal>
-                      {item.tokenName} <ExternalLinkIcon mx='2px' />
+                      {item.tokenName} <ExternalLinkIcon mx="2px" />
                     </Link>
                   </Text>
 
@@ -424,12 +423,14 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   </Flex>
 
                   <Box mt="4">
-                    {item.creator !== address && <Box color="gray.600" fontSize="sm">
-                      {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
-                      <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/accounts/${item.creator}`} isExternal>
-                        <ExternalLinkIcon mx='2px' />
-                      </Link>
-                    </Box>}
+                    {item.creator !== address && (
+                      <Box color="gray.600" fontSize="sm">
+                        {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
+                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/accounts/${item.creator}`} isExternal>
+                          <ExternalLinkIcon mx="2px" />
+                        </Link>
+                      </Box>
+                    )}
 
                     <Box color="gray.600" fontSize="sm">
                       {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -476,7 +477,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     </HStack>
 
                     <HStack mt="5">
-                      <Text fontSize="xs" w='110px'>How many to list: </Text>
+                      <Text fontSize="xs" w="110px">
+                        How many to list:{" "}
+                      </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -503,7 +506,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     </HStack>
 
                     <HStack mt="2">
-                      <Text fontSize="xs" w='110px'>Listing price for each: </Text>
+                      <Text fontSize="xs" w="110px">
+                        Listing price for each:{" "}
+                      </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -514,9 +519,10 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
                         value={prices[index]}
                         onChange={(valueString, valueAsNumber) => {
-                          let error = '';
-                          if (valueAsNumber < 0) error = 'Cannot be negative';
-                          if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
+                          let error = "";
+                          if (valueAsNumber < 0) error = "Cannot be negative";
+                          if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0)
+                            error = "Cannot exceed maximum listing price";
                           setPriceErrors((oldErrors) => {
                             const newErrors = [...oldErrors];
                             newErrors[index] = error;
@@ -561,13 +567,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   backgroundColor="blackAlpha.800"
                   visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce)) ? "visible" : "collapse"}
                 >
-                  <Text
-                    fontSize="md"
-                    position="absolute"
-                    top="45%"
-                    textAlign="center"
-                    px="2"
-                  >
+                  <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
                     Data NFT is under investigation by the DAO as there was a complaint received against it
                   </Text>
@@ -599,7 +599,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                         {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance
+                          ` The remaining ${
+                            selectedDataNft.supply - selectedDataNft.balance
                           } have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
                       </Text>
                     </Box>
@@ -711,10 +712,10 @@ export default function MyDataNFTsMx({ onRfMount }) {
                 Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
               </Text>
 
-              <Text fontSize="md" mt="8">
+              <Text display="none" fontSize="md" mt="8">
                 Advanced:
               </Text>
-              <Flex mt="2" justifyContent="flex-start" alignItems="center" gap="4">
+              <Flex display="none" mt="2" justifyContent="flex-start" alignItems="center" gap="4">
                 <Text fontSize="md">Access Time Limit per SFT: </Text>
                 <Select size="sm" width="120px" defaultValue="unlimited">
                   <option value="unlimited">Unlimited</option>

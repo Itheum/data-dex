@@ -1,11 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Stack } from "@chakra-ui/layout";
-import { Skeleton, CloseButton, HStack, Badge, ButtonGroup, Button, Alert, AlertIcon, AlertTitle, Heading, Image, Flex, Link, Text } from "@chakra-ui/react";
-import { useMoralis, useMoralisCloudFunction, useMoralisWeb3Api } from "react-moralis";
-import { CHAIN_TOKEN_SYMBOL, OPENSEA_CHAIN_NAMES, CHAIN_NAMES, CHAIN_TX_VIEWER, CHAINS } from "libs/util";
-import { sleep, buyOnOpenSea, contractsForChain } from "libs/util";
-import { useChainMeta } from "store/ChainMetaContext";
+import React, {useEffect, useState} from "react";
+import {ExternalLinkIcon} from "@chakra-ui/icons";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Box,
+  Button,
+  ButtonGroup,
+  CloseButton,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Link,
+  Skeleton,
+  Stack,
+  Text
+} from "@chakra-ui/react";
+import {useMoralis, useMoralisCloudFunction, useMoralisWeb3Api} from "react-moralis";
+import {
+  buyOnOpenSea,
+  CHAIN_NAMES,
+  CHAIN_TOKEN_SYMBOL,
+  CHAIN_TX_VIEWER,
+  CHAINS,
+  contractsForChain,
+  OPENSEA_CHAIN_NAMES,
+  sleep
+} from "libs/util";
+import {useChainMeta} from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
 

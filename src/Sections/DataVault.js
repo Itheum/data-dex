@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Link, Badge, Flex, Image, StackDivider, HStack, Heading, Center } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider } from "@chakra-ui/react";
 import dataVaultIcon from "img/data-vault-icon.png";
 import { CHAIN_TOKEN_SYMBOL } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
