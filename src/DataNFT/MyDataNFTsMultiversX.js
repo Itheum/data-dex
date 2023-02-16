@@ -153,7 +153,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
             const dataNFT = {};
             dataNFT.index = index; // only for view & query
             dataNFT.id = nft["identifier"]; // ID of NFT -> done
-            dataNFT.nftImgUrl = nft["url"]; // image URL of of NFT -> done
+            dataNFT.nftImgUrl = nft["url"]; // image URL of NFT -> done
             dataNFT.dataPreview = decodedAttributes["data_preview_url"].toString(); // preview URL for NFT data stream -> done
             dataNFT.dataStream = decodedAttributes["data_stream_url"].toString(); // data stream URL -> done
             dataNFT.dataMarshal = decodedAttributes["data_marshal_url"].toString(); // data stream URL -> done
