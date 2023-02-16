@@ -456,12 +456,24 @@ export default function Marketplace() {
                         )}
                       </Text>
                     </Box>
+                    <Button
+                      mt="2"
+                      size="sm"
+                      colorScheme="teal"
+                      height="7"
+                      variant="outline"
+                      onClick={() => {
+                        window.open(nftMetadatas[index].dataPreview);
+                      }}
+                    >
+                      Preview Data
+                    </Button>
 
                     {
                       /* Public Marketplace: Hide Procure part if NFT is owned by User */
                       tabState === 1 && address && address != offer.owner && (
                         <>
-                          <HStack mt="2" h="3rem">
+                          <HStack h="3rem">
                             <Text fontSize="xs">How many to procure </Text>
                             <NumberInput
                               size="xs"
