@@ -31,7 +31,7 @@ const contracts = {
     devnet: {
       itheumTokenContractAddress: "ITHEUM-a61317",
       dataNFTFTTicker: "DATANFTFT2-71ac28",
-      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqy6mdcqsnu2qvzhy95s2s8cgfcwldypmw7yqs4uxmgq",
+      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqxlyhfj7wq9uccyfzu0naaxc9r604yjltfsxsnszt4t",
       faucetContractAddress: "erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf",
       dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgq6s9e6ywux0xl36mg39lk48mj7m6tzy5qfsxsfq0xne",
       dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqca3crd27vj8cruuxzkkma548fy8q69hxfsxsw2wxwy",
