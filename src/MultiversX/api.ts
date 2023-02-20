@@ -58,15 +58,9 @@ export const getClaimTransactions = async (address: string, smartContractAddress
   const api = getApi(networkId);
 
   try {
-    const allTxs = `https://${api}/accounts/${address}/transactions?size=50&receiver=${smartContractAddress}&withOperations=true`;
+    const allTxs = `https://${api}/accounts/${address}/transactions?size=25&receiver=${smartContractAddress}&function=claim&withOperations=true`;
 
-    const resp = await (
-      await axios.get(allTxs, { timeout: uxConfig.mxAPITimeoutMs })
-    ).data
-      .filter((tx: any) => {
-        return tx.function === "claim";
-      })
-      .slice(0, 25);
+    const resp = await (await axios.get(allTxs, { timeout: uxConfig.mxAPITimeoutMs })).data;
 
     const transactions = [];
 
@@ -76,7 +70,7 @@ export const getClaimTransactions = async (address: string, smartContractAddress
       transaction["hash"] = tx["txHash"];
       transaction["status"] = tx["status"];
 
-      const data = Buffer.from(resp[tx]["data"], "base64").toString("ascii").split("@");
+      const data = Buffer.from(tx["data"], "base64").toString("ascii").split("@");
 
       if (data.length === 1) {
         transaction["claimType"] = "Claim All";
@@ -94,6 +88,9 @@ export const getClaimTransactions = async (address: string, smartContractAddress
           case "02":
             transaction["claimType"] = "Allocation";
             break;
+          case "03":
+            transaction["claimType"] = "Royalties";
+            break;
           default:
             transaction["claimType"] = "Unknown";
             break;
@@ -102,9 +99,9 @@ export const getClaimTransactions = async (address: string, smartContractAddress
 
       let amount = 0;
 
-      for (const op in resp[tx]["operations"]) {
-        if (resp[tx]["operations"][op]["value"]) {
-          amount += parseInt(resp[tx]["operations"][op]["value"]);
+      for (const op of tx["operations"]) {
+        if (op["value"]) {
+          amount += parseInt(op["value"]);
         }
       }
 
