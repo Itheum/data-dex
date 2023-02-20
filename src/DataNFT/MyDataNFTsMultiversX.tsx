@@ -64,6 +64,7 @@ export default function MyDataNFTsMx() {
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState<number[]>([]);
+  const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [prices, setPrices] = useState<number[]>([]);
   const [priceErrors, setPriceErrors] = useState<string[]>([]);
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
@@ -151,6 +152,7 @@ export default function MyDataNFTsMx() {
       const localAmounts: number[] = [];
       const localPrices: number[] = [];
       const localErrors: string[] = [];
+      const _amountErrors: string[] = [];
 
       for (let index = 0; index < onChainNfts.length; index++) {
         const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
@@ -179,11 +181,13 @@ export default function MyDataNFTsMx() {
         localAmounts.push(1);
         localPrices.push(10);
         localErrors.push("");
+        _amountErrors.push("");
       }
 
       setAmounts(localAmounts);
       setPrices(localPrices);
       setPriceErrors(localErrors);
+      setAmountErrors(_amountErrors);
 
       console.log("_dataNfts", _dataNfts);
       setDataNfts(_dataNfts);
@@ -478,13 +482,24 @@ export default function MyDataNFTsMx() {
                         max={item.balance}
                         isValidCharacter={isValidNumericCharacter}
                         value={amounts[index]}
-                        onChange={(valueString) =>
+                        onChange={(valueString, valueAsNumber) => {
+                          let error = "";
+                          if (valueAsNumber <= 0) {
+                            error = "Cannot be zero or negative";
+                          } else if (valueAsNumber > item.balance) {
+                            error = "Cannot exceed balance";
+                          }
+                          setAmountErrors((oldErrors) => {
+                            const newErrors = [...oldErrors];
+                            newErrors[index] = error;
+                            return newErrors;
+                          });
                           setAmounts((oldAmounts) => {
                             const newAmounts = [...oldAmounts];
-                            newAmounts[index] = Number(valueString);
+                            newAmounts[index] = valueAsNumber;
                             return newAmounts;
-                          })
-                        }
+                          });
+                        }}
                       >
                         <NumberInputField />
                         <NumberInputStepper>
@@ -493,6 +508,11 @@ export default function MyDataNFTsMx() {
                         </NumberInputStepper>
                       </NumberInput>
                     </HStack>
+                    {amountErrors[index] && (
+                      <Text color="red.400" fontSize="xs">
+                        {amountErrors[index]}
+                      </Text>
+                    )}
 
                     <HStack mt="2">
                       <Text fontSize="xs" w="110px">
@@ -538,7 +558,7 @@ export default function MyDataNFTsMx() {
                       </Text>
                     )}
 
-                    <Button size="xs" mt={3} colorScheme="teal" variant="outline" isDisabled={hasPendingTransactions} onClick={() => onListButtonClick(item)}>
+                    <Button size="xs" mt={3} colorScheme="teal" variant="outline" isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]} onClick={() => onListButtonClick(item)}>
                       List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
                       {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
                     </Button>
