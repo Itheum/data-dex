@@ -1,4 +1,4 @@
-import { useState, useEffect, React } from "react";
+import React, { useState, useEffect } from "react";
 import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Spinner,

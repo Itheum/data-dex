@@ -1,11 +1,23 @@
 import React from "react";
-import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Link, Badge, Flex, Image, StackDivider, HStack, Heading, Center, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import {
+  Badge,
+  Box,
+  Button,
+  Center,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Link,
+  Stack,
+  StackDivider,
+  Text
+} from "@chakra-ui/react";
+import {useNavigate} from "react-router-dom";
 import dataNFTIcon from "img/data-nft-icon.png";
 import openSeaLogoIcon from "img/opensea-logo.png";
-import { MENU } from "libs/util";
-import { useChainMeta } from "store/ChainMetaContext";
+import {MENU} from "libs/util";
+import {useChainMeta} from "store/ChainMetaContext";
 
 export default function ({ setMenuItem }) {
   const navigate = useNavigate();

@@ -1,65 +1,64 @@
-import React, { useEffect, useState } from "react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
-import { Heading, Box, Stack } from "@chakra-ui/layout";
+import React, {useEffect, useState} from "react";
+import {CheckCircleIcon} from "@chakra-ui/icons";
 import {
-  Button,
-  Input,
-  Text,
-  HStack,
-  Spinner,
-  Skeleton,
-  Center,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
-  CloseButton,
-  Image,
   Badge,
-  Wrap,
-  Flex,
-  Textarea,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  CloseButton,
   Drawer,
-  DrawerOverlay,
+  DrawerBody,
   DrawerContent,
   DrawerHeader,
-  DrawerBody,
+  DrawerOverlay,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  useToast,
-  useDisclosure,
-  Checkbox,
-  Tag,
   Popover,
-  PopoverTrigger,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  Link,
+  PopoverTrigger,
+  Skeleton,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
+  Textarea,
+  useDisclosure,
+  useToast,
+  Wrap
 } from "@chakra-ui/react";
-import { ResultsParser } from "@multiversx/sdk-core";
-import { useTrackTransactionStatus, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import {ResultsParser} from "@multiversx/sdk-core";
+import {useGetPendingTransactions, useTrackTransactionStatus} from "@multiversx/sdk-dapp/hooks";
+import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
-
-import { set } from "lodash";
 import mime from "mime";
-import moment from "moment";
-import { NFTStorage, File } from "nft.storage";
-import { uxConfig, sleep, MENU, convertWeiToEsdt, tryParseInt, isValidNumericCharacter } from "libs/util";
-import { checkBalance } from "MultiversX/api";
-import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { useChainMeta } from "store/ChainMetaContext";
+import {File, NFTStorage} from "nft.storage";
+import {convertWeiToEsdt, isValidNumericCharacter, MENU, sleep} from "libs/util";
+import {checkBalance} from "MultiversX/api";
+import {DataNftMintContract} from "MultiversX/dataNftMint";
+import {useChainMeta} from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
 const InputLabelWithPopover = ({ children, tkey }) => {

@@ -1,22 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
-import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Alert, AlertTitle, Link, Badge, AlertIcon, AlertDescription, Spacer, Text, HStack, Heading, Wrap, Spinner, useToast, useDisclosure, Tooltip } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import React, {useEffect, useState} from "react";
+import {WarningTwoIcon} from "@chakra-ui/icons";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Link,
+  Spacer,
+  Spinner,
+  Stack,
+  Text,
+  Tooltip,
+  useDisclosure,
+  useToast,
+  Wrap
+} from "@chakra-ui/react";
+import {useGetAccountInfo, useGetLoginInfo} from "@multiversx/sdk-dapp/hooks/account";
+import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { uxConfig, debugui, sleep, dataCATDemoUserData } from "libs/util";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
-import { formatNumberRoundFloor } from "libs/util";
-import { ClaimsContract } from "MultiversX/claims";
-import { FaucetContract } from "MultiversX/faucet";
-import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
+import {
+  CHAIN_TOKEN_SYMBOL,
+  CLAIM_TYPES,
+  dataCATDemoUserData,
+  debugui,
+  formatNumberRoundFloor,
+  MENU,
+  sleep,
+  SUPPORTED_CHAINS,
+  uxConfig
+} from "libs/util";
+import {ClaimsContract} from "MultiversX/claims";
+import {FaucetContract} from "MultiversX/faucet";
+import {useChainMeta} from "store/ChainMetaContext";
+import {useUser} from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 let mxFaucetContract = null;
