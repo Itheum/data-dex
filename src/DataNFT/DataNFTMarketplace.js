@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {ExternalLinkIcon} from "@chakra-ui/icons";
+import React, { useEffect, useState } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertIcon,
@@ -16,20 +16,11 @@ import {
   Link,
   Skeleton,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
-import {useMoralis, useMoralisCloudFunction, useMoralisWeb3Api} from "react-moralis";
-import {
-  buyOnOpenSea,
-  CHAIN_NAMES,
-  CHAIN_TOKEN_SYMBOL,
-  CHAIN_TX_VIEWER,
-  CHAINS,
-  contractsForChain,
-  OPENSEA_CHAIN_NAMES,
-  sleep
-} from "libs/util";
-import {useChainMeta} from "store/ChainMetaContext";
+import { useMoralis, useMoralisCloudFunction, useMoralisWeb3Api } from "react-moralis";
+import { buyOnOpenSea, CHAIN_NAMES, CHAIN_TOKEN_SYMBOL, CHAIN_TX_VIEWER, CHAINS, contractsForChain, OPENSEA_CHAIN_NAMES, sleep } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
 

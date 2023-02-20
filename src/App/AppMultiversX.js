@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from "react";
-import {ExternalLinkIcon, HamburgerIcon, MoonIcon, SunIcon, WarningTwoIcon} from "@chakra-ui/icons";
+import React, { useEffect, useRef, useState } from "react";
+import { ExternalLinkIcon, HamburgerIcon, MoonIcon, SunIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -37,12 +37,12 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
-import {useGetAccountInfo, useGetLoginInfo} from "@multiversx/sdk-dapp/hooks/account";
-import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
-import {logout} from "@multiversx/sdk-dapp/utils";
-import {AiFillHome} from "react-icons/ai";
-import {IoConstructOutline} from "react-icons/io5";
-import {Outlet, Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { logout } from "@multiversx/sdk-dapp/utils";
+import { AiFillHome } from "react-icons/ai";
+import { IoConstructOutline } from "react-icons/io5";
+import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
@@ -51,7 +51,7 @@ import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
-import {useSessionStorage} from "libs/hooks";
+import { useSessionStorage } from "libs/hooks";
 import {
   CHAIN_TOKEN_SYMBOL,
   CHAINS,
@@ -63,15 +63,15 @@ import {
   gtagGo,
   MENU,
   PATHS,
-  SUPPORTED_CHAINS
+  SUPPORTED_CHAINS,
 } from "libs/util";
-import {checkBalance} from "MultiversX/api";
+import { checkBalance } from "MultiversX/api";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
-import {useChainMeta} from "store/ChainMetaContext";
-import {useUser} from "store/UserContext";
+import { useChainMeta } from "store/ChainMetaContext";
+import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 import ShortAddress from "UtilComps/ShortAddress";
@@ -593,27 +593,33 @@ function App({ appConfig }) {
 
               <Box w={[null, "full"]}>
                 <Routes>
-                  <Route path="/"
-                    element={<HomeMx
-                      key={rfKeys.tools}
-                      onRfMount={() => handleRfMount("tools")}
-                      setMenuItem={setMenuItem}
-                      itheumAccount={itheumAccount}
-                      onItheumAccount={setItheumAccount} />}
+                  <Route
+                    path="/"
+                    element={
+                      <HomeMx
+                        key={rfKeys.tools}
+                        onRfMount={() => handleRfMount("tools")}
+                        setMenuItem={setMenuItem}
+                        itheumAccount={itheumAccount}
+                        onItheumAccount={setItheumAccount}
+                      />
+                    }
                   />
-                  <Route path="home"
-                    element={<HomeMx
-                      key={rfKeys.tools}
-                      onRfMount={() => handleRfMount("tools")}
-                      setMenuItem={setMenuItem}
-                      itheumAccount={itheumAccount}
-                      onItheumAccount={setItheumAccount} />}
+                  <Route
+                    path="home"
+                    element={
+                      <HomeMx
+                        key={rfKeys.tools}
+                        onRfMount={() => handleRfMount("tools")}
+                        setMenuItem={setMenuItem}
+                        itheumAccount={itheumAccount}
+                        onItheumAccount={setItheumAccount}
+                      />
+                    }
                   />
-                  <Route path="selldata"
-                    element={<SellDataMX
-                      key={rfKeys.sellData}
-                      itheumAccount={itheumAccount}
-                      onRfMount={() => handleRfMount("sellData")} />}
+                  <Route
+                    path="selldata"
+                    element={<SellDataMX key={rfKeys.sellData} itheumAccount={itheumAccount} onRfMount={() => handleRfMount("sellData")} />}
                   />
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />

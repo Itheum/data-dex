@@ -1,6 +1,6 @@
-import React, {FC} from "react";
-import {ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon} from "@chakra-ui/icons";
-import {Flex, IconButton, Text, Tooltip} from "@chakra-ui/react";
+import React, { FC } from "react";
+import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 
 // const PAGE_SIZES: number[] = [8, 16, 24];
 

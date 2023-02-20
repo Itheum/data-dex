@@ -2,8 +2,8 @@ import React, { ReactElement } from "react";
 import { createContext, useState, useContext } from "react";
 
 export interface ChainMetaType {
-  chainMeta: any,
-  setChainMeta: any,
+  chainMeta: any;
+  setChainMeta: any;
 }
 
 const chainMetaContext = createContext<ChainMetaType>({
