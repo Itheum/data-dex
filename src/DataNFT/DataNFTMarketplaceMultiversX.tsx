@@ -61,6 +61,7 @@ export default function Marketplace() {
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
+  const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const contract = new DataNftMarketContract("ED");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
@@ -158,6 +159,7 @@ export default function Marketplace() {
       setAmountOfTokens(amounts);
 
       //
+      setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
       const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
       const _metadatas: DataNftMetadataType[] = [];
@@ -166,6 +168,7 @@ export default function Marketplace() {
       }
       console.log("_metadatas", _metadatas);
       setNftMetadatas(_metadatas);
+      setNftMetadatasLoading(false);
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
@@ -369,7 +372,8 @@ export default function Marketplace() {
                   </Flex>
 
                   <Flex h="30rem" p="3" direction="column" justify="space-between">
-                    {nftMetadatas[index] && (
+                    {nftMetadatasLoading && <SkeletonLoadingList />}
+                    {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
                         <Text fontSize="xs">
                           <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
