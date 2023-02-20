@@ -108,12 +108,15 @@ export default function MyDataNFTsMx() {
     })();
   }, []);
 
-  const onChangeDataNftBurnAmount = (valueAsString: string, valueAsNumber: number) => {
+  const onChangeDataNftBurnAmount = (valueAsString: string) => {
     let error = "";
-    if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
-      error = "Data NFT balance exceeded";
-    } else if (valueAsNumber < 1) {
+    const valueAsNumber = Number(valueAsString);
+    console.log("valueAsNumber", valueAsNumber);
+    console.log("selectedDataNft", selectedDataNft);
+    if (valueAsNumber < 1) {
       error = "Burn Amount cannot be zero or negative";
+    } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
+      error = "Data NFT balance exceeded";
     }
 
     setDataNftBurnAmountError(error);
@@ -606,6 +609,7 @@ export default function MyDataNFTsMx() {
                       size="xs"
                       maxW={16}
                       step={1}
+                      defaultValue={selectedDataNft.balance}
                       min={1}
                       max={selectedDataNft.balance}
                       isValidCharacter={isValidNumericCharacter}
