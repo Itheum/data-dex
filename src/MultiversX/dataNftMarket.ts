@@ -23,7 +23,7 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
-import BigNumber from 'bignumber.js';
+import BigNumber from "bignumber.js";
 import jsonData from "./ABIs/data_market.abi.json";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain } from "../libs/util";
@@ -139,19 +139,21 @@ export class DataNftMarketContract {
   }
 
   async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
-    const data = BigNumber(paymentAmount).comparedTo(0) > 0 ? TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("ESDTTransfer"))
-      .addArg(new TokenIdentifierValue(tokenId))
-      .addArg(new BigUIntValue(paymentAmount))
-      .addArg(new StringValue("acceptOffer"))
-      .addArg(new U64Value(index))
-      .addArg(new BigUIntValue(amount))
-      .build()
-    : TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("acceptOffer"))
-      .addArg(new U64Value(index))
-      .addArg(new BigUIntValue(amount))
-      .build();
+    const data =
+      BigNumber(paymentAmount).comparedTo(0) > 0
+        ? TransactionPayload.contractCall()
+            .setFunction(new ContractFunction("ESDTTransfer"))
+            .addArg(new TokenIdentifierValue(tokenId))
+            .addArg(new BigUIntValue(paymentAmount))
+            .addArg(new StringValue("acceptOffer"))
+            .addArg(new U64Value(index))
+            .addArg(new BigUIntValue(amount))
+            .build()
+        : TransactionPayload.contractCall()
+            .setFunction(new ContractFunction("acceptOffer"))
+            .addArg(new U64Value(index))
+            .addArg(new BigUIntValue(amount))
+            .build();
 
     const offerEsdtTx = new Transaction({
       value: 0,

@@ -674,14 +674,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   }
 
   const validateDataStreamUrl = (value) => {
-    if(value.includes("https://drive.google.com")) {
+    if (value.includes("https://drive.google.com")) {
       setDataStreamUrlValidation(true);
     } else {
       setDataStreamUrlValidation(false);
     }
   };
   const validateDataPreviewUrl = (value) => {
-    if(value.includes("https://drive.google.com")) {
+    if (value.includes("https://drive.google.com")) {
       setDataPreviewUrlValidation(true);
     } else {
       setDataPreviewUrlValidation(false);
@@ -868,9 +868,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 </Text>
               )}
               {userFocusedForm && dataPreviewUrlValidation && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    Data Preview URL doesn&apos;t accept Google Drive URLs
-                  </Text>
+                <Text color="red.400" fontSize="sm" mt="1 !important">
+                  Data Preview URL doesn&apos;t accept Google Drive URLs
+                </Text>
               )}
 
               <InputLabelWithPopover tkey="data-marshal-url">

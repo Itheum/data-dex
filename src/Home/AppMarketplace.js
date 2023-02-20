@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   Badge,
   Box,
@@ -21,9 +21,9 @@ import {
 import imgProgGaPa from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
 import imgProgWfh from "img/prog-wfh.png";
-import {CHAIN_TOKEN_SYMBOL, progInfoMeta} from "libs/util";
-import {useChainMeta} from "store/ChainMetaContext";
-import {useUser} from "store/UserContext";
+import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
+import { useUser } from "store/UserContext";
 
 export default function AppMarketplace() {
   const { chainMeta: _chainMeta } = useChainMeta();

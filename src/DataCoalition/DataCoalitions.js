@@ -1,9 +1,9 @@
 import React from "react";
-import {Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider} from "@chakra-ui/react";
-import {useNavigate} from "react-router-dom";
+import { Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import dataCoalitionsIcon from "img/data-coalitions-icon.png";
-import {CHAIN_TOKEN_SYMBOL, MENU} from "libs/util";
-import {useChainMeta} from "store/ChainMetaContext";
+import { CHAIN_TOKEN_SYMBOL, MENU } from "libs/util";
+import { useChainMeta } from "store/ChainMetaContext";
 
 export default function ({ setMenuItem }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();

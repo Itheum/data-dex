@@ -18,7 +18,7 @@ import {
   Tooltip,
   useDisclosure,
   useToast,
-  Wrap
+  Wrap,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -27,17 +27,7 @@ import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import {
-  CHAIN_TOKEN_SYMBOL,
-  CLAIM_TYPES,
-  dataCATDemoUserData,
-  debugui,
-  formatNumberRoundFloor,
-  MENU,
-  sleep,
-  SUPPORTED_CHAINS,
-  uxConfig
-} from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, debugui, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -272,9 +262,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     setLoadingDataCatTestUser(false);
 
     toast({
-      title: 'Congrats! an Itheum Data CAT test account has been linked',
-      description: 'You can now advertise your data for trade on the Data DEX',
-      status: 'success',
+      title: "Congrats! an Itheum Data CAT test account has been linked",
+      description: "You can now advertise your data for trade on the Data DEX",
+      status: "success",
       duration: 6000,
       isClosable: true,
     });
@@ -301,13 +291,15 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 <Alert>
                   <Stack>
                     <AlertTitle fontSize="md">
-                      <AlertIcon mb={2} /> Sorry! You don&apos;t seem to have a{' '}
+                      <AlertIcon mb={2} /> Sorry! You don&apos;t seem to have a{" "}
                       <Link href="https://itheum.com" isExternal>
                         itheum.com
-                      </Link>{' '}
+                      </Link>{" "}
                       Data CAT account
                     </AlertTitle>
-                    <AlertDescription fontSize="md">But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
+                    <AlertDescription fontSize="md">
+                      But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
+                    </AlertDescription>
                   </Stack>
                 </Alert>
               )}
@@ -340,7 +332,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   variant="outline"
                   onClick={() => {
                     setMenuItem(2);
-                    navigate('/selldata');
+                    navigate("/selldata");
                   }}
                 >
                   Trade My Data

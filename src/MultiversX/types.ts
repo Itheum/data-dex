@@ -1,5 +1,5 @@
-export type RecordStringNumberType =  Record<string, number>;
-export type RecordStringStringType =  Record<string, string>;
+export type RecordStringNumberType = Record<string, number>;
+export type RecordStringStringType = Record<string, string>;
 
 export interface DataNftMetadataType {
   index: number;
@@ -64,17 +64,17 @@ export interface DataNftType {
 }
 
 export interface UserDataType {
-  antiSpamTaxValue: number,
-  addressFrozen: boolean,
-  frozenNonces: number[],
-  contractPaused: boolean,
-  userWhitelistedForMint: boolean,
-  lastUserMintTime: number,
-  maxRoyalties: number,
-  maxSupply: number,
-  minRoyalties: number,
-  mintTimeLimit: number,
-  numberOfMintsForUser: number,
-  totalNumberOfMints: number,
-  contractWhitelistEnabled: boolean,
+  antiSpamTaxValue: number;
+  addressFrozen: boolean;
+  frozenNonces: number[];
+  contractPaused: boolean;
+  userWhitelistedForMint: boolean;
+  lastUserMintTime: number;
+  maxRoyalties: number;
+  maxSupply: number;
+  minRoyalties: number;
+  mintTimeLimit: number;
+  numberOfMintsForUser: number;
+  totalNumberOfMints: number;
+  contractWhitelistEnabled: boolean;
 }
