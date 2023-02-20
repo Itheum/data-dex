@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {WarningTwoIcon} from "@chakra-ui/icons";
+import React, { useEffect, useState } from "react";
+import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -20,10 +20,10 @@ import {
   useToast,
   Wrap
 } from "@chakra-ui/react";
-import {useGetAccountInfo, useGetLoginInfo} from "@multiversx/sdk-dapp/hooks/account";
-import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
@@ -38,10 +38,10 @@ import {
   SUPPORTED_CHAINS,
   uxConfig
 } from "libs/util";
-import {ClaimsContract} from "MultiversX/claims";
-import {FaucetContract} from "MultiversX/faucet";
-import {useChainMeta} from "store/ChainMetaContext";
-import {useUser} from "store/UserContext";
+import { ClaimsContract } from "MultiversX/claims";
+import { FaucetContract } from "MultiversX/faucet";
+import { useChainMeta } from "store/ChainMetaContext";
+import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 let mxFaucetContract = null;
@@ -58,8 +58,8 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
-    claimBalanceValues: ["-1", "-1", "-1"], // -1 is loading, -2 is error
-    claimBalanceDates: [0, 0, 0],
+    claimBalanceValues: ["-1", "-1", "-1", "-1"], // -1 is loading, -2 is error
+    claimBalanceDates: [0, 0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
