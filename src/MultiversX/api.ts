@@ -119,16 +119,18 @@ export const getClaimTransactions = async (address: string, smartContractAddress
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string, networkId: string) => {
+export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string, networkId: string): Promise<NftType[]> => {
   const api = getApi(networkId);
   try {
-    const nftsLink = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
+    const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
+    const { data } = await axios.get<NftType[]>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
 
-    const resp = await (await axios.get(nftsLink, { timeout: uxConfig.mxAPITimeoutMs })).data;
-    return resp;
+    return data;
   } catch (error) {
     console.error(error);
-    return { error };
+    return [];
   }
 };
 
