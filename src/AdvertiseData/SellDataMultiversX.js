@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {CheckCircleIcon} from "@chakra-ui/icons";
+import React, { useEffect, useState } from "react";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -47,18 +47,18 @@ import {
   Textarea,
   useDisclosure,
   useToast,
-  Wrap
+  Wrap,
 } from "@chakra-ui/react";
-import {ResultsParser} from "@multiversx/sdk-core";
-import {useGetPendingTransactions, useTrackTransactionStatus} from "@multiversx/sdk-dapp/hooks";
-import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
+import { ResultsParser } from "@multiversx/sdk-core";
+import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
 import mime from "mime";
-import {File, NFTStorage} from "nft.storage";
-import {convertWeiToEsdt, isValidNumericCharacter, MENU, sleep} from "libs/util";
-import {checkBalance} from "MultiversX/api";
-import {DataNftMintContract} from "MultiversX/dataNftMint";
-import {useChainMeta} from "store/ChainMetaContext";
+import { File, NFTStorage } from "nft.storage";
+import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/util";
+import { checkBalance } from "MultiversX/api";
+import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
 const InputLabelWithPopover = ({ children, tkey }) => {
@@ -165,6 +165,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
+  const [dataStreamUrlValidation, setDataStreamUrlValidation] = useState(false);
+  const [dataPreviewUrlValidation, setDataPreviewUrlValidation] = useState(false);
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
   // query settings from Data NFT Minter SC
@@ -393,26 +395,26 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   useEffect(() => {
     setMintDataNFTDisabled(
       !!dataNFTStreamUrlError ||
-      !!dataNFTStreamPreviewUrlError ||
-      !!dataNFTTokenNameError ||
-      !!datasetTitleError ||
-      !!datasetDescriptionError ||
-      !!dataNFTCopiesError ||
-      !!dataNFTRoyaltyError ||
-      !dataNFTStreamUrlValid ||
-      !dataNFTStreamPreviewUrlValid ||
-      !dataNFTMarshalServiceValid ||
-      !dataNFTImgGenServiceValid ||
-      !readTermsChecked ||
-      !readAntiSpamFeeChecked ||
-      minRoyalties < 0 ||
-      maxRoyalties < 0 ||
-      maxSupply < 0 ||
-      antiSpamTax < 0 ||
-      itheumBalance < antiSpamTax ||
-      // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
-      (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-      (userData && userData.contractPaused)
+        !!dataNFTStreamPreviewUrlError ||
+        !!dataNFTTokenNameError ||
+        !!datasetTitleError ||
+        !!datasetDescriptionError ||
+        !!dataNFTCopiesError ||
+        !!dataNFTRoyaltyError ||
+        !dataNFTStreamUrlValid ||
+        !dataNFTStreamPreviewUrlValid ||
+        !dataNFTMarshalServiceValid ||
+        !dataNFTImgGenServiceValid ||
+        !readTermsChecked ||
+        !readAntiSpamFeeChecked ||
+        minRoyalties < 0 ||
+        maxRoyalties < 0 ||
+        maxSupply < 0 ||
+        antiSpamTax < 0 ||
+        itheumBalance < antiSpamTax ||
+        // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
+        (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+        (userData && userData.contractPaused)
     );
   }, [
     dataNFTStreamUrlError,
@@ -441,11 +443,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const mintTxFail = (foo) => {
     console.log("mintTxFail", foo);
+    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
   const mintTxCancelled = (foo) => {
     console.log("mintTxCancelled", foo);
+    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
@@ -461,8 +465,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const getDataForSale = async (programId) => {
     let selObj = {};
-    let dataCATStreamUrl = '';
-    let dataCATStreamPreviewUrl = '';
+    let dataCATStreamUrl = "";
+    let dataCATStreamPreviewUrl = "";
 
     if (programId) {
       selObj = {
@@ -513,6 +517,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
     const res = await validateBaseInput();
     if (res) {
+      setErrDataNFTStreamGeneric(null);
       dataNFTDataStreamAdvertise();
     }
   };
@@ -668,6 +673,21 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   }
 
+  const validateDataStreamUrl = (value) => {
+    if(value.includes("https://drive.google.com")) {
+      setDataStreamUrlValidation(true);
+    } else {
+      setDataStreamUrlValidation(false);
+    }
+  };
+  const validateDataPreviewUrl = (value) => {
+    if(value.includes("https://drive.google.com")) {
+      setDataPreviewUrlValidation(true);
+    } else {
+      setDataPreviewUrlValidation(false);
+    }
+  };
+
   return (
     <Stack spacing={5}>
       <Heading size="lg">Trade Data</Heading>
@@ -734,10 +754,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   </Text>
                 </Stack>
               )) || (
-                  <Heading as="h4" size="lg">
-                    Trade a Data Stream as a Data NFT-FT
-                  </Heading>
-                )}
+                <Heading as="h4" size="lg">
+                  Trade a Data Stream as a Data NFT-FT
+                </Heading>
+              )}
             </HStack>
           </DrawerHeader>
           <DrawerBody
@@ -756,29 +776,29 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 !dataNFTImgGenServiceValid ||
                 (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
                 (userData && userData.contractPaused)) && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Uptime Errors
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
-                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
-                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
-                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                          <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                        )}
-                        {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Uptime Errors
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                      {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                      {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                      {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                      {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                      {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      )}
+                      {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
               <Text fontSize="sm" color="gray.400">
                 * required fields
@@ -801,7 +821,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 mt="1 !important"
                 placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                 value={dataNFTStreamUrl}
-                onChange={(event) => onChangeDataNFTStreamUrl(event.currentTarget.value)}
+                onChange={(event) => {
+                  onChangeDataNFTStreamUrl(event.currentTarget.value);
+                  validateDataStreamUrl(event.currentTarget.value);
+                }}
               />
               {userFocusedForm && dataNFTStreamUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -811,6 +834,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               {userFocusedForm && !dataNFTStreamUrlValid && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
                   Data Stream URL must be a publicly accessible url
+                </Text>
+              )}
+              {userFocusedForm && dataStreamUrlValidation && (
+                <Text color="red.400" fontSize="sm" mt="1 !important">
+                  Data Stream URL doesn&apos;t accept Google Drive URLs
                 </Text>
               )}
 
@@ -824,7 +852,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 mt="1 !important"
                 placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                 value={dataNFTStreamPreviewUrl}
-                onChange={(event) => onChangeDataNFTStreamPreviewUrl(event.currentTarget.value)}
+                onChange={(event) => {
+                  onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                  validateDataPreviewUrl(event.currentTarget.value);
+                }}
               />
               {userFocusedForm && dataNFTStreamPreviewUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -835,6 +866,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 <Text color="red.400" fontSize="sm" mt="1 !important">
                   Data Stream Preview URL must be a publicly accessible url
                 </Text>
+              )}
+              {userFocusedForm && dataPreviewUrlValidation && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    Data Preview URL doesn&apos;t accept Google Drive URLs
+                  </Text>
               )}
 
               <InputLabelWithPopover tkey="data-marshal-url">
@@ -881,12 +917,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 </Text>
               </InputLabelWithPopover>
 
-              <Input
-                mt="1 !important"
-                placeholder="Dataset Title"
-                value={datasetTitle}
-                onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
-              />
+              <Input mt="1 !important" placeholder="Dataset Title" value={datasetTitle} onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)} />
               <Text color="gray.400" fontSize="sm" mt="0 !important">
                 Between 10 and 50 alphanumeric characters only
               </Text>
@@ -987,11 +1018,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 Terms and Fees
               </Text>
               <Text fontSize="md" mt="4 !important">
-                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
-                that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
-                is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But
-                there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
-                of use before proceeding.
+                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that
+                the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is
+                always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there
+                are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use
+                before proceeding.
               </Text>
               <Flex mt="3 !important">
                 <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>

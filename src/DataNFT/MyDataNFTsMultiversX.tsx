@@ -50,29 +50,28 @@ import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxCo
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
-export default function MyDataNFTsMx() {
+export default function MyDataNFTsMx({ onRfMount }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
+  const [onChainNFTs, setOnChainNFTs] = useState(null);
+  const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState([]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
-  const [amounts, setAmounts] = useState<number[]>([]);
-  const [prices, setPrices] = useState<number[]>([]);
-  const [priceErrors, setPriceErrors] = useState<string[]>([]);
+  const [amounts, setAmounts] = useState([]);
+  const [prices, setPrices] = useState([]);
+  const [priceErrors, setPriceErrors] = useState([]);
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
     s2: 0,
     s3: 0,
-    s4: 0,
   });
-  const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
+  const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState(null);
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
@@ -80,8 +79,8 @@ export default function MyDataNFTsMx() {
 
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
-  const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
+  const [selectedDataNft, setSelectedDataNft] = useState(null);
+  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState({});
 
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
@@ -92,120 +91,129 @@ export default function MyDataNFTsMx() {
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
       console.log("_marketRequirements", _marketRequirements);
-      const _maxPaymentFeeMap: RecordStringNumberType = {};
-
-      if (_marketRequirements) {
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
-          ).toNumber();
-        }
+      const _maxPaymentFeeMap = {};
+      for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
+        _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
+          _marketRequirements.maximum_payment_fees[i],
+          tokenDecimals(_marketRequirements.accepted_payments[i])
+        ).toNumber();
       }
-
       setMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
   }, []);
 
-  const onChangeDataNftBurnAmount = (valueAsString: string, valueAsNumber: number) => {
+  const onChangeDataNftBurnAmount = (newValue) => {
     let error = "";
-    if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
+    if (Number(newValue) > Number(selectedDataNft.balance)) {
       error = "Data NFT balance exceeded";
-    } else if (valueAsNumber < 1) {
+    } else if (Number(newValue) < 1) {
       error = "Burn Amount cannot be zero or negative";
     }
 
     setDataNftBurnAmountError(error);
-    setDataNftBurnAmount(valueAsNumber);
+    setDataNftBurnAmount(newValue);
   };
 
-  const onBurnButtonClick = (nft: DataNftType) => {
+  const onBurnButtonClick = (nft) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(Number(nft.balance)); // init
+    setDataNftBurnAmount(nft.balance); // init
     setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
-  const onListButtonClick = (nft: DataNftType) => {
+  const onListButtonClick = (nft) => {
     setSelectedDataNft(nft);
     onListNFTOpen();
   };
 
-  const getOnChainNFTs = async () => {
-    const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
-    console.log("onChainNfts", onChainNfts);
-
-    if (onChainNfts.length > 0) {
-      const codec = new BinaryCodec();
-      const json = JSON.parse(JSON.stringify(dataNftMintJson));
-      const abiRegistry = AbiRegistry.create(json);
-      const abi = new SmartContractAbi(abiRegistry, ["DataNftMint"]);
-      const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
-
-      // some logic to loop through the raw onChainNFTs and build the dataNfts
-      const _dataNfts: DataNftType[] = [];
-      const localAmounts: number[] = [];
-      const localPrices: number[] = [];
-      const localErrors: string[] = [];
-
-      for (let index = 0; index < onChainNfts.length; index++) {
-        const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
-        const nft = onChainNfts[index];
-
-        _dataNfts.push({
-          index, // only for view & query
-          id: nft.identifier, // ID of NFT -> done
-          nftImgUrl: nft.url ? nft.url : "", // image URL of of NFT -> done
-          dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
-          dataStream: decodedAttributes["data_stream_url"].toString(), // data stream URL -> done
-          dataMarshal: decodedAttributes["data_marshal_url"].toString(), // data stream URL -> done
-          tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
-          feeInTokens: 100, // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-          creator: decodedAttributes["creator"].toString(), // initial creator of NFT
-          creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
-          supply: nft.supply ? Number(nft.supply) : 0,
-          balance: Number(nft.balance),
-          description: decodedAttributes["description"].toString(),
-          title: decodedAttributes["title"].toString(),
-          royalties: nft.royalties / 100,
-          nonce: nft.nonce,
-          collection: nft.collection,
-        });
-
-        localAmounts.push(1);
-        localPrices.push(10);
-        localErrors.push("");
-      }
-
-      setAmounts(localAmounts);
-      setPrices(localPrices);
-      setPriceErrors(localErrors);
-
-      console.log("_dataNfts", _dataNfts);
-      setDataNfts(_dataNfts);
-    } else {
-      // await sleep(4);
-      setNoData(true);
-      setDataNfts([]);
+  useEffect(() => {
+    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's 'false' we need to get balances
+    if (!hasPendingTransactions) {
+      getOnChainNFTs();
     }
-  };
+  }, [hasPendingTransactions]);
 
   // use this effect to parse  the raw data into a catalog that is easier to render in the UI
   useEffect(() => {
-    getOnChainNFTs();
-  }, [hasPendingTransactions]);
+    const parseOnChainNfts = async () => {
+      if (onChainNFTs !== null) {
+        if (onChainNFTs.length > 0) {
+          const codec = new BinaryCodec();
+          const json = JSON.parse(JSON.stringify(dataNftMintJson));
+          const abiRegistry = AbiRegistry.create(json);
+          const abi = new SmartContractAbi(abiRegistry, ["DataNftMint"]);
+          const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
 
-  const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
-  useEffect(() => {
-    (async () => {
-      if (address) {
-        const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
-        setUserData(_userData);
+          // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
+          const usersDataNFTCatalogLocal = [];
+          let localAmounts = [];
+          let localPrices = [];
+          let localErrors = [];
+          onChainNFTs.forEach((nft, index) => {
+            const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft["attributes"], "base64"), dataNftAttributes).valueOf();
+            const dataNFT = {};
+            dataNFT.index = index; // only for view & query
+            dataNFT.id = nft["identifier"]; // ID of NFT -> done
+            dataNFT.nftImgUrl = nft["url"]; // image URL of NFT -> done
+            dataNFT.dataPreview = decodedAttributes["data_preview_url"].toString(); // preview URL for NFT data stream -> done
+            dataNFT.dataStream = decodedAttributes["data_stream_url"].toString(); // data stream URL -> done
+            dataNFT.dataMarshal = decodedAttributes["data_marshal_url"].toString(); // data stream URL -> done
+            dataNFT.tokenName = nft["name"]; // is this different to NFT ID? -> yes, name can be chosen by the user
+            dataNFT.feeInTokens = "100"; // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
+            dataNFT.creator = decodedAttributes["creator"].toString(); // initial creator of NFT
+            dataNFT.creationTime = new Date(Number(decodedAttributes["creation_time"]) * 1000); // initial creation time of NFT
+            dataNFT.supply = nft["supply"];
+            dataNFT.balance = nft["balance"];
+            dataNFT.description = decodedAttributes["description"].toString();
+            dataNFT.title = decodedAttributes["title"].toString();
+            dataNFT.royalties = nft["royalties"] / 100;
+            dataNFT.nonce = nft["nonce"];
+            dataNFT.collection = nft["collection"];
+            localAmounts.push(1);
+            localPrices.push(10);
+            localErrors.push("");
+            usersDataNFTCatalogLocal.push(dataNFT);
+            console.log("test");
+          });
+          setAmounts(localAmounts);
+          setPrices(localPrices);
+          setPriceErrors(localErrors);
+          console.log("usersDataNFTCatalogLocal");
+          console.log(usersDataNFTCatalogLocal);
+
+          setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
+        } else {
+          await sleep(4);
+          setNoData(true);
+        }
       }
-    })();
+    };
+    parseOnChainNfts();
+  }, [onChainNFTs]);
+
+  const [userData, setUserData] = useState({});
+  const getUserData = async () => {
+    if (address && !hasPendingTransactions) {
+      const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
+      setUserData(_userData);
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
   }, [address, hasPendingTransactions]);
 
-  const accessDataStream = async (NFTid: string, myAddress: string) => {
+  // get the raw NFT data from the blockchain for the user
+  const getOnChainNFTs = async () => {
+    const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
+
+    console.log("onChainNfts");
+    console.log(onChainNfts);
+
+    setOnChainNFTs(onChainNfts);
+  };
+
+  const accessDataStream = async (NFTid, myAddress) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -248,22 +256,20 @@ export default function MyDataNFTsMx() {
         }
       } else {
         if (data.success === false) {
-          setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
+          setErrUnlockAccessGeneric(new Error(`${data.error.code}, ${data.error.message}`));
         } else {
-          setErrUnlockAccessGeneric("Data Marshal responded with an unknown error trying to generate your access links");
+          setErrUnlockAccessGeneric(new Error("Data Marshal responded with an unknown error trying to generate your access links"));
         }
       }
-    } catch (e: any) {
-      setErrUnlockAccessGeneric(e.toString());
+    } catch (e) {
+      setErrUnlockAccessGeneric(e);
     }
   };
 
-  const fetchAccountSignature = async (message: string) => {
+  const fetchAccountSignature = async (message) => {
     const signResult = {
-      signature: "",
-      addrInHex: "",
-      success: false,
-      exception: "",
+      signature: null,
+      addrInHex: null,
     };
 
     let customError = "Signature result not received from wallet";
@@ -274,18 +280,31 @@ export default function MyDataNFTsMx() {
     } else {
       try {
         const signatureObj = await signMessage({ message });
-        if (signatureObj?.signature && signatureObj?.address) {
+        console.log("signatureObj");
+        console.log(signatureObj);
+
+        if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) {
           // Maiar App V2 / Ledger
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
+          signResult.addrInHex = signatureObj.address.valueHex;
+
+          if (signatureObj.signature.buffer instanceof Uint8Array) {
+            // Ledger
+            customError = "Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
+          } else {
+            // Maiar (it will be string)
+            signResult.signature = signatureObj.signature.buffer.toString();
+          }
+        } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) {
+          // Defi Wallet
+          signResult.signature = signatureObj.signature.value;
+          signResult.addrInHex = signatureObj.address.valueHex;
         } else {
-          signResult.exception = "Signature result from wallet was malformed";
+          signResult.success = false;
+          signResult.exception = new Error("Signature result from wallet was malformed");
         }
-      } catch (e: any) {
+      } catch (e) {
         signResult.success = false;
-        signResult.exception = e.toString();
+        signResult.exception = e;
       }
 
       console.log("signResult");
@@ -294,7 +313,7 @@ export default function MyDataNFTsMx() {
 
     if (signResult.signature === null || signResult.addrInHex === null) {
       signResult.success = false;
-      signResult.exception = customError;
+      signResult.exception = new Error(customError);
     }
 
     return signResult;
@@ -302,7 +321,7 @@ export default function MyDataNFTsMx() {
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
-    setErrUnlockAccessGeneric("");
+    setErrUnlockAccessGeneric(null);
     onAccessProgressModalClose();
   };
 
@@ -361,10 +380,10 @@ export default function MyDataNFTsMx() {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
-        <Flex wrap="wrap" gap="5">
-          {dataNfts &&
-            dataNfts.map((item, index) => (
+      {(usersDataNFTCatalog.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
+        <Flex wrap="wrap" spacing={5}>
+          {usersDataNFTCatalog &&
+            usersDataNFTCatalog.map((item, index) => (
               <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" mb="1rem" position="relative" w="15.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
@@ -374,7 +393,7 @@ export default function MyDataNFTsMx() {
 
                 <Flex h="30rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
-                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/nfts/${item.id}`} isExternal>
                       {item.tokenName} <ExternalLinkIcon mx="2px" />
                     </Link>
                   </Text>
@@ -407,7 +426,7 @@ export default function MyDataNFTsMx() {
                     {item.creator !== address && (
                       <Box color="gray.600" fontSize="sm">
                         {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
-                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/accounts/${item.creator}`} isExternal>
                           <ExternalLinkIcon mx="2px" />
                         </Link>
                       </Box>
@@ -546,9 +565,7 @@ export default function MyDataNFTsMx() {
                   height="100%"
                   width="100%"
                   backgroundColor="blackAlpha.800"
-                  visibility={
-                    userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
-                  }
+                  visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce)) ? "visible" : "collapse"}
                 >
                   <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
@@ -750,7 +767,7 @@ export default function MyDataNFTsMx() {
                       <AlertIcon mb={2} />
                       Process Error
                     </AlertTitle>
-                    {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
+                    {errUnlockAccessGeneric.message && <AlertDescription fontSize="md">{errUnlockAccessGeneric.message}</AlertDescription>}
                     <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                   </Stack>
                 </Alert>
