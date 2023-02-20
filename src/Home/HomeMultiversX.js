@@ -254,7 +254,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     onClose: () => {
       onRoyaltiesClose();
     },
-    title: "Rewards",
+    title: "Royalties",
     tag1: "Total Available",
     value1: claimsBalances.claimBalanceValues[3],
     tag2: "Last Deposited on",
