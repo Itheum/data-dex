@@ -442,7 +442,6 @@ export default function Marketplace() {
                         Fee per NFT:
                         {marketRequirements ? (
                           <>
-                            {" "}
                             {printPrice(
                               convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
                               getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
