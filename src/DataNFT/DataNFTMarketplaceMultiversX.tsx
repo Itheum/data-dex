@@ -376,7 +376,7 @@ export default function Marketplace() {
                   </Flex>
 
                   <Flex h="30rem" p="3" direction="column" justify="space-between">
-                    {nftMetadatasLoading && <SkeletonLoadingList />}
+                    {!(!nftMetadatasLoading && nftMetadatas[index]) && <SkeletonLoadingList />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
                         <Text fontSize="xs">
@@ -410,9 +410,14 @@ export default function Marketplace() {
                         </Flex>
 
                         <Box color="gray.600" fontSize="sm">
-                          {`Creator: ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
-
+                          Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
                           <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                            <ExternalLinkIcon mx="2px" />
+                          </Link>
+                        </Box>
+                        <Box color="gray.600" fontSize="sm">
+                          Owner:&nbsp; {` ${offer.owner.slice(0, 8)} ... ${offer.owner.slice(-8)}`}
+                          <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                             <ExternalLinkIcon mx="2px" />
                           </Link>
                         </Box>
@@ -445,158 +450,162 @@ export default function Marketplace() {
                       </>
                     )}
 
-                    <Box fontSize="xs" mt="2">
-                      <Text>
-                        Fee per NFT:
-                        {marketRequirements ? (
-                          <>
-                            {printPrice(
-                              convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                              getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                            )}
-                          </>
-                        ) : (
-                          " -"
-                        )}
-                      </Text>
-                    </Box>
-                    <Button
-                      mt="2"
-                      size="sm"
-                      colorScheme="teal"
-                      height="7"
-                      variant="outline"
-                      onClick={() => {
-                        window.open(nftMetadatas[index].dataPreview);
-                      }}
-                    >
-                      Preview Data
-                    </Button>
-
                     {
-                      /* Public Marketplace: Hide Procure part if NFT is owned by User */
-                      (tabState === 1 && address && address != offer.owner && (
-                        <>
-                          <HStack h="3rem">
-                            <Text fontSize="xs">How many to procure </Text>
-                            <NumberInput
-                              size="xs"
-                              maxW={16}
-                              step={1}
-                              min={1}
-                              max={offer.quantity}
-                              isValidCharacter={isValidNumericCharacter}
-                              value={amountOfTokens[index]}
-                              onChange={(valueAsString) => {
-                                const value = Number(valueAsString);
-                                let error = "";
-                                if (value <= 0) {
-                                  error = "Cannot be zero or negative";
-                                } else if (value > offer.quantity) {
-                                  error = "Cannot exceed balance";
-                                }
-                                setAmountErrors((oldErrors) => {
-                                  const newErrors = [...oldErrors];
-                                  newErrors[index] = error;
-                                  return newErrors;
-                                });
-                                setAmountOfTokens((oldAmounts: any) => {
-                                  const newAmounts = { ...oldAmounts };
-                                  newAmounts[index] = value;
-                                  return newAmounts;
-                                });
-                              }}
-                            >
-                              <NumberInputField />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                            <Button
-                              size="xs"
-                              colorScheme="teal"
-                              width="72px"
-                              isDisabled={hasPendingTransactions || !!amountErrors[index]}
-                              onClick={() => {
-                                setReadTermsChecked(false);
-                                setSelectedOfferIndex(index);
-                                onProcureModalOpen();
-                              }}
-                            >
-                              Procure
-                            </Button>
-                          </HStack>
-                          {amountErrors[index] && (
-                            <Text color="red.400" fontSize="xs">
-                              {amountErrors[index]}
-                            </Text>
-                          )}
-                        </>
-                      )) || <Box mt="2" h="3rem" />
-                    }
+                      !nftMetadatasLoading && nftMetadatas[index] && (<>
+                        <Box fontSize="xs" mt="2">
+                          <Text>
+                            Fee per NFT:
+                            {marketRequirements ? (
+                              <>
+                                {printPrice(
+                                  convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
+                                  getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                                )}
+                              </>
+                            ) : (
+                              " -"
+                            )}
+                          </Text>
+                        </Box>
+                        <Button
+                          mt="2"
+                          size="sm"
+                          colorScheme="teal"
+                          height="7"
+                          variant="outline"
+                          onClick={() => {
+                            window.open(nftMetadatas[index].dataPreview);
+                          }}
+                        >
+                          Preview Data
+                        </Button>
 
-                    {tabState === 2 && address && (
-                      <>
-                        <Flex mt="2" gap="2">
-                          <Button
-                            size="xs"
-                            colorScheme="teal"
-                            width="72px"
-                            isDisabled={hasPendingTransactions}
-                            onClick={() => {
-                              setSelectedOfferIndex(index);
-                              setDelistAmount(offers[index].quantity);
-                              setDelistModalState(1);
-                              onDelistModalOpen();
-                            }}
-                          >
-                            De-List All
-                          </Button>
-                          {offers[index].quantity > 1 && (
-                            <Button
-                              size="xs"
-                              colorScheme="teal"
-                              width="72px"
-                              isDisabled={hasPendingTransactions}
-                              onClick={() => {
-                                setSelectedOfferIndex(index);
-                                setDelistAmount(1);
-                                setDelistModalState(0);
-                                onDelistModalOpen();
-                              }}
-                            >
-                              De-List Some
-                            </Button>
-                          )}
-                          <Button
-                            size="xs"
-                            colorScheme="teal"
-                            width="72px"
-                            isDisabled={hasPendingTransactions}
-                            onClick={() => {
-                              setSelectedOfferIndex(index);
-                              if (marketRequirements) {
-                                setNewListingPrice(
-                                  convertWeiToEsdt(
-                                    BigNumber(offers[index].wanted_token_amount)
-                                      .multipliedBy(amountOfTokens[index])
-                                      .multipliedBy(10000)
-                                      .div(10000 + marketRequirements.buyer_fee),
-                                    tokenDecimals(offers[index].wanted_token_identifier)
-                                  ).toNumber()
-                                );
-                              } else {
-                                setNewListingPrice(0);
-                              }
-                              onUpdatePriceModalOpen();
-                            }}
-                          >
-                            Update Price
-                          </Button>
-                        </Flex>
-                      </>
-                    )}
+                        {
+                          /* Public Marketplace: Hide Procure part if NFT is owned by User */
+                          (tabState === 1 && address && address != offer.owner && (
+                            <>
+                              <HStack h="3rem">
+                                <Text fontSize="xs">How many to procure </Text>
+                                <NumberInput
+                                  size="xs"
+                                  maxW={16}
+                                  step={1}
+                                  min={1}
+                                  max={offer.quantity}
+                                  isValidCharacter={isValidNumericCharacter}
+                                  value={amountOfTokens[index]}
+                                  onChange={(valueAsString) => {
+                                    const value = Number(valueAsString);
+                                    let error = "";
+                                    if (value <= 0) {
+                                      error = "Cannot be zero or negative";
+                                    } else if (value > offer.quantity) {
+                                      error = "Cannot exceed balance";
+                                    }
+                                    setAmountErrors((oldErrors) => {
+                                      const newErrors = [...oldErrors];
+                                      newErrors[index] = error;
+                                      return newErrors;
+                                    });
+                                    setAmountOfTokens((oldAmounts: any) => {
+                                      const newAmounts = { ...oldAmounts };
+                                      newAmounts[index] = value;
+                                      return newAmounts;
+                                    });
+                                  }}
+                                >
+                                  <NumberInputField />
+                                  <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                  </NumberInputStepper>
+                                </NumberInput>
+                                <Button
+                                  size="xs"
+                                  colorScheme="teal"
+                                  width="72px"
+                                  isDisabled={hasPendingTransactions || !!amountErrors[index]}
+                                  onClick={() => {
+                                    setReadTermsChecked(false);
+                                    setSelectedOfferIndex(index);
+                                    onProcureModalOpen();
+                                  }}
+                                >
+                                  Procure
+                                </Button>
+                              </HStack>
+                              {amountErrors[index] && (
+                                <Text color="red.400" fontSize="xs">
+                                  {amountErrors[index]}
+                                </Text>
+                              )}
+                            </>
+                          )) || <Box mt="2" h="3rem" />
+                        }
+
+                        {tabState === 2 && address && (
+                          <>
+                            <Flex mt="2" gap="2">
+                              <Button
+                                size="xs"
+                                colorScheme="teal"
+                                width="72px"
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => {
+                                  setSelectedOfferIndex(index);
+                                  setDelistAmount(offers[index].quantity);
+                                  setDelistModalState(1);
+                                  onDelistModalOpen();
+                                }}
+                              >
+                                De-List All
+                              </Button>
+                              {offers[index].quantity > 1 && (
+                                <Button
+                                  size="xs"
+                                  colorScheme="teal"
+                                  width="72px"
+                                  isDisabled={hasPendingTransactions}
+                                  onClick={() => {
+                                    setSelectedOfferIndex(index);
+                                    setDelistAmount(1);
+                                    setDelistModalState(0);
+                                    onDelistModalOpen();
+                                  }}
+                                >
+                                  De-List Some
+                                </Button>
+                              )}
+                              <Button
+                                size="xs"
+                                colorScheme="teal"
+                                width="72px"
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => {
+                                  setSelectedOfferIndex(index);
+                                  if (marketRequirements) {
+                                    setNewListingPrice(
+                                      convertWeiToEsdt(
+                                        BigNumber(offers[index].wanted_token_amount)
+                                          .multipliedBy(amountOfTokens[index])
+                                          .multipliedBy(10000)
+                                          .div(10000 + marketRequirements.buyer_fee),
+                                        tokenDecimals(offers[index].wanted_token_identifier)
+                                      ).toNumber()
+                                    );
+                                  } else {
+                                    setNewListingPrice(0);
+                                  }
+                                  onUpdatePriceModalOpen();
+                                }}
+                              >
+                                Update Price
+                              </Button>
+                            </Flex>
+                          </>
+                        )}
+                      </>)
+                    }
                   </Flex>
 
                   <Box
