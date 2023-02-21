@@ -36,7 +36,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
   const { colorMode } = useColorMode();
 
   return (
-    <Container maxW="container.xxl" h="100vh" display="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
+    <Container maxW="container.xl" h="100vh" display="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
       <Box
         minW={[null, null, "460px"]}
         p={["20px", null, "30px"]}
