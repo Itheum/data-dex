@@ -59,6 +59,7 @@ export default function Marketplace() {
   const [tabState, setTabState] = useState<number>(1); // 1 for "Public Marketplace", 2 for "My Data NFTs"
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
+  const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
@@ -153,10 +154,13 @@ export default function Marketplace() {
 
       //
       const amounts: any = {};
+      const _amountErrors: string[] = [];
       for (let i = 0; i < _offers.length; i++) {
         amounts[i] = 1;
+        _amountErrors.push("");
       }
       setAmountOfTokens(amounts);
+      setAmountErrors(_amountErrors);
 
       //
       setNftMetadatasLoading(true);
@@ -483,13 +487,25 @@ export default function Marketplace() {
                               max={offer.quantity}
                               isValidCharacter={isValidNumericCharacter}
                               value={amountOfTokens[index]}
-                              onChange={(valueString) =>
+                              onChange={(valueAsString) => {
+                                const value = Number(valueAsString);
+                                let error = "";
+                                if (value <= 0) {
+                                  error = "Cannot be zero or negative";
+                                } else if (value > offer.quantity) {
+                                  error = "Cannot exceed balance";
+                                }
+                                setAmountErrors((oldErrors) => {
+                                  const newErrors = [...oldErrors];
+                                  newErrors[index] = error;
+                                  return newErrors;
+                                });
                                 setAmountOfTokens((oldAmounts: any) => {
                                   const newAmounts = { ...oldAmounts };
-                                  newAmounts[index] = Number(valueString);
+                                  newAmounts[index] = value;
                                   return newAmounts;
-                                })
-                              }
+                                });
+                              }}
                             >
                               <NumberInputField />
                               <NumberInputStepper>
@@ -501,7 +517,7 @@ export default function Marketplace() {
                               size="xs"
                               colorScheme="teal"
                               width="72px"
-                              isDisabled={hasPendingTransactions}
+                              isDisabled={hasPendingTransactions || !!amountErrors[index]}
                               onClick={() => {
                                 setReadTermsChecked(false);
                                 setSelectedOfferIndex(index);
@@ -511,6 +527,11 @@ export default function Marketplace() {
                               Procure
                             </Button>
                           </HStack>
+                          {amountErrors[index] && (
+                            <Text color="red.400" fontSize="xs">
+                              {amountErrors[index]}
+                            </Text>
+                          )}
                         </>
                       )) || <Box mt="2" h="3rem" />
                     }
@@ -919,13 +940,14 @@ export default function Marketplace() {
                     max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
                     isValidCharacter={isValidNumericCharacter}
                     value={newListingPrice}
-                    onChange={(valueAsString, valueAsNumber) => {
+                    onChange={(valueAsString) => {
+                      const value = Number(valueAsString);
                       let error = "";
-                      if (valueAsNumber < 0) error = "Cannot be negative";
-                      if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0)
+                      if (value < 0) error = "Cannot be negative";
+                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0)
                         error = "Cannot exceed maximum listing price";
                       setNewListingPriceError(error);
-                      setNewListingPrice(!valueAsNumber ? 0 : valueAsNumber);
+                      setNewListingPrice(value);
                     }}
                     keepWithinRange={true}
                   >
