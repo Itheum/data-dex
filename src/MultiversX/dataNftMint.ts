@@ -225,7 +225,7 @@ export class DataNftMintContract {
       supply: nft.supply ? Number(nft.supply) : 0,
       description: decodedAttributes["description"].toString(),
       title: decodedAttributes["title"].toString(),
-      royalties: nft.royalties / 100,
+      royalties: nft.royalties ? nft.royalties / 100 : 0,
       nonce: nft.nonce,
       collection: nft.collection,
       balance: 0,
