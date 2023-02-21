@@ -52,7 +52,7 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
