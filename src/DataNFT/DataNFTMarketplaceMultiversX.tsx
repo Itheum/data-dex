@@ -827,7 +827,10 @@ export default function Marketplace() {
                       max={offers[selectedOfferIndex].quantity}
                       isValidCharacter={isValidNumericCharacter}
                       value={delistAmount}
-                      onChange={(valueAsString, valueAsNumber) => setDelistAmount(valueAsNumber)}
+                      onChange={(value) => {
+                        const valueAsNumber = Number(value);
+                        setDelistAmount(valueAsNumber);
+                      }}
                       keepWithinRange={true}
                     >
                       <NumberInputField />

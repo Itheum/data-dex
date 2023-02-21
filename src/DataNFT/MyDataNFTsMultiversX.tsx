@@ -482,8 +482,9 @@ export default function MyDataNFTsMx() {
                         max={item.balance}
                         isValidCharacter={isValidNumericCharacter}
                         value={amounts[index]}
-                        onChange={(valueString, valueAsNumber) => {
+                        onChange={(value) => {
                           let error = "";
+                          const valueAsNumber = Number(value);
                           if (valueAsNumber <= 0) {
                             error = "Cannot be zero or negative";
                           } else if (valueAsNumber > item.balance) {
@@ -558,7 +559,14 @@ export default function MyDataNFTsMx() {
                       </Text>
                     )}
 
-                    <Button size="xs" mt={3} colorScheme="teal" variant="outline" isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]} onClick={() => onListButtonClick(item)}>
+                    <Button
+                      size="xs"
+                      mt={3}
+                      colorScheme="teal"
+                      variant="outline"
+                      isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]}
+                      onClick={() => onListButtonClick(item)}
+                    >
                       List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
                       {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
                     </Button>
