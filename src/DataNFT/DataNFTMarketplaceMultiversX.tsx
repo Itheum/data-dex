@@ -46,6 +46,7 @@ import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import useThrottle from "../UtilComps/UseThrottle";
 
 function printPrice(price: number, token: string): string {
   return price <= 0 ? "FREE" : `${price} ${token}`;
@@ -91,13 +92,13 @@ export default function Marketplace() {
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(8);
-  const onGotoPage = (newPageIndex: number) => {
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
       setPageIndex(newPageIndex);
     }
-  };
+  });
 
-  //
   useEffect(() => {
     (async () => {
       const _marketRequirements = await contract.getRequirements();
