@@ -359,10 +359,10 @@ export default function Marketplace() {
         ) : offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap">
+          <Flex wrap="wrap" gap="5">
             {offers.length > 0 &&
               offers.map((offer, index) => (
-                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" mb="1rem" position="relative" w="15.5rem">
+                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="14rem">
                   <Flex justifyContent="center" pt={5}>
                     <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                       <Image
