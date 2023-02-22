@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
@@ -37,6 +37,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -52,12 +53,18 @@ function printPrice(price: number, token: string): string {
   return price <= 0 ? "FREE" : `${price} ${token}`;
 }
 
-export default function Marketplace() {
+interface PropsType {
+  tabState: number, // 1 for "Public Marketplace", 2 for "My Data NFTs"
+}
+
+export const Marketplace: FC<PropsType> = ({
+  tabState
+}) => {
+  const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
-  const [tabState, setTabState] = useState<number>(1); // 1 for "Public Marketplace", 2 for "My Data NFTs"
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
@@ -334,7 +341,7 @@ export default function Marketplace() {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              setTabState(1);
+              navigate("/datanfts/marketplace");
             }}
           >
             Public Marketplace
@@ -347,7 +354,7 @@ export default function Marketplace() {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              setTabState(2);
+              navigate("/datanfts/marketplace/my");
             }}
           >
             My Listed Data NFTs
@@ -990,4 +997,6 @@ export default function Marketplace() {
       )}
     </>
   );
-}
+};
+
+export default Marketplace;
