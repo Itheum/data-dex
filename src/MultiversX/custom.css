@@ -92,6 +92,11 @@
   color: var(--chakra-colors-chakra-body-text);
 }
 
+.dapp-core-component__main__data-field .dapp-core-component__main__textarea {
+  background: var(--chakra-colors-gray-700);
+  color: var(--chakra-colors-chakra-body-text);
+}
+
 /* STOP MVX LOGIN STYLING */
 
 .dapp-core-component__main__btn-primary {
