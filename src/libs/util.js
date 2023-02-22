@@ -105,7 +105,6 @@ export const uxConfig = {
   mxAPITimeoutMs: 10000,
 };
 
-export const dataNftMarketCardHeight = "26rem";
 export const progInfoMeta = {
   rhc: {
     name: "Red Heart Challenge",

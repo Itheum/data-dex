@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Flex, Skeleton, Stack } from "@chakra-ui/react";
-import { dataNftMarketCardHeight } from "../libs/util";
 
 type SkeletonLoadingListProps = {
   skeletonType?: "horizontal" | "vertical";
@@ -13,7 +12,7 @@ export const SkeletonLoadingList: React.FC<SkeletonLoadingListProps> = (props) =
   return (
     <Flex wrap="wrap" gap="2">
       {skeletonType === "horizontal" && (
-        <Stack w="14rem" h={dataNftMarketCardHeight}>
+        <Stack w="14rem" h="38">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
