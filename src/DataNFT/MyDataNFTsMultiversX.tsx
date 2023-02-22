@@ -378,7 +378,7 @@ export default function MyDataNFTsMx() {
         <Flex wrap="wrap" gap="5">
           {dataNfts &&
             dataNfts.map((item, index) => (
-              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mb="1rem" position="relative" w="14rem">
+              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mb="1rem" position="relative" w="13.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                     <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />

@@ -1,6 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ExternalLinkIcon, HamburgerIcon, MoonIcon, SunIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import {
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  useDisclosure,
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
+  List,
+  ListIcon,
+  ListItem,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -13,6 +28,7 @@ import {
   Container,
   Flex,
   Heading,
+  Stack,
   HStack,
   IconButton,
   Image,
@@ -24,7 +40,6 @@ import {
   MenuItem,
   MenuItemOption,
   MenuList,
-  Spacer,
   Spinner,
   Text,
   useBreakpointValue,
@@ -35,6 +50,18 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { AiFillHome } from "react-icons/ai";
+import {
+  MdDarkMode,
+  MdExpandLess,
+  MdExpandMore,
+  MdLightMode,
+  MdMenu,
+} from "react-icons/md";
+import {
+  MdLocalFireDepartment,
+  MdBolt,
+  MdOnlinePrediction,
+} from "react-icons/md";
 import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
@@ -66,8 +93,32 @@ import TrustedComputation from "Sections/TrustedComputation";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
-import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 import ShortAddress from "UtilComps/ShortAddress";
+
+const exploreRouterMenu = [
+  {
+    sectionId: "Movies",
+    sectionLabel: "Movies",
+    sectionItems: [
+      {
+        menuEnum: MENU.SELL,
+        path: "selldata",
+        label: "Trade Data",
+        Icon: MdLocalFireDepartment,
+      },
+      {
+        path: "datanfts/wallet",
+        label: "Data NFT Wallet",
+        Icon: MdBolt,
+      },
+      {
+        path: "datanfts/marketplace",
+        label: "Data NFT Marketplace",
+        Icon: MdOnlinePrediction,
+      },
+    ],
+  },
+];
 
 const mxLogout = logout;
 const _chainMetaLocal = {};
@@ -77,6 +128,15 @@ const baseUserContext = {
 }; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
 
 function App({ appConfig }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { colorMode, toggleColorMode } = useColorMode();
+
+  const navigateToDiscover = (type, menuEnum, state) => {
+    setMenuItem(menuEnum);
+    navigate(type);
+    if (isOpen) onClose();
+  };
+
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
@@ -96,7 +156,6 @@ function App({ appConfig }) {
     auth: 0,
     dataNFTWallet: 0,
   });
-  const [splashScreenShown, setSplashScreenShown] = useState({});
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -217,10 +276,6 @@ function App({ appConfig }) {
     setRfKeys(reRf);
   };
 
-  const doSplashScreenShown = (menuItem) => {
-    setSplashScreenShown({ ...splashScreenShown, [menuItem]: true });
-  };
-
   const handleLogout = () => {
     clearAppSessions();
 
@@ -241,7 +296,8 @@ function App({ appConfig }) {
   debugui(`walletUsedSession ${walletUsedSession}`);
   debugui(`_chainMetaLocal.networkId ${_chainMetaLocal.networkId}`);
 
-  const screenBreakPoint = useBreakpointValue({ base: "base", md: "md" });
+  // const screenBreakPoint = useBreakpointValue({ base: "base", md: "md" });
+  //// e.g. {screenBreakPoint === "md" && <ShortAddress address={mxAddress} fontSize="md" />}
 
   const isMenuItemSelected = (currentMenuItem) => {
     return menuItem === currentMenuItem;
@@ -263,22 +319,103 @@ function App({ appConfig }) {
   return (
     <>
       {_user.isMxAuthenticated && (
-        <Container maxW="container.xl" h="100vh" display="flex" justifyContent="center" alignItems="center">
-          <Flex h="100vh" w="100vw" direction={{ base: "column", md: "column" }}>
-            <HStack h="10vh" p="5" backgroundColor="none">
-              <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+        <Container maxW="container.xl">
+          <Flex
+            bg={"none"}
+            flexDirection="column"
+            justifyContent={"space-between"}
+            minH="100vh"
+            px={4}
+            boxShadow={"xl"}
+            zIndex={2}>
 
-              <Heading display={["none", "initial"]}>
-                <Text fontSize="sm">Itheum Data DEX</Text>
-                <Text fontSize="xx-small">{dataDexVersion}</Text>
-              </Heading>
+            <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="dashed 1px">
+              <HStack alignItems={"center"} spacing={4}>
+                <IconButton
+                  size={"sm"}
+                  variant={"ghost"}
+                  icon={
+                    <MdMenu
+                      style={{
+                        transform: "translateX(65%)",
+                      }}
+                    />
+                  }
+                  display={{
+                    md: "none",
+                  }}
+                  aria-label={"Open Menu"}
+                  onClick={isOpen ? onClose : onOpen}
+                />
+                <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+                <Heading fontWeight={"normal"} size={"md"}>
+                  <Text fontSize="lg">Itheum Data DEX</Text>
+                </Heading>
+              </HStack>
 
-              <Spacer />
+              <HStack alignItems={"center"} spacing={2}>
+                <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
 
-              <HStack>
-                <Button
-                  colorScheme="teal"
-                  variant="outline"
+                <LoggedInChainBadge chain={chain} displayParams={["none", null, "block"]} />
+
+                <Box display={{ base: "none", md: "block" }}>
+                  {exploreRouterMenu.map((menu) => (
+                    <Menu key={menu.sectionId}>
+                      <MenuButton
+                        as={Button}
+                        size={"sm"}
+                        rightIcon={<MdExpandMore />}>
+                        <ShortAddress address={mxAddress} fontSize="md" />
+                      </MenuButton>
+                      <MenuList maxW={"fit-content"}>
+                        {menu.sectionItems.map((menuItem) => {
+                          const { label, path, menuEnum, filterParams, Icon } = menuItem;
+                          return (
+                            <MenuItem
+                              key={label}
+                              onClick={() =>
+                                navigateToDiscover(path, menuEnum, filterParams)
+                              }>
+                              <Icon
+                                size={"1.25em"}
+                                style={{ marginRight: "1rem" }}
+                              />
+                              {label}
+                            </MenuItem>
+                          );
+                        })}
+
+                        <MenuDivider />
+
+                        <MenuGroup title="My Address Quick Copy">
+                          <MenuItemOption closeOnSelect={false}>
+                            <ShortAddress address={mxAddress} fontSize="sm" />
+                          </MenuItemOption>
+
+                          <MenuDivider />
+                        </MenuGroup>
+
+                        <MenuGroup>
+                          {_user.isMxAuthenticated && (
+                            <ChainSupportedComponent feature={MENU.CLAIMS}>
+                              <MenuItem closeOnSelect={false} onClick={() => setMxShowClaimsHistory(true)}>
+                                <Text fontSize="sm">View claims history</Text>
+                              </MenuItem>
+                            </ChainSupportedComponent>
+                          )}
+
+                          <MenuItem onClick={handleLogout} fontSize="sm">
+                            Logout
+                          </MenuItem>
+                        </MenuGroup>
+                      </MenuList>
+                    </Menu>
+                  ))}
+                </Box>
+
+                <IconButton size={"sm"}
+                  icon={<AiFillHome />}
+                  aria-label={"Back to Home"}
                   isDisabled={isMenuItemSelected(MENU.HOME)}
                   _disabled={menuButtonDisabledStyle(MENU.HOME)}
                   opacity={0.6}
@@ -287,162 +424,18 @@ function App({ appConfig }) {
                     navigate("home");
                     setShowMobileMenu(false);
                   }}
-                >
-                  <AiFillHome />
-                </Button>
+                />
 
-                <ChainSupportedInput feature={MENU.SELL}>
-                  <Button
-                    colorScheme="teal"
-                    variant="outline"
-                    isDisabled={isMenuItemSelected(MENU.SELL)}
-                    _disabled={menuButtonDisabledStyle(MENU.SELL)}
-                    opacity={0.6}
-                    onClick={() => {
-                      setMenuItem(MENU.SELL);
-                      navigate("selldata");
-                      setShowMobileMenu(false);
-                    }}
-                  >
-                    Trade Data
-                  </Button>
-                </ChainSupportedInput>
-
-                <Button
-                  colorScheme="teal"
-                  variant="outline"
-                  isDisabled={isMenuItemSelected(MENU.NFTMINE)}
-                  _disabled={menuButtonDisabledStyle(MENU.NFTMINE)}
-                  opacity={0.6}
-                  onClick={() => {
-                    if (splashScreenShown[MENU.NFT]) {
-                      navigate("datanfts/wallet");
-                      setMenuItem(MENU.NFTMINE);
-                      setShowMobileMenu(false);
-                    } else {
-                      doSplashScreenShown(MENU.NFT);
-                      navigate("datanfts");
-                      setMenuItem(MENU.NFTMINE);
-                      setShowMobileMenu(false);
-                    }
-                  }}
-                >
-                  Wallet
-                </Button>
-
-                <Button
-                  colorScheme="teal"
-                  variant="outline"
-                  isDisabled={isMenuItemSelected(MENU.NFTALL)}
-                  _disabled={menuButtonDisabledStyle(MENU.NFTALL)}
-                  opacity={0.6}
-                  onClick={() => {
-                    if (splashScreenShown[MENU.NFT]) {
-                      navigate("datanfts/marketplace");
-                      setMenuItem(MENU.NFTALL);
-                      setShowMobileMenu(false);
-                    } else {
-                      doSplashScreenShown(MENU.NFT);
-                      navigate("datanfts");
-                      setMenuItem(MENU.NFTALL);
-                      setShowMobileMenu(false);
-                    }
-                  }}
-                >
-                  Marketplace
-                </Button>
-
-                <Box
-                  as="text"
-                  fontSize={["sm", "md"]}
-                  minWidth="5.5rem"
-                  align="center"
-                  p="11.3px"
-                  color="white"
-                  fontWeight="bold"
-                  borderRadius="md"
-                  bgGradient="linear(to-l, #7928CA, #FF0080)"
-                >
-                  {tokenBalance === -1 ? (
-                    <Spinner size="xs" />
-                  ) : tokenBalance === -2 ? (
-                    <WarningTwoIcon />
-                  ) : (
-                    <>
-                      {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {formatNumberRoundFloor(tokenBalance)}
-                    </>
-                  )}
-                </Box>
-
-                <Box
-                  display={["none", null, "block"]}
-                  fontSize={["xs", "md"]}
-                  align="center"
-                  p="11.3px"
-                  color="rgb(243, 183, 30)"
-                  fontWeight="bold"
-                  bg="rgba(243, 132, 30, 0.05)"
-                  borderRadius="md"
-                >
-                  {chain || "..."}
-                </Box>
-
-                <Button display={["none", "initial"]} onClick={toggleColorMode}>
-                  {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-                </Button>
+                <IconButton size={"sm"}
+                  icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
+                  aria-label={"Change Color Theme"}
+                  onClick={toggleColorMode}
+                />
               </HStack>
+            </Flex>
 
-              <Menu>
-                <MenuButton as={Button} colorScheme="teal">
-                  {screenBreakPoint === "md" && <ShortAddress address={mxAddress} fontSize="md" />}
-                  <IconButton aria-label="Menu" icon={<HamburgerIcon />} display={["block", "none"]} />
-                </MenuButton>
-                <MenuList>
-                  <MenuGroup title="My Address Quick Copy">
-                    <MenuItemOption closeOnSelect={false}>
-                      <ShortAddress address={mxAddress} fontSize="sm" />
-                    </MenuItemOption>
-
-                    <MenuDivider />
-                  </MenuGroup>
-
-                  <MenuGroup>
-                    {_user.isMxAuthenticated && (
-                      <ChainSupportedComponent feature={MENU.CLAIMS}>
-                        <MenuItem closeOnSelect={false} onClick={() => setMxShowClaimsHistory(true)}>
-                          <Text fontSize="sm">View claims history</Text>
-                        </MenuItem>
-                      </ChainSupportedComponent>
-                    )}
-
-                    <MenuItem onClick={handleLogout} fontSize="sm">
-                      Logout
-                    </MenuItem>
-                  </MenuGroup>
-
-                  <MenuDivider display={["block", null, "none"]} />
-
-                  <MenuGroup>
-                    <MenuItem closeOnSelect={false} display={["block", null, "none"]}>
-                      <Box
-                        fontSize={["xs", "sm"]}
-                        align="center"
-                        p={2}
-                        color="rgb(243, 183, 30)"
-                        fontWeight="bold"
-                        bg="rgba(243, 132, 30, 0.05)"
-                        borderRadius="md"
-                      >
-                        {chain || "..."}
-                      </Box>
-                    </MenuItem>
-                  </MenuGroup>
-                </MenuList>
-              </Menu>
-            </HStack>
-
-            <HStack alignItems={["center", "flex-start"]} flexDirection={["column", "row"]} pt={5} backgroundColor="none">
-              <Box w={[null, "full"]}>
+            <Box backgroundColor="none" flexGrow="1" p="5">
+              <Box>
                 <Routes>
                   <Route
                     path="/"
@@ -488,16 +481,21 @@ function App({ appConfig }) {
                   </Route>
                 </Routes>
               </Box>
-            </HStack>
+            </Box>
 
-            <HStack py={5} backgroundColor="none">
-              <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
-                Terms of Use <ExternalLinkIcon mx="2px" />
-              </Link>
-              <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
-                Privacy Policy <ExternalLinkIcon mx="2px" />
-              </Link>
-            </HStack>
+            <Box backgroundColor="none" height={"5rem"} borderTop="dashed 1px">
+              <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
+                <Text fontSize="xx-small">{dataDexVersion}</Text>
+                <HStack>
+                  <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
+                    Terms of Use <ExternalLinkIcon mx="2px" />
+                  </Link>
+                  <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
+                    Privacy Policy <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </HStack>
+              </Flex>
+            </Box>
           </Flex>
 
           <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={() => setAlertIsOpen(false)}>
@@ -530,6 +528,121 @@ function App({ appConfig }) {
           {mxShowClaimsHistory && (
             <ClaimsHistory mxAddress={mxAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
           )}
+
+          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerHeader
+                borderBottomWidth={"1px"}
+                display={"flex"}
+                alignItems={"center"}>
+                <Heading size={"sm"} onClick={onClose}>
+                  Itheum Data DEX
+                </Heading>
+                <DrawerCloseButton />
+              </DrawerHeader>
+              <DrawerBody p={0}>
+                <Accordion allowMultiple>
+                  {exploreRouterMenu.map((menu) => (
+                    <AccordionItem key={menu.sectionId}>
+                      {({ isExpanded }) => (
+                        <>
+                          <AccordionButton
+                            display={"flex"}
+                            justifyContent={"space-between"}
+                            alignItems={"center"}>
+                            <Text m={0} fontWeight={"bold"}>
+                              <ShortAddress address={mxAddress} fontSize="md" />
+                            </Text>
+                            {isExpanded ? <MdExpandLess /> : <MdExpandMore />}
+                          </AccordionButton>
+                          <AccordionPanel p={0}>
+                            <List>
+                              {menu.sectionItems.map((menuItem) => {
+                                const { label, path, filterParams, Icon } =
+                                  menuItem;
+                                return (
+                                  <ListItem
+                                    as={Button}
+                                    variant={"ghost"}
+                                    w={"full"}
+                                    borderRadius={"0"}
+                                    display={"flex"}
+                                    justifyContent={"start"}
+                                    p={3}
+                                    key={label}
+                                    onClick={() =>
+                                      navigateToDiscover(path, filterParams)
+                                    }>
+                                    <ListIcon
+                                      as={() =>
+                                        Icon({
+                                          size: "1.25em",
+                                          style: { marginRight: "0.75rem" },
+                                        })
+                                      }
+                                    />
+                                    <Text mt={-1}>{label}</Text>
+                                  </ListItem>
+                                );
+                              })}
+
+                              <ListItem as={Button}
+                                variant={"ghost"}
+                                w={"full"}
+                                borderRadius={"0"}
+                                display={"flex"}
+                                justifyContent={"start"}
+                                p={3}
+                                onClick={() =>
+                                  setMxShowClaimsHistory(true)
+                                }>View claims history</ListItem>
+
+                              <ListItem as={Button}
+                                variant={"ghost"}
+                                w={"full"}
+                                borderRadius={"0"}
+                                display={"flex"}
+                                justifyContent={"start"}
+                                p={3}
+                                onClick={handleLogout}>Logout</ListItem>
+
+                            </List>
+                          </AccordionPanel>
+                        </>
+                      )}
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+
+                <Stack width="60%" spacing="3" m="1rem auto">
+                  <LoggedInChainBadge chain={chain} displayParams={["block", null, "none"]} />
+
+                  <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["block", null, "none"]} />
+                </Stack>
+
+              </DrawerBody>
+              <DrawerFooter
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                borderTopWidth={"1px"}>
+
+                <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
+                  <Text fontSize="xx-small">{dataDexVersion}</Text>
+                  <HStack>
+                    <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
+                      Terms of Use <ExternalLinkIcon mx="2px" />
+                    </Link>
+                    <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
+                      Privacy Policy <ExternalLinkIcon mx="2px" />
+                    </Link>
+                  </HStack>
+                </Flex>
+
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
         </Container>
       )}
     </>
@@ -537,3 +650,46 @@ function App({ appConfig }) {
 }
 
 export default App;
+
+function ItheumTokenBalanceBadge({ tokenBalance, displayParams }) {
+  return (<Box
+    display={displayParams}
+    fontSize={["xs", "md"]}
+    minWidth="5.5rem"
+    align="center"
+    color="white"
+    fontWeight="bold"
+    borderRadius="md"
+    height="2rem"
+    padding="6px 11px"
+    bgGradient="linear(to-l, #7928CA, #FF0080)"
+  >
+    {tokenBalance === -1 ? (
+      <Spinner size="xs" />
+    ) : tokenBalance === -2 ? (
+      <WarningTwoIcon />
+    ) : (
+      <>
+        {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {formatNumberRoundFloor(tokenBalance)}
+      </>
+    )}
+  </Box>);
+}
+
+function LoggedInChainBadge({ chain, displayParams }) {
+  return (
+    <Box
+      display={displayParams}
+      fontSize={["xs", "md"]}
+      align="center"
+      color="rgb(243, 183, 30)"
+      fontWeight="bold"
+      bg="rgba(243, 132, 30, 0.05)"
+      borderRadius="md"
+      height="2rem"
+      padding="6px 11px"
+    >
+      {chain || "..."}
+    </Box>
+  );
+}

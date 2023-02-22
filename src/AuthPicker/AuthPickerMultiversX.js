@@ -105,7 +105,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
                           <ExtensionLoginButton
                             callbackRoute={"/"}
-                            loginButtonText={"MultiversX DeFi Wallet"}
+                            loginButtonText={"DeFi Wallet"}
                             buttonClassName="auth_button"
                             // eslint-disable-next-line no-undef
                             onClick={() => alert("s")}

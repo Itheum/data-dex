@@ -8,7 +8,7 @@ type SkeletonLoadingListProps = {
 };
 
 export const SkeletonLoadingList: React.FC<SkeletonLoadingListProps> = (props) => {
-  const { skeletonType = "vertical", items = 8, children } = props;
+  const { skeletonType = "vertical", items = 10, children } = props;
   return (
     <Flex wrap="wrap" gap="2">
       {skeletonType === "horizontal" && (
@@ -22,8 +22,8 @@ export const SkeletonLoadingList: React.FC<SkeletonLoadingListProps> = (props) =
       {skeletonType === "vertical" &&
         [...Array(items)].map((_, i) => {
           return (
-            <Box key={i} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" mb="1rem" position="relative" w="14rem" h="41.9rem">
-              <Skeleton h="98.5%" m="5px" borderRadius="lg">
+            <Box key={i} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mb="1rem" mr="1rem" position="relative" w="14rem" h="41.9rem">
+              <Skeleton h="98.4%" m="5px" borderRadius="lg">
                 {children}
               </Skeleton>
             </Box>
