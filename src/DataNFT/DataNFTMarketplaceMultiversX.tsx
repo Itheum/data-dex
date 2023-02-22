@@ -62,6 +62,7 @@ export const Marketplace: FC<PropsType> = ({
 }) => {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
@@ -200,7 +201,7 @@ export const Marketplace: FC<PropsType> = ({
 
   const getUserData = async () => {
     if (address) {
-      const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
+      const _userData = await mintContract.getUserDataOut(address, itheumToken);
       setUserData(_userData);
     }
   };
@@ -405,8 +406,8 @@ export const Marketplace: FC<PropsType> = ({
                           <Popover trigger="hover" placement="auto">
                             <PopoverTrigger>
                               <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                                {nftMetadatas[index].description.substring(0, 60) !== nftMetadatas[index].description
-                                  ? nftMetadatas[index].description.substring(0, 60) + "..."
+                                {nftMetadatas[index].description.length > 54
+                                  ? nftMetadatas[index].description.substring(0, 53) + "..."
                                   : nftMetadatas[index].description}
                               </Text>
                             </PopoverTrigger>
@@ -844,10 +845,12 @@ export const Marketplace: FC<PropsType> = ({
                 <ModalBody py={6}>
                   <HStack spacing={5} alignItems="center">
                     <Box flex="4" alignContent="center">
-                      <Text fontSize="lg">Procure Access to Data NFTs</Text>
+                      <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
                           {nftMetadatas[selectedOfferIndex].tokenName}
+                          <br />
+                          Listed supply: {offers[selectedOfferIndex].quantity}
                         </Text>
                       </Flex>
                     </Box>
@@ -893,9 +896,23 @@ export const Marketplace: FC<PropsType> = ({
               </>
             ) : (
               <>
-                <ModalHeader>Are you sure?</ModalHeader>
-                <ModalBody pb={6}>
-                  <Text fontSize="md" mt="2">
+                <ModalBody py={6}>
+                  <HStack spacing={5} alignItems="center">
+                    <Box flex="4" alignContent="center">
+                      <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
+                      <Flex mt="1">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                          {nftMetadatas[selectedOfferIndex].tokenName}
+                          <br />
+                          Listed supply: {offers[selectedOfferIndex].quantity}
+                        </Text>
+                      </Flex>
+                    </Box>
+                    <Box flex="1">
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                    </Box>
+                  </HStack>
+                  <Text fontSize="md" mt="8" width={205}>
                     You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
@@ -957,14 +974,14 @@ export const Marketplace: FC<PropsType> = ({
                     maxW={16}
                     step={5}
                     min={0}
-                    max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
+                    max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
                     isValidCharacter={isValidNumericCharacter}
                     value={newListingPrice}
                     onChange={(valueAsString) => {
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}
