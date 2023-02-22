@@ -332,7 +332,10 @@ export default function Marketplace() {
             isDisabled={tabState === 1}
             _disabled={{ opacity: 1 }}
             opacity={0.4}
-            onClick={() => setTabState(1)}
+            onClick={() => {
+              setPageIndex(0);
+              setTabState(1);
+            }}
           >
             Public Marketplace
           </Button>
@@ -342,7 +345,10 @@ export default function Marketplace() {
             isDisabled={tabState === 2}
             _disabled={{ opacity: 1 }}
             opacity={0.4}
-            onClick={() => setTabState(2)}
+            onClick={() => {
+              setPageIndex(0);
+              setTabState(2);
+            }}
           >
             My Listed Data NFTs
           </Button>
