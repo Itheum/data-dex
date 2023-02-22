@@ -58,6 +58,7 @@ import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
 export default function MyDataNFTsMx() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
@@ -398,7 +399,7 @@ export default function MyDataNFTsMx() {
                   <Flex flexGrow="1">
                     <Popover trigger="hover" placement="auto">
                       <PopoverTrigger>
-                        <Text fontSize="md" mt="2" color="#929497" wordBreak="break-word">
+                        <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
                           {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
                         </Text>
                       </PopoverTrigger>
@@ -526,13 +527,12 @@ export default function MyDataNFTsMx() {
                         defaultValue={10}
                         min={0}
                         isValidCharacter={isValidNumericCharacter}
-                        max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
+                        max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
                         value={prices[index]}
                         onChange={(valueString, valueAsNumber) => {
                           let error = "";
                           if (valueAsNumber < 0) error = "Cannot be negative";
-                          if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0)
-                            error = "Cannot exceed maximum listing price";
+                          if (valueAsNumber > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
                           setPriceErrors((oldErrors) => {
                             const newErrors = [...oldErrors];
                             newErrors[index] = error;

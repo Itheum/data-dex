@@ -34,6 +34,7 @@ export class DataNftMarketContract {
   chainID: string;
   networkProvider: ProxyNetworkProvider;
   contract: SmartContract;
+  itheumToken: string;
   constructor(networkId: string) {
     this.timeout = 5000;
     this.dataNftMarketContractAddress = contractsForChain(networkId).market;
@@ -54,6 +55,7 @@ export class DataNftMarketContract {
       address: new Address(this.dataNftMarketContractAddress),
       abi: abi,
     });
+    this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
   }
 
   async getNumberOfOffers() {
@@ -278,7 +280,7 @@ export class DataNftMarketContract {
         .addArg(new BigUIntValue(addTokenQuantity)) //how many tokens to send
         .addArg(new AddressValue(new Address(this.dataNftMarketContractAddress))) //address to send to
         .addArg(new StringValue("addOffer")) //what method to call on the contract
-        .addArg(new TokenIdentifierValue("ITHEUM-a61317")) //what token id to ask for
+        .addArg(new TokenIdentifierValue(this.itheumToken)) //what token id to ask for
         .addArg(new U64Value(0)) //what nonce to ask for
         .addArg(new BigUIntValue(price * 10 ** 18)) //how much to ask for
         .addArg(new BigUIntValue(addTokenQuantity)) //how many times to divide the amount of tokens sent into
