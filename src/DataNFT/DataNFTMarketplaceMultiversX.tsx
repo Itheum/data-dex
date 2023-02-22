@@ -37,7 +37,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig, dataNftMarketCardHeight } from "libs/util";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
@@ -376,7 +376,7 @@ export default function Marketplace() {
                     </Skeleton>
                   </Flex>
 
-                  <Flex h="30rem" p="3" direction="column" justify="space-between">
+                  <Flex h={dataNftMarketCardHeight} p="3" direction="column" justify="space-between">
                     {nftMetadatasLoading && <Skeleton />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
@@ -613,6 +613,7 @@ export default function Marketplace() {
                     height="100%"
                     width="100%"
                     backgroundColor="blackAlpha.800"
+                    rounded="lg"
                     visibility={
                       userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
                     }

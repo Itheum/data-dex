@@ -384,7 +384,7 @@ export default function MyDataNFTsMx() {
                   </Skeleton>
                 </Flex>
 
-                <Flex h="30rem" p="3" direction="column" justify="space-between">
+                <Flex h="26rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
                     <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
                       {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -398,8 +398,8 @@ export default function MyDataNFTsMx() {
                   <Flex flexGrow="1">
                     <Popover trigger="hover" placement="auto">
                       <PopoverTrigger>
-                        <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
-                          {item.description.substring(0, 50) !== item.description ? (item.description.substring(0, 50) + " ...") : item.description}
+                        <Text fontSize="md" mt="2" color="#929497" wordBreak="break-word">
+                          {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
                         </Text>
                       </PopoverTrigger>
                       <PopoverContent mx="2" width="220px" mt="-7">
@@ -582,6 +582,7 @@ export default function MyDataNFTsMx() {
                   height="100%"
                   width="100%"
                   backgroundColor="blackAlpha.800"
+                  rounded="lg"
                   visibility={
                     userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
                   }
