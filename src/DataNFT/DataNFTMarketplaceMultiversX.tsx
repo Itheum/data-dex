@@ -376,7 +376,7 @@ export default function Marketplace() {
                     </Skeleton>
                   </Flex>
 
-                  <Flex h="26" p="3" direction="column" justify="space-between">
+                  <Flex h="26rem" p="3" direction="column" justify="space-between">
                     {nftMetadatasLoading && <Skeleton />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>

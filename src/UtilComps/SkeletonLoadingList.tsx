@@ -12,7 +12,7 @@ export const SkeletonLoadingList: React.FC<SkeletonLoadingListProps> = (props) =
   return (
     <Flex wrap="wrap" gap="2">
       {skeletonType === "horizontal" && (
-        <Stack w="14rem" h="38">
+        <Stack w="14rem" h="38rem">
           <Skeleton height="20px" />
           <Skeleton height="20px" />
           <Skeleton height="20px" />
