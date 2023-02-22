@@ -385,7 +385,7 @@ export default function MyDataNFTsMx() {
                   </Skeleton>
                 </Flex>
 
-                <Flex h="30rem" p="3" direction="column" justify="space-between">
+                <Flex h="26rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
                     <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
                       {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -582,6 +582,7 @@ export default function MyDataNFTsMx() {
                   height="100%"
                   width="100%"
                   backgroundColor="blackAlpha.800"
+                  rounded="lg"
                   visibility={
                     userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
                   }

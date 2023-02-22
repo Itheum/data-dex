@@ -388,7 +388,7 @@ export const Marketplace: FC<PropsType> = ({
                     </Skeleton>
                   </Flex>
 
-                  <Flex h="30rem" p="3" direction="column" justify="space-between">
+                  <Flex h="26rem" p="3" direction="column" justify="space-between">
                     {nftMetadatasLoading && <Skeleton />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
@@ -629,6 +629,7 @@ export const Marketplace: FC<PropsType> = ({
                     height="100%"
                     width="100%"
                     backgroundColor="blackAlpha.800"
+                    rounded="lg"
                     visibility={
                       userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
                     }
