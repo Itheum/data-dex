@@ -393,7 +393,7 @@ export default function Marketplace() {
                         <Flex flexGrow="1">
                           <Popover trigger="hover" placement="auto">
                             <PopoverTrigger>
-                              <Text fontSize="sm" mt="2" color="gray.300" noOfLines={[1, 2, 3]} w="100%">
+                              <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
                                 {nftMetadatas[index].description.substring(0, 60) !== nftMetadatas[index].description
                                   ? nftMetadatas[index].description.substring(0, 60) + "..."
                                   : nftMetadatas[index].description}
@@ -404,7 +404,7 @@ export default function Marketplace() {
                               <PopoverArrow />
                               <PopoverCloseButton />
                               <PopoverBody>
-                                <Text fontSize="sm" mt="2" color="gray.300">
+                                <Text fontSize="sm" mt="2" color="gray.200">
                                   {nftMetadatas[index].description}
                                 </Text>
                               </PopoverBody>
