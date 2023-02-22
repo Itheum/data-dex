@@ -52,7 +52,7 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
@@ -399,7 +399,7 @@ export default function MyDataNFTsMx() {
                     <Popover trigger="hover" placement="auto">
                       <PopoverTrigger>
                         <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
-                          {item.description.substring(0, 100) !== item.description ? item.description.substring(0, 100) + " ..." : item.description}
+                          {item.description.substring(0, 50) !== item.description ? (item.description.substring(0, 50) + " ...") : item.description}
                         </Text>
                       </PopoverTrigger>
                       <PopoverContent mx="2" width="220px" mt="-7">
