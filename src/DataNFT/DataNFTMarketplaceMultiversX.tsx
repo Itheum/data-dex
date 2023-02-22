@@ -42,10 +42,11 @@ import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import useThrottle from "../UtilComps/UseThrottle";
 
 function printPrice(price: number, token: string): string {
   return price <= 0 ? "FREE" : `${price} ${token}`;
@@ -91,13 +92,13 @@ export default function Marketplace() {
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(8);
-  const onGotoPage = (newPageIndex: number) => {
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
       setPageIndex(newPageIndex);
     }
-  };
+  });
 
-  //
   useEffect(() => {
     (async () => {
       const _marketRequirements = await contract.getRequirements();
@@ -316,6 +317,10 @@ export default function Marketplace() {
 
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
+  function nftIsOwnedByAnotherAddress(offer: OfferType) {
+    return address && address != offer.owner;
+  }
+
   return (
     <>
       <Stack spacing={5}>
@@ -344,13 +349,7 @@ export default function Marketplace() {
         </Flex>
 
         <Flex justifyContent="center" alignItems="center">
-          <CustomPagination
-            pageCount={pageCount}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-            gotoPage={onGotoPage}
-            // setPageSize={() => (() => {})}
-          />
+          <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
         </Flex>
 
         {loadingOffers ? (
@@ -358,10 +357,10 @@ export default function Marketplace() {
         ) : offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap">
+          <Flex wrap="wrap" gap="5">
             {offers.length > 0 &&
               offers.map((offer, index) => (
-                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mr="1rem" mb="1rem" position="relative" w="15.5rem">
+                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="14rem">
                   <Flex justifyContent="center" pt={5}>
                     <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                       <Image
@@ -376,7 +375,7 @@ export default function Marketplace() {
                   </Flex>
 
                   <Flex h="30rem" p="3" direction="column" justify="space-between">
-                    {!(!nftMetadatasLoading && nftMetadatas[index]) && <SkeletonLoadingList />}
+                    {nftMetadatasLoading && <Skeleton />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
                         <Text fontSize="xs">
@@ -392,8 +391,10 @@ export default function Marketplace() {
                         <Flex flexGrow="1">
                           <Popover trigger="hover" placement="auto">
                             <PopoverTrigger>
-                              <Text fontSize="sm" mt="2" color="gray.300" noOfLines={[1, 2, 3]}>
-                                {nftMetadatas[index].description}
+                              <Text fontSize="sm" mt="2" color="gray.300" noOfLines={[1, 2, 3]} w="100%">
+                                {nftMetadatas[index].description.substring(0, 60) !== nftMetadatas[index].description
+                                  ? nftMetadatas[index].description.substring(0, 60) + "..."
+                                  : nftMetadatas[index].description}
                               </Text>
                             </PopoverTrigger>
                             <PopoverContent mx="2" width="220px" mt="-7">
@@ -408,37 +409,37 @@ export default function Marketplace() {
                             </PopoverContent>
                           </Popover>
                         </Flex>
+                        <Flex display="flex" flexDirection="column">
+                          <Box color="gray.600" fontSize="sm">
+                            Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+                            <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                              <ExternalLinkIcon mx="2px" />
+                            </Link>
+                          </Box>
+                          <Box color="gray.600" fontSize="sm">
+                            Owner:&nbsp; {` ${offer.owner.slice(0, 8)} ... ${offer.owner.slice(-8)}`}
+                            <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
+                              <ExternalLinkIcon mx="2px" />
+                            </Link>
+                          </Box>
+                          <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
+                            {address && address == nftMetadatas[index].creator && (
+                              <Badge borderRadius="full" px="2" colorScheme="teal">
+                                <Text>You are the Creator</Text>
+                              </Badge>
+                            )}
 
-                        <Box color="gray.600" fontSize="sm">
-                          Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
-                          <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                            <ExternalLinkIcon mx="2px" />
-                          </Link>
-                        </Box>
-                        <Box color="gray.600" fontSize="sm">
-                          Owner:&nbsp; {` ${offer.owner.slice(0, 8)} ... ${offer.owner.slice(-8)}`}
-                          <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
-                            <ExternalLinkIcon mx="2px" />
-                          </Link>
-                        </Box>
+                            {address && address == offer.owner && (
+                              <Badge borderRadius="full" px="2" colorScheme="teal">
+                                <Text>You are the Owner</Text>
+                              </Badge>
+                            )}
 
-                        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
-                          {address && address == nftMetadatas[index].creator && (
-                            <Badge borderRadius="full" px="2" colorScheme="teal">
-                              <Text>You are the Creator</Text>
+                            <Badge borderRadius="full" px="2" colorScheme="blue">
+                              Fully Transferable License
                             </Badge>
-                          )}
-
-                          {address && address == offer.owner && (
-                            <Badge borderRadius="full" px="2" colorScheme="teal">
-                              <Text>You are the Owner</Text>
-                            </Badge>
-                          )}
-
-                          <Badge borderRadius="full" px="2" colorScheme="blue">
-                            Fully Transferable License
-                          </Badge>
-                        </Box>
+                          </Box>
+                        </Flex>
 
                         <Box display="flex" justifyContent="flex-start" mt="2">
                           <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
@@ -450,8 +451,8 @@ export default function Marketplace() {
                       </>
                     )}
 
-                    {
-                      !nftMetadatasLoading && nftMetadatas[index] && (<>
+                    {!nftMetadatasLoading && nftMetadatas[index] && (
+                      <>
                         <Box fontSize="xs" mt="2">
                           <Text>
                             Fee per NFT:
@@ -480,68 +481,65 @@ export default function Marketplace() {
                           Preview Data
                         </Button>
 
-                        {
-                          /* Public Marketplace: Hide Procure part if NFT is owned by User */
-                          (tabState === 1 && address && address != offer.owner && (
-                            <>
-                              <HStack h="3rem">
-                                <Text fontSize="xs">How many to procure </Text>
-                                <NumberInput
-                                  size="xs"
-                                  maxW={16}
-                                  step={1}
-                                  min={1}
-                                  max={offer.quantity}
-                                  isValidCharacter={isValidNumericCharacter}
-                                  value={amountOfTokens[index]}
-                                  onChange={(valueAsString) => {
-                                    const value = Number(valueAsString);
-                                    let error = "";
-                                    if (value <= 0) {
-                                      error = "Cannot be zero or negative";
-                                    } else if (value > offer.quantity) {
-                                      error = "Cannot exceed balance";
-                                    }
-                                    setAmountErrors((oldErrors) => {
-                                      const newErrors = [...oldErrors];
-                                      newErrors[index] = error;
-                                      return newErrors;
-                                    });
-                                    setAmountOfTokens((oldAmounts: any) => {
-                                      const newAmounts = { ...oldAmounts };
-                                      newAmounts[index] = value;
-                                      return newAmounts;
-                                    });
-                                  }}
-                                >
-                                  <NumberInputField />
-                                  <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                  </NumberInputStepper>
-                                </NumberInput>
-                                <Button
-                                  size="xs"
-                                  colorScheme="teal"
-                                  width="72px"
-                                  isDisabled={hasPendingTransactions || !!amountErrors[index]}
-                                  onClick={() => {
-                                    setReadTermsChecked(false);
-                                    setSelectedOfferIndex(index);
-                                    onProcureModalOpen();
-                                  }}
-                                >
-                                  Procure
-                                </Button>
-                              </HStack>
-                              {amountErrors[index] && (
-                                <Text color="red.400" fontSize="xs">
-                                  {amountErrors[index]}
-                                </Text>
-                              )}
-                            </>
-                          )) || <Box mt="2" h="3rem" />
-                        }
+                        {(tabState == 1 && nftIsOwnedByAnotherAddress(offer) && (
+                          <>
+                            <HStack h="3rem">
+                              <Text fontSize="xs">How many to procure </Text>
+                              <NumberInput
+                                size="xs"
+                                maxW={16}
+                                step={1}
+                                min={1}
+                                max={offer.quantity}
+                                isValidCharacter={isValidNumericCharacter}
+                                value={amountOfTokens[index]}
+                                onChange={(valueAsString) => {
+                                  const value = Number(valueAsString);
+                                  let error = "";
+                                  if (value <= 0) {
+                                    error = "Cannot be zero or negative";
+                                  } else if (value > offer.quantity) {
+                                    error = "Cannot exceed balance";
+                                  }
+                                  setAmountErrors((oldErrors) => {
+                                    const newErrors = [...oldErrors];
+                                    newErrors[index] = error;
+                                    return newErrors;
+                                  });
+                                  setAmountOfTokens((oldAmounts: any) => {
+                                    const newAmounts = { ...oldAmounts };
+                                    newAmounts[index] = value;
+                                    return newAmounts;
+                                  });
+                                }}
+                              >
+                                <NumberInputField />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                              <Button
+                                size="xs"
+                                colorScheme="teal"
+                                width="72px"
+                                isDisabled={hasPendingTransactions || !!amountErrors[index]}
+                                onClick={() => {
+                                  setReadTermsChecked(false);
+                                  setSelectedOfferIndex(index);
+                                  onProcureModalOpen();
+                                }}
+                              >
+                                Procure
+                              </Button>
+                            </HStack>
+                            {amountErrors[index] && (
+                              <Text color="red.400" fontSize="xs">
+                                {amountErrors[index]}
+                              </Text>
+                            )}
+                          </>
+                        )) || <Box mt="2" h="3rem" />}
 
                         {tabState === 2 && address && (
                           <>
@@ -604,8 +602,8 @@ export default function Marketplace() {
                             </Flex>
                           </>
                         )}
-                      </>)
-                    }
+                      </>
+                    )}
                   </Flex>
 
                   <Box
@@ -953,8 +951,7 @@ export default function Marketplace() {
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0)
-                        error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = "Cannot exceed maximum listing price";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}
