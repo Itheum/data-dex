@@ -385,37 +385,37 @@ export default function MyDataNFTsMx() {
                   </Skeleton>
                 </Flex>
 
-                <Flex h="26rem" p="3" direction="column" justify="space-between">
+                <Flex h="28rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
                     <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
                       {item.tokenName} <ExternalLinkIcon mx="2px" />
                     </Link>
                   </Text>
-
-                  <Text fontWeight="bold" fontSize="lg" mt="2">
-                    {item.title}
-                  </Text>
-
-                  <Flex flexGrow="1">
-                    <Popover trigger="hover" placement="auto">
-                      <PopoverTrigger>
-                        <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
-                          {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
+                  <Popover trigger="hover" placement="auto">
+                    <PopoverTrigger>
+                      <div>
+                        <Text fontWeight="bold" fontSize="lg" mt="2">
+                          {item.title.length > 20 ? item.title.substring(0, 20) + " ..." : item.title}
                         </Text>
-                      </PopoverTrigger>
-                      <PopoverContent mx="2" width="220px" mt="-7">
-                        <PopoverHeader fontWeight="semibold">{item.tokenName}</PopoverHeader>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody>
-                          <Text fontSize="sm" mt="2" color="gray.300">
-                            {item.description}
-                          </Text>
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  </Flex>
 
+                        <Flex flexGrow="1">
+                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
+                            {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
+                          </Text>
+                        </Flex>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent mx="2" width="220px" mt="-7">
+                      <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody>
+                        <Text fontSize="sm" mt="2" color="gray.300">
+                          {item.description}
+                        </Text>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
                   <Box mt="4">
                     {item.creator !== address && (
                       <Box color="gray.600" fontSize="sm">

@@ -54,12 +54,10 @@ function printPrice(price: number, token: string): string {
 }
 
 interface PropsType {
-  tabState: number, // 1 for "Public Marketplace", 2 for "My Data NFTs"
+  tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
 }
 
-export const Marketplace: FC<PropsType> = ({
-  tabState
-}) => {
+export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta.contracts.itheumToken;
@@ -388,7 +386,7 @@ export const Marketplace: FC<PropsType> = ({
                     </Skeleton>
                   </Flex>
 
-                  <Flex h="26rem" p="3" direction="column" justify="space-between">
+                  <Flex h="28rem" p="3" direction="column" justify="space-between">
                     {nftMetadatasLoading && <Skeleton />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
@@ -397,32 +395,33 @@ export const Marketplace: FC<PropsType> = ({
                             {nftMetadatas[index].tokenName} <ExternalLinkIcon mx="2px" />
                           </Link>
                         </Text>
-
-                        <Text fontWeight="bold" fontSize="lg" mt="2">
-                          {nftMetadatas[index].title}
-                        </Text>
-
-                        <Flex flexGrow="1">
-                          <Popover trigger="hover" placement="auto">
-                            <PopoverTrigger>
-                              <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                                {nftMetadatas[index].description.length > 54
-                                  ? nftMetadatas[index].description.substring(0, 53) + "..."
-                                  : nftMetadatas[index].description}
+                        <Popover trigger="hover" placement="auto">
+                          <PopoverTrigger>
+                            <div>
+                              <Text fontWeight="bold" fontSize="lg" mt="2">
+                                {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
                               </Text>
-                            </PopoverTrigger>
-                            <PopoverContent mx="2" width="220px" mt="-7">
-                              <PopoverHeader fontWeight="semibold">{nftMetadatas[index].tokenName}</PopoverHeader>
-                              <PopoverArrow />
-                              <PopoverCloseButton />
-                              <PopoverBody>
-                                <Text fontSize="sm" mt="2" color="gray.200">
-                                  {nftMetadatas[index].description}
+
+                              <Flex flexGrow="1">
+                                <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
+                                  {nftMetadatas[index].description.length > 54
+                                    ? nftMetadatas[index].description.substring(0, 53) + "..."
+                                    : nftMetadatas[index].description}
                                 </Text>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </Flex>
+                              </Flex>
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent mx="2" width="220px" mt="-7">
+                            <PopoverHeader fontWeight="semibold">{nftMetadatas[index].title}</PopoverHeader>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody>
+                              <Text fontSize="sm" mt="2" color="gray.200">
+                                {nftMetadatas[index].description}
+                              </Text>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
                         <Flex display="flex" flexDirection="column">
                           <Box color="gray.600" fontSize="sm">
                             Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
