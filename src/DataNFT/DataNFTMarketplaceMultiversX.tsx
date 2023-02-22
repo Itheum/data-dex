@@ -54,6 +54,7 @@ function printPrice(price: number, token: string): string {
 
 export default function Marketplace() {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
@@ -193,7 +194,7 @@ export default function Marketplace() {
 
   const getUserData = async () => {
     if (address) {
-      const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
+      const _userData = await mintContract.getUserDataOut(address, itheumToken);
       setUserData(_userData);
     }
   };
@@ -394,8 +395,8 @@ export default function Marketplace() {
                           <Popover trigger="hover" placement="auto">
                             <PopoverTrigger>
                               <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                                {nftMetadatas[index].description.substring(0, 60) !== nftMetadatas[index].description
-                                  ? nftMetadatas[index].description.substring(0, 60) + "..."
+                                {nftMetadatas[index].description.length > 54
+                                  ? nftMetadatas[index].description.substring(0, 53) + "..."
                                   : nftMetadatas[index].description}
                               </Text>
                             </PopoverTrigger>
@@ -958,14 +959,14 @@ export default function Marketplace() {
                     maxW={16}
                     step={5}
                     min={0}
-                    max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
+                    max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
                     isValidCharacter={isValidNumericCharacter}
                     value={newListingPrice}
                     onChange={(valueAsString) => {
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}
