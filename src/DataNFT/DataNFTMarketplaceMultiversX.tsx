@@ -631,13 +631,7 @@ export default function Marketplace() {
           /* show bottom pagination only if offers exist */
           offers.length > 0 && (
             <Flex justifyContent="center" alignItems="center">
-              <CustomPagination
-                pageCount={pageCount}
-                pageIndex={pageIndex}
-                pageSize={pageSize}
-                gotoPage={onGotoPage}
-                // setPageSize={() => (() => {})}
-              />
+              <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
             </Flex>
           )
         }
