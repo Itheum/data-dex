@@ -287,7 +287,9 @@ function App({ appConfig }) {
                     navigate("home");
                     setShowMobileMenu(false);
                   }}
-                ><AiFillHome /></Button>
+                >
+                  <AiFillHome />
+                </Button>
 
                 <ChainSupportedInput feature={MENU.SELL}>
                   <Button
@@ -488,7 +490,7 @@ function App({ appConfig }) {
               </Box>
             </HStack>
 
-            <HStack pt={5} backgroundColor="none">
+            <HStack py={5} backgroundColor="none">
               <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                 Terms of Use <ExternalLinkIcon mx="2px" />
               </Link>
@@ -529,8 +531,7 @@ function App({ appConfig }) {
             <ClaimsHistory mxAddress={mxAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
           )}
         </Container>
-      )
-      }
+      )}
     </>
   );
 }
