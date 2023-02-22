@@ -829,10 +829,12 @@ export default function Marketplace() {
                 <ModalBody py={6}>
                   <HStack spacing={5} alignItems="center">
                     <Box flex="4" alignContent="center">
-                      <Text fontSize="lg">Procure Access to Data NFTs</Text>
+                      <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
                           {nftMetadatas[selectedOfferIndex].tokenName}
+                          <br />
+                          Listed supply: {offers[selectedOfferIndex].quantity}
                         </Text>
                       </Flex>
                     </Box>
@@ -878,9 +880,23 @@ export default function Marketplace() {
               </>
             ) : (
               <>
-                <ModalHeader>Are you sure?</ModalHeader>
-                <ModalBody pb={6}>
-                  <Text fontSize="md" mt="2">
+                <ModalBody py={6}>
+                  <HStack spacing={5} alignItems="center">
+                    <Box flex="4" alignContent="center">
+                      <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
+                      <Flex mt="1">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                          {nftMetadatas[selectedOfferIndex].tokenName}
+                          <br />
+                          Listed supply: {offers[selectedOfferIndex].quantity}
+                        </Text>
+                      </Flex>
+                    </Box>
+                    <Box flex="1">
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                    </Box>
+                  </HStack>
+                  <Text fontSize="md" mt="8" width={205}>
                     You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
