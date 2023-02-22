@@ -42,10 +42,11 @@ import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import useThrottle from "../UtilComps/UseThrottle";
 
 function printPrice(price: number, token: string): string {
   return price <= 0 ? "FREE" : `${price} ${token}`;
@@ -91,13 +92,13 @@ export default function Marketplace() {
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(8);
-  const onGotoPage = (newPageIndex: number) => {
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
       setPageIndex(newPageIndex);
     }
-  };
+  });
 
-  //
   useEffect(() => {
     (async () => {
       const _marketRequirements = await contract.getRequirements();
@@ -376,7 +377,7 @@ export default function Marketplace() {
                   </Flex>
 
                   <Flex h="30rem" p="3" direction="column" justify="space-between">
-                    {nftMetadatasLoading && <SkeletonLoadingList />}
+                    {nftMetadatasLoading && <Skeleton />}
                     {!nftMetadatasLoading && nftMetadatas[index] && (
                       <>
                         <Text fontSize="xs">
@@ -392,8 +393,10 @@ export default function Marketplace() {
                         <Flex flexGrow="1">
                           <Popover trigger="hover" placement="auto">
                             <PopoverTrigger>
-                              <Text fontSize="sm" mt="2" color="gray.300" noOfLines={[1, 2, 3]}>
-                                {nftMetadatas[index].description}
+                              <Text fontSize="sm" mt="2" color="gray.300" noOfLines={[1, 2, 3]} w="100%">
+                                {nftMetadatas[index].description.substring(0, 60) !== nftMetadatas[index].description
+                                  ? nftMetadatas[index].description.substring(0, 60) + "..."
+                                  : nftMetadatas[index].description}
                               </Text>
                             </PopoverTrigger>
                             <PopoverContent mx="2" width="220px" mt="-7">
@@ -409,31 +412,33 @@ export default function Marketplace() {
                           </Popover>
                         </Flex>
 
-                        <Box color="gray.600" fontSize="sm">
-                          {`Creator: ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+                        <Flex display="flex" flexDirection="column">
+                          <Box color="gray.600" fontSize="sm">
+                            {`Creator: ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
 
-                          <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                            <ExternalLinkIcon mx="2px" />
-                          </Link>
-                        </Box>
+                            <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                              <ExternalLinkIcon mx="2px" />
+                            </Link>
+                          </Box>
 
-                        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
-                          {address && address == nftMetadatas[index].creator && (
-                            <Badge borderRadius="full" px="2" colorScheme="teal">
-                              <Text>You are the Creator</Text>
+                          <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
+                            {address && address == nftMetadatas[index].creator && (
+                              <Badge borderRadius="full" px="2" colorScheme="teal">
+                                <Text>You are the Creator</Text>
+                              </Badge>
+                            )}
+
+                            {address && address == offer.owner && (
+                              <Badge borderRadius="full" px="2" colorScheme="teal">
+                                <Text>You are the Owner</Text>
+                              </Badge>
+                            )}
+
+                            <Badge borderRadius="full" px="2" colorScheme="blue">
+                              Fully Transferable License
                             </Badge>
-                          )}
-
-                          {address && address == offer.owner && (
-                            <Badge borderRadius="full" px="2" colorScheme="teal">
-                              <Text>You are the Owner</Text>
-                            </Badge>
-                          )}
-
-                          <Badge borderRadius="full" px="2" colorScheme="blue">
-                            Fully Transferable License
-                          </Badge>
-                        </Box>
+                          </Box>
+                        </Flex>
 
                         <Box display="flex" justifyContent="flex-start" mt="2">
                           <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
@@ -533,7 +538,7 @@ export default function Marketplace() {
                             </Text>
                           )}
                         </>
-                      )) || <Box mt="2" h="3rem" />
+                      )) || <Box h="3rem" />
                     }
 
                     {tabState === 2 && address && (
@@ -944,8 +949,7 @@ export default function Marketplace() {
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0)
-                        error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = "Cannot exceed maximum listing price";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}
