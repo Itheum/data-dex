@@ -417,14 +417,14 @@ export default function MyDataNFTsMx() {
                     </PopoverContent>
                   </Popover>
                   <Box mt="4">
-                    {item.creator !== address && (
+                    {
                       <Box color="gray.600" fontSize="sm">
                         {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
                         <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                           <ExternalLinkIcon mx="2px" />
                         </Link>
                       </Box>
-                    )}
+                    }
 
                     <Box color="gray.600" fontSize="sm">
                       {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
