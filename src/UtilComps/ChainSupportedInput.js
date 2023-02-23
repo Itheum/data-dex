@@ -1,5 +1,4 @@
 import React from "react";
-import { isDisabled } from "@chakra-ui/utils";
 import { IoConstructOutline } from "react-icons/io5";
 import { notSupportedOnChain } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";

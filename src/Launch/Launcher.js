@@ -1,4 +1,4 @@
-import { useState, React } from "react";
+import React, { useState } from "react";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import MxAppHarness from "AppHarness/AppHarnessMultiversX";

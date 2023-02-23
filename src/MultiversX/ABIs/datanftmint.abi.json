@@ -26,9 +26,7 @@
       "name": "initializeContract",
       "onlyOwner": true,
       "mutability": "mutable",
-      "payableInTokens": [
-        "EGLD"
-      ],
+      "payableInTokens": ["EGLD"],
       "inputs": [
         {
           "name": "collection_name",
@@ -60,9 +58,7 @@
     {
       "name": "mint",
       "mutability": "mutable",
-      "payableInTokens": [
-        "*"
-      ],
+      "payableInTokens": ["*"],
       "inputs": [
         {
           "name": "name",
@@ -110,9 +106,7 @@
     {
       "name": "burn",
       "mutability": "mutable",
-      "payableInTokens": [
-        "*"
-      ],
+      "payableInTokens": ["*"],
       "inputs": [],
       "outputs": []
     },

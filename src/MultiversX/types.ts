@@ -1,3 +1,6 @@
+export type RecordStringNumberType = Record<string, number>;
+export type RecordStringStringType = Record<string, string>;
+
 export interface DataNftMetadataType {
   index: number;
   id: string;
@@ -38,4 +41,40 @@ export interface OfferType {
   wanted_token_nonce: number;
   wanted_token_amount: string;
   quantity: number;
+}
+
+export interface DataNftType {
+  index: number;
+  id: string;
+  nftImgUrl: string;
+  dataPreview: string;
+  dataStream: string;
+  dataMarshal: string;
+  tokenName: string;
+  feeInTokens: number;
+  creator: string;
+  creationTime: Date;
+  supply: number;
+  balance: number;
+  description: string;
+  title: string;
+  royalties: number;
+  nonce: number;
+  collection: string;
+}
+
+export interface UserDataType {
+  antiSpamTaxValue: number;
+  addressFrozen: boolean;
+  frozenNonces: number[];
+  contractPaused: boolean;
+  userWhitelistedForMint: boolean;
+  lastUserMintTime: number;
+  maxRoyalties: number;
+  maxSupply: number;
+  minRoyalties: number;
+  mintTimeLimit: number;
+  numberOfMintsForUser: number;
+  totalNumberOfMints: number;
+  contractWhitelistEnabled: boolean;
 }

@@ -1,62 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import { Heading, Box, Stack } from "@chakra-ui/layout";
 import {
-  Button,
-  Input,
-  Text,
-  HStack,
-  Spinner,
-  Skeleton,
-  Center,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
-  CloseButton,
-  Image,
   Badge,
-  Wrap,
-  Flex,
-  Textarea,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  CloseButton,
   Drawer,
-  DrawerOverlay,
+  DrawerBody,
   DrawerContent,
   DrawerHeader,
-  DrawerBody,
+  DrawerOverlay,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  useToast,
-  useDisclosure,
-  Checkbox,
-  Tag,
   Popover,
-  PopoverTrigger,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  Link,
+  PopoverTrigger,
+  Skeleton,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
+  Textarea,
+  useDisclosure,
+  useToast,
+  Wrap,
 } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core";
-import { useTrackTransactionStatus, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
-
-import { set } from "lodash";
 import mime from "mime";
-import moment from "moment";
-import { NFTStorage, File } from "nft.storage";
-import { uxConfig, sleep, MENU, convertWeiToEsdt, tryParseInt, isValidNumericCharacter } from "libs/util";
+import { File, NFTStorage } from "nft.storage";
+import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/util";
 import { checkBalance } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -166,6 +165,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
+  const [dataStreamUrlValidation, setDataStreamUrlValidation] = useState(false);
+  const [dataPreviewUrlValidation, setDataPreviewUrlValidation] = useState(false);
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
   // query settings from Data NFT Minter SC
@@ -442,11 +443,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const mintTxFail = (foo) => {
     console.log("mintTxFail", foo);
+    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
   const mintTxCancelled = (foo) => {
     console.log("mintTxCancelled", foo);
+    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
@@ -462,8 +465,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const getDataForSale = async (programId) => {
     let selObj = {};
-    let dataCATStreamUrl = '';
-    let dataCATStreamPreviewUrl = '';
+    let dataCATStreamUrl = "";
+    let dataCATStreamPreviewUrl = "";
 
     if (programId) {
       selObj = {
@@ -514,6 +517,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
     const res = await validateBaseInput();
     if (res) {
+      setErrDataNFTStreamGeneric(null);
       dataNFTDataStreamAdvertise();
     }
   };
@@ -669,46 +673,36 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   }
 
+  const validateDataStreamUrl = (value) => {
+    if (value.includes("https://drive.google.com")) {
+      setDataStreamUrlValidation(true);
+    } else {
+      setDataStreamUrlValidation(false);
+    }
+  };
+  const validateDataPreviewUrl = (value) => {
+    if (value.includes("https://drive.google.com")) {
+      setDataPreviewUrlValidation(true);
+    } else {
+      setDataPreviewUrlValidation(false);
+    }
+  };
+
   return (
     <Stack spacing={5}>
       <Heading size="lg">Trade Data</Heading>
       <Heading size="xs" opacity=".7">
-        Trade your personal data direct-to-buyer (peer-to-peer) or as Data NFTs across many NFT Marketplaces
+        Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
-      {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
-        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          {itheumAccount.programsAllocation.map((item) => (
-            <Box key={item.program} maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
-
-              <Box p="6">
-                <Box display="flex" alignItems="baseline">
-                  <Badge borderRadius="full" px="2" colorScheme="teal">
-                    {" "}
-                    New
-                  </Badge>
-                  <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                    {itheumAccount._lookups.programs[item.program].programName}
-                  </Box>
-                </Box>
-                <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
-                  Trade Program Data
-                </Button>
-              </Box>
-            </Box>
-          ))}
-        </Wrap>
-      )}
-
       <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+        <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mt={5}>
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" />
 
           <Box p="6">
             <Box display="flex" alignItems="baseline">
               <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                Trade a Data Stream as a Data NFT-FT
+                Any Data Stream as Data NFT-FT
               </Box>
             </Box>
             <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null)}>
@@ -717,6 +711,38 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
           </Box>
         </Box>
       </Wrap>
+
+      {
+        itheumAccount && itheumAccount.programsAllocation.length > 0 && (
+          <>
+            <Heading size="md" m="3rem 0 1rem 0 !important">Supported Data CAT Programs</Heading>
+            <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+              {itheumAccount.programsAllocation.map((item) => (
+                <Box key={item.program} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden">
+                  <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
+
+                  <Box p="6">
+                    <Box display="flex" alignItems="baseline">
+                      <Badge borderRadius="full" px="2" colorScheme="teal">
+                        {" "}
+                        New
+                      </Badge>
+                      <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                        {itheumAccount._lookups.programs[item.program].programName}
+                      </Box>
+                    </Box>
+                    <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
+                      Trade Program Data
+                    </Button>
+                  </Box>
+                </Box>
+              ))}
+            </Wrap>
+          </>
+        )
+      }
+
+
 
       <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
@@ -802,7 +828,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 mt="1 !important"
                 placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                 value={dataNFTStreamUrl}
-                onChange={(event) => onChangeDataNFTStreamUrl(event.currentTarget.value)}
+                onChange={(event) => {
+                  onChangeDataNFTStreamUrl(event.currentTarget.value);
+                  validateDataStreamUrl(event.currentTarget.value);
+                }}
               />
               {userFocusedForm && dataNFTStreamUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -812,6 +841,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               {userFocusedForm && !dataNFTStreamUrlValid && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
                   Data Stream URL must be a publicly accessible url
+                </Text>
+              )}
+              {userFocusedForm && dataStreamUrlValidation && (
+                <Text color="red.400" fontSize="sm" mt="1 !important">
+                  Data Stream URL doesn&apos;t accept Google Drive URLs
                 </Text>
               )}
 
@@ -825,7 +859,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 mt="1 !important"
                 placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                 value={dataNFTStreamPreviewUrl}
-                onChange={(event) => onChangeDataNFTStreamPreviewUrl(event.currentTarget.value)}
+                onChange={(event) => {
+                  onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                  validateDataPreviewUrl(event.currentTarget.value);
+                }}
               />
               {userFocusedForm && dataNFTStreamPreviewUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -835,6 +872,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               {userFocusedForm && !dataNFTStreamPreviewUrlValid && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
                   Data Stream Preview URL must be a publicly accessible url
+                </Text>
+              )}
+              {userFocusedForm && dataPreviewUrlValidation && (
+                <Text color="red.400" fontSize="sm" mt="1 !important">
+                  Data Preview URL doesn&apos;t accept Google Drive URLs
                 </Text>
               )}
 
@@ -882,12 +924,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 </Text>
               </InputLabelWithPopover>
 
-              <Input
-                mt="1 !important"
-                placeholder="Dataset Title"
-                value={datasetTitle}
-                onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
-              />
+              <Input mt="1 !important" placeholder="Dataset Title" value={datasetTitle} onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)} />
               <Text color="gray.400" fontSize="sm" mt="0 !important">
                 Between 10 and 50 alphanumeric characters only
               </Text>
@@ -988,11 +1025,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 Terms and Fees
               </Text>
               <Text fontSize="md" mt="4 !important">
-                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
-                that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
-                is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But
-                there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
-                of use before proceeding.
+                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that
+                the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is
+                always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there
+                are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use
+                before proceeding.
               </Text>
               <Flex mt="3 !important">
                 <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
@@ -1138,6 +1175,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Stack>
+    </Stack >
   );
 }

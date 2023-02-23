@@ -1,20 +1,19 @@
 {
   "buildInfo": {
     "rustc": {
-      "version": "1.63.0-nightly",
-      "commitHash": "21e9336fe81a1fce364349bb7a35a0347c369f34",
-      "commitDate": "2022-06-18",
+      "version": "1.69.0-nightly",
+      "commitHash": "75a0be98f25a4b9de5afa0e15eb016e7f9627032",
+      "commitDate": "2023-02-05",
       "channel": "Nightly",
-      "short": "rustc 1.63.0-nightly (21e9336fe 2022-06-18)"
+      "short": "rustc 1.69.0-nightly (75a0be98f 2023-02-05)"
     },
     "contractCrate": {
       "name": "claims",
-      "version": "0.0.0",
-      "git_version": "086b7e4-modified"
+      "version": "0.1.0"
     },
     "framework": {
-      "name": "elrond-wasm",
-      "version": "0.31.1"
+      "name": "multiversx-sc",
+      "version": "0.39.5"
     }
   },
   "name": "ClaimsContract",
@@ -62,6 +61,30 @@
     },
     {
       "name": "removePrivilegedAddress",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "addDepositorAddress",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeDepositorAddress",
       "onlyOwner": true,
       "mutability": "mutable",
       "inputs": [
@@ -216,6 +239,17 @@
       ]
     },
     {
+      "name": "viewDepositorAddresses",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "variadic<Address>",
+          "multi_result": true
+        }
+      ]
+    },
+    {
       "name": "viewClaims",
       "mutability": "readonly",
       "inputs": [
@@ -242,6 +276,127 @@
       "outputs": [
         {
           "type": "List<Claim>"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "identifier": "harvestPaused",
+      "inputs": [
+        {
+          "name": "operator",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "harvestUnpaused",
+      "inputs": []
+    },
+    {
+      "identifier": "privilegedAddressAdded",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "privledgedAddressRemoved",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "depositorAddressAdded",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "depositorAddressRemoved",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "claimAdded",
+      "inputs": [
+        {
+          "name": "operator",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "claim_type",
+          "type": "ClaimType",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "claimRemoved",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "claim_type",
+          "type": "ClaimType",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "claimCollected",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "claim_type",
+          "type": "ClaimType",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "BigUint",
+          "indexed": true
         }
       ]
     }
@@ -275,6 +430,10 @@
         {
           "name": "Allocation",
           "discriminant": 2
+        },
+        {
+          "name": "Royalties",
+          "discriminant": 3
         }
       ]
     }

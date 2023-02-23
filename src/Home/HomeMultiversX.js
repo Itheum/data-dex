@@ -1,18 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
-import { Box, Stack } from "@chakra-ui/layout";
-import { Button, Alert, AlertTitle, Link, Badge, AlertIcon, AlertDescription, Spacer, Text, HStack, Heading, Wrap, Spinner, useToast, useDisclosure, Tooltip } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Link,
+  Spacer,
+  Spinner,
+  Stack,
+  Text,
+  Tooltip,
+  useDisclosure,
+  useToast,
+  Wrap,
+} from "@chakra-ui/react";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { uxConfig, debugui, sleep, dataCATDemoUserData } from "libs/util";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS } from "libs/util";
-import { formatNumberRoundFloor } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, debugui, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -33,8 +48,8 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
-    claimBalanceValues: ["-1", "-1", "-1"], // -1 is loading, -2 is error
-    claimBalanceDates: [0, 0, 0],
+    claimBalanceValues: ["-1", "-1", "-1", "-1"], // -1 is loading, -2 is error
+    claimBalanceDates: [0, 0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
@@ -221,6 +236,22 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     claimType: CLAIM_TYPES.ALLOCATIONS,
     mxClaimsContract,
   };
+
+  const { isOpen: isRoyaltiesOpen, onOpen: onRoyaltiesOpen, onClose: onRoyaltiesClose } = useDisclosure();
+
+  const royaltiesModalData = {
+    isOpen: isRoyaltiesOpen,
+    onClose: () => {
+      onRoyaltiesClose();
+    },
+    title: "Royalties",
+    tag1: "Total Available",
+    value1: claimsBalances.claimBalanceValues[3],
+    tag2: "Last Deposited on",
+    value2: moment(claimsBalances.claimBalanceDates[3]).format(uxConfig.dateStrTm),
+    claimType: CLAIM_TYPES.ROYALTIES,
+    mxClaimsContract,
+  };
   // E: claims related logic
 
   const doDataCatTestUser = async () => {
@@ -231,9 +262,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     setLoadingDataCatTestUser(false);
 
     toast({
-      title: 'Congrats! an Itheum Data CAT test account has been linked',
-      description: 'You can now advertise your data for trade on the Data DEX',
-      status: 'success',
+      title: "Congrats! an Itheum Data CAT test account has been linked",
+      description: "You can now advertise your data for trade on the Data DEX",
+      status: "success",
       duration: 6000,
       isClosable: true,
     });
@@ -245,13 +276,14 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
   const tileBoxMdW = "310px";
   const tileBoxH = "360px";
+  const claimsStackMinW = "220px";
 
   return (
     <Stack>
       <Heading size="lg">Home</Heading>
 
       <Stack>
-        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={5}>
+        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={2}>
           <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
             <Stack p="5" h={tileBoxH} w={tileBoxMdW}>
               {!itheumAccount && <Heading size="md">Linked Itheum Data CAT Account</Heading>}
@@ -259,13 +291,15 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 <Alert>
                   <Stack>
                     <AlertTitle fontSize="md">
-                      <AlertIcon mb={2} /> Sorry! You don&apos;t seem to have a{' '}
+                      <AlertIcon mb={2} /> Sorry! You don&apos;t seem to have a{" "}
                       <Link href="https://itheum.com" isExternal>
                         itheum.com
-                      </Link>{' '}
+                      </Link>{" "}
                       Data CAT account
                     </AlertTitle>
-                    <AlertDescription fontSize="md">But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.</AlertDescription>
+                    <AlertDescription fontSize="md">
+                      But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
+                    </AlertDescription>
                   </Stack>
                 </Alert>
               )}
@@ -298,7 +332,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   variant="outline"
                   onClick={() => {
                     setMenuItem(2);
-                    navigate('/selldata');
+                    navigate("/tradedata");
                   }}
                 >
                   Trade My Data
@@ -330,9 +364,6 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 NFMe ID Avatar
               </Heading>
               <Spacer />
-              <Button disabled colorScheme="teal">
-                Mint & Own NFT
-              </Button>
               <Text fontSize="sm" align="center">
                 Coming Soon
               </Text>
@@ -341,11 +372,11 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
           <ChainSupportedComponent feature={MENU.CLAIMS}>
             <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, "initial"]}>
-              <Stack p="5" h={tileBoxH}>
+              <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                 <Heading size="md">My Claims</Heading>
 
                 <Spacer />
-                <HStack spacing={50}>
+                <HStack justifyContent={"space-between"}>
                   <Text>Rewards</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
@@ -363,7 +394,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 </HStack>
 
                 <Spacer />
-                <HStack spacing={50}>
+                <HStack justifyContent={"space-between"}>
                   <Text>Airdrops</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
@@ -381,9 +412,27 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 </HStack>
                 <Spacer />
 
+                <HStack justifyContent={"space-between"}>
+                  <Text>Royalties</Text>
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
+                      {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[3])
+                      ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                        <Spinner size="xs" />
+                      ) : (
+                        <WarningTwoIcon />
+                      )}
+                    </Button>
+                  </Tooltip>
+
+                  <ClaimModalMx {...royaltiesModalData} />
+                </HStack>
+                <Spacer />
+
                 {(claimsBalances.claimBalanceValues[2] > 0 && (
                   <Box h="40px">
-                    <HStack spacing={30}>
+                    <HStack justifyContent={"space-between"}>
                       <Text>Allocations</Text>
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>

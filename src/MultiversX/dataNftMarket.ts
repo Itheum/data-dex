@@ -23,7 +23,7 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
-import BigNumber from 'bignumber.js';
+import BigNumber from "bignumber.js";
 import jsonData from "./ABIs/data_market.abi.json";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain } from "../libs/util";
@@ -34,6 +34,7 @@ export class DataNftMarketContract {
   chainID: string;
   networkProvider: ProxyNetworkProvider;
   contract: SmartContract;
+  itheumToken: string;
   constructor(networkId: string) {
     this.timeout = 5000;
     this.dataNftMarketContractAddress = contractsForChain(networkId).market;
@@ -54,6 +55,7 @@ export class DataNftMarketContract {
       address: new Address(this.dataNftMarketContractAddress),
       abi: abi,
     });
+    this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
   }
 
   async getNumberOfOffers() {
@@ -139,19 +141,21 @@ export class DataNftMarketContract {
   }
 
   async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
-    const data = BigNumber(paymentAmount).comparedTo(0) > 0 ? TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("ESDTTransfer"))
-      .addArg(new TokenIdentifierValue(tokenId))
-      .addArg(new BigUIntValue(paymentAmount))
-      .addArg(new StringValue("acceptOffer"))
-      .addArg(new U64Value(index))
-      .addArg(new BigUIntValue(amount))
-      .build()
-    : TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("acceptOffer"))
-      .addArg(new U64Value(index))
-      .addArg(new BigUIntValue(amount))
-      .build();
+    const data =
+      BigNumber(paymentAmount).comparedTo(0) > 0
+        ? TransactionPayload.contractCall()
+            .setFunction(new ContractFunction("ESDTTransfer"))
+            .addArg(new TokenIdentifierValue(tokenId))
+            .addArg(new BigUIntValue(paymentAmount))
+            .addArg(new StringValue("acceptOffer"))
+            .addArg(new U64Value(index))
+            .addArg(new BigUIntValue(amount))
+            .build()
+        : TransactionPayload.contractCall()
+            .setFunction(new ContractFunction("acceptOffer"))
+            .addArg(new U64Value(index))
+            .addArg(new BigUIntValue(amount))
+            .build();
 
     const offerEsdtTx = new Transaction({
       value: 0,
@@ -276,7 +280,7 @@ export class DataNftMarketContract {
         .addArg(new BigUIntValue(addTokenQuantity)) //how many tokens to send
         .addArg(new AddressValue(new Address(this.dataNftMarketContractAddress))) //address to send to
         .addArg(new StringValue("addOffer")) //what method to call on the contract
-        .addArg(new TokenIdentifierValue("ITHEUM-a61317")) //what token id to ask for
+        .addArg(new TokenIdentifierValue(this.itheumToken)) //what token id to ask for
         .addArg(new U64Value(0)) //what nonce to ask for
         .addArg(new BigUIntValue(price * 10 ** 18)) //how much to ask for
         .addArg(new BigUIntValue(addTokenQuantity)) //how many times to divide the amount of tokens sent into

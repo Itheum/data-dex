@@ -1,78 +1,80 @@
-import React, { useState, useEffect } from "react";
-import { ExternalLinkIcon, CheckCircleIcon } from "@chakra-ui/icons";
-import { Box, Stack } from "@chakra-ui/layout";
+import React, { useEffect, useState } from "react";
+import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Skeleton,
-  Button,
-  HStack,
-  Badge,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  Heading,
-  Image,
+  Badge,
+  Box,
+  Button,
+  CloseButton,
   Flex,
+  Heading,
+  HStack,
+  Image,
   Link,
-  Text,
-  Tooltip,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  Spinner,
-  AlertDescription,
-  CloseButton,
-  ModalCloseButton,
-  useDisclosure,
   Popover,
-  PopoverTrigger,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  useToast,
+  PopoverTrigger,
   Select,
+  Skeleton,
+  Spinner,
+  Stack,
+  Text,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import { AbiRegistry, ArgSerializer, BinaryCodec, EndpointParameterDefinition, SmartContractAbi, StructType, Type } from "@multiversx/sdk-core/out";
+import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import { useSessionStorage } from "libs/hooks";
-import { sleep, uxConfig, consoleNotice, convertWeiToEsdt, isValidNumericCharacter } from "libs/util";
-import { CHAIN_TX_VIEWER } from "libs/util";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import SkeletonLoadingList from "UtilComps/SkeletonLoadingList";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
-export default function MyDataNFTsMx({ onRfMount }) {
+export default function MyDataNFTsMx() {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const [onChainNFTs, setOnChainNFTs] = useState(null);
-  const [usersDataNFTCatalog, setUsersDataNFTCatalog] = useState([]);
+  const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
-  const [amounts, setAmounts] = useState([]);
-  const [prices, setPrices] = useState([]);
-  const [priceErrors, setPriceErrors] = useState([]);
+  const [amounts, setAmounts] = useState<number[]>([]);
+  const [amountErrors, setAmountErrors] = useState<string[]>([]);
+  const [prices, setPrices] = useState<number[]>([]);
+  const [priceErrors, setPriceErrors] = useState<string[]>([]);
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
     s2: 0,
     s3: 0,
+    s4: 0,
   });
-  const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState(null);
+  const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
@@ -80,50 +82,121 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
-  const [selectedDataNft, setSelectedDataNft] = useState(null);
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState({});
+  const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
+  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
 
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
+  const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
+
   useEffect(() => {
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
-      console.log("_marketRequirements", _marketRequirements);
-      const _maxPaymentFeeMap = {};
-      for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-        _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-          _marketRequirements.maximum_payment_fees[i],
-          tokenDecimals(_marketRequirements.accepted_payments[i])
-        ).toNumber();
+      const _maxPaymentFeeMap: RecordStringNumberType = {};
+
+      if (_marketRequirements) {
+        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
+          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
+            _marketRequirements.maximum_payment_fees[i],
+            tokenDecimals(_marketRequirements.accepted_payments[i])
+          ).toNumber();
+        }
       }
+
       setMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
   }, []);
 
-  const onChangeDataNftBurnAmount = (newValue) => {
+  const onChangeDataNftBurnAmount = (valueAsString: string) => {
     let error = "";
-    if (Number(newValue) > Number(selectedDataNft.balance)) {
-      error = "Data NFT balance exceeded";
-    } else if (Number(newValue) < 1) {
+    const valueAsNumber = Number(valueAsString);
+    console.log("valueAsNumber", valueAsNumber);
+    console.log("selectedDataNft", selectedDataNft);
+    if (valueAsNumber < 1) {
       error = "Burn Amount cannot be zero or negative";
+    } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
+      error = "Data NFT balance exceeded";
     }
 
     setDataNftBurnAmountError(error);
-    setDataNftBurnAmount(newValue);
+    setDataNftBurnAmount(valueAsNumber);
   };
 
-  const onBurnButtonClick = (nft) => {
+  const onBurnButtonClick = (nft: DataNftType) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(nft.balance); // init
+    setDataNftBurnAmount(Number(nft.balance)); // init
     setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
-  const onListButtonClick = (nft) => {
+  const onListButtonClick = (nft: DataNftType) => {
     setSelectedDataNft(nft);
     onListNFTOpen();
+  };
+
+  const getOnChainNFTs = async () => {
+    const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
+    console.log("onChainNfts", onChainNfts);
+
+    if (onChainNfts.length > 0) {
+      const codec = new BinaryCodec();
+      const json = JSON.parse(JSON.stringify(dataNftMintJson));
+      const abiRegistry = AbiRegistry.create(json);
+      const abi = new SmartContractAbi(abiRegistry, ["DataNftMint"]);
+      const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
+
+      // some logic to loop through the raw onChainNFTs and build the dataNfts
+      const _dataNfts: DataNftType[] = [];
+      const localAmounts: number[] = [];
+      const localPrices: number[] = [];
+      const localErrors: string[] = [];
+      const _amountErrors: string[] = [];
+
+      for (let index = 0; index < onChainNfts.length; index++) {
+        const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
+        const nft = onChainNfts[index];
+
+        _dataNfts.push({
+          index, // only for view & query
+          id: nft.identifier, // ID of NFT -> done
+          nftImgUrl: nft.url ? nft.url : "", // image URL of of NFT -> done
+          dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
+          dataStream: decodedAttributes["data_stream_url"].toString(), // data stream URL -> done
+          dataMarshal: decodedAttributes["data_marshal_url"].toString(), // data stream URL -> done
+          tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
+          feeInTokens: 100, // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
+          creator: decodedAttributes["creator"].toString(), // initial creator of NFT
+          creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
+          supply: nft.supply ? Number(nft.supply) : 0,
+          balance: Number(nft.balance),
+          description: decodedAttributes["description"].toString(),
+          title: decodedAttributes["title"].toString(),
+          royalties: nft.royalties / 100,
+          nonce: nft.nonce,
+          collection: nft.collection,
+        });
+
+        localAmounts.push(1);
+        localPrices.push(10);
+        localErrors.push("");
+        _amountErrors.push("");
+      }
+
+      setAmounts(localAmounts);
+      setPrices(localPrices);
+      setPriceErrors(localErrors);
+      setAmountErrors(_amountErrors);
+
+      console.log("_dataNfts", _dataNfts);
+      setDataNfts(_dataNfts);
+    } else {
+      // await sleep(4);
+      setNoData(true);
+      setDataNfts([]);
+    }
   };
 
   useEffect(() => {
@@ -133,88 +206,16 @@ export default function MyDataNFTsMx({ onRfMount }) {
     }
   }, [hasPendingTransactions]);
 
-  // use this effect to parse  the raw data into a catalog that is easier to render in the UI
   useEffect(() => {
-    const parseOnChainNfts = async () => {
-      if (onChainNFTs !== null) {
-        if (onChainNFTs.length > 0) {
-          const codec = new BinaryCodec();
-          const json = JSON.parse(JSON.stringify(dataNftMintJson));
-          const abiRegistry = AbiRegistry.create(json);
-          const abi = new SmartContractAbi(abiRegistry, ["DataNftMint"]);
-          const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
-
-          // some logic to loop through the raw onChainNFTs and build the usersDataNFTCatalog
-          const usersDataNFTCatalogLocal = [];
-          let localAmounts = [];
-          let localPrices = [];
-          let localErrors = [];
-          onChainNFTs.forEach((nft, index) => {
-            const decodedAttributes = codec.decodeTopLevel(Buffer.from(nft["attributes"], "base64"), dataNftAttributes).valueOf();
-            const dataNFT = {};
-            dataNFT.index = index; // only for view & query
-            dataNFT.id = nft["identifier"]; // ID of NFT -> done
-            dataNFT.nftImgUrl = nft["url"]; // image URL of of NFT -> done
-            dataNFT.dataPreview = decodedAttributes["data_preview_url"].toString(); // preview URL for NFT data stream -> done
-            dataNFT.dataStream = decodedAttributes["data_stream_url"].toString(); // data stream URL -> done
-            dataNFT.dataMarshal = decodedAttributes["data_marshal_url"].toString(); // data stream URL -> done
-            dataNFT.tokenName = nft["name"]; // is this different to NFT ID? -> yes, name can be chosen by the user
-            dataNFT.feeInTokens = "100"; // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-            dataNFT.creator = decodedAttributes["creator"].toString(); // initial creator of NFT
-            dataNFT.creationTime = new Date(Number(decodedAttributes["creation_time"]) * 1000); // initial creation time of NFT
-            dataNFT.supply = nft["supply"];
-            dataNFT.balance = nft["balance"];
-            dataNFT.description = decodedAttributes["description"].toString();
-            dataNFT.title = decodedAttributes["title"].toString();
-            dataNFT.royalties = nft["royalties"] / 100;
-            dataNFT.nonce = nft["nonce"];
-            dataNFT.collection = nft["collection"];
-            localAmounts.push(1);
-            localPrices.push(10);
-            localErrors.push('');
-            usersDataNFTCatalogLocal.push(dataNFT);
-            console.log("test");
-          });
-          setAmounts(localAmounts);
-          setPrices(localPrices);
-          setPriceErrors(localErrors);
-          console.log("usersDataNFTCatalogLocal");
-          console.log(usersDataNFTCatalogLocal);
-
-          setUsersDataNFTCatalog(usersDataNFTCatalogLocal);
-        } else {
-          await sleep(4);
-          setNoData(true);
-        }
+    (async () => {
+      if (address) {
+        const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
+        setUserData(_userData);
       }
-    };
-    parseOnChainNfts();
-  }, [onChainNFTs]);
-
-  const [userData, setUserData] = useState({});
-  const getUserData = async () => {
-    if (address && !hasPendingTransactions) {
-      const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
-      setUserData(_userData);
-    }
-  };
-
-  useEffect(() => {
-    getUserData();
+    })();
   }, [address, hasPendingTransactions]);
 
-  // get the raw NFT data from the blockchain for the user
-  const getOnChainNFTs = async () => {
-    const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
-
-    console.log("onChainNfts");
-    console.log(onChainNfts);
-
-    setOnChainNFTs(onChainNfts);
-  };
-
-  const accessDataStream = async (NFTid, myAddress) => {
+  const accessDataStream = async (NFTid: string, myAddress: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -246,8 +247,8 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
-          link.target = '_blank';
-          link.setAttribute('target', '_blank');
+          link.target = "_blank";
+          link.setAttribute("target", "_blank");
           link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
@@ -257,50 +258,47 @@ export default function MyDataNFTsMx({ onRfMount }) {
         }
       } else {
         if (data.success === false) {
-          setErrUnlockAccessGeneric(new Error(`${data.error.code}, ${data.error.message}`));
+          setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
         } else {
-          setErrUnlockAccessGeneric(new Error("Data Marshal responded with an unknown error trying to generate your access links"));
+          setErrUnlockAccessGeneric("Data Marshal responded with an unknown error trying to generate your access links");
         }
       }
-    } catch (e) {
-      setErrUnlockAccessGeneric(e);
+    } catch (e: any) {
+      setErrUnlockAccessGeneric(e.toString());
     }
   };
 
-  const fetchAccountSignature = async (message) => {
+  const fetchAccountSignature = async (message: string) => {
     const signResult = {
-      signature: null,
-      addrInHex: null,
+      signature: "",
+      addrInHex: "",
+      success: false,
+      exception: "",
     };
 
-    let customError = 'Signature result not received from wallet';
+    let customError = "Signature result not received from wallet";
 
-    if (walletUsedSession === 'el_webwallet') { // web wallet not supported
-      customError = 'Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
+    if (walletUsedSession === "el_webwallet") {
+      // web wallet not supported
+      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
     } else {
       try {
         const signatureObj = await signMessage({ message });
         console.log("signatureObj");
         console.log(signatureObj);
 
-        if (signatureObj?.signature?.buffer && signatureObj?.address?.valueHex) { // Maiar App V2 / Ledger
-          signResult.addrInHex = signatureObj.address.valueHex;
-
-          if (signatureObj.signature.buffer instanceof Uint8Array) { // Ledger
-            customError = 'Currently, Signature verifications do not work on Ledger. Please use the XPortal App or the DeFi Wallet Browser Plugin.';
-          } else { // Maiar (it will be string)
-            signResult.signature = signatureObj.signature.buffer.toString();
-          }
-        } else if (signatureObj?.signature?.value && signatureObj?.address?.valueHex) { // Defi Wallet      
-          signResult.signature = signatureObj.signature.value;
-          signResult.addrInHex = signatureObj.address.valueHex;
+        if (signatureObj?.signature && signatureObj?.address) {
+          // Maiar App V2 / Ledger
+          signResult.addrInHex = signatureObj.address.hex();
+          signResult.signature = signatureObj.signature.hex();
+          signResult.addrInHex = signatureObj.address.hex();
+          signResult.success = true;
         } else {
-          signResult.success = false;
-          signResult.exception = new Error("Signature result from wallet was malformed");
+          signResult.exception = "Signature result from wallet was malformed";
         }
-      } catch (e) {
+      } catch (e: any) {
         signResult.success = false;
-        signResult.exception = e;
+        signResult.exception = e.toString();
       }
 
       console.log("signResult");
@@ -309,7 +307,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
     if (signResult.signature === null || signResult.addrInHex === null) {
       signResult.success = false;
-      signResult.exception = new Error(customError);
+      signResult.exception = customError;
     }
 
     return signResult;
@@ -317,7 +315,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
-    setErrUnlockAccessGeneric(null);
+    setErrUnlockAccessGeneric("");
     onAccessProgressModalClose();
   };
 
@@ -376,61 +374,57 @@ export default function MyDataNFTsMx({ onRfMount }) {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {(usersDataNFTCatalog.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
-        <Flex wrap="wrap" spacing={5}>
-          {usersDataNFTCatalog &&
-            usersDataNFTCatalog.map((item, index) => (
-              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mr="1rem" mb="1rem" position="relative" w="15.5rem">
+      {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
+        <Flex wrap="wrap" gap="5">
+          {dataNfts &&
+            dataNfts.map((item, index) => (
+              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mb="1rem" position="relative" w="13.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
-                    <Image
-                      src={item.nftImgUrl}
-                      alt={item.dataPreview}
-                      h={200}
-                      w={200}
-                      borderRadius="md"
-                      onLoad={() => setOneNFTImgLoaded(true)} />
+                    <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
                   </Skeleton>
                 </Flex>
 
-                <Flex h="30rem" p="3" direction="column" justify="space-between">
+                <Flex h="28rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
-                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/nfts/${item.id}`} isExternal>
-                      {item.tokenName} <ExternalLinkIcon mx='2px' />
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+                      {item.tokenName} <ExternalLinkIcon mx="2px" />
                     </Link>
                   </Text>
-
-                  <Text fontWeight="bold" fontSize="lg" mt="2">
-                    {item.title}
-                  </Text>
-
-                  <Flex flexGrow="1">
-                    <Popover trigger="hover" placement="auto">
-                      <PopoverTrigger>
-                        <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
-                          {item.description.substring(0, 100) !== item.description ? item.description.substring(0, 100) + " ..." : item.description}
+                  <Popover trigger="hover" placement="auto">
+                    <PopoverTrigger>
+                      <div>
+                        <Text fontWeight="bold" fontSize="lg" mt="2">
+                          {item.title.length > 20 ? item.title.substring(0, 20) + " ..." : item.title}
                         </Text>
-                      </PopoverTrigger>
-                      <PopoverContent mx="2" width="220px" mt="-7">
-                        <PopoverHeader fontWeight="semibold">{item.tokenName}</PopoverHeader>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody>
-                          <Text fontSize="sm" mt="2" color="gray.300">
-                            {item.description}
-                          </Text>
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  </Flex>
 
+                        <Flex flexGrow="1">
+                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
+                            {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
+                          </Text>
+                        </Flex>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent mx="2" width="220px" mt="-7">
+                      <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverBody>
+                        <Text fontSize="sm" mt="2" color="gray.300">
+                          {item.description}
+                        </Text>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
                   <Box mt="4">
-                    {item.creator !== address && <Box color="gray.600" fontSize="sm">
-                      {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
-                      <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId]}/accounts/${item.creator}`} isExternal>
-                        <ExternalLinkIcon mx='2px' />
-                      </Link>
-                    </Box>}
+                    {item.creator !== address && (
+                      <Box color="gray.600" fontSize="sm">
+                        {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
+                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                          <ExternalLinkIcon mx="2px" />
+                        </Link>
+                      </Box>
+                    )}
 
                     <Box color="gray.600" fontSize="sm">
                       {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -477,7 +471,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                     </HStack>
 
                     <HStack mt="5">
-                      <Text fontSize="xs" w='110px'>How many to list: </Text>
+                      <Text fontSize="xs" w="110px">
+                        How many to list:{" "}
+                      </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -487,13 +483,25 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         max={item.balance}
                         isValidCharacter={isValidNumericCharacter}
                         value={amounts[index]}
-                        onChange={(valueString) =>
+                        onChange={(value) => {
+                          let error = "";
+                          const valueAsNumber = Number(value);
+                          if (valueAsNumber <= 0) {
+                            error = "Cannot be zero or negative";
+                          } else if (valueAsNumber > item.balance) {
+                            error = "Cannot exceed balance";
+                          }
+                          setAmountErrors((oldErrors) => {
+                            const newErrors = [...oldErrors];
+                            newErrors[index] = error;
+                            return newErrors;
+                          });
                           setAmounts((oldAmounts) => {
                             const newAmounts = [...oldAmounts];
-                            newAmounts[index] = Number(valueString);
+                            newAmounts[index] = valueAsNumber;
                             return newAmounts;
-                          })
-                        }
+                          });
+                        }}
                       >
                         <NumberInputField />
                         <NumberInputStepper>
@@ -502,9 +510,16 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         </NumberInputStepper>
                       </NumberInput>
                     </HStack>
+                    {amountErrors[index] && (
+                      <Text color="red.400" fontSize="xs">
+                        {amountErrors[index]}
+                      </Text>
+                    )}
 
                     <HStack mt="2">
-                      <Text fontSize="xs" w='110px'>Listing price for each: </Text>
+                      <Text fontSize="xs" w="110px">
+                        Listing price for each:{" "}
+                      </Text>
                       <NumberInput
                         size="xs"
                         maxW={16}
@@ -512,12 +527,12 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         defaultValue={10}
                         min={0}
                         isValidCharacter={isValidNumericCharacter}
-                        max={maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0} // need to update hardcoded tokenId
+                        max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
                         value={prices[index]}
                         onChange={(valueString, valueAsNumber) => {
-                          let error = '';
-                          if (valueAsNumber < 0) error = 'Cannot be negative';
-                          if (valueAsNumber > maxPaymentFeeMap["ITHEUM-a61317"] ? maxPaymentFeeMap["ITHEUM-a61317"] : 0) error = 'Cannot exceed maximum listing price';
+                          let error = "";
+                          if (valueAsNumber < 0) error = "Cannot be negative";
+                          if (valueAsNumber > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
                           setPriceErrors((oldErrors) => {
                             const newErrors = [...oldErrors];
                             newErrors[index] = error;
@@ -544,7 +559,14 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       </Text>
                     )}
 
-                    <Button size="xs" mt={3} colorScheme="teal" variant="outline" isDisabled={hasPendingTransactions} onClick={() => onListButtonClick(item)}>
+                    <Button
+                      size="xs"
+                      mt={3}
+                      colorScheme="teal"
+                      variant="outline"
+                      isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]}
+                      onClick={() => onListButtonClick(item)}
+                    >
                       List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
                       {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
                     </Button>
@@ -560,15 +582,12 @@ export default function MyDataNFTsMx({ onRfMount }) {
                   height="100%"
                   width="100%"
                   backgroundColor="blackAlpha.800"
-                  visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce)) ? "visible" : "collapse"}
+                  rounded="lg"
+                  visibility={
+                    userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
+                  }
                 >
-                  <Text
-                    fontSize="md"
-                    position="absolute"
-                    top="45%"
-                    textAlign="center"
-                    px="2"
-                  >
+                  <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
                     Data NFT is under investigation by the DAO as there was a complaint received against it
                   </Text>
@@ -600,8 +619,9 @@ export default function MyDataNFTsMx({ onRfMount }) {
                         You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                         {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance
-                          } have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
+                          ` The remaining ${
+                            selectedDataNft.supply - selectedDataNft.balance
+                          } are not under your ownership.`}
                       </Text>
                     </Box>
                   </HStack>
@@ -618,6 +638,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       size="xs"
                       maxW={16}
                       step={1}
+                      defaultValue={selectedDataNft.balance}
                       min={1}
                       max={selectedDataNft.balance}
                       isValidCharacter={isValidNumericCharacter}
@@ -712,10 +733,10 @@ export default function MyDataNFTsMx({ onRfMount }) {
                 Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
               </Text>
 
-              <Text fontSize="md" mt="8">
+              <Text display="none" fontSize="md" mt="8">
                 Advanced:
               </Text>
-              <Flex mt="2" justifyContent="flex-start" alignItems="center" gap="4">
+              <Flex display="none" mt="2" justifyContent="flex-start" alignItems="center" gap="4">
                 <Text fontSize="md">Access Time Limit per SFT: </Text>
                 <Select size="sm" width="120px" defaultValue="unlimited">
                   <option value="unlimited">Unlimited</option>
@@ -767,7 +788,7 @@ export default function MyDataNFTsMx({ onRfMount }) {
                       <AlertIcon mb={2} />
                       Process Error
                     </AlertTitle>
-                    {errUnlockAccessGeneric.message && <AlertDescription fontSize="md">{errUnlockAccessGeneric.message}</AlertDescription>}
+                    {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
                     <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                   </Stack>
                 </Alert>

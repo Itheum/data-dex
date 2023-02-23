@@ -1,7 +1,6 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Flex } from "@chakra-ui/layout";
-import { IconButton, Tooltip, Text } from "@chakra-ui/react";
+import { Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 
 // const PAGE_SIZES: number[] = [8, 16, 24];
 
@@ -10,6 +9,7 @@ interface PropsType {
   pageIndex: number;
   pageSize: number;
   gotoPage: (e: number) => void;
+
   // setPageSize: (e: number) => void,
 }
 
@@ -22,6 +22,7 @@ export const CustomPagination: FC<PropsType> = ({
 }) => {
   const canPreviousPage = pageIndex > 0;
   const canNextPage = pageIndex < pageCount - 1;
+  const [isInThrottle, setIsInThrottle] = useState(false);
   const previousPage = () => {
     if (canPreviousPage) {
       gotoPage(pageIndex - 1);
@@ -35,15 +36,21 @@ export const CustomPagination: FC<PropsType> = ({
 
   return (
     <>
-      <Flex justifyContent="space-between" m={4} alignItems="center">
+      <Flex justifyContent="space-between"  alignItems="center">
         <Flex>
           <Tooltip label="First Page">
             <IconButton
               colorScheme="teal"
               size="sm"
               aria-label="First Page"
-              onClick={() => gotoPage(0)}
-              isDisabled={!canPreviousPage}
+              onClick={() => {
+                gotoPage(0);
+                setIsInThrottle(true);
+                setTimeout(() => {
+                  setIsInThrottle(false);
+                }, 2000);
+              }}
+              isDisabled={!canPreviousPage || isInThrottle}
               icon={<ArrowLeftIcon h={3} w={3} />}
               mr={2}
             />
@@ -53,8 +60,14 @@ export const CustomPagination: FC<PropsType> = ({
               colorScheme="teal"
               size="sm"
               aria-label="Previous Page"
-              onClick={previousPage}
-              isDisabled={!canPreviousPage}
+              onClick={() => {
+                previousPage();
+                setIsInThrottle(true);
+                setTimeout(() => {
+                  setIsInThrottle(false);
+                }, 2000);
+              }}
+              isDisabled={!canPreviousPage || isInThrottle}
               icon={<ChevronLeftIcon h={6} w={6} />}
             />
           </Tooltip>
@@ -79,8 +92,14 @@ export const CustomPagination: FC<PropsType> = ({
               colorScheme="teal"
               size="sm"
               aria-label="Next Page"
-              onClick={nextPage}
-              isDisabled={!canNextPage}
+              onClick={() => {
+                nextPage();
+                setIsInThrottle(true);
+                setTimeout(() => {
+                  setIsInThrottle(false);
+                }, 2000);
+              }}
+              isDisabled={!canNextPage || isInThrottle}
               icon={<ChevronRightIcon h={6} w={6} />}
             />
           </Tooltip>
@@ -89,8 +108,14 @@ export const CustomPagination: FC<PropsType> = ({
               colorScheme="teal"
               size="sm"
               aria-label="Last Page"
-              onClick={() => gotoPage(pageCount - 1)}
-              isDisabled={!canNextPage}
+              onClick={() => {
+                gotoPage(pageCount - 1);
+                setIsInThrottle(true);
+                setTimeout(() => {
+                  setIsInThrottle(false);
+                }, 2000);
+              }}
+              isDisabled={!canNextPage || isInThrottle}
               icon={<ArrowRightIcon h={3} w={3} />}
               ml={2}
             />

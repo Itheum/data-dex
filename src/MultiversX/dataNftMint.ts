@@ -23,7 +23,7 @@ import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { contractsForChain, convertEsdtToWei } from "libs/util";
 import jsonData from "./ABIs/datanftmint.abi.json";
-import { DataNftMetadataType } from "./types";
+import { DataNftMetadataType, UserDataType } from "./types";
 
 export class DataNftMintContract {
   timeout: number;
@@ -166,7 +166,7 @@ export class DataNftMintContract {
     });
   }
 
-  async getUserDataOut(address: string, spamTaxTokenId: string) {
+  async getUserDataOut(address: string, spamTaxTokenId: string): Promise<UserDataType | undefined> {
     const interaction = this.contract.methods.getUserDataOut([new Address(address), spamTaxTokenId]);
     const query = interaction.buildQuery();
     const result = [];
@@ -179,7 +179,7 @@ export class DataNftMintContract {
 
       if (returnCode && returnCode.isSuccess() && firstValue) {
         const userData = firstValue.valueOf();
-        const returnData = {
+        const returnData: UserDataType = {
           antiSpamTaxValue: userData.anti_spam_tax_value.toNumber(),
           addressFrozen: userData.frozen,
           frozenNonces: userData.frozen_nonces.map((v: any) => v.toNumber()),
@@ -200,12 +200,12 @@ export class DataNftMintContract {
         const nonOKErr = new Error("getUserDataOut returnCode returned a non OK value");
         console.error(nonOKErr);
 
-        return { error: nonOKErr };
+        return undefined;
       }
     } catch (error) {
       console.error(error);
 
-      return { error };
+      return undefined;
     }
   }
 
@@ -225,7 +225,7 @@ export class DataNftMintContract {
       supply: nft.supply ? Number(nft.supply) : 0,
       description: decodedAttributes["description"].toString(),
       title: decodedAttributes["title"].toString(),
-      royalties: nft.royalties / 100,
+      royalties: nft.royalties ? nft.royalties / 100 : 0,
       nonce: nft.nonce,
       collection: nft.collection,
       balance: 0,
