@@ -50,22 +50,11 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { AiFillHome } from "react-icons/ai";
-import {
-  MdDarkMode,
-  MdExpandLess,
-  MdExpandMore,
-  MdLightMode,
-  MdMenu,
-} from "react-icons/md";
-import {
-  MdLocalFireDepartment,
-  MdBolt,
-  MdOnlinePrediction,
-} from "react-icons/md";
+import { MdDarkMode, MdExpandLess, MdExpandMore, MdLightMode, MdMenu } from "react-icons/md";
+import { MdLocalFireDepartment, MdBolt, MdOnlinePrediction } from "react-icons/md";
 import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
-import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
@@ -94,6 +83,7 @@ import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ShortAddress from "UtilComps/ShortAddress";
+import Marketplace from "../DataNFT/DataNFTMarketplaceMultiversX";
 
 const exploreRouterMenu = [
   {
@@ -315,10 +305,10 @@ function App({ appConfig }) {
     return styleProps;
   };
 
-  let containerShadow = 'rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px';
+  let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
 
-  if (colorMode === 'light') {
-    containerShadow = 'rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px';
+  if (colorMode === "light") {
+    containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
   return (
@@ -332,8 +322,8 @@ function App({ appConfig }) {
             minH="100vh"
             px={4}
             boxShadow={containerShadow}
-            zIndex={2}>
-
+            zIndex={2}
+          >
             <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="dashed 1px">
               <HStack alignItems={"center"} spacing={4}>
                 <IconButton
@@ -353,10 +343,13 @@ function App({ appConfig }) {
                   onClick={isOpen ? onClose : onOpen}
                 />
 
-                <HStack cursor="pointer" onClick={() => {
-                  setMenuItem(MENU.HOME);
-                  navigate("home");
-                }}>
+                <HStack
+                  cursor="pointer"
+                  onClick={() => {
+                    setMenuItem(MENU.HOME);
+                    navigate("home");
+                  }}
+                >
                   <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                   <Heading fontWeight={"normal"} size={"md"}>
                     <Text fontSize="lg">Itheum Data DEX</Text>
@@ -372,25 +365,15 @@ function App({ appConfig }) {
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId}>
-                      <MenuButton
-                        as={Button}
-                        size={"sm"}
-                        rightIcon={<MdExpandMore />}>
+                      <MenuButton as={Button} size={"sm"} rightIcon={<MdExpandMore />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"}>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, filterParams, Icon } = menuItem;
                           return (
-                            <MenuItem
-                              key={label}
-                              onClick={() =>
-                                navigateToDiscover(path, menuEnum, filterParams)
-                              }>
-                              <Icon
-                                size={"1.25em"}
-                                style={{ marginRight: "1rem" }}
-                              />
+                            <MenuItem key={label} onClick={() => navigateToDiscover(path, menuEnum, filterParams)}>
+                              <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
                               {label}
                             </MenuItem>
                           );
@@ -424,7 +407,8 @@ function App({ appConfig }) {
                   ))}
                 </Box>
 
-                <IconButton size={"sm"}
+                <IconButton
+                  size={"sm"}
                   icon={<AiFillHome />}
                   aria-label={"Back to Home"}
                   isDisabled={isMenuItemSelected(MENU.HOME)}
@@ -436,7 +420,8 @@ function App({ appConfig }) {
                   }}
                 />
 
-                <IconButton size={"sm"}
+                <IconButton
+                  size={"sm"}
                   icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
                   aria-label={"Change Color Theme"}
                   onClick={toggleColorMode}
@@ -478,8 +463,8 @@ function App({ appConfig }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
-                    <Route path="marketplace" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
-                    <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                    <Route path="marketplace" element={<Marketplace tabState={1} />} />
+                    <Route path="marketplace/my" element={<Marketplace tabState={2} />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
                     <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
@@ -542,10 +527,7 @@ function App({ appConfig }) {
           <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>
             <DrawerOverlay />
             <DrawerContent>
-              <DrawerHeader
-                borderBottomWidth={"1px"}
-                display={"flex"}
-                alignItems={"center"}>
+              <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"}>
                 <Heading size={"sm"} onClick={onClose}>
                   Itheum Data DEX
                 </Heading>
@@ -557,10 +539,7 @@ function App({ appConfig }) {
                     <AccordionItem key={menu.sectionId}>
                       {({ isExpanded }) => (
                         <>
-                          <AccordionButton
-                            display={"flex"}
-                            justifyContent={"space-between"}
-                            alignItems={"center"}>
+                          <AccordionButton display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
                             <Text m={0} fontWeight={"bold"}>
                               <ShortAddress address={mxAddress} fontSize="md" />
                             </Text>
@@ -569,8 +548,7 @@ function App({ appConfig }) {
                           <AccordionPanel p={0}>
                             <List>
                               {menu.sectionItems.map((menuItem) => {
-                                const { label, path, filterParams, Icon } =
-                                  menuItem;
+                                const { label, path, filterParams, Icon } = menuItem;
                                 return (
                                   <ListItem
                                     as={Button}
@@ -581,9 +559,8 @@ function App({ appConfig }) {
                                     justifyContent={"start"}
                                     p={3}
                                     key={label}
-                                    onClick={() =>
-                                      navigateToDiscover(path, filterParams)
-                                    }>
+                                    onClick={() => navigateToDiscover(path, filterParams)}
+                                  >
                                     <ListIcon
                                       as={() =>
                                         Icon({
@@ -597,26 +574,31 @@ function App({ appConfig }) {
                                 );
                               })}
 
-                              <ListItem as={Button}
+                              <ListItem
+                                as={Button}
                                 variant={"ghost"}
                                 w={"full"}
                                 borderRadius={"0"}
                                 display={"flex"}
                                 justifyContent={"start"}
                                 p={3}
-                                onClick={() =>
-                                  setMxShowClaimsHistory(true)
-                                }>View claims history</ListItem>
+                                onClick={() => setMxShowClaimsHistory(true)}
+                              >
+                                View claims history
+                              </ListItem>
 
-                              <ListItem as={Button}
+                              <ListItem
+                                as={Button}
                                 variant={"ghost"}
                                 w={"full"}
                                 borderRadius={"0"}
                                 display={"flex"}
                                 justifyContent={"start"}
                                 p={3}
-                                onClick={handleLogout}>Logout</ListItem>
-
+                                onClick={handleLogout}
+                              >
+                                Logout
+                              </ListItem>
                             </List>
                           </AccordionPanel>
                         </>
@@ -630,14 +612,8 @@ function App({ appConfig }) {
 
                   <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["block", null, "none"]} />
                 </Stack>
-
               </DrawerBody>
-              <DrawerFooter
-                display={"flex"}
-                justifyContent={"center"}
-                alignItems={"center"}
-                borderTopWidth={"1px"}>
-
+              <DrawerFooter display={"flex"} justifyContent={"center"} alignItems={"center"} borderTopWidth={"1px"}>
                 <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
                   <Text fontSize="xx-small">{dataDexVersion}</Text>
                   <HStack>
@@ -649,7 +625,6 @@ function App({ appConfig }) {
                     </Link>
                   </HStack>
                 </Flex>
-
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
@@ -662,28 +637,30 @@ function App({ appConfig }) {
 export default App;
 
 function ItheumTokenBalanceBadge({ tokenBalance, displayParams }) {
-  return (<Box
-    display={displayParams}
-    fontSize={["xs", "md"]}
-    minWidth="5.5rem"
-    align="center"
-    color="white"
-    fontWeight="bold"
-    borderRadius="md"
-    height="2rem"
-    padding="6px 11px"
-    bgGradient="linear(to-l, #7928CA, #FF0080)"
-  >
-    {tokenBalance === -1 ? (
-      <Spinner size="xs" />
-    ) : tokenBalance === -2 ? (
-      <WarningTwoIcon />
-    ) : (
-      <>
-        {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {formatNumberRoundFloor(tokenBalance)}
-      </>
-    )}
-  </Box>);
+  return (
+    <Box
+      display={displayParams}
+      fontSize={["xs", "md"]}
+      minWidth="5.5rem"
+      align="center"
+      color="white"
+      fontWeight="bold"
+      borderRadius="md"
+      height="2rem"
+      padding="6px 11px"
+      bgGradient="linear(to-l, #7928CA, #FF0080)"
+    >
+      {tokenBalance === -1 ? (
+        <Spinner size="xs" />
+      ) : tokenBalance === -2 ? (
+        <WarningTwoIcon />
+      ) : (
+        <>
+          {CHAIN_TOKEN_SYMBOL(_chainMetaLocal.networkId)} {formatNumberRoundFloor(tokenBalance)}
+        </>
+      )}
+    </Box>
+  );
 }
 
 function LoggedInChainBadge({ chain, displayParams }) {
