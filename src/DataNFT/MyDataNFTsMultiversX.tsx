@@ -621,7 +621,7 @@ export default function MyDataNFTsMx() {
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
                           ` The remaining ${
                             selectedDataNft.supply - selectedDataNft.balance
-                          } have already been purchased or burned and they no longer belong to you so you CANNOT burn them.`}
+                          } are not under your ownership.`}
                       </Text>
                     </Box>
                   </HStack>

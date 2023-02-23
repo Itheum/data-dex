@@ -97,7 +97,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
-  const [pageSize, setPageSize] = useState<number>(8);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
@@ -331,7 +331,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     <>
       <Stack spacing={5}>
         <Heading size="lg">Data NFT Marketplace</Heading>
-        <Flex mt="5" gap="12px" justifyContent={{ base: "center", md: "flex-start" }} flexDirection={{ base: "row", md: "row" }}>
+
+        <Flex mt="5" pr="5" gap="12px" justifyContent={{ base: "center", md: "flex-start" }} flexDirection={{ base: "row", md: "row" }}>
           <Button
             colorScheme="teal"
             width={{ base: "160px", md: "160px" }}
@@ -358,9 +359,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           >
             My Listed Data NFTs
           </Button>
-        </Flex>
+          
+          <Box flexGrow="1" />
 
-        <Flex justifyContent="center" alignItems="center">
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
         </Flex>
 
@@ -468,7 +469,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       <>
                         <Box fontSize="xs" mt="2">
                           <Text>
-                            Fee per NFT:
+                            Fee per NFT: {` `}
                             {marketRequirements ? (
                               <>
                                 {printPrice(
@@ -646,7 +647,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {
           /* show bottom pagination only if offers exist */
           offers.length > 0 && (
-            <Flex justifyContent="center" alignItems="center">
+            <Flex justifyContent="right" mt="5" pr="5">
               <CustomPagination
                 pageCount={pageCount}
                 pageIndex={pageIndex}

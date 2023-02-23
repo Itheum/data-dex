@@ -201,7 +201,7 @@ export const MENU = {
 export const PATHS = {
   home: [0, [-1]],
   buydata: [1, [0]],
-  selldata: [2, [-1]],
+  tradedata: [2, [-1]],
   purchaseddata: [3, [0]],
   chaintransactions: [4, [3]],
   datavault: [5, [4]],

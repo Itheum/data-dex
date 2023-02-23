@@ -332,7 +332,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   variant="outline"
                   onClick={() => {
                     setMenuItem(2);
-                    navigate("/selldata");
+                    navigate("/tradedata");
                   }}
                 >
                   Trade My Data
@@ -364,9 +364,6 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 NFMe ID Avatar
               </Heading>
               <Spacer />
-              <Button disabled colorScheme="teal">
-                Mint & Own NFT
-              </Button>
               <Text fontSize="sm" align="center">
                 Coming Soon
               </Text>

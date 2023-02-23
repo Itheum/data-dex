@@ -158,7 +158,6 @@ function App({ appConfig }) {
   });
   const cancelRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState(null);
@@ -316,17 +315,23 @@ function App({ appConfig }) {
     return styleProps;
   };
 
+  let containerShadow = 'rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px';
+
+  if (colorMode === 'light') {
+    containerShadow = 'rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px';
+  }
+
   return (
     <>
       {_user.isMxAuthenticated && (
         <Container maxW="container.xl">
           <Flex
-            bg={"none"}
+            bgColor={colorMode === "dark" && "black"}
             flexDirection="column"
             justifyContent={"space-between"}
             minH="100vh"
             px={4}
-            boxShadow={"xl"}
+            boxShadow={containerShadow}
             zIndex={2}>
 
             <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="dashed 1px">
@@ -347,10 +352,16 @@ function App({ appConfig }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-                <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-                <Heading fontWeight={"normal"} size={"md"}>
-                  <Text fontSize="lg">Itheum Data DEX</Text>
-                </Heading>
+
+                <HStack cursor="pointer" onClick={() => {
+                  setMenuItem(MENU.HOME);
+                  navigate("home");
+                }}>
+                  <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+                  <Heading fontWeight={"normal"} size={"md"}>
+                    <Text fontSize="lg">Itheum Data DEX</Text>
+                  </Heading>
+                </HStack>
               </HStack>
 
               <HStack alignItems={"center"} spacing={2}>
@@ -422,7 +433,6 @@ function App({ appConfig }) {
                   onClick={() => {
                     setMenuItem(MENU.HOME);
                     navigate("home");
-                    setShowMobileMenu(false);
                   }}
                 />
 
@@ -434,7 +444,7 @@ function App({ appConfig }) {
               </HStack>
             </Flex>
 
-            <Box backgroundColor="none" flexGrow="1" p="5">
+            <Box backgroundColor="none" flexGrow="1" p="5" mt="5">
               <Box>
                 <Routes>
                   <Route
@@ -462,7 +472,7 @@ function App({ appConfig }) {
                     }
                   />
                   <Route
-                    path="selldata"
+                    path="tradedata"
                     element={<SellDataMX key={rfKeys.sellData} itheumAccount={itheumAccount} onRfMount={() => handleRfMount("sellData")} />}
                   />
                   <Route path="datanfts" element={<Outlet />}>
