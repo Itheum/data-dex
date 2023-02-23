@@ -283,7 +283,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
       <Heading size="lg">Home</Heading>
 
       <Stack>
-        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={5}>
+        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={2}>
           <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
             <Stack p="5" h={tileBoxH} w={tileBoxMdW}>
               {!itheumAccount && <Heading size="md">Linked Itheum Data CAT Account</Heading>}
@@ -332,7 +332,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   variant="outline"
                   onClick={() => {
                     setMenuItem(2);
-                    navigate("/selldata");
+                    navigate("/tradedata");
                   }}
                 >
                   Trade My Data
@@ -364,9 +364,6 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 NFMe ID Avatar
               </Heading>
               <Spacer />
-              <Button disabled colorScheme="teal">
-                Mint & Own NFT
-              </Button>
               <Text fontSize="sm" align="center">
                 Coming Soon
               </Text>
