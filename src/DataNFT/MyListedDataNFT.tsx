@@ -15,7 +15,7 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Skeleton,
-  Text,
+  Text, useDisclosure,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -76,9 +76,8 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
   return (
-    <>
-      <Flex wrap="wrap" gap="5">
-        <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
+      <Flex wrap="wrap" gap="5" key={index} >
+        <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <Skeleton isLoaded={nftImageLoading} h={200}>
               <Image
@@ -94,7 +93,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
 
           <Flex h="28rem" p="3" direction="column" justify="space-between">
             {nftMetadataLoading && <Skeleton />}
-            {nftMetadataLoading && nftMetadata[index] && (
+            {!nftMetadataLoading && nftMetadata[index] && (
               <>
                 <Text fontSize="xs">
                   <Link href={`${ChainExplorer}/nfts/${nftMetadata[index].id}`} isExternal>
@@ -170,7 +169,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               </>
             )}
 
-            {!nftMetadataLoading && nftMetadata[index] && (
+            {!nftMetadataLoading && !!nftMetadata[index] && (
               <>
                 <Box fontSize="xs" mt="2">
                   <Text>
@@ -194,7 +193,8 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   height="7"
                   variant="outline"
                   onClick={() => {
-                    console.log("ceva", offers);
+                    console.log("NftLoading", nftMetadataLoading);
+                    console.log("nftMetaIndex", !!nftMetadata[index]);
                     window.open(nftMetadata[index].dataPreview);
                   }}
                 >
@@ -266,26 +266,25 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
             )}
           </Flex>
 
-          {/*<Box*/}
-          {/*  position="absolute"*/}
-          {/*  top="0"*/}
-          {/*  bottom="0"*/}
-          {/*  left="0"*/}
-          {/*  right="0"*/}
-          {/*  height="100%"*/}
-          {/*  width="100%"*/}
-          {/*  backgroundColor="blackAlpha.800"*/}
-          {/*  rounded="lg"*/}
-          {/*  visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"}*/}
-          {/*>*/}
-          {/*  <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">*/}
-          {/*    - FROZEN - <br />*/}
-          {/*    Data NFT is under investigation by the DAO as there was a complaint received against it*/}
-          {/*  </Text>*/}
-          {/*</Box>*/}
+          <Box
+            position="absolute"
+            top="0"
+            bottom="0"
+            left="0"
+            right="0"
+            height="100%"
+            width="100%"
+            backgroundColor="blackAlpha.800"
+            rounded="lg"
+            visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"}
+          >
+            <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
+              - FROZEN - <br />
+              Data NFT is under investigation by the DAO as there was a complaint received against it
+            </Text>
+          </Box>
         </Box>
       </Flex>
-    </>
   );
 };
 

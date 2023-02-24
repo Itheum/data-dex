@@ -5,6 +5,11 @@ import {
   Flex,
   Heading,
   HStack,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -15,6 +20,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { useLocation } from "react-router-dom";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
@@ -28,7 +34,7 @@ import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import MyListedDataNFT from "./MyListedDataNFT";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import useThrottle from "../UtilComps/UseThrottle";
 
 function printPrice(price: number, token: string): string {
@@ -40,6 +46,7 @@ interface PropsType {
 }
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta.contracts.itheumToken;
@@ -61,8 +68,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const [isPublicMarketplace, setIsPublicMarketplace] = useState<boolean>(true);
-  const [isMyListedData, setIsMyListedData] = useState<boolean>(false);
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
@@ -108,6 +113,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         setMaxPaymentFeeMap({});
       }
     })();
+    console.log(location);
   }, []);
   useEffect(() => {
     (async () => {
@@ -325,8 +331,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              setIsMyListedData(false);
-              setIsPublicMarketplace(true);
               navigate("/datanfts/marketplace");
             }}
           >
@@ -340,8 +344,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              setIsMyListedData(true);
-              setIsPublicMarketplace(false);
               navigate("/datanfts/marketplace/my");
             }}
           >
@@ -361,68 +363,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <Flex wrap="wrap" gap="5">
             {offers.length > 0 &&
               offers.map((offer, index) => (
-                <>
-                  {(isPublicMarketplace && nftIsOwnedByAnotherAddress(offer) && (
-                    <>
-                      <HStack h="3rem">
-                        <Text fontSize="xs">How many to procure </Text>
-                        <NumberInput
-                          size="xs"
-                          maxW={16}
-                          step={1}
-                          min={1}
-                          max={offer.quantity}
-                          isValidCharacter={isValidNumericCharacter}
-                          value={amountOfTokens[index]}
-                          onChange={(valueAsString) => {
-                            const value = Number(valueAsString);
-                            let error = "";
-                            if (value <= 0) {
-                              error = "Cannot be zero or negative";
-                            } else if (value > offer.quantity) {
-                              error = "Cannot exceed balance";
-                            }
-                            setAmountErrors((oldErrors) => {
-                              const newErrors = [...oldErrors];
-                              newErrors[index] = error;
-                              return newErrors;
-                            });
-                            setAmountOfTokens((oldAmounts: any) => {
-                              const newAmounts = { ...oldAmounts };
-                              newAmounts[index] = value;
-                              return newAmounts;
-                            });
-                          }}
-                        >
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                        <Button
-                          size="xs"
-                          colorScheme="teal"
-                          width="72px"
-                          isDisabled={hasPendingTransactions || !!amountErrors[index]}
-                          onClick={() => {
-                            setReadTermsChecked(false);
-                            setSelectedOfferIndex(index);
-                            onProcureModalOpen();
-                          }}
-                        >
-                          Procure
-                        </Button>
-                      </HStack>
-                      {amountErrors[index] && (
-                        <Text color="red.400" fontSize="xs">
-                          {amountErrors[index]}
-                        </Text>
-                      )}
-                    </>
-                  )) || <Box mt="2" h="3rem" />}
-
-                  {isMyListedData && address && (
+                <div key={offer.index}>
+                  {location.pathname === '/datanfts/marketplace/my' && address && (
                     <MyListedDataNFT
                       offer={offer}
                       offers={offers}
@@ -443,11 +385,187 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       index={index}
                     />
                   )}
-                </>
+                </div>
               ))}
           </Flex>
         )}
       </Stack>
+      {selectedOfferIndex >= 0 && selectedOfferIndex < offers.length && (
+        <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalContent>
+            {delistModalState === 0 ? (
+              <>
+                <ModalBody py={6}>
+                  <HStack spacing={5} alignItems="center">
+                    <Box flex="4" alignContent="center">
+                      <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
+                      <Flex mt="1">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                          {nftMetadatas[selectedOfferIndex].tokenName}
+                          <br />
+                          Listed supply: {offers[selectedOfferIndex].quantity}
+                        </Text>
+                      </Flex>
+                    </Box>
+                    <Box flex="1">
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                    </Box>
+                  </HStack>
+                  <Flex mt="8" justifyContent="flex-start" alignItems="center">
+                    <Text width="160px" fontSize="md">
+                      How many would you like to delist?
+                    </Text>
+                    <NumberInput
+                      size="xs"
+                      ml="30px"
+                      maxW={16}
+                      step={1}
+                      min={1}
+                      max={offers[selectedOfferIndex].quantity}
+                      isValidCharacter={isValidNumericCharacter}
+                      value={delistAmount}
+                      onChange={(value) => {
+                        const valueAsNumber = Number(value);
+                        setDelistAmount(valueAsNumber);
+                      }}
+                      keepWithinRange={true}
+                    >
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Flex>
+                  <Flex justifyContent="end" mt="6 !important">
+                    <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
+                      Proceed
+                    </Button>
+                    <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
+                      Cancel
+                    </Button>
+                  </Flex>
+                </ModalBody>
+              </>
+            ) : (
+              <>
+                <ModalBody py={6}>
+                  <HStack spacing={5} alignItems="center">
+                    <Box flex="4" alignContent="center">
+                      <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
+                      <Flex mt="1">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                          {nftMetadatas[selectedOfferIndex].tokenName}
+                          <br />
+                          Listed supply: {offers[selectedOfferIndex].quantity}
+                        </Text>
+                      </Flex>
+                    </Box>
+                    <Box flex="1">
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                    </Box>
+                  </HStack>
+                  <Text fontSize="md" mt="8" width={205}>
+                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
+                  </Text>
+                  <Flex justifyContent="end" mt="6 !important">
+                    <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
+                      Proceed
+                    </Button>
+                    <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
+                      Cancel
+                    </Button>
+                  </Flex>
+                </ModalBody>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      )}
+
+      {selectedOfferIndex >= 0 && selectedOfferIndex < offers.length && marketRequirements && (
+        <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalContent>
+            <ModalBody py={6}>
+              <HStack spacing={5} alignItems="center">
+                <Box flex="4" alignContent="center">
+                  <Text fontSize="lg">Update Listing Price for Each</Text>
+                  <Flex mt="1">
+                    <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                      {nftMetadatas[selectedOfferIndex].tokenName}
+                    </Text>
+                  </Flex>
+                </Box>
+                <Box flex="1">
+                  <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                </Box>
+              </HStack>
+              <Box mt="8">
+                <Flex justifyContent="flex-start" alignItems="center">
+                  <Text width="160px" fontSize="md">
+                    Current Price per Data NFT
+                  </Text>
+                  <Box>
+                    :{" "}
+                    {convertWeiToEsdt(
+                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                        .multipliedBy(amountOfTokens[selectedOfferIndex])
+                        .multipliedBy(10000)
+                        .div(10000 + marketRequirements.buyer_fee),
+                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                    ).toNumber()}{" "}
+                    {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                  </Box>
+                </Flex>
+                <Flex justifyContent="flex-start" alignItems="center">
+                  <Text width="160px" fontSize="md">
+                    New Price
+                  </Text>
+                  <NumberInput
+                    size="xs"
+                    maxW={16}
+                    step={5}
+                    min={0}
+                    max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
+                    isValidCharacter={isValidNumericCharacter}
+                    value={newListingPrice}
+                    onChange={(valueAsString) => {
+                      const value = Number(valueAsString);
+                      let error = "";
+                      if (value < 0) error = "Cannot be negative";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
+                      setNewListingPriceError(error);
+                      setNewListingPrice(value);
+                    }}
+                    keepWithinRange={true}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </Flex>
+                {newListingPriceError && (
+                  <Text color="red.400" fontSize="xs" ml="164px" mt="1">
+                    {newListingPriceError}
+                  </Text>
+                )}
+              </Box>
+              <Flex justifyContent="end" mt="6 !important">
+                <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>
+                  Proceed
+                </Button>
+                <Button colorScheme="teal" size="sm" variant="outline" onClick={onUpdatePriceModalClose}>
+                  Cancel
+                </Button>
+              </Flex>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
     </>
   );
 };
