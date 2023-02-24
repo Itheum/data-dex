@@ -161,6 +161,13 @@ function App({ appConfig }) {
   const navigate = useNavigate();
   const path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
+  const handleScrollClick = (event) => {
+    if (event.button === 0) {
+      event.preventDefault();
+      window.open('https://www.google.ro', '_blank');
+    }
+  };
+
   useEffect(() => {
     setUser({ ...baseUserContext }); // set base user context for app
 
@@ -342,7 +349,7 @@ function App({ appConfig }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-
+                <a href="">
                 <HStack
                   cursor="pointer"
                   onClick={() => {
@@ -350,11 +357,12 @@ function App({ appConfig }) {
                     navigate("home");
                   }}
                 >
-                  <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+                  <Image boxSize="50px" height="auto" onClick={(e) => handleScrollClick(e)} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                   <Heading fontWeight={"normal"} size={"md"}>
                     <Text fontSize="lg">Itheum Data DEX</Text>
                   </Heading>
                 </HStack>
+                </a>
               </HStack>
 
               <HStack alignItems={"center"} spacing={2}>
@@ -369,13 +377,15 @@ function App({ appConfig }) {
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"}>
-                        {menu.sectionItems.map((menuItem) => {
+                        {menu.sectionItems.map((menuItem, i) => {
                           const { label, path, menuEnum, filterParams, Icon } = menuItem;
                           return (
-                            <MenuItem key={label} onClick={() => navigateToDiscover(path, menuEnum, filterParams)}>
-                              <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
-                              {label}
-                            </MenuItem>
+                            <a href={`${path}`} key={i}>
+                              <MenuItem key={label} onClick={() => navigateToDiscover(path, menuEnum, filterParams)}>
+                                <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
+                                {label}
+                              </MenuItem>
+                            </a>
                           );
                         })}
 
