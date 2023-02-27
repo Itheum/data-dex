@@ -560,25 +560,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         {tabState === 2 && address && (
                           <>
                             <Flex mt="2" gap="2">
-                              <Button
-                                size="xs"
-                                colorScheme="teal"
-                                width="72px"
-                                isDisabled={hasPendingTransactions}
-                                onClick={() => {
-                                  setSelectedOfferIndex(index);
-                                  setDelistAmount(offers[index].quantity);
-                                  setDelistModalState(1);
-                                  onDelistModalOpen();
-                                }}
-                              >
-                                De-List All
-                              </Button>
                               {offers[index].quantity > 1 && (
                                 <Button
                                   size="xs"
                                   colorScheme="teal"
-                                  width="72px"
+                                  width="90px"
                                   isDisabled={hasPendingTransactions}
                                   onClick={() => {
                                     setSelectedOfferIndex(index);
@@ -587,13 +573,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                     onDelistModalOpen();
                                   }}
                                 >
-                                  De-List Some
+                                  De-List
                                 </Button>
                               )}
                               <Button
                                 size="xs"
                                 colorScheme="teal"
-                                width="72px"
+                                width="90px"
                                 isDisabled={hasPendingTransactions}
                                 onClick={() => {
                                   setSelectedOfferIndex(index);
@@ -890,6 +876,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
+                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
+                      De-List All
+                    </Button>
                   </Flex>
                   {delistAmountError && (
                     <Text color="red.400" fontSize="xs" ml="190px" mt="1">
