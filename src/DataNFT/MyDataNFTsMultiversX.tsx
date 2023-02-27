@@ -52,6 +52,7 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
+import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
@@ -419,7 +420,7 @@ export default function MyDataNFTsMx() {
                   <Box mt="4">
                     {
                       <Box color="gray.600" fontSize="sm">
-                        {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
+                        Creator: <ShortAddress address={item.creator}></ShortAddress>
                         <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                           <ExternalLinkIcon mx="2px" />
                         </Link>
@@ -619,9 +620,7 @@ export default function MyDataNFTsMx() {
                         You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                         {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${
-                            selectedDataNft.supply - selectedDataNft.balance
-                          } are not under your ownership.`}
+                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} are not under your ownership.`}
                       </Text>
                     </Box>
                   </HStack>

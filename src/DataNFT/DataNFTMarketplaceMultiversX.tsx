@@ -44,6 +44,7 @@ import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
+import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
@@ -361,7 +362,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           >
             My Listed Data NFTs
           </Button>
-          
+
           <Box flexGrow="1" />
 
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
@@ -427,13 +428,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Popover>
                         <Flex display="flex" flexDirection="column">
                           <Box color="gray.600" fontSize="sm">
-                            Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+                            Creator: <ShortAddress address={nftMetadatas[index].creator}></ShortAddress>
                             <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
                               <ExternalLinkIcon mx="2px" />
                             </Link>
                           </Box>
                           <Box color="gray.600" fontSize="sm">
-                            Owner:&nbsp; {` ${offer.owner.slice(0, 8)} ... ${offer.owner.slice(-8)}`}
+                            Owner: <ShortAddress address={offer.owner}></ShortAddress>
                             <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                               <ExternalLinkIcon mx="2px" />
                             </Link>
@@ -462,7 +463,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Box>
 
                         <Box color="gray.600" fontSize="sm">
-                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${convertToLocalString(nftMetadatas[index].royalties * 100)}%`}
+                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${convertToLocalString(
+                            nftMetadatas[index].royalties * 100
+                          )}%`}
                         </Box>
                       </>
                     )}
