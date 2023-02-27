@@ -463,7 +463,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Box>
 
                         <Box color="gray.600" fontSize="sm">
-                          {`Listed: ${offer.quantity} out of ${nftMetadatas[index].supply} supply`} <br />
+                          {`Listed: ${offer.quantity}`} <br />
+                          {`Total supply: ${nftMetadatas[index].supply}`} <br />
                           {`Royalty: ${convertToLocalString(nftMetadatas[index].royalties * 100)}%`}
                         </Box>
                       </>
