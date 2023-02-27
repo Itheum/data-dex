@@ -395,13 +395,13 @@ export default function MyDataNFTsMx() {
                   <Popover trigger="hover" placement="auto">
                     <PopoverTrigger>
                       <div>
-                        <Text fontWeight="bold" fontSize="lg" mt="2">
-                          {item.title.length > 20 ? item.title.substring(0, 20) + " ..." : item.title}
+                        <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
+                          {item.title}
                         </Text>
 
                         <Flex flexGrow="1">
-                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
-                            {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
+                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                            {item.description}
                           </Text>
                         </Flex>
                       </div>

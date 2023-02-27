@@ -402,15 +402,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <Popover trigger="hover" placement="auto">
                           <PopoverTrigger>
                             <div>
-                              <Text fontWeight="bold" fontSize="lg" mt="2">
-                                {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
+                              <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
+                                {nftMetadatas[index].title}
                               </Text>
 
                               <Flex flexGrow="1">
-                                <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                                  {nftMetadatas[index].description.length > 54
-                                    ? nftMetadatas[index].description.substring(0, 53) + "..."
-                                    : nftMetadatas[index].description}
+                                <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%">
+                                  {nftMetadatas[index].description}
                                 </Text>
                               </Flex>
                             </div>
