@@ -78,11 +78,7 @@ export default function MyDataNFTsMx() {
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
-  const {
-    isOpen: isAccessProgressModalOpen,
-    onOpen: onAccessProgressModalOpen,
-    onClose: onAccessProgressModalClose,
-  } = useDisclosure();
+  const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
 
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
@@ -161,9 +157,7 @@ export default function MyDataNFTsMx() {
       const _amountErrors: string[] = [];
 
       for (let index = 0; index < onChainNfts.length; index++) {
-        const decodedAttributes = codec
-          .decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes)
-          .valueOf();
+        const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
         const nft = onChainNfts[index];
 
         _dataNfts.push({
@@ -233,9 +227,7 @@ export default function MyDataNFTsMx() {
 
     try {
       // const chainId = _chainMeta.networkId;
-      const res = await fetch(
-        `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/preaccess?chainId=${_chainMeta.networkId}`
-      );
+      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -269,9 +261,7 @@ export default function MyDataNFTsMx() {
         if (data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
         } else {
-          setErrUnlockAccessGeneric(
-            "Data Marshal responded with an unknown error trying to generate your access links"
-          );
+          setErrUnlockAccessGeneric("Data Marshal responded with an unknown error trying to generate your access links");
         }
       }
     } catch (e: any) {
@@ -291,8 +281,7 @@ export default function MyDataNFTsMx() {
 
     if (walletUsedSession === "el_webwallet") {
       // web wallet not supported
-      customError =
-        "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
+      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
     } else {
       try {
         const signatureObj = await signMessage({ message });
@@ -373,13 +362,7 @@ export default function MyDataNFTsMx() {
       return;
     }
 
-    marketContract.addToMarket(
-      selectedDataNft.collection,
-      selectedDataNft.nonce,
-      amounts[selectedDataNft.index],
-      prices[selectedDataNft.index],
-      address
-    );
+    marketContract.addToMarket(selectedDataNft.collection, selectedDataNft.nonce, amounts[selectedDataNft.index], prices[selectedDataNft.index], address);
 
     //
     onListNFTClose();
@@ -392,39 +375,20 @@ export default function MyDataNFTsMx() {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {(dataNfts.length === 0 && (
-        <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>
-      )) || (
+      {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
         <Flex wrap="wrap" gap="5">
           {dataNfts &&
             dataNfts.map((item, index) => (
-              <Box
-                key={item.id}
-                maxW="xs"
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="wrap"
-                mb="1rem"
-                position="relative"
-                w="13.5rem">
+              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
-                    <Image
-                      src={item.nftImgUrl}
-                      alt={item.dataPreview}
-                      h={200}
-                      w={200}
-                      borderRadius="md"
-                      onLoad={() => setOneNFTImgLoaded(true)}
-                    />
+                    <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
                   </Skeleton>
                 </Flex>
 
                 <Flex h="28rem" p="3" direction="column" justify="space-between">
                   <Text fontSize="xs">
-                    <Link
-                      href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`}
-                      isExternal>
+                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
                       {item.tokenName} <ExternalLinkIcon mx="2px" />
                     </Link>
                   </Text>
@@ -457,11 +421,7 @@ export default function MyDataNFTsMx() {
                     {
                       <Box color="gray.600" fontSize="sm">
                         Creator: <ShortAddress address={item.creator}></ShortAddress>
-                        <Link
-                          href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${
-                            item.creator
-                          }`}
-                          isExternal>
+                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                           <ExternalLinkIcon mx="2px" />
                         </Link>
                       </Box>
@@ -479,13 +439,7 @@ export default function MyDataNFTsMx() {
                       Fully Transferable License
                     </Badge>
 
-                    <Button
-                      mt="2"
-                      size="sm"
-                      colorScheme="red"
-                      height="5"
-                      isDisabled={hasPendingTransactions}
-                      onClick={(e) => onBurnButtonClick(item)}>
+                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
                       Burn
                     </Button>
 
@@ -576,8 +530,7 @@ export default function MyDataNFTsMx() {
                         onChange={(valueString, valueAsNumber) => {
                           let error = "";
                           if (valueAsNumber < 0) error = "Cannot be negative";
-                          if (valueAsNumber > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0)
-                            error = "Cannot exceed maximum listing price";
+                          if (valueAsNumber > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
                           setPriceErrors((oldErrors) => {
                             const newErrors = [...oldErrors];
                             newErrors[index] = error;
@@ -627,10 +580,7 @@ export default function MyDataNFTsMx() {
                   backgroundColor="blackAlpha.800"
                   rounded="lg"
                   visibility={
-                    userData &&
-                    (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce)))
-                      ? "visible"
-                      : "collapse"
+                    userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
                   }>
                   <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
@@ -654,34 +604,25 @@ export default function MyDataNFTsMx() {
                     <Box flex="1.1">
                       <Stack>
                         <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
-                        <Text
-                          fontWeight="bold"
-                          fontSize="md"
-                          backgroundColor="blackAlpha.300"
-                          px="1"
-                          textAlign="center">
+                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
                           {selectedDataNft.tokenName}
                         </Text>
                       </Stack>
                     </Box>
                     <Box flex="1.9" alignContent="center">
                       <Text color="orange.300" fontSize="sm">
-                        You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of{" "}
-                        {selectedDataNft.supply}). You can burn these {selectedDataNft.balance} Data NFTs and remove
-                        them from your wallet.
+                        You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
+                        {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${
-                            selectedDataNft.supply - selectedDataNft.balance
-                          } are not under your ownership.`}
+                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} are not under your ownership.`}
                       </Text>
                     </Box>
                   </HStack>
 
                   <Text fontSize="md" mt="4">
-                    Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are
-                    &quot;Private&quot; to only you so on one can see or access them. So only burn Data NFTs if you are
-                    sure you want to destroy your Data NFTs for good. Once burned you will not be able to recover them
-                    again.
+                    Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
+                    one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be
+                    able to recover them again.
                   </Text>
 
                   <HStack mt="8">
@@ -711,12 +652,7 @@ export default function MyDataNFTsMx() {
                   )}
 
                   <Flex justifyContent="end" mt="8 !important">
-                    <Button
-                      colorScheme="teal"
-                      size="sm"
-                      mx="3"
-                      onClick={() => setBurnNFTModalState(2)}
-                      isDisabled={!!dataNftBurnAmountError}>
+                    <Button colorScheme="teal" size="sm" mx="3" onClick={() => setBurnNFTModalState(2)} isDisabled={!!dataNftBurnAmountError}>
                       I want to Burn my {dataNftBurnAmount} Data NFTs
                     </Button>
                     <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
@@ -786,8 +722,7 @@ export default function MyDataNFTsMx() {
                 How many to list: {amounts[selectedDataNft.index]}
               </Text>
               <Text fontSize="md" mt="2">
-                Listing fee per NFT:{" "}
-                {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
+                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
               </Text>
 
               <Text display="none" fontSize="md" mt="8">
@@ -813,11 +748,7 @@ export default function MyDataNFTsMx() {
         </Modal>
       )}
 
-      <Modal
-        isOpen={isAccessProgressModalOpen}
-        onClose={cleanupAccessDataStreamProcess}
-        closeOnEsc={false}
-        closeOnOverlayClick={false}>
+      <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Data Access Unlock Progress</ModalHeader>
@@ -849,9 +780,7 @@ export default function MyDataNFTsMx() {
                       <AlertIcon mb={2} />
                       Process Error
                     </AlertTitle>
-                    {errUnlockAccessGeneric && (
-                      <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>
-                    )}
+                    {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
                     <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                   </Stack>
                 </Alert>

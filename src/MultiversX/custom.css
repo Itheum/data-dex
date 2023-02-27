@@ -78,8 +78,7 @@
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.dapp-core-component__confirmAddressStyles__ledger-confirm-address
-  .dapp-core-component__confirmAddressStyles__ledger-confirm-address-footer {
+.dapp-core-component__confirmAddressStyles__ledger-confirm-address .dapp-core-component__confirmAddressStyles__ledger-confirm-address-footer {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 

@@ -52,9 +52,7 @@ export default function AppMarketplace() {
     <>
       <Stack pt="5" h="360px">
         <Heading size="md">App Marketplace</Heading>
-        <Text fontSize="md">
-          Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data
-        </Text>
+        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
           <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
             <Image src={imgProgGaPa} />
@@ -69,24 +67,14 @@ export default function AppMarketplace() {
                   Live
                 </Badge>
               </Box>
-              <Button
-                size="sm"
-                mt="3"
-                mr="3"
-                colorScheme="teal"
-                variant="outline"
-                onClick={() => handleLearnMoreProg("gdc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
                 Learn More
               </Button>
               <Button
                 size="sm"
                 mt="3"
                 colorScheme="teal"
-                onClick={() =>
-                  window.open(
-                    "https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae"
-                  )
-                }>
+                onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}>
                 Join Now
               </Button>
             </Box>
@@ -105,20 +93,10 @@ export default function AppMarketplace() {
                   Coming Soon
                 </Badge>
               </Box>
-              <Button
-                size="sm"
-                mt="3"
-                mr="3"
-                colorScheme="teal"
-                variant="outline"
-                onClick={() => handleLearnMoreProg("rhc")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
                 Learn More
               </Button>
-              <Button
-                size="sm"
-                mt="3"
-                colorScheme="teal"
-                onClick={() => appendUserAddressAndRedirect("https://itheum.com/redheartchallenge")}>
+              <Button size="sm" mt="3" colorScheme="teal" onClick={() => appendUserAddressAndRedirect("https://itheum.com/redheartchallenge")}>
                 Join Now
               </Button>
             </Box>
@@ -137,13 +115,7 @@ export default function AppMarketplace() {
                   Coming Soon
                 </Badge>
               </Box>
-              <Button
-                size="sm"
-                mt="3"
-                mr="3"
-                colorScheme="teal"
-                variant="outline"
-                onClick={() => handleLearnMoreProg("wfa")}>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
                 Learn More
               </Button>
               <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
@@ -155,12 +127,7 @@ export default function AppMarketplace() {
       </Stack>
 
       {learnMoreProd && (
-        <Modal
-          size={modelSize}
-          isOpen={isProgressModalOpen}
-          onClose={onProgressModalClose}
-          closeOnEsc={false}
-          closeOnOverlayClick={false}>
+        <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>

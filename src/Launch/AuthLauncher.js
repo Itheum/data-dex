@@ -33,14 +33,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
   return (
     <Container maxW="container.xbl">
       <Container maxW="container.xl">
-        <Flex
-          bg={"none"}
-          flexDirection="column"
-          justifyContent={"space-between"}
-          minH="100vh"
-          px={4}
-          boxShadow={"xl"}
-          zIndex={2}>
+        <Flex bg={"none"} flexDirection="column" justifyContent={"space-between"} minH="100vh" px={4} boxShadow={"xl"} zIndex={2}>
           <Flex
             h="5rem"
             alignItems={"center"}
@@ -49,12 +42,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
             borderBottom="dashed 1px"
             p="5">
             <HStack alignItems={"center"} spacing={4}>
-              <Image
-                boxSize="50px"
-                height="auto"
-                src={colorMode === "light" ? logoSmlL : logoSmlD}
-                alt="Itheum Data DEX"
-              />
+              <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
               <Heading fontWeight={"normal"} size={"md"}>
                 <Text fontSize="lg">Itheum Data DEX</Text>
               </Heading>
@@ -77,28 +65,16 @@ const AuthLauncher = ({ onLaunchMode }) => {
 
               <Wrap spacing="50px" mt="20px">
                 <WrapItem>
-                  <Image
-                    w="250px"
-                    src="https://devnet-media.elrond.com/nfts/asset/bafkreidm2ezl6a2zeze2rgy6n5r7ehx5vxerymiglev2wtecvvztrlizka"
-                  />
+                  <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreidm2ezl6a2zeze2rgy6n5r7ehx5vxerymiglev2wtecvvztrlizka" />
                 </WrapItem>
                 <WrapItem>
-                  <Image
-                    w="250px"
-                    src="https://devnet-media.elrond.com/nfts/asset/bafkreih7pf65lgyi5gm7n3aapvyai5b23m7tz5m5iwdclw6y4ecwsg35du"
-                  />
+                  <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreih7pf65lgyi5gm7n3aapvyai5b23m7tz5m5iwdclw6y4ecwsg35du" />
                 </WrapItem>
                 <WrapItem>
-                  <Image
-                    w="250px"
-                    src="https://devnet-media.elrond.com/nfts/asset/bafkreicqtuzy5pkbtccckzbfjwfm2qwydnhk4xwgcjchmki5udjqtsc3uq"
-                  />
+                  <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreicqtuzy5pkbtccckzbfjwfm2qwydnhk4xwgcjchmki5udjqtsc3uq" />
                 </WrapItem>
                 <WrapItem>
-                  <Image
-                    w="250px"
-                    src="https://devnet-media.elrond.com/nfts/asset/bafkreifw3v3f2xmlhexyh3mgoj4e7uhfguzl6mawdm5ffl7qjcew3i2lzy"
-                  />
+                  <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreifw3v3f2xmlhexyh3mgoj4e7uhfguzl6mawdm5ffl7qjcew3i2lzy" />
                 </WrapItem>
               </Wrap>
             </Box>

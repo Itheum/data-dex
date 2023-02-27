@@ -22,17 +22,7 @@ export const SkeletonLoadingList: React.FC<SkeletonLoadingListProps> = (props) =
       {skeletonType === "vertical" &&
         [...Array(items)].map((_, i) => {
           return (
-            <Box
-              key={i}
-              maxW="xs"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              mb="1rem"
-              mr="1rem"
-              position="relative"
-              w="13.3rem"
-              h="41.9rem">
+            <Box key={i} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mb="1rem" mr="1rem" position="relative" w="13.3rem" h="41.9rem">
               <Skeleton h="98.4%" m="5px" borderRadius="lg">
                 {children}
               </Skeleton>

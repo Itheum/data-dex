@@ -70,8 +70,7 @@ const InputLabelWithPopover = ({ children, tkey }) => {
       "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)";
   } else if (tkey === "data-preview-url") {
     title = "Data Preview URL";
-    text =
-      "A URL of a free preview of full data asset which should be publicly accessible behind a secure domain (one that starts with https://)";
+    text = "A URL of a free preview of full data asset which should be publicly accessible behind a secure domain (one that starts with https://)";
   } else if (tkey === "data-marshal-url") {
     title = "Data Marshal URL";
     text = "The Data Marshal is the service that brokers the on-chain access control for your data asset";
@@ -131,16 +130,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   });
   const [mintingSuccessful, setMintingSuccessful] = useState(false);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const {
-    isOpen: isDrawerOpenTradeStream,
-    onOpen: onOpenDrawerTradeStream,
-    onClose: onCloseDrawerTradeStream,
-  } = useDisclosure();
-  const {
-    isOpen: isReadTermsModalOpen,
-    onOpen: onReadTermsModalOpen,
-    onClose: onReadTermsModalClose,
-  } = useDisclosure();
+  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
+  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [currSellObject, setCurrSellObject] = useState(null);
 
   const [isStreamTrade, setIsStreamTrade] = useState(0);
@@ -314,18 +305,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) =>
-      setDataNFTMarshalServiceValid(res)
-    );
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) => setDataNFTMarshalServiceValid(res));
 
     setDataNFTMarshalService(trimmedValue);
   };
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then((res) =>
-      setDataNFTImgGenService(res)
-    );
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then((res) => setDataNFTImgGenService(res));
   };
 
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
@@ -523,9 +510,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
     if (userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
       toast({
-        title: `You can mint next Data NFT-FT after ${new Date(
-          userData.lastUserMintTime + userData.mintTimeLimit
-        ).toLocaleString()}`,
+        title: `You can mint next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
         status: "error",
         isClosable: true,
       });
@@ -577,9 +562,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         if (data.success === false) {
           setErrDataNFTStreamGeneric(new Error(`${data.error.code}, ${data.error.message}`));
         } else {
-          setErrDataNFTStreamGeneric(
-            new Error("Data Marshal responded with an unknown error trying to generate your encrypted links")
-          );
+          setErrDataNFTStreamGeneric(new Error("Data Marshal responded with an unknown error trying to generate your encrypted links"));
         }
       }
     } catch (e) {
@@ -679,14 +662,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   async function validateBaseInput() {
-    if (
-      !dataNFTStreamUrl.includes("https://") ||
-      !dataNFTStreamPreviewUrl.includes("https://") ||
-      !dataNFTMarshalService.includes("https://")
-    ) {
+    if (!dataNFTStreamUrl.includes("https://") || !dataNFTStreamPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
       toast({
-        title:
-          "Your data stream url inputs don't seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it",
+        title: "Your data stream url inputs don't seem to be valid. for e.g. stream URLs / marshal service URLs need to have https:// in it",
         status: "error",
         isClosable: true,
       });
@@ -743,12 +721,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
           <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
             {itheumAccount.programsAllocation.map((item) => (
               <Box key={item.program} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden">
-                <Image
-                  src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${
-                    itheumAccount._lookups.programs[item.program].img
-                  }.png`}
-                  alt=""
-                />
+                <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
                 <Box p="6">
                   <Box display="flex" alignItems="baseline">
@@ -770,12 +743,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         </>
       )}
 
-      <Drawer
-        onClose={onRfMount}
-        isOpen={isDrawerOpenTradeStream}
-        size="xl"
-        closeOnEsc={false}
-        closeOnOverlayClick={false}>
+      <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader>
@@ -826,20 +794,12 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                       {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
                       {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
                       {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                      {!dataNFTMarshalServiceValid && (
-                        <Text fontSize="md">Data Marshal service is not responding.</Text>
-                      )}
-                      {!dataNFTImgGenServiceValid && (
-                        <Text fontSize="md">Generative image generation service is not responding.</Text>
-                      )}
+                      {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
                       {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                        <AlertDescription fontSize="md">
-                          You are not currently whitelisted to mint Data NFTs
-                        </AlertDescription>
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
                       )}
-                      {userData && userData.contractPaused && (
-                        <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>
-                      )}
+                      {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
                     </AlertDescription>
                   </Stack>
                 </Alert>
@@ -964,12 +924,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 </Text>
               </InputLabelWithPopover>
 
-              <Input
-                mt="1 !important"
-                placeholder="Dataset Title"
-                value={datasetTitle}
-                onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
-              />
+              <Input mt="1 !important" placeholder="Dataset Title" value={datasetTitle} onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)} />
               <Text color="gray.400" fontSize="sm" mt="0 !important">
                 Between 10 and 50 alphanumeric characters only
               </Text>
@@ -1068,23 +1023,18 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 Terms and Fees
               </Text>
               <Text fontSize="md" mt="4 !important">
-                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict
-                “terms of use”, as an example, you agree that the data is free of any illegal material and that it does
-                not breach any copyright laws. You also agree to make sure the Data Stream URL is always online. Given
-                it&apos;s an NFT, you also have limitations like not being able to update the title, description,
-                royalty, etc. But there are other conditions too. Take some time to read these “terms of use” before you
-                proceed and it&apos;s critical you understand the terms of use before proceeding.
+                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that
+                the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is
+                always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there
+                are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use
+                before proceeding.
               </Text>
               <Flex mt="3 !important">
                 <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
                   Read Terms of Use
                 </Button>
               </Flex>
-              <Checkbox
-                size="md"
-                mt="3 !important"
-                isChecked={readTermsChecked}
-                onChange={(e) => setReadTermsChecked(e.target.checked)}>
+              <Checkbox size="md" mt="3 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
                 I have read and I agree to the Terms of Use
               </Checkbox>
               {userFocusedForm && !readTermsChecked && (
@@ -1094,9 +1044,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               )}
 
               <Text fontSize="md" mt="8 !important">
-                An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets
-                created by bad actors. This fee will be dynamically adjusted by the protocol based on ongoing dataset
-                curation discovery by the Itheum DAO.
+                An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
+                dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
               </Text>
               <Flex mt="3 !important">
                 <Tag variant="solid" colorScheme="teal">
@@ -1113,11 +1062,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   Read about the Anti-Spam fee
                 </Button>
               </Flex>
-              <Checkbox
-                size="md"
-                mt="3 !important"
-                isChecked={readAntiSpamFeeChecked}
-                onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+              <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
                 I accept the deduction of the anti-spam minting fee from my wallet
               </Checkbox>
               {userFocusedForm && !readAntiSpamFeeChecked && (
@@ -1128,23 +1073,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
               <Flex>
                 <ChainSupportedInput feature={MENU.SELL}>
-                  <Button
-                    mt="5"
-                    colorScheme="teal"
-                    isLoading={isProgressModalOpen}
-                    onClick={dataNFTSellSubmit}
-                    isDisabled={mintDataNFTDisabled}>
+                  <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} isDisabled={mintDataNFTDisabled}>
                     Mint and Trade as NFT
                   </Button>
                 </ChainSupportedInput>
               </Flex>
             </Stack>
 
-            <Modal
-              isOpen={isProgressModalOpen}
-              onClose={closeProgressModal}
-              closeOnEsc={false}
-              closeOnOverlayClick={false}>
+            <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false}>
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>Data Advertising Progress</ModalHeader>
@@ -1164,19 +1100,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                       <>
                         <Skeleton isLoaded={oneNFTImgLoaded} h={200} margin="auto">
                           <Center>
-                            <Image
-                              src={dataNFTImg}
-                              h={200}
-                              w={200}
-                              borderRadius="md"
-                              onLoad={() => setOneNFTImgLoaded(true)}
-                            />
+                            <Image src={dataNFTImg} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
                           </Center>
                         </Skeleton>
                         <Box textAlign="center">
-                          <Text fontSize="xs">
-                            This image was created using the unique data signature (it&apos;s one of a kind!)
-                          </Text>
+                          <Text fontSize="xs">This image was created using the unique data signature (it&apos;s one of a kind!)</Text>
                         </Box>
                       </>
                     )}
@@ -1193,9 +1121,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                     {mintingSuccessful && (
                       <Box textAlign="center" mt="6">
                         <Alert status="success">
-                          <Text colorScheme="teal">
-                            Success! Your Data NFT has been minted on the MultiversX Blockchain
-                          </Text>
+                          <Text colorScheme="teal">Success! Your Data NFT has been minted on the MultiversX Blockchain</Text>
                         </Alert>
                         <HStack mt="4">
                           <Link href="datanfts/wallet" textDecoration="none" _hover={{ textDecoration: "none" }}>
@@ -1215,15 +1141,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                             <AlertIcon mb={2} />
                             Process Error
                           </AlertTitle>
-                          {errDataNFTStreamGeneric.message && (
-                            <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>
-                          )}
-                          <CloseButton
-                            position="absolute"
-                            right="8px"
-                            top="8px"
-                            onClick={() => onProgressModalClose()}
-                          />
+                          {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => onProgressModalClose()} />
                         </Stack>
                       </Alert>
                     )}
@@ -1235,22 +1154,16 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         </DrawerContent>
       </Drawer>
 
-      <Modal
-        isOpen={isReadTermsModalOpen}
-        onClose={onReadTermsModalClose}
-        closeOnEsc={false}
-        closeOnOverlayClick={false}>
+      <Modal isOpen={isReadTermsModalOpen} onClose={onReadTermsModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
         <ModalContent>
           <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
           <ModalBody pb={6}>
             <Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-              industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type
-              and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-              into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-              release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-              software like Aldus PageMaker including versions of Lorem Ipsum.
+              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since
+              the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
+              but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
+              sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
             </Text>
             <Flex justifyContent="end" mt="6 !important">
               <Button colorScheme="teal" onClick={onReadTermsModalClose}>

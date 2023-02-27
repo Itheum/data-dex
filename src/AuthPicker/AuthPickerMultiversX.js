@@ -18,12 +18,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import {
-  ExtensionLoginButton,
-  LedgerLoginButton,
-  WalletConnectLoginButton,
-  WebWalletLoginButton,
-} from "@multiversx/sdk-dapp/UI";
+import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useNavigate } from "react-router-dom";
 import { useSessionStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
@@ -82,13 +77,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
     <>
       {!mxAddress && (
         <Stack spacing={6} p="5">
-          <Modal
-            isCentered
-            size={modelSize}
-            isOpen={isProgressModalOpen}
-            onClose={handleProgressModalClose}
-            closeOnEsc={false}
-            closeOnOverlayClick={false}>
+          <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
@@ -109,9 +98,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
                             callbackRoute={"/"}
                             loginButtonText={"xPortal App"}
                             buttonClassName="auth_button"
-                            {...(walletConnectV2ProjectId
-                              ? { isWalletConnectV2: true }
-                              : {})}></WalletConnectLoginButton>
+                            {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
@@ -124,17 +111,11 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
-                          <WebWalletLoginButton
-                            callbackRoute={"/"}
-                            loginButtonText={"Web Wallet"}
-                            buttonClassName="auth_button"></WebWalletLoginButton>
+                          <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
-                          <LedgerLoginButton
-                            callbackRoute={"/"}
-                            loginButtonText={"Ledger"}
-                            buttonClassName="auth_button"></LedgerLoginButton>
+                          <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
                         </WrapItem>
                       </Wrap>
                     </Stack>

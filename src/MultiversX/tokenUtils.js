@@ -58,11 +58,7 @@ export const tokenDecimals = (token_identifier) => {
     token_identifier === "EFFORT-a13513"
   ) {
     return 18;
-  } else if (
-    token_identifier === "USDC-c76f1f" ||
-    token_identifier === "QWT-46ac01" ||
-    token_identifier === "ISET-84e55e"
-  ) {
+  } else if (token_identifier === "USDC-c76f1f" || token_identifier === "QWT-46ac01" || token_identifier === "ISET-84e55e") {
     return 6;
   } else if (token_identifier === "OFE-29eb54") {
     return 4;

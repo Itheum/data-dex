@@ -77,15 +77,13 @@ obj = {
       "2553c3b0-51b0-11e7-9bd2-2f33680a66b6": {
         programName: "Pregnancy Condition Monitoring",
         img: "pcm",
-        description:
-          "New Hypertension occurs in 8-10% of pregnancies and many women develop depression during this period.",
+        description: "New Hypertension occurs in 8-10% of pregnancies and many women develop depression during this period.",
         duration: "30_weeks",
       },
       "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": {
         programName: "Red Heart Challenge",
         img: "rhc",
-        description:
-          "A 3 week challenge to generate some Heart Health insights by collecting Blood Pressure readings, Stress Readings etc",
+        description: "A 3 week challenge to generate some Heart Health insights by collecting Blood Pressure readings, Stress Readings etc",
         duration: "3_weeks",
       },
       "183f0290-f726-11e7-9186-3bcb5c5d22db": {

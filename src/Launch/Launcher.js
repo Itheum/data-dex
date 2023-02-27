@@ -46,10 +46,7 @@ function Launcher() {
             <NotificationModal />
             <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-            <AuthPickerMx
-              launchEnvironment={launchEnvironment}
-              resetLaunchMode={() => handleLaunchMode("auth", "devnet")}
-            />
+            <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("auth", "devnet")} />
             <MxAppHarness launchEnvironment={launchEnvironment} />
           </DappProvider>
         </>

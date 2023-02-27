@@ -38,14 +38,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import {
-  CHAIN_TX_VIEWER,
-  convertEsdtToWei,
-  convertWeiToEsdt,
-  isValidNumericCharacter,
-  sleep,
-  uxConfig,
-} from "libs/util";
+import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -81,11 +74,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const contract = new DataNftMarketContract("ED");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
-  const {
-    isOpen: isReadTermsModalOpen,
-    onOpen: onReadTermsModalOpen,
-    onClose: onReadTermsModalClose,
-  } = useDisclosure();
+  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [userData, setUserData] = useState<any>({});
@@ -104,11 +93,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [delistAmountError, setDelistAmountError] = useState<string>("");
 
   //
-  const {
-    isOpen: isUpdatePriceModalOpen,
-    onOpen: onUpdatePriceModalOpen,
-    onClose: onUpdatePriceModalClose,
-  } = useDisclosure();
+  const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
 
@@ -171,11 +156,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       setLoadingOffers(true);
-      const _offers = await contract.viewPagedOffers(
-        pageIndex * pageSize,
-        (pageIndex + 1) * pageSize - 1,
-        tabState === 1 ? "" : address
-      );
+      const _offers = await contract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
       console.log("_offers", _offers);
       setOffers(_offers);
       // end loading offers
@@ -210,11 +191,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
 
       // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
-      const _token = await getAccountTokenFromApi(
-        address,
-        offers[selectedOfferIndex].wanted_token_identifier,
-        _chainMeta.networkId
-      );
+      const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
       if (_token) {
         setWantedTokenBalance(_token.balance ? _token.balance : "0");
       } else {
@@ -268,12 +245,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     const offer = offers[selectedOfferIndex];
     const paymentAmount = BigNumber(offer.wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]);
     if (offer.wanted_token_identifier == "EGLD") {
-      contract.sendAcceptOfferEgldTransaction(
-        offer.index,
-        paymentAmount.toFixed(),
-        amountOfTokens[selectedOfferIndex],
-        address
-      );
+      contract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amountOfTokens[selectedOfferIndex], address);
     } else {
       if (offer.wanted_token_nonce === 0) {
         contract.sendAcceptOfferEsdtTransaction(
@@ -363,12 +335,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       <Stack spacing={5}>
         <Heading size="lg">Data NFT Marketplace</Heading>
 
-        <Flex
-          mt="5"
-          pr="5"
-          gap="12px"
-          justifyContent={{ base: "center", md: "flex-start" }}
-          flexDirection={{ base: "row", md: "row" }}>
+        <Flex mt="5" pr="5" gap="12px" justifyContent={{ base: "center", md: "flex-start" }} flexDirection={{ base: "row", md: "row" }}>
           <Button
             colorScheme="teal"
             width={{ base: "160px", md: "160px" }}
@@ -407,21 +374,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <Flex wrap="wrap" gap="5">
             {offers.length > 0 &&
               offers.map((offer, index) => (
-                <Box
-                  key={index}
-                  maxW="xs"
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  overflow="wrap"
-                  mb="1rem"
-                  position="relative"
-                  w="13.5rem">
+                <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
                   <Flex justifyContent="center" pt={5}>
                     <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                       <Image
-                        src={`https://${getApi("ED")}/nfts/${offer.offered_token_identifier}-${hexZero(
-                          offer.offered_token_nonce
-                        )}/thumbnail`}
+                        src={`https://${getApi("ED")}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
                         alt={"item.dataPreview"}
                         h={200}
                         w={200}
@@ -478,14 +435,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                               <ExternalLinkIcon mx="2px" />
                             </Link>
                           </Box>
-                          <Box
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="flex-start"
-                            alignItems="flex-start"
-                            gap="1"
-                            my="1"
-                            height="5rem">
+                          <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
                             {address && address == nftMetadatas[index].creator && (
                               <Badge borderRadius="full" px="2" colorScheme="teal">
                                 <Text>You are the Creator</Text>
@@ -505,9 +455,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Flex>
 
                         <Box display="flex" justifyContent="flex-start" mt="2">
-                          <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(
-                            uxConfig.dateStr
-                          )}`}</Text>
+                          <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
                         </Box>
 
                         <Box color="gray.600" fontSize="sm">
@@ -526,10 +474,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             {marketRequirements ? (
                               <>
                                 {printPrice(
-                                  convertWeiToEsdt(
-                                    offer.wanted_token_amount,
-                                    tokenDecimals(offer.wanted_token_identifier)
-                                  ).toNumber(),
+                                  convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
                                   getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                                 )}
                               </>
@@ -668,10 +613,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     backgroundColor="blackAlpha.800"
                     rounded="lg"
                     visibility={
-                      userData.addressFrozen ||
-                      (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce))
-                        ? "visible"
-                        : "collapse"
+                      userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
                     }>
                     <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                       - FROZEN - <br />
@@ -713,13 +655,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   </Flex>
                 </Box>
                 <Box flex="1">
-                  <Image
-                    src={nftMetadatas[selectedOfferIndex].nftImgUrl}
-                    h="auto"
-                    w="100%"
-                    borderRadius="md"
-                    m="auto"
-                  />
+                  <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                 </Box>
               </HStack>
               <Flex fontSize="md" mt="2">
@@ -739,10 +675,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             .div(10000 + marketRequirements.buyer_fee),
                           tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
                         ).toNumber(),
-                        getTokenWantedRepresentation(
-                          offers[selectedOfferIndex].wanted_token_identifier,
-                          offers[selectedOfferIndex].wanted_token_nonce
-                        )
+                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
                       )}
                     </>
                   ) : (
@@ -751,9 +684,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 </Box>
               </Flex>
               <Flex>
-                {BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                  .multipliedBy(amountOfTokens[selectedOfferIndex])
-                  .comparedTo(wantedTokenBalance) > 0 && (
+                {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
+                  0 && (
                   <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
                     Your wallet token balance is too low to proceed
                   </Text>
@@ -784,15 +716,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     <>
                       {printPrice(
                         convertWeiToEsdt(
-                          BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(
-                            amountOfTokens[selectedOfferIndex]
-                          ),
+                          BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),
                           tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
                         ).toNumber(),
-                        getTokenWantedRepresentation(
-                          offers[selectedOfferIndex].wanted_token_identifier,
-                          offers[selectedOfferIndex].wanted_token_nonce
-                        )
+                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
                       )}
                     </>
                   ) : (
@@ -818,10 +745,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                               tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
                             ).toNumber() +
                             " "}
-                          {getTokenWantedRepresentation(
-                            offers[selectedOfferIndex].wanted_token_identifier,
-                            offers[selectedOfferIndex].wanted_token_nonce
-                          )}
+                          {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
                           {" + "}
                           {convertWeiToEsdt(
                             BigNumber(offers[selectedOfferIndex].wanted_token_amount)
@@ -831,10 +755,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
                           ).toNumber()}
                           {" " +
-                            getTokenWantedRepresentation(
-                              offers[selectedOfferIndex].wanted_token_identifier,
-                              offers[selectedOfferIndex].wanted_token_nonce
-                            )}
+                            getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
                         </>
                       )}
                     </>
@@ -848,11 +769,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   Read Terms of Use
                 </Button>
               </Flex>
-              <Checkbox
-                size="sm"
-                mt="3 !important"
-                isChecked={readTermsChecked}
-                onChange={(e: any) => setReadTermsChecked(e.target.checked)}>
+              <Checkbox size="sm" mt="3 !important" isChecked={readTermsChecked} onChange={(e: any) => setReadTermsChecked(e.target.checked)}>
                 I have read all terms and agree to them
               </Checkbox>
               {!readTermsChecked && (
@@ -868,9 +785,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   onClick={onProcure}
                   isDisabled={
                     !readTermsChecked ||
-                    BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                      .multipliedBy(amountOfTokens[selectedOfferIndex])
-                      .comparedTo(wantedTokenBalance) > 0
+                    BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
+                      0
                   }>
                   Proceed
                 </Button>
@@ -882,22 +798,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </ModalContent>
         </Modal>
       )}
-      <Modal
-        isOpen={isReadTermsModalOpen}
-        onClose={onReadTermsModalClose}
-        closeOnEsc={false}
-        closeOnOverlayClick={false}>
+      <Modal isOpen={isReadTermsModalOpen} onClose={onReadTermsModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
         <ModalContent>
           <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
           <ModalBody pb={6}>
             <Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-              industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type
-              and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-              into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-              release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-              software like Aldus PageMaker including versions of Lorem Ipsum.
+              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since
+              the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
+              but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
+              sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
             </Text>
             <Flex justifyContent="end" mt="6 !important">
               <Button colorScheme="teal" onClick={onReadTermsModalClose}>
@@ -926,13 +836,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image
-                        src={nftMetadatas[selectedOfferIndex].nftImgUrl}
-                        h="auto"
-                        w="100%"
-                        borderRadius="md"
-                        m="auto"
-                      />
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
                   <Flex mt="8" justifyContent="flex-start" alignItems="center">
@@ -963,12 +867,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
-                    <Button
-                      colorScheme="teal"
-                      size="xs"
-                      variant="outline"
-                      ml="2"
-                      onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
+                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
                       De-List All
                     </Button>
                   </Flex>
@@ -1002,18 +901,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image
-                        src={nftMetadatas[selectedOfferIndex].nftImgUrl}
-                        h="auto"
-                        w="100%"
-                        borderRadius="md"
-                        m="auto"
-                      />
+                      <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
                   <Text fontSize="md" mt="8" width={205}>
-                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public
-                    Marketplace.
+                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
@@ -1031,11 +923,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       )}
 
       {selectedOfferIndex >= 0 && selectedOfferIndex < offers.length && marketRequirements && (
-        <Modal
-          isOpen={isUpdatePriceModalOpen}
-          onClose={onUpdatePriceModalClose}
-          closeOnEsc={false}
-          closeOnOverlayClick={false}>
+        <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
           <ModalContent>
             <ModalBody py={6}>
@@ -1049,13 +937,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   </Flex>
                 </Box>
                 <Box flex="1">
-                  <Image
-                    src={nftMetadatas[selectedOfferIndex].nftImgUrl}
-                    h="auto"
-                    w="100%"
-                    borderRadius="md"
-                    m="auto"
-                  />
+                  <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                 </Box>
               </HStack>
               <Box mt="8">
@@ -1072,10 +954,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         .div(10000 + marketRequirements.buyer_fee),
                       tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
                     ).toNumber()}{" "}
-                    {getTokenWantedRepresentation(
-                      offers[selectedOfferIndex].wanted_token_identifier,
-                      offers[selectedOfferIndex].wanted_token_nonce
-                    )}
+                    {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
                   </Box>
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center">
@@ -1094,8 +973,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0)
-                        error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}

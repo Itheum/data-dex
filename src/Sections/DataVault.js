@@ -19,23 +19,17 @@ export default function () {
               </Badge>
             </Heading>
             <Image src={dataVaultIcon} boxSize="150px" m={5} borderRadius="md" />
-            <HStack
-              divider={<StackDivider borderColor="gray.200" />}
-              spacing={4}
-              alignItems="baseline"
-              flexDirection={["column", "initial"]}>
+            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
               <Box fontSize="sm" align="center" flex="1">
-                Store highly sensitive personal data in your data vault. For example: details about your gender, race,
-                sexual preference, prior health conditions, financial history etc
+                Store highly sensitive personal data in your data vault. For example: details about your gender, race, sexual preference, prior health
+                conditions, financial history etc
               </Box>
               <Box fontSize="sm" align="center" flex="1">
-                Data is encrypted using your own private key (no one else can unlock and view it) and stored in IPFS (no
-                one else can destroy it)
+                Data is encrypted using your own private key (no one else can unlock and view it) and stored in IPFS (no one else can destroy it)
               </Box>
               <Box fontSize="sm" align="center" flex="1">
-                Append data from your vault to the regular data you trade on the data dex. As this gives the
-                &quot;dataset&quot; more context, it becomes more valuable to the buyer - so you will earn more{" "}
-                {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                Append data from your vault to the regular data you trade on the data dex. As this gives the &quot;dataset&quot; more context, it becomes more
+                valuable to the buyer - so you will earn more {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
               </Box>
             </HStack>
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-vault-1" isExternal>

@@ -110,8 +110,7 @@ export const progInfoMeta = {
     name: "Red Heart Challenge",
     desc: "Take this 3 week program and get unique insights into the health of your heart. This app uses a first of it’s kind technology to coach you through every step and to puts you in the center of the entire process.",
     medium: "Telegram App",
-    outcome:
-      "Data produced from this program can be used to assess the impact blood pressure, stress, diet and activity has on overall cardiovascular health.",
+    outcome: "Data produced from this program can be used to assess the impact blood pressure, stress, diet and activity has on overall cardiovascular health.",
     targetBuyer: 'Research Institutes, Drug Manufacturers, Health "Care Teams", Private Health Insurance',
     data: "Blood Pressure (single arm and both arms), Stress Levels, Activity Levels, Diet Assessment",
     url: "https://itheum.com/redheartchallenge",
@@ -274,18 +273,7 @@ export function notSupportedOnChain(menuItem, networkId) {
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [
-      MENU.FAUCET,
-      MENU.TX,
-      MENU.COALITION,
-      MENU.NFTALL,
-      MENU.NFTMINE,
-      MENU.BUY,
-      MENU.PURCHASED,
-      MENU.ADVERTISED,
-      MENU.DATAPROOFS,
-      MENU.SELL,
-    ],
+    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -509,15 +497,13 @@ export const dataCATDemoUserData = {
       "2553c3b0-51b0-11e7-9bd2-2f33680a66b6": {
         "programName": "Pregnancy Condition Monitoring",
         "img": "pcm",
-        "description":
-          "New Hypertension occurs in 8-10% of pregnancies and many women develop depression during this period.",
+        "description": "New Hypertension occurs in 8-10% of pregnancies and many women develop depression during this period.",
         "duration": "30_weeks",
       },
       "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": {
         "programName": "Red Heart Challenge",
         "img": "rhc",
-        "description":
-          "A 3 week challenge to generate some Heart Health insights by collecting Blood Pressure readings, Stress Readings etc",
+        "description": "A 3 week challenge to generate some Heart Health insights by collecting Blood Pressure readings, Stress Readings etc",
         "duration": "3_weeks",
       },
       "ef62c220-50e1-11e7-9bd2-2f33680a66b6": {

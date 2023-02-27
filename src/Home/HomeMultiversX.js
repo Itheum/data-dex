@@ -27,17 +27,7 @@ import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import {
-  CHAIN_TOKEN_SYMBOL,
-  CLAIM_TYPES,
-  dataCATDemoUserData,
-  debugui,
-  formatNumberRoundFloor,
-  MENU,
-  sleep,
-  SUPPORTED_CHAINS,
-  uxConfig,
-} from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, debugui, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -308,8 +298,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                       Data CAT account
                     </AlertTitle>
                     <AlertDescription fontSize="md">
-                      But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account
-                      below.
+                      But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
                     </AlertDescription>
                   </Stack>
                 </Alert>
@@ -318,9 +307,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
               {itheumAccount && (
                 <Stack>
                   <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                  <Text fontSize="sm">
-                    You have data available to trade from the following programs you are participating in...{" "}
-                  </Text>
+                  <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
                   {itheumAccount.programsAllocation.map((item) => (
                     <Stack direction="row" key={item.program}>
                       <Badge borderRadius="full" px="2" colorScheme="teal">
@@ -363,11 +350,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
                 <Spacer />
 
-                <Button
-                  colorScheme="teal"
-                  variant="outline"
-                  onClick={handleOnChainFaucet}
-                  disabled={isMxFaucetDisabled}>
+                <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} disabled={isMxFaucetDisabled}>
                   Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Button>
               </Stack>
@@ -394,19 +377,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 <Spacer />
                 <HStack justifyContent={"space-between"}>
                   <Text>Rewards</Text>
-                  <Tooltip
-                    colorScheme="teal"
-                    hasArrow
-                    label="The claims contract is currently paused"
-                    isDisabled={!claimContractPauseValue}>
-                    <Button
-                      isDisabled={shouldClaimButtonBeDisabled(0)}
-                      colorScheme="teal"
-                      variant="outline"
-                      w="70px"
-                      onClick={onRewardsOpen}>
-                      {claimsBalances.claimBalanceValues[0] !== "-1" &&
-                      claimsBalances.claimBalanceValues[0] !== "-2" ? (
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                      {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[0])
                       ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
                         <Spinner size="xs" />
@@ -422,19 +395,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 <Spacer />
                 <HStack justifyContent={"space-between"}>
                   <Text>Airdrops</Text>
-                  <Tooltip
-                    colorScheme="teal"
-                    hasArrow
-                    label="The claims contract is currently paused"
-                    isDisabled={!claimContractPauseValue}>
-                    <Button
-                      isDisabled={shouldClaimButtonBeDisabled(1)}
-                      colorScheme="teal"
-                      variant="outline"
-                      w="70px"
-                      onClick={onAirdropsOpen}>
-                      {claimsBalances.claimBalanceValues[1] !== "-1" &&
-                      claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                      {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[1])
                       ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
                         <Spinner size="xs" />
@@ -450,19 +413,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
                 <HStack justifyContent={"space-between"}>
                   <Text>Royalties</Text>
-                  <Tooltip
-                    colorScheme="teal"
-                    hasArrow
-                    label="The claims contract is currently paused"
-                    isDisabled={!claimContractPauseValue}>
-                    <Button
-                      isDisabled={shouldClaimButtonBeDisabled(3)}
-                      colorScheme="teal"
-                      variant="outline"
-                      w="70px"
-                      onClick={onRoyaltiesOpen}>
-                      {claimsBalances.claimBalanceValues[3] !== "-1" &&
-                      claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                  <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                    <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
+                      {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
                         formatNumberRoundFloor(claimsBalances.claimBalanceValues[3])
                       ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
                         <Spinner size="xs" />
@@ -480,19 +433,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   <Box h="40px">
                     <HStack justifyContent={"space-between"}>
                       <Text>Allocations</Text>
-                      <Tooltip
-                        colorScheme="teal"
-                        hasArrow
-                        label="The claims contract is currently paused"
-                        isDisabled={!claimContractPauseValue}>
-                        <Button
-                          isDisabled={shouldClaimButtonBeDisabled(2)}
-                          colorScheme="teal"
-                          variant="outline"
-                          w="70px"
-                          onClick={onAllocationsOpen}>
-                          {claimsBalances.claimBalanceValues[2] !== "-1" &&
-                          claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                        <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                          {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
                             formatNumberRoundFloor(claimsBalances.claimBalanceValues[2])
                           ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
                             <Spinner size="xs" />

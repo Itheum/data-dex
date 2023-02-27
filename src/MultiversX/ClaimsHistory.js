@@ -101,11 +101,7 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
                               <ExternalLinkIcon mx="2px" /> {item.hash.slice(0, 5)}...
                               {item.hash.slice(item.hash.length - 5, item.hash.length)}
                             </Link>
-                            {item.status === "success" ? (
-                              ""
-                            ) : (
-                              <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>
-                            )}
+                            {item.status === "success" ? "" : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
                           </Td>
                           <Td>
                             <Text fontSize="sm">{item.claimType}</Text>

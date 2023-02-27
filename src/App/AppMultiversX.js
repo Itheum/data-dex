@@ -327,12 +327,7 @@ function App({ appConfig }) {
             px={4}
             boxShadow={containerShadow}
             zIndex={2}>
-            <Flex
-              h="5rem"
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              backgroundColor="none"
-              borderBottom="dashed 1px">
+            <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="dashed 1px">
               <HStack alignItems={"center"} spacing={4}>
                 <IconButton
                   size={"sm"}
@@ -352,12 +347,7 @@ function App({ appConfig }) {
                 />
                 <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }}>
                   <HStack>
-                    <Image
-                      boxSize="50px"
-                      height="auto"
-                      src={colorMode === "light" ? logoSmlL : logoSmlD}
-                      alt="Itheum Data DEX"
-                    />
+                    <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                     <Heading fontWeight={"normal"} size={"md"}>
                       <Text fontSize="lg">Itheum Data DEX</Text>
                     </Heading>
@@ -490,22 +480,11 @@ function App({ appConfig }) {
                   />
                   <Route
                     path="tradedata"
-                    element={
-                      <SellDataMX
-                        key={rfKeys.sellData}
-                        itheumAccount={itheumAccount}
-                        onRfMount={() => handleRfMount("sellData")}
-                      />
-                    }
+                    element={<SellDataMX key={rfKeys.sellData} itheumAccount={itheumAccount} onRfMount={() => handleRfMount("sellData")} />}
                   />
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                    <Route
-                      path="wallet"
-                      element={
-                        <MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />
-                      }
-                    />
+                    <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
                     <Route path="marketplace" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                     <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                   </Route>
@@ -564,11 +543,7 @@ function App({ appConfig }) {
           </AlertDialog>
 
           {mxShowClaimsHistory && (
-            <ClaimsHistory
-              mxAddress={mxAddress}
-              networkId={_chainMetaLocal.networkId}
-              onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)}
-            />
+            <ClaimsHistory mxAddress={mxAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
           )}
 
           <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>

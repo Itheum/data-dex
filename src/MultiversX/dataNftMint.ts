@@ -213,9 +213,7 @@ export class DataNftMintContract {
 
   decodeNftAttributes(nft: NftType, index: number): DataNftMetadataType {
     const dataNftAttributes = this.abiRegistry.getStruct("DataNftAttributes");
-    const decodedAttributes = new BinaryCodec()
-      .decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes)
-      .valueOf();
+    const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes).valueOf();
     const dataNFT: DataNftMetadataType = {
       index, // only for view & query
       id: nft.identifier, // ID of NFT -> done
