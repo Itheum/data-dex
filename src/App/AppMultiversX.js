@@ -58,8 +58,8 @@ import {
   MdMenu,
 } from "react-icons/md";
 import {
-  MdLocalFireDepartment,
-  MdBolt,
+  MdOutlineAccountBalanceWallet,
+  MdOutlineDataSaverOn,
   MdOnlinePrediction,
 } from "react-icons/md";
 import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
@@ -102,18 +102,23 @@ const exploreRouterMenu = [
     sectionItems: [
       {
         menuEnum: MENU.SELL,
-        path: "selldata",
+        path: "tradedata",
         label: "Trade Data",
-        Icon: MdLocalFireDepartment,
+        shortLbl: "Trade",
+        Icon: MdOutlineDataSaverOn,
       },
       {
+        menuEnum: MENU.NFTMINE,
         path: "datanfts/wallet",
         label: "Data NFT Wallet",
-        Icon: MdBolt,
+        shortLbl: "Wallet",
+        Icon: MdOutlineAccountBalanceWallet,
       },
       {
+        menuEnum: MENU.NFTALL,
         path: "datanfts/marketplace",
         label: "Data NFT Marketplace",
+        shortLbl: "Market",
         Icon: MdOnlinePrediction,
       },
     ],
@@ -365,6 +370,28 @@ function App({ appConfig }) {
               </HStack>
 
               <HStack alignItems={"center"} spacing={2}>
+                <HStack display={{ base: "none", md: "none", xl: "block" }} >
+                  {
+                    exploreRouterMenu[0].sectionItems.map(quickMenuItem => {
+                      const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
+                      return <Button
+                        colorScheme="teal"
+                        variant="outline"
+                        isDisabled={isMenuItemSelected(menuEnum)}
+                        _disabled={menuButtonDisabledStyle(menuEnum)}
+                        opacity={0.6}
+                        key={shortLbl}
+                        leftIcon={<Icon size={"1.25em"} />}
+                        size='sm'
+                        onClick={() =>
+                          navigateToDiscover(path, menuEnum)
+                        }>
+                        {shortLbl}
+                      </Button>;
+                    })
+                  }
+                </HStack>
+
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
 
                 <LoggedInChainBadge chain={chain} displayParams={["none", null, "block"]} />
