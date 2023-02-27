@@ -1,7 +1,11 @@
 {
-  "printWidth": 160,
+  "printWidth": 120,
   "singleQuote": false,
   "quoteProps": "preserve",
   "trailingComma": "es5",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "tabWidth": 2,
+  "bracketSameLine": true,
+  "bracketSpacing": true,
+  "arrowParens": "always"
 }

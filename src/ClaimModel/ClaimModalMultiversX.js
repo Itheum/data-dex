@@ -36,7 +36,13 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   return (
-    <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState({})} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal
+      size={modelSize}
+      isOpen={isOpen}
+      onClose={() => resetClaimState({})}
+      isCentered
+      closeOnEsc={false}
+      closeOnOverlayClick={false}>
       <ModalOverlay />
 
       <ModalContent h="300px" w="400px">

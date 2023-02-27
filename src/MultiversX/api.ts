@@ -116,7 +116,11 @@ export const getClaimTransactions = async (address: string, smartContractAddress
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string, networkId: string): Promise<NftType[]> => {
+export const getNftsOfACollectionForAnAddress = async (
+  address: string,
+  collectionTicker: string,
+  networkId: string
+): Promise<NftType[]> => {
   const api = getApi(networkId);
   try {
     const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
@@ -163,7 +167,11 @@ export const getNftsByIds = async (nftIds: string[], networkId: string): Promise
   }
 };
 
-export const getAccountTokenFromApi = async (address: string, tokenId: string, networkId: string): Promise<TokenType | undefined> => {
+export const getAccountTokenFromApi = async (
+  address: string,
+  tokenId: string,
+  networkId: string
+): Promise<TokenType | undefined> => {
   const api = getApi(networkId);
   try {
     const url = `https://${api}/accounts/${address}/tokens/${tokenId}`;

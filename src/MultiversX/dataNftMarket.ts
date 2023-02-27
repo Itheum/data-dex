@@ -44,7 +44,9 @@ export class DataNftMarketContract {
       this.networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
       this.chainID = "1";
     } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+        timeout: this.timeout,
+      });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -88,7 +90,9 @@ export class DataNftMarketContract {
     const interaction = this.contract.methodsExplicit.viewOffers([
       new U64Value(startIndex),
       new U64Value(stopIndex),
-      userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing(),
+      userAddress
+        ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress)))
+        : OptionalValue.newMissing(),
     ]);
     const query = interaction.buildQuery();
 
@@ -140,7 +144,13 @@ export class DataNftMarketContract {
     return [];
   }
 
-  async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
+  async sendAcceptOfferEsdtTransaction(
+    index: number,
+    paymentAmount: string,
+    tokenId: string,
+    amount: number,
+    sender: string
+  ) {
     const data =
       BigNumber(paymentAmount).comparedTo(0) > 0
         ? TransactionPayload.contractCall()
@@ -181,7 +191,14 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: string, tokenId: string, nonce: number, amount: number, senderAddress: string) {
+  async sendAcceptOfferNftEsdtTransaction(
+    index: number,
+    paymentAmount: string,
+    tokenId: string,
+    nonce: number,
+    amount: number,
+    senderAddress: string
+  ) {
     const offerEsdtTx = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -247,7 +264,10 @@ export class DataNftMarketContract {
   async sendCancelOfferTransaction(index: number, senderAddress: string) {
     const cancelTx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("cancelOffer")).addArg(new U64Value(index)).build(),
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction("cancelOffer"))
+        .addArg(new U64Value(index))
+        .build(),
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
@@ -269,7 +289,13 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async addToMarket(addTokenCollection: string, addTokenNonce: number, addTokenQuantity: number, price: number, addressOfSender: string) {
+  async addToMarket(
+    addTokenCollection: string,
+    addTokenNonce: number,
+    addTokenQuantity: number,
+    price: number,
+    addressOfSender: string
+  ) {
     const askDenominator = 10 ** 18;
     const addERewTx = new Transaction({
       value: 0,
@@ -371,7 +397,9 @@ export class DataNftMarketContract {
     const interaction = this.contract.methodsExplicit.viewPagedOffers([
       new U64Value(startIndex),
       new U64Value(stopIndex),
-      userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing(),
+      userAddress
+        ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress)))
+        : OptionalValue.newMissing(),
     ]);
     const query = interaction.buildQuery();
 

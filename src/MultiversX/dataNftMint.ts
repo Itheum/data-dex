@@ -43,7 +43,9 @@ export class DataNftMintContract {
       this.networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
       this.chainID = "1";
     } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+        timeout: this.timeout,
+      });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -211,7 +213,9 @@ export class DataNftMintContract {
 
   decodeNftAttributes(nft: NftType, index: number): DataNftMetadataType {
     const dataNftAttributes = this.abiRegistry.getStruct("DataNftAttributes");
-    const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes).valueOf();
+    const decodedAttributes = new BinaryCodec()
+      .decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes)
+      .valueOf();
     const dataNFT: DataNftMetadataType = {
       index, // only for view & query
       id: nft.identifier, // ID of NFT -> done

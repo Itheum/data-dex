@@ -41,13 +41,15 @@ function Launcher() {
               name: "customConfig",
               apiTimeout: uxConfig.mxAPITimeoutMs,
               walletConnectV2ProjectId,
-            }}
-          >
+            }}>
             <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
             <NotificationModal />
             <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-            <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("auth", "devnet")} />
+            <AuthPickerMx
+              launchEnvironment={launchEnvironment}
+              resetLaunchMode={() => handleLaunchMode("auth", "devnet")}
+            />
             <MxAppHarness launchEnvironment={launchEnvironment} />
           </DappProvider>
         </>

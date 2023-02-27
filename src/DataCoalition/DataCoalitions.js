@@ -24,18 +24,23 @@ export default function ({ setMenuItem }) {
             <Heading size="mb" mb="5">
               A glimpse into the future of how data will be sourced on the blockchain for AI
             </Heading>
-            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
+            <HStack
+              divider={<StackDivider borderColor="gray.200" />}
+              spacing={4}
+              alignItems="baseline"
+              flexDirection={["column", "initial"]}>
               <Box fontSize="sm" align="center" flex="1">
-                Independently &quot;cherry-picking&quot; and selling personal data is inefficient and time consuming. Curating data and monitoring the terms and
-                conditions for each sale will quickly become overwhelming
+                Independently &quot;cherry-picking&quot; and selling personal data is inefficient and time consuming.
+                Curating data and monitoring the terms and conditions for each sale will quickly become overwhelming
               </Box>
               <Box fontSize="sm" align="center" flex="1">
-                Your individual data is also not very valuable &quot;when viewed in isolation&quot;- but when your data is &quot;grouped&quot; into clusters of
-                similar people, it grows significantly in value
+                Your individual data is also not very valuable &quot;when viewed in isolation&quot;- but when your data
+                is &quot;grouped&quot; into clusters of similar people, it grows significantly in value
               </Box>
               <Box fontSize="sm" align="center" flex="1">
-                Coalitions are DAOs. Stake your {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} and align to the Coalition who best suits your interests. Delegate
-                the ownership of your personal data and have the Coalition trade your data on your behalf
+                Coalitions are DAOs. Stake your {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} and align to the Coalition
+                who best suits your interests. Delegate the ownership of your personal data and have the Coalition trade
+                your data on your behalf
               </Box>
             </HStack>
 
@@ -45,8 +50,7 @@ export default function ({ setMenuItem }) {
                 onClick={() => {
                   setMenuItem(MENU.COALITIONALL);
                   navigate("viewcoalitions");
-                }}
-              >
+                }}>
                 Enter - Data Coalitions
               </Button>
             </HStack>

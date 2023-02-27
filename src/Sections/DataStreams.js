@@ -15,18 +15,23 @@ export default function () {
               </Badge>
             </Heading>
             <Image src={dataStreamIcon} boxSize="150px" m={5} borderRadius="md" />
-            <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
+            <HStack
+              divider={<StackDivider borderColor="gray.200" />}
+              spacing={4}
+              alignItems="baseline"
+              flexDirection={["column", "initial"]}>
               <Box fontSize="sm" align="center" flex="1">
-                Let buyers subscribe to &quot;personal data streams&quot;- unlike the one-off datasets, data streams will continue to feed data as new data is
-                generated
+                Let buyers subscribe to &quot;personal data streams&quot;- unlike the one-off datasets, data streams
+                will continue to feed data as new data is generated
               </Box>
               <Box fontSize="sm" align="center" flex="1">
-                Streams are a more powerful way for buyers to subscribe to longitudinal datasets that grow over time. For e.g. health and wellness data like
-                physical activity, sleep quality, blood pressure or financial activity like spend habits etc.
+                Streams are a more powerful way for buyers to subscribe to longitudinal datasets that grow over time.
+                For e.g. health and wellness data like physical activity, sleep quality, blood pressure or financial
+                activity like spend habits etc.
               </Box>
               <Box fontSize="sm" align="center" flex="1">
-                When paired with context rich data from your &quot;data vault&quot;- Steams become a valuable and steady source of passive income for you in
-                exchange for your personal data
+                When paired with context rich data from your &quot;data vault&quot;- Steams become a valuable and steady
+                source of passive income for you in exchange for your personal data
               </Box>
             </HStack>
             <Link mt="10" href="https://dev.to/itheum/itheum-data-dex-whitepaper-ooo#data-streams-1" isExternal>

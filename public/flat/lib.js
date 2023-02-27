@@ -138,7 +138,10 @@ const buyView = async () => {
 
     // if curr user address is not seller's then show a 'buy' button
     if (object.get("sellerEthAddress") !== window.state.user.get("ethAddress")) {
-      dataorders += '<button type="button" class="btn btn-secondary" onclick="window.requestToBuy(\'' + object.id + "')\">Request to buy</button>";
+      dataorders +=
+        '<button type="button" class="btn btn-secondary" onclick="window.requestToBuy(\'' +
+        object.id +
+        "')\">Request to buy</button>";
     }
 
     dataorders += "<br /><br />";

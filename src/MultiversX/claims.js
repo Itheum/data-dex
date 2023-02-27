@@ -25,7 +25,9 @@ export class ClaimsContract {
       this.networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
       this.chainID = "1";
     } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+        timeout: this.timeout,
+      });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -102,7 +104,10 @@ export class ClaimsContract {
   async sendClaimRewardsTransaction(sender, rewardType) {
     const claimTransaction = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("claim")).addArg(new U64Value(rewardType)).build(),
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction("claim"))
+        .addArg(new U64Value(rewardType))
+        .build(),
       receiver: new Address(this.claimsContractAddress),
       sender: new Address(sender),
       gasLimit: 6000000,

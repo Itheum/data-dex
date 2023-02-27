@@ -36,16 +36,27 @@ const AuthLauncher = ({ onLaunchMode }) => {
   const { colorMode } = useColorMode();
 
   return (
-    <Container maxW="container.xl" h="100vh" display="flex" justifyContent="center" alignItems="center" backgroundImage={launcherBG}>
+    <Container
+      maxW="container.xl"
+      h="100vh"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      backgroundImage={launcherBG}>
       <Box
         minW={[null, null, "460px"]}
         p={["20px", null, "30px"]}
         borderWidth="1px"
         borderRadius="lg"
-        backgroundColor={(colorMode === "dark" && "gray.800") || "white"}
-      >
+        backgroundColor={(colorMode === "dark" && "gray.800") || "white"}>
         <Stack>
-          <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={colorMode === "dark" ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />
+          <Image
+            w={["70px", null, "90px"]}
+            h={["60px", null, "80px"]}
+            src={colorMode === "dark" ? logoSmlD : logoSmlL}
+            alt="Itheum Data DEX"
+            margin="auto"
+          />
           <Heading size="md" textAlign="center">
             Itheum Data DEX
           </Heading>
@@ -54,7 +65,11 @@ const AuthLauncher = ({ onLaunchMode }) => {
           </Text>
           <Spacer />
 
-          <HStack justifyContent="center" p={["initial", 8]} spacing={["initial", 6]} flexDirection={["column", "initial"]}>
+          <HStack
+            justifyContent="center"
+            p={["initial", 8]}
+            spacing={["initial", 6]}
+            flexDirection={["column", "initial"]}>
             <PopupChainSelectorForWallet lrgButtonSize={true} hideTerms={true} onMxEnvPick={onLaunchMode} />
           </HStack>
 
@@ -63,7 +78,12 @@ const AuthLauncher = ({ onLaunchMode }) => {
               Supported Chains
             </Text>
 
-            <Flex wrap={["wrap", "nowrap"]} direction="row" justify="space-around" w={["300px", "500px"]} align="center">
+            <Flex
+              wrap={["wrap", "nowrap"]}
+              direction="row"
+              justify="space-around"
+              w={["300px", "500px"]}
+              align="center">
               <Tooltip label="Live on MultiversX Mainnet & Devnet">
                 <Image src={chainMx} boxSize="30px" borderRadius="lg" m="5px" />
               </Tooltip>
@@ -104,8 +124,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
       onClose={() => setShowMxEnvPicker(false)}
       closeOnBlur={true}
       isLazy
-      lazyBehavior="keepMounted"
-    >
+      lazyBehavior="keepMounted">
       <HStack>
         <PopoverTrigger>
           <Button>Connect MultiversX Wallet</Button>
@@ -124,8 +143,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
             onClick={() => {
               setShowMxEnvPicker(false);
               onMxEnvPick("mx", "mainnet");
-            }}
-          >
+            }}>
             {" "}
             Mainnet
           </Button>
@@ -136,8 +154,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
             onClick={() => {
               setShowMxEnvPicker(false);
               onMxEnvPick("mx", "devnet");
-            }}
-          >
+            }}>
             {" "}
             Devnet
           </Button>
