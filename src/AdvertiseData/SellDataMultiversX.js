@@ -167,6 +167,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [dataStreamUrlValidation, setDataStreamUrlValidation] = useState(false);
   const [dataPreviewUrlValidation, setDataPreviewUrlValidation] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState(null);
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
   // query settings from Data NFT Minter SC
@@ -464,6 +465,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [mintSessionId, setMintSessionId] = useState(null);
 
   const getDataForSale = async (programId) => {
+    setSelectedProgramId(programId);
     let selObj = {};
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
@@ -616,7 +618,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
-
     const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
       media: imageOnIpfsUrl,
@@ -832,6 +833,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamUrl(event.currentTarget.value);
                   validateDataStreamUrl(event.currentTarget.value);
                 }}
+                isDisabled={selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -863,6 +865,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
                   validateDataPreviewUrl(event.currentTarget.value);
                 }}
+                isDisabled={selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamPreviewUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
