@@ -39,6 +39,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
@@ -460,7 +461,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Box>
 
                         <Box color="gray.600" fontSize="sm">
-                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${nftMetadatas[index].royalties * 100}%`}
+                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${convertToLocalString(nftMetadatas[index].royalties * 100)}%`}
                         </Box>
                       </>
                     )}
