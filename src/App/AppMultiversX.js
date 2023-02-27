@@ -62,7 +62,7 @@ import {
   MdOutlineDataSaverOn,
   MdOnlinePrediction,
 } from "react-icons/md";
-import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation, useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
@@ -136,9 +136,8 @@ function App({ appConfig }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const { colorMode, toggleColorMode } = useColorMode();
 
-  const navigateToDiscover = (type, menuEnum, state) => {
+  const navigateToDiscover = (menuEnum) => {
     setMenuItem(menuEnum);
-    navigate(type);
     if (isOpen) onClose();
   };
 
@@ -357,16 +356,14 @@ function App({ appConfig }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-
-                <HStack cursor="pointer" onClick={() => {
-                  setMenuItem(MENU.HOME);
-                  navigate("home");
-                }}>
-                  <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-                  <Heading fontWeight={"normal"} size={"md"}>
-                    <Text fontSize="lg">Itheum Data DEX</Text>
-                  </Heading>
-                </HStack>
+                <Link as={ReactRouterLink} to='/' style={{ textDecoration: 'none' }}>
+                  <HStack>
+                    <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+                    <Heading fontWeight={"normal"} size={"md"}>
+                      <Text fontSize="lg">Itheum Data DEX</Text>
+                    </Heading>
+                  </HStack>
+                </Link>
               </HStack>
 
               <HStack alignItems={"center"} spacing={2}>
@@ -374,7 +371,7 @@ function App({ appConfig }) {
                   {
                     exploreRouterMenu[0].sectionItems.map(quickMenuItem => {
                       const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
-                      return <Button
+                      return <Link as={ReactRouterLink} to={path} style={{ textDecoration: 'none' }} key={path}><Button
                         colorScheme="teal"
                         variant="outline"
                         isDisabled={isMenuItemSelected(menuEnum)}
@@ -384,10 +381,10 @@ function App({ appConfig }) {
                         leftIcon={<Icon size={"1.25em"} />}
                         size='sm'
                         onClick={() =>
-                          navigateToDiscover(path, menuEnum)
+                          navigateToDiscover(menuEnum)
                         }>
                         {shortLbl}
-                      </Button>;
+                      </Button></Link>;
                     })
                   }
                 </HStack>
@@ -409,17 +406,18 @@ function App({ appConfig }) {
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, filterParams, Icon } = menuItem;
                           return (
-                            <MenuItem
-                              key={label}
-                              onClick={() =>
-                                navigateToDiscover(path, menuEnum, filterParams)
-                              }>
-                              <Icon
-                                size={"1.25em"}
-                                style={{ marginRight: "1rem" }}
-                              />
-                              {label}
-                            </MenuItem>
+                            <Link as={ReactRouterLink} to={path} style={{ textDecoration: 'none' }} key={path}>
+                              <MenuItem
+                                key={label}
+                                onClick={() =>
+                                  navigateToDiscover(menuEnum)
+                                }>
+                                <Icon
+                                  size={"1.25em"}
+                                  style={{ marginRight: "1rem" }}
+                                />
+                                {label}
+                              </MenuItem></Link>
                           );
                         })}
 
@@ -450,18 +448,17 @@ function App({ appConfig }) {
                     </Menu>
                   ))}
                 </Box>
-
-                <IconButton size={"sm"}
-                  icon={<AiFillHome />}
-                  aria-label={"Back to Home"}
-                  isDisabled={isMenuItemSelected(MENU.HOME)}
-                  _disabled={menuButtonDisabledStyle(MENU.HOME)}
-                  opacity={0.6}
-                  onClick={() => {
-                    setMenuItem(MENU.HOME);
-                    navigate("home");
-                  }}
-                />
+                <Link as={ReactRouterLink} to={MENU.HOME} style={{ textDecoration: 'none' }}>
+                  <IconButton size={"sm"}
+                    icon={<AiFillHome />}
+                    aria-label={"Back to Home"}
+                    isDisabled={isMenuItemSelected(MENU.HOME)}
+                    _disabled={menuButtonDisabledStyle(MENU.HOME)}
+                    opacity={0.6}
+                    onClick={() => {
+                      navigateToDiscover(MENU.HOME);
+                    }}
+                  /></Link>
 
                 <IconButton size={"sm"}
                   icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
@@ -596,31 +593,32 @@ function App({ appConfig }) {
                           <AccordionPanel p={0}>
                             <List>
                               {menu.sectionItems.map((menuItem) => {
-                                const { label, path, filterParams, Icon } =
+                                const { label, menuEnum, path, filterParams, Icon } =
                                   menuItem;
                                 return (
-                                  <ListItem
-                                    as={Button}
-                                    variant={"ghost"}
-                                    w={"full"}
-                                    borderRadius={"0"}
-                                    display={"flex"}
-                                    justifyContent={"start"}
-                                    p={3}
-                                    key={label}
-                                    onClick={() =>
-                                      navigateToDiscover(path, filterParams)
-                                    }>
-                                    <ListIcon
-                                      as={() =>
-                                        Icon({
-                                          size: "1.25em",
-                                          style: { marginRight: "0.75rem" },
-                                        })
-                                      }
-                                    />
-                                    <Text mt={-1}>{label}</Text>
-                                  </ListItem>
+                                  <Link as={ReactRouterLink} to={path} style={{ textDecoration: 'none' }} key={path}>
+                                    <ListItem
+                                      as={Button}
+                                      variant={"ghost"}
+                                      w={"full"}
+                                      borderRadius={"0"}
+                                      display={"flex"}
+                                      justifyContent={"start"}
+                                      p={3}
+                                      key={label}
+                                      onClick={() =>
+                                        navigateToDiscover(menuEnum)
+                                      }>
+                                      <ListIcon
+                                        as={() =>
+                                          Icon({
+                                            size: "1.25em",
+                                            style: { marginRight: "0.75rem" },
+                                          })
+                                        }
+                                      />
+                                      <Text mt={-1}>{label}</Text>
+                                    </ListItem></Link>
                                 );
                               })}
 
