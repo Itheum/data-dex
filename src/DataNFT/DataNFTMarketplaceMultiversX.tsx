@@ -39,6 +39,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
@@ -88,6 +89,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
   const [delistAmount, setDelistAmount] = useState<number>(1);
+  const [delistAmountError, setDelistAmountError] = useState<string>("");
 
   //
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -460,7 +462,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Box>
 
                         <Box color="gray.600" fontSize="sm">
-                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${nftMetadatas[index].royalties * 100}%`}
+                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${convertToLocalString(nftMetadatas[index].royalties * 100)}%`}
                         </Box>
                       </>
                     )}
@@ -558,25 +560,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         {tabState === 2 && address && (
                           <>
                             <Flex mt="2" gap="2">
-                              <Button
-                                size="xs"
-                                colorScheme="teal"
-                                width="72px"
-                                isDisabled={hasPendingTransactions}
-                                onClick={() => {
-                                  setSelectedOfferIndex(index);
-                                  setDelistAmount(offers[index].quantity);
-                                  setDelistModalState(1);
-                                  onDelistModalOpen();
-                                }}
-                              >
-                                De-List All
-                              </Button>
                               {offers[index].quantity > 1 && (
                                 <Button
                                   size="xs"
                                   colorScheme="teal"
-                                  width="72px"
+                                  width="90px"
                                   isDisabled={hasPendingTransactions}
                                   onClick={() => {
                                     setSelectedOfferIndex(index);
@@ -585,13 +573,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                     onDelistModalOpen();
                                   }}
                                 >
-                                  De-List Some
+                                  De-List
                                 </Button>
                               )}
                               <Button
                                 size="xs"
                                 colorScheme="teal"
-                                width="72px"
+                                width="90px"
                                 isDisabled={hasPendingTransactions}
                                 onClick={() => {
                                   setSelectedOfferIndex(index);
@@ -872,9 +860,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       max={offers[selectedOfferIndex].quantity}
                       isValidCharacter={isValidNumericCharacter}
                       value={delistAmount}
-                      onChange={(value) => {
-                        const valueAsNumber = Number(value);
-                        setDelistAmount(valueAsNumber);
+                      onChange={(valueAsString) => {
+                        const value = Number(valueAsString);
+                        let error = "";
+                        if (value <= 0) error = "Cannot be zero or negative";
+                        if (value > offers[selectedOfferIndex].quantity) error = "Cannot exceed balance";
+                        setDelistAmountError(error);
+                        setDelistAmount(value);
                       }}
                       keepWithinRange={true}
                     >
@@ -884,7 +876,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
+                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
+                      De-List All
+                    </Button>
                   </Flex>
+                  {delistAmountError && (
+                    <Text color="red.400" fontSize="xs" ml="190px" mt="1">
+                      {delistAmountError}
+                    </Text>
+                  )}
                   <Flex justifyContent="end" mt="6 !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
                       Proceed
