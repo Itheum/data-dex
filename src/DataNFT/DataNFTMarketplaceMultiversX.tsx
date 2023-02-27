@@ -89,6 +89,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
   const [delistAmount, setDelistAmount] = useState<number>(1);
+  const [delistAmountError, setDelistAmountError] = useState<string>("");
 
   //
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -873,9 +874,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       max={offers[selectedOfferIndex].quantity}
                       isValidCharacter={isValidNumericCharacter}
                       value={delistAmount}
-                      onChange={(value) => {
-                        const valueAsNumber = Number(value);
-                        setDelistAmount(valueAsNumber);
+                      onChange={(valueAsString) => {
+                        const value = Number(valueAsString);
+                        let error = "";
+                        if (value <= 0) error = "Cannot be zero or negative";
+                        if (value > offers[selectedOfferIndex].quantity) error = "Cannot exceed balance";
+                        setDelistAmountError(error);
+                        setDelistAmount(value);
                       }}
                       keepWithinRange={true}
                     >
@@ -886,6 +891,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       </NumberInputStepper>
                     </NumberInput>
                   </Flex>
+                  {delistAmountError && (
+                    <Text color="red.400" fontSize="xs" ml="190px" mt="1">
+                      {delistAmountError}
+                    </Text>
+                  )}
                   <Flex justifyContent="end" mt="6 !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
                       Proceed
