@@ -14,7 +14,7 @@
 }
 
 .auth_button {
-  color: var(--chakra-colors-chakra-body-text) !important;
+  color: var(--chakra-colors-chakra-body-text);
 }
 
 /* Ice - #131 */
@@ -48,67 +48,83 @@
 
 /* START MVX LOGIN STYLING */
 .dapp-core-component__dappModalStyles__dappModalContent.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-dialog-content {
-  background: var(--chakra-colors-gray-700);
+  background: var(--chakra-colors-gray-700) !important;
 }
 
 .dapp-core-component__dappModalStyles__dappModalHeader.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-header {
-  background: var(--chakra-colors-gray-700);
+  background: var(--chakra-colors-gray-700) !important;
 }
 
 .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-close-button {
-  background: var(--chakra-colors-gray-700);
-  color: var(--chakra-colors-chakra-body-text);
+  background: var(--chakra-colors-gray-700) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__main__btn.dapp-core-component__main__btn-primary.dapp-core-component__ledgerConnectStyles__login-connect-container-button {
-  background: var(--chakra-colors-whiteAlpha-200);
-  border-color: var(--chakra-colors-whiteAlpha-200);
-  color: var(--chakra-colors-chakra-body-text);
+  background: var(--chakra-colors-whiteAlpha-200) !important;
+  border-color: var(--chakra-colors-whiteAlpha-200) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__addressTableStyles__ledger-address-table-wrapper
   .dapp-core-component__addressTableStyles__ledger-address-table
   .dapp-core-component__addressTableStyles__ledger-address-table-header {
-  background: var(--chakra-colors-gray-700);
+  background: var(--chakra-colors-gray-700) !important;
 }
 
 .dapp-core-component__confirmAddressStyles__ledger-confirm-address
   .dapp-core-component__confirmAddressStyles__ledger-confirm-address-section
   .dapp-core-component__confirmAddressStyles__ledger-confirm-address-description {
-  color: var(--chakra-colors-chakra-body-text);
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__confirmAddressStyles__ledger-confirm-address .dapp-core-component__confirmAddressStyles__ledger-confirm-address-footer {
-  color: var(--chakra-colors-chakra-body-text);
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
   .dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-dialog-content {
-  background: var(--chakra-colors-gray-700);
+  background: var(--chakra-colors-gray-700) !important;
 }
 
 .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
-  background: var(--chakra-colors-gray-700);
-  color: var(--chakra-colors-chakra-body-text);
+  background: var(--chakra-colors-gray-700) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__main__data-field .dapp-core-component__main__textarea {
-  background: var(--chakra-colors-gray-700);
-  color: var(--chakra-colors-chakra-body-text);
+  background: var(--chakra-colors-gray-700) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.dapp-core-component__main__btn.dapp-core-component__main__btn-primary.dapp-core-component__main__px-4.dapp-core-component__main__m-1.dapp-core-component__main__mx-3.auth_button {
+  background-color: transparent !important;
+}
+
+.dapp-core-component__ledgerConnectStyles__login-connect-container-icon {
+  filter: invert(1) !important;
+}
+
+.dapp-core-component__addressRowStyles__ledger-address-table-body-item.dapp-ledger-address-row {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.dapp-core-component__addressRowStyles__ledger-address-table-body-item.dapp-core-component__addressRowStyles__ledger-address-table-body-item-selected.dapp-ledger-address-row {
+  font-weight: bold !important;
 }
 
 /* STOP MVX LOGIN STYLING */
 
 .dapp-core-component__main__btn-primary {
-  background-color: var(--chakra-colors-whiteAlpha-200);
-  color: var(--chakra-colors-chakra-body-text);
-  border-color: var(--chakra-colors-whiteAlpha-200);
+  background-color: var(--chakra-colors-whiteAlpha-200) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
+  border-color: var(--chakra-colors-whiteAlpha-200) !important;
 }
 
 .dapp-core-component__main__btn-primary:hover {
-  background-color: var(--chakra-colors-gray-700);
-  color: var(--chakra-colors-chakra-body-text);
-  border-color: var(--chakra-colors-whiteAlpha-200);
+  background-color: var(--chakra-colors-gray-700) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
+  border-color: var(--chakra-colors-whiteAlpha-200) !important;
 }
 
 .dapp-modal-dialog-close-button {
@@ -147,15 +163,15 @@
 
 .dapp-wallet-connect-login-modal .dapp-modal-dialog-header,
 .dapp-ledger-login-container .dapp-modal-dialog-header {
-  margin-top: 10px;
+  margin-top: 10px !important;
 }
 
 .dapp-ledger-login-container .dapp-core-component__main__text-danger {
-  margin-bottom: 5px;
+  margin-bottom: 5px !important;
 }
 
 .dapp-modal-dialog-header .dapp-modal-dialog-close-button {
-  margin-top: 5px;
+  margin-top: 5px !important;
 }
 
 .dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper {

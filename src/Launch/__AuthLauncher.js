@@ -42,8 +42,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
         p={["20px", null, "30px"]}
         borderWidth="1px"
         borderRadius="lg"
-        backgroundColor={(colorMode === "dark" && "gray.800") || "white"}
-      >
+        backgroundColor={(colorMode === "dark" && "gray.800") || "white"}>
         <Stack>
           <Image w={["70px", null, "90px"]} h={["60px", null, "80px"]} src={colorMode === "dark" ? logoSmlD : logoSmlL} alt="Itheum Data DEX" margin="auto" />
           <Heading size="md" textAlign="center">
@@ -104,8 +103,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
       onClose={() => setShowMxEnvPicker(false)}
       closeOnBlur={true}
       isLazy
-      lazyBehavior="keepMounted"
-    >
+      lazyBehavior="keepMounted">
       <HStack>
         <PopoverTrigger>
           <Button>Connect MultiversX Wallet</Button>
@@ -124,8 +122,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
             onClick={() => {
               setShowMxEnvPicker(false);
               onMxEnvPick("mx", "mainnet");
-            }}
-          >
+            }}>
             {" "}
             Mainnet
           </Button>
@@ -136,8 +133,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
             onClick={() => {
               setShowMxEnvPicker(false);
               onMxEnvPick("mx", "devnet");
-            }}
-          >
+            }}>
             {" "}
             Devnet
           </Button>

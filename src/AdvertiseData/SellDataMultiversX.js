@@ -167,6 +167,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [dataStreamUrlValidation, setDataStreamUrlValidation] = useState(false);
   const [dataPreviewUrlValidation, setDataPreviewUrlValidation] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState(null);
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
   // query settings from Data NFT Minter SC
@@ -395,26 +396,26 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   useEffect(() => {
     setMintDataNFTDisabled(
       !!dataNFTStreamUrlError ||
-      !!dataNFTStreamPreviewUrlError ||
-      !!dataNFTTokenNameError ||
-      !!datasetTitleError ||
-      !!datasetDescriptionError ||
-      !!dataNFTCopiesError ||
-      !!dataNFTRoyaltyError ||
-      !dataNFTStreamUrlValid ||
-      !dataNFTStreamPreviewUrlValid ||
-      !dataNFTMarshalServiceValid ||
-      !dataNFTImgGenServiceValid ||
-      !readTermsChecked ||
-      !readAntiSpamFeeChecked ||
-      minRoyalties < 0 ||
-      maxRoyalties < 0 ||
-      maxSupply < 0 ||
-      antiSpamTax < 0 ||
-      itheumBalance < antiSpamTax ||
-      // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
-      (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-      (userData && userData.contractPaused)
+        !!dataNFTStreamPreviewUrlError ||
+        !!dataNFTTokenNameError ||
+        !!datasetTitleError ||
+        !!datasetDescriptionError ||
+        !!dataNFTCopiesError ||
+        !!dataNFTRoyaltyError ||
+        !dataNFTStreamUrlValid ||
+        !dataNFTStreamPreviewUrlValid ||
+        !dataNFTMarshalServiceValid ||
+        !dataNFTImgGenServiceValid ||
+        !readTermsChecked ||
+        !readAntiSpamFeeChecked ||
+        minRoyalties < 0 ||
+        maxRoyalties < 0 ||
+        maxSupply < 0 ||
+        antiSpamTax < 0 ||
+        itheumBalance < antiSpamTax ||
+        // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
+        (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+        (userData && userData.contractPaused)
     );
   }, [
     dataNFTStreamUrlError,
@@ -464,6 +465,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [mintSessionId, setMintSessionId] = useState(null);
 
   const getDataForSale = async (programId) => {
+    setSelectedProgramId(programId);
     let selObj = {};
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
@@ -616,7 +618,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
     await sleep(3);
-
     const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
       media: imageOnIpfsUrl,
@@ -712,37 +713,35 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         </Box>
       </Wrap>
 
-      {
-        itheumAccount && itheumAccount.programsAllocation.length > 0 && (
-          <>
-            <Heading size="md" m="3rem 0 1rem 0 !important">Supported Data CAT Programs</Heading>
-            <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-              {itheumAccount.programsAllocation.map((item) => (
-                <Box key={item.program} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden">
-                  <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
+      {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
+        <>
+          <Heading size="md" m="3rem 0 1rem 0 !important">
+            Supported Data CAT Programs
+          </Heading>
+          <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+            {itheumAccount.programsAllocation.map((item) => (
+              <Box key={item.program} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden">
+                <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
-                  <Box p="6">
-                    <Box display="flex" alignItems="baseline">
-                      <Badge borderRadius="full" px="2" colorScheme="teal">
-                        {" "}
-                        New
-                      </Badge>
-                      <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                        {itheumAccount._lookups.programs[item.program].programName}
-                      </Box>
+                <Box p="6">
+                  <Box display="flex" alignItems="baseline">
+                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                      {" "}
+                      New
+                    </Badge>
+                    <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                      {itheumAccount._lookups.programs[item.program].programName}
                     </Box>
-                    <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
-                      Trade Program Data
-                    </Button>
                   </Box>
+                  <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
+                    Trade Program Data
+                  </Button>
                 </Box>
-              ))}
-            </Wrap>
-          </>
-        )
-      }
-
-
+              </Box>
+            ))}
+          </Wrap>
+        </>
+      )}
 
       <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
@@ -761,10 +760,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   </Text>
                 </Stack>
               )) || (
-                  <Heading as="h4" size="lg">
-                    Trade a Data Stream as a Data NFT-FT
-                  </Heading>
-                )}
+                <Heading as="h4" size="lg">
+                  Trade a Data Stream as a Data NFT-FT
+                </Heading>
+              )}
             </HStack>
           </DrawerHeader>
           <DrawerBody
@@ -772,8 +771,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               if (!userFocusedForm) {
                 setUserFocusedForm(true);
               }
-            }}
-          >
+            }}>
             <Stack spacing="5" mt="5">
               {(minRoyalties < 0 ||
                 maxRoyalties < 0 ||
@@ -783,29 +781,29 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 !dataNFTImgGenServiceValid ||
                 (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
                 (userData && userData.contractPaused)) && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Uptime Errors
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
-                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
-                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
-                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                          <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                        )}
-                        {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Uptime Errors
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                      {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                      {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                      {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                      {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                      {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      )}
+                      {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
               <Text fontSize="sm" color="gray.400">
                 * required fields
@@ -832,6 +830,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamUrl(event.currentTarget.value);
                   validateDataStreamUrl(event.currentTarget.value);
                 }}
+                isDisabled={selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -863,6 +862,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
                   validateDataPreviewUrl(event.currentTarget.value);
                 }}
+                isDisabled={selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamPreviewUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -971,8 +971,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 max={maxSupply > 0 ? maxSupply : 1}
                 value={dataNFTCopies}
                 isValidCharacter={isValidNumericCharacter}
-                onChange={handleChangeDataNftCopies}
-              >
+                onChange={handleChangeDataNftCopies}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -1004,8 +1003,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 max={maxRoyalties > 0 ? maxRoyalties : 0}
                 isValidCharacter={isValidNumericCharacter}
                 value={dataNFTRoyalty}
-                onChange={handleChangeDataNftRoyalties}
-              >
+                onChange={handleChangeDataNftRoyalties}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -1175,6 +1173,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Stack >
+    </Stack>
   );
 }

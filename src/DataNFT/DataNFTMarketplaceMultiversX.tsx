@@ -44,6 +44,7 @@ import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
+import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
@@ -344,8 +345,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             onClick={() => {
               setPageIndex(0);
               navigate("/datanfts/marketplace");
-            }}
-          >
+            }}>
             Public Marketplace
           </Button>
           <Button
@@ -357,11 +357,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             onClick={() => {
               setPageIndex(0);
               navigate("/datanfts/marketplace/my");
-            }}
-          >
+            }}>
             My Listed Data NFTs
           </Button>
-          
+
           <Box flexGrow="1" />
 
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
@@ -401,15 +400,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <Popover trigger="hover" placement="auto">
                           <PopoverTrigger>
                             <div>
-                              <Text fontWeight="bold" fontSize="lg" mt="2">
-                                {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
+                              <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
+                                {nftMetadatas[index].title}
                               </Text>
 
                               <Flex flexGrow="1">
-                                <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                                  {nftMetadatas[index].description.length > 54
-                                    ? nftMetadatas[index].description.substring(0, 53) + "..."
-                                    : nftMetadatas[index].description}
+                                <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%">
+                                  {nftMetadatas[index].description}
                                 </Text>
                               </Flex>
                             </div>
@@ -427,13 +424,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Popover>
                         <Flex display="flex" flexDirection="column">
                           <Box color="gray.600" fontSize="sm">
-                            Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+                            Creator: <ShortAddress address={nftMetadatas[index].creator}></ShortAddress>
                             <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
                               <ExternalLinkIcon mx="2px" />
                             </Link>
                           </Box>
                           <Box color="gray.600" fontSize="sm">
-                            Owner:&nbsp; {` ${offer.owner.slice(0, 8)} ... ${offer.owner.slice(-8)}`}
+                            Owner: <ShortAddress address={offer.owner}></ShortAddress>
                             <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                               <ExternalLinkIcon mx="2px" />
                             </Link>
@@ -462,7 +459,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         </Box>
 
                         <Box color="gray.600" fontSize="sm">
-                          {`Balance: ${offer.quantity} out of ${nftMetadatas[index].supply}. Royalty: ${convertToLocalString(nftMetadatas[index].royalties * 100)}%`}
+                          {`Listed: ${offer.quantity}`} <br />
+                          {`Total supply: ${nftMetadatas[index].supply}`} <br />
+                          {`Royalty: ${convertToLocalString(nftMetadatas[index].royalties * 100)}%`}
                         </Box>
                       </>
                     )}
@@ -492,8 +491,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           variant="outline"
                           onClick={() => {
                             window.open(nftMetadatas[index].dataPreview);
-                          }}
-                        >
+                          }}>
                           Preview Data
                         </Button>
 
@@ -527,8 +525,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                     newAmounts[index] = value;
                                     return newAmounts;
                                   });
-                                }}
-                              >
+                                }}>
                                 <NumberInputField />
                                 <NumberInputStepper>
                                   <NumberIncrementStepper />
@@ -544,8 +541,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                   setReadTermsChecked(false);
                                   setSelectedOfferIndex(index);
                                   onProcureModalOpen();
-                                }}
-                              >
+                                }}>
                                 Procure
                               </Button>
                             </HStack>
@@ -571,8 +567,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                     setDelistAmount(1);
                                     setDelistModalState(0);
                                     onDelistModalOpen();
-                                  }}
-                                >
+                                  }}>
                                   De-List
                                 </Button>
                               )}
@@ -597,8 +592,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                     setNewListingPrice(0);
                                   }
                                   onUpdatePriceModalOpen();
-                                }}
-                              >
+                                }}>
                                 Update Price
                               </Button>
                             </Flex>
@@ -620,8 +614,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     rounded="lg"
                     visibility={
                       userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
-                    }
-                  >
+                    }>
                     <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                       - FROZEN - <br />
                       Data NFT is under investigation by the DAO as there was a complaint received against it
@@ -794,8 +787,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
                       0
-                  }
-                >
+                  }>
                   Proceed
                 </Button>
                 <Button colorScheme="teal" size="sm" variant="outline" onClick={onProcureModalClose}>
@@ -868,8 +860,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         setDelistAmountError(error);
                         setDelistAmount(value);
                       }}
-                      keepWithinRange={true}
-                    >
+                      keepWithinRange={true}>
                       <NumberInputField />
                       <NumberInputStepper>
                         <NumberIncrementStepper />
@@ -986,8 +977,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}
-                    keepWithinRange={true}
-                  >
+                    keepWithinRange={true}>
                     <NumberInputField />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
