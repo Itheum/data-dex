@@ -12,8 +12,7 @@ export default function IconButton({ disabled, icon, l1, l2, selected, onclickFu
       w="350px"
       backgroundColor={selected && "teal"}
       cursor="pointer"
-      onClick={onclickFunc || null}
-    >
+      onClick={onclickFunc || null}>
       {icon}
       <Tooltip label={disabled && "Coming soon..."}>
         <Box>

@@ -45,8 +45,7 @@ export default function ({ setMenuItem }) {
                 onClick={() => {
                   setMenuItem(MENU.COALITIONALL);
                   navigate("viewcoalitions");
-                }}
-              >
+                }}>
                 Enter - Data Coalitions
               </Button>
             </HStack>

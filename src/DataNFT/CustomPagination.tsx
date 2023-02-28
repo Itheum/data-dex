@@ -36,7 +36,7 @@ export const CustomPagination: FC<PropsType> = ({
 
   return (
     <>
-      <Flex justifyContent="space-between"  alignItems="center">
+      <Flex justifyContent="space-between" alignItems="center">
         <Flex>
           <Tooltip label="First Page">
             <IconButton
