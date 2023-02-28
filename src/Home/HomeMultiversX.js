@@ -333,8 +333,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   onClick={() => {
                     setMenuItem(2);
                     navigate("/tradedata");
-                  }}
-                >
+                  }}>
                   Trade My Data
                 </Button>
               )}

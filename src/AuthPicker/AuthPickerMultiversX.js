@@ -98,8 +98,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
                             callbackRoute={"/"}
                             loginButtonText={"xPortal App"}
                             buttonClassName="auth_button"
-                            {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}
-                          ></WalletConnectLoginButton>
+                            {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
@@ -108,8 +107,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
                             loginButtonText={"DeFi Wallet"}
                             buttonClassName="auth_button"
                             // eslint-disable-next-line no-undef
-                            onClick={() => alert("s")}
-                          ></ExtensionLoginButton>
+                            onClick={() => alert("s")}></ExtensionLoginButton>
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">

@@ -52,6 +52,7 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
+import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
@@ -378,7 +379,7 @@ export default function MyDataNFTsMx() {
         <Flex wrap="wrap" gap="5">
           {dataNfts &&
             dataNfts.map((item, index) => (
-              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mb="1rem" position="relative" w="13.5rem">
+              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
                 <Flex justifyContent="center" pt={5}>
                   <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
                     <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
@@ -394,13 +395,13 @@ export default function MyDataNFTsMx() {
                   <Popover trigger="hover" placement="auto">
                     <PopoverTrigger>
                       <div>
-                        <Text fontWeight="bold" fontSize="lg" mt="2">
-                          {item.title.length > 20 ? item.title.substring(0, 20) + " ..." : item.title}
+                        <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
+                          {item.title}
                         </Text>
 
                         <Flex flexGrow="1">
-                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word">
-                            {item.description.substring(0, 50) !== item.description ? item.description.substring(0, 50) + " ..." : item.description}
+                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                            {item.description}
                           </Text>
                         </Flex>
                       </div>
@@ -417,14 +418,14 @@ export default function MyDataNFTsMx() {
                     </PopoverContent>
                   </Popover>
                   <Box mt="4">
-                    {item.creator !== address && (
+                    {
                       <Box color="gray.600" fontSize="sm">
-                        {`Creator: ${item.creator.slice(0, 8)} ... ${item.creator.slice(-8)}`}
+                        Creator: <ShortAddress address={item.creator}></ShortAddress>
                         <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                           <ExternalLinkIcon mx="2px" />
                         </Link>
                       </Box>
-                    )}
+                    }
 
                     <Box color="gray.600" fontSize="sm">
                       {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -453,8 +454,7 @@ export default function MyDataNFTsMx() {
                         height="7"
                         onClick={() => {
                           accessDataStream(item.id, address);
-                        }}
-                      >
+                        }}>
                         View Data
                       </Button>
                       <Button
@@ -464,8 +464,7 @@ export default function MyDataNFTsMx() {
                         variant="outline"
                         onClick={() => {
                           window.open(item.dataPreview);
-                        }}
-                      >
+                        }}>
                         Preview Data
                       </Button>
                     </HStack>
@@ -501,8 +500,7 @@ export default function MyDataNFTsMx() {
                             newAmounts[index] = valueAsNumber;
                             return newAmounts;
                           });
-                        }}
-                      >
+                        }}>
                         <NumberInputField />
                         <NumberInputStepper>
                           <NumberIncrementStepper />
@@ -544,8 +542,7 @@ export default function MyDataNFTsMx() {
                             return newPrices;
                           });
                         }}
-                        keepWithinRange={true}
-                      >
+                        keepWithinRange={true}>
                         <NumberInputField />
                         <NumberInputStepper>
                           <NumberIncrementStepper />
@@ -565,8 +562,7 @@ export default function MyDataNFTsMx() {
                       colorScheme="teal"
                       variant="outline"
                       isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]}
-                      onClick={() => onListButtonClick(item)}
-                    >
+                      onClick={() => onListButtonClick(item)}>
                       List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
                       {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
                     </Button>
@@ -585,8 +581,7 @@ export default function MyDataNFTsMx() {
                   rounded="lg"
                   visibility={
                     userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
-                  }
-                >
+                  }>
                   <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
                     Data NFT is under investigation by the DAO as there was a complaint received against it
@@ -619,9 +614,7 @@ export default function MyDataNFTsMx() {
                         You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                         {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                         {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                          ` The remaining ${
-                            selectedDataNft.supply - selectedDataNft.balance
-                          } are not under your ownership.`}
+                          ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} are not under your ownership.`}
                       </Text>
                     </Box>
                   </HStack>
@@ -644,8 +637,7 @@ export default function MyDataNFTsMx() {
                       isValidCharacter={isValidNumericCharacter}
                       value={dataNftBurnAmount}
                       onChange={onChangeDataNftBurnAmount}
-                      keepWithinRange={true}
-                    >
+                      keepWithinRange={true}>
                       <NumberInputField />
                       <NumberInputStepper>
                         <NumberIncrementStepper />

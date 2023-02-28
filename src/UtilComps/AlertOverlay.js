@@ -34,8 +34,7 @@ const AlertOverlay = ({ errorData: { errContextMsg, rawError }, onClose }) => {
                 mt="5"
                 onClick={() => {
                   setAlertIsOpen(false);
-                }}
-              >
+                }}>
                 Close
               </Button>
             </Alert>

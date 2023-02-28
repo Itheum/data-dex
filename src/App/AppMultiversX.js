@@ -51,10 +51,11 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { AiFillHome } from "react-icons/ai";
 import { MdDarkMode, MdExpandLess, MdExpandMore, MdLightMode, MdMenu } from "react-icons/md";
-import { MdLocalFireDepartment, MdBolt, MdOnlinePrediction } from "react-icons/md";
-import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { MdOutlineAccountBalanceWallet, MdOutlineDataSaverOn, MdOnlinePrediction } from "react-icons/md";
+import { Outlet, Route, Routes, useLocation, useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
+import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
@@ -83,7 +84,6 @@ import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ShortAddress from "UtilComps/ShortAddress";
-import Marketplace from "../DataNFT/DataNFTMarketplaceMultiversX";
 
 const exploreRouterMenu = [
   {
@@ -92,18 +92,23 @@ const exploreRouterMenu = [
     sectionItems: [
       {
         menuEnum: MENU.SELL,
-        path: "selldata",
+        path: "tradedata",
         label: "Trade Data",
-        Icon: MdLocalFireDepartment,
+        shortLbl: "Trade",
+        Icon: MdOutlineDataSaverOn,
       },
       {
+        menuEnum: MENU.NFTMINE,
         path: "datanfts/wallet",
         label: "Data NFT Wallet",
-        Icon: MdBolt,
+        shortLbl: "Wallet",
+        Icon: MdOutlineAccountBalanceWallet,
       },
       {
+        menuEnum: MENU.NFTALL,
         path: "datanfts/marketplace",
         label: "Data NFT Marketplace",
+        shortLbl: "Market",
         Icon: MdOnlinePrediction,
       },
     ],
@@ -121,9 +126,8 @@ function App({ appConfig }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const { colorMode, toggleColorMode } = useColorMode();
 
-  const navigateToDiscover = (type, menuEnum, state) => {
+  const navigateToDiscover = (menuEnum) => {
     setMenuItem(menuEnum);
-    navigate(type);
     if (isOpen) onClose();
   };
 
@@ -160,13 +164,6 @@ function App({ appConfig }) {
 
   const navigate = useNavigate();
   const path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
-
-  const handleScrollClick = (event) => {
-    if (event.button === 0) {
-      event.preventDefault();
-      window.open('https://www.google.ro', '_blank');
-    }
-  };
 
   useEffect(() => {
     setUser({ ...baseUserContext }); // set base user context for app
@@ -329,8 +326,7 @@ function App({ appConfig }) {
             minH="100vh"
             px={4}
             boxShadow={containerShadow}
-            zIndex={2}
-          >
+            zIndex={2}>
             <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="dashed 1px">
               <HStack alignItems={"center"} spacing={4}>
                 <IconButton
@@ -349,23 +345,39 @@ function App({ appConfig }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-                <a href="">
-                <HStack
-                  cursor="pointer"
-                  onClick={() => {
-                    setMenuItem(MENU.HOME);
-                    navigate("home");
-                  }}
-                >
-                  <Image boxSize="50px" height="auto" onClick={(e) => handleScrollClick(e)} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-                  <Heading fontWeight={"normal"} size={"md"}>
-                    <Text fontSize="lg">Itheum Data DEX</Text>
-                  </Heading>
-                </HStack>
-                </a>
+                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }}>
+                  <HStack>
+                    <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+                    <Heading fontWeight={"normal"} size={"md"}>
+                      <Text fontSize="lg">Itheum Data DEX</Text>
+                    </Heading>
+                  </HStack>
+                </Link>
               </HStack>
 
               <HStack alignItems={"center"} spacing={2}>
+                <HStack display={{ base: "none", md: "none", xl: "block" }}>
+                  {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
+                    const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
+                    return (
+                      <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                        <Button
+                          colorScheme="teal"
+                          variant="outline"
+                          isDisabled={isMenuItemSelected(menuEnum)}
+                          _disabled={menuButtonDisabledStyle(menuEnum)}
+                          opacity={0.6}
+                          key={shortLbl}
+                          leftIcon={<Icon size={"1.25em"} />}
+                          size="sm"
+                          onClick={() => navigateToDiscover(menuEnum)}>
+                          {shortLbl}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                </HStack>
+
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
 
                 <LoggedInChainBadge chain={chain} displayParams={["none", null, "block"]} />
@@ -377,15 +389,15 @@ function App({ appConfig }) {
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"}>
-                        {menu.sectionItems.map((menuItem, i) => {
+                        {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, filterParams, Icon } = menuItem;
                           return (
-                            <a href={`${path}`} key={i}>
-                              <MenuItem key={label} onClick={() => navigateToDiscover(path, menuEnum, filterParams)}>
+                            <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                              <MenuItem key={label} onClick={() => navigateToDiscover(menuEnum)}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
                                 {label}
                               </MenuItem>
-                            </a>
+                            </Link>
                           );
                         })}
 
@@ -416,19 +428,19 @@ function App({ appConfig }) {
                     </Menu>
                   ))}
                 </Box>
-
-                <IconButton
-                  size={"sm"}
-                  icon={<AiFillHome />}
-                  aria-label={"Back to Home"}
-                  isDisabled={isMenuItemSelected(MENU.HOME)}
-                  _disabled={menuButtonDisabledStyle(MENU.HOME)}
-                  opacity={0.6}
-                  onClick={() => {
-                    setMenuItem(MENU.HOME);
-                    navigate("home");
-                  }}
-                />
+                <Link as={ReactRouterLink} to={MENU.HOME} style={{ textDecoration: "none" }}>
+                  <IconButton
+                    size={"sm"}
+                    icon={<AiFillHome />}
+                    aria-label={"Back to Home"}
+                    isDisabled={isMenuItemSelected(MENU.HOME)}
+                    _disabled={menuButtonDisabledStyle(MENU.HOME)}
+                    opacity={0.6}
+                    onClick={() => {
+                      navigateToDiscover(MENU.HOME);
+                    }}
+                  />
+                </Link>
 
                 <IconButton
                   size={"sm"}
@@ -473,8 +485,8 @@ function App({ appConfig }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
-                    <Route path="marketplace" element={<Marketplace tabState={1} />} />
-                    <Route path="marketplace/my" element={<Marketplace tabState={2} />} />
+                    <Route path="marketplace" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                    <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
                     <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
@@ -558,29 +570,30 @@ function App({ appConfig }) {
                           <AccordionPanel p={0}>
                             <List>
                               {menu.sectionItems.map((menuItem) => {
-                                const { label, path, filterParams, Icon } = menuItem;
+                                const { label, menuEnum, path, filterParams, Icon } = menuItem;
                                 return (
-                                  <ListItem
-                                    as={Button}
-                                    variant={"ghost"}
-                                    w={"full"}
-                                    borderRadius={"0"}
-                                    display={"flex"}
-                                    justifyContent={"start"}
-                                    p={3}
-                                    key={label}
-                                    onClick={() => navigateToDiscover(path, filterParams)}
-                                  >
-                                    <ListIcon
-                                      as={() =>
-                                        Icon({
-                                          size: "1.25em",
-                                          style: { marginRight: "0.75rem" },
-                                        })
-                                      }
-                                    />
-                                    <Text mt={-1}>{label}</Text>
-                                  </ListItem>
+                                  <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                                    <ListItem
+                                      as={Button}
+                                      variant={"ghost"}
+                                      w={"full"}
+                                      borderRadius={"0"}
+                                      display={"flex"}
+                                      justifyContent={"start"}
+                                      p={3}
+                                      key={label}
+                                      onClick={() => navigateToDiscover(menuEnum)}>
+                                      <ListIcon
+                                        as={() =>
+                                          Icon({
+                                            size: "1.25em",
+                                            style: { marginRight: "0.75rem" },
+                                          })
+                                        }
+                                      />
+                                      <Text mt={-1}>{label}</Text>
+                                    </ListItem>
+                                  </Link>
                                 );
                               })}
 
@@ -592,8 +605,7 @@ function App({ appConfig }) {
                                 display={"flex"}
                                 justifyContent={"start"}
                                 p={3}
-                                onClick={() => setMxShowClaimsHistory(true)}
-                              >
+                                onClick={() => setMxShowClaimsHistory(true)}>
                                 View claims history
                               </ListItem>
 
@@ -605,8 +617,7 @@ function App({ appConfig }) {
                                 display={"flex"}
                                 justifyContent={"start"}
                                 p={3}
-                                onClick={handleLogout}
-                              >
+                                onClick={handleLogout}>
                                 Logout
                               </ListItem>
                             </List>
@@ -658,8 +669,7 @@ function ItheumTokenBalanceBadge({ tokenBalance, displayParams }) {
       borderRadius="md"
       height="2rem"
       padding="6px 11px"
-      bgGradient="linear(to-l, #7928CA, #FF0080)"
-    >
+      bgGradient="linear(to-l, #7928CA, #FF0080)">
       {tokenBalance === -1 ? (
         <Spinner size="xs" />
       ) : tokenBalance === -2 ? (
@@ -684,8 +694,7 @@ function LoggedInChainBadge({ chain, displayParams }) {
       bg="rgba(243, 132, 30, 0.05)"
       borderRadius="md"
       height="2rem"
-      padding="6px 11px"
-    >
+      padding="6px 11px">
       {chain || "..."}
     </Box>
   );

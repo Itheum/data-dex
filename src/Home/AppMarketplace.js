@@ -74,8 +74,7 @@ export default function AppMarketplace() {
                 size="sm"
                 mt="3"
                 colorScheme="teal"
-                onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}
-              >
+                onClick={() => window.open("https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae")}>
                 Join Now
               </Button>
             </Box>
@@ -170,8 +169,7 @@ export default function AppMarketplace() {
                 disabled={!progInfoMeta[learnMoreProd].canJoin}
                 size="sm"
                 colorScheme="teal"
-                onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}
-              >
+                onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
                 Join Now
               </Button>
             </ModalFooter>

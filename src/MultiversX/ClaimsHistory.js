@@ -67,8 +67,7 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
         setClaimTransactionsModalOpen(false);
       }}
       size={modelSize}
-      scrollBehavior="inside"
-    >
+      scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Recent Claim Transactions</ModalHeader>
