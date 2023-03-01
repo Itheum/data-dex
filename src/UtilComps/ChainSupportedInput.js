@@ -15,7 +15,7 @@ export default function ChainSupportedInput({ feature, children }) {
       // NOTE: only supports 1 child nested under parent ChainSupportedInput. e.g. <ChainSupportedInput><Button {...props} /></ChainSupportedInput>
       return React.cloneElement(children, {
         leftIcon: <IoConstructOutline />,
-        disabled: true
+        isDisabled: true
       });
     }    
   }
