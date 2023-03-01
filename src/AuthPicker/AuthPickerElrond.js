@@ -71,11 +71,11 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_MAIARAPP)} className="auth_wrap">
-                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button" isWalletConnectV2={true}></WalletConnectLoginButton>
+                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'xPortal App'} buttonClassName="auth_button" isWalletConnectV2={true}></WalletConnectLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">
-                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'Maiar DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
+                      <ExtensionLoginButton callbackRoute={'/'} loginButtonText={'MultiversX DeFi Wallet'} buttonClassName="auth_button" onClick={() => (alert('s'))}></ExtensionLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_WEBWALLET)} className="auth_wrap">
