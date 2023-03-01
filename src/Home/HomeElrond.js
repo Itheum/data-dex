@@ -15,9 +15,8 @@ import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
 import AppMarketplace from 'Home/AppMarketplace';
 import { FaucetContract } from 'Elrond/faucet';
 import { ClaimsContract } from 'Elrond/claims';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import { useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { useGetAccountInfo, useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
 import { formatNumberRoundFloor } from 'libs/util';
 
 let elrondFaucetContract = null;

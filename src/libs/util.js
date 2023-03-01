@@ -144,50 +144,6 @@ export const tmpProgIdMapping = {
   '48d7b020-eab0-11ea-a466-0334ff0e8bf2': 'OkPulse',
 };
 
-export const dataTemplates = {
-  dataPack: {
-    sellerEthAddress: null,
-    dataPreview: null,
-    dataHash: null,
-    dataFile: null,
-    termsOfUseId: null,
-    txHash: null,
-    txNetworkId: null,
-  },
-  dataNFT: {
-    sellerEthAddress: null,
-    dataPreview: null,
-    dataHash: null,
-    dataFile: null,
-    priceInMyda: null,
-    termsOfUseId: null,
-    metaDataFile: null,
-    nftName: null,
-    txNFTContract: null,
-    txNFTId: null,
-    txHash: null,
-    txNetworkId: null,
-  },
-  dataOrder: {
-    dataPackId: null,
-    buyerEthAddress: null,
-    pricePaid: null,
-    dataFileUrl: null,
-    dataHash: null,
-    txHash: null,
-    txNetworkId: null,
-  },
-  dataNFTMetaDataFile: {
-    name: '',
-    description: '',
-    image: '',
-    external_url: '',
-    properties: {
-      data_dex_nft_id: '',
-    },
-  },
-};
-
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());

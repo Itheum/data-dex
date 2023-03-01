@@ -38,13 +38,6 @@ const AuthLauncher = ({ onLaunchMode }) => {
               hideTerms={true}
               onElrondEnvPick={onLaunchMode} />
 
-            <Box display="none">
-              <Spacer pt={5} display={['block', 'none']} />
-
-              <Button onClick={() => onLaunchMode('evm')}>
-                Connect EVM Wallet
-              </Button>
-            </Box>
           </HStack>
 
           <Box display="none">

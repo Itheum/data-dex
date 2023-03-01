@@ -3,17 +3,17 @@ import { uxConfig } from 'libs/util';
 
 export const getApi = (networkId) => {
   if (networkId === 'E1') {
-    return 'api.elrond.com';
+    return 'api.multiversx.com';
   } else {
-    return 'devnet-api.elrond.com';
+    return 'devnet-api.multiversx.com';
   }
 };
 
 export const getExplorer = (networkId) => {
   if (networkId === 'E1') {
-    return 'explorer.elrond.com';
+    return 'explorer.multiversx.com';
   } else {
-    return 'devnet-explorer.elrond.com';
+    return 'devnet-explorer.multiversx.com';
   }
 };
 

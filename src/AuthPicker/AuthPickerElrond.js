@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { Stack, Box, Text, Link, Wrap, Badge, Modal, ModalOverlay, ModalContent, 
   ModalHeader, ModalBody, ModalCloseButton, useDisclosure, WrapItem, useBreakpointValue } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@elrondnetwork/dapp-core/UI';
-import { useGetAccountInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from '@multiversx/sdk-dapp/UI';
+import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { WALLETS } from 'libs/util';
 import { gtagGo, clearAppSessions, sleep } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
 import { useNavigate } from 'react-router-dom';
+
+const walletConnectV2ProjectId = process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID;
 
 function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
   const navigate = useNavigate();
@@ -69,7 +71,7 @@ function AuthPickerElrond ({ launchEnvironment, resetLaunchMode }) {
                 <Stack>
                   <Wrap spacing="20px" justify="space-between" padding="10px">
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_MAIARAPP)} className="auth_wrap">
-                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button"></WalletConnectLoginButton>
+                      <WalletConnectLoginButton callbackRoute={'/'} loginButtonText={'Maiar App'} buttonClassName="auth_button" isWalletConnectV2={true}></WalletConnectLoginButton>
                     </WrapItem>
 
                     <WrapItem onClick={() => goElrondLogin(WALLETS.ELROND_DEFI)} className="auth_wrap">

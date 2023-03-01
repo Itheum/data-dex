@@ -1,18 +1,15 @@
 import { useState } from 'react';
 import React from 'react';
-import { DappProvider } from '@elrondnetwork/dapp-core/wrappers';
-import { MoralisProvider } from 'react-moralis';
+import { DappProvider } from '@multiversx/sdk-dapp/wrappers';
 
 import AuthLauncher from 'Launch/AuthLauncher';
-import EVMAppHarness from 'AppHarness/AppHarnessEVM';
 import ElrondAppHarness from 'AppHarness/AppHarnessElrond';
-import AuthPickerEVM from 'AuthPicker/AuthPickerEVM';
 import AuthPickerElrond from 'AuthPicker/AuthPickerElrond';
 import { debugui, uxConfig } from 'libs/util';
 import { useSessionStorage } from 'libs/hooks';
-import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@elrondnetwork/dapp-core/UI';
+import { TransactionsToastList, SignTransactionsModals, NotificationModal } from '@multiversx/sdk-dapp/UI';
 
-const serverUrl = process.env.REACT_APP_ENV_MORALIS_SERVER;
+const walletConnectV2ProjectId = process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID;
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useSessionStorage('itm-launch-mode', null); // let's us support, browser refresh session recovery if user is logged in
@@ -42,15 +39,8 @@ function Launcher() {
         <AuthLauncher onLaunchMode={handleLaunchMode} />
       }
 
-      {launchMode === 'evm' && <>
-        <MoralisProvider appId={process.env.REACT_APP_ENV_MORALIS_APPID} serverUrl={serverUrl}>
-          <AuthPickerEVM resetLaunchMode={() => handleLaunchMode('auth')} />
-          <EVMAppHarness resetLaunchMode={() => handleLaunchMode('auth')} />
-        </MoralisProvider>
-      </>}
-
       {launchMode === 'elrond' && <>      
-        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: 'customConfig', apiTimeout: uxConfig.elrondAPITimeoutMs }}>
+        <DappProvider environment={launchEnvironment} customNetworkConfig={{ name: 'customConfig', apiTimeout: uxConfig.elrondAPITimeoutMs, walletConnectV2ProjectId }}>
           <TransactionsToastList />
           <NotificationModal />
           <SignTransactionsModals className="itheum-data-dex-elrond-modals" />

@@ -9,21 +9,12 @@ import { Container, Heading, Flex, Spacer, Box, Stack, HStack } from '@chakra-ui
 import { SunIcon, MoonIcon, ExternalLinkIcon, WarningTwoIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { AiFillHome } from 'react-icons/ai';
 import { IoConstructOutline } from 'react-icons/io5';
-import SellData from 'DataPack/SellData';
-import BuyData from 'DataPack/BuyData';
-import PurchasedData from 'DataPack/PurchasedData';
-import AdvertisedData from 'DataPack/AdvertisedData';
-import PersonalDataProofs from 'DataPack/PersonalDataProofs';
 import ShortAddress from 'UtilComps/ShortAddress';
 import HomeElrond from 'Home/HomeElrond';
-import ChainTransactions from 'Sections/ChainTransactions';
 import DataVault from 'Sections/DataVault';
 import DataNFTs from 'DataNFT/DataNFTs';
-import MyDataNFTs from 'DataNFT/MyDataNFTs';
-import DataNFTMarketplace from 'DataNFT/DataNFTMarketplace';
 import DataStreams from 'Sections/DataStreams';
 import DataCoalitions from 'DataCoalition/DataCoalitions';
-import DataCoalitionsViewAll from 'DataCoalition/DataCoalitionsViewAll';
 import TrustedComputation from 'Sections/TrustedComputation';
 import ChainSupportedInput from 'UtilComps/ChainSupportedInput';
 import ClaimsHistory from 'Elrond/ClaimsHistory';
@@ -35,10 +26,9 @@ import { useSessionStorage } from 'libs/hooks';
 import logoSmlD from 'img/logo-sml-d.png';
 import logoSmlL from 'img/logo-sml-l.png';
 import ChainSupportedComponent from 'UtilComps/ChainSupportedComponent';
-
-import { logout } from '@elrondnetwork/dapp-core/utils';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions';
-import { useGetAccountInfo, useGetLoginInfo } from '@elrondnetwork/dapp-core/hooks/account';
+import { logout } from '@multiversx/sdk-dapp/utils';
+import { useGetPendingTransactions } from '@multiversx/sdk-dapp/hooks/transactions';
+import { useGetAccountInfo, useGetLoginInfo } from '@multiversx/sdk-dapp/hooks/account';
 import { checkBalance } from 'Elrond/api';
 import { formatNumberRoundFloor } from 'libs/util';
 
@@ -346,71 +336,6 @@ function App({ appConfig }) {
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
-                            Data Packs
-                          </Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <ChainSupportedInput feature={MENU.BUY}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={menuItem === MENU.BUY}
-                                onClick={() => {
-                                  setMenuItem(MENU.BUY);
-                                  navigate('datapacks/buydata');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Buy Data
-                              </Button>
-                            </ChainSupportedInput>
-                            <ChainSupportedInput feature={MENU.ADVERTISED}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={menuItem === MENU.ADVERTISED}
-                                onClick={() => {
-                                  setMenuItem(MENU.ADVERTISED);
-                                  navigate('datapacks/advertiseddata');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Advertised Data
-                              </Button>
-                            </ChainSupportedInput>
-                            <ChainSupportedInput feature={MENU.PURCHASED}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={menuItem === MENU.PURCHASED}
-                                onClick={() => {
-                                  setMenuItem(MENU.PURCHASED);
-                                  navigate('datapacks/purchaseddata');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Purchased Data
-                              </Button>
-                            </ChainSupportedInput>
-                            <ChainSupportedInput feature={MENU.DATAPROOFS}>
-                              <Button
-                                colorScheme="teal"
-                                isDisabled={menuItem === MENU.DATAPROOFS}
-                                onClick={() => {
-                                  setMenuItem(MENU.DATAPROOFS);
-                                  navigate('datapacks/personaldataproof');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Personal Data Proofs
-                              </Button>
-                            </ChainSupportedInput>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">
                             Data NFTs
                           </Button>
                           <AccordionIcon />
@@ -498,32 +423,6 @@ function App({ appConfig }) {
                       <AccordionItem>
                         <AccordionButton>
                           <Button flex="1" colorScheme="teal" variant="outline">
-                            Utils
-                          </Button>
-                          <AccordionIcon />
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <Stack direction="column" spacing={4} align="left" mt="2" w={menuButtonW}>
-                            <ChainSupportedInput feature={MENU.TX}>
-                              <Button
-                                disabled={noChainSupport(MENU.TX, _chainMetaLocal.networkId)}
-                                colorScheme="teal"
-                                onClick={() => {
-                                  setMenuItem(MENU.TX);
-                                  navigate('utils/chaintransactions');
-                                  setShowMobileMenu(false);
-                                }}
-                              >
-                                Chain Transactions
-                              </Button>
-                            </ChainSupportedInput>
-                          </Stack>
-                        </AccordionPanel>
-                      </AccordionItem>
-
-                      <AccordionItem>
-                        <AccordionButton>
-                          <Button flex="1" colorScheme="teal" variant="outline">
                             Labs
                           </Button>
                           <AccordionIcon />
@@ -575,24 +474,11 @@ function App({ appConfig }) {
                 <Routes>
                   <Route path="/" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount('tools')}  />}/>
                   <Route path="home" element={<HomeElrond key={rfKeys.tools} onRfMount={() => handleRfMount('tools')}  />}/>
-                  <Route path="selldata" element={<SellData key={rfKeys.sellData} onRfMount={() => handleRfMount('sellData')} />} />
-                  <Route path="datapacks" element={<Outlet />}>
-                    <Route path="buydata" element={<BuyData key={rfKeys.buyData} onRfMount={() => handleRfMount('buyData')} />} />
-                    <Route path="advertiseddata" element={<AdvertisedData />} />
-                    <Route path="purchaseddata" element={<PurchasedData />} />
-                    <Route path="personaldataproof" element={<PersonalDataProofs />} />
-                  </Route>
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                    <Route path="wallet" element={<MyDataNFTs />} />
-                    <Route path="marketplace" element={<DataNFTMarketplace />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
                     <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
-                    <Route path="viewcoalitions" element={<DataCoalitionsViewAll />} />
-                  </Route>
-                  <Route paths="utils" element={<Outlet />}>
-                    <Route path="chaintransactions" element={<ChainTransactions />} />
                   </Route>
                   <Route path="labs" element={<Outlet />}>
                     <Route path="datastreams" element={<DataStreams />} />
