@@ -51,9 +51,9 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import useThrottle from "../UtilComps/UseThrottle";
 
-function printPrice(price: number, token: string): string {
-  return price <= 0 ? "FREE" : `${price} ${token}`;
-}
+// function printPrice(price: number, token: string): string {
+//   return price <= 0 ? "FREE" : `${price} ${token}`;
+// }
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -473,10 +473,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             Fee per NFT: {` `}
                             {marketRequirements ? (
                               <>
-                                {printPrice(
-                                  convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                                  getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                                )}
+                                {/*{printPrice(*/}
+                                {/*  convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),*/}
+                                {/*  getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)*/}
+                                {/*)}*/}
                               </>
                             ) : (
                               " -"
@@ -667,16 +667,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 <Box>
                   {marketRequirements ? (
                     <>
-                      {": "}
-                      {printPrice(
-                        convertWeiToEsdt(
-                          BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                            .multipliedBy(10000)
-                            .div(10000 + marketRequirements.buyer_fee),
-                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber(),
-                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
-                      )}
+                      {/*{printPrice(*/}
+                      {/*  convertWeiToEsdt(*/}
+                      {/*    BigNumber(offers[selectedOfferIndex].wanted_token_amount)*/}
+                      {/*      .multipliedBy(10000)*/}
+                      {/*      .div(10000 + marketRequirements.buyer_fee),*/}
+                      {/*    tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)*/}
+                      {/*  ).toNumber(),*/}
+                      {/*  getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)*/}
+                      {/*)}*/}
                     </>
                   ) : (
                     "-"
@@ -711,16 +710,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Total Fee</Box>
                 <Box>
-                  {": "}
                   {marketRequirements ? (
                     <>
-                      {printPrice(
-                        convertWeiToEsdt(
-                          BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),
-                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber(),
-                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
-                      )}
+                      {/*{printPrice(*/}
+                      {/*  convertWeiToEsdt(*/}
+                      {/*    BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),*/}
+                      {/*    tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)*/}
+                      {/*  ).toNumber(),*/}
+                      {/*  getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)*/}
+                      {/*)}*/}
                     </>
                   ) : (
                     "-"

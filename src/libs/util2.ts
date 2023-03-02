@@ -6,3 +6,7 @@ export const convertToLocalString = (value: BigNumber.Value, precision?: number)
     .toNumber()
     .toLocaleString();
 };
+
+export const printPrice = (price: number, token: string): string => {
+  return price <= 0 ? "FREE" : `${price} ${token}`;
+};
