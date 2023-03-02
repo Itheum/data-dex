@@ -327,7 +327,7 @@ function App({ appConfig }) {
             px={4}
             boxShadow={containerShadow}
             zIndex={2}>
-            <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="dashed 1px">
+            <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="solid 1px">
               <HStack alignItems={"center"} spacing={4}>
                 <IconButton
                   size={"sm"}
@@ -500,7 +500,7 @@ function App({ appConfig }) {
               </Box>
             </Box>
 
-            <Box backgroundColor="none" height={"5rem"} borderTop="dashed 1px">
+            <Box backgroundColor="none" height={"5rem"} borderTop="solid 1px">
               <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
                 <Text fontSize="xx-small">{dataDexVersion}</Text>
                 <HStack>

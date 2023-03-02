@@ -290,7 +290,6 @@ export default function MyDataNFTsMx() {
 
         if (signatureObj?.signature && signatureObj?.address) {
           // Maiar App V2 / Ledger
-          signResult.addrInHex = signatureObj.address.hex();
           signResult.signature = signatureObj.signature.hex();
           signResult.addrInHex = signatureObj.address.hex();
           signResult.success = true;
@@ -306,7 +305,10 @@ export default function MyDataNFTsMx() {
       console.log(signResult);
     }
 
-    if (signResult.signature === null || signResult.addrInHex === null) {
+    if (signResult.signature === null || 
+          signResult.signature === '' || 
+            signResult.addrInHex === null ||
+              signResult.addrInHex === '') {
       signResult.success = false;
       signResult.exception = customError;
     }
