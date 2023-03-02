@@ -3,7 +3,6 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Image,
   Link,
@@ -20,11 +19,11 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
+import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
@@ -36,44 +35,29 @@ type UpperCardComponentProps = {
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
   nftMetadata: DataNftMetadataType[];
-  marketRequirements: MarketplaceRequirementsType | undefined;
-  setDelistAmount: Dispatch<SetStateAction<number>>;
-  setDelistModalState: Dispatch<SetStateAction<number>>;
-  onDelistModalOpen: () => void;
-  setSelectedOfferIndex: Dispatch<SetStateAction<number>>;
-  setNewListingPrice: Dispatch<SetStateAction<number>>;
-  amountOfTokens: Record<any, any>; //record<string, number> stands for empty object
-  onUpdatePriceModalOpen: () => void;
   userData: Record<any, any>;
   index: number;
   children?: React.ReactNode;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const {
-    offer,
-    offers,
-    nftImageLoading,
-    nftMetadataLoading,
-    setNftImageLoading,
-    nftMetadata,
-    marketRequirements,
-    setDelistAmount,
-    setDelistModalState,
-    onDelistModalOpen,
-    setSelectedOfferIndex,
-    setNewListingPrice,
-    amountOfTokens,
-    onUpdatePriceModalOpen,
-    userData,
-    index,
-    children,
-  } = props;
+  const { offer, offers, nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadata, userData, index, children } = props;
   // Multiversx API
-  const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const { hasPendingTransactions } = useGetPendingTransactions();
+  const contract = new DataNftMarketContract("ED");
+  const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
+  const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
+  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
+  const [delistAmount, setDelistAmount] = useState<number>(1);
+  const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
+  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
+  const [newListingPrice, setNewListingPrice] = useState<number>(0);
+  const [amountOfTokens, setAmountOfTokens] = useState<any>({});
+  const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
+  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
 
   return (
     <Flex wrap="wrap" gap="5" key={index}>
@@ -184,78 +168,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   )}
                 </Text>
               </Box>
-              <Button
-                mt="2"
-                size="sm"
-                colorScheme="teal"
-                height="7"
-                variant="outline"
-                onClick={() => {
-                  console.log("NftLoading", nftMetadataLoading);
-                  console.log("nftMetaIndex", !!nftMetadata[index]);
-                  window.open(nftMetadata[index].dataPreview);
-                }}>
-                Preview Data
-              </Button>
 
-              {address && (
-                <>
-                  <Flex mt="2" gap="2">
-                    <Button
-                      size="xs"
-                      colorScheme="teal"
-                      width="72px"
-                      isDisabled={hasPendingTransactions}
-                      onClick={() => {
-                        setSelectedOfferIndex(index);
-                        setDelistAmount(offers[index].quantity);
-                        setDelistModalState(1);
-                        onDelistModalOpen();
-                      }}>
-                      De-List All
-                    </Button>
-                    {offers[index].quantity > 1 && (
-                      <Button
-                        size="xs"
-                        colorScheme="teal"
-                        width="72px"
-                        isDisabled={hasPendingTransactions}
-                        onClick={() => {
-                          setSelectedOfferIndex(index);
-                          setDelistAmount(1);
-                          setDelistModalState(0);
-                          onDelistModalOpen();
-                        }}>
-                        De-List Some
-                      </Button>
-                    )}
-                    <Button
-                      size="xs"
-                      colorScheme="teal"
-                      width="72px"
-                      isDisabled={hasPendingTransactions}
-                      onClick={() => {
-                        setSelectedOfferIndex(index);
-                        if (marketRequirements) {
-                          setNewListingPrice(
-                            convertWeiToEsdt(
-                              BigNumber(offers[index].wanted_token_amount)
-                                .multipliedBy(amountOfTokens[index])
-                                .multipliedBy(10000)
-                                .div(10000 + marketRequirements.buyer_fee),
-                              tokenDecimals(offers[index].wanted_token_identifier)
-                            ).toNumber()
-                          );
-                        } else {
-                          setNewListingPrice(0);
-                        }
-                        onUpdatePriceModalOpen();
-                      }}>
-                      Update Price
-                    </Button>
-                  </Flex>
-                </>
-              )}
+              {address && <>{children}</>}
             </>
           )}
         </Flex>
