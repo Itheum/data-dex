@@ -3,6 +3,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Image,
   Link,
@@ -25,7 +26,7 @@ import { printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
+import { DataNftMetadataType, DataNftType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
@@ -36,12 +37,13 @@ type UpperCardComponentProps = {
   nftMetadataLoading: boolean;
   nftMetadata: DataNftMetadataType[];
   userData: Record<any, any>;
+  item?: DataNftType;
   index: number;
   children?: React.ReactNode;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const { offer, offers, nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadata, userData, index, children } = props;
+  const { offer, offers, nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadata, userData, index, children, item } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -58,6 +60,17 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
+  const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
+  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
+  const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
+  const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
+
+  const onBurnButtonClick = (nft: DataNftType) => {
+    setSelectedDataNft(nft);
+    setDataNftBurnAmount(Number(nft.balance)); // init
+    setBurnNFTModalState(1);
+    onBurnNFTOpen();
+  };
 
   return (
     <Flex wrap="wrap" gap="5" key={index}>
@@ -138,6 +151,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   <Badge borderRadius="full" px="2" colorScheme="blue">
                     Fully Transferable License
                   </Badge>
+
+                  {item && (
+                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
+                      Burn
+                    </Button>
+                  )}
                 </Box>
               </Flex>
 

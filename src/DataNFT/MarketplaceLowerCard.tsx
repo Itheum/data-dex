@@ -1,6 +1,9 @@
 import React, { FC, useEffect, useState } from "react";
 import {
-  Button, Flex, Box, Image,
+  Button,
+  Flex,
+  Box,
+  Image,
   HStack,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -9,17 +12,22 @@ import {
   NumberInputStepper,
   Text,
   useDisclosure,
-  useToast, ModalBody, ModalContent, ModalOverlay, Modal, Checkbox,
+  useToast,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Modal,
+  Checkbox,
 } from "@chakra-ui/react";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import BigNumber from "bignumber.js";
 import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
 import { printPrice } from "../libs/util2";
-import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
-import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
-import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import BigNumber from "bignumber.js";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { getAccountTokenFromApi } from "../MultiversX/api";
+import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
+import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
+import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type MarketplaceLowerCardProps = {
@@ -27,7 +35,6 @@ type MarketplaceLowerCardProps = {
   offers: OfferType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
-
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
@@ -101,6 +108,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
         setMaxPaymentFeeMap({});
       }
     })();
+    console.log(amountOfTokens[index]);
   }, []);
 
   const onProcure = async () => {
@@ -165,7 +173,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
     onProcureModalClose();
   };
 
-
   return (
     <>
       <HStack h="3rem">
@@ -178,6 +185,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
           max={offer.quantity}
           isValidCharacter={isValidNumericCharacter}
           value={amountOfTokens[index]}
+          defaultValue={1}
           onChange={(valueAsString) => {
             const value = Number(valueAsString);
             let error = "";
@@ -268,10 +276,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
               <Flex>
                 {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
                   0 && (
-                    <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                      Your wallet token balance is too low to proceed
-                    </Text>
-                  )}
+                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                    Your wallet token balance is too low to proceed
+                  </Text>
+                )}
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Buyer Fee (per NFT)</Box>
@@ -279,14 +287,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   :{" "}
                   {marketRequirements
                     ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                        .multipliedBy(marketRequirements.buyer_fee)
-                        .div(10000 + marketRequirements.buyer_fee),
-                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                    ).toNumber()} ${getTokenWantedRepresentation(
-                      offers[selectedOfferIndex].wanted_token_identifier,
-                      offers[selectedOfferIndex].wanted_token_nonce
-                    )})`
+                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                          .multipliedBy(marketRequirements.buyer_fee)
+                          .div(10000 + marketRequirements.buyer_fee),
+                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                      ).toNumber()} ${getTokenWantedRepresentation(
+                        offers[selectedOfferIndex].wanted_token_identifier,
+                        offers[selectedOfferIndex].wanted_token_nonce
+                      )})`
                     : "-"}
                 </Box>
               </Flex>
@@ -368,7 +376,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                    0
+                      0
                   }>
                   Proceed
                 </Button>
@@ -380,7 +388,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
           </ModalContent>
         </Modal>
       )}
-
     </>
   );
 };

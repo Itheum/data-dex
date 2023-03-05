@@ -25,7 +25,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/util";
 import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -39,10 +39,6 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
-
-// function printPrice(price: number, token: string): string {
-//   return price <= 0 ? "FREE" : `${price} ${token}`;
-// }
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -90,6 +86,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(10);
+  const marketplace = "/datanfts/marketplace";
+  const myListedData = "/datanfts/marketplace/my";
+  const location = useLocation();
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
@@ -373,7 +372,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     nftMetadata={nftMetadatas}
                     userData={userData}
                     index={index}>
-                    <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas}/>
+                    {location.pathname === marketplace ? (
+                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} offer={offer} offers={offers} />
+                    ) : (
+                      <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} />
+                    )}
                   </UpperCardComponent>
                 </div>
               ))}
