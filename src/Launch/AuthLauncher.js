@@ -39,7 +39,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
             alignItems={"center"}
             justifyContent={"space-between"}
             backgroundColor={colorMode === "light" ? "white" : "black"}
-            borderBottom="dashed 1px"
+            borderBottom="solid 1px"
             p="5">
             <HStack alignItems={"center"} spacing={4}>
               <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
@@ -138,7 +138,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
             </Box>
           </Box>
 
-          <Box backgroundColor={colorMode === "light" ? "white" : "black"} height={"5rem"} borderTop="dashed 1px">
+          <Box backgroundColor={colorMode === "light" ? "white" : "black"} height={"5rem"} borderTop="solid 1px">
             <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
               <Text fontSize="xx-small">{dataDexVersion}</Text>
               <HStack>
