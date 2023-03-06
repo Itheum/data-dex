@@ -47,6 +47,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
+  const [feePrice, setFeePrice] = useState<string>("");
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
@@ -90,9 +91,15 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   }, [address, offers, selectedOfferIndex, hasPendingTransactions]);
 
   useEffect(() => {
+    setFeePrice(
+      printPrice(
+        convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+      )
+    );
     (async () => {
       const _marketRequirements = await contract.getRequirements();
-      console.log("_marketRequirements", _marketRequirements);
+      // console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
       if (_marketRequirements) {
@@ -108,7 +115,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
         setMaxPaymentFeeMap({});
       }
     })();
-    console.log(amountOfTokens[index]);
   }, []);
 
   const onProcure = async () => {
@@ -175,6 +181,17 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
 
   return (
     <>
+      <Button
+        mt="2"
+        size="sm"
+        colorScheme="teal"
+        height="7"
+        variant="outline"
+        onClick={() => {
+          window.open(nftMetadatas[index].dataPreview);
+        }}>
+        Preview Data
+      </Button>
       <HStack h="3rem">
         <Text fontSize="xs">How many to procure </Text>
         <NumberInput
@@ -250,7 +267,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
               </HStack>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">How many</Box>
-                <Box>: {amountOfTokens[selectedOfferIndex]}</Box>
+                <Box>: {amountOfTokens[selectedOfferIndex] ? amountOfTokens[selectedOfferIndex] : 1}</Box>
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Fee per NFT</Box>
@@ -302,19 +319,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 <Box w="140px">Total Fee</Box>
                 <Box>
                   {": "}
-                  {marketRequirements ? (
-                    <>
-                      {printPrice(
-                        convertWeiToEsdt(
-                          BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]),
-                          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                        ).toNumber(),
-                        getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)
-                      )}
-                    </>
-                  ) : (
-                    "-"
-                  )}
+                  {marketRequirements ? <>{feePrice}</> : "-"}
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">

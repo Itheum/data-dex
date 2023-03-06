@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction, useState } from "react";
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
@@ -23,7 +23,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import moment from "moment/moment";
 import { useLocation } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { printPrice } from "../libs/util2";
+import { printPrice, convertToLocalString } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
@@ -36,34 +36,27 @@ type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
-  nftMetadata: DataNftMetadataType[];
+  nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
+  marketRequirements: MarketplaceRequirementsType | undefined;
   item?: DataNftType;
   index: number;
   children?: React.ReactNode;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const { offer, offers, nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadata, userData, index, children, item } = props;
+  const { offer, offers, nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadatas, userData, index, children, item, marketRequirements } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const { hasPendingTransactions } = useGetPendingTransactions();
   const marketplace = "/datanfts/marketplace";
+  const myListedData = "/datanfts/marketplace/my";
   const location = useLocation();
+  const [feePrice, setFeePrice] = useState<string>("");
 
   const contract = new DataNftMarketContract("ED");
-  const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
-  const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
-  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
-  const [delistAmount, setDelistAmount] = useState<number>(1);
-  const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
-  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
-  const [newListingPrice, setNewListingPrice] = useState<number>(0);
-  const [amountOfTokens, setAmountOfTokens] = useState<any>({});
-  const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
@@ -75,6 +68,15 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
+
+  useEffect(() => {
+    setFeePrice(
+      printPrice(
+        convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+      )
+    );
+  }, []);
 
   return (
     <Flex wrap="wrap" gap="5" key={index}>
@@ -94,42 +96,44 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
           {nftMetadataLoading && <Skeleton />}
-          {!nftMetadataLoading && nftMetadata[index] && (
+          {!nftMetadataLoading && nftMetadatas[index] && (
             <>
               <Text fontSize="xs">
-                <Link href={`${ChainExplorer}/nfts/${nftMetadata[index].id}`} isExternal>
-                  {nftMetadata[index].tokenName} <ExternalLinkIcon mx="2px" />
+                <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
+                  {nftMetadatas[index].tokenName} <ExternalLinkIcon mx="2px" />
                 </Link>
               </Text>
               <Popover trigger="hover" placement="auto">
                 <PopoverTrigger>
                   <div>
                     <Text fontWeight="bold" fontSize="lg" mt="2">
-                      {nftMetadata[index].title.length > 20 ? nftMetadata[index].title.substring(0, 19) + "..." : nftMetadata[index].title}
+                      {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
                     </Text>
 
                     <Flex flexGrow="1">
                       <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                        {nftMetadata[index].description.length > 54 ? nftMetadata[index].description.substring(0, 53) + "..." : nftMetadata[index].description}
+                        {nftMetadatas[index].description.length > 54
+                          ? nftMetadatas[index].description.substring(0, 53) + "..."
+                          : nftMetadatas[index].description}
                       </Text>
                     </Flex>
                   </div>
                 </PopoverTrigger>
                 <PopoverContent mx="2" width="220px" mt="-7">
-                  <PopoverHeader fontWeight="semibold">{nftMetadata[index].title}</PopoverHeader>
+                  <PopoverHeader fontWeight="semibold">{nftMetadatas[index].title}</PopoverHeader>
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverBody>
                     <Text fontSize="sm" mt="2" color="gray.200">
-                      {nftMetadata[index].description}
+                      {nftMetadatas[index].description}
                     </Text>
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
               <Flex display="flex" flexDirection="column">
                 <Box color="gray.600" fontSize="sm">
-                  Creator: {` ${nftMetadata[index].creator.slice(0, 8)} ... ${nftMetadata[index].creator.slice(-8)}`}
-                  <Link href={`${ChainExplorer}/accounts/${nftMetadata[index].creator}`} isExternal>
+                  Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+                  <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Box>
@@ -140,7 +144,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </Link>
                 </Box>
                 <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
-                  {address && address == nftMetadata[index].creator && (
+                  {address && address == nftMetadatas[index].creator && (
                     <Badge borderRadius="full" px="2" colorScheme="teal">
                       <Text>You are the Creator</Text>
                     </Badge>
@@ -165,30 +169,25 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               </Flex>
 
               <Box display="flex" justifyContent="flex-start" mt="2">
-                <Text fontSize="xs">{`Creation time:   ${moment(nftMetadata[index].creationTime).format(uxConfig.dateStr)}`}aaaa</Text>
+                <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
               </Box>
 
-              <Box color="gray.600" fontSize="sm">
-                {`Balance: ${offer.quantity} out of ${nftMetadata[index].supply}. Royalty: ${nftMetadata[index].royalties * 100}%`}
-              </Box>
+              {nftMetadatas[index] && (
+                <Box color="gray.600" fontSize="sm">
+                  {`Listed: ${offer.quantity}`} <br />
+                  {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
+                  {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
+                </Box>
+              )}
             </>
           )}
 
-          {!nftMetadataLoading && !!nftMetadata[index] && location.pathname === marketplace && (
+          {!nftMetadataLoading && !!nftMetadatas[index] && (location.pathname === marketplace || location.pathname === myListedData) && feePrice && (
             <>
               <Box fontSize="xs" mt="2">
                 <Text>
                   Fee per NFT: {` `}
-                  {marketRequirements ? (
-                    <>
-                      {printPrice(
-                        convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                      )}
-                    </>
-                  ) : (
-                    " -"
-                  )}
+                  {marketRequirements ? <>{feePrice}</> : " -"}
                 </Text>
               </Box>
             </>

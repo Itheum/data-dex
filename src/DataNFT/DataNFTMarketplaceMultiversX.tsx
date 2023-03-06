@@ -368,10 +368,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     nftImageLoading={oneNFTImgLoaded}
                     setNftImageLoading={setOneNFTImgLoaded}
                     nftMetadataLoading={nftMetadatasLoading}
-                    nftMetadata={nftMetadatas}
+                    nftMetadatas={nftMetadatas}
+                    marketRequirements={marketRequirements}
                     userData={userData}
                     index={index}>
-                    {location.pathname === marketplace ? (
+                    {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} offer={offer} offers={offers} />
                     ) : (
                       <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} />
