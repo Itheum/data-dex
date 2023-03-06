@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -45,6 +45,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
+import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useSessionStorage } from "libs/hooks";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
@@ -73,7 +74,6 @@ export default function MyDataNFTsMx() {
     s1: 0,
     s2: 0,
     s3: 0,
-    s4: 0,
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
@@ -132,6 +132,7 @@ export default function MyDataNFTsMx() {
     setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
+
   const onListButtonClick = (nft: DataNftType) => {
     setSelectedDataNft(nft);
     onListNFTOpen();
@@ -290,7 +291,6 @@ export default function MyDataNFTsMx() {
 
         if (signatureObj?.signature && signatureObj?.address) {
           // Maiar App V2 / Ledger
-          signResult.addrInHex = signatureObj.address.hex();
           signResult.signature = signatureObj.signature.hex();
           signResult.addrInHex = signatureObj.address.hex();
           signResult.success = true;
@@ -306,7 +306,10 @@ export default function MyDataNFTsMx() {
       console.log(signResult);
     }
 
-    if (signResult.signature === null || signResult.addrInHex === null) {
+    if (signResult.signature === null ||
+      signResult.signature === '' ||
+      signResult.addrInHex === null ||
+      signResult.addrInHex === '') {
       signResult.success = false;
       signResult.exception = customError;
     }
@@ -315,7 +318,7 @@ export default function MyDataNFTsMx() {
   };
 
   const cleanupAccessDataStreamProcess = () => {
-    setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
     setErrUnlockAccessGeneric("");
     onAccessProgressModalClose();
   };
@@ -770,8 +773,17 @@ export default function MyDataNFTsMx() {
 
               <HStack>
                 {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                <Text>Verifying data access rights to unlock data stream</Text>
+                <Text>Verifying data access rights to unlock Data Stream</Text>
               </HStack>
+
+              {(unlockAccessProgress.s1 && unlockAccessProgress.s2 && !unlockAccessProgress.s3) &&
+                <Stack border="solid .04rem" padding={3} borderRadius={5}>
+                  <Text fontSize="sm" lineHeight={1.7}>
+                    <InfoIcon boxSize={5} mr={1} />Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select <b>Always allow pop-ups</b>
+                  </Text>
+                  <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
+                </Stack>
+              }
 
               {errUnlockAccessGeneric && (
                 <Alert status="error">
