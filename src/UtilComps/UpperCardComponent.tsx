@@ -21,6 +21,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment/moment";
+import { useLocation } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
@@ -49,6 +50,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const marketplace = "/datanfts/marketplace";
+  const location = useLocation();
+
   const contract = new DataNftMarketContract("ED");
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -170,7 +174,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
             </>
           )}
 
-          {!nftMetadataLoading && !!nftMetadata[index] && (
+          {!nftMetadataLoading && !!nftMetadata[index] && location.pathname === marketplace && (
             <>
               <Box fontSize="xs" mt="2">
                 <Text>
@@ -187,10 +191,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   )}
                 </Text>
               </Box>
-
-              {address && <>{children}</>}
             </>
           )}
+          {address && <>{children}</>}
         </Flex>
 
         <Box

@@ -87,7 +87,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(10);
   const marketplace = "/datanfts/marketplace";
-  const myListedData = "/datanfts/marketplace/my";
   const location = useLocation();
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
