@@ -225,7 +225,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   //
   const [userData, setUserData] = useState({});
   const getUserData = async () => {
-    if (mxAddress && !hasPendingTransactions) {
+    if (mxAddress) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
@@ -414,8 +414,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       antiSpamTax < 0 ||
       itheumBalance < antiSpamTax ||
       // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
-      (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-      (userData && userData.contractPaused)
+      (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+      (!!userData && userData.contractPaused) ||
+      (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
     );
   }, [
     dataNFTStreamUrlError,
@@ -779,8 +780,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 antiSpamTax < 0 ||
                 !dataNFTMarshalServiceValid ||
                 !dataNFTImgGenServiceValid ||
-                (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-                (userData && userData.contractPaused)) && (
+                (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+                (!!userData && userData.contractPaused)) ||
+                (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
+                && (
                   <Alert status="error">
                     <Stack>
                       <AlertTitle fontSize="md" mb={2}>
@@ -796,10 +799,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                         {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
                         {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
                         {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
                           <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
                         )}
-                        {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                        {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                        {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && <Text fontSize="md">{`You can mint next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`}</Text>}
                       </AlertDescription>
                     </Stack>
                   </Alert>
