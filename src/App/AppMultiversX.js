@@ -106,7 +106,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.NFTALL,
-        path: "datanfts/marketplace",
+        path: "datanfts/marketplace/market/0",
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: MdOnlinePrediction,
@@ -485,8 +485,8 @@ function App({ appConfig }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
-                    <Route path="marketplace" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
-                    <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                    <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                    <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>
                     <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />

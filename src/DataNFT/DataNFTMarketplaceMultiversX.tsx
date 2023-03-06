@@ -37,7 +37,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
@@ -61,6 +61,9 @@ interface PropsType {
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const navigate = useNavigate();
+  const { pageNumber } = useParams();
+  const pageIndex = pageNumber ? Number(pageNumber) : 0;
+
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
@@ -99,8 +102,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
-  const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(10);
+
+  const setPageIndex = (newPageIndex: number) => {
+    navigate(`/datanfts/marketplace/${tabState === 1 ? 'market' : 'my'}/${newPageIndex}`);
+  };
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
@@ -344,7 +350,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              navigate("/datanfts/marketplace");
+              navigate("/datanfts/marketplace/market/0");
             }}>
             Public Marketplace
           </Button>
@@ -356,7 +362,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              navigate("/datanfts/marketplace/my");
+              navigate("/datanfts/marketplace/my/0");
             }}>
             My Listed Data NFTs
           </Button>
@@ -634,7 +640,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 pageIndex={pageIndex}
                 pageSize={pageSize}
                 gotoPage={onGotoPage}
-                // setPageSize={() => (() => {})}
+              // setPageSize={() => (() => {})}
               />
             </Flex>
           )
@@ -686,10 +692,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               <Flex>
                 {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
                   0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
+                    <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                      Your wallet token balance is too low to proceed
+                    </Text>
+                  )}
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Buyer Fee (per NFT)</Box>
@@ -697,14 +703,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   :{" "}
                   {marketRequirements
                     ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                          .multipliedBy(marketRequirements.buyer_fee)
-                          .div(10000 + marketRequirements.buyer_fee),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(
-                        offers[selectedOfferIndex].wanted_token_identifier,
-                        offers[selectedOfferIndex].wanted_token_nonce
-                      )})`
+                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                        .multipliedBy(marketRequirements.buyer_fee)
+                        .div(10000 + marketRequirements.buyer_fee),
+                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(
+                      offers[selectedOfferIndex].wanted_token_identifier,
+                      offers[selectedOfferIndex].wanted_token_nonce
+                    )})`
                     : "-"}
                 </Box>
               </Flex>
@@ -786,7 +792,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                      0
+                    0
                   }>
                   Proceed
                 </Button>
