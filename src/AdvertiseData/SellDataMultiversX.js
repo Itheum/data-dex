@@ -110,9 +110,33 @@ const checkUrlReturns200 = async (url) => {
   // check that URL returns 200 code
   try {
     const res = await axios.get(url);
-    return res.status === 200;
+    if (res.status === 200) {
+      return {
+        isSuccess: true,
+        message: "",
+      };
+    } else {
+      return {
+        isSuccess: false,
+        message: "Data Stream URL must be a publicly accessible url",
+      };
+    }
   } catch (err) {
-    return false;
+    console.log('err', err);
+    let message = err.message;
+
+    if (err.response && err.response.status) {
+      if (err.response.status === 404) {
+        message = "Url is not found";
+      } else {
+        message = err.response.statusText;
+      }
+    }
+
+    return {
+      isSuccess: false,
+      message,
+    };
   }
 };
 
@@ -156,9 +180,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [maxSupply, setMaxSupply] = useState(-1);
   const [antiSpamTax, setAntiSpamTax] = useState(-1);
 
-  const [dataNFTStreamUrlValid, setDataNFTStreamUrlValid] = useState(false);
-  const [dataNFTStreamPreviewUrlValid, setDataNFTStreamPreviewUrlValid] = useState(false);
-  const [dataNFTMarshalServiceValid, setDataNFTMarshalServiceValid] = useState(false);
+  const [dataNFTStreamUrlStatus, setDataNFTStreamUrlStatus] = useState("");
+  const [dataNFTStreamPreviewUrlStatus, setDataNFTStreamPreviewUrlStatus] = useState("");
+  const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState(false);
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const [itheumBalance, setItheumBalance] = useState(0);
@@ -270,7 +294,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       error = "Length of Data Stream URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then((res) => setDataNFTStreamUrlValid(res));
+      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+        setDataNFTStreamUrlStatus(message);
+      });
     }
 
     setDataNFTStreamUrlError(error);
@@ -282,8 +308,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     const trimmedValue = value.trim();
     let error = "";
 
-    // debugger; // eslint-disable-line
-
     if (!trimmedValue.startsWith("https://")) {
       error = "Data Preview URL must start with 'https://'";
     } else if (trimmedValue.includes(" ")) {
@@ -294,7 +318,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       error = "Length of Data Preview URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then((res) => setDataNFTStreamPreviewUrlValid(res));
+      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+        setDataNFTStreamPreviewUrlStatus(message);
+      });
     }
 
     setDataNFTStreamPreviewUrlError(error);
@@ -305,7 +331,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) => setDataNFTMarshalServiceValid(res));
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then(({ isSuccess, message }) => {
+      setDataNFTMarshalServiceStatus(message);
+    });
 
     setDataNFTMarshalService(trimmedValue);
   };
@@ -402,9 +430,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       !!datasetDescriptionError ||
       !!dataNFTCopiesError ||
       !!dataNFTRoyaltyError ||
-      !dataNFTStreamUrlValid ||
-      !dataNFTStreamPreviewUrlValid ||
-      !dataNFTMarshalServiceValid ||
+      !!dataNFTStreamUrlStatus ||
+      !!dataNFTStreamPreviewUrlStatus ||
+      !!dataNFTMarshalServiceStatus ||
       !dataNFTImgGenServiceValid ||
       !readTermsChecked ||
       !readAntiSpamFeeChecked ||
@@ -426,9 +454,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     datasetDescriptionError,
     dataNFTCopiesError,
     dataNFTRoyaltyError,
-    dataNFTStreamUrlValid,
-    dataNFTStreamPreviewUrlValid,
-    dataNFTMarshalServiceValid,
+    dataNFTStreamUrlStatus,
+    dataNFTStreamPreviewUrlStatus,
+    dataNFTMarshalServiceStatus,
     dataNFTImgGenServiceValid,
     readTermsChecked,
     readAntiSpamFeeChecked,
@@ -778,7 +806,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 maxRoyalties < 0 ||
                 maxSupply < 0 ||
                 antiSpamTax < 0 ||
-                !dataNFTMarshalServiceValid ||
+                !!dataNFTMarshalServiceStatus ||
                 !dataNFTImgGenServiceValid ||
                 (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
                 (!!userData && userData.contractPaused)) ||
@@ -797,7 +825,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                         {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
                         {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
                         {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                        {!!dataNFTMarshalServiceStatus && <Text fontSize="md">Data Marshal service is not responding.</Text>}
                         {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
                         {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
                           <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
@@ -841,9 +869,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   {dataNFTStreamUrlError}
                 </Text>
               )}
-              {userFocusedForm && !dataNFTStreamUrlValid && (
+              {userFocusedForm && dataNFTStreamUrlStatus && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Stream URL must be a publicly accessible url
+                  {dataNFTStreamUrlStatus}
                 </Text>
               )}
               {userFocusedForm && dataStreamUrlValidation && (
@@ -873,9 +901,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   {dataNFTStreamPreviewUrlError}
                 </Text>
               )}
-              {userFocusedForm && !dataNFTStreamPreviewUrlValid && (
+              {userFocusedForm && !!dataNFTStreamPreviewUrlStatus && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Stream Preview URL must be a publicly accessible url
+                  {dataNFTStreamPreviewUrlStatus}
                 </Text>
               )}
               {userFocusedForm && dataPreviewUrlValidation && (
@@ -891,9 +919,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               </InputLabelWithPopover>
 
               <Input mt="1 !important" value={dataNFTMarshalService} disabled />
-              {userFocusedForm && !dataNFTMarshalServiceValid && (
+              {userFocusedForm && !!dataNFTMarshalServiceStatus && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Marshal Service is currently offline
+                  {dataNFTMarshalServiceStatus}
                 </Text>
               )}
 
