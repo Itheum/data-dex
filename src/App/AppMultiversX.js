@@ -55,6 +55,7 @@ import { MdOutlineAccountBalanceWallet, MdOutlineDataSaverOn, MdOnlinePrediction
 import { Outlet, Route, Routes, useLocation, useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
+import DataNFTDetails from "DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
@@ -486,6 +487,7 @@ function App({ appConfig }) {
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
                     <Route path="marketplace" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                    <Route path="nft/:tokenId" element={<DataNFTDetails />} />
                     <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                   </Route>
                   <Route path="datacoalitions" element={<Outlet />}>

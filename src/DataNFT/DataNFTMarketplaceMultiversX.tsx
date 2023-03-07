@@ -634,7 +634,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 pageIndex={pageIndex}
                 pageSize={pageSize}
                 gotoPage={onGotoPage}
-                // setPageSize={() => (() => {})}
+              // setPageSize={() => (() => {})}
               />
             </Flex>
           )
@@ -686,10 +686,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               <Flex>
                 {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
                   0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
+                    <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                      Your wallet token balance is too low to proceed
+                    </Text>
+                  )}
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Buyer Fee (per NFT)</Box>
@@ -697,14 +697,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   :{" "}
                   {marketRequirements
                     ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                          .multipliedBy(marketRequirements.buyer_fee)
-                          .div(10000 + marketRequirements.buyer_fee),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(
-                        offers[selectedOfferIndex].wanted_token_identifier,
-                        offers[selectedOfferIndex].wanted_token_nonce
-                      )})`
+                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                        .multipliedBy(marketRequirements.buyer_fee)
+                        .div(10000 + marketRequirements.buyer_fee),
+                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(
+                      offers[selectedOfferIndex].wanted_token_identifier,
+                      offers[selectedOfferIndex].wanted_token_nonce
+                    )})`
                     : "-"}
                 </Box>
               </Flex>
@@ -786,7 +786,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                      0
+                    0
                   }>
                   Proceed
                 </Button>
