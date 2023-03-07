@@ -58,10 +58,11 @@ import { File, NFTStorage } from "nft.storage";
 import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/util";
 import { checkBalance } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
-const InputLabelWithPopover = ({ children, tkey }) => {
+const InputLabelWithPopover = ({ children, tkey }: { children: any, tkey: string }) => {
   let title = "",
     text = "";
   if (tkey === "data-stream-url") {
@@ -106,7 +107,7 @@ const InputLabelWithPopover = ({ children, tkey }) => {
   );
 };
 
-const checkUrlReturns200 = async (url) => {
+const checkUrlReturns200 = async (url: string) => {
   // check that URL returns 200 code
   try {
     const res = await axios.get(url);
@@ -121,7 +122,7 @@ const checkUrlReturns200 = async (url) => {
         message: "Data Stream URL must be a publicly accessible url",
       };
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log('err', err);
     let message = err.message;
 
@@ -140,7 +141,7 @@ const checkUrlReturns200 = async (url) => {
   }
 };
 
-export default function SellDataMX({ onRfMount, itheumAccount }) {
+export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any, itheumAccount: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -156,19 +157,19 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
-  const [currSellObject, setCurrSellObject] = useState(null);
+  const [currSellObject, setCurrSellObject] = useState<any>(null);
 
   const [isStreamTrade, setIsStreamTrade] = useState(0);
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [dataNFTImg, setDataNFTImg] = useState(null);
+  const [dataNFTImg, setDataNFTImg] = useState("");
   const [dataNFTTokenName, setDataNFTTokenName] = useState("");
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
   const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState("");
   const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState("");
-  const [dataNFTMarshalService, setDataNFTMarshalService] = useState();
-  const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
+  const [dataNFTMarshalService, setDataNFTMarshalService] = useState("");
+  const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
 
   const [datasetTitle, setDatasetTitle] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
@@ -202,8 +203,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setMinRoyalties(value.toNumber() / 100);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMinRoyalties(value.toNumber() / 100);
+      }
     })();
     (async () => {
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
@@ -211,8 +214,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setMaxRoyalties(value.toNumber() / 100);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMaxRoyalties(value.toNumber() / 100);
+      }
     })();
     (async () => {
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
@@ -220,8 +225,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setMaxSupply(value.toNumber());
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMaxSupply(value.toNumber());
+      }
     })();
     (async () => {
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
@@ -229,8 +236,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setAntiSpamTax(convertWeiToEsdt(value).toNumber());
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setAntiSpamTax(convertWeiToEsdt(value).toNumber());
+      }
     })();
   }, []);
 
@@ -247,7 +256,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   }, [mxAddress, hasPendingTransactions]);
 
   //
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState<UserDataType | undefined>();
   const getUserData = async () => {
     if (mxAddress) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
@@ -280,7 +289,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   // validation logic
 
   const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
-  const onChangeDataNFTStreamUrl = (value) => {
+  const onChangeDataNFTStreamUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
 
@@ -304,7 +313,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
-  const onChangeDataNFTStreamPreviewUrl = (value) => {
+  const onChangeDataNFTStreamPreviewUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
 
@@ -327,7 +336,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     setDataNFTStreamPreviewUrl(trimmedValue);
   };
 
-  const onChangeDataNFTMarshalService = (value) => {
+  const onChangeDataNFTMarshalService = (value: string) => {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
@@ -340,11 +349,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then((res) => setDataNFTImgGenService(res));
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then(({ isSuccess, message }) => {
+      setDataNFTImgGenService(isSuccess);
+    });
   };
 
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
-  const onChangeDataNFTTokenName = (value) => {
+  const onChangeDataNFTTokenName = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
 
@@ -359,7 +370,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [datasetTitleError, setDatasetTitleError] = useState("");
-  const onChangeDatasetTitle = (value) => {
+  const onChangeDatasetTitle = (value: string) => {
     let error = "";
 
     if (value.length < 10 || value.length > 50) {
@@ -373,7 +384,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [datasetDescriptionError, setDatasetDescriptionError] = useState("");
-  const onChangeDatasetDescription = (value) => {
+  const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
     if (value.length < 10 || value.length > 250) {
@@ -385,7 +396,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
-  const handleChangeDataNftCopies = (value) => {
+  const handleChangeDataNftCopies = (value: number) => {
     let error = "";
     if (value < 1) {
       error = "Number of copies cannot be negative";
@@ -398,7 +409,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
-  const handleChangeDataNftRoyalties = (value) => {
+  const handleChangeDataNftRoyalties = (value: number) => {
     let error = "";
     if (value < 0) {
       error = "Royalties cannot be negative";
@@ -471,19 +482,19 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   ]);
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const mintTxFail = (foo) => {
+  const mintTxFail = (foo: any) => {
     console.log("mintTxFail", foo);
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
-  const mintTxCancelled = (foo) => {
+  const mintTxCancelled = (foo: any) => {
     console.log("mintTxCancelled", foo);
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
-  const mintTxSuccess = async (foo) => {
+  const mintTxSuccess = async (foo: any) => {
     console.log("mintTxSuccess", foo);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
     await sleep(3);
@@ -493,15 +504,15 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const [mintSessionId, setMintSessionId] = useState(null);
 
-  const getDataForSale = async (programId) => {
+  const getDataForSale = async (programId: any) => {
     setSelectedProgramId(programId);
-    let selObj = {};
+    let selObj: any;
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
 
     if (programId) {
       selObj = {
-        ...itheumAccount.programsAllocation.find((i) => i.program === programId),
+        ...itheumAccount.programsAllocation.find((i: any) => i.program === programId),
         ...itheumAccount._lookups.programs[programId],
       };
       setCurrSellObject(selObj);
@@ -565,7 +576,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     onProgressModalOpen();
 
     const myHeaders = new Headers();
-    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY);
+    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY || "");
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
 
@@ -599,19 +610,15 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   };
 
-  async function createFileFromUrl(url) {
+  async function createFileFromUrl(url: string) {
     const res = await fetch(url);
-    // console.log('res', res);
     const data = await res.blob();
-    const type = mime.getType(data);
-    // console.log('type', type);
     const _file = new File([data], "image", { type: "image/png" });
-    // console.log('file', _file);
 
     return _file;
   }
 
-  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
+  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any, dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
     const newNFTImg = `https://d37x5igq4vw5mq.cloudfront.net/datadexapi/v1/generateNFTArt?hash=${dataNFTHash}`;
 
@@ -622,7 +629,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     try {
       const image = await createFileFromUrl(newNFTImg);
       const nftstorage = new NFTStorage({
-        token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY,
+        token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
       });
       res = await nftstorage.storeBlob(image);
     } catch (e) {
@@ -645,7 +652,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     handleOnChainMint({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted });
   };
 
-  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
+  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }: { imageOnIpfsUrl: any, dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
     const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
@@ -703,14 +710,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   }
 
-  const validateDataStreamUrl = (value) => {
+  const validateDataStreamUrl = (value: string) => {
     if (value.includes("https://drive.google.com")) {
       setDataStreamUrlValidation(true);
     } else {
       setDataStreamUrlValidation(false);
     }
   };
-  const validateDataPreviewUrl = (value) => {
+  const validateDataPreviewUrl = (value: string) => {
     if (value.includes("https://drive.google.com")) {
       setDataPreviewUrlValidation(true);
     } else {
@@ -725,7 +732,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
-      <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+      <Wrap shouldWrapChildren={true} spacing={5}>
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mt={5}>
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" />
 
@@ -747,8 +754,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
           <Heading size="md" m="3rem 0 1rem 0 !important">
             Supported Data CAT Programs
           </Heading>
-          <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-            {itheumAccount.programsAllocation.map((item) => (
+          <Wrap shouldWrapChildren={true} spacing={5}>
+            {itheumAccount.programsAllocation.map((item: any) => (
               <Box key={item.program} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden">
                 <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
@@ -862,7 +869,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamUrl(event.currentTarget.value);
                   validateDataStreamUrl(event.currentTarget.value);
                 }}
-                isDisabled={selectedProgramId}
+                isDisabled={!!selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -894,7 +901,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
                   validateDataPreviewUrl(event.currentTarget.value);
                 }}
-                isDisabled={selectedProgramId}
+                isDisabled={!!selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamPreviewUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
@@ -1003,7 +1010,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 max={maxSupply > 0 ? maxSupply : 1}
                 value={dataNFTCopies}
                 isValidCharacter={isValidNumericCharacter}
-                onChange={handleChangeDataNftCopies}>
+                onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -1035,7 +1042,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 max={maxRoyalties > 0 ? maxRoyalties : 0}
                 isValidCharacter={isValidNumericCharacter}
                 value={dataNFTRoyalty}
-                onChange={handleChangeDataNftRoyalties}>
+                onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
