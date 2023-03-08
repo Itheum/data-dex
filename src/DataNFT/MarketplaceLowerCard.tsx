@@ -53,9 +53,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const contract = new DataNftMarketContract("ED");
-  const [pageCount, setPageCount] = useState<number>(1);
-  const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
-  const [pageSize, setPageSize] = useState<number>(10);
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
@@ -63,11 +60,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
     (async () => {
       // init - no selection
       setSelectedOfferIndex(-1);
-      const _offers = await contract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, address);
 
       const amounts: any = {};
       const _amountErrors: string[] = [];
-      for (let i = 0; i < _offers.length; i++) {
+      for (let i = 0; i < offers.length; i++) {
         amounts[i] = 1;
         _amountErrors.push("");
       }

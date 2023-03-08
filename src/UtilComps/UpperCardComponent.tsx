@@ -111,10 +111,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                     </Text>
 
                     <Flex flexGrow="1">
-                      <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                        {nftMetadatas[index].description.length > 54
-                          ? nftMetadatas[index].description.substring(0, 53) + "..."
-                          : nftMetadatas[index].description}
+                      <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
+                        {nftMetadatas[index].description}
                       </Text>
                     </Flex>
                   </div>

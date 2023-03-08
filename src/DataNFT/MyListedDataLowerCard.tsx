@@ -1,30 +1,29 @@
 import React, { FC, useEffect, useState } from "react";
 import {
   Box,
-  Image,
-  Text,
   Button,
   Flex,
   HStack,
+  Image,
   Modal,
   ModalBody,
   ModalContent,
   ModalOverlay,
+  NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
+  NumberInputField,
   NumberInputStepper,
+  Text,
   useDisclosure,
   useToast,
-  NumberDecrementStepper,
-  NumberInputField,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { convertWeiToEsdt, sleep, convertEsdtToWei, isValidNumericCharacter } from "../libs/util";
-import { getNftsByIds } from "../MultiversX/api";
+import { convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import { hexZero, tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
+import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
@@ -54,18 +53,19 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
-  // useEffect(() => {
-  //   console.log(
-  //     "price",
-  //     convertWeiToEsdt(
-  //       BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-  //         .multipliedBy(amountOfTokens[selectedOfferIndex])
-  //         .multipliedBy(10000)
-  //         .div(10000 + (marketRequirements?.buyer_fee ? marketRequirements?.buyer_fee : 0)),
-  //       tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-  //     ).toNumber()
-  //   );
-  // }, []);
+  useEffect(() => {
+    // console.log(
+    //   "price",
+    //   marketRequirements
+    // convertWeiToEsdt(
+    //   BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+    //     .multipliedBy(amountOfTokens[selectedOfferIndex])
+    //     .multipliedBy(10000)
+    //     .div(10000 + marketRequirements?.buyer_fee),
+    //   tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+    // ).toNumber()
+    // );
+  }, []);
 
   const onDelist = async () => {
     if (!address) {
@@ -122,19 +122,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   };
 
   useEffect(() => {
-    console.log(
-      "price",
-      convertWeiToEsdt(
-        BigNumber(offers[selectedOfferIndex]?.wanted_token_amount)
-          .multipliedBy(amountOfTokens[selectedOfferIndex])
-          .multipliedBy(10000)
-          .div(10000 + (marketRequirements?.buyer_fee ? marketRequirements?.buyer_fee : 0)),
-        tokenDecimals(offers[selectedOfferIndex]?.wanted_token_identifier)
-      ).toNumber()
-    );
     (async () => {
       const _marketRequirements = await contract.getRequirements();
-      console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
       if (_marketRequirements) {
@@ -157,6 +146,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
       // init - no selection
       setSelectedOfferIndex(-1);
     })();
+    const amounts: any = {};
+    for (let i = 0; i < offers.length; i++) {
+      amounts[i] = 1;
+    }
+    setAmountOfTokens(amounts);
   }, [hasPendingTransactions]);
 
   return (
@@ -174,21 +168,20 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
       </Button>
 
       <Flex mt="2" gap="2">
-        {offers[index].quantity > 1 && (
-          <Button
-            size="xs"
-            colorScheme="teal"
-            width="90px"
-            isDisabled={hasPendingTransactions}
-            onClick={() => {
-              setSelectedOfferIndex(index);
-              setDelistAmount(1);
-              setDelistModalState(0);
-              onDelistModalOpen();
-            }}>
-            De-List
-          </Button>
-        )}
+        <Button
+          size="xs"
+          colorScheme="teal"
+          width="90px"
+          isDisabled={hasPendingTransactions}
+          onClick={() => {
+            setSelectedOfferIndex(index);
+            setDelistAmount(1);
+            setDelistModalState(0);
+            onDelistModalOpen();
+          }}>
+          De-List
+        </Button>
+
         <Button
           size="xs"
           colorScheme="teal"
@@ -209,6 +202,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
             } else {
               setNewListingPrice(0);
             }
+            console.log(amountOfTokens[index]);
             onUpdatePriceModalOpen();
           }}>
           Update Price
@@ -345,13 +339,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                   </Text>
                   <Box>
                     :{" "}
-                    {convertWeiToEsdt(
-                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                        .multipliedBy(amountOfTokens[selectedOfferIndex])
-                        .multipliedBy(10000)
-                        .div(10000 + marketRequirements.buyer_fee),
-                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                    ).toNumber()}{" "}
+                    {marketRequirements &&
+                      convertWeiToEsdt(
+                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                          .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
+                          .multipliedBy(10000)
+                          .div(10000 + (marketRequirements.buyer_fee as number)),
+                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+                      ).toNumber()}{" "}
                     {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
                   </Box>
                 </Flex>
@@ -364,7 +359,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                     maxW={16}
                     step={5}
                     min={0}
-                    tabIndex={-1}
                     max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
                     isValidCharacter={isValidNumericCharacter}
                     value={newListingPrice}
