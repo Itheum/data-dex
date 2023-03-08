@@ -24,6 +24,7 @@ import {
   Link,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -1138,6 +1139,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>Data Advertising Progress</ModalHeader>
+                {!!errDataNFTStreamGeneric && <ModalCloseButton />}
                 <ModalBody pb={6}>
                   <Stack spacing={5}>
                     <HStack>
