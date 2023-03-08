@@ -24,6 +24,7 @@ import {
   Link,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -816,8 +817,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 !!dataNFTMarshalServiceStatus ||
                 !dataNFTImgGenServiceValid ||
                 (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-                (!!userData && userData.contractPaused)) ||
-                (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
+                (!!userData && userData.contractPaused))
                 && (
                   <Alert status="error">
                     <Stack>
@@ -838,7 +838,23 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                           <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
                         )}
                         {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                        {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && <Text fontSize="md">{`You can mint next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`}</Text>}
+                      </AlertDescription>
+                    </Stack>
+                  </Alert>
+                )}
+
+              {(!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
+                && (
+                  <Alert status="error">
+                    <Stack>
+                      <AlertTitle fontSize="md" mb={2}>
+                        <AlertIcon display="inline-block" />
+                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                          Alerts
+                        </Text>
+                      </AlertTitle>
+                      <AlertDescription>
+                        {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && <Text fontSize="md">{`There is a time interval enforced between mints. You can mint your next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`}</Text>}
                       </AlertDescription>
                     </Stack>
                   </Alert>
@@ -1123,6 +1139,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>Data Advertising Progress</ModalHeader>
+                {!!errDataNFTStreamGeneric && <ModalCloseButton />}
                 <ModalBody pb={6}>
                   <Stack spacing={5}>
                     <HStack>
