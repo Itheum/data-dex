@@ -27,7 +27,7 @@ import logoSmlL from "img/logo-sml-l.png";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 
-const AuthLauncher = ({ onLaunchMode }) => {
+const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
   const { colorMode } = useColorMode();
 
   return (
@@ -48,7 +48,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
               </Heading>
             </HStack>
 
-            <PopupChainSelectorForWallet lrgButtonSize={true} hideTerms={true} onMxEnvPick={onLaunchMode} />
+            <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />
           </Flex>
 
           <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
@@ -157,7 +157,7 @@ const AuthLauncher = ({ onLaunchMode }) => {
   );
 };
 
-const PopupChainSelectorForWallet = ({ onMxEnvPick }) => {
+const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
 
   return (

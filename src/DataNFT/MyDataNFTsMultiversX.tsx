@@ -58,7 +58,7 @@ import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
-export default function MyDataNFTsMx() {
+export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
