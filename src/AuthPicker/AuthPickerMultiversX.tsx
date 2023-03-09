@@ -19,14 +19,12 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
-import { useNavigate } from "react-router-dom";
 import { useSessionStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { WALLETS } from "libs/util";
 import { gtagGo, clearAppSessions, sleep } from "libs/util";
 
-function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
-  const navigate = useNavigate();
+function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any, resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
@@ -65,7 +63,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
     }
   };
 
-  const goMxLogin = (wallet) => {
+  const goMxLogin = (wallet: any) => {
     gtagGo("auth", "login", wallet);
 
     setWalletUsedSession(wallet);
@@ -105,9 +103,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }) {
                           <ExtensionLoginButton
                             callbackRoute={"/"}
                             loginButtonText={"DeFi Wallet"}
-                            buttonClassName="auth_button"
-                            // eslint-disable-next-line no-undef
-                            onClick={() => alert("s")}></ExtensionLoginButton>
+                            buttonClassName="auth_button"></ExtensionLoginButton>
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">

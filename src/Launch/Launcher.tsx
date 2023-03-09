@@ -14,7 +14,7 @@ function Launcher() {
   const [launchMode, setLaunchMode] = useState(launchModeSession || "auth");
   const [launchEnvironment, setLaunchEnvironment] = useState(launchEnvSession || "devnet");
   console.log(launchMode);
-  const handleLaunchMode = (option, environment) => {
+  const handleLaunchMode = (option: any, environment: any) => {
     setLaunchMode(option);
     setLaunchModeSession(option);
     if (environment) {
@@ -31,9 +31,9 @@ function Launcher() {
 
   return (
     <>
-      {launchMode === "auth" && <AuthLauncher onLaunchMode={handleLaunchMode} />}
+      {launchMode == "auth" && <AuthLauncher onLaunchMode={handleLaunchMode} />}
 
-      {launchMode === "mx" && (
+      {launchMode == "mx" && (
         <>
           <DappProvider
             environment={launchEnvironment}

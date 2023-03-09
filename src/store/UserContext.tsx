@@ -1,9 +1,17 @@
 import React from "react";
 import { createContext, useState, useContext } from "react";
 
-const userContext = createContext({});
+export interface UserContextType {
+  user: any;
+  setUser: any;
+}
 
-export const UserContextProvider = ({ children }) => {
+const userContext = createContext<UserContextType>({
+  user: undefined,
+  setUser: undefined,
+});
+
+export const UserContextProvider = ({ children }: { children: any }) => {
   const [user, setUser] = useState({});
 
   return <userContext.Provider value={{ user, setUser }}>{children}</userContext.Provider>;
