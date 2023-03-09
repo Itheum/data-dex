@@ -51,7 +51,7 @@ import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxCo
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { DataNftType, ItemType, OfferType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
@@ -64,6 +64,27 @@ export default function MyDataNFTsMx() {
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
+  const [items, setItems] = useState<ItemType[]>([
+    {
+      index: 0,
+      owner: "",
+      wanted_token_identifier: "",
+      wanted_token_amount: "",
+      wanted_token_nonce: 0,
+      offered_token_identifier: "",
+      offered_token_nonce: 0,
+      balance: 0,
+      supply: 0,
+      royalties: 0,
+      id: "",
+      dataPreview: "",
+      quantity: 0,
+      nonce: 0,
+      nftImgUrl: "",
+      title: "",
+      tokenName: "",
+    }
+  ]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState<number[]>([]);

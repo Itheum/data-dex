@@ -27,18 +27,18 @@ import { printPrice } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
+import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type MarketplaceLowerCardProps = {
-  offer: OfferType;
+  item: ItemType;
   offers: OfferType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
-  const { offer, index, offers, nftMetadatas } = props;
+  const { item, index, offers, nftMetadatas } = props;
 
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -53,6 +53,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const contract = new DataNftMarketContract("ED");
+  const [isMyNft, setIsMyNft] = useState<boolean>(false);
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
@@ -69,6 +70,12 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
       }
       setAmountOfTokens(amounts);
       setAmountErrors(_amountErrors);
+      if (item.owner === address) {
+        setIsMyNft(true);
+      } else {
+        setIsMyNft(false);
+      }
+
     })();
   }, [hasPendingTransactions]);
 
@@ -89,8 +96,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   useEffect(() => {
     setFeePrice(
       printPrice(
-        convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+        convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
       )
     );
     (async () => {
@@ -188,55 +195,59 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
         }}>
         Preview Data
       </Button>
-      <HStack h="3rem">
-        <Text fontSize="xs">How many to procure </Text>
-        <NumberInput
-          size="xs"
-          maxW={16}
-          step={1}
-          min={1}
-          max={offer.quantity}
-          isValidCharacter={isValidNumericCharacter}
-          value={amountOfTokens[index]}
-          defaultValue={1}
-          onChange={(valueAsString) => {
-            const value = Number(valueAsString);
-            let error = "";
-            if (value <= 0) {
-              error = "Cannot be zero or negative";
-            } else if (value > offer.quantity) {
-              error = "Cannot exceed balance";
-            }
-            setAmountErrors((oldErrors: any) => {
-              const newErrors = [...oldErrors];
-              newErrors[index] = error;
-              return newErrors;
-            });
-            setAmountOfTokens((oldAmounts: any) => {
-              const newAmounts = { ...oldAmounts };
-              newAmounts[index] = value;
-              return newAmounts;
-            });
-          }}>
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-        <Button
-          size="xs"
-          colorScheme="teal"
-          width="72px"
-          isDisabled={hasPendingTransactions || !!amountErrors[index]}
-          onClick={() => {
-            setReadTermsChecked(false);
-            setSelectedOfferIndex(index);
-            onProcureModalOpen();
-          }}>
-          Procure
-        </Button>
-      </HStack>
+      {!isMyNft ? (
+        <HStack h="3rem">
+          <Text fontSize="xs">How many to procure </Text>
+          <NumberInput
+            size="xs"
+            maxW={16}
+            step={1}
+            min={1}
+            max={item?.quantity}
+            isValidCharacter={isValidNumericCharacter}
+            value={amountOfTokens[index]}
+            defaultValue={1}
+            onChange={(valueAsString) => {
+              const value = Number(valueAsString);
+              let error = "";
+              if (value <= 0) {
+                error = "Cannot be zero or negative";
+              } else if (value > item?.quantity) {
+                error = "Cannot exceed balance";
+              }
+              setAmountErrors((oldErrors: any) => {
+                const newErrors = [...oldErrors];
+                newErrors[index] = error;
+                return newErrors;
+              });
+              setAmountOfTokens((oldAmounts: any) => {
+                const newAmounts = { ...oldAmounts };
+                newAmounts[index] = value;
+                return newAmounts;
+              });
+            }}>
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <Button
+            size="xs"
+            colorScheme="teal"
+            width="72px"
+            isDisabled={hasPendingTransactions || !!amountErrors[index]}
+            onClick={() => {
+              setReadTermsChecked(false);
+              setSelectedOfferIndex(index);
+              onProcureModalOpen();
+            }}>
+            Procure
+          </Button>
+        </HStack>
+      ) :
+        <HStack h="3rem"></HStack>
+      }
       {amountErrors[index] && (
         <Text color="red.400" fontSize="xs">
           {amountErrors[index]}

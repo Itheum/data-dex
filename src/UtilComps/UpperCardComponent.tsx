@@ -27,25 +27,29 @@ import { printPrice, convertToLocalString } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, DataNftType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
+import {
+  DataNftMetadataType,
+  DataNftType,
+  ItemType,
+  MarketplaceRequirementsType,
+  OfferType,
+} from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
-  offer: OfferType;
-  offers: Record<any, any>;
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
   marketRequirements: MarketplaceRequirementsType | undefined;
-  item?: DataNftType;
+  item?: ItemType;
   index: number;
   children?: React.ReactNode;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const { offer, offers, nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadatas, userData, index, children, item, marketRequirements } = props;
+  const { nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadatas, userData, index, children, item, marketRequirements } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -72,8 +76,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   useEffect(() => {
     setFeePrice(
       printPrice(
-        convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+        convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
       )
     );
   }, []);
@@ -84,7 +88,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
         <Flex justifyContent="center" pt={5}>
           <Skeleton isLoaded={nftImageLoading} h={200}>
             <Image
-              src={`https://${getApi("ED")}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi("ED")}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}
@@ -136,8 +140,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </Link>
                 </Box>
                 <Box color="gray.600" fontSize="sm">
-                  Owner:&nbsp; {` ${offer.owner.slice(0, 8)} ... ${offer.owner.slice(-8)}`}
-                  <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
+                  Owner:&nbsp; {` ${item?.owner.slice(0, 8)} ... ${item?.owner.slice(-8)}`}
+                  <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Box>
@@ -148,7 +152,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                     </Badge>
                   )}
 
-                  {address && address == offer.owner && (
+                  {address && address == item?.owner && (
                     <Badge borderRadius="full" px="2" colorScheme="teal">
                       <Text>You are the Owner</Text>
                     </Badge>
@@ -158,11 +162,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                     Fully Transferable License
                   </Badge>
 
-                  {item && (
-                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
-                      Burn
-                    </Button>
-                  )}
+                  {/*{item && (*/}
+                  {/*  <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions}>*/}
+                  {/*    Burn*/}
+                  {/*  </Button>*/}
+                  {/*)}*/}
                 </Box>
               </Flex>
 
@@ -172,14 +176,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
               {nftMetadatas[index] && (
                 <Box color="gray.600" fontSize="sm">
-                  {`Listed: ${offer.quantity}`} <br />
+                  {`Listed: ${item?.quantity}`} <br />
                   {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
                   {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
                 </Box>
               )}
             </>
           )}
-
           {!nftMetadataLoading && !!nftMetadatas[index] && (location.pathname === marketplace || location.pathname === myListedData) && feePrice && (
             <>
               <Box fontSize="xs" mt="2">
@@ -203,7 +206,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"}>
+          visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item?.offered_token_nonce)) ? "visible" : "collapse"}>
           <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it

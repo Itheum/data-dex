@@ -53,20 +53,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
-  useEffect(() => {
-    // console.log(
-    //   "price",
-    //   marketRequirements
-    // convertWeiToEsdt(
-    //   BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-    //     .multipliedBy(amountOfTokens[selectedOfferIndex])
-    //     .multipliedBy(10000)
-    //     .div(10000 + marketRequirements?.buyer_fee),
-    //   tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-    // ).toNumber()
-    // );
-  }, []);
-
   const onDelist = async () => {
     if (!address) {
       toast({

@@ -29,7 +29,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/util";
 import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
+import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
@@ -69,6 +69,28 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
+  const [items, setItems] = useState<ItemType[]>([
+    {
+      index: 0,
+      owner: "",
+      wanted_token_identifier: "",
+      wanted_token_amount: "",
+      wanted_token_nonce: 0,
+      offered_token_identifier: "",
+      offered_token_nonce: 0,
+      balance: 0,
+      supply: 0,
+      royalties: 0,
+      id: "",
+      dataPreview: "",
+      quantity: 0,
+      nonce: 0,
+      nftImgUrl: "",
+      title: "",
+      tokenName: "",
+    }
+    ]);
+
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
 
   //
@@ -145,7 +167,28 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setLoadingOffers(true);
       const _offers = await contract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
       console.log("_offers", _offers);
+      // for (let i = 0; i < _offers.length; i++) {
+      // if(address === _offers[i].owner) {
+      //   return;
+      // }
+      // }
       setOffers(_offers);
+      setItems((prev) => {
+        return _offers.map((offer: OfferType, i: number) => {
+            return {
+              ...prev?.[i] ?? {},
+              index: offer.index,
+              owner: offer.owner,
+              wanted_token_identifier: offer.wanted_token_identifier,
+              wanted_token_amount: offer.wanted_token_amount,
+              wanted_token_nonce: offer.wanted_token_nonce,
+              offered_token_identifier: offer.offered_token_identifier,
+              offered_token_nonce: offer.offered_token_nonce,
+              quantity: offer.quantity,
+            };
+          });
+      });
+      console.log("items", items);
       // end loading offers
       setLoadingOffers(false);
 
@@ -172,6 +215,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setNftMetadatasLoading(false);
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
+
+  // useEffect(() => {
+  //   setItems();
+  // }, [offers]);
 
   useEffect(() => {
     (async () => {
@@ -360,22 +407,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         ) : (
           <Flex wrap="wrap" gap="5">
             {offers.length > 0 &&
-              offers.map((offer, index) => (
-                <div key={offer.index}>
+              items?.map((item, index) => (
+                <div key={index}>
                   <UpperCardComponent
-                    offer={offer}
-                    offers={offers}
                     nftImageLoading={oneNFTImgLoaded}
                     setNftImageLoading={setOneNFTImgLoaded}
                     nftMetadataLoading={nftMetadatasLoading}
                     nftMetadatas={nftMetadatas}
                     marketRequirements={marketRequirements}
+                    item={item}
                     userData={userData}
                     index={index}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} offer={offer} offers={offers} />
+                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} />
+                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} />
                     )}
                   </UpperCardComponent>
                 </div>
