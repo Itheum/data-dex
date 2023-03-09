@@ -25,7 +25,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/util";
 import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
 import moment from "moment";
@@ -112,7 +112,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const marketplace = "/datanfts/marketplace";
+  const marketplace = `/datanfts/marketplace/market/${pageIndex}`;
   const location = useLocation();
 
   const setPageIndex = (newPageIndex: number) => {
