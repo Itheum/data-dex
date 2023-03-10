@@ -54,6 +54,7 @@ import { MdOutlineAccountBalanceWallet, MdOutlineDataSaverOn, MdOnlinePrediction
 import { Outlet, Route, Routes, useLocation, useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
+import DataNFTDetails from "DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
@@ -350,7 +351,7 @@ function App({ appConfig }: { appConfig: any }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }}>
+                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }} onClick={() => { navigateToDiscover(MENU.HOME); }}>
                   <HStack>
                     <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                     <Heading fontWeight={"normal"} size={"md"}>
@@ -490,6 +491,8 @@ function App({ appConfig }: { appConfig: any }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
+                    <Route path="nft/:tokenId" element={<DataNFTDetails />} />
+                    <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                     <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                   </Route>
@@ -551,7 +554,7 @@ function App({ appConfig }: { appConfig: any }) {
             <ClaimsHistory mxAddress={mxAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
           )}
 
-          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>
+          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
             <DrawerOverlay />
             <DrawerContent>
               <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"}>
