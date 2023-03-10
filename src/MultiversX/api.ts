@@ -25,7 +25,7 @@ export const getTransactionLink = (networkId: string, txHash: string) => {
 };
 
 // check token balance on Mx
-export const checkBalance = async (token: string, address: string, networkId: string) => {
+export const checkBalance = async (token: string, address: string, networkId: string): Promise<{ balance: any }> => {
   const api = getApi(networkId);
 
   return new Promise((resolve, reject) => {
@@ -44,10 +44,10 @@ export const checkBalance = async (token: string, address: string, networkId: st
             if (error.response.status === 404 || error.response.status === 500) {
               resolve({ balance: 0 }); // no ITHEUM => 404, nonce account 0 => 500
             } else {
-              resolve({ error });
+              resolve({ balance: undefined });
             }
           } else {
-            resolve({ error });
+            resolve({ balance: undefined });
           }
         }
       });

@@ -37,7 +37,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getNftsByIds } from "MultiversX/api";
@@ -61,6 +61,9 @@ interface PropsType {
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const navigate = useNavigate();
+  const { pageNumber } = useParams();
+  const pageIndex = pageNumber ? Number(pageNumber) : 0;
+
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta.contracts.itheumToken;
   const { address } = useGetAccountInfo();
@@ -99,8 +102,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
-  const [pageIndex, setPageIndex] = useState<number>(0); // pageIndex starts from 0
   const [pageSize, setPageSize] = useState<number>(10);
+
+  const setPageIndex = (newPageIndex: number) => {
+    navigate(`/datanfts/marketplace/${tabState === 1 ? 'market' : 'my'}/${newPageIndex}`);
+  };
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
     if (0 <= newPageIndex && newPageIndex < pageCount) {
@@ -344,7 +350,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              navigate("/datanfts/marketplace");
+              navigate("/datanfts/marketplace/market/0");
             }}>
             Public Marketplace
           </Button>
@@ -356,7 +362,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             opacity={0.4}
             onClick={() => {
               setPageIndex(0);
-              navigate("/datanfts/marketplace/my");
+              navigate("/datanfts/marketplace/my/0");
             }}>
             My Listed Data NFTs
           </Button>
