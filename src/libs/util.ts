@@ -33,8 +33,10 @@ import {
   faucetContractAddress_Mx_Mainnet,
 } from "./contractAddresses";
 
-export const contractsForChain = (networkId) => {
-  const contracts = {
+type NetworkIdType = string | number;
+
+export const contractsForChain = (networkId: NetworkIdType) => {
+  const contracts: Record<string, string | null> = {
     itheumToken: null,
     ddex: null,
     dnft: null,
@@ -161,11 +163,11 @@ export const qsParams = () => {
   return params;
 };
 
-export const itheumTokenRoundUtil = (balance, decimals, BigNumber) => {
+export const itheumTokenRoundUtil = (balance: BigNumber.Value, decimals: number) => {
   const balanceWeiString = balance.toString();
-  const balanceWeiBN = BigNumber.from(balanceWeiString);
-  const decimalsBN = BigNumber.from(decimals);
-  const divisor = BigNumber.from(10).pow(decimalsBN);
+  const balanceWeiBN = BigNumber(balanceWeiString);
+  const decimalsBN = BigNumber(decimals);
+  const divisor = BigNumber(10).pow(decimalsBN);
   const beforeDecimal = balanceWeiBN.div(divisor);
 
   return beforeDecimal.toString();
@@ -243,7 +245,7 @@ export const CHAIN_NAMES = {
   43113: "avalanche testnet",
 };
 
-export const OPENSEA_CHAIN_NAMES = {
+export const OPENSEA_CHAIN_NAMES: Record<NetworkIdType, string> = {
   1: "eth",
   5: "goerli",
   137: "matic",
@@ -265,8 +267,8 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
 -----------------------------------------`;
 
-export function notSupportedOnChain(menuItem, networkId) {
-  const UNSUPPORTED_CHAIN_FEATURES = {
+export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
+  const UNSUPPORTED_CHAIN_FEATURES: Record<NetworkIdType, number[]> = {
     5: [MENU.TX],
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX, MENU.COALITION],
@@ -300,8 +302,8 @@ export const CHAIN_TX_LIST = {
   },
 };
 
-export const CHAIN_TOKEN_SYMBOL = (networkId) => {
-  const mapping = {
+export const CHAIN_TOKEN_SYMBOL = (networkId: NetworkIdType) => {
+  const mapping: Record<string, any[]> = {
     ITHEUM: ["E1", "ED"],
     eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
@@ -329,19 +331,13 @@ export const TERMS = [
   { id: "3", val: "Fully License (any use case)", coin: 2 },
 ];
 
-export const sleep = (sec) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, sec * 1000);
-  });
-};
+export const sleep = (sec: number) => new Promise(r => setTimeout(r, sec * 1000));
 
-export const buyOnOpenSea = (txNFTId, dnftContract, txNetworkId) => {
+export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId: NetworkIdType) => {
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
 };
 
-export const gtagGo = (category, action, label, value) => {
+export const gtagGo = (category: string, action: any, label: any, value?: any) => {
   /*
   e.g.
   Category: 'Videos', Action: 'Play', Label: 'Gone With the Wind'
@@ -363,7 +359,7 @@ export const gtagGo = (category, action, label, value) => {
     return;
   }
 
-  const eventObj = {
+  const eventObj: Record<string, string> = {
     event_category: category,
   };
 
@@ -376,15 +372,17 @@ export const gtagGo = (category, action, label, value) => {
   }
 
   if (window.location.hostname !== "localhost") {
-    window.gtag("event", action, eventObj);
+    (window as any).gtag("event", action, eventObj);
   }
 };
 
-export const debugui = (text) => {
+export const debugui = (text: string) => {
   if (sessionStorage && sessionStorage.getItem("itm-debugui")) {
     const div = document.getElementById("debugui");
-    div.innerHTML = text + "<br/>" + div.innerHTML;
-    div.style.display = "block";
+    if (div) {
+      div.innerHTML = text + "<br/>" + div.innerHTML;
+      div.style.display = "block";
+    }
   }
 };
 
@@ -397,26 +395,26 @@ export const clearAppSessions = () => {
   sessionStorage.removeItem("itm-launch-env");
 };
 
-export const formatNumberRoundFloor = (num, decimals = 2) => {
+export const formatNumberRoundFloor = (num: number, decimals = 2) => {
   const factor = Math.pow(10, decimals);
   return (Math.floor(num * factor) / factor).toFixed(2);
 };
 
-export const convertWeiToEsdt = (amount, decimals = 18, precision = 4) => {
+export const convertWeiToEsdt = (amount: BigNumber.Value, decimals = 18, precision = 4) => {
   return BigNumber(amount).shiftedBy(-decimals).decimalPlaces(precision);
 };
 
-export const convertEsdtToWei = (amount, decimals = 18) => {
+export const convertEsdtToWei = (amount: BigNumber.Value, decimals = 18) => {
   return BigNumber(amount).shiftedBy(decimals);
 };
 
-export const tryParseInt = (value, defaultValue = 0) => {
+export const tryParseInt = (value: any, defaultValue = 0) => {
   if (defaultValue < 0) defaultValue = 0;
   const intValue = parseInt(value);
   return Number.isNaN(intValue) ? defaultValue : intValue;
 };
 
-export const isValidNumericCharacter = (char) => {
+export const isValidNumericCharacter = (char: any) => {
   return char.match(/[0-9]/);
 };
 
