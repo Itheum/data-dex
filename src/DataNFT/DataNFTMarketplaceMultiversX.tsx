@@ -32,6 +32,7 @@ import {
   Text,
   useDisclosure,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -341,33 +342,35 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       <Stack spacing={5}>
         <Heading size="lg">Data NFT Marketplace</Heading>
 
-        <Flex mt="5" pr="5" gap="12px" justifyContent={{ base: "center", md: "flex-start" }} flexDirection={{ base: "row", md: "row" }}>
-          <Button
-            colorScheme="teal"
-            width={{ base: "160px", md: "160px" }}
-            isDisabled={tabState === 1}
-            _disabled={{ opacity: 1 }}
-            opacity={0.4}
-            onClick={() => {
-              setPageIndex(0);
-              navigate("/datanfts/marketplace/market/0");
-            }}>
-            Public Marketplace
-          </Button>
-          <Button
-            colorScheme="teal"
-            width={{ base: "160px", md: "160px" }}
-            isDisabled={tabState === 2}
-            _disabled={{ opacity: 1 }}
-            opacity={0.4}
-            onClick={() => {
-              setPageIndex(0);
-              navigate("/datanfts/marketplace/my/0");
-            }}>
-            My Listed Data NFTs
-          </Button>
-
-          <Box flexGrow="1" />
+        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "row", md: "row" }} flexWrap={"wrap"}>
+          <HStack>
+            <Button
+              colorScheme="teal"
+              width={{ base: "120px", md: "160px" }}
+              isDisabled={tabState === 1}
+              _disabled={{ opacity: 1 }}
+              opacity={0.4}
+              fontSize={{ base: "sm", md: "md" }}
+              onClick={() => {
+                setPageIndex(0);
+                navigate("/datanfts/marketplace/market/0");
+              }}>
+              Public Marketplace
+            </Button>
+            <Button
+              colorScheme="teal"
+              width={{ base: "120px", md: "160px" }}
+              isDisabled={tabState === 2}
+              _disabled={{ opacity: 1 }}
+              opacity={0.4}
+              fontSize={{ base: "sm", md: "md" }}
+              onClick={() => {
+                setPageIndex(0);
+                navigate("/datanfts/marketplace/my/0");
+              }}>
+              My Listed Data NFTs
+            </Button>
+          </HStack>
 
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
         </Flex>
@@ -377,7 +380,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         ) : offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap" gap="5">
+          <Flex wrap="wrap" gap="5" justifyContent={"center"}>
             {offers.length > 0 &&
               offers.map((offer, index) => (
                 <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">

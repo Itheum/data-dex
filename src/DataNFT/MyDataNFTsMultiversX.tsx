@@ -379,7 +379,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       </Heading>
 
       {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
-        <Flex wrap="wrap" gap="5">
+        <Flex wrap="wrap" gap="5" justifyContent={"center"}>
           {dataNfts &&
             dataNfts.map((item, index) => (
               <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">

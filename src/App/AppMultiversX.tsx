@@ -554,7 +554,7 @@ function App({ appConfig }: { appConfig: any }) {
             <ClaimsHistory mxAddress={mxAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
           )}
 
-          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>
+          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
             <DrawerOverlay />
             <DrawerContent>
               <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"}>

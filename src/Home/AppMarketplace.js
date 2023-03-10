@@ -50,11 +50,11 @@ export default function AppMarketplace() {
 
   return (
     <>
-      <Stack pt="5" h="360px">
+      <Stack pt="5">
         <Heading size="md">App Marketplace</Heading>
         <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
             <Image src={imgProgGaPa} />
 
             <Box p="3">
@@ -80,7 +80,7 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -102,7 +102,7 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden" width="300px">
+          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
             <Image src={imgProgWfh} />
 
             <Box p="3">

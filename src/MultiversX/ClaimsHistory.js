@@ -78,57 +78,57 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
               {loadingClaims === -1 ? <Spinner size="lg" /> : <WarningTwoIcon />}
             </Box>
           )) || (
-            <>
-              {(mxClaims.length > 0 && (
-                <TableContainer>
-                  <Table variant="striped" size="sm">
-                    <Thead>
-                      <Tr>
-                        <Th>When</Th>
-                        <Th>Hash</Th>
-                        <Th>Type</Th>
-                        <Th textAlign="center">Amount</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {mxClaims.map((item) => (
-                        <Tr key={item.hash}>
-                          <Td>
-                            <Text fontSize="xs">{new Date(item.timestamp).toLocaleString()}</Text>
-                          </Td>
-                          <Td>
-                            <Link fontSize="sm" href={getTransactionLink(networkId, item.hash)} isExternal>
-                              <ExternalLinkIcon mx="2px" /> {item.hash.slice(0, 5)}...
-                              {item.hash.slice(item.hash.length - 5, item.hash.length)}
-                            </Link>
-                            {item.status === "success" ? "" : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
-                          </Td>
-                          <Td>
-                            <Text fontSize="sm">{item.claimType}</Text>
-                          </Td>
-                          <Td textAlign="center">
-                            <Text fontSize="sm">{formatNumberRoundFloor(item.amount / Math.pow(10, 18))}</Text>
-                          </Td>
+              <>
+                {(mxClaims.length > 0 && (
+                  <TableContainer>
+                    <Table variant="striped" size="sm">
+                      <Thead>
+                        <Tr>
+                          <Th>When</Th>
+                          <Th>Hash</Th>
+                          <Th>Type</Th>
+                          <Th textAlign="center">Amount</Th>
                         </Tr>
-                      ))}
-                    </Tbody>
-                    <Tfoot>
-                      <Tr>
-                        <Th>When</Th>
-                        <Th>Hash</Th>
-                        <Th>Type</Th>
-                        <Th textAlign="center">Amount</Th>
-                      </Tr>
-                    </Tfoot>
-                  </Table>
-                </TableContainer>
-              )) || (
-                <Box minH="150" alignItems="center" display="flex" justifyContent="center">
-                  No claims yet...
-                </Box>
-              )}
-            </>
-          )}
+                      </Thead>
+                      <Tbody>
+                        {mxClaims.map((item) => (
+                          <Tr key={item.hash}>
+                            <Td>
+                              <Text fontSize="xs">{new Date(item.timestamp).toLocaleString()}</Text>
+                            </Td>
+                            <Td>
+                              <Link fontSize="sm" href={getTransactionLink(networkId, item.hash)} isExternal>
+                                <ExternalLinkIcon mx="2px" /> {item.hash.slice(0, 5)}...
+                                {item.hash.slice(item.hash.length - 5, item.hash.length)}
+                              </Link>
+                              {item.status === "success" ? "" : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
+                            </Td>
+                            <Td>
+                              <Text fontSize="sm">{item.claimType}</Text>
+                            </Td>
+                            <Td textAlign="center">
+                              <Text fontSize="sm">{formatNumberRoundFloor(item.amount / Math.pow(10, 18))}</Text>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                      <Tfoot>
+                        <Tr>
+                          <Th>When</Th>
+                          <Th>Hash</Th>
+                          <Th>Type</Th>
+                          <Th textAlign="center">Amount</Th>
+                        </Tr>
+                      </Tfoot>
+                    </Table>
+                  </TableContainer>
+                )) || (
+                    <Box minH="150" alignItems="center" display="flex" justifyContent="center">
+                      No claims yet...
+                    </Box>
+                  )}
+              </>
+            )}
         </ModalBody>
       </ModalContent>
     </Modal>
