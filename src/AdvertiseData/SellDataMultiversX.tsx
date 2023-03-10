@@ -63,7 +63,7 @@ import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
-const InputLabelWithPopover = ({ children, tkey }: { children: any, tkey: string }) => {
+const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
   let title = "",
     text = "";
   if (tkey === "data-stream-url") {
@@ -124,7 +124,7 @@ const checkUrlReturns200 = async (url: string) => {
       };
     }
   } catch (err: any) {
-    console.log('err', err);
+    console.log("err", err);
     let message = err.message;
 
     if (err.response && err.response.status) {
@@ -142,7 +142,7 @@ const checkUrlReturns200 = async (url: string) => {
   }
 };
 
-export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any, itheumAccount: any }) {
+export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -300,8 +300,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       error = "Data Stream URL cannot contain spaces";
     } else if (dataNFTStreamPreviewUrl === trimmedValue) {
       error = "Data Stream URL cannot be same as the Data Stream Preview URL";
-    } else if (trimmedValue.length > 1000) {
-      error = "Length of Data Stream URL cannot exceed 1000";
+    } else if (trimmedValue.length > 250) {
+      error = "Length of Data Stream URL cannot exceed 250";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
       checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
@@ -324,8 +324,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       error = "Data Preview URL cannot contain spaces";
     } else if (dataNFTStreamUrl === trimmedValue) {
       error = "Data Preview URL cannot be same as the Data Stream URL";
-    } else if (trimmedValue.length > 1000) {
-      error = "Length of Data Preview URL cannot exceed 1000";
+    } else if (trimmedValue.length > 250) {
+      error = "Length of Data Preview URL cannot exceed 250";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
       checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
@@ -436,27 +436,27 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   useEffect(() => {
     setMintDataNFTDisabled(
       !!dataNFTStreamUrlError ||
-      !!dataNFTStreamPreviewUrlError ||
-      !!dataNFTTokenNameError ||
-      !!datasetTitleError ||
-      !!datasetDescriptionError ||
-      !!dataNFTCopiesError ||
-      !!dataNFTRoyaltyError ||
-      !!dataNFTStreamUrlStatus ||
-      !!dataNFTStreamPreviewUrlStatus ||
-      !!dataNFTMarshalServiceStatus ||
-      !dataNFTImgGenServiceValid ||
-      !readTermsChecked ||
-      !readAntiSpamFeeChecked ||
-      minRoyalties < 0 ||
-      maxRoyalties < 0 ||
-      maxSupply < 0 ||
-      antiSpamTax < 0 ||
-      itheumBalance < antiSpamTax ||
-      // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
-      (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-      (!!userData && userData.contractPaused) ||
-      (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
+        !!dataNFTStreamPreviewUrlError ||
+        !!dataNFTTokenNameError ||
+        !!datasetTitleError ||
+        !!datasetDescriptionError ||
+        !!dataNFTCopiesError ||
+        !!dataNFTRoyaltyError ||
+        !!dataNFTStreamUrlStatus ||
+        !!dataNFTStreamPreviewUrlStatus ||
+        !!dataNFTMarshalServiceStatus ||
+        !dataNFTImgGenServiceValid ||
+        !readTermsChecked ||
+        !readAntiSpamFeeChecked ||
+        minRoyalties < 0 ||
+        maxRoyalties < 0 ||
+        maxSupply < 0 ||
+        antiSpamTax < 0 ||
+        itheumBalance < antiSpamTax ||
+        // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
+        (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+        (!!userData && userData.contractPaused) ||
+        (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
     );
   }, [
     dataNFTStreamUrlError,
@@ -619,7 +619,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     return _file;
   }
 
-  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any, dataNFTStreamUrlEncrypted: any }) => {
+  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
     const newNFTImg = `https://d37x5igq4vw5mq.cloudfront.net/datadexapi/v1/generateNFTArt?hash=${dataNFTHash}`;
 
@@ -653,7 +653,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     handleOnChainMint({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted });
   };
 
-  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }: { imageOnIpfsUrl: any, dataNFTStreamUrlEncrypted: any }) => {
+  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }: { imageOnIpfsUrl: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
     const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
@@ -797,10 +797,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   </Text>
                 </Stack>
               )) || (
-                  <Heading as="h4" size="lg">
-                    Trade a Data Stream as a Data NFT-FT
-                  </Heading>
-                )}
+                <Heading as="h4" size="lg">
+                  Trade a Data Stream as a Data NFT-FT
+                </Heading>
+              )}
             </HStack>
           </DrawerHeader>
           <DrawerBody
@@ -817,48 +817,50 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 !!dataNFTMarshalServiceStatus ||
                 !dataNFTImgGenServiceValid ||
                 (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-                (!!userData && userData.contractPaused))
-                && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Uptime Errors
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
-                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
-                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
-                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!!dataNFTMarshalServiceStatus && <Text fontSize="md">Data Marshal service is not responding.</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                          <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                        )}
-                        {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+                (!!userData && userData.contractPaused)) && (
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Uptime Errors
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                      {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                      {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                      {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                      {!!dataNFTMarshalServiceStatus && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                      {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      )}
+                      {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
-              {(!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
-                && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Alerts
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && <Text fontSize="md">{`There is a time interval enforced between mints. You can mint your next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`}</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+              {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Alerts
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
+                        <Text fontSize="md">{`There is a time interval enforced between mints. You can mint your next Data NFT-FT after ${new Date(
+                          userData.lastUserMintTime + userData.mintTimeLimit
+                        ).toLocaleString()}`}</Text>
+                      )}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
               <Text fontSize="sm" color="gray.400">
                 * required fields
