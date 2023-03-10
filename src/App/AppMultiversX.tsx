@@ -351,7 +351,7 @@ function App({ appConfig }: { appConfig: any }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }}>
+                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }} onClick={() => { navigateToDiscover(MENU.HOME); }}>
                   <HStack>
                     <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                     <Heading fontWeight={"normal"} size={"md"}>

@@ -202,10 +202,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   };
 
   useEffect(() => {
-    // hasPendingTransactions will fire with false during init and then move from true to false each time a tranasaction is done... so if it's 'false' we need to get balances
-    if (!hasPendingTransactions) {
-      getOnChainNFTs();
-    }
+    getOnChainNFTs();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
