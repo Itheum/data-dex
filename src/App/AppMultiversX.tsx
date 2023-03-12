@@ -42,7 +42,6 @@ import {
   MenuList,
   Spinner,
   Text,
-  useBreakpointValue,
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
@@ -55,6 +54,7 @@ import { MdOutlineAccountBalanceWallet, MdOutlineDataSaverOn, MdOnlinePrediction
 import { Outlet, Route, Routes, useLocation, useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
+import DataNFTDetails from "DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
@@ -116,17 +116,23 @@ const exploreRouterMenu = [
 ];
 
 const mxLogout = logout;
-const _chainMetaLocal = {};
+const _chainMetaLocal: {
+  networkId: string,
+  contracts: any,
+} = {
+  networkId: "",
+  contracts: undefined,
+};
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 const baseUserContext = {
   isMxAuthenticated: false,
 }; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
 
-function App({ appConfig }) {
+function App({ appConfig }: { appConfig: any }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const { colorMode, toggleColorMode } = useColorMode();
 
-  const navigateToDiscover = (menuEnum) => {
+  const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
     if (isOpen) onClose();
   };
@@ -141,7 +147,7 @@ function App({ appConfig }) {
   const [menuItem, setMenuItem] = useState(MENU.HOME);
   const [tokenBalance, setTokenBalance] = useState(-1); // -1 is loading, -2 is error
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
-  const [chain, setChain] = useState(0);
+  const [chain, setChain] = useState("");
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
@@ -150,11 +156,11 @@ function App({ appConfig }) {
     auth: 0,
     dataNFTWallet: 0,
   });
-  const cancelRef = useRef();
+  const cancelRef = useRef<HTMLButtonElement>(null);
   const { colorMode, toggleColorMode } = useColorMode();
   const { pathname } = useLocation();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
-  const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState(null);
+  const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
 
   const [itheumAccount, setItheumAccount] = useState(null);
 
@@ -169,7 +175,7 @@ function App({ appConfig }) {
     setUser({ ...baseUserContext }); // set base user context for app
 
     if (path) {
-      setMenuItem(PATHS[path]?.[0]);
+      setMenuItem(PATHS[path as keyof typeof PATHS]?.[0] as number);
     }
 
     console.log(consoleNotice);
@@ -181,7 +187,7 @@ function App({ appConfig }) {
     async function mxSessionInit() {
       // when user disconnects in xPortal App, it comes to this route. So we need to logout the user
       // ... also do the loggedInActiveMxWallet check to make sure mx addresses didn't swap midway (see below for why)
-      if (path === "unlock" || (loggedInActiveMxWallet !== null && loggedInActiveMxWallet !== mxAddress)) {
+      if (path === "unlock" || (loggedInActiveMxWallet && loggedInActiveMxWallet !== mxAddress)) {
         handleLogout();
         return;
       }
@@ -247,7 +253,7 @@ function App({ appConfig }) {
 
       if (typeof data.balance !== "undefined") {
         setTokenBalance(data.balance / Math.pow(10, 18));
-      } else if (data.error) {
+      } else {
         setTokenBalance(-2); // -2 is error getting it
 
         if (!toast.isActive("er1")) {
@@ -264,7 +270,7 @@ function App({ appConfig }) {
   };
 
   // utility that will reload a component and reset it's state
-  const handleRfMount = (key) => {
+  const handleRfMount = (key: string) => {
     const reRf = { ...rfKeys, [key]: Date.now() };
     setRfKeys(reRf);
   };
@@ -292,12 +298,12 @@ function App({ appConfig }) {
   // const screenBreakPoint = useBreakpointValue({ base: "base", md: "md" });
   //// e.g. {screenBreakPoint === "md" && <ShortAddress address={mxAddress} fontSize="md" />}
 
-  const isMenuItemSelected = (currentMenuItem) => {
+  const isMenuItemSelected = (currentMenuItem: number) => {
     return menuItem === currentMenuItem;
   };
 
-  const menuButtonDisabledStyle = (currentMenuItem) => {
-    let styleProps = {
+  const menuButtonDisabledStyle = (currentMenuItem: number) => {
+    let styleProps: any = {
       cursor: "not-allowed",
     };
     if (isMenuItemSelected(currentMenuItem)) {
@@ -320,7 +326,7 @@ function App({ appConfig }) {
       {_user.isMxAuthenticated && (
         <Container maxW="container.xl">
           <Flex
-            bgColor={colorMode === "dark" && "black"}
+            bgColor={colorMode === "dark" ? "black" : undefined}
             flexDirection="column"
             justifyContent={"space-between"}
             minH="100vh"
@@ -345,7 +351,7 @@ function App({ appConfig }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }}>
+                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }} onClick={() => { navigateToDiscover(MENU.HOME); }}>
                   <HStack>
                     <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                     <Heading fontWeight={"normal"} size={"md"}>
@@ -390,7 +396,7 @@ function App({ appConfig }) {
                       </MenuButton>
                       <MenuList maxW={"fit-content"}>
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, path, menuEnum, filterParams, Icon } = menuItem;
+                          const { label, path, menuEnum, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem key={label} onClick={() => navigateToDiscover(menuEnum)}>
@@ -428,7 +434,7 @@ function App({ appConfig }) {
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={MENU.HOME} style={{ textDecoration: "none" }}>
+                <Link as={ReactRouterLink} to={""} style={{ textDecoration: "none" }}>
                   <IconButton
                     size={"sm"}
                     icon={<AiFillHome />}
@@ -485,6 +491,8 @@ function App({ appConfig }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
+                    <Route path="nft/:tokenId" element={<DataNFTDetails />} />
+                    <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                     <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                   </Route>
@@ -528,7 +536,7 @@ function App({ appConfig }) {
                   chain is currently not supported. We are working on it. You need to be on{" "}
                   {SUPPORTED_CHAINS.map((i) => (
                     <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">
-                      {CHAINS[i]}
+                      {CHAINS[i as keyof typeof CHAINS]}
                     </Badge>
                   ))}
                 </AlertDialogBody>
@@ -546,7 +554,7 @@ function App({ appConfig }) {
             <ClaimsHistory mxAddress={mxAddress} networkId={_chainMetaLocal.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
           )}
 
-          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>
+          <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
             <DrawerOverlay />
             <DrawerContent>
               <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"}>
@@ -570,7 +578,7 @@ function App({ appConfig }) {
                           <AccordionPanel p={0}>
                             <List>
                               {menu.sectionItems.map((menuItem) => {
-                                const { label, menuEnum, path, filterParams, Icon } = menuItem;
+                                const { label, menuEnum, path, Icon } = menuItem;
                                 return (
                                   <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                                     <ListItem
@@ -657,13 +665,13 @@ function App({ appConfig }) {
 
 export default App;
 
-function ItheumTokenBalanceBadge({ tokenBalance, displayParams }) {
+function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any, displayParams: any }) {
   return (
     <Box
       display={displayParams}
       fontSize={["xs", "md"]}
       minWidth="5.5rem"
-      align="center"
+      textAlign="center"
       color="white"
       fontWeight="bold"
       borderRadius="md"
@@ -683,12 +691,12 @@ function ItheumTokenBalanceBadge({ tokenBalance, displayParams }) {
   );
 }
 
-function LoggedInChainBadge({ chain, displayParams }) {
+function LoggedInChainBadge({ chain, displayParams }: { chain: any, displayParams: any }) {
   return (
     <Box
       display={displayParams}
       fontSize={["xs", "md"]}
-      align="center"
+      textAlign="center"
       color="rgb(243, 183, 30)"
       fontWeight="bold"
       bg="rgba(243, 132, 30, 0.05)"

@@ -4,17 +4,17 @@ import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import MxAppHarness from "AppHarness/AppHarnessMultiversX";
 import AuthPickerMx from "AuthPicker/AuthPickerMultiversX";
 import AuthLauncher from "Launch/AuthLauncher";
-import { useSessionStorage } from "libs/hooks";
+import { useLocalStorage, useSessionStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
 import { debugui, uxConfig } from "libs/util";
 
 function Launcher() {
-  const [launchModeSession, setLaunchModeSession] = useSessionStorage("itm-launch-mode", null); // let's us support, browser refresh session recovery if user is logged in
-  const [launchEnvSession, setLaunchEnvSession] = useSessionStorage("itm-launch-env", null); // ... as above
+  const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null); // let's us support, browser refresh session recovery if user is logged in
+  const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null); // ... as above
   const [launchMode, setLaunchMode] = useState(launchModeSession || "auth");
   const [launchEnvironment, setLaunchEnvironment] = useState(launchEnvSession || "devnet");
-  console.log(launchMode);
-  const handleLaunchMode = (option, environment) => {
+
+  const handleLaunchMode = (option: any, environment: any) => {
     setLaunchMode(option);
     setLaunchModeSession(option);
     if (environment) {
@@ -28,12 +28,11 @@ function Launcher() {
   };
 
   debugui(`launchMode ${launchMode} environment ${launchEnvironment}`);
-
   return (
     <>
-      {launchMode === "auth" && <AuthLauncher onLaunchMode={handleLaunchMode} />}
+      {launchMode == "auth" && <AuthLauncher onLaunchMode={handleLaunchMode} />}
 
-      {launchMode === "mx" && (
+      {launchMode == "mx" && (
         <>
           <DappProvider
             environment={launchEnvironment}
