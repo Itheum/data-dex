@@ -26,7 +26,7 @@ import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
-const nonProdEnv = process.env.NODE_ENV !== 'production' ? `env:${process.env.NODE_ENV}` : null;
+const nonProdEnv = process.env.NODE_ENV !== 'production' ? `env:${process.env.NODE_ENV}` : `env:${process.env.NODE_ENV}`;
 
 const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
   const { colorMode } = useColorMode();
