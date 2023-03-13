@@ -3,7 +3,6 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Image,
   Link,
@@ -20,20 +19,15 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import BigNumber from "bignumber.js";
 import moment from "moment/moment";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { printPrice, convertToLocalString } from "../libs/util2";
+import { convertToLocalString, printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
-import {
-  DataNftMetadataType,
-  DataNftType,
-  ItemType,
-  MarketplaceRequirementsType,
-  OfferType,
-} from "../MultiversX/types";
+import { DataNftMetadataType, DataNftType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
@@ -56,7 +50,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const { hasPendingTransactions } = useGetPendingTransactions();
 
-
   const location = useLocation();
   const [feePrice, setFeePrice] = useState<string>("");
 
@@ -76,7 +69,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   useEffect(() => {
     setFeePrice(
       printPrice(
-        convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
         getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
       )
     );
