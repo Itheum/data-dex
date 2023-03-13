@@ -124,6 +124,8 @@ const _chainMetaLocal: {
   contracts: undefined,
 };
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
+const nonProdEnv = process.env.NODE_ENV !== 'production' ? `env:${process.env.NODE_ENV}` : null;
+
 const baseUserContext = {
   isMxAuthenticated: false,
 }; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
@@ -510,7 +512,7 @@ function App({ appConfig }: { appConfig: any }) {
 
             <Box backgroundColor="none" height={"5rem"} borderTop="solid 1px">
               <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                <Text fontSize="xx-small">{dataDexVersion}</Text>
+                <Text fontSize="xx-small">{dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}</Text>
                 <HStack>
                   <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                     Terms of Use <ExternalLinkIcon mx="2px" />
