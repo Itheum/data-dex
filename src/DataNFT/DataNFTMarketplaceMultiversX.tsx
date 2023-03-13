@@ -147,6 +147,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, []);
   useEffect(() => {
     (async () => {
+      if (hasPendingTransactions) return;
+
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
@@ -168,6 +170,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
+      if (hasPendingTransactions) return;
+
       // init - no selection
       setSelectedOfferIndex(-1);
 
@@ -222,6 +226,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     (async () => {
       if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
+      if (hasPendingTransactions) return;
 
       // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
       const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
@@ -240,6 +245,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
   };
   useEffect(() => {
+    if (hasPendingTransactions) return;
+
     getUserData();
   }, [address, hasPendingTransactions]);
   const onProcure = async () => {
@@ -368,35 +375,43 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       <Stack spacing={5}>
         <Heading size="lg">Data NFT Marketplace</Heading>
 
-        <Flex mt="5" pr="5" gap="12px" justifyContent={{ base: "center", md: "flex-start" }} flexDirection={{ base: "row", md: "row" }}>
-          <Button
-            colorScheme="teal"
-            width={{ base: "160px", md: "160px" }}
-            isDisabled={tabState === 1}
-            _disabled={{ opacity: 1 }}
-            opacity={0.4}
-            onClick={() => {
-              setPageIndex(0);
-              navigate("/datanfts/marketplace/market/0");
-            }}>
-            Public Marketplace
-          </Button>
-          <Button
-            colorScheme="teal"
-            width={{ base: "160px", md: "160px" }}
-            isDisabled={tabState === 2}
-            _disabled={{ opacity: 1 }}
-            opacity={0.4}
-            onClick={() => {
-              setPageIndex(0);
-              navigate("/datanfts/marketplace/my/0");
-            }}>
-            My Listed Data NFTs
-          </Button>
+        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "row", md: "row" }} flexWrap={"wrap"}>
+          <HStack>
+            <Button
+              colorScheme="teal"
+              width={{ base: "120px", md: "160px" }}
+              isDisabled={tabState === 1 || hasPendingTransactions}
+              _disabled={{ opacity: 1 }}
+              opacity={0.4}
+              fontSize={{ base: "sm", md: "md" }}
+              onClick={() => {
+                setPageIndex(0);
+                navigate("/datanfts/marketplace/market/0");
+              }}>
+              Public Marketplace
+            </Button>
+            <Button
+              colorScheme="teal"
+              width={{ base: "120px", md: "160px" }}
+              isDisabled={tabState === 2 || hasPendingTransactions}
+              _disabled={{ opacity: 1 }}
+              opacity={0.4}
+              fontSize={{ base: "sm", md: "md" }}
+              onClick={() => {
+                setPageIndex(0);
+                navigate("/datanfts/marketplace/my/0");
+              }}>
+              My Listed Data NFTs
+            </Button>
+          </HStack>
 
-          <Box flexGrow="1" />
-
-          <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} />
+          <CustomPagination
+            pageCount={pageCount}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+            gotoPage={onGotoPage}
+            disabled={hasPendingTransactions}
+          />
         </Flex>
 
         {loadingOffers ? (
@@ -404,7 +419,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         ) : offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap" gap="5">
+          <Flex wrap="wrap" gap="5" justifyContent={"center"}>
             {offers.length > 0 &&
               items?.map((item, index) => (
                 <div key={index}>
@@ -437,7 +452,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 pageIndex={pageIndex}
                 pageSize={pageSize}
                 gotoPage={onGotoPage}
-              // setPageSize={() => (() => {})}
+                disabled={hasPendingTransactions}
               />
             </Flex>
           )
@@ -587,7 +602,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                    0
+                    0 ||
+                    hasPendingTransactions
                   }>
                   Proceed
                 </Button>
@@ -668,7 +684,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
-                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
+                    <Button
+                      colorScheme="teal"
+                      size="xs"
+                      variant="outline"
+                      ml="2"
+                      onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}
+                      isDisabled={hasPendingTransactions}
+                    >
                       De-List All
                     </Button>
                   </Flex>
@@ -678,10 +701,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     </Text>
                   )}
                   <Flex justifyContent="end" mt="6 !important">
-                    <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      mx="3"
+                      onClick={() => setDelistModalState(1)}
+                      isDisabled={hasPendingTransactions}
+                    >
                       Proceed
                     </Button>
-                    <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      variant="outline"
+                      onClick={onDelistModalClose}
+                    >
                       Cancel
                     </Button>
                   </Flex>
@@ -709,10 +743,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
-                    <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      mx="3"
+                      onClick={onDelist}
+                      isDisabled={hasPendingTransactions}
+                    >
                       Proceed
                     </Button>
-                    <Button colorScheme="teal" size="sm" variant="outline" onClick={onDelistModalClose}>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      variant="outline"
+                      onClick={onDelistModalClose}
+                    >
                       Cancel
                     </Button>
                   </Flex>
@@ -793,10 +838,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 )}
               </Box>
               <Flex justifyContent="end" mt="6 !important">
-                <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>
+                <Button
+                  colorScheme="teal"
+                  size="sm"
+                  mx="3"
+                  onClick={onUpdatePrice}
+                  isDisabled={hasPendingTransactions}
+                >
                   Proceed
                 </Button>
-                <Button colorScheme="teal" size="sm" variant="outline" onClick={onUpdatePriceModalClose}>
+                <Button
+                  colorScheme="teal"
+                  size="sm"
+                  variant="outline"
+                  onClick={onUpdatePriceModalClose}
+                >
                   Cancel
                 </Button>
               </Flex>
