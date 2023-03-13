@@ -43,8 +43,8 @@ const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
             borderBottom="solid 1px"
             p="5">
             <HStack alignItems={"center"} spacing={4}>
-              <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading fontWeight={"normal"} size={"md"}>
+              <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Heading fontWeight={"normal"} size={"md"} display={{ base: "none", md: "block" }}>
                 <Text fontSize="lg">Itheum Data DEX</Text>
               </Heading>
             </HStack>
@@ -55,7 +55,7 @@ const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
           <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
             <Box w="100%" h="400px" bgGradient="linear(to-r, green.200, pink.500)">
               <Center h="100%">
-                <Heading color="#000">Own and trade your data in the Web3 Multiverse</Heading>
+                <Heading color="#000" textAlign={"center"}>Own and trade your data in the Web3 Multiverse</Heading>
               </Center>
             </Box>
 
@@ -171,7 +171,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack>
         <PopoverTrigger>
-          <Button>Connect MultiversX Wallet</Button>
+          <Button fontSize={{ base: "sm", md: "md" }}>Connect MultiversX Wallet</Button>
         </PopoverTrigger>
       </HStack>
 
