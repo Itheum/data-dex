@@ -10,16 +10,13 @@ import {
   NumberInputStepper,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import { useSessionStorage } from "libs/hooks";
 import { isValidNumericCharacter, sleep } from "libs/util";
-import { DataNftMarketContract } from "MultiversX/dataNftMarket";
-import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { DataNftType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 
 type DataNftWalletLowerCardProps = {
@@ -30,49 +27,24 @@ type DataNftWalletLowerCardProps = {
 const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
   const { dataNftItem, index } = props;
 
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const itheumToken = _chainMeta.contracts.itheumToken;
+  const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
-  const toast = useToast();
-  const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
-  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState<number[]>([]);
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [prices, setPrices] = useState<number[]>([]);
   const [priceErrors, setPriceErrors] = useState<string[]>([]);
-  const [unlockAccessProgress, setUnlockAccessProgress] = useState({
-    s1: 0,
-    s2: 0,
-    s3: 0,
-    s4: 0,
-  });
-  const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
-  const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
-  const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
-  const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
-  const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
+  const { onOpen: onListNFTOpen } = useDisclosure();
+  const { onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
 
-  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
-  const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
-  const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
-
-  const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
-  const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
 
   const cleanupAccessDataStreamProcess = () => {
-    setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
-    setErrUnlockAccessGeneric("");
     onAccessProgressModalClose();
   };
 
   const onListButtonClick = (nft: DataNftType) => {
-    setSelectedDataNft(nft);
     onListNFTOpen();
   };
 
@@ -136,20 +108,14 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
       const data = await res.json();
 
       if (data && data.nonce) {
-        setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
 
         await sleep(3);
 
         const signResult = await fetchAccountSignature(data.nonce);
 
-        if (signResult.success === false) {
-          setErrUnlockAccessGeneric(signResult.exception);
-        } else {
-          setUnlockAccessProgress((prevProgress) => ({
-            ...prevProgress,
-            s2: 1,
-          }));
+        if (signResult.success !== false) {
           await sleep(3);
+        } else {
 
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
@@ -162,15 +128,9 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
 
           cleanupAccessDataStreamProcess();
         }
-      } else {
-        if (data.success === false) {
-          setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
-        } else {
-          setErrUnlockAccessGeneric("Data Marshal responded with an unknown error trying to generate your access links");
-        }
       }
     } catch (e: any) {
-      setErrUnlockAccessGeneric(e.toString());
+      console.log(e);
     }
   };
 
@@ -259,12 +219,12 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
             defaultValue={10}
             min={0}
             isValidCharacter={isValidNumericCharacter}
-            max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
+            max={0}
             value={prices[index]}
             onChange={(valueString, valueAsNumber) => {
               let error = "";
               if (valueAsNumber < 0) error = "Cannot be negative";
-              if (valueAsNumber > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
+              if (valueAsNumber > 0) error = "Cannot exceed maximum listing price";
               setPriceErrors((oldErrors) => {
                 const newErrors = [...oldErrors];
                 newErrors[index] = error;

@@ -102,7 +102,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
     );
     (async () => {
       const _marketRequirements = await contract.getRequirements();
-      // console.log("_marketRequirements", _marketRequirements);
+      console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
       if (_marketRequirements) {
@@ -114,6 +114,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
           ).toNumber();
         }
         setMaxPaymentFeeMap(_maxPaymentFeeMap);
+        console.log("_maxPaymentFeeMap", _maxPaymentFeeMap);
       } else {
         setMaxPaymentFeeMap({});
       }
@@ -300,10 +301,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
               <Flex>
                 {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
                   0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
+                    <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                      Your wallet token balance is too low to proceed
+                    </Text>
+                  )}
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Buyer Fee (per NFT)</Box>
@@ -311,14 +312,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   :{" "}
                   {marketRequirements
                     ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                          .multipliedBy(marketRequirements.buyer_fee)
-                          .div(10000 + marketRequirements.buyer_fee),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(
-                        offers[selectedOfferIndex].wanted_token_identifier,
-                        offers[selectedOfferIndex].wanted_token_nonce
-                      )})`
+                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                        .multipliedBy(marketRequirements.buyer_fee)
+                        .div(10000 + marketRequirements.buyer_fee),
+                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(
+                      offers[selectedOfferIndex].wanted_token_identifier,
+                      offers[selectedOfferIndex].wanted_token_nonce
+                    )})`
                     : "-"}
                 </Box>
               </Flex>
@@ -388,7 +389,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                      0
+                    0
                   }>
                   Proceed
                 </Button>
