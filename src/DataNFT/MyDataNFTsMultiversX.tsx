@@ -202,12 +202,13 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   };
 
   useEffect(() => {
+    if (hasPendingTransactions) return;
     getOnChainNFTs();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
     (async () => {
-      if (address) {
+      if (address && !hasPendingTransactions) {
         const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
         setUserData(_userData);
       }
@@ -439,7 +440,14 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       Fully Transferable License
                     </Badge>
 
-                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
+                    <Button
+                      mt="2"
+                      size="sm"
+                      colorScheme="red"
+                      height="5"
+                      isDisabled={hasPendingTransactions}
+                      onClick={(e) => onBurnButtonClick(item)}
+                    >
                       Burn
                     </Button>
 
@@ -652,7 +660,13 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                   )}
 
                   <Flex justifyContent="end" mt="8 !important">
-                    <Button colorScheme="teal" size="sm" mx="3" onClick={() => setBurnNFTModalState(2)} isDisabled={!!dataNftBurnAmountError}>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      mx="3"
+                      onClick={() => setBurnNFTModalState(2)}
+                      isDisabled={!!dataNftBurnAmountError || hasPendingTransactions}
+                    >
                       I want to Burn my {dataNftBurnAmount} Data NFTs
                     </Button>
                     <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
@@ -685,7 +699,13 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                     Are you sure you want to proceed with burning the Data NFTs? You cannot undo this action.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
-                    <Button colorScheme="teal" size="sm" mx="3" onClick={onBurn}>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      mx="3"
+                      onClick={onBurn}
+                      isDisabled={hasPendingTransactions}
+                    >
                       Proceed
                     </Button>
                     <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
@@ -736,7 +756,13 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
               </Flex>
 
               <Flex justifyContent="end" mt="8 !important">
-                <Button colorScheme="teal" size="sm" mx="3" onClick={onList}>
+                <Button
+                  colorScheme="teal"
+                  size="sm"
+                  mx="3"
+                  onClick={onList}
+                  isDisabled={hasPendingTransactions}
+                >
                   Proceed
                 </Button>
                 <Button colorScheme="teal" size="sm" variant="outline" onClick={onListNFTClose}>

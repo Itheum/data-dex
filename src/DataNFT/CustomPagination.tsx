@@ -9,7 +9,7 @@ interface PropsType {
   pageIndex: number;
   pageSize: number;
   gotoPage: (e: number) => void;
-
+  disabled: boolean;
   // setPageSize: (e: number) => void,
 }
 
@@ -18,6 +18,7 @@ export const CustomPagination: FC<PropsType> = ({
   pageIndex,
   pageSize,
   gotoPage,
+  disabled,
   // setPageSize,
 }) => {
   const canPreviousPage = pageIndex > 0;
@@ -49,7 +50,7 @@ export const CustomPagination: FC<PropsType> = ({
                 setIsInThrottle(false);
               }, 2000);
             }}
-            isDisabled={!canPreviousPage || isInThrottle}
+            isDisabled={!canPreviousPage || isInThrottle || disabled}
             icon={<ArrowLeftIcon h={3} w={3} />}
             mr={2}
           />
@@ -66,7 +67,7 @@ export const CustomPagination: FC<PropsType> = ({
                 setIsInThrottle(false);
               }, 2000);
             }}
-            isDisabled={!canPreviousPage || isInThrottle}
+            isDisabled={!canPreviousPage || isInThrottle || disabled}
             icon={<ChevronLeftIcon h={6} w={6} />}
           />
         </Tooltip>
@@ -98,7 +99,7 @@ export const CustomPagination: FC<PropsType> = ({
                 setIsInThrottle(false);
               }, 2000);
             }}
-            isDisabled={!canNextPage || isInThrottle}
+            isDisabled={!canNextPage || isInThrottle || disabled}
             icon={<ChevronRightIcon h={6} w={6} />}
           />
         </Tooltip>
@@ -114,7 +115,7 @@ export const CustomPagination: FC<PropsType> = ({
                 setIsInThrottle(false);
               }, 2000);
             }}
-            isDisabled={!canNextPage || isInThrottle}
+            isDisabled={!canNextPage || isInThrottle || disabled}
             icon={<ArrowRightIcon h={3} w={3} />}
             ml={2}
           />

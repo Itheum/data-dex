@@ -353,7 +353,12 @@ function App({ appConfig }: { appConfig: any }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
-                <Link as={ReactRouterLink} to="/" style={{ textDecoration: "none" }} onClick={() => { navigateToDiscover(MENU.HOME); }}>
+                <Link
+                  as={ReactRouterLink}
+                  to={hasPendingTransactions ? "#" : "/"}
+                  style={{ textDecoration: "none" }}
+                  onClick={() => { navigateToDiscover(MENU.HOME); }}
+                >
                   <HStack>
                     <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                     <Heading fontWeight={"normal"} size={"md"}>
@@ -368,7 +373,12 @@ function App({ appConfig }: { appConfig: any }) {
                   {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
                     const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
                     return (
-                      <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                      <Link
+                        as={ReactRouterLink}
+                        to={hasPendingTransactions ? "#" : path}
+                        style={{ textDecoration: "none" }}
+                        key={path}
+                      >
                         <Button
                           colorScheme="teal"
                           variant="outline"
@@ -400,7 +410,12 @@ function App({ appConfig }: { appConfig: any }) {
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, Icon } = menuItem;
                           return (
-                            <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                            <Link
+                              as={ReactRouterLink}
+                              to={hasPendingTransactions ? "#" : path}
+                              style={{ textDecoration: "none" }}
+                              key={path}
+                            >
                               <MenuItem key={label} onClick={() => navigateToDiscover(menuEnum)}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
                                 {label}
@@ -436,7 +451,11 @@ function App({ appConfig }: { appConfig: any }) {
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={""} style={{ textDecoration: "none" }}>
+                <Link
+                  as={ReactRouterLink}
+                  to={hasPendingTransactions ? "#" : ""}
+                  style={{ textDecoration: "none" }}
+                >
                   <IconButton
                     size={"sm"}
                     icon={<AiFillHome />}
@@ -582,7 +601,12 @@ function App({ appConfig }: { appConfig: any }) {
                               {menu.sectionItems.map((menuItem) => {
                                 const { label, menuEnum, path, Icon } = menuItem;
                                 return (
-                                  <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                                  <Link
+                                    as={ReactRouterLink}
+                                    to={hasPendingTransactions ? "#" : path}
+                                    style={{ textDecoration: "none" }}
+                                    key={path}
+                                  >
                                     <ListItem
                                       as={Button}
                                       variant={"ghost"}
