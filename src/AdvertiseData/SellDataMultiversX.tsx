@@ -485,13 +485,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const mintTxFail = (foo: any) => {
     console.log("mintTxFail", foo);
-    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    // setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
   const mintTxCancelled = (foo: any) => {
     console.log("mintTxCancelled", foo);
-    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    // setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
@@ -681,21 +681,24 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   });
 
   const closeProgressModal = () => {
-    toast({
-      title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
-      status: "success",
-      isClosable: true,
-    });
+    if (mintingSuccessful) {
+      toast({
+        title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
+        status: "success",
+        isClosable: true,
+      });
+
+      onCloseDrawerTradeStream();
+
+      // remount the component (quick way to rest all state to pristine)
+      onRfMount();
+    }
 
     onProgressModalClose();
-    onCloseDrawerTradeStream();
 
     // initialize modal status
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
-
-    // remount the component (quick way to rest all state to pristine)
-    onRfMount();
   };
 
   async function validateBaseInput() {
@@ -1198,7 +1201,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                             Process Error
                           </AlertTitle>
                           {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => onProgressModalClose()} />
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => closeProgressModal()} />
                         </Stack>
                       </Alert>
                     )}
