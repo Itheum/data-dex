@@ -614,6 +614,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   async function createFileFromUrl(url: string) {
     const res = await fetch(url);
     const data = await res.blob();
+    console.log(res.headers.get("x-nft-traits"));
     const _file = new File([data], "image", { type: "image/png" });
 
     return _file;
