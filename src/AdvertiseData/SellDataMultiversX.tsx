@@ -108,38 +108,47 @@ const InputLabelWithPopover = ({ children, tkey }: { children: any, tkey: string
   );
 };
 
-const checkUrlReturns200 = async (url: string) => {
-  // check that URL returns 200 code
-  try {
-    const res = await axios.get(url);
-    if (res.status === 200) {
-      return {
-        isSuccess: true,
-        message: "",
-      };
-    } else {
-      return {
-        isSuccess: false,
-        message: "Data Stream URL must be a publicly accessible url",
-      };
-    }
-  } catch (err: any) {
-    console.log('err', err);
-    let message = err.message;
 
-    if (err.response && err.response.status) {
-      if (err.response.status === 404) {
-        message = "Url is not found";
-      } else {
-        message = err.response.statusText;
-      }
-    }
-
-    return {
-      isSuccess: false,
-      message,
+function makeRequest(url: string): Promise<{ statusCode: number, isError: boolean }> {
+  return new Promise(function (resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onload = function (e) {
+      resolve({
+        statusCode: this.status,
+        isError: false,
+      });
     };
+    xhr.onerror = function (e) {
+      resolve({
+        statusCode: this.status,
+        isError: true,
+      });
+    };
+    xhr.send();
+  });
+}
+
+const checkUrlReturns200 = async (url: string) => {
+  const { statusCode, isError } = await makeRequest(url);
+  console.log('statusCode', statusCode);
+
+  let isSuccess = false;
+  let message = "";
+  if (isError) {
+    message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
+  } else if (statusCode === 200) {
+    isSuccess = true;
+  } else if (statusCode === 404) {
+    message = "Data Stream URL is not reachable (Status Code 404 received)";
+  } else {
+    message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
   }
+
+  return {
+    isSuccess,
+    message,
+  };
 };
 
 export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any, itheumAccount: any }) {
@@ -342,7 +351,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     // Itheum Data Marshal Service Check
     checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then(({ isSuccess, message }) => {
-      setDataNFTMarshalServiceStatus(message);
+      setDataNFTMarshalServiceStatus(!isSuccess);
     });
 
     setDataNFTMarshalService(trimmedValue);
