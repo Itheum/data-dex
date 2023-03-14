@@ -451,6 +451,7 @@ function App({ appConfig }: { appConfig: any }) {
                     </Menu>
                   ))}
                 </Box>
+
                 <Link
                   as={ReactRouterLink}
                   to={hasPendingTransactions ? "#" : ""}
