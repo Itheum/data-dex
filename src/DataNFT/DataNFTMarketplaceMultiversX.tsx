@@ -353,11 +353,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             <Button
               colorScheme="teal"
               width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 1 || hasPendingTransactions}
+              isDisabled={tabState === 1}
               _disabled={{ opacity: 1 }}
               opacity={0.4}
               fontSize={{ base: "sm", md: "md" }}
               onClick={() => {
+                if (hasPendingTransactions) return;
                 setPageIndex(0);
                 navigate("/datanfts/marketplace/market/0");
               }}>
@@ -366,11 +367,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             <Button
               colorScheme="teal"
               width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 2 || hasPendingTransactions}
+              isDisabled={tabState === 2}
               _disabled={{ opacity: 1 }}
               opacity={0.4}
               fontSize={{ base: "sm", md: "md" }}
               onClick={() => {
+                if (hasPendingTransactions) return;
                 setPageIndex(0);
                 navigate("/datanfts/marketplace/my/0");
               }}>
