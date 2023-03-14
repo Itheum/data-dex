@@ -634,7 +634,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     backgroundColor="blackAlpha.800"
                     rounded="lg"
                     visibility={
-                      userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
+                      userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce))) ? "visible" : "collapse"
                     }>
                     <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                       - FROZEN - <br />
