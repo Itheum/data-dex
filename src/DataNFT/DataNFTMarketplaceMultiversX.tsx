@@ -635,7 +635,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     rounded="lg"
                     visibility={
                       userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce))) ? "visible" : "collapse"
-                    }>
+                    }
+                    backdropFilter="auto"
+                    backdropBlur="6px"
+                  >
                     <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                       - FROZEN - <br />
                       Data NFT is under investigation by the DAO as there was a complaint received against it
