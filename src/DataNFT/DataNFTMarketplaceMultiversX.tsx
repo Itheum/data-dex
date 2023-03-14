@@ -392,7 +392,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         ) : offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap" gap="5" justifyContent={"center"}>
+          <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
             {offers.length > 0 &&
               offers.map((offer, index) => (
                 <Box key={index} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">

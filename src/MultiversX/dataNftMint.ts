@@ -61,6 +61,7 @@ export class DataNftMintContract {
   async sendMintTransaction({
     name,
     media,
+    metadata,
     data_marchal,
     data_stream,
     data_preview,
@@ -74,6 +75,7 @@ export class DataNftMintContract {
   }: {
     name: string;
     media: string;
+    metadata: string;
     data_marchal: string;
     data_stream: string;
     data_preview: string;
@@ -94,6 +96,7 @@ export class DataNftMintContract {
         .addArg(new StringValue("mint"))
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
+        .addArg(new StringValue(metadata))
         .addArg(new StringValue(data_marchal))
         .addArg(new StringValue(data_stream))
         .addArg(new StringValue(data_preview))
