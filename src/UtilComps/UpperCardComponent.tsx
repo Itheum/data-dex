@@ -48,9 +48,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  const { hasPendingTransactions } = useGetPendingTransactions();
+  // const { hasPendingTransactions } = useGetPendingTransactions();
 
-  const location = useLocation();
+  // const location = useLocation();
   const [feePrice, setFeePrice] = useState<string>("");
 
   const contract = new DataNftMarketContract("ED");
