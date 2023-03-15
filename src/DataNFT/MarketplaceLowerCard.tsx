@@ -18,6 +18,7 @@ import {
   ModalOverlay,
   Modal,
   Checkbox,
+  ModalHeader,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -75,7 +76,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
       } else {
         setIsMyNft(false);
       }
-
     })();
   }, [hasPendingTransactions]);
 
@@ -246,9 +246,9 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
             Procure
           </Button>
         </HStack>
-      ) :
+      ) : (
         <HStack h="3rem"></HStack>
-      }
+      )}
       {amountErrors[index] && (
         <Text color="red.400" fontSize="xs">
           {amountErrors[index]}
@@ -301,10 +301,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
               <Flex>
                 {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
                   0 && (
-                    <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                      Your wallet token balance is too low to proceed
-                    </Text>
-                  )}
+                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                    Your wallet token balance is too low to proceed
+                  </Text>
+                )}
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Buyer Fee (per NFT)</Box>
@@ -312,14 +312,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   :{" "}
                   {marketRequirements
                     ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                        .multipliedBy(marketRequirements.buyer_fee)
-                        .div(10000 + marketRequirements.buyer_fee),
-                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                    ).toNumber()} ${getTokenWantedRepresentation(
-                      offers[selectedOfferIndex].wanted_token_identifier,
-                      offers[selectedOfferIndex].wanted_token_nonce
-                    )})`
+                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                          .multipliedBy(marketRequirements.buyer_fee)
+                          .div(10000 + marketRequirements.buyer_fee),
+                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                      ).toNumber()} ${getTokenWantedRepresentation(
+                        offers[selectedOfferIndex].wanted_token_identifier,
+                        offers[selectedOfferIndex].wanted_token_nonce
+                      )})`
                     : "-"}
                 </Box>
               </Flex>
@@ -389,7 +389,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                    0
+                      0
                   }>
                   Proceed
                 </Button>
@@ -401,6 +401,26 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
           </ModalContent>
         </Modal>
       )}
+
+      <Modal isOpen={isReadTermsModalOpen} onClose={onReadTermsModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+        <ModalContent>
+          <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
+          <ModalBody pb={6}>
+            <Text>
+              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since
+              the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
+              but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
+              sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+            </Text>
+            <Flex justifyContent="end" mt="6 !important">
+              <Button colorScheme="teal" onClick={onReadTermsModalClose}>
+                I have read this
+              </Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
