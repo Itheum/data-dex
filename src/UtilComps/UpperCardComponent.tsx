@@ -15,19 +15,15 @@ import {
   PopoverTrigger,
   Skeleton,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
-import { useLocation } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
-import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, DataNftType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
+import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
@@ -48,23 +44,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  // const { hasPendingTransactions } = useGetPendingTransactions();
 
-  // const location = useLocation();
   const [feePrice, setFeePrice] = useState<string>("");
-
-  const contract = new DataNftMarketContract("ED");
-  const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
-  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
-  const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
-  const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
-
-  const onBurnButtonClick = (nft: DataNftType) => {
-    setSelectedDataNft(nft);
-    setDataNftBurnAmount(Number(nft.balance)); // init
-    setBurnNFTModalState(1);
-    onBurnNFTOpen();
-  };
 
   useEffect(() => {
     setFeePrice(
@@ -154,12 +135,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   <Badge borderRadius="full" px="2" colorScheme="blue">
                     Fully Transferable License
                   </Badge>
-
-                  {/*{item && (*/}
-                  {/*  <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions}>*/}
-                  {/*    Burn*/}
-                  {/*  </Button>*/}
-                  {/*)}*/}
                 </Box>
               </Flex>
 

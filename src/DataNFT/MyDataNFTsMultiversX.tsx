@@ -83,7 +83,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       nftImgUrl: "",
       title: "",
       tokenName: "",
-    }
+    },
   ]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
@@ -325,10 +325,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       console.log(signResult);
     }
 
-    if (signResult.signature === null ||
-      signResult.signature === '' ||
-      signResult.addrInHex === null ||
-      signResult.addrInHex === '') {
+    if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
       signResult.success = false;
       signResult.exception = customError;
     }
@@ -433,13 +430,13 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       <PopoverArrow />
                       <PopoverCloseButton />
                       <PopoverBody>
-                        <Text fontSize="sm" mt="2" color="gray.300">
+                        <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
                           {item.description}
                         </Text>
                       </PopoverBody>
                     </PopoverContent>
                   </Popover>
-                  <Box mt="4">
+                  <Box>
                     {
                       <Box color="gray.600" fontSize="sm">
                         Creator: <ShortAddress address={item.creator}></ShortAddress>
@@ -461,14 +458,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       Fully Transferable License
                     </Badge>
 
-                    <Button
-                      mt="2"
-                      size="sm"
-                      colorScheme="red"
-                      height="5"
-                      isDisabled={hasPendingTransactions}
-                      onClick={(e) => onBurnButtonClick(item)}
-                    >
+                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
                       Burn
                     </Button>
 
@@ -686,8 +676,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       size="sm"
                       mx="3"
                       onClick={() => setBurnNFTModalState(2)}
-                      isDisabled={!!dataNftBurnAmountError || hasPendingTransactions}
-                    >
+                      isDisabled={!!dataNftBurnAmountError || hasPendingTransactions}>
                       I want to Burn my {dataNftBurnAmount} Data NFTs
                     </Button>
                     <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
@@ -720,13 +709,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                     Are you sure you want to proceed with burning the Data NFTs? You cannot undo this action.
                   </Text>
                   <Flex justifyContent="end" mt="6 !important">
-                    <Button
-                      colorScheme="teal"
-                      size="sm"
-                      mx="3"
-                      onClick={onBurn}
-                      isDisabled={hasPendingTransactions}
-                    >
+                    <Button colorScheme="teal" size="sm" mx="3" onClick={onBurn} isDisabled={hasPendingTransactions}>
                       Proceed
                     </Button>
                     <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
@@ -777,13 +760,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
               </Flex>
 
               <Flex justifyContent="end" mt="8 !important">
-                <Button
-                  colorScheme="teal"
-                  size="sm"
-                  mx="3"
-                  onClick={onList}
-                  isDisabled={hasPendingTransactions}
-                >
+                <Button colorScheme="teal" size="sm" mx="3" onClick={onList} isDisabled={hasPendingTransactions}>
                   Proceed
                 </Button>
                 <Button colorScheme="teal" size="sm" variant="outline" onClick={onListNFTClose}>
@@ -820,14 +797,16 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 <Text>Verifying data access rights to unlock Data Stream</Text>
               </HStack>
 
-              {(unlockAccessProgress.s1 && unlockAccessProgress.s2 && !unlockAccessProgress.s3) &&
+              {unlockAccessProgress.s1 && unlockAccessProgress.s2 && !unlockAccessProgress.s3 && (
                 <Stack border="solid .04rem" padding={3} borderRadius={5}>
                   <Text fontSize="sm" lineHeight={1.7}>
-                    <InfoIcon boxSize={5} mr={1} />Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select <b>Always allow pop-ups</b>
+                    <InfoIcon boxSize={5} mr={1} />
+                    Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select{" "}
+                    <b>Always allow pop-ups</b>
                   </Text>
                   <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
                 </Stack>
-              }
+              )}
 
               {errUnlockAccessGeneric && (
                 <Alert status="error">
