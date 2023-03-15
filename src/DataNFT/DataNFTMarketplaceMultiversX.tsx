@@ -69,13 +69,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
+
+  const mintContract = new DataNftMintContract(_chainMeta.networkId);
+  const marketContract = new DataNftMarketContract("ED");
+
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
-  const contract = new DataNftMarketContract("ED");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
@@ -83,7 +86,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [userData, setUserData] = useState<any>({});
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
-  const mintContract = new DataNftMintContract(_chainMeta.networkId);
+  const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
@@ -116,7 +119,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      const _marketRequirements = await contract.getRequirements();
+      const _marketRequirements = await marketContract.getRequirements();
       console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
@@ -134,6 +137,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
+      console.log('_marketFreezedNonces', _marketFreezedNonces);
+      setMarketFreezedNonces(_marketFreezedNonces);
+    })();
+  }, []);
+
   useEffect(() => {
     (async () => {
       if (hasPendingTransactions) return;
@@ -141,10 +153,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = await contract.getNumberOfOffers();
+        _numberOfOffers = await marketContract.getNumberOfOffers();
       } else {
         // offers of User
-        _numberOfOffers = await contract.getUserTotalOffers(address);
+        _numberOfOffers = await marketContract.getUserTotalOffers(address);
       }
       console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
@@ -166,7 +178,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       setLoadingOffers(true);
-      const _offers = await contract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
       console.log("_offers", _offers);
       setOffers(_offers);
       // end loading offers
@@ -258,10 +270,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     const offer = offers[selectedOfferIndex];
     const paymentAmount = BigNumber(offer.wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]);
     if (offer.wanted_token_identifier == "EGLD") {
-      contract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amountOfTokens[selectedOfferIndex], address);
+      marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amountOfTokens[selectedOfferIndex], address);
     } else {
       if (offer.wanted_token_nonce === 0) {
-        contract.sendAcceptOfferEsdtTransaction(
+        marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
           offer.wanted_token_identifier,
@@ -269,7 +281,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           address
         );
       } else {
-        contract.sendAcceptOfferNftEsdtTransaction(
+        marketContract.sendAcceptOfferNftEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
           offer.wanted_token_identifier,
@@ -301,7 +313,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       return;
     }
 
-    contract.delistDataNft(offers[selectedOfferIndex].index, delistAmount, address);
+    marketContract.delistDataNft(offers[selectedOfferIndex].index, delistAmount, address);
     // a small delay for visual effect
     await sleep(0.5);
     onDelistModalClose();
@@ -326,7 +338,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       return;
     }
 
-    contract.updateOfferPrice(
+    marketContract.updateOfferPrice(
       offers[selectedOfferIndex].index,
       convertEsdtToWei(newListingPrice, tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)).toFixed(),
       address
@@ -353,11 +365,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             <Button
               colorScheme="teal"
               width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 1 || hasPendingTransactions}
+              isDisabled={tabState === 1}
               _disabled={{ opacity: 1 }}
               opacity={0.4}
               fontSize={{ base: "sm", md: "md" }}
               onClick={() => {
+                if (hasPendingTransactions) return;
                 setPageIndex(0);
                 navigate("/datanfts/marketplace/market/0");
               }}>
@@ -366,11 +379,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             <Button
               colorScheme="teal"
               width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 2 || hasPendingTransactions}
+              isDisabled={tabState === 2}
               _disabled={{ opacity: 1 }}
               opacity={0.4}
               fontSize={{ base: "sm", md: "md" }}
               onClick={() => {
+                if (hasPendingTransactions) return;
                 setPageIndex(0);
                 navigate("/datanfts/marketplace/my/0");
               }}>
@@ -634,8 +648,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     backgroundColor="blackAlpha.800"
                     rounded="lg"
                     visibility={
-                      userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
-                    }>
+                      userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) || marketFreezedNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"
+                    }
+                    backdropFilter="auto"
+                    backdropBlur="6px"
+                  >
                     <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                       - FROZEN - <br />
                       Data NFT is under investigation by the DAO as there was a complaint received against it
