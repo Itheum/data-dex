@@ -395,7 +395,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       </Heading>
 
       {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
-        <Flex wrap="wrap" gap="5" justifyContent={"center"}>
+        <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
           {dataNfts &&
             dataNfts.map((item, index) => (
               <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
@@ -600,7 +600,10 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                   rounded="lg"
                   visibility={
                     userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
-                  }>
+                  }
+                  backdropFilter="auto"
+                  backdropBlur="6px"
+                >
                   <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
                     Data NFT is under investigation by the DAO as there was a complaint received against it

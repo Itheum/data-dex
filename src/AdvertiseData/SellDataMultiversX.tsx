@@ -623,10 +623,28 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   async function createFileFromUrl(url: string) {
     const res = await fetch(url);
     const data = await res.blob();
-    const _file = new File([data], "image", { type: "image/png" });
-
-    return _file;
+    const _imageFile = new File([data], "image.png", { type: "image/png" });
+    const traits = createIpfsMetadata(res.headers.get("x-nft-traits") || "");
+    const _traitsFile = new File([JSON.stringify(traits)], "metadata.json", { type: "application/json" });
+    return { image: _imageFile, traits: _traitsFile };
   }
+
+  function createIpfsMetadata(traits: string) {
+    const metadata = {
+      description: `${datasetTitle} : ${datasetDescription}`,
+      attributes: [] as object[],
+    };
+    const attributes = traits.split(",").filter((element) => element.trim() !== "");
+    const metadataAttributes = [];
+    for (const attribute of attributes) {
+      const [key, value] = attribute.split(":");
+      const trait = { trait_type: key.trim(), value: value.trim() };
+      metadataAttributes.push(trait);
+    }
+    metadata.attributes = metadataAttributes;
+    return metadata;
+  }
+
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any, dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
@@ -637,11 +655,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     let res;
     // catch IPFS error
     try {
-      const image = await createFileFromUrl(newNFTImg);
+      const { image, traits } = await createFileFromUrl(newNFTImg);
       const nftstorage = new NFTStorage({
         token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
       });
-      res = await nftstorage.storeBlob(image);
+      res = await nftstorage.storeDirectory([image, traits]);
     } catch (e) {
       setErrDataNFTStreamGeneric(new Error("Uploading the image on IPFS has failed"));
       return;
@@ -651,22 +669,24 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       setErrDataNFTStreamGeneric(new Error("Uploading the image on IPFS has failed"));
       return;
     }
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}`;
-    // console.log('imageOnIpfsUrl', imageOnIpfsUrl);
+    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
+    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
+    console.log('metadataOnIpfsUrl', metadataOnIpfsUrl);
 
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
 
-    handleOnChainMint({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted });
+    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl, dataNFTStreamUrlEncrypted });
   };
 
-  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }: { imageOnIpfsUrl: any, dataNFTStreamUrlEncrypted: any }) => {
+  const handleOnChainMint = async ({ imageOnIpfsUrl, metadataOnIpfsUrl, dataNFTStreamUrlEncrypted }: { imageOnIpfsUrl: string, metadataOnIpfsUrl: string, dataNFTStreamUrlEncrypted: string }) => {
     await sleep(3);
     const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
       media: imageOnIpfsUrl,
+      metadata: metadataOnIpfsUrl,
       data_marchal: dataNFTMarshalService,
       data_stream: dataNFTStreamUrlEncrypted,
       data_preview: dataNFTStreamPreviewUrl,

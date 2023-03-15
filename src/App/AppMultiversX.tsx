@@ -355,8 +355,8 @@ function App({ appConfig }: { appConfig: any }) {
                 />
                 <Link
                   as={ReactRouterLink}
-                  to={hasPendingTransactions ? "#" : "/"}
-                  style={{ textDecoration: "none" }}
+                  to={"/"}
+                  style={{ textDecoration: "none", pointerEvents: hasPendingTransactions ? "none" : undefined }}
                   onClick={() => { navigateToDiscover(MENU.HOME); }}
                 >
                   <HStack>
@@ -375,14 +375,14 @@ function App({ appConfig }: { appConfig: any }) {
                     return (
                       <Link
                         as={ReactRouterLink}
-                        to={hasPendingTransactions ? "#" : path}
+                        to={path}
                         style={{ textDecoration: "none" }}
                         key={path}
                       >
                         <Button
                           colorScheme="teal"
                           variant="outline"
-                          isDisabled={isMenuItemSelected(menuEnum)}
+                          isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
                           _disabled={menuButtonDisabledStyle(menuEnum)}
                           opacity={0.6}
                           key={shortLbl}
@@ -412,11 +412,15 @@ function App({ appConfig }: { appConfig: any }) {
                           return (
                             <Link
                               as={ReactRouterLink}
-                              to={hasPendingTransactions ? "#" : path}
+                              to={path}
                               style={{ textDecoration: "none" }}
                               key={path}
                             >
-                              <MenuItem key={label} onClick={() => navigateToDiscover(menuEnum)}>
+                              <MenuItem
+                                key={label}
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => navigateToDiscover(menuEnum)}
+                              >
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
                                 {label}
                               </MenuItem>
@@ -437,13 +441,21 @@ function App({ appConfig }: { appConfig: any }) {
                         <MenuGroup>
                           {_user.isMxAuthenticated && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
-                              <MenuItem closeOnSelect={false} onClick={() => setMxShowClaimsHistory(true)}>
+                              <MenuItem
+                                closeOnSelect={false}
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => setMxShowClaimsHistory(true)}
+                              >
                                 <Text fontSize="sm">View claims history</Text>
                               </MenuItem>
                             </ChainSupportedComponent>
                           )}
 
-                          <MenuItem onClick={handleLogout} fontSize="sm">
+                          <MenuItem
+                            onClick={handleLogout}
+                            fontSize="sm"
+                            isDisabled={hasPendingTransactions}
+                          >
                             Logout
                           </MenuItem>
                         </MenuGroup>
@@ -453,14 +465,14 @@ function App({ appConfig }: { appConfig: any }) {
                 </Box>
                 <Link
                   as={ReactRouterLink}
-                  to={hasPendingTransactions ? "#" : ""}
+                  to={""}
                   style={{ textDecoration: "none" }}
                 >
                   <IconButton
                     size={"sm"}
                     icon={<AiFillHome />}
                     aria-label={"Back to Home"}
-                    isDisabled={isMenuItemSelected(MENU.HOME)}
+                    isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
                     _disabled={menuButtonDisabledStyle(MENU.HOME)}
                     opacity={0.6}
                     onClick={() => {
@@ -603,7 +615,7 @@ function App({ appConfig }: { appConfig: any }) {
                                 return (
                                   <Link
                                     as={ReactRouterLink}
-                                    to={hasPendingTransactions ? "#" : path}
+                                    to={path}
                                     style={{ textDecoration: "none" }}
                                     key={path}
                                   >
