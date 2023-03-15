@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Button, Text, NumberInput, NumberInputField, NumberDecrementStepper, NumberIncrementStepper, NumberInputStepper, HStack, Select, Show, VStack } from "@chakra-ui/react";
 import {
   useReactTable,
   flexRender,
@@ -16,7 +16,21 @@ import {
 import Filter from "./Filter";
 import { DataTableProps, fuzzyFilter } from "./tableUtils";
 
-
+const styles = {
+  table: {
+    border: '2px solid var(--chakra-colors-teal-200)',
+    borderRadius: '1rem',
+    fontSize: '16px'
+  },
+  tbody: {
+    borderBottom: '1px solid var(--chakra-colors-teal-200)'
+  },
+  th: {
+    borderBottom: '1px solid var(--chakra-colors-teal-200)',
+    borderRight: '1px solid var(--chakra-colors-teal-200)',
+    padding: '2px 4px'
+  }
+};
 
 export function DataTable<Data extends object>({
   data,
@@ -47,125 +61,153 @@ export function DataTable<Data extends object>({
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
   });
 
-  return (<div>
-    <Table>
-      <Thead>
-        {table.getHeaderGroups().map(headerGroup => (
-          <Tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => {
-              return (
-                <Th key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder ? null : (
-                    <>
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? 'cursor-pointer select-none'
-                            : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: <TriangleUpIcon />,
-                          desc: <TriangleDownIcon />,
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                      {header.column.getCanFilter() ? (
-                        <div>
-                          <Filter column={header.column} table={table} />
-                        </div>
-                      ) : null}
-                    </>
-                  )}
-                </Th>
-              );
-            })}
-          </Tr>
-        ))}
-      </Thead>
-      <Tbody>
-        {table.getRowModel().rows.map(row => {
-          return (
-            <Tr key={row.id}>
-              {row.getVisibleCells().map(cell => {
+  return (
+    <Box className="hidden-overflow-x">
+      <Table style={styles.table} className="data-table">
+        <Thead style={styles.th}>
+          {table.getHeaderGroups().map(headerGroup => (
+            <Tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => {
                 return (
-                  <Td key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
+                  <Th key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder ? null : (
+                      <>
+                        <Box
+                          {...{
+                            className: header.column.getCanSort()
+                              ? 'cursor-pointer select-none'
+                              : '',
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: <TriangleUpIcon />,
+                            desc: <TriangleDownIcon />,
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </Box>
+                        {header.column.getCanFilter() ? (
+                          <Box>
+                            <Filter column={header.column} table={table} />
+                          </Box>
+                        ) : null}
+                      </>
                     )}
-                  </Td>
+                  </Th>
                 );
               })}
             </Tr>
-          );
-        })}
-      </Tbody>
-    </Table>
-    <div className="flex items-center gap-2">
-      <button
-        className="border rounded p-1"
-        onClick={() => table.setPageIndex(0)}
-        disabled={!table.getCanPreviousPage()}
-      >
-        {'<<'}
-      </button>
-      <button
-        className="border rounded p-1"
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-      >
-        {'<'}
-      </button>
-      <button
-        className="border rounded p-1"
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-      >
-        {'>'}
-      </button>
-      <button
-        className="border rounded p-1"
-        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-        disabled={!table.getCanNextPage()}
-      >
-        {'>>'}
-      </button>
-      <span className="flex items-center gap-1">
-        <div>Page</div>
-        <strong>
-          {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </strong>
-      </span>
-      <span className="flex items-center gap-1">
-        | Go to page:
-        <input
-          type="number"
-          defaultValue={table.getState().pagination.pageIndex + 1}
-          onChange={e => {
-            const page = e.target.value ? Number(e.target.value) - 1 : 0;
-            table.setPageIndex(page);
-          }}
-          className="border p-1 rounded w-16"
-        />
-      </span>
-      <select
-        value={table.getState().pagination.pageSize}
-        onChange={e => {
-          table.setPageSize(Number(e.target.value));
-        }}
-      >
-        {[10, 20, 30, 40, 50].map(pageSize => (
-          <option key={pageSize} value={pageSize}>
-            Show {pageSize}
-          </option>
-        ))}
-      </select>
-    </div>
-  </div>);
+          ))}
+        </Thead>
+        <Tbody style={styles.tbody}>
+          {table.getRowModel().rows.map(row => {
+            return (
+              <Tr key={row.id}>
+                {row.getVisibleCells().map(cell => {
+                  return (
+                    <Td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Td>
+                  );
+                })}
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+      <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
+        <VStack>
+          <Show above="md">
+            <HStack>
+              <Button
+                border={1}
+                borderRadius={'0.24rem'}
+                padding={1}
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {'<<'}
+              </Button>
+              <Button
+                border={1}
+                borderRadius={'0.24rem'}
+                padding={1}
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {'<'}
+              </Button>
+              <Button
+                border={1}
+                borderRadius={'0.24rem'}
+                padding={1}
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                {'>'}
+              </Button>
+              <Button
+                border={1}
+                borderRadius={'0.24rem'}
+                padding={1}
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                {'>>'}
+              </Button>
+            </HStack>
+          </Show>
+          <Text as={'span'} display={"flex"} alignItems={"center"} gap={1}>
+            Page
+            <strong>
+              {table.getState().pagination.pageIndex + 1}
+            </strong>
+            of
+            <strong>
+              {table.getPageCount()}
+            </strong>
+          </Text>
+        </VStack>
+        <HStack>
+          <Text as={'span'} minWidth={'5rem'}>
+            Go to page
+          </Text>
+          <NumberInput
+            defaultValue={table.getState().pagination.pageIndex + 1}
+            maxWidth={'4.4rem'}
+            onChange={(e: string) => {
+              const page = e ? Number(e) - 1 : 0;
+              table.setPageIndex(page);
+            }}>
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+
+          <Show above="md">
+            <Select
+              value={table.getState().pagination.pageSize}
+              onChange={e => {
+                table.setPageSize(Number(e.target.value));
+              }}
+              maxWidth={200}
+            >
+              {[10, 20, 30, 40, 50].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </Select>
+          </Show>
+        </HStack>
+      </VStack>
+    </Box>);
 }
