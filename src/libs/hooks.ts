@@ -5,7 +5,9 @@ function tryJsonParse(value: string | null): string | null {
     if (value) {
       return JSON.parse(value);
     }
-  } catch {;}
+  } catch {
+    /* empty */
+  }
   return null;
 }
 

@@ -117,8 +117,8 @@ const exploreRouterMenu = [
 
 const mxLogout = logout;
 const _chainMetaLocal: {
-  networkId: string,
-  contracts: any,
+  networkId: string;
+  contracts: any;
 } = {
   networkId: "",
   contracts: undefined,
@@ -357,8 +357,9 @@ function App({ appConfig }: { appConfig: any }) {
                   as={ReactRouterLink}
                   to={"/"}
                   style={{ textDecoration: "none", pointerEvents: hasPendingTransactions ? "none" : undefined }}
-                  onClick={() => { navigateToDiscover(MENU.HOME); }}
-                >
+                  onClick={() => {
+                    navigateToDiscover(MENU.HOME);
+                  }}>
                   <HStack>
                     <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
                     <Heading fontWeight={"normal"} size={"md"}>
@@ -373,12 +374,7 @@ function App({ appConfig }: { appConfig: any }) {
                   {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
                     const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
                     return (
-                      <Link
-                        as={ReactRouterLink}
-                        to={path}
-                        style={{ textDecoration: "none" }}
-                        key={path}
-                      >
+                      <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                         <Button
                           colorScheme="teal"
                           variant="outline"
@@ -410,17 +406,8 @@ function App({ appConfig }: { appConfig: any }) {
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, Icon } = menuItem;
                           return (
-                            <Link
-                              as={ReactRouterLink}
-                              to={path}
-                              style={{ textDecoration: "none" }}
-                              key={path}
-                            >
-                              <MenuItem
-                                key={label}
-                                isDisabled={hasPendingTransactions}
-                                onClick={() => navigateToDiscover(menuEnum)}
-                              >
+                            <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                              <MenuItem key={label} isDisabled={hasPendingTransactions} onClick={() => navigateToDiscover(menuEnum)}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
                                 {label}
                               </MenuItem>
@@ -441,21 +428,13 @@ function App({ appConfig }: { appConfig: any }) {
                         <MenuGroup>
                           {_user.isMxAuthenticated && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
-                              <MenuItem
-                                closeOnSelect={false}
-                                isDisabled={hasPendingTransactions}
-                                onClick={() => setMxShowClaimsHistory(true)}
-                              >
+                              <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
                                 <Text fontSize="sm">View claims history</Text>
                               </MenuItem>
                             </ChainSupportedComponent>
                           )}
 
-                          <MenuItem
-                            onClick={handleLogout}
-                            fontSize="sm"
-                            isDisabled={hasPendingTransactions}
-                          >
+                          <MenuItem onClick={handleLogout} fontSize="sm" isDisabled={hasPendingTransactions}>
                             Logout
                           </MenuItem>
                         </MenuGroup>
@@ -463,11 +442,7 @@ function App({ appConfig }: { appConfig: any }) {
                     </Menu>
                   ))}
                 </Box>
-                <Link
-                  as={ReactRouterLink}
-                  to={""}
-                  style={{ textDecoration: "none" }}
-                >
+                <Link as={ReactRouterLink} to={""} style={{ textDecoration: "none" }}>
                   <IconButton
                     size={"sm"}
                     icon={<AiFillHome />}
@@ -543,7 +518,9 @@ function App({ appConfig }: { appConfig: any }) {
 
             <Box backgroundColor="none" height={"5rem"} borderTop="solid 1px">
               <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                <Text fontSize="xx-small">{dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}</Text>
+                <Text fontSize="xx-small">
+                  {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
+                </Text>
                 <HStack>
                   <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                     Terms of Use <ExternalLinkIcon mx="2px" />
@@ -613,12 +590,7 @@ function App({ appConfig }: { appConfig: any }) {
                               {menu.sectionItems.map((menuItem) => {
                                 const { label, menuEnum, path, Icon } = menuItem;
                                 return (
-                                  <Link
-                                    as={ReactRouterLink}
-                                    to={path}
-                                    style={{ textDecoration: "none" }}
-                                    key={path}
-                                  >
+                                  <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                                     <ListItem
                                       as={Button}
                                       variant={"ghost"}
@@ -703,7 +675,7 @@ function App({ appConfig }: { appConfig: any }) {
 
 export default App;
 
-function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any, displayParams: any }) {
+function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {
   return (
     <Box
       display={displayParams}
@@ -729,7 +701,7 @@ function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance
   );
 }
 
-function LoggedInChainBadge({ chain, displayParams }: { chain: any, displayParams: any }) {
+function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParams: any }) {
   return (
     <Box
       display={displayParams}
