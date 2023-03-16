@@ -61,6 +61,7 @@ export interface ItemType {
   title: string;
   tokenName: string;
   quantity: number;
+  collection: string;
 }
 
 export interface DataNftType {

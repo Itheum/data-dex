@@ -91,6 +91,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       nftImgUrl: "",
       title: "",
       tokenName: "",
+      collection: "",
     },
   ]);
 

@@ -83,6 +83,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       nftImgUrl: "",
       title: "",
       tokenName: "",
+      collection: "",
     },
   ]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -142,7 +143,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
       error = "Data NFT balance exceeded";
     }
-
     setDataNftBurnAmountError(error);
     setDataNftBurnAmount(valueAsNumber);
   };
@@ -185,7 +185,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         _dataNfts.push({
           index, // only for view & query
           id: nft.identifier, // ID of NFT -> done
-          nftImgUrl: nft.url ? nft.url : "", // image URL of of NFT -> done
+          nftImgUrl: nft.url ? nft.url : "", // image URL of NFT -> done
           dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
           dataStream: decodedAttributes["data_stream_url"].toString(), // data stream URL -> done
           dataMarshal: decodedAttributes["data_marshal_url"].toString(), // data stream URL -> done
@@ -215,11 +215,30 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
       console.log("_dataNfts", _dataNfts);
       setDataNfts(_dataNfts);
+      setItems((prev) => {
+        return _dataNfts.map((dataNft: DataNftType, i: number) => {
+          return {
+            ...(prev?.[i] ?? {}),
+            id: dataNft.id,
+            tokenName: dataNft.tokenName,
+            title: dataNft.title,
+            description: dataNft.description,
+            creator: dataNft.creator,
+            balance: dataNft.balance,
+            supply: dataNft.supply,
+            royalties: dataNft.royalties,
+            creationTime: dataNft.creationTime,
+            dataPreview: dataNft.dataPreview,
+          };
+        });
+      });
     } else {
       // await sleep(4);
       setNoData(true);
       setDataNfts([]);
     }
+
+    console.log(items);
   };
 
   useEffect(() => {
@@ -231,6 +250,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     (async () => {
       if (address && !hasPendingTransactions) {
         const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
+        console.log("User data", _userData);
         setUserData(_userData);
       }
     })();
