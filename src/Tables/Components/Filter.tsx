@@ -15,61 +15,51 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
 
   const styles = {
     numberInput: {
-      width: '4.8rem',
-      lineHeight: '1.25rem',
-      border: '1px solid',
-      borderRadius: '0.375rem',
-      padding: '2px',
-      marginTop: '0.24rem',
-      fontSize: '16px',
+      width: "4.8rem",
+      lineHeight: "1.25rem",
+      border: "1px solid",
+      borderRadius: "0.375rem",
+      padding: "2px",
+      marginTop: "0.24rem",
+      fontSize: "16px",
     },
     textInput: {
-      lineHeight: '1.25rem',
-      border: '1px solid',
-      borderRadius: '0.375rem',
-      padding: '2px',
-      marginTop: '0.24rem',
-      fontSize: '16px',
-      maxWidth: '120px',
-    }
+      lineHeight: "1.25rem",
+      border: "1px solid",
+      borderRadius: "0.375rem",
+      padding: "2px",
+      marginTop: "0.24rem",
+      fontSize: "16px",
+      maxWidth: "120px",
+    },
   };
 
-  return typeof firstValue === 'number' ? (
+  return typeof firstValue === "number" ? (
     <Box>
       <Box display={"flex"} gap={2}>
         <DebouncedInput
           type="number"
-          min={Number(column.getFacetedMinMaxValues()?.[0] ?? '')}
-          max={Number(column.getFacetedMinMaxValues()?.[1] ?? '')}
-          value={(columnFilterValue as [number, number])?.[0] ?? ''}
-          onChange={value =>
-            column.setFilterValue((old: [number, number]) => [value, old?.[1]])
-          }
-          placeholder={`Min ${column.getFacetedMinMaxValues()?.[0]
-            ? `(${column.getFacetedMinMaxValues()?.[0]})`
-            : ''
-            }`}
+          min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
+          max={Number(column.getFacetedMinMaxValues()?.[1] ?? "")}
+          value={(columnFilterValue as [number, number])?.[0] ?? ""}
+          onChange={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
+          placeholder={`Min ${column.getFacetedMinMaxValues()?.[0] ? `(${column.getFacetedMinMaxValues()?.[0]})` : ""}`}
           style={styles.numberInput}
         />
         <DebouncedInput
           type="number"
-          min={Number(column.getFacetedMinMaxValues()?.[0] ?? '')}
-          max={Number(column.getFacetedMinMaxValues()?.[1] ?? '')}
-          value={(columnFilterValue as [number, number])?.[1] ?? ''}
-          onChange={value =>
-            column.setFilterValue((old: [number, number]) => [old?.[0], value])
-          }
-          placeholder={`Max ${column.getFacetedMinMaxValues()?.[1]
-            ? `(${column.getFacetedMinMaxValues()?.[1]})`
-            : ''
-            }`}
+          min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
+          max={Number(column.getFacetedMinMaxValues()?.[1] ?? "")}
+          value={(columnFilterValue as [number, number])?.[1] ?? ""}
+          onChange={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
+          placeholder={`Max ${column.getFacetedMinMaxValues()?.[1] ? `(${column.getFacetedMinMaxValues()?.[1]})` : ""}`}
           style={styles.numberInput}
         />
       </Box>
     </Box>
   ) : (
     <Box>
-      <datalist id={column.id + 'list'}>
+      <datalist id={column.id + "list"}>
         {sortedUniqueValues.slice(0, 5000).map((value: any) => (
           <option value={value} key={value} />
         ))}
@@ -80,7 +70,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
         onChange={(value) => column.setFilterValue(value)}
         placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
         style={styles.textInput}
-        list={column.id + 'list'}
+        list={column.id + "list"}
       />
     </Box>
   );
