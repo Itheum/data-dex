@@ -462,8 +462,10 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       Burn
                     </Button>
 
-                    <Box fontSize="sm" mt="5">
-                      {`Balance: ${item.balance} out of ${item.supply}. Royalty: ${item.royalties * 100}%`}
+                    <Box color="gray.600" fontSize="sm" my={2}>
+                      {`Balance: ${item.balance}`} <br />
+                      {`Total supply: ${item.supply}`} <br />
+                      {`Royalty: ${item.royalties * 100}%`}
                     </Box>
 
                     <HStack mt="2">

@@ -19,6 +19,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
+import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
@@ -108,13 +109,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               </Popover>
               <Flex display="flex" flexDirection="column">
                 <Box color="gray.600" fontSize="sm">
-                  Creator: {` ${nftMetadatas[index].creator.slice(0, 8)} ... ${nftMetadatas[index].creator.slice(-8)}`}
+                  Creator: <ShortAddress address={nftMetadatas[index].creator} />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Box>
                 <Box color="gray.600" fontSize="sm">
-                  Owner:&nbsp; {` ${item?.owner.slice(0, 8)} ... ${item?.owner.slice(-8)}`}
+                  Owner: <ShortAddress address={item?.owner} />
                   <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
