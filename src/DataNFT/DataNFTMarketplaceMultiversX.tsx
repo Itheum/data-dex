@@ -303,7 +303,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     marketRequirements={marketRequirements}
                     item={item}
                     userData={userData}
-                    index={index}>
+                    index={index}
+                    marketFreezedNonces={marketFreezedNonces}
+                  >
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
                     ) : (
