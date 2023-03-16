@@ -238,4 +238,30 @@ export class DataNftMintContract {
 
     return dataNFT;
   }
+
+  async getSftsFreezedForAddress(targetAddress: string): Promise<number[]> {
+    try {
+      const interaction = this.contract.methods.getSftsFreezedForAddress([new Address(targetAddress)]);
+      const query = interaction.buildQuery();
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (returnCode && returnCode.isSuccess() && firstValue) {
+        const values = firstValue.valueOf();
+        const decoded = values.map((value: any) => value.toNumber());
+
+        return decoded;
+      } else {
+        console.error(returnMessage);
+
+        return [];
+      }
+    } catch (error) {
+      console.error(error);
+
+      return [];
+    }
+  }
 }

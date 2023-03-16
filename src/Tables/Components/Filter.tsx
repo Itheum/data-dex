@@ -3,24 +3,13 @@ import { Box } from "@chakra-ui/react";
 import { Column, Table } from "@tanstack/react-table";
 import DebouncedInput from "./DebouncedInput";
 
-export default function Filter({
-  column,
-  table,
-}: {
-  column: Column<any, unknown>
-  table: Table<any>
-}) {
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id);
+export default function Filter({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
+  const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id);
 
   const columnFilterValue = column.getFilterValue();
 
   const sortedUniqueValues = useMemo(
-    () =>
-      typeof firstValue === 'number'
-        ? []
-        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
+    () => (typeof firstValue === "number" ? [] : Array.from(column.getFacetedUniqueValues().keys()).sort()),
     [column.getFacetedUniqueValues()]
   );
 
@@ -87,8 +76,8 @@ export default function Filter({
       </datalist>
       <DebouncedInput
         type="text"
-        value={(columnFilterValue ?? '') as string}
-        onChange={value => column.setFilterValue(value)}
+        value={(columnFilterValue ?? "") as string}
+        onChange={(value) => column.setFilterValue(value)}
         placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
         style={styles.textInput}
         list={column.id + 'list'}

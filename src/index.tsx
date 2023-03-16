@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "production") {
     dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
 
     // this is so we can use the environments filter in sentry to filter staging production vs actual production
-    environment: process.env.REACT_APP_ENV_SENTRY_PROFILE || 'unknown',
+    environment: process.env.REACT_APP_ENV_SENTRY_PROFILE || "unknown",
 
     // (BrowserTracing) Set tracesSampleRate to 1.0 to capture 100%  of transactions for performance monitoring.
     tracesSampleRate: 1.0,

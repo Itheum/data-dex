@@ -24,7 +24,7 @@ import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { WALLETS } from "libs/util";
 import { gtagGo, clearAppSessions, sleep } from "libs/util";
 
-function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any, resetLaunchMode: any }) {
+function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
@@ -100,10 +100,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
-                          <ExtensionLoginButton
-                            callbackRoute={"/"}
-                            loginButtonText={"DeFi Wallet"}
-                            buttonClassName="auth_button"></ExtensionLoginButton>
+                          <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
                         </WrapItem>
 
                         <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">

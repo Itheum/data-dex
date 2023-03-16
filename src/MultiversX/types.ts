@@ -43,6 +43,26 @@ export interface OfferType {
   quantity: number;
 }
 
+export interface ItemType {
+  index: number;
+  owner: string;
+  wanted_token_identifier: string;
+  wanted_token_amount: string;
+  wanted_token_nonce: number;
+  offered_token_identifier: string;
+  offered_token_nonce: number;
+  balance: number;
+  supply: number;
+  royalties: number;
+  id: string;
+  dataPreview: string;
+  nftImgUrl: string;
+  nonce: number;
+  title: string;
+  tokenName: string;
+  quantity: number;
+}
+
 export interface DataNftType {
   index: number;
   id: string;

@@ -57,10 +57,7 @@ const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
           borderColor="teal.300"
           p="5">
           <HStack alignItems={"center"} spacing={4}>
-            <Image
-              boxSize="48px"
-              height="auto"
-              src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+            <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
 
             <Heading size={"md"} display={["none", "block"]}>
               Itheum Data DEX
@@ -79,7 +76,6 @@ const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
             bgPosition="bottom"
             bgRepeat="no-repeat"
             justifyContent="center">
-
             <Center pt="5rem">
               <Flex backgroundColor="none" flexDirection={["column", null, "column", "row"]}>
                 <Box
@@ -87,16 +83,17 @@ const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
                   backgroundColor="none"
                   textAlign={["center", null, null, "center", "left"]}
                   m={["auto", "initial"]}>
-
-                  <Heading
-                    as="h1"
-                    size={["2xl", null, null, "3xl", "4xl"]}>
-                    Own and trade <Text as="span" color="teal.300">your data</Text> in the Web3 Multiverse
+                  <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
+                    Own and trade{" "}
+                    <Text as="span" color="teal.300">
+                      your data
+                    </Text>{" "}
+                    in the Web3 Multiverse
                   </Heading>
 
-                  <Text
-                    mt="1rem">
-                    Lorem ipsum dolor sit amet consectetur. Turpis vulputate vel elementum nibh viverra cras dui faucibus. Risus in sem viverra adipiscing quam in. Dictum aliquam semper orci molesti.
+                  <Text mt="1rem">
+                    Lorem ipsum dolor sit amet consectetur. Turpis vulputate vel elementum nibh viverra cras dui faucibus. Risus in sem viverra adipiscing quam
+                    in. Dictum aliquam semper orci molesti.
                   </Text>
                 </Box>
 
@@ -187,14 +184,11 @@ const AuthLauncher = ({ onLaunchMode }: { onLaunchMode: any }) => {
           </Box>
         </Box>
 
-        <Box
-          backgroundColor={colorMode === "light" ? "white" : "black"}
-          height={"5rem"}
-          borderTop="solid 1px"
-          borderColor="teal.300">
-
+        <Box backgroundColor={colorMode === "light" ? "white" : "black"} height={"5rem"} borderTop="solid 1px" borderColor="teal.300">
           <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-            <Text fontSize="xx-small">{dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}</Text>
+            <Text fontSize="xx-small">
+              {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
+            </Text>
             <HStack>
               <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
                 Terms of Use <ExternalLinkIcon mx="2px" />
@@ -223,7 +217,9 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack>
         <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }}>Connect MultiversX Wallet</Button>
+          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }}>
+            Connect MultiversX Wallet
+          </Button>
         </PopoverTrigger>
       </HStack>
 
