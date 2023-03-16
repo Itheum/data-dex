@@ -123,46 +123,44 @@ export function DataTable<Data extends object>({
       </Table>
       <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
         <VStack>
-          <Show above="md">
-            <HStack>
-              <Button
-                border={1}
-                borderRadius={'0.24rem'}
-                padding={1}
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                {'<<'}
-              </Button>
-              <Button
-                border={1}
-                borderRadius={'0.24rem'}
-                padding={1}
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                {'<'}
-              </Button>
-              <Button
-                border={1}
-                borderRadius={'0.24rem'}
-                padding={1}
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                {'>'}
-              </Button>
-              <Button
-                border={1}
-                borderRadius={'0.24rem'}
-                padding={1}
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                {'>>'}
-              </Button>
-            </HStack>
-          </Show>
+          <HStack>
+            <Button
+              border={1}
+              borderRadius={'0.24rem'}
+              padding={1}
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {'<<'}
+            </Button>
+            <Button
+              border={1}
+              borderRadius={'0.24rem'}
+              padding={1}
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {'<'}
+            </Button>
+            <Button
+              border={1}
+              borderRadius={'0.24rem'}
+              padding={1}
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              {'>'}
+            </Button>
+            <Button
+              border={1}
+              borderRadius={'0.24rem'}
+              padding={1}
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              {'>>'}
+            </Button>
+          </HStack>
           <Text as={'span'} display={"flex"} alignItems={"center"} gap={1}>
             Page
             <strong>
