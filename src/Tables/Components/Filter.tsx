@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { Box } from "@chakra-ui/react";
 import { Column, Table } from "@tanstack/react-table";
 import DebouncedInput from "./DebouncedInput";
 
@@ -12,9 +13,30 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
     [column.getFacetedUniqueValues()]
   );
 
+  const styles = {
+    numberInput: {
+      width: "4.8rem",
+      lineHeight: "1.25rem",
+      border: "1px solid",
+      borderRadius: "0.375rem",
+      padding: "2px",
+      marginTop: "0.24rem",
+      fontSize: "16px",
+    },
+    textInput: {
+      lineHeight: "1.25rem",
+      border: "1px solid",
+      borderRadius: "0.375rem",
+      padding: "2px",
+      marginTop: "0.24rem",
+      fontSize: "16px",
+      maxWidth: "120px",
+    },
+  };
+
   return typeof firstValue === "number" ? (
-    <div>
-      <div className="flex space-x-2">
+    <Box>
+      <Box display={"flex"} gap={2}>
         <DebouncedInput
           type="number"
           min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
@@ -22,7 +44,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
           value={(columnFilterValue as [number, number])?.[0] ?? ""}
           onChange={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
           placeholder={`Min ${column.getFacetedMinMaxValues()?.[0] ? `(${column.getFacetedMinMaxValues()?.[0]})` : ""}`}
-          className="w-24 border shadow rounded"
+          style={styles.numberInput}
         />
         <DebouncedInput
           type="number"
@@ -31,13 +53,12 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
           value={(columnFilterValue as [number, number])?.[1] ?? ""}
           onChange={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
           placeholder={`Max ${column.getFacetedMinMaxValues()?.[1] ? `(${column.getFacetedMinMaxValues()?.[1]})` : ""}`}
-          className="w-24 border shadow rounded"
+          style={styles.numberInput}
         />
-      </div>
-      <div className="h-1" />
-    </div>
+      </Box>
+    </Box>
   ) : (
-    <>
+    <Box>
       <datalist id={column.id + "list"}>
         {sortedUniqueValues.slice(0, 5000).map((value: any) => (
           <option value={value} key={value} />
@@ -48,10 +69,9 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
         value={(columnFilterValue ?? "") as string}
         onChange={(value) => column.setFilterValue(value)}
         placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
-        className="w-36 border shadow rounded"
+        style={styles.textInput}
         list={column.id + "list"}
       />
-      <div className="h-1" />
-    </>
+    </Box>
   );
 }
