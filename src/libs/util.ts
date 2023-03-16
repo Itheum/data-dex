@@ -376,23 +376,13 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   }
 };
 
-export const debugui = (text: string) => {
-  if (sessionStorage && sessionStorage.getItem("itm-debugui")) {
-    const div = document.getElementById("debugui");
-    if (div) {
-      div.innerHTML = text + "<br/>" + div.innerHTML;
-      div.style.display = "block";
-    }
-  }
-};
-
 export const clearAppSessions = () => {
   // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in mx)
-  // ... so we explictely remove 'itm-wallet-used' here
-  sessionStorage.removeItem("itm-wallet-used");
+  // ... so we explicitly remove 'itm-wallet-used' here
+  localStorage?.removeItem("itm-wallet-used");
 
-  sessionStorage.removeItem("itm-launch-mode");
-  sessionStorage.removeItem("itm-launch-env");
+  localStorage?.removeItem("itm-launch-mode");
+  localStorage?.removeItem("itm-launch-env");
 };
 
 export const formatNumberRoundFloor = (num: number, decimals = 2) => {

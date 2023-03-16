@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
-import { useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { WALLETS } from "libs/util";
 import { gtagGo, clearAppSessions, sleep } from "libs/util";
@@ -27,7 +27,7 @@ import { gtagGo, clearAppSessions, sleep } from "libs/util";
 function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
