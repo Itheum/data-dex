@@ -1,10 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import {
+  Badge,
   Box,
   Button,
   Flex,
   HStack,
-  Image,
+  Image, Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -21,22 +22,36 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
+import {
+  CHAIN_TX_VIEWER,
+  convertEsdtToWei,
+  convertWeiToEsdt,
+  isValidNumericCharacter,
+  sleep,
+  uxConfig,
+} from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, MarketplaceRequirementsType } from "../MultiversX/types";
+import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
+import { ShortAddress } from "../UtilComps/ShortAddress";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import moment from "moment/moment";
+import { convertToLocalString } from "../libs/util2";
+import { Address } from "@multiversx/sdk-core/out";
 
 type MyListedDataLowerCardProps = {
-  offers: Record<any, any>;
+  item: ItemType;
+  offers: OfferType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
-  const { offers, index, nftMetadatas } = props;
+  const { offers, index, nftMetadatas, item } = props;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const contract = new DataNftMarketContract("ED");
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -141,6 +156,50 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
 
   return (
     <>
+      <Flex display="flex" flexDirection="column">
+        <Box color="gray.600" fontSize="sm">
+          Creator: <ShortAddress address={new Address(nftMetadatas[index]?.creator)} />
+          <Link href={`${ChainExplorer}/accounts/${new Address(nftMetadatas[index]?.creator)}`} isExternal>
+            <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+
+        <Box color="gray.600" fontSize="sm">
+          Owner: <ShortAddress address={new Address(item?.owner)} />
+          <Link href={`${ChainExplorer}/accounts/${new Address(item?.owner)}`} isExternal>
+            <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
+          {address && address == nftMetadatas[index]?.creator && (
+            <Badge borderRadius="full" px="2" colorScheme="teal">
+              <Text>You are the Creator</Text>
+            </Badge>
+          )}
+
+          {address && address == item?.owner && (
+            <Badge borderRadius="full" px="2" colorScheme="teal">
+              <Text>You are the Owner</Text>
+            </Badge>
+          )}
+
+          <Badge borderRadius="full" px="2" colorScheme="blue">
+            Fully Transferable License
+          </Badge>
+        </Box>
+      </Flex>
+      <Box display="flex" justifyContent="flex-start" mt="2">
+        <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index]?.creationTime).format(uxConfig.dateStr)}`}</Text>
+      </Box>
+
+      {nftMetadatas[index] && (
+        <Box color="gray.600" fontSize="sm">
+          {`Listed: ${item?.quantity}`} <br />
+          {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
+          {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
+        </Box>
+      )}
+
       <Button
         mt="2"
         size="sm"
@@ -245,7 +304,15 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
-                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
+                    <Button
+                      colorScheme="teal"
+                      size="xs"
+                      variant="outline"
+                      ml="2"
+                      onClick={() => {
+                        setDelistAmount(offers[selectedOfferIndex]?.quantity);
+                        console.log(offers[selectedOfferIndex]?.quantity);
+                      }}>
                       De-List All
                     </Button>
                   </Flex>
@@ -331,7 +398,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                           .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
                           .multipliedBy(10000)
                           .div(10000 + (marketRequirements.buyer_fee as number)),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
                       ).toNumber()}{" "}
                     {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
                   </Box>

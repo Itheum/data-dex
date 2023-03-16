@@ -83,7 +83,8 @@ import TrustedComputation from "Sections/TrustedComputation";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
-import ShortAddress from "UtilComps/ShortAddress";
+import { ShortAddress } from "UtilComps/ShortAddress";
+import { Address } from "@multiversx/sdk-core/out";
 
 const exploreRouterMenu = [
   {
@@ -400,7 +401,7 @@ function App({ appConfig }: { appConfig: any }) {
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId}>
                       <MenuButton as={Button} size={"sm"} rightIcon={<MdExpandMore />}>
-                        <ShortAddress address={mxAddress} fontSize="md" />
+                        <ShortAddress address={new Address(mxAddress)} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"}>
                         {menu.sectionItems.map((menuItem) => {
@@ -419,7 +420,7 @@ function App({ appConfig }: { appConfig: any }) {
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false}>
-                            <ShortAddress address={mxAddress} fontSize="sm" />
+                            <ShortAddress address={new Address(mxAddress)} fontSize="sm" />
                           </MenuItemOption>
 
                           <MenuDivider />
@@ -581,7 +582,7 @@ function App({ appConfig }: { appConfig: any }) {
                         <>
                           <AccordionButton display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
                             <Text m={0} fontWeight={"bold"}>
-                              <ShortAddress address={mxAddress} fontSize="md" />
+                              <ShortAddress address={new Address(mxAddress)} fontSize="md" />
                             </Text>
                             {isExpanded ? <MdExpandLess /> : <MdExpandMore />}
                           </AccordionButton>

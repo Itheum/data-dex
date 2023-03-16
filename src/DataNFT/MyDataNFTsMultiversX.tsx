@@ -40,7 +40,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
+import { AbiRegistry, Address, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
@@ -53,7 +53,7 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, ItemType, OfferType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import ShortAddress from "UtilComps/ShortAddress";
+import { ShortAddress } from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
@@ -459,7 +459,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                   <Box>
                     {
                       <Box color="gray.600" fontSize="sm">
-                        Creator: <ShortAddress address={item.creator}></ShortAddress>
+                        Creator: <ShortAddress address={new Address(item.creator)}></ShortAddress>
                         <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                           <ExternalLinkIcon mx="2px" />
                         </Link>

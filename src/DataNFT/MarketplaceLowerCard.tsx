@@ -18,18 +18,22 @@ import {
   ModalOverlay,
   Modal,
   Checkbox,
-  ModalHeader,
+  ModalHeader, Link, Badge,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
-import { printPrice } from "../libs/util2";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
+import { printPrice, convertToLocalString } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
+import { ShortAddress } from "../UtilComps/ShortAddress";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import moment from "moment";
+import { Address } from "@multiversx/sdk-core/out";
 
 type MarketplaceLowerCardProps = {
   item: ItemType;
@@ -43,6 +47,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
 
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [readTermsChecked, setReadTermsChecked] = useState(false);
@@ -185,6 +190,51 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
 
   return (
     <>
+      <Flex display="flex" flexDirection="column">
+        <Box color="gray.600" fontSize="sm">
+          Creator: <ShortAddress address={new Address(nftMetadatas[index]?.creator)} />
+          <Link href={`${ChainExplorer}/accounts/${new Address(nftMetadatas[index]?.creator)}`} isExternal>
+            <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+
+        <Box color="gray.600" fontSize="sm">
+          Owner: <ShortAddress address={new Address(item?.owner)} />
+          <Link href={`${ChainExplorer}/accounts/${new Address(item?.owner)}`} isExternal>
+            <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+        <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
+          {address && address == nftMetadatas[index]?.creator && (
+            <Badge borderRadius="full" px="2" colorScheme="teal">
+              <Text>You are the Creator</Text>
+            </Badge>
+          )}
+
+          {address && address == item?.owner && (
+            <Badge borderRadius="full" px="2" colorScheme="teal">
+              <Text>You are the Owner</Text>
+            </Badge>
+          )}
+
+          <Badge borderRadius="full" px="2" colorScheme="blue">
+            Fully Transferable License
+          </Badge>
+
+        </Box>
+      </Flex>
+      <Box display="flex" justifyContent="flex-start" mt="2">
+        <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index]?.creationTime).format(uxConfig.dateStr)}`}</Text>
+      </Box>
+
+      {nftMetadatas[index] && (
+        <Box color="gray.600" fontSize="sm">
+          {`Listed: ${item?.quantity}`} <br />
+          {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
+          {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
+        </Box>
+      )}
+
       <Button
         mt="2"
         size="sm"

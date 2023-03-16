@@ -308,7 +308,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} />
+                      <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} item={item}/>
                     )}
                   </UpperCardComponent>
                 </div>

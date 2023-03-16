@@ -1,7 +1,6 @@
 import React, { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
   Button,
   Flex,
@@ -12,7 +11,8 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
-  ModalOverlay, NumberDecrementStepper,
+  ModalOverlay,
+  NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
@@ -27,14 +27,13 @@ import {
   Skeleton,
   Stack,
   Text,
-  useDisclosure, useToast,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
-import moment from "moment/moment";
-import ShortAddress from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter } from "../libs/util";
+import { printPrice } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
@@ -192,54 +191,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
-              <Flex display="flex" flexDirection="column">
-                <Box color="gray.600" fontSize="sm">
-                  Creator: <ShortAddress address={nftMetadatas[index].creator} />
-                  <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </Box>
-                <Box color="gray.600" fontSize="sm">
-                  Owner: <ShortAddress address={item?.owner} />
-                  <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </Box>
-                <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
-                  {address && address == nftMetadatas[index].creator && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Creator</Text>
-                    </Badge>
-                  )}
 
-                  {address && address == item?.owner && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Owner</Text>
-                    </Badge>
-                  )}
-
-                  <Badge borderRadius="full" px="2" colorScheme="blue">
-                    Fully Transferable License
-                  </Badge>
-                  {hasBurnButton && (
-                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
-                      Burn
-                    </Button>
-                  )}
-                </Box>
-              </Flex>
-
-              <Box display="flex" justifyContent="flex-start" mt="2">
-                <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
-              </Box>
-
-              {nftMetadatas[index] && (
-                <Box color="gray.600" fontSize="sm">
-                  {`Listed: ${item?.quantity}`} <br />
-                  {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
-                  {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
-                </Box>
-              )}
             </>
           )}
           {!nftMetadataLoading && !!nftMetadatas[index] && feePrice && (

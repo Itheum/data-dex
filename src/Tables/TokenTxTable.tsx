@@ -7,7 +7,7 @@ import axios from "axios";
 import { CHAIN_TX_VIEWER } from "libs/util";
 import { getApi } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
-import ShortAddress from "UtilComps/ShortAddress";
+import { ShortAddress } from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
 import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 export default function TokenTxTable(props: TokenTableProps) {
@@ -62,7 +62,7 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.to,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} />
+            <ShortAddress address={new Address(cellProps.getValue())} />
             <Link
               href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`}
               isExternal

@@ -22,12 +22,13 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
-import ShortAddress from "UtilComps/ShortAddress";
+import { ShortAddress } from "UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { getApi } from "../MultiversX/api";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
+import { Address } from "@multiversx/sdk-core/out";
 
 type MyListedDataNFTProps = {
   offer: OfferType;
@@ -130,14 +131,14 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               <Flex display="flex" flexDirection="column">
                 <Box color="gray.600" fontSize="sm">
                   Creator:
-                  <ShortAddress address={nftMetadata[index].creator} />
-                  <Link href={`${ChainExplorer}/accounts/${nftMetadata[index].creator}`} isExternal>
+                  <ShortAddress address={new Address(nftMetadata[index]?.creator)} />
+                  <Link href={`${ChainExplorer}/accounts/${nftMetadata[index]?.creator}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Box>
                 <Box color="gray.600" fontSize="sm">
-                  Owner: <ShortAddress address={offer.owner} />
-                  <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
+                  Owner: <ShortAddress address={new Address(offer.owner)} />
+                  <Link href={`${ChainExplorer}/accounts/${new Address(offer.owner)}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Box>
