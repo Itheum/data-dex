@@ -14,7 +14,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
-import { useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import { isValidNumericCharacter, sleep } from "libs/util";
 import { DataNftType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -38,7 +38,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
 
   const { hasPendingTransactions } = useGetPendingTransactions();
 
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
 
   const cleanupAccessDataStreamProcess = () => {
     onAccessProgressModalClose();

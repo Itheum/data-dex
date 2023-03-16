@@ -61,14 +61,13 @@ import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
-import { useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import {
   CHAIN_TOKEN_SYMBOL,
   CHAINS,
   clearAppSessions,
   consoleNotice,
   contractsForChain,
-  debugui,
   formatNumberRoundFloor,
   gtagGo,
   MENU,
@@ -161,7 +160,7 @@ function App({ appConfig }: { appConfig: any }) {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { colorMode, toggleColorMode } = useColorMode();
   const { pathname } = useLocation();
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
 
   const [itheumAccount, setItheumAccount] = useState(null);
@@ -293,12 +292,6 @@ function App({ appConfig }: { appConfig: any }) {
       mxLogout("/");
     }
   };
-
-  debugui(`walletUsedSession ${walletUsedSession}`);
-  debugui(`_chainMetaLocal.networkId ${_chainMetaLocal.networkId}`);
-
-  // const screenBreakPoint = useBreakpointValue({ base: "base", md: "md" });
-  //// e.g. {screenBreakPoint === "md" && <ShortAddress address={mxAddress} fontSize="md" />}
 
   const isMenuItemSelected = (currentMenuItem: number) => {
     return menuItem === currentMenuItem;

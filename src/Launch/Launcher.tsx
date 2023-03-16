@@ -4,9 +4,9 @@ import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import MxAppHarness from "AppHarness/AppHarnessMultiversX";
 import AuthPickerMx from "AuthPicker/AuthPickerMultiversX";
 import AuthLauncher from "Launch/AuthLauncher";
-import { useLocalStorage, useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
-import { debugui, uxConfig } from "libs/util";
+import { uxConfig } from "libs/util";
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null); // let's us support, browser refresh session recovery if user is logged in
@@ -17,6 +17,7 @@ function Launcher() {
   const handleLaunchMode = (option: any, environment: any) => {
     setLaunchMode(option);
     setLaunchModeSession(option);
+
     if (environment) {
       setLaunchEnvironment(environment);
       setLaunchEnvSession(environment);
@@ -24,10 +25,9 @@ function Launcher() {
 
     // always reset this value in case user is toggling between wallets in front end
     // ... resetting here is nice an clean
-    sessionStorage.removeItem("itm-wallet-used");
+    localStorage?.removeItem("itm-wallet-used");
   };
 
-  debugui(`launchMode ${launchMode} environment ${launchEnvironment}`);
   return (
     <>
       {launchMode == "auth" && <AuthLauncher onLaunchMode={handleLaunchMode} />}
