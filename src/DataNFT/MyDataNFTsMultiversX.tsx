@@ -46,7 +46,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
-import { useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -111,7 +111,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
 
   useEffect(() => {

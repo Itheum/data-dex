@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, debugui, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -271,8 +271,6 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
     onItheumAccount(dataCATDemoUserData);
   };
-
-  debugui(`_chainMeta.networkId ${_chainMeta.networkId}`);
 
   const tileBoxMdW = "310px";
   const tileBoxH = "360px";
