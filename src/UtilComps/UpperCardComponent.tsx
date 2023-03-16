@@ -36,11 +36,23 @@ type UpperCardComponentProps = {
   marketRequirements: MarketplaceRequirementsType | undefined;
   item?: ItemType;
   index: number;
+  marketFreezedNonces: number[];
   children?: React.ReactNode;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const { nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadatas, userData, index, children, item, marketRequirements } = props;
+  const {
+    nftImageLoading,
+    nftMetadataLoading,
+    setNftImageLoading,
+    nftMetadatas,
+    userData,
+    index,
+    children,
+    item,
+    marketRequirements,
+    marketFreezedNonces,
+  } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -175,7 +187,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item?.offered_token_nonce)) ? "visible" : "collapse"}>
+          visibility={
+            userData.addressFrozen
+              || (userData.frozenNonces && item
+                && (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce)))
+              ? "visible" : "collapse"
+          }
+        >
           <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it
