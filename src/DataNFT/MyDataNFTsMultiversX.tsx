@@ -604,8 +604,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                     userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
                   }
                   backdropFilter="auto"
-                  backdropBlur="6px"
-                >
+                  backdropBlur="6px">
                   <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
                     - FROZEN - <br />
                     Data NFT is under investigation by the DAO as there was a complaint received against it

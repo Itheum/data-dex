@@ -15,7 +15,8 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Skeleton,
-  Text, useDisclosure,
+  Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -77,7 +78,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
   return (
-    <Flex wrap="wrap" gap="5" key={index} >
+    <Flex wrap="wrap" gap="5" key={index}>
       <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
         <Flex justifyContent="center" pt={5}>
           <Skeleton isLoaded={nftImageLoading} h={200}>
@@ -110,9 +111,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
 
                     <Flex flexGrow="1">
                       <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                        {nftMetadata[index].description.length > 54
-                          ? nftMetadata[index].description.substring(0, 53) + "..."
-                          : nftMetadata[index].description}
+                        {nftMetadata[index].description.length > 54 ? nftMetadata[index].description.substring(0, 53) + "..." : nftMetadata[index].description}
                       </Text>
                     </Flex>
                   </div>
@@ -130,7 +129,8 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               </Popover>
               <Flex display="flex" flexDirection="column">
                 <Box color="gray.600" fontSize="sm">
-                  Creator:<ShortAddress address={nftMetadata[index].creator} />
+                  Creator:
+                  <ShortAddress address={nftMetadata[index].creator} />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadata[index].creator}`} isExternal>
                     <ExternalLinkIcon mx="2px" />
                   </Link>
@@ -197,8 +197,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   console.log("NftLoading", nftMetadataLoading);
                   console.log("nftMetaIndex", !!nftMetadata[index]);
                   window.open(nftMetadata[index].dataPreview);
-                }}
-              >
+                }}>
                 Preview Data
               </Button>
 
@@ -215,8 +214,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                         setDelistAmount(offers[index].quantity);
                         setDelistModalState(1);
                         onDelistModalOpen();
-                      }}
-                    >
+                      }}>
                       De-List All
                     </Button>
                     {offers[index].quantity > 1 && (
@@ -230,8 +228,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                           setDelistAmount(1);
                           setDelistModalState(0);
                           onDelistModalOpen();
-                        }}
-                      >
+                        }}>
                         De-List Some
                       </Button>
                     )}
@@ -256,8 +253,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                           setNewListingPrice(0);
                         }
                         onUpdatePriceModalOpen();
-                      }}
-                    >
+                      }}>
                       Update Price
                     </Button>
                   </Flex>
@@ -277,8 +273,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"}
-        >
+          visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"}>
           <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it

@@ -108,7 +108,6 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
       const data = await res.json();
 
       if (data && data.nonce) {
-
         await sleep(3);
 
         const signResult = await fetchAccountSignature(data.nonce);
@@ -116,7 +115,6 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
         if (signResult.success !== false) {
           await sleep(3);
         } else {
-
           // auto download the file without ever exposing the url
           const link = document.createElement("a");
           link.target = "_blank";

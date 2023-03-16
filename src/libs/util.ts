@@ -331,7 +331,7 @@ export const TERMS = [
   { id: "3", val: "Fully License (any use case)", coin: 2 },
 ];
 
-export const sleep = (sec: number) => new Promise(r => setTimeout(r, sec * 1000));
+export const sleep = (sec: number) => new Promise((r) => setTimeout(r, sec * 1000));
 
 export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId: NetworkIdType) => {
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
