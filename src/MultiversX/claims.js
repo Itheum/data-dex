@@ -49,10 +49,10 @@ export class ClaimsContract {
       const res = await this.networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
-      const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+      const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
       if (returnCode && returnCode.isSuccess()) {
-        firstValue.valueOf().forEach((item, index) => {
+        firstValue.valueOf().forEach((item) => {
           result.push({
             amount: item.amount.toNumber(),
             date: item.date.toNumber() * 1000,

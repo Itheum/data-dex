@@ -114,6 +114,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
+          { amount: 0, date: 0 }
         ];
 
         const claimBalanceValues = [];
@@ -127,7 +128,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
             claimBalanceDates.push(claim.date);
           });
         } else if (claims.error) {
-          claimBalanceValues.push("-2", "-2", "-2"); // errors
+          claimBalanceValues.push("-2", "-2", "-2", "-2"); // errors
 
           if (!toast.isActive("er2")) {
             toast({
