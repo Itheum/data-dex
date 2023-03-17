@@ -92,6 +92,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       title: "",
       tokenName: "",
       collection: "",
+      creator: "",
+      creationTime: new Date(),
     },
   ]);
 
@@ -243,7 +245,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   };
   useEffect(() => {
     if (hasPendingTransactions) return;
-
     getUserData();
   }, [address, hasPendingTransactions]);
 
@@ -308,7 +309,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} item={item}/>
+                      <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} item={item} />
                     )}
                   </UpperCardComponent>
                 </div>

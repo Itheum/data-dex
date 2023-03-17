@@ -84,6 +84,8 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       title: "",
       tokenName: "",
       collection: "",
+      creator: "",
+      creationTime: new Date(),
     },
   ]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
