@@ -65,7 +65,7 @@ import { useLocalStorage } from "libs/hooks";
 import {
   CHAIN_TOKEN_SYMBOL,
   CHAINS,
-  clearAppSessions,
+  clearAppSessionsLaunchMode,
   consoleNotice,
   contractsForChain,
   formatNumberRoundFloor,
@@ -277,7 +277,7 @@ function App({ appConfig }: { appConfig: any }) {
   };
 
   const handleLogout = () => {
-    clearAppSessions();
+    clearAppSessionsLaunchMode();
 
     setUser({ ...baseUserContext });
     setChainMeta({});
