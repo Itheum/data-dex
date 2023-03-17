@@ -48,6 +48,7 @@ import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { convertToLocalString } from "libs/util2";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -465,7 +466,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                     <Box color="gray.600" fontSize="sm" my={2}>
                       {`Balance: ${item.balance}`} <br />
                       {`Total supply: ${item.supply}`} <br />
-                      {`Royalty: ${item.royalties * 100}%`}
+                      {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
                     </Box>
 
                     <HStack mt="2">

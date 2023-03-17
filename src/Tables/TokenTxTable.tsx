@@ -92,7 +92,6 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   useEffect(() => {
     const apiUrl = getApi(_chainMeta.networkId);
-    console.log("apiUrl", `${apiUrl}/transactions?token=${props.tokenId}&status=success&size=10000`);
     axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=10000`).then((res) => {
       const txs = res.data;
       setData(

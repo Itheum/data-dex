@@ -132,11 +132,15 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
     }
   };
 
+  function convertToLocalString(arg0: number) {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
       <Box mt="4">
         <Box fontSize="sm" mt="5">
-          {`Balance: ${dataNftItem.balance} out of ${dataNftItem.supply}. Royalty: ${dataNftItem.royalties * 100}%`}
+          {`Balance: ${dataNftItem.balance} out of ${dataNftItem.supply}. Royalty: ${convertToLocalString(dataNftItem.royalties * 100)}%`}
         </Box>
 
         <HStack mt="2">

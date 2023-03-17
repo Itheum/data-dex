@@ -22,6 +22,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
+import { convertToLocalString } from "libs/util2";
 import ShortAddress from "UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { getApi } from "../MultiversX/api";
@@ -165,7 +166,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               </Box>
 
               <Box color="gray.600" fontSize="sm">
-                {`Balance: ${offer.quantity} out of ${nftMetadata[index].supply}. Royalty: ${nftMetadata[index].royalties * 100}%`}
+                {`Balance: ${offer.quantity} out of ${nftMetadata[index].supply}. Royalty: ${convertToLocalString(nftMetadata[index].royalties * 100)}%`}
               </Box>
             </>
           )}
