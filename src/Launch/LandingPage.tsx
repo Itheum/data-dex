@@ -15,11 +15,13 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Wrap,
-  WrapItem,
   Text,
   Center,
   Link,
+  Card,
+  CardBody,
+  Stack,
+  SimpleGrid,
   useColorMode,
 } from "@chakra-ui/react";
 import imgHeroDataNFTs from "img/landing/hero-data-nfts.png";
@@ -34,26 +36,29 @@ const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
   const { colorMode } = useColorMode();
 
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
+  let gradientBorder = "linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
 
   if (colorMode === "light") {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
+    gradientBorder = "linear-gradient(white, white) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
   }
 
   return (
     <Container maxW="container.xl">
       <Flex
-        bgColor={colorMode === "dark" ? "black" : undefined}
+        bgColor={colorMode === "dark" ? "black" : "white"}
         flexDirection="column"
-        justifyContent={"space-between"}
+        justifyContent="space-between"
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
+
         <Flex
           h="5rem"
           alignItems="center"
-          justifyContent={"space-between"}
+          justifyContent="space-between"
           backgroundColor={colorMode === "light" ? "white" : "black"}
-          borderBottom="solid 1px"
+          borderBottom="solid .1rem"
           borderColor="teal.300"
           p="5">
           <HStack alignItems={"center"} spacing={4}>
@@ -68,16 +73,16 @@ const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
         </Flex>
 
         <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
-          <Flex
-            w="100%"
+          <Flex w="100%"
             h={["40rem", "45rem"]}
             bgImage={imgHeroMetaverseMask}
             bgSize="contain"
             bgPosition="bottom"
             bgRepeat="no-repeat"
             justifyContent="center">
-            <Center pt="5rem">
-              <Flex backgroundColor="none" flexDirection={["column", null, "column", "row"]}>
+
+            <Center w="95%" pt="5rem" backgroundColor="none">
+              <Flex w="100%" backgroundColor="none" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]}>
                 <Box
                   width={["300px", null, null, "500px", "690px"]}
                   backgroundColor="none"
@@ -104,97 +109,123 @@ const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
             </Center>
           </Flex>
 
-          <Box p="5">
-            <Heading as="h2" size="lg">
+          <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
+            <Heading as="h2" size="lg" mb="5" textAlign={["center", "initial"]}>
               Recent Data NFTs
             </Heading>
 
-            <Wrap spacing="50px" mt="20px">
-              <WrapItem>
-                <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreidm2ezl6a2zeze2rgy6n5r7ehx5vxerymiglev2wtecvvztrlizka" />
-              </WrapItem>
-              <WrapItem>
-                <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreih7pf65lgyi5gm7n3aapvyai5b23m7tz5m5iwdclw6y4ecwsg35du" />
-              </WrapItem>
-              <WrapItem>
-                <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreicqtuzy5pkbtccckzbfjwfm2qwydnhk4xwgcjchmki5udjqtsc3uq" />
-              </WrapItem>
-              <WrapItem>
-                <Image w="250px" src="https://devnet-media.elrond.com/nfts/asset/bafkreifw3v3f2xmlhexyh3mgoj4e7uhfguzl6mawdm5ffl7qjcew3i2lzy" />
-              </WrapItem>
-            </Wrap>
+            <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
+              {Array.from("12345").map(idx => (
+                <Card
+                  key={idx}
+                  maxW="sm"
+                  variant="outline"
+                  backgroundColor="none"
+                  borderRadius="1.5rem"
+                  border=".1rem solid transparent"
+                  style={{ "background": gradientBorder }}>
+                  <CardBody>
+                    <Link href="/datanfts/marketplace/DATANFTFT2-71ac28-79">
+                      <Image
+                        src="https://devnet-media.elrond.com/nfts/asset/bafkreih7pf65lgyi5gm7n3aapvyai5b23m7tz5m5iwdclw6y4ecwsg35du"
+                        alt="Green double couch with wooden legs"
+                        borderRadius="lg"
+                      />
+                    </Link>
+                    <Stack mt="6" spacing="2">
+                      <Heading size="md">NFT Short Name</Heading>
+                      <Text>Supply Available : 2</Text>
+                      <Text>Price : 102 ITHEUM</Text>
+                    </Stack>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
           </Box>
 
-          <Box p="5">
-            <Heading as="h2" size="lg">
+          <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
+            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Data NFT 101
             </Heading>
 
-            <Wrap spacing="50px" mt="20px">
-              <WrapItem>
-                <Center w="250px" h="180px" bg="red.200">
-                  Box 1
-                </Center>
-              </WrapItem>
-              <WrapItem>
-                <Center w="250px" h="180px" bg="green.200">
-                  Box 2
-                </Center>
-              </WrapItem>
-              <WrapItem>
-                <Center w="250px" h="180px" bg="tomato">
-                  Box 3
-                </Center>
-              </WrapItem>
-              <WrapItem>
-                <Center w="250px" h="180px" bg="blue.200">
-                  Box 4
-                </Center>
-              </WrapItem>
-            </Wrap>
+            <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
+              {Array.from("123").map(idx => (
+                <Card
+                  key={idx}
+                  variant="outline"
+                  backgroundColor="none"
+                  border="none"
+                >
+                  <CardBody>
+                    <Box>
+                      <Image
+                        src="https://www.colorbook.io/imagecreator.php?hex=none&width=350&height=200"
+                        alt=">Article Title GOES IN HERE"
+                        borderRadius="1.5rem"
+                        border=".1rem solid transparent"
+                        style={{ "background": gradientBorder }}
+                      />
+                    </Box>
+                    <Stack mt="6" spacing="2">
+                      <Text>10 March,2023</Text>
+                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>Article Title GOES IN HERE, CAPS AND it might be two to three lines long</Heading>
+                      <Text noOfLines={2}>Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....</Text>
+                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">Read More</Link>
+                    </Stack>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
           </Box>
 
-          <Box p="5">
-            <Heading as="h2" size="lg">
-              Notable Articles
+          <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
+            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+              Articles
             </Heading>
 
-            <Wrap spacing="50px" mt="20px">
-              <WrapItem>
-                <Center w="250px" h="180px" bg="red.200">
-                  Box 1
-                </Center>
-              </WrapItem>
-              <WrapItem>
-                <Center w="250px" h="180px" bg="green.200">
-                  Box 2
-                </Center>
-              </WrapItem>
-              <WrapItem>
-                <Center w="250px" h="180px" bg="tomato">
-                  Box 3
-                </Center>
-              </WrapItem>
-              <WrapItem>
-                <Center w="250px" h="180px" bg="blue.200">
-                  Box 4
-                </Center>
-              </WrapItem>
-            </Wrap>
+            <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
+              {Array.from("123").map(idx => (
+                <Card
+                  key={idx}
+                  variant="outline"
+                  backgroundColor="none"
+                  border="none"
+                >
+                  <CardBody>
+                    <Box>
+                      <Image
+                        src="https://www.colorbook.io/imagecreator.php?hex=none&width=350&height=200"
+                        alt=">Article Title GOES IN HERE"
+                        borderRadius="1.5rem"
+                        border=".1rem solid transparent"
+                        style={{ "background": gradientBorder }}
+                      />
+                    </Box>
+                    <Stack mt="6" spacing="2">
+                      <Text>10 March, 2023</Text>
+                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>Article Title GOES IN HERE, CAPS AND it might be two to three lines long</Heading>
+                      <Text noOfLines={2}>Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....</Text>
+                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">Read More</Link>
+                    </Stack>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
           </Box>
+
         </Box>
 
-        <Box backgroundColor={colorMode === "light" ? "white" : "black"} height={"5rem"} borderTop="solid 1px" borderColor="teal.300">
+        <Box backgroundColor={colorMode === "light" ? "white" : "black"} height="5rem" borderTop="solid .1rem" borderColor="teal.300">
           <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
             <Text fontSize="xx-small">
               {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
             </Text>
             <HStack>
               <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
-                Terms of Use <ExternalLinkIcon mx="2px" />
+                Terms of Use <ExternalLinkIcon mx={1} />
               </Link>
               <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
-                Privacy Policy <ExternalLinkIcon mx="2px" />
+                Privacy Policy <ExternalLinkIcon mx={1} />
               </Link>
             </HStack>
           </Flex>
