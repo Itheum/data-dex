@@ -376,11 +376,8 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   }
 };
 
-export const clearAppSessions = () => {
-  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in mx)
-  // ... so we explicitly remove 'itm-wallet-used' here
+export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-wallet-used");
-
   localStorage?.removeItem("itm-launch-mode");
   localStorage?.removeItem("itm-launch-env");
 };

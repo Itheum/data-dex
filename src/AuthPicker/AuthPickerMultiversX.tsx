@@ -22,16 +22,16 @@ import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebW
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { WALLETS } from "libs/util";
-import { gtagGo, clearAppSessions, sleep } from "libs/util";
+import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/util";
 
 function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
-  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
-      clearAppSessions();
+      clearAppSessionsLaunchMode();
 
       await sleep(1);
       if (window !== undefined) {
@@ -74,61 +74,59 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   return (
     <>
       {!mxAddress && (
-        <Stack spacing={6} p="5">
-          <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>
-                Select a{" "}
-                <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                  {launchEnvironment}
-                </Badge>{" "}
-                MultiversX Wallet
-              </ModalHeader>
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <Stack spacing="5">
-                  <Box p="5px">
-                    <Stack>
-                      <Wrap spacing="20px" justify="space-between" padding="10px">
-                        <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
-                          <WalletConnectLoginButton
-                            callbackRoute={"/"}
-                            loginButtonText={"xPortal App"}
-                            buttonClassName="auth_button"
-                            {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
-                        </WrapItem>
+        <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              Select a{" "}
+              <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
+                {launchEnvironment}
+              </Badge>{" "}
+              MultiversX Wallet
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <Stack spacing="5">
+                <Box p="5px">
+                  <Stack>
+                    <Wrap spacing="20px" justify="space-between" padding="10px">
+                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
+                        <WalletConnectLoginButton
+                          callbackRoute={"/"}
+                          loginButtonText={"xPortal App"}
+                          buttonClassName="auth_button"
+                          {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
+                      </WrapItem>
 
-                        <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
-                          <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
-                        </WrapItem>
+                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
+                        <ExtensionLoginButton callbackRoute={"/"} loginButtonText={"DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
+                      </WrapItem>
 
-                        <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
-                          <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
-                        </WrapItem>
+                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
+                        <WebWalletLoginButton callbackRoute={"/"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
+                      </WrapItem>
 
-                        <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
-                          <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
-                        </WrapItem>
-                      </Wrap>
-                    </Stack>
-                  </Box>
+                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
+                        <LedgerLoginButton callbackRoute={"/"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
+                      </WrapItem>
+                    </Wrap>
+                  </Stack>
+                </Box>
 
-                  <Text fontSize="sm">
-                    By logging in, you are agreeing to the{" "}
-                    <Link href="https://itheum.com/termsofuse" isExternal>
-                      Terms of Use <ExternalLinkIcon mx="2px" />
-                    </Link>{" "}
-                    &{" "}
-                    <Link href="https://itheum.com/privacypolicy" isExternal>
-                      Privacy Policy <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  </Text>
-                </Stack>
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        </Stack>
+                <Text fontSize="sm">
+                  By logging in, you are agreeing to the{" "}
+                  <Link href="https://itheum.com/termsofuse" isExternal>
+                    Terms of Use <ExternalLinkIcon mx="2px" />
+                  </Link>{" "}
+                  &{" "}
+                  <Link href="https://itheum.com/privacypolicy" isExternal>
+                    Privacy Policy <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </Text>
+              </Stack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       )}
     </>
   );
