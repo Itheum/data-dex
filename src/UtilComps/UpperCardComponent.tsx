@@ -44,12 +44,10 @@ import { DataNftMintContract } from "../MultiversX/dataNftMint";
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
-  nftMetadataLoading: boolean;
+  nftMetadataLoading?: boolean;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
-  marketRequirements: MarketplaceRequirementsType | undefined;
   item: ItemType;
-  hasBurnButton?: boolean;
   index: number;
   children?: React.ReactNode;
 };
@@ -64,8 +62,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     index,
     children,
     item,
-    hasBurnButton = true,
-    marketRequirements,
   } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
@@ -129,12 +125,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   };
 
   useEffect(() => {
-    setFeePrice(
-      printPrice(
-        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
-      )
-    );
+  //   setFeePrice(
+  //     printPrice(
+  //       convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+  //       getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
+  //     )
+  //   );
   }, []);
 
   return (
@@ -192,16 +188,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                 </PopoverContent>
               </Popover>
 
-            </>
-          )}
-          {!nftMetadataLoading && !!nftMetadatas[index] && feePrice && (
-            <>
-              <Box fontSize="xs" mt="2">
-                <Text>
-                  Fee per NFT: {` `}
-                  {marketRequirements ? <>{feePrice}</> : " -"}
-                </Text>
-              </Box>
             </>
           )}
           {address && <>{children}</>}

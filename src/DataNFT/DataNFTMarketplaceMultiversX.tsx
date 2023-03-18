@@ -302,7 +302,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     setNftImageLoading={setOneNFTImgLoaded}
                     nftMetadataLoading={nftMetadatasLoading}
                     nftMetadatas={nftMetadatas}
-                    marketRequirements={marketRequirements}
                     item={item}
                     userData={userData}
                     index={index}>

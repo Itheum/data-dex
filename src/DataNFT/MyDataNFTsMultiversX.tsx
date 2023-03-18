@@ -57,6 +57,8 @@ import { ShortAddress } from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
+import UpperCardComponent from "../UtilComps/UpperCardComponent";
+import { DataNftWalletLowerCard } from "./DataNftWalletLowerCard";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
@@ -115,7 +117,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
-  const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
+  const [userData, setUserData] = useState<any>({});
 
   useEffect(() => {
     (async () => {
@@ -231,6 +233,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
             royalties: dataNft.royalties,
             creationTime: dataNft.creationTime,
             dataPreview: dataNft.dataPreview,
+            nftImgUrl: dataNft.nftImgUrl,
           };
         });
       });
@@ -416,226 +419,31 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
+      {!noData && dataNfts.length === 0 ? <>{(<SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> :
         <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
-          {dataNfts &&
-            dataNfts.map((item, index) => (
-              <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
-                <Flex justifyContent="center" pt={5}>
-                  <Skeleton isLoaded={oneNFTImgLoaded} h={200}>
-                    <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setOneNFTImgLoaded(true)} />
-                  </Skeleton>
-                </Flex>
-
-                <Flex h="28rem" p="3" direction="column" justify="space-between">
-                  <Text fontSize="xs">
-                    <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
-                      {item.tokenName} <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  </Text>
-                  <Popover trigger="hover" placement="auto">
-                    <PopoverTrigger>
-                      <div>
-                        <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
-                          {item.title}
-                        </Text>
-
-                        <Flex flexGrow="1">
-                          <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
-                            {item.description}
-                          </Text>
-                        </Flex>
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent mx="2" width="220px" mt="-7">
-                      <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverBody>
-                        <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                          {item.description}
-                        </Text>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                  <Box>
-                    {
-                      <Box color="gray.600" fontSize="sm">
-                        Creator: <ShortAddress address={new Address(item.creator)}></ShortAddress>
-                        <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                          <ExternalLinkIcon mx="2px" />
-                        </Link>
-                      </Box>
-                    }
-
-                    <Box color="gray.600" fontSize="sm">
-                      {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
-                    </Box>
-
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the {item.creator !== address ? "Owner" : "Creator"}</Text>
-                    </Badge>
-
-                    <Badge borderRadius="full" px="2" colorScheme="blue">
-                      Fully Transferable License
-                    </Badge>
-
-                    <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(e) => onBurnButtonClick(item)}>
-                      Burn
-                    </Button>
-
-                    <Box color="gray.600" fontSize="sm" my={2}>
-                      {`Balance: ${item.balance}`} <br />
-                      {`Total supply: ${item.supply}`} <br />
-                      {`Royalty: ${item.royalties * 100}%`}
-                    </Box>
-
-                    <HStack mt="2">
-                      <Button
-                        size="sm"
-                        colorScheme="teal"
-                        height="7"
-                        onClick={() => {
-                          accessDataStream(item.id, address);
-                        }}>
-                        View Data
-                      </Button>
-                      <Button
-                        size="sm"
-                        colorScheme="teal"
-                        height="7"
-                        variant="outline"
-                        onClick={() => {
-                          window.open(item.dataPreview);
-                        }}>
-                        Preview Data
-                      </Button>
-                    </HStack>
-
-                    <HStack mt="5">
-                      <Text fontSize="xs" w="110px">
-                        How many to list:{" "}
-                      </Text>
-                      <NumberInput
-                        size="xs"
-                        maxW={16}
-                        step={1}
-                        defaultValue={1}
-                        min={1}
-                        max={item.balance}
-                        isValidCharacter={isValidNumericCharacter}
-                        value={amounts[index]}
-                        onChange={(value) => {
-                          let error = "";
-                          const valueAsNumber = Number(value);
-                          if (valueAsNumber <= 0) {
-                            error = "Cannot be zero or negative";
-                          } else if (valueAsNumber > item.balance) {
-                            error = "Cannot exceed balance";
-                          }
-                          setAmountErrors((oldErrors) => {
-                            const newErrors = [...oldErrors];
-                            newErrors[index] = error;
-                            return newErrors;
-                          });
-                          setAmounts((oldAmounts) => {
-                            const newAmounts = [...oldAmounts];
-                            newAmounts[index] = valueAsNumber;
-                            return newAmounts;
-                          });
-                        }}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </HStack>
-                    {amountErrors[index] && (
-                      <Text color="red.400" fontSize="xs">
-                        {amountErrors[index]}
-                      </Text>
-                    )}
-
-                    <HStack mt="2">
-                      <Text fontSize="xs" w="110px">
-                        Listing price for each:{" "}
-                      </Text>
-                      <NumberInput
-                        size="xs"
-                        maxW={16}
-                        step={5}
-                        defaultValue={10}
-                        min={0}
-                        isValidCharacter={isValidNumericCharacter}
-                        max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
-                        value={prices[index]}
-                        onChange={(valueString, valueAsNumber) => {
-                          let error = "";
-                          if (valueAsNumber < 0) error = "Cannot be negative";
-                          if (valueAsNumber > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
-                          setPriceErrors((oldErrors) => {
-                            const newErrors = [...oldErrors];
-                            newErrors[index] = error;
-                            return newErrors;
-                          });
-                          setPrices((oldPrices) => {
-                            const newPrices = [...oldPrices];
-                            newPrices[index] = !valueAsNumber ? 0 : valueAsNumber;
-                            return newPrices;
-                          });
-                        }}
-                        keepWithinRange={true}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </HStack>
-                    {priceErrors[index] && (
-                      <Text color="red.400" fontSize="xs">
-                        {priceErrors[index]}
-                      </Text>
-                    )}
-
-                    <Button
-                      size="xs"
-                      mt={3}
-                      colorScheme="teal"
-                      variant="outline"
-                      isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]}
-                      onClick={() => onListButtonClick(item)}>
-                      List {amounts[index]} NFT{amounts[index] > 1 && "s"} for{" "}
-                      {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
-                    </Button>
-                  </Box>
-                </Flex>
-
-                <Box
-                  position="absolute"
-                  top="0"
-                  bottom="0"
-                  left="0"
-                  right="0"
-                  height="100%"
-                  width="100%"
-                  backgroundColor="blackAlpha.800"
-                  rounded="lg"
-                  visibility={
-                    userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
-                  }
-                  backdropFilter="auto"
-                  backdropBlur="6px">
-                  <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
-                    - FROZEN - <br />
-                    Data NFT is under investigation by the DAO as there was a complaint received against it
-                  </Text>
-                </Box>
-              </Box>
+          {items &&
+            items.map((item, index) => (
+              <div key={index}>
+                <UpperCardComponent nftImageLoading={oneNFTImgLoaded} setNftImageLoading={setOneNFTImgLoaded} nftMetadatas={dataNfts} userData={userData} item={item} index={index}>
+                  <DataNftWalletLowerCard dataNftItem={item} index={index}/>
+                </UpperCardComponent>
+              </div>
             ))}
         </Flex>
-      )}
+      }
+
+      {/*{(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (*/}
+      {/*  <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>*/}
+      {/*    {items &&*/}
+      {/*      items.map((item, index) => (*/}
+      {/*     <div key={index}>*/}
+      {/*       <UpperCardComponent nftImageLoading={oneNFTImgLoaded} setNftImageLoading={setOneNFTImgLoaded} nftMetadatas={dataNfts} userData={userData} item={item} index={index}>*/}
+      {/*       <DataNftWalletLowerCard dataNftItem={item} index={index}/>*/}
+      {/*       </UpperCardComponent>*/}
+      {/*     </div>*/}
+      {/*       ))}*/}
+      {/*  </Flex>*/}
+      {/*)}*/}
 
       {selectedDataNft && (
         <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>

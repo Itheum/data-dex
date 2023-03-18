@@ -1,12 +1,13 @@
 import React, { useState, FC, useEffect } from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
+  Alert, AlertDescription, AlertIcon, AlertTitle,
   Badge,
   Box,
-  Button,
+  Button, CloseButton,
   Flex,
-  HStack,
-  Link,
+  HStack, Image,
+  Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -18,7 +19,7 @@ import {
   PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverTrigger,
+  PopoverTrigger, Select, Spinner, Stack,
   Text,
   useDisclosure,
   useToast,
@@ -38,6 +39,7 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../MultiversX/dataNftMint";
 import { tokenDecimals } from "../MultiversX/tokenUtils";
 import { ShortAddress } from "../UtilComps/ShortAddress";
+import imgGuidePopup from "../img/guide-unblock-popups.png";
 
 type DataNftWalletLowerCardProps = {
   dataNftItem: ItemType;
@@ -57,9 +59,9 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [prices, setPrices] = useState<number[]>([]);
   const [priceErrors, setPriceErrors] = useState<string[]>([]);
-  const { onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
+  const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
 
   const { hasPendingTransactions } = useGetPendingTransactions();
 
@@ -288,7 +290,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
 
   return (
     <>
-      <Flex h="28rem" p="3" direction="column" justify="space-between">
+      <Flex h="28rem" flexDirection="column" justify="space-between">
         <Box>
           {
             <Box color="gray.600" fontSize="sm">
@@ -440,6 +442,221 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
             List {amounts[index]} NFT{amounts[index] > 1 && "s"} for {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
           </Button>
         </Box>
+
+        {selectedDataNft && (
+          <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
+            <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+            <ModalContent>
+              {burnNFTModalState === 1 ? (
+                <>
+                  <ModalHeader>Burn Supply from my Data NFT</ModalHeader>
+                  <ModalBody pb={6}>
+                    <HStack spacing="5" alignItems="center">
+                      <Box flex="1.1">
+                        <Stack>
+                          <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
+                          <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                            {selectedDataNft.tokenName}
+                          </Text>
+                        </Stack>
+                      </Box>
+                      <Box flex="1.9" alignContent="center">
+                        <Text color="orange.300" fontSize="sm">
+                          You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
+                          {selectedDataNft.balance} Data NFTs and remove them from your wallet.
+                          {selectedDataNft.supply - selectedDataNft.balance > 0 &&
+                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} are not under your ownership.`}
+                        </Text>
+                      </Box>
+                    </HStack>
+
+                    <Text fontSize="md" mt="4">
+                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
+                      one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be
+                      able to recover them again.
+                    </Text>
+
+                    <HStack mt="8">
+                      <Text fontSize="md">How many do you want to burn?</Text>
+                      <NumberInput
+                        size="xs"
+                        maxW={16}
+                        step={1}
+                        defaultValue={selectedDataNft.balance}
+                        min={1}
+                        max={selectedDataNft.balance}
+                        isValidCharacter={isValidNumericCharacter}
+                        value={dataNftBurnAmount}
+                        onChange={onChangeDataNftBurnAmount}
+                        keepWithinRange={true}>
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    </HStack>
+                    {dataNftBurnAmountError && (
+                      <Text ml="208px" color="red.400" fontSize="sm" mt="1 !important">
+                        {dataNftBurnAmountError}
+                      </Text>
+                    )}
+
+                    <Flex justifyContent="end" mt="8 !important">
+                      <Button
+                        colorScheme="teal"
+                        size="sm"
+                        mx="3"
+                        onClick={() => setBurnNFTModalState(2)}
+                        isDisabled={!!dataNftBurnAmountError || hasPendingTransactions}>
+                        I want to Burn my {dataNftBurnAmount} Data NFTs
+                      </Button>
+                      <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </ModalBody>
+                </>
+              ) : (
+                <>
+                  <ModalHeader>Are you sure?</ModalHeader>
+                  <ModalBody pb={6}>
+                    <Flex>
+                      <Text fontWeight="bold" fontSize="md" px="1">
+                        Data NFT Title: &nbsp;
+                      </Text>
+                      <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                        {selectedDataNft.title}
+                      </Text>
+                    </Flex>
+                    <Flex mt="1">
+                      <Text fontWeight="bold" fontSize="md" px="1">
+                        Burn Amount: &nbsp;&nbsp;
+                      </Text>
+                      <Text fontSize="sm" backgroundColor="blackAlpha.300" px="1">
+                        {dataNftBurnAmount}
+                      </Text>
+                    </Flex>
+                    <Text fontSize="md" mt="2">
+                      Are you sure you want to proceed with burning the Data NFTs? You cannot undo this action.
+                    </Text>
+                    <Flex justifyContent="end" mt="6 !important">
+                      <Button colorScheme="teal" size="sm" mx="3" onClick={onBurn} isDisabled={hasPendingTransactions}>
+                        Proceed
+                      </Button>
+                      <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </ModalBody>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+        )}
+
+        {selectedDataNft && (
+          <Modal isOpen={isListNFTOpen} onClose={onListNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
+            <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+            <ModalContent>
+              <ModalBody py={6}>
+                <HStack spacing="5" alignItems="center">
+                  <Box flex="4" alignContent="center">
+                    <Text fontSize="lg">List my Data NFT on the Public Marketplace</Text>
+                    <Flex mt="1">
+                      <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                        {selectedDataNft.tokenName}
+                      </Text>
+                    </Flex>
+                  </Box>
+                  <Box flex="1">
+                    <Image src={selectedDataNft.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
+                  </Box>
+                </HStack>
+
+                <Text fontSize="md" mt="4">
+                  How many to list: {amounts[selectedDataNft.index]}
+                </Text>
+                <Text fontSize="md" mt="2">
+                  Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
+                </Text>
+
+                <Text display="none" fontSize="md" mt="8">
+                  Advanced:
+                </Text>
+                <Flex display="none" mt="2" justifyContent="flex-start" alignItems="center" gap="4">
+                  <Text fontSize="md">Access Time Limit per SFT: </Text>
+                  <Select size="sm" width="120px" defaultValue="unlimited">
+                    <option value="unlimited">Unlimited</option>
+                  </Select>
+                </Flex>
+
+                <Flex justifyContent="end" mt="8 !important">
+                  <Button colorScheme="teal" size="sm" mx="3" onClick={onList} isDisabled={hasPendingTransactions}>
+                    Proceed
+                  </Button>
+                  <Button colorScheme="teal" size="sm" variant="outline" onClick={onListNFTClose}>
+                    Cancel
+                  </Button>
+                </Flex>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
+
+        <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Data Access Unlock Progress</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <Stack spacing={5}>
+                <HStack>
+                  {(!unlockAccessProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
+                  <Text>Initiating handshake with Data Marshal</Text>
+                </HStack>
+
+                <HStack>
+                  {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
+                  <Stack>
+                    <Text>Please sign transaction to complete handshake</Text>
+                    <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
+                  </Stack>
+                </HStack>
+
+                <HStack>
+                  {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
+                  <Text>Verifying data access rights to unlock Data Stream</Text>
+                </HStack>
+
+                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && !unlockAccessProgress.s3 && (
+                  <Stack border="solid .04rem" padding={3} borderRadius={5}>
+                    <Text fontSize="sm" lineHeight={1.7}>
+                      <InfoIcon boxSize={5} mr={1} />
+                      Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select{" "}
+                      <b>Always allow pop-ups</b>
+                    </Text>
+                    <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
+                  </Stack>
+                )}
+
+                {errUnlockAccessGeneric && (
+                  <Alert status="error">
+                    <Stack>
+                      <AlertTitle fontSize="md">
+                        <AlertIcon mb={2} />
+                        Process Error
+                      </AlertTitle>
+                      {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
+                      <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
+                    </Stack>
+                  </Alert>
+                )}
+              </Stack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
       </Flex>
     </>
   );
