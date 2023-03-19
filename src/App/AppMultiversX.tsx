@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   useDisclosure,
@@ -76,6 +75,7 @@ import {
 } from "libs/util";
 import { checkBalance } from "MultiversX/api";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
+import AppFooter from "Sections/AppFooter";
 import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
@@ -122,8 +122,6 @@ const _chainMetaLocal: {
   networkId: "",
   contracts: undefined,
 };
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
-const nonProdEnv = `env:${process.env.REACT_APP_ENV_SENTRY_PROFILE}`;
 
 const baseUserContext = {
   isMxAuthenticated: false,
@@ -321,14 +319,21 @@ function App({ appConfig }: { appConfig: any }) {
       {_user.isMxAuthenticated && (
         <Container maxW="container.xl">
           <Flex
-            bgColor={colorMode === "dark" ? "black" : undefined}
+            bgColor={colorMode === "dark" ? "black" : "white"}
             flexDirection="column"
-            justifyContent={"space-between"}
+            justifyContent="space-between"
             minH="100vh"
-            px={4}
             boxShadow={containerShadow}
             zIndex={2}>
-            <Flex h="5rem" alignItems={"center"} justifyContent={"space-between"} backgroundColor="none" borderBottom="solid 1px">
+
+            <Flex
+              h="5rem"
+              alignItems="center"
+              justifyContent="space-between"
+              backgroundColor={colorMode === "light" ? "white" : "black"}
+              borderBottom="solid .1rem"
+              borderColor="teal.300"
+              p="5">
               <HStack alignItems={"center"} spacing={4}>
                 <IconButton
                   size={"sm"}
@@ -346,6 +351,7 @@ function App({ appConfig }: { appConfig: any }) {
                   aria-label={"Open Menu"}
                   onClick={isOpen ? onClose : onOpen}
                 />
+
                 <Link
                   as={ReactRouterLink}
                   to={"/"}
@@ -354,9 +360,9 @@ function App({ appConfig }: { appConfig: any }) {
                     navigateToDiscover(MENU.HOME);
                   }}>
                   <HStack>
-                    <Image boxSize="50px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-                    <Heading fontWeight={"normal"} size={"md"}>
-                      <Text fontSize="lg">Itheum Data DEX</Text>
+                    <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+                    <Heading size={"md"}>
+                      Itheum Data DEX
                     </Heading>
                   </HStack>
                 </Link>
@@ -492,7 +498,7 @@ function App({ appConfig }: { appConfig: any }) {
                   <Route path="datanfts" element={<Outlet />}>
                     <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                     <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
-                    <Route path="marketplace/:tokenId" element={<DataNFTDetails />} />
+                    <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                     <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                     <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
@@ -509,21 +515,7 @@ function App({ appConfig }: { appConfig: any }) {
               </Box>
             </Box>
 
-            <Box backgroundColor="none" height={"5rem"} borderTop="solid 1px">
-              <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                <Text fontSize="xx-small">
-                  {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
-                </Text>
-                <HStack>
-                  <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
-                    Terms of Use <ExternalLinkIcon mx="2px" />
-                  </Link>
-                  <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
-                    Privacy Policy <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </HStack>
-              </Flex>
-            </Box>
+            <AppFooter />
           </Flex>
 
           <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={() => setAlertIsOpen(false)}>
@@ -641,23 +633,9 @@ function App({ appConfig }: { appConfig: any }) {
 
                 <Stack width="60%" spacing="3" m="1rem auto">
                   <LoggedInChainBadge chain={chain} displayParams={["block", null, "none"]} />
-
                   <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["block", null, "none"]} />
                 </Stack>
               </DrawerBody>
-              <DrawerFooter display={"flex"} justifyContent={"center"} alignItems={"center"} borderTopWidth={"1px"}>
-                <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                  <Text fontSize="xx-small">{dataDexVersion}</Text>
-                  <HStack>
-                    <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
-                      Terms of Use <ExternalLinkIcon mx="2px" />
-                    </Link>
-                    <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
-                      Privacy Policy <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  </HStack>
-                </Flex>
-              </DrawerFooter>
             </DrawerContent>
           </Drawer>
         </Container>
