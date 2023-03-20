@@ -13,14 +13,14 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
-import { sleep, convertWeiToEsdt } from "libs/util";
+import { sleep, convertWeiToEsdt, styleStrings } from "libs/util";
 import { getNftsByIds } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftCondensedView } from "MultiversX/types";
+import { useChainMeta } from "store/ChainMetaContext";
 import { hexZero } from "../MultiversX/tokenUtils.js";
 
-let pageLoadEffectCalled = false; // flag to prevent on load effect called multiple times
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
 // create the placeholder offers for skeleton loading
@@ -42,7 +42,8 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-const RecentDataNFTs = ({ headingText, networkId }: { headingText: string, networkId: string }) => {
+const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorStyle }: { headingText: string, networkId: string, headingSize?: string, borderMultiColorStyle?: boolean }) => {
+  const { chainMeta: _chainMeta } = useChainMeta();
   const { colorMode } = useColorMode();
 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
@@ -52,72 +53,66 @@ const RecentDataNFTs = ({ headingText, networkId }: { headingText: string, netwo
   const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
-    if (pageLoadEffectCalled) {
-      return;
+    if (_chainMeta?.networkId) {
+      (async () => {
+        const highestOfferIndex = await marketContract.getHighestOfferIndex(); // 53
+
+        // get latest 10 offers from the SC
+        const startIndex = Math.max(highestOfferIndex - 11, 0); // 42
+        const stopIndex = highestOfferIndex; // 53
+
+        const offers = await marketContract.viewOffers(startIndex, stopIndex);
+
+        // get these offers metadata from the API
+        const nftIds = offers.map(offer => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
+        const dataNfts = await getNftsByIds(nftIds, networkId);
+
+        // merge the offer data and meta data
+        const _latestOffers: DataNftCondensedView[] = [];
+
+        offers.forEach((offer, idx) => {
+          const _nft = dataNfts.find(nft => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
+
+          if (_nft !== undefined) {
+            const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
+
+            const tokenAmount = convertWeiToEsdt(BigNumber(offer.wanted_token_amount)).toNumber();
+
+            _latestOffers.push({
+              data_nft_id: _nftMetaData.id,
+              offered_token_identifier: offer.offered_token_identifier,
+              offered_token_nonce: offer.offered_token_nonce,
+              offer_index: offer.index,
+              offered_token_amount: offer.offered_token_amount,
+              quantity: offer.quantity,
+              wanted_token_amount: offer.wanted_token_amount,
+              creator: _nftMetaData.creator,
+              tokenName: _nftMetaData.tokenName,
+              title: _nftMetaData.title,
+              nftImgUrl: _nftMetaData.nftImgUrl,
+              royalties: _nftMetaData.royalties,
+              feePerSFT: tokenAmount
+            });
+          }
+        });
+
+        await sleep(1);
+
+        setLatestOffers(_latestOffers);
+        setLoadedOffers(true);
+      })();
     }
+  }, [_chainMeta]);
 
-    pageLoadEffectCalled = true;
-    (async () => {
-      const highestOfferIndex = await marketContract.getHighestOfferIndex(); // 53
-
-      // get latest 10 offers from the SC
-      const startIndex = (highestOfferIndex - 11); // 42
-      const stopIndex = highestOfferIndex; // 53
-
-      const offers = await marketContract.viewOffers(startIndex, stopIndex);
-      console.log('offers', offers);
-
-      // get these offers metadata from the API
-      const nftIds = offers.map(offer => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
-      const dataNfts = await getNftsByIds(nftIds, networkId);
-
-      console.log('dataNfts', dataNfts);
-
-      // merge the offer data and meta data
-      const _latestOffers: DataNftCondensedView[] = [];
-
-      offers.forEach((offer, idx) => {
-        const _nft = dataNfts.find(nft => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
-
-        if (_nft !== undefined) {
-          const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
-
-          const tokenAmount = convertWeiToEsdt(BigNumber(offer.wanted_token_amount)).toNumber();
-
-          _latestOffers.push({
-            data_nft_id: _nftMetaData.id,
-            offered_token_identifier: offer.offered_token_identifier,
-            offered_token_nonce: offer.offered_token_nonce,
-            offer_index: offer.index,
-            offered_token_amount: offer.offered_token_amount,
-            quantity: offer.quantity,
-            wanted_token_amount: offer.wanted_token_amount,
-            creator: _nftMetaData.creator,
-            tokenName: _nftMetaData.tokenName,
-            title: _nftMetaData.title,
-            nftImgUrl: _nftMetaData.nftImgUrl,
-            royalties: _nftMetaData.royalties,
-            feePerSFT: tokenAmount
-          });
-        }
-      });
-
-      await sleep(2);
-
-      setLatestOffers(_latestOffers);
-      setLoadedOffers(true);
-    })();
-  }, []);
-
-  let gradientBorder = "linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
+  let gradientBorder = borderMultiColorStyle ? styleStrings.gradientBorderMulticolor : styleStrings.gradientBorderPassive;
 
   if (colorMode === "light") {
-    gradientBorder = "linear-gradient(white, white) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
+    gradientBorder = borderMultiColorStyle ? styleStrings.gradientBorderMulticolorLight : styleStrings.gradientBorderPassiveLight;
   }
 
   return (
     <>
-      <Heading as="h2" size="lg" mb="5" textAlign={["center", "initial"]}>
+      <Heading as="h4" size={headingSize as any || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
@@ -140,7 +135,7 @@ const RecentDataNFTs = ({ headingText, networkId }: { headingText: string, netwo
               style={{ "background": gradientBorder }}>
               <CardBody>
                 <Skeleton height='180px' isLoaded={loadedOffers} fadeDuration={1}>
-                  <Link href={`/dataNfts/marketplace/${item.data_nft_id}/${item.offer_index}`}>
+                  <Link href={`/dataNfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
                     <Image
                       src={item.nftImgUrl}
                       alt="Green double couch with wooden legs"
@@ -148,7 +143,7 @@ const RecentDataNFTs = ({ headingText, networkId }: { headingText: string, netwo
                     />
                   </Link>
                 </Skeleton>
-                <Skeleton height='75px' isLoaded={loadedOffers} fadeDuration={5}>
+                <Skeleton height='75px' isLoaded={loadedOffers} fadeDuration={2}>
                   <Stack mt="3">
                     <Heading size="md" noOfLines={1}>{item.title}</Heading>
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>

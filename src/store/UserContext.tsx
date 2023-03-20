@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { createContext, useState, useContext } from "react";
 
 export interface UserContextType {
@@ -11,14 +11,17 @@ const userContext = createContext<UserContextType>({
   setUser: undefined,
 });
 
-export const UserContextProvider = ({ children }: { children: any }) => {
-  const [user, setUser] = useState({});
+export const UserContextProvider = ({ children }: { children: ReactElement }) => {
+  const [user, setUser] = useState({
+    user: undefined,
+    setUser: undefined,
+  });
 
   return <userContext.Provider value={{ user, setUser }}>{children}</userContext.Provider>;
 };
 
-export const useUser = () => {
-  const context = useContext(userContext);
-  if (context === undefined) throw Error("UseUser must be wrapped inside userContextProvider");
+export const useUser = (): UserContextType => {
+  const context: UserContextType = useContext(userContext);
+  if (context === undefined) throw Error("useUser must be wrapped inside userContextProvider");
   return context;
 };

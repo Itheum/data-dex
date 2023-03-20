@@ -14,18 +14,20 @@ import {
   ModalOverlay,
   Stack,
   Text,
+  Wrap,
   useBreakpointValue,
   useDisclosure,
-  Wrap,
+  useColorMode,
 } from "@chakra-ui/react";
 import imgProgGaPa from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
 import imgProgWfh from "img/prog-wfh.png";
-import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, progInfoMeta, styleStrings } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 
 export default function AppMarketplace() {
+  const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
   const [learnMoreProd, setLearnMoreProg] = useState(null);
@@ -48,13 +50,26 @@ export default function AppMarketplace() {
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
+  let gradientBorder = styleStrings.gradientBorderPassive;
+
+  if (colorMode === "light") {
+    gradientBorder = styleStrings.gradientBorderPassiveLight;
+  }
+
   return (
     <>
       <Stack pt="5">
         <Heading size="md">App Marketplace</Heading>
         <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Box
+            maxW="container.sm"
+            overflow="hidden"
+            border=".1rem solid transparent"
+            backgroundColor="none"
+            borderRadius="1.5rem"
+            style={{ "background": gradientBorder }}>
+
             <Image src={imgProgGaPa} />
 
             <Box p="3">
@@ -80,7 +95,13 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Box
+            maxW="container.sm"
+            overflow="hidden"
+            border=".1rem solid transparent"
+            backgroundColor="none"
+            borderRadius="1.5rem"
+            style={{ "background": gradientBorder }}>
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -102,7 +123,13 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+          <Box
+            maxW="container.sm"
+            overflow="hidden"
+            border=".1rem solid transparent"
+            backgroundColor="none"
+            borderRadius="1.5rem"
+            style={{ "background": gradientBorder }}>
             <Image src={imgProgWfh} />
 
             <Box p="3">

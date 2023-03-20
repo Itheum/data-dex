@@ -16,24 +16,40 @@ type DataNFTDetailsProps = {
   owner?: string;
   listed?: number;
   showConnectWallet?: boolean;
+  tokenIdProp?: string;
+  offerId?: number;
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { tokenId } = useParams();
+  const { tokenId: tokenIdParam } = useParams();
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
-  const explorerUrl = getExplorer(_chainMeta.networkId);
-  const nftExplorerUrl = getNftLink(_chainMeta.networkId, tokenId || "");
   const [price, setPrice] = useState<number>(0);
   const owner = props.owner || "";
   const listed = props.listed || 0;
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
+  const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
+  let explorerUrl = '';
+  let nftExplorerUrl = '';
 
   useEffect(() => {
+    if (_chainMeta?.networkId) {
+      // console.log('********** DataNFTDetails LOAD A _chainMeta READY ', _chainMeta);
+
+      explorerUrl = getExplorer(_chainMeta.networkId);
+      nftExplorerUrl = getNftLink(_chainMeta.networkId, tokenId || "");
+
+      getTokenDetails();
+      getTokenHistory();
+
+    }
+  }, [_chainMeta]);
+
+  function getTokenDetails() {
     const apiLink = getApi(_chainMeta.networkId);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
     axios.get(nftApiLink).then((res) => {
@@ -52,16 +68,19 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         isClosable: true,
       });
     });
-  }, []);
+  }
 
-  useEffect(() => {
+  function getTokenHistory() {
     const apiUrl = getApi(_chainMeta.networkId);
-    axios.get(`https://${apiUrl}/nfts/${tokenId}/transactions?status=success&function=addOffer&size=1&receiver=${_chainMeta.contracts.market}`).then((res) => {
+    axios.get(`https://${apiUrl}/nfts/${tokenId}/transactions?status=success&function=addOffer&size=1&receiver=${_chainMeta?.contracts?.market}`).then((res) => {
       const txs = res.data;
       if (txs.length > 0) {
         const tx = txs[0];
         const hexPrice = Buffer.from(tx.data, "base64").toString().split("@")[8];
-        const _price = convertWeiToEsdt(parseInt("0x" + hexPrice, 16)).toNumber();
+        let _price = 0;
+        if (hexPrice.trim() !== "") {
+          _price = convertWeiToEsdt(parseInt("0x" + hexPrice, 16)).toNumber();
+        }
         setPrice(_price);
       } else {
         setPrice(-1);
@@ -77,7 +96,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         isClosable: true,
       });
     });
-  }, []);
+  }
 
   function decodeNftAttributes(nft: any) {
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -111,26 +130,30 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   return (
     <Box>{!isLoadingNftData() ? <Box>
       <Flex direction={"column"} alignItems={"flex-start"}>
-        <Heading size="lg" marginBottom={4}>
-          Data NFT Marketplace
-        </Heading>
-        <HStack>
-          <Button
-            colorScheme="teal"
-            width={{ base: "120px", md: "160px" }}
-            _disabled={{ opacity: 1 }}
-            fontSize={{ base: "sm", md: "md" }}
-            onClick={() => {
-              navigate("/datanfts/marketplace/market/0");
-            }}
-            marginRight={2}>
-            Public Marketplace
-          </Button>
-          <Link href={nftExplorerUrl} isExternal>
-            {nftData.name} <ExternalLinkIcon mx="2px" />
-          </Link>
-        </HStack>
-        <Box width={"100%"} marginY={"56px"}>
+        {tokenIdParam &&
+          <>
+            <Heading size="lg" marginBottom={4}>
+              Data NFT Marketplace
+            </Heading>
+            <HStack>
+              <Button
+                colorScheme="teal"
+                width={{ base: "120px", md: "160px" }}
+                _disabled={{ opacity: 1 }}
+                fontSize={{ base: "sm", md: "md" }}
+                onClick={() => {
+                  navigate("/datanfts/marketplace/market/0");
+                }}
+                marginRight={2}>
+                Public Marketplace
+              </Button>
+              <Link href={nftExplorerUrl} isExternal>
+                {nftData.name} <ExternalLinkIcon mx="2px" />
+              </Link>
+            </HStack>
+          </>
+        }
+        <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"}>
           <Stack
             flexDirection={{ base: "column", md: "row" }}
             justifyContent={{ base: "center", md: "flex-start" }}
@@ -148,7 +171,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Text>
               <Flex direction={{ base: "column", md: "row" }} gap="3">
                 <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
-                  {price >= 0 ? `Last listing price: ${price} ITHEUM` : "Not Listed"}
+                  {price > 0 ? `Last listing price: ${price} ITHEUM` : price === 0 ? "Last listing price: FREE" : "Not Listed"}
                 </Text>
                 {showConnectWallet && (
                   <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
