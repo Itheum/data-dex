@@ -24,7 +24,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
-import { printPrice } from "../libs/util2";
+import { convertToLocalString, printPrice } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
@@ -36,10 +36,11 @@ type MarketplaceLowerCardProps = {
   offers: OfferType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
+  itheumPrice: number | undefined;
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
-  const { item, index, offers, nftMetadatas } = props;
+  const { item, index, offers, nftMetadatas, itheumPrice } = props;
 
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -49,6 +50,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [feePrice, setFeePrice] = useState<string>("");
+  const [fee, setFee] = useState<number>(0);
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
@@ -100,6 +102,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
         getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
       )
     );
+    setFee(convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber());
     (async () => {
       const _marketRequirements = await contract.getRequirements();
       // console.log("_marketRequirements", _marketRequirements);
@@ -327,7 +330,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 <Box w="140px">Total Fee</Box>
                 <Box>
                   {": "}
-                  {marketRequirements ? <>{feePrice}</> : "-"}
+                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}</> : "-"}
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">

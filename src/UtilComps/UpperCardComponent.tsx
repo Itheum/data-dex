@@ -38,7 +38,8 @@ type UpperCardComponentProps = {
   index: number;
   marketFreezedNonces: number[];
   children?: React.ReactNode;
-  loadDetailsDrawer?: any
+  loadDetailsDrawer?: any;
+  itheumPrice: number | undefined;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
@@ -53,7 +54,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     item,
     marketRequirements,
     marketFreezedNonces,
-    loadDetailsDrawer
+    loadDetailsDrawer,
+    itheumPrice,
   } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
@@ -61,6 +63,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
   const [feePrice, setFeePrice] = useState<string>("");
+  const [fee, setFee] = useState<number>(0);
 
   useEffect(() => {
     setFeePrice(
@@ -69,6 +72,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
         getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
       )
     );
+    setFee(convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber());
   }, []);
 
   return (
@@ -180,7 +184,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               <Box fontSize="xs" mt="2">
                 <Text>
                   Fee per NFT: {` `}
-                  {marketRequirements ? <>{feePrice}</> : " -"}
+                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}</> : " -"}
                 </Text>
               </Box>
             </>

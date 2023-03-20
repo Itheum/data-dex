@@ -16,7 +16,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt } from "libs/util";
-import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
+import { getAccountTokenFromApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -47,6 +47,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract("ED");
 
+  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
@@ -136,6 +137,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
+  }, []);
+
+  const getItheumPrice = () => {
+    (async () => {
+      const _itheumPrice = await getItheumPriceFromApi();
+      console.log('_itheumPrice', _itheumPrice);
+      setItheumPrice(_itheumPrice);
+    })();
+  };
+
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -313,11 +330,23 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     index={index}
                     marketFreezedNonces={marketFreezedNonces}
                     loadDetailsDrawer={openDetailsView}
+                    itheumPrice={itheumPrice}
                   >
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
+                      <MarketplaceLowerCard
+                        nftMetadatas={nftMetadatas}
+                        index={index}
+                        item={item}
+                        offers={offers}
+                        itheumPrice={itheumPrice}
+                      />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} />
+                      <MyListedDataLowerCard
+                        index={index}
+                        offers={items}
+                        nftMetadatas={nftMetadatas}
+                        itheumPrice={itheumPrice}
+                      />
                     )}
                   </UpperCardComponent>
                 </div>

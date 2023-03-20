@@ -49,7 +49,7 @@ import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { convertToLocalString } from "libs/util2";
-import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
+import { getItheumPriceFromApi, getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, ItemType, OfferType, RecordStringNumberType, UserDataType } from "MultiversX/types";
@@ -114,6 +114,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
+  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
   useEffect(() => {
     // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
@@ -133,6 +134,22 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
       setMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
+  }, []);
+
+  const getItheumPrice = () => {
+    (async () => {
+      const _itheumPrice = await getItheumPriceFromApi();
+      console.log('_itheumPrice', _itheumPrice);
+      setItheumPrice(_itheumPrice);
+    })();
+  };
+
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   const onChangeDataNftBurnAmount = (valueAsString: string) => {
@@ -752,7 +769,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 How many to list: {amounts[selectedDataNft.index]}
               </Text>
               <Text fontSize="md" mt="2">
-                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
+                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM (${prices[selectedDataNft.index] && itheumPrice ? convertToLocalString(prices[selectedDataNft.index] * itheumPrice) + " USD" : ""})` : "FREE"}{" "}
               </Text>
 
               <Text display="none" fontSize="md" mt="8">
