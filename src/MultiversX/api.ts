@@ -24,6 +24,10 @@ export const getTransactionLink = (networkId: string, txHash: string) => {
   return `https://${getExplorer(networkId)}/transactions/${txHash}`;
 };
 
+export const getNftLink = (networkId: string, nftId: string) => {
+  return `https://${getExplorer(networkId)}/nfts/${nftId}`;
+};
+
 // check token balance on Mx
 export const checkBalance = async (token: string, address: string, networkId: string): Promise<{ balance: any }> => {
   const api = getApi(networkId);

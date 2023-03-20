@@ -177,3 +177,13 @@
 .dapp-core-component__transactionsToastList-styles__toasts.dapp-core-component__transactionsToastList-styles__toastWrapper {
   position: fixed !important;
 }
+
+.hidden-overflow-x::-webkit-scrollbar {
+  display: none;
+}
+
+.hidden-overflow-x {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-x: scroll;
+}

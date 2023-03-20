@@ -3,12 +3,12 @@ import {Flex, Heading, Stack, Text, useDisclosure, useToast,} from "@chakra-ui/r
 import {AbiRegistry, BinaryCodec, SmartContractAbi} from "@multiversx/sdk-core/out";
 import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
 import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
-import {useSessionStorage} from "libs/hooks";
+import {useLocalStorage, useSessionStorage} from "libs/hooks";
 import {convertWeiToEsdt} from "libs/util";
 import {getNftsOfACollectionForAnAddress} from "MultiversX/api";
 import {DataNftMarketContract} from "MultiversX/dataNftMarket";
 import {DataNftMintContract} from "MultiversX/dataNftMint";
-import {DataNftType, ItemType, RecordStringNumberType} from "MultiversX/types";
+import {DataNftType, ItemType, RecordStringNumberType, UserDataType} from "MultiversX/types";
 import {useChainMeta} from "store/ChainMetaContext";
 import {SkeletonLoadingList} from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
@@ -18,6 +18,7 @@ import {DataNftWalletLowerCard} from "./DataNftWalletLowerCard";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
+  const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
   const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
   const [items, setItems] = useState<ItemType[]>([
@@ -56,9 +57,12 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
-  const [userData, setUserData] = useState<any>({});
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [userData, setUserData] = useState<any>(undefined);
 
   useEffect(() => {
+    // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
+
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
       const _maxPaymentFeeMap: RecordStringNumberType = {};
@@ -130,7 +134,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       setPriceErrors(localErrors);
       setAmountErrors(_amountErrors);
 
-      console.log("_dataNfts", _dataNfts);
       setDataNfts(_dataNfts);
       setItems((prev) => {
         return _dataNfts.map((dataNft: DataNftType, i: number) => {
@@ -158,7 +161,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       setDataNfts([]);
     }
 
-    console.log(items);
   };
 
   useEffect(() => {

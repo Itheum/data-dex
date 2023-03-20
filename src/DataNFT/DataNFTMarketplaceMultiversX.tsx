@@ -1,19 +1,31 @@
-import React, {FC, useEffect, useState} from "react";
-import {Button, Flex, Heading, HStack, Stack, Text,} from "@chakra-ui/react";
-import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
-import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {convertWeiToEsdt} from "libs/util";
-import {getAccountTokenFromApi, getNftsByIds} from "MultiversX/api";
-import {DataNftMintContract} from "MultiversX/dataNftMint";
-import {DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType} from "MultiversX/types";
-import {useChainMeta} from "store/ChainMetaContext";
-import {SkeletonLoadingList} from "UtilComps/SkeletonLoadingList";
-import {CustomPagination} from "./CustomPagination";
+import React, { FC, useEffect, useState } from "react";
+import {
+  Button,
+  Flex,
+  Heading,
+  HStack,
+  Stack,
+  Text,
+  CloseButton,
+  Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
+  useDisclosure
+} from "@chakra-ui/react";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import DataNFTDetails from "DataNFT/DataNFTDetails";
+import { convertWeiToEsdt } from "libs/util";
+import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
+import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
+import { useChainMeta } from "store/ChainMetaContext";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
+import { CustomPagination } from "./CustomPagination";
 import MarketplaceLowerCard from "./MarketplaceLowerCard";
 import MyListedDataLowerCard from "./MyListedDataLowerCard";
-import {DataNftMarketContract} from "../MultiversX/dataNftMarket";
-import {hexZero, tokenDecimals} from "../MultiversX/tokenUtils.js";
+import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
+import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
 
@@ -23,11 +35,12 @@ interface PropsType {
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const navigate = useNavigate();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pageNumber } = useParams();
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
 
   const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const itheumToken = _chainMeta.contracts.itheumToken;
+  const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
 
@@ -46,6 +59,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
+
+  const [dataNftIdForDetails, setDataNftIdForDetails] = useState<any>(null);
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
@@ -75,6 +90,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   ]);
 
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
+  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
@@ -93,6 +109,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   });
 
   useEffect(() => {
+    // console.log('********** DataNFTMarketplaceMultiversX A LOAD _chainMeta ', _chainMeta);
+
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
       console.log("_marketRequirements", _marketRequirements);
@@ -114,6 +132,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, []);
 
   useEffect(() => {
+    // console.log('********** DataNFTMarketplaceMultiversX B LOAD _chainMeta ', _chainMeta);
+
     (async () => {
       const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
       console.log("_marketFreezedNonces", _marketFreezedNonces);
@@ -193,7 +213,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       for (let i = 0; i < _nfts.length; i++) {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
       }
-      console.log("_metadatas", _metadatas);
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
     })();
@@ -220,10 +239,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setUserData(_userData);
     }
   };
+
   useEffect(() => {
     if (hasPendingTransactions) return;
     getUserData();
   }, [address, hasPendingTransactions]);
+
+  function openDetailsView(dataNftId: string) {
+    setDataNftIdForDetails(dataNftId);
+    onOpenDrawerTradeStream();
+  }
+
+  function closeDetailsView() {
+    setDataNftIdForDetails(null);
+    onCloseDrawerTradeStream();
+  }
 
   return (
     <>
@@ -246,7 +276,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               }}>
               Public Marketplace
             </Button>
-            <Button
+            {isMxLoggedIn && <Button
               colorScheme="teal"
               width={{ base: "120px", md: "160px" }}
               isDisabled={tabState === 2}
@@ -259,7 +289,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 navigate("/datanfts/marketplace/my/0");
               }}>
               My Listed Data NFTs
-            </Button>
+            </Button>}
           </HStack>
 
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
@@ -281,7 +311,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     nftMetadatas={nftMetadatas}
                     item={item}
                     userData={userData}
-                    index={index}>
+                    index={index}
+                    marketFreezedNonces={marketFreezedNonces}
+                    loadDetailsDrawer={openDetailsView}
+                  >
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
                     ) : (
@@ -302,6 +335,23 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           )
         }
       </Stack>
+
+      <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader>
+            <HStack spacing="5">
+              <CloseButton size="lg" onClick={closeDetailsView} />
+              <Heading as="h4" size="lg">
+                Data NFT Details
+              </Heading>
+            </HStack>
+          </DrawerHeader>
+          <DrawerBody>
+            <DataNFTDetails tokenIdProp={dataNftIdForDetails} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

@@ -32,6 +32,7 @@ import moment from "moment/moment";
 import { useSessionStorage } from "libs/hooks";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { DataNftType, ItemType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { useLocalStorage } from "libs/hooks";
 import { useChainMeta } from "store/ChainMetaContext";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "../MultiversX/api";
@@ -65,6 +66,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
 
   const { hasPendingTransactions } = useGetPendingTransactions();
 
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
 
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
@@ -78,7 +80,6 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
 
-  const [walletUsedSession, setWalletUsedSession] = useSessionStorage("itm-wallet-used", null);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
   const toast = useToast();
@@ -292,6 +293,10 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
     //
     onListNFTClose();
   };
+
+  function convertToLocalString(arg0: number) {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <>

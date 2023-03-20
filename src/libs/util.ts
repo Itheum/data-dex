@@ -198,6 +198,8 @@ export const MENU = {
   TRUSTEDCOMP: 14,
   FAUCET: 14,
   CLAIMS: 15,
+  LANDING: 16,
+  NFTDETAILS: 17,
 };
 
 export const PATHS = {
@@ -216,6 +218,8 @@ export const PATHS = {
   datacoalitions: [12, [2]],
   personaldataproof: [13, [0]],
   trustedcomputation: [14, [4]],
+  nftdetails: [17, [4]],
+  offer: [17, [4]],
 };
 
 export const CHAINS = {
@@ -376,23 +380,10 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   }
 };
 
-export const debugui = (text: string) => {
-  if (sessionStorage && sessionStorage.getItem("itm-debugui")) {
-    const div = document.getElementById("debugui");
-    if (div) {
-      div.innerHTML = text + "<br/>" + div.innerHTML;
-      div.style.display = "block";
-    }
-  }
-};
-
-export const clearAppSessions = () => {
-  // WEIRD, for some reason setWalletUsedSession(null) does not trigger the hook ONLY for metamask (works fine in mx)
-  // ... so we explictely remove 'itm-wallet-used' here
-  sessionStorage.removeItem("itm-wallet-used");
-
-  sessionStorage.removeItem("itm-launch-mode");
-  sessionStorage.removeItem("itm-launch-env");
+export const clearAppSessionsLaunchMode = () => {
+  localStorage?.removeItem("itm-wallet-used");
+  localStorage?.removeItem("itm-launch-mode");
+  localStorage?.removeItem("itm-launch-env");
 };
 
 export const formatNumberRoundFloor = (num: number, decimals = 2) => {
@@ -520,4 +511,11 @@ export const dataCATDemoUserData = {
       },
     },
   },
+};
+
+export const styleStrings = {
+  gradientBorderMulticolor: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, rgb(79 209 197 / 100%)) border-box',
+  gradientBorderMulticolorLight: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, rgb(79 209 197 / 100%)) border-box',
+  gradientBorderPassive: 'linear-gradient(black, black) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box',
+  gradientBorderPassiveLight: 'linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box',
 };

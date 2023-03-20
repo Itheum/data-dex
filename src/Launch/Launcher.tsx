@@ -3,53 +3,53 @@ import { TransactionsToastList, SignTransactionsModals, NotificationModal } from
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import MxAppHarness from "AppHarness/AppHarnessMultiversX";
 import AuthPickerMx from "AuthPicker/AuthPickerMultiversX";
-import AuthLauncher from "Launch/AuthLauncher";
-import { useLocalStorage, useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
-import { debugui, uxConfig } from "libs/util";
+import { uxConfig, clearAppSessionsLaunchMode } from "libs/util";
 
 function Launcher() {
-  const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null); // let's us support, browser refresh session recovery if user is logged in
-  const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null); // ... as above
-  const [launchMode, setLaunchMode] = useState(launchModeSession || "auth");
+  const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
+  const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null);
+  const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
   const [launchEnvironment, setLaunchEnvironment] = useState(launchEnvSession || "devnet");
 
+  // hoisting launchModeControl here allows us to go multi-chain easier in future
+  // ... have a look at git history on this component
   const handleLaunchMode = (option: any, environment: any) => {
     setLaunchMode(option);
     setLaunchModeSession(option);
+
     if (environment) {
       setLaunchEnvironment(environment);
       setLaunchEnvSession(environment);
     }
 
-    // always reset this value in case user is toggling between wallets in front end
-    // ... resetting here is nice an clean
-    sessionStorage.removeItem("itm-wallet-used");
+    // resetting all launch mode sessions here is nice an clean
+    clearAppSessionsLaunchMode();
   };
 
-  debugui(`launchMode ${launchMode} environment ${launchEnvironment}`);
   return (
     <>
-      {launchMode == "auth" && <AuthLauncher onLaunchMode={handleLaunchMode} />}
+      <DappProvider
+        environment={launchEnvironment}
+        customNetworkConfig={{
+          name: "customConfig",
+          apiTimeout: uxConfig.mxAPITimeoutMs,
+          walletConnectV2ProjectId,
+        }}>
+        <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
+        <NotificationModal />
+        <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-      {launchMode == "mx" && (
-        <>
-          <DappProvider
-            environment={launchEnvironment}
-            customNetworkConfig={{
-              name: "customConfig",
-              apiTimeout: uxConfig.mxAPITimeoutMs,
-              walletConnectV2ProjectId,
-            }}>
-            <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
-            <NotificationModal />
-            <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
+        {launchMode == "mx" &&
+          <AuthPickerMx
+            launchEnvironment={launchEnvironment}
+            resetLaunchMode={() => handleLaunchMode("no-auth", "devnet")} />}
 
-            <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("auth", "devnet")} />
-            <MxAppHarness launchEnvironment={launchEnvironment} />
-          </DappProvider>
-        </>
-      )}
+        <MxAppHarness
+          launchEnvironment={launchEnvironment}
+          handleLaunchMode={handleLaunchMode} />
+      </DappProvider>
     </>
   );
 }
