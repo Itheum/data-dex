@@ -38,6 +38,7 @@ type UpperCardComponentProps = {
   index: number;
   marketFreezedNonces: number[];
   children?: React.ReactNode;
+  loadDetailsDrawer?: any
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
@@ -52,6 +53,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     item,
     marketRequirements,
     marketFreezedNonces,
+    loadDetailsDrawer
   } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
@@ -71,7 +73,14 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   return (
     <Flex wrap="wrap" gap="5" key={index}>
-      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
+      <Box
+        maxW="xs"
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="wrap"
+        mb="1rem"
+        position="relative"
+        w="13.5rem">
         <Flex justifyContent="center" pt={5}>
           <Skeleton isLoaded={nftImageLoading} h={200}>
             <Image
@@ -80,7 +89,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               h={200}
               w={200}
               borderRadius="md"
+              cursor="pointer"
               onLoad={() => setNftImageLoading(true)}
+              onClick={() => loadDetailsDrawer(nftMetadatas[index].id)}
             />
           </Skeleton>
         </Flex>

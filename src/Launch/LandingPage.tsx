@@ -1,20 +1,9 @@
-import React, { useState } from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import React, { useEffect } from "react";
 import {
   Box,
-  Button,
-  Container,
   Flex,
   Heading,
-  HStack,
   Image,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Text,
   Center,
   Link,
@@ -26,25 +15,28 @@ import {
 } from "@chakra-ui/react";
 import imgHeroDataNFTs from "img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "img/landing/hero-metaverse-mask.png";
-import logoSmlD from "img/logo-sml-d.png";
-import logoSmlL from "img/logo-sml-l.png";
+import { styleStrings } from "libs/util";
+import RecentDataNFTs from "Sections/RecentDataNFTs";
+// import { useChainMeta } from "store/ChainMetaContext";
 
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
-const nonProdEnv = `env:${process.env.REACT_APP_ENV_SENTRY_PROFILE}`;
-
-const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
+const LandingPage = () => {
   const { colorMode } = useColorMode();
+  // const { chainMeta: _chainMeta } = useChainMeta();
+
+  // useEffect(() => {
+  //   console.log('********** AppHeader LOAD _chainMeta ', _chainMeta);
+  // }, []);
 
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
-  let gradientBorder = "linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
+  let gradientBorder = styleStrings.gradientBorderMulticolor;
 
   if (colorMode === "light") {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
-    gradientBorder = "linear-gradient(white, white) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
+    gradientBorder = styleStrings.gradientBorderMulticolorLight;
   }
 
   return (
-    <Container maxW="container.xl">
+    <Box>
       <Flex
         bgColor={colorMode === "dark" ? "black" : "white"}
         flexDirection="column"
@@ -52,25 +44,6 @@ const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
-
-        <Flex
-          h="5rem"
-          alignItems="center"
-          justifyContent="space-between"
-          backgroundColor={colorMode === "light" ? "white" : "black"}
-          borderBottom="solid .1rem"
-          borderColor="teal.300"
-          p="5">
-          <HStack alignItems={"center"} spacing={4}>
-            <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-
-            <Heading size={"md"} display={["none", "block"]}>
-              Itheum Data DEX
-            </Heading>
-          </HStack>
-
-          {onLaunchMode && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
-        </Flex>
 
         <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
           <Flex w="100%"
@@ -110,37 +83,7 @@ const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
           </Flex>
 
           <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
-            <Heading as="h2" size="lg" mb="5" textAlign={["center", "initial"]}>
-              Recent Data NFTs
-            </Heading>
-
-            <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
-              {Array.from("12345").map(idx => (
-                <Card
-                  key={idx}
-                  maxW="sm"
-                  variant="outline"
-                  backgroundColor="none"
-                  borderRadius="1.5rem"
-                  border=".1rem solid transparent"
-                  style={{ "background": gradientBorder }}>
-                  <CardBody>
-                    <Link href="/datanfts/marketplace/DATANFTFT2-71ac28-79">
-                      <Image
-                        src="https://devnet-media.elrond.com/nfts/asset/bafkreih7pf65lgyi5gm7n3aapvyai5b23m7tz5m5iwdclw6y4ecwsg35du"
-                        alt="Green double couch with wooden legs"
-                        borderRadius="lg"
-                      />
-                    </Link>
-                    <Stack mt="6" spacing="2">
-                      <Heading size="md">NFT Short Name</Heading>
-                      <Text>Supply Available : 2</Text>
-                      <Text>Price : 102 ITHEUM</Text>
-                    </Stack>
-                  </CardBody>
-                </Card>
-              ))}
-            </SimpleGrid>
+            <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
           </Box>
 
           <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
@@ -214,76 +157,8 @@ const LandingPage = ({ onLaunchMode }: { onLaunchMode?: any }) => {
           </Box>
 
         </Box>
-
-        <Box backgroundColor={colorMode === "light" ? "white" : "black"} height="5rem" borderTop="solid .1rem" borderColor="teal.300">
-          <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-            <Text fontSize="xx-small">
-              {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
-            </Text>
-            <HStack>
-              <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
-                Terms of Use <ExternalLinkIcon mx={1} />
-              </Link>
-              <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
-                Privacy Policy <ExternalLinkIcon mx={1} />
-              </Link>
-            </HStack>
-          </Flex>
-        </Box>
       </Flex>
-    </Container>
-  );
-};
-
-const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
-  const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
-
-  return (
-    <Popover
-      isOpen={showMxEnvPicker}
-      onOpen={() => setShowMxEnvPicker(true)}
-      onClose={() => setShowMxEnvPicker(false)}
-      closeOnBlur={true}
-      isLazy
-      lazyBehavior="keepMounted">
-      <HStack>
-        <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }}>
-            Connect MultiversX Wallet
-          </Button>
-        </PopoverTrigger>
-      </HStack>
-
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader>
-          <Text fontSize="md">Please pick a MultiversX environment</Text>
-        </PopoverHeader>
-        <PopoverBody>
-          <Button
-            size="sm"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "mainnet");
-            }}>
-            {" "}
-            Mainnet
-          </Button>
-
-          <Button
-            size="sm"
-            ml="2"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "devnet");
-            }}>
-            {" "}
-            Devnet
-          </Button>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+    </Box>
   );
 };
 

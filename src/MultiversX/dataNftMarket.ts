@@ -35,6 +35,7 @@ export class DataNftMarketContract {
   networkProvider: ProxyNetworkProvider;
   contract: SmartContract;
   itheumToken: string;
+
   constructor(networkId: string) {
     this.timeout = 5000;
     this.dataNftMarketContractAddress = contractsForChain(networkId).market;
@@ -57,6 +58,7 @@ export class DataNftMarketContract {
       address: new Address(this.dataNftMarketContractAddress),
       abi: abi,
     });
+
     this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
   }
 
@@ -86,78 +88,22 @@ export class DataNftMarketContract {
     }
   }
 
-  async getOffers(startIndex: number, stopIndex: number, userAddress?: string) {
-    const interaction = this.contract.methodsExplicit.viewOffers([
-      new U64Value(startIndex),
-      new U64Value(stopIndex),
-      userAddress ? new OptionalValue(new AddressType(), new AddressValue(new Address(userAddress))) : OptionalValue.newMissing(),
-    ]);
-    const query = interaction.buildQuery();
-
-    try {
-      const res = await this.networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-
-      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (returnCode && returnCode.isSuccess()) {
-        const firstValueParsed = (firstValue as List).valueOf();
-        const tempTokens: {
-          index: number;
-          owner: Address;
-          quantity: number;
-          have: { identifier: string; nonce: number; amount: number };
-          want: { identifier: string; nonce: number; amount: number };
-        }[] = [];
-
-        firstValueParsed.forEach((token: any) => {
-          const parsedToken = {
-            index: token["index"].toNumber(),
-            owner: token["owner"],
-            have: {
-              identifier: token["offered_token_identifier"],
-              nonce: token["offered_token_nonce"].toNumber(),
-              amount: token["offered_token_amount"].toNumber(),
-            },
-            want: {
-              identifier: token["wanted_token_identifier"],
-              nonce: token["wanted_token_nonce"].toNumber(),
-              amount: token["wanted_token_amount"].toNumber(),
-            },
-            quantity: token["quantity"].toNumber(),
-          };
-          tempTokens.push(parsedToken);
-        });
-
-        return tempTokens;
-      } else {
-        console.error(returnMessage);
-        const nonOKErr = new Error("getOffers returnCode returned a non OK value");
-        console.error(nonOKErr);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    return [];
-  }
-
   async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
     const data =
       BigNumber(paymentAmount).comparedTo(0) > 0
         ? TransactionPayload.contractCall()
-            .setFunction(new ContractFunction("ESDTTransfer"))
-            .addArg(new TokenIdentifierValue(tokenId))
-            .addArg(new BigUIntValue(paymentAmount))
-            .addArg(new StringValue("acceptOffer"))
-            .addArg(new U64Value(index))
-            .addArg(new BigUIntValue(amount))
-            .build()
+          .setFunction(new ContractFunction("ESDTTransfer"))
+          .addArg(new TokenIdentifierValue(tokenId))
+          .addArg(new BigUIntValue(paymentAmount))
+          .addArg(new StringValue("acceptOffer"))
+          .addArg(new U64Value(index))
+          .addArg(new BigUIntValue(amount))
+          .build()
         : TransactionPayload.contractCall()
-            .setFunction(new ContractFunction("acceptOffer"))
-            .addArg(new U64Value(index))
-            .addArg(new BigUIntValue(amount))
-            .build();
+          .setFunction(new ContractFunction("acceptOffer"))
+          .addArg(new U64Value(index))
+          .addArg(new BigUIntValue(amount))
+          .build();
 
     const offerEsdtTx = new Transaction({
       value: 0,
@@ -369,6 +315,46 @@ export class DataNftMarketContract {
     }
   }
 
+  async viewOffers(startIndex: number, stopIndex: number): Promise<OfferType[]> {
+    // this will spread out a new array from startIndex to stopIndex e.g. startIndex=0, stopIndex=5 : you get [1,2,3,4,5]
+    const indexRange = Array.from(
+      { length: stopIndex - startIndex },
+      (_, i) => new U64Value(startIndex + 1 + i)
+    );
+
+    const interaction = this.contract.methodsExplicit.viewOffers(indexRange);
+    const query = interaction.buildQuery();
+
+    try {
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (!firstValue || !returnCode.isSuccess()) {
+        console.error(returnMessage);
+        return [];
+      }
+
+      const values = firstValue.valueOf();
+      const decoded = values.map((value: any) => ({
+        index: value.index.toNumber(),
+        owner: value.owner.toString(),
+        offered_token_identifier: value.offered_token_identifier.toString(),
+        offered_token_nonce: value.offered_token_nonce.toNumber(),
+        offered_token_amount: value.offered_token_amount.toFixed(),
+        wanted_token_identifier: value.wanted_token_identifier.toString(),
+        wanted_token_nonce: value.wanted_token_nonce.toNumber(),
+        wanted_token_amount: value.wanted_token_amount.toFixed(),
+        quantity: value.quantity.toNumber(),
+      }));
+
+      return decoded;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+
   async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<OfferType[]> {
     const interaction = this.contract.methodsExplicit.viewPagedOffers([
       new U64Value(startIndex),
@@ -460,5 +446,29 @@ export class DataNftMarketContract {
     });
 
     return { sessionId, error };
+  }
+
+  async getHighestOfferIndex(): Promise<number> {
+    const interaction = this.contract.methodsExplicit.getHighestOfferIndex();
+    const query = interaction.buildQuery();
+
+    try {
+      const res = await this.networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (!firstValue || !returnCode.isSuccess()) {
+        console.error(returnMessage);
+        return 0;
+      }
+
+      const value = firstValue.valueOf();
+      const decoded = value.toNumber();
+
+      return decoded;
+    } catch (e) {
+      console.error(e);
+      return 0;
+    }
   }
 }

@@ -60,8 +60,8 @@ import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
-  const itheumToken = _chainMeta.contracts.itheumToken;
+  const { chainMeta: _chainMeta } = useChainMeta();
+  const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
@@ -116,6 +116,8 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
 
   useEffect(() => {
+    // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
+
     (async () => {
       const _marketRequirements = await marketContract.getRequirements();
       const _maxPaymentFeeMap: RecordStringNumberType = {};
@@ -214,7 +216,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       setPriceErrors(localErrors);
       setAmountErrors(_amountErrors);
 
-      console.log("_dataNfts", _dataNfts);
       setDataNfts(_dataNfts);
     } else {
       // await sleep(4);
