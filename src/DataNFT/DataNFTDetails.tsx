@@ -77,7 +77,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       if (txs.length > 0) {
         const tx = txs[0];
         const hexPrice = Buffer.from(tx.data, "base64").toString().split("@")[8];
-        const _price = convertWeiToEsdt(parseInt("0x" + hexPrice, 16)).toNumber();
+        let _price = 0;
+        if (hexPrice.trim() !== "") {
+          _price = convertWeiToEsdt(parseInt("0x" + hexPrice, 16)).toNumber();
+        }
+        console.log(Buffer.from(tx.data, "base64").toString().split("@"));
         setPrice(_price);
       } else {
         setPrice(-1);
@@ -168,7 +172,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Text>
               <Flex direction={{ base: "column", md: "row" }} gap="3">
                 <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
-                  {price >= 0 ? `Last listing price: ${price} ITHEUM` : "Not Listed"}
+                  {price > 0 ? `Last listing price: ${price} ITHEUM` : price === 0 ? "Last listing price: FREE" : "Not Listed"}
                 </Text>
                 {showConnectWallet && (
                   <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
