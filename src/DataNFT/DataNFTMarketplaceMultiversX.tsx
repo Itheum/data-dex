@@ -1,42 +1,19 @@
-import React, { FC, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Flex,
-  Heading,
-  HStack,
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Stack,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import BigNumber from "bignumber.js";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/util";
-import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
-import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
-import { useChainMeta } from "store/ChainMetaContext";
-import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
-import { CustomPagination } from "./CustomPagination";
+import React, {FC, useEffect, useState} from "react";
+import {Button, Flex, Heading, HStack, Stack, Text,} from "@chakra-ui/react";
+import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
+import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {convertWeiToEsdt} from "libs/util";
+import {getAccountTokenFromApi, getNftsByIds} from "MultiversX/api";
+import {DataNftMintContract} from "MultiversX/dataNftMint";
+import {DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType} from "MultiversX/types";
+import {useChainMeta} from "store/ChainMetaContext";
+import {SkeletonLoadingList} from "UtilComps/SkeletonLoadingList";
+import {CustomPagination} from "./CustomPagination";
 import MarketplaceLowerCard from "./MarketplaceLowerCard";
 import MyListedDataLowerCard from "./MyListedDataLowerCard";
-import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import {DataNftMarketContract} from "../MultiversX/dataNftMarket";
+import {hexZero, tokenDecimals} from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
 

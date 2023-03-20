@@ -55,9 +55,9 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const itheumToken = _chainMeta.contracts.itheumToken;
 
-  const [amounts, setAmounts] = useState<number[]>([]);
+  const [amounts, setAmounts] = useState<number>(1);
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
-  const [prices, setPrices] = useState<number[]>([]);
+  const [prices, setPrices] = useState<number>(10);
   const [priceErrors, setPriceErrors] = useState<string[]>([]);
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
@@ -258,7 +258,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
       return;
     }
 
-    mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+    mintContract.sendBurnTransaction(address, dataNftItem.collection, dataNftItem.nonce, dataNftBurnAmount);
 
     // close modal
     onBurnNFTClose();
@@ -281,8 +281,13 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
       });
       return;
     }
-
-    marketContract.addToMarket(selectedDataNft.collection, selectedDataNft.nonce, amounts[selectedDataNft.index], prices[selectedDataNft.index], address);
+    // console.group();
+    // console.log("collection", selectedDataNft.collection);
+    // console.log("nonce", selectedDataNft.nonce);
+    // console.log("amounts", amounts);
+    // console.log("prices", prices);
+    // console.groupEnd();
+    marketContract.addToMarket(dataNftItem.collection, dataNftItem.nonce, amounts, prices ?? 0, address);
 
     //
     onListNFTClose();
@@ -357,7 +362,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
               min={1}
               max={dataNftItem.balance}
               isValidCharacter={isValidNumericCharacter}
-              value={amounts[index]}
+              value={amounts}
               onChange={(value) => {
                 let error = "";
                 const valueAsNumber = Number(value);
@@ -371,11 +376,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
                   newErrors[index] = error;
                   return newErrors;
                 });
-                setAmounts((oldAmounts) => {
-                  const newAmounts = [...oldAmounts];
-                  newAmounts[index] = valueAsNumber;
-                  return newAmounts;
-                });
+                setAmounts(valueAsNumber);
               }}>
               <NumberInputField />
               <NumberInputStepper>
@@ -402,7 +403,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
               min={0}
               isValidCharacter={isValidNumericCharacter}
               max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
-              value={prices[index]}
+              value={prices}
               onChange={(valueString, valueAsNumber) => {
                 let error = "";
                 if (valueAsNumber < 0) error = "Cannot be negative";
@@ -412,11 +413,7 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
                   newErrors[index] = error;
                   return newErrors;
                 });
-                setPrices((oldPrices) => {
-                  const newPrices = [...oldPrices];
-                  newPrices[index] = !valueAsNumber ? 0 : valueAsNumber;
-                  return newPrices;
-                });
+                setPrices(!valueAsNumber ? 0 : valueAsNumber);
               }}
               keepWithinRange={true}>
               <NumberInputField />
@@ -439,8 +436,29 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
             variant="outline"
             isDisabled={hasPendingTransactions || !!amountErrors[index] || !!priceErrors[index]}
             onClick={() => onListButtonClick(dataNftItem)}>
-            List {amounts[index]} NFT{amounts[index] > 1 && "s"} for {prices[index] ? `${prices[index]} ITHEUM ${amounts[index] > 1 ? "each" : ""}` : "Free"}
+            List {amounts} NFT{amounts > 1 && "s"} for {prices ? `${prices} ITHEUM ${amounts > 1 ? "each" : ""}` : "Free"}
           </Button>
+
+          <Box
+              position="absolute"
+              top="0"
+              bottom="0"
+              left="0"
+              right="0"
+              height="100%"
+              width="100%"
+              backgroundColor="blackAlpha.800"
+              rounded="lg"
+              visibility={
+                userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(dataNftItem.nonce))) ? "visible" : "collapse"
+              }
+              backdropFilter="auto"
+              backdropBlur="6px">
+            <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
+              - FROZEN - <br />
+              Data NFT is under investigation by the DAO as there was a complaint received against it
+            </Text>
+          </Box>
         </Box>
 
         {selectedDataNft && (
@@ -575,10 +593,10 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
                 </HStack>
 
                 <Text fontSize="md" mt="4">
-                  How many to list: {amounts[selectedDataNft.index]}
+                  How many to list: {amounts}
                 </Text>
                 <Text fontSize="md" mt="2">
-                  Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM` : "FREE"}{" "}
+                  Listing fee per NFT: {prices ? `${prices} ITHEUM` : "FREE"}{" "}
                 </Text>
 
                 <Text display="none" fontSize="md" mt="8">
