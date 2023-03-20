@@ -39,7 +39,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const { offers, index, nftMetadatas, itheumPrice } = props;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const contract = new DataNftMarketContract("ED");
+  const contract = new DataNftMarketContract(_chainMeta.networkId);
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection

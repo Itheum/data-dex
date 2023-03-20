@@ -55,7 +55,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
-  const contract = new DataNftMarketContract("ED");
+  const contract = new DataNftMarketContract(_chainMeta.networkId);
   const [isMyNft, setIsMyNft] = useState<boolean>(false);
   const toast = useToast();
   const { address } = useGetAccountInfo();

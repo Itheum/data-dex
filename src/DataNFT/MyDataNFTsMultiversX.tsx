@@ -180,8 +180,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   };
 
   const getOnChainNFTs = async () => {
-    const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
     console.log("onChainNfts", onChainNfts);
 
     if (onChainNfts.length > 0) {

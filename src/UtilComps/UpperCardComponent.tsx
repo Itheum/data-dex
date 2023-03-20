@@ -88,7 +88,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
         <Flex justifyContent="center" pt={5}>
           <Skeleton isLoaded={nftImageLoading} h={200}>
             <Image
-              src={`https://${getApi("ED")}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}

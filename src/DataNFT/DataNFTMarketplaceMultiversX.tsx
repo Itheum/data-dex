@@ -45,7 +45,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const marketContract = new DataNftMarketContract("ED");
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
