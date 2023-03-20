@@ -25,7 +25,6 @@ export const getTransactionLink = (networkId: string, txHash: string) => {
 };
 
 export const getNftLink = (networkId: string, nftId: string) => {
-  console.log(networkId);
   return `https://${getExplorer(networkId)}/nfts/${nftId}`;
 };
 

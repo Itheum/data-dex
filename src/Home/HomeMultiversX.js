@@ -28,12 +28,11 @@ import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
 import RecentDataNFTs from "Sections/RecentDataNFTs";
 import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 let mxFaucetContract = null;
@@ -43,7 +42,6 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { user: _user } = useUser();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
@@ -59,8 +57,13 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   const [loadingCfTestData, setLoadingDataCatTestUser] = useState(false);
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   console.log('********** HomeMultiversX LOAD _chainMeta ', _chainMeta);
+  //   console.log('********** HomeMultiversX LOAD _user ', _user);
+  // }, []);
+
   useEffect(() => {
-    if (_chainMeta?.networkId && _user?.isMxAuthenticated) {
+    if (_chainMeta?.networkId && isMxLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         try {
           mxFaucetContract = new FaucetContract(_chainMeta.networkId);
@@ -279,10 +282,10 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   const tileBoxH = "360px";
   const claimsStackMinW = "220px";
 
-  let gradientBorder = "linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
+  let gradientBorder = styleStrings.gradientBorderPassive;
 
   if (colorMode === "light") {
-    gradientBorder = "linear-gradient(white, white) padding-box, linear-gradient(to right, #FF439D, #00C797) border-box";
+    gradientBorder = styleStrings.gradientBorderPassiveLight;
   }
 
   return (
@@ -488,7 +491,10 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
       </Stack>
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
-        <RecentDataNFTs headingText="Recent Data NFTs" networkId={_chainMeta.networkId} />
+        <RecentDataNFTs
+          headingText="Recent Data NFTs"
+          headingSize="md"
+          networkId={_chainMeta.networkId} />
       </Box>
 
       <AppMarketplace />

@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction, useState } from "react";
+import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
@@ -16,7 +16,6 @@ import {
   PopoverTrigger,
   Skeleton,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
