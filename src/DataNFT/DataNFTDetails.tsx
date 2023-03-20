@@ -81,7 +81,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         if (hexPrice.trim() !== "") {
           _price = convertWeiToEsdt(parseInt("0x" + hexPrice, 16)).toNumber();
         }
-        console.log(Buffer.from(tx.data, "base64").toString().split("@"));
         setPrice(_price);
       } else {
         setPrice(-1);

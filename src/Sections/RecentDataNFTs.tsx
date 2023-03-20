@@ -58,7 +58,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorS
         const highestOfferIndex = await marketContract.getHighestOfferIndex(); // 53
 
         // get latest 10 offers from the SC
-        const startIndex = (highestOfferIndex - 11); // 42
+        const startIndex = Math.max(highestOfferIndex - 11, 0); // 42
         const stopIndex = highestOfferIndex; // 53
 
         const offers = await marketContract.viewOffers(startIndex, stopIndex);
