@@ -110,6 +110,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     // console.log('********** DataNFTMarketplaceMultiversX A LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketRequirements = await marketContract.getRequirements();
       console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
@@ -127,17 +129,19 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         setMaxPaymentFeeMap({});
       }
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   useEffect(() => {
     // console.log('********** DataNFTMarketplaceMultiversX B LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
       console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   const getItheumPrice = () => {
     (async () => {
@@ -158,6 +162,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     (async () => {
       if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       let _numberOfOffers = 0;
       if (tabState === 1) {
@@ -176,11 +181,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         onGotoPage(0);
       }
     })();
-  }, [hasPendingTransactions, tabState]);
+  }, [hasPendingTransactions, tabState, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
       if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       // init - no selection
       setSelectedOfferIndex(-1);
@@ -230,12 +236,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
     })();
-  }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
+  }, [pageIndex, pageSize, tabState, hasPendingTransactions, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
       if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
       if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
       const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
@@ -245,7 +252,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         setWantedTokenBalance("0");
       }
     })();
-  }, [address, offers, selectedOfferIndex, hasPendingTransactions]);
+  }, [address, offers, selectedOfferIndex, hasPendingTransactions, _chainMeta.networkId]);
 
   const getUserData = async () => {
     if (address) {
@@ -256,9 +263,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     if (hasPendingTransactions) return;
+    if (!_chainMeta.networkId) return;
 
     getUserData();
-  }, [address, hasPendingTransactions]);
+  }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
   function openDetailsView(dataNftId: string) {
     setDataNftIdForDetails(dataNftId);

@@ -52,7 +52,7 @@ import { convertToLocalString } from "libs/util2";
 import { getItheumPriceFromApi, getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType, ItemType, OfferType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { DataNftType, ItemType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
@@ -120,6 +120,8 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketRequirements = await marketContract.getRequirements();
       const _maxPaymentFeeMap: RecordStringNumberType = {};
 
@@ -134,7 +136,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
       setMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   const getItheumPrice = () => {
     (async () => {
@@ -242,17 +244,20 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   useEffect(() => {
     if (hasPendingTransactions) return;
+    if (!_chainMeta.networkId) return;
+
     getOnChainNFTs();
-  }, [hasPendingTransactions]);
+  }, [hasPendingTransactions, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
+      if (!_chainMeta.networkId) return;
       if (address && !hasPendingTransactions) {
         const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
         setUserData(_userData);
       }
     })();
-  }, [address, hasPendingTransactions]);
+  }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
   const accessDataStream = async (NFTid: string, myAddress: string) => {
     /*
