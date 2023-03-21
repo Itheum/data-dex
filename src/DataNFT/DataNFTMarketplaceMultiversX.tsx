@@ -7,8 +7,12 @@ import {
   Stack,
   Text,
   CloseButton,
-  Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
-  useDisclosure
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -146,7 +150,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const getItheumPrice = () => {
     (async () => {
       const _itheumPrice = await getItheumPriceFromApi();
-      console.log('_itheumPrice', _itheumPrice);
       setItheumPrice(_itheumPrice);
     })();
   };
@@ -299,20 +302,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               }}>
               Public Marketplace
             </Button>
-            {isMxLoggedIn && <Button
-              colorScheme="teal"
-              width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 2}
-              _disabled={{ opacity: 1 }}
-              opacity={0.4}
-              fontSize={{ base: "sm", md: "md" }}
-              onClick={() => {
-                if (hasPendingTransactions) return;
-                setPageIndex(0);
-                navigate("/datanfts/marketplace/my/0");
-              }}>
-              My Listed Data NFTs
-            </Button>}
+            {isMxLoggedIn && (
+              <Button
+                colorScheme="teal"
+                width={{ base: "120px", md: "160px" }}
+                isDisabled={tabState === 2}
+                _disabled={{ opacity: 1 }}
+                opacity={0.4}
+                fontSize={{ base: "sm", md: "md" }}
+                onClick={() => {
+                  if (hasPendingTransactions) return;
+                  setPageIndex(0);
+                  navigate("/datanfts/marketplace/my/0");
+                }}>
+                My Listed Data NFTs
+              </Button>
+            )}
           </HStack>
 
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
@@ -338,23 +343,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     index={index}
                     marketFreezedNonces={marketFreezedNonces}
                     loadDetailsDrawer={openDetailsView}
-                    itheumPrice={itheumPrice}
-                  >
+                    itheumPrice={itheumPrice}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard
-                        nftMetadatas={nftMetadatas}
-                        index={index}
-                        item={item}
-                        offers={offers}
-                        itheumPrice={itheumPrice}
-                      />
+                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} itheumPrice={itheumPrice} />
                     ) : (
-                      <MyListedDataLowerCard
-                        index={index}
-                        offers={items}
-                        nftMetadatas={nftMetadatas}
-                        itheumPrice={itheumPrice}
-                      />
+                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
                     )}
                   </UpperCardComponent>
                 </div>
