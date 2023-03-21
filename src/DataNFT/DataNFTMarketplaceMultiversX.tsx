@@ -7,8 +7,12 @@ import {
   Stack,
   Text,
   CloseButton,
-  Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody,
-  useDisclosure
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -53,7 +57,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
-  const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [userData, setUserData] = useState<any>({});
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
@@ -276,20 +279,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               }}>
               Public Marketplace
             </Button>
-            {isMxLoggedIn && <Button
-              colorScheme="teal"
-              width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 2}
-              _disabled={{ opacity: 1 }}
-              opacity={0.4}
-              fontSize={{ base: "sm", md: "md" }}
-              onClick={() => {
-                if (hasPendingTransactions) return;
-                setPageIndex(0);
-                navigate("/datanfts/marketplace/my/0");
-              }}>
-              My Listed Data NFTs
-            </Button>}
+            {isMxLoggedIn && (
+              <Button
+                colorScheme="teal"
+                width={{ base: "120px", md: "160px" }}
+                isDisabled={tabState === 2}
+                _disabled={{ opacity: 1 }}
+                opacity={0.4}
+                fontSize={{ base: "sm", md: "md" }}
+                onClick={() => {
+                  if (hasPendingTransactions) return;
+                  setPageIndex(0);
+                  navigate("/datanfts/marketplace/my/0");
+                }}>
+                My Listed Data NFTs
+              </Button>
+            )}
           </HStack>
 
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
@@ -313,8 +318,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     userData={userData}
                     index={index}
                     marketFreezedNonces={marketFreezedNonces}
-                    loadDetailsDrawer={openDetailsView}
-                  >
+                    loadDetailsDrawer={openDetailsView}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
                     ) : (

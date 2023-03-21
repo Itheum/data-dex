@@ -5,7 +5,8 @@ import {
   Button,
   Flex,
   HStack,
-  Image, Link,
+  Image,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -22,14 +23,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import {
-  CHAIN_TX_VIEWER,
-  convertEsdtToWei,
-  convertWeiToEsdt,
-  isValidNumericCharacter,
-  sleep,
-  uxConfig,
-} from "../libs/util";
+import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
@@ -37,7 +31,7 @@ import { useChainMeta } from "../store/ChainMetaContext";
 import { ShortAddress } from "../UtilComps/ShortAddress";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import moment from "moment/moment";
-import { convertToLocalString } from "../libs/util2";
+import { convertToLocalString, printPrice } from "../libs/util2";
 import { Address } from "@multiversx/sdk-core/out";
 
 type MyListedDataLowerCardProps = {

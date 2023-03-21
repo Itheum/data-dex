@@ -1,41 +1,45 @@
-import React, { useState, FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
-  Alert, AlertDescription, AlertIcon, AlertTitle,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Badge,
   Box,
-  Button, CloseButton,
+  Button,
+  CloseButton,
   Flex,
-  HStack, Image,
-  Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay,
+  HStack,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger, Select, Spinner, Stack,
+  Select,
+  Spinner,
+  Stack,
   Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { AbiRegistry, Address, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment/moment";
-import { useSessionStorage } from "libs/hooks";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
-import { DataNftType, ItemType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useLocalStorage } from "libs/hooks";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { ItemType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
-import { getNftsOfACollectionForAnAddress } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../MultiversX/dataNftMint";
 import { tokenDecimals } from "../MultiversX/tokenUtils";
@@ -138,6 +142,56 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
     })();
   }, [address, hasPendingTransactions]);
 
+  const fetchAccountSignature = async (message: string) => {
+    const signResult = {
+      signature: "",
+      addrInHex: "",
+      success: false,
+      exception: "",
+    };
+
+    let customError = "Signature result not received from wallet";
+
+    if (walletUsedSession === "el_webwallet") {
+      // web wallet not supported
+      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
+    } else {
+      try {
+        const signatureObj = await signMessage({ message });
+        console.log("signatureObj");
+        console.log(signatureObj);
+
+        if (signatureObj?.signature && signatureObj?.address) {
+          // Maiar App V2 / Ledger
+          signResult.signature = signatureObj.signature.hex();
+          signResult.addrInHex = signatureObj.address.hex();
+          signResult.success = true;
+        } else {
+          signResult.exception = "Signature result from wallet was malformed";
+        }
+      } catch (e: any) {
+        signResult.success = false;
+        signResult.exception = e.toString();
+      }
+
+      console.log("signResult");
+      console.log(signResult);
+    }
+
+    if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
+      signResult.success = false;
+      signResult.exception = customError;
+    }
+
+    return signResult;
+  };
+
+  const cleanupAccessDataStreamProcess = () => {
+    setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
+    setErrUnlockAccessGeneric("");
+    onAccessProgressModalClose();
+  };
+
   const accessDataStream = async (NFTid: string, myAddress: string) => {
     /*
           1) get a nonce from the data marshal (s1)
@@ -191,56 +245,6 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
     }
   };
 
-  const fetchAccountSignature = async (message: string) => {
-    const signResult = {
-      signature: "",
-      addrInHex: "",
-      success: false,
-      exception: "",
-    };
-
-    let customError = "Signature result not received from wallet";
-
-    if (walletUsedSession === "el_webwallet") {
-      // web wallet not supported
-      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
-    } else {
-      try {
-        const signatureObj = await signMessage({ message });
-        console.log("signatureObj");
-        console.log(signatureObj);
-
-        if (signatureObj?.signature && signatureObj?.address) {
-          // Maiar App V2 / Ledger
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
-        } else {
-          signResult.exception = "Signature result from wallet was malformed";
-        }
-      } catch (e: any) {
-        signResult.success = false;
-        signResult.exception = e.toString();
-      }
-
-      console.log("signResult");
-      console.log(signResult);
-    }
-
-    if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
-      signResult.success = false;
-      signResult.exception = customError;
-    }
-
-    return signResult;
-  };
-
-  const cleanupAccessDataStreamProcess = () => {
-    setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
-    setErrUnlockAccessGeneric("");
-    onAccessProgressModalClose();
-  };
-
   const onBurn = () => {
     if (!address) {
       toast({
@@ -282,21 +286,11 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
       });
       return;
     }
-    // console.group();
-    // console.log("collection", selectedDataNft.collection);
-    // console.log("nonce", selectedDataNft.nonce);
-    // console.log("amounts", amounts);
-    // console.log("prices", prices);
-    // console.groupEnd();
     marketContract.addToMarket(dataNftItem.collection, dataNftItem.nonce, amounts, prices ?? 0, address);
 
     //
     onListNFTClose();
   };
-
-  function convertToLocalString(arg0: number) {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <>
@@ -445,20 +439,20 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
           </Button>
 
           <Box
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              height="100%"
-              width="100%"
-              backgroundColor="blackAlpha.800"
-              rounded="lg"
-              visibility={
-                userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(dataNftItem.nonce))) ? "visible" : "collapse"
-              }
-              backdropFilter="auto"
-              backdropBlur="6px">
+            position="absolute"
+            top="0"
+            bottom="0"
+            left="0"
+            right="0"
+            height="100%"
+            width="100%"
+            backgroundColor="blackAlpha.800"
+            rounded="lg"
+            visibility={
+              userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(dataNftItem.nonce))) ? "visible" : "collapse"
+            }
+            backdropFilter="auto"
+            backdropBlur="6px">
             <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
               - FROZEN - <br />
               Data NFT is under investigation by the DAO as there was a complaint received against it
@@ -495,8 +489,8 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
 
                     <Text fontSize="md" mt="4">
                       Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
-                      one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be
-                      able to recover them again.
+                      one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not
+                      be able to recover them again.
                     </Text>
 
                     <HStack mt="8">
@@ -679,7 +673,6 @@ export const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) =
             </ModalBody>
           </ModalContent>
         </Modal>
-
       </Flex>
     </>
   );

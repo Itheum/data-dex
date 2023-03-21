@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -14,10 +14,10 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
-import {useGetAccountInfo, useGetLoginInfo} from "@multiversx/sdk-dapp/hooks/account";
-import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
-import {logout} from "@multiversx/sdk-dapp/utils";
-import {Outlet, Route, Routes, useLocation} from "react-router-dom";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { logout } from "@multiversx/sdk-dapp/utils";
+import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import SellDataMX from "AdvertiseData/SellDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
@@ -26,50 +26,19 @@ import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
 import LandingPage from "Launch/LandingPage";
-import {useLocalStorage} from "libs/hooks";
-import {CHAINS, clearAppSessionsLaunchMode, consoleNotice, gtagGo, MENU, PATHS, SUPPORTED_CHAINS,} from "libs/util";
-import {checkBalance} from "MultiversX/api";
+import { useLocalStorage } from "libs/hooks";
+import { CHAINS, clearAppSessionsLaunchMode, consoleNotice, gtagGo, MENU, PATHS, SUPPORTED_CHAINS } from "libs/util";
+import { checkBalance } from "MultiversX/api";
 import AppFooter from "Sections/AppFooter";
 import AppHeader from "Sections/AppHeader";
 import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
-import {useChainMeta} from "store/ChainMetaContext";
-import {MdOnlinePrediction, MdOutlineAccountBalanceWallet, MdOutlineDataSaverOn} from "react-icons/md";
-
-const exploreRouterMenu = [
-  {
-    sectionId: "Movies",
-    sectionLabel: "Movies",
-    sectionItems: [
-      {
-        menuEnum: MENU.SELL,
-        path: "tradedata",
-        label: "Trade Data",
-        shortLbl: "Trade",
-        Icon: MdOutlineDataSaverOn,
-      },
-      {
-        menuEnum: MENU.NFTMINE,
-        path: "datanfts/wallet",
-        label: "Data NFT Wallet",
-        shortLbl: "Wallet",
-        Icon: MdOutlineAccountBalanceWallet,
-      },
-      {
-        menuEnum: MENU.NFTALL,
-        path: "datanfts/marketplace/market/0",
-        label: "Data NFT Marketplace",
-        shortLbl: "Market",
-        Icon: MdOnlinePrediction,
-      },
-    ],
-  },
-];
+import { useChainMeta } from "store/ChainMetaContext";
 
 const mxLogout = logout;
 
-function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any, resetAppContexts: any, onLaunchMode: any }) {
+function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; resetAppContexts: any; onLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
@@ -104,11 +73,10 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any, re
     if (path) {
       // we can use - to tag path keys. e.g. offer-44 is path key offer. So remove anything after - if needed
       // also, NFTDETAILS key is for path like DATANFTFT2-71ac28-79 so allow for this custom logic
-      if (path.includes('DATANFT')) {
-        path = 'nftdetails';
-      }
-      else if (path.includes('-')) {
-        path = path.split('-')[0];
+      if (path.includes("DATANFT")) {
+        path = "nftdetails";
+      } else if (path.includes("-")) {
+        path = path.split("-")[0];
       }
 
       setMenuItem(PATHS[path as keyof typeof PATHS]?.[0] as number);
@@ -229,27 +197,16 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any, re
           minH="100vh"
           boxShadow={containerShadow}
           zIndex={2}>
-
           {/* App Header */}
-          <AppHeader
-            onLaunchMode={onLaunchMode}
-            tokenBalance={tokenBalance}
-            menuItem={menuItem}
-            setMenuItem={setMenuItem}
-            handleLogout={handleLogout}
-          />
+          <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
 
           {/* App Body */}
           <Box backgroundColor="none" flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"} mt={menuItem !== MENU.LANDING ? "5" : "0"}>
             <Routes>
+              <Route path="/" element={<LandingPage />} />
 
-              <Route path="/"
-                element={
-                  <LandingPage />
-                }
-              />
-
-              <Route path="home"
+              <Route
+                path="home"
                 element={
                   <HomeMx
                     key={rfKeys.tools}
@@ -257,7 +214,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any, re
                     setMenuItem={setMenuItem}
                     itheumAccount={itheumAccount}
                     onItheumAccount={setItheumAccount}
-                  />}
+                  />
+                }
               />
 
               <Route

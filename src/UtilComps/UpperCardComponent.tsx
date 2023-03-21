@@ -35,7 +35,7 @@ type UpperCardComponentProps = {
   loadDetailsDrawer?: any;
 };
 
-const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
+export const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadatas, userData, index, children, item, marketFreezedNonces, loadDetailsDrawer } =
     props;
   // Multiversx API
