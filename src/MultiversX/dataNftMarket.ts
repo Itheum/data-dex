@@ -26,7 +26,7 @@ import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import BigNumber from "bignumber.js";
 import jsonData from "./ABIs/data_market.abi.json";
 import { MarketplaceRequirementsType, OfferType } from "./types";
-import { contractsForChain } from "../libs/util";
+import { contractsForChain, uxConfig } from "../libs/util";
 
 export class DataNftMarketContract {
   timeout: number;
@@ -37,7 +37,7 @@ export class DataNftMarketContract {
   itheumToken: string;
 
   constructor(networkId: string) {
-    this.timeout = 5000;
+    this.timeout = uxConfig.mxAPITimeoutMs;
     this.dataNftMarketContractAddress = contractsForChain(networkId).market;
     this.chainID = "D";
 

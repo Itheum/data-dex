@@ -83,7 +83,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Flex justifyContent="center" pt={5}>
           <Skeleton isLoaded={nftImageLoading} h={200}>
             <Image
-              src={`https://${getApi("ED")}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(_chainMeta.networkId)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}
@@ -273,7 +273,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce)) ? "visible" : "collapse"}>
+          visibility={userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(offer.offered_token_nonce))) ? "visible" : "collapse"}>
           <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it
