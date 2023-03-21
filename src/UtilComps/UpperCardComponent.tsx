@@ -203,9 +203,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backgroundColor="blackAlpha.800"
           rounded="lg"
           visibility={
-            userData.addressFrozen
-              || (userData.frozenNonces && item
-                && (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce)))
+            userData && (userData.addressFrozen || (userData.frozenNonces && item && (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible" : "collapse"
           }
         >
