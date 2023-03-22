@@ -184,7 +184,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               <Box fontSize="xs" mt="2">
                 <Text>
                   Fee per NFT: {` `}
-                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice), 2} USD)` : ''}</> : " -"}
+                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}</> : " -"}
                 </Text>
               </Box>
             </>

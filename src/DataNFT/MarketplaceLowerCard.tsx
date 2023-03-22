@@ -330,7 +330,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 <Box w="140px">Total Fee</Box>
                 <Box>
                   {": "}
-                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice), 2} USD)` : ''}</> : "-"}
+                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}</> : "-"}
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">
