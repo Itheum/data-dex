@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Button,
   Flex,
@@ -22,9 +23,11 @@ import {
   Link,
   Badge,
 } from "@chakra-ui/react";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
+import moment from "moment";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
 import { printPrice, convertToLocalString } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
@@ -33,9 +36,6 @@ import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/token
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 import { ShortAddress } from "../UtilComps/ShortAddress";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import moment from "moment";
-import { Address } from "@multiversx/sdk-core/out";
 
 type MarketplaceLowerCardProps = {
   item: ItemType;
@@ -262,14 +262,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
         </Box>
       )}
 
-      {!!nftMetadatas[index] && fee && (
+      {!!nftMetadatas[index] && (
         <>
           <Box fontSize="xs" mt="2">
             <Text>
               Fee per NFT: {` `}
               {marketRequirements ? (
                 <>
-                  {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                  {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                 </>
               ) : (
                 " -"
@@ -393,12 +393,12 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 </Box>
               </Flex>
               <Flex>
-                {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                  0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
+                {BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) > 0
+                  && (
+                    <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                      Your wallet token balance is too low to proceed
+                    </Text>
+                  )}
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Buyer Fee (per NFT)</Box>
@@ -406,14 +406,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   :{" "}
                   {marketRequirements
                     ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                          .multipliedBy(marketRequirements.buyer_fee)
-                          .div(10000 + marketRequirements.buyer_fee),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(
-                        offers[selectedOfferIndex].wanted_token_identifier,
-                        offers[selectedOfferIndex].wanted_token_nonce
-                      )})`
+                      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+                        .multipliedBy(marketRequirements.buyer_fee)
+                        .div(10000 + marketRequirements.buyer_fee),
+                      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(
+                      offers[selectedOfferIndex].wanted_token_identifier,
+                      offers[selectedOfferIndex].wanted_token_nonce
+                    )})`
                     : "-"}
                 </Box>
               </Flex>
@@ -421,13 +421,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 <Box w="140px">Total Fee</Box>
                 <Box>
                   {": "}
-                  {marketRequirements ? (
-                    <>
-                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
-                    </>
-                  ) : (
-                    "-"
-                  )}
+                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}</> : "-"}
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">
@@ -489,7 +483,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                   isDisabled={
                     !readTermsChecked ||
                     BigNumber(offers[selectedOfferIndex].wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]).comparedTo(wantedTokenBalance) >
-                      0
+                    0
                   }>
                   Proceed
                 </Button>

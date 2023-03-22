@@ -5,8 +5,8 @@ import { AbiRegistry, Address, BinaryCodec } from "@multiversx/sdk-core/out";
 import axios from "axios";
 import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
-import { convertWeiToEsdt, uxConfig } from "libs/util";
-import { getApi, getExplorer, getNftLink } from "MultiversX/api";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "libs/util";
+import { getApi, getNftLink } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import { ShortAddress } from "UtilComps/ShortAddress";
@@ -33,15 +33,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
-  let explorerUrl = "";
-  let nftExplorerUrl = "";
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const nftExplorerUrl = _chainMeta.networkId ? getNftLink(_chainMeta.networkId, tokenId || "") : "";
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
       // console.log('********** DataNFTDetails LOAD A _chainMeta READY ', _chainMeta);
-
-      explorerUrl = getExplorer(_chainMeta.networkId);
-      nftExplorerUrl = getNftLink(_chainMeta.networkId, tokenId || "");
 
       getTokenDetails();
       getTokenHistory();
@@ -133,103 +130,104 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }
 
   return (
-    <Box>
-      {!isLoadingNftData() ? (
-        <Box>
-          <Flex direction={"column"} alignItems={"flex-start"}>
-            {tokenIdParam && (
-              <>
-                <Heading size="lg" marginBottom={4}>
-                  Data NFT Marketplace
-                </Heading>
-                <HStack>
-                  <Button
-                    colorScheme="teal"
-                    width={{ base: "120px", md: "160px" }}
-                    _disabled={{ opacity: 1 }}
-                    fontSize={{ base: "sm", md: "md" }}
-                    onClick={() => {
-                      navigate("/datanfts/marketplace/market/0");
-                    }}
-                    marginRight={2}>
-                    Public Marketplace
-                  </Button>
-                  <Link href={nftExplorerUrl} isExternal>
-                    {nftData.name} <ExternalLinkIcon mx="2px" />
+    <Box>{!isLoadingNftData() ?
+      <Box>
+        <Flex direction={"column"} alignItems={"flex-start"}>
+          {tokenIdParam &&
+            <>
+              <Heading size="lg" marginBottom={4}>
+                Data NFT Marketplace
+              </Heading>
+              <HStack>
+                <Button
+                  colorScheme="teal"
+                  width={{ base: "120px", md: "160px" }}
+                  _disabled={{ opacity: 1 }}
+                  fontSize={{ base: "sm", md: "md" }}
+                  onClick={() => {
+                    navigate("/datanfts/marketplace/market/0");
+                  }}
+                  marginRight={2}>
+                  Public Marketplace
+                </Button>
+                <Link href={nftExplorerUrl} isExternal>
+                  {nftData.name} <ExternalLinkIcon mx="2px" />
+                </Link>
+              </HStack>
+            </>
+          }
+          <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"}>
+            <Stack
+              flexDirection={{ base: "column", md: "row" }}
+              justifyContent={{ base: "center", md: "flex-start" }}
+              alignItems={{ base: "center", md: "flex-start" }}>
+              <Image
+                boxSize={{ base: "240px", md: "400px" }}
+                objectFit={"cover"}
+                src={nftData.url}
+                alt={"Data NFT Image"}
+                marginRight={{ base: 0, md: "2.4rem" }}
+              />
+              <VStack alignItems={"flex-start"} gap={"15px"}>
+                <Text fontSize="36px" noOfLines={2}>
+                  {nftData.attributes?.title}
+                </Text>
+                <Box color="gray.100" fontSize="xl">
+                  <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
+                    {nftData.identifier}
+                    <ExternalLinkIcon mx="6px" />
                   </Link>
-                </HStack>
-              </>
-            )}
-            <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"}>
-              <Stack
-                flexDirection={{ base: "column", md: "row" }}
-                justifyContent={{ base: "center", md: "flex-start" }}
-                alignItems={{ base: "center", md: "flex-start" }}>
-                <Image
-                  boxSize={{ base: "240px", md: "400px" }}
-                  objectFit={"cover"}
-                  src={nftData.url}
-                  alt={"Data NFT Image"}
-                  marginRight={{ base: 0, md: "2.4rem" }}
-                />
-                <VStack alignItems={"flex-start"} gap={"15px"}>
-                  <Text fontSize="36px" noOfLines={2}>
-                    {nftData.attributes?.title}
+                </Box>
+                <Flex direction={{ base: "column", md: "row" }} gap="3">
+                  <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
+                    {price > 0 ? `Last listing price: ${price} ITHEUM` : price === 0 ? "Last listing price: FREE" : "Not Listed"}
                   </Text>
-                  <Flex direction={{ base: "column", md: "row" }} gap="3">
-                    <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
-                      {price > 0 ? `Last listing price: ${price} ITHEUM` : price === 0 ? "Last listing price: FREE" : "Not Listed"}
-                    </Text>
-                    {showConnectWallet && (
-                      <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
-                        Connect MultiversX Wallet
-                      </Button>
-                    )}
-                  </Flex>
-                  <Text fontSize={"22px"} noOfLines={2}>
-                    {nftData.attributes?.description}
-                  </Text>
-                  <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">
-                    Fully Transferable License
-                  </Badge>
-                  <Flex direction={"column"} gap="1">
-                    <Box color="gray.600" fontSize="lg">
-                      Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
-                      <Link href={`https://${explorerUrl}/accounts/${nftData.attributes?.creator}`} isExternal>
-                        <ExternalLinkIcon mx="4px" />
-                      </Link>
-                    </Box>
-                    {owner && (
-                      <Box color="gray.600" fontSize="lg">
-                        Owner: <ShortAddress fontSize="lg" address={new Address(owner)}></ShortAddress>
-                        <Link href={`https://${explorerUrl}/accounts/${owner}`} isExternal>
-                          <ExternalLinkIcon mx="4px" />
-                        </Link>
-                      </Box>
-                    )}
-                  </Flex>
-                  <Box display="flex" justifyContent="flex-start">
-                    <Text fontSize="lg">{`Creation time: ${moment(nftData.attributes?.creationTime).format(uxConfig.dateStr)}`}</Text>
+                  {showConnectWallet && (
+                    <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
+                      Connect MultiversX Wallet
+                    </Button>
+                  )}
+                </Flex>
+                <Text fontSize={"22px"} noOfLines={2}>
+                  {nftData.attributes?.description}
+                </Text>
+                <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">
+                  Fully Transferable License
+                </Badge>
+                <Flex direction={"column"} gap="1">
+                  <Box color="gray.600" fontSize="lg">
+                    Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
+                    <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
+                      <ExternalLinkIcon mx="4px" />
+                    </Link>
                   </Box>
-                  <Flex direction={"column"} gap="1" color="gray.600" fontSize="lg">
-                    {listed > 0 && <Text>{`Listed: ${listed}`}</Text>}
-                    <Text>{`Total supply: ${nftData.supply}`}</Text>
-                    <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
-                  </Flex>
-                </VStack>
-              </Stack>
-            </Box>
-          </Flex>
-          <VStack alignItems={"flex-start"}>
-            <Heading size="lg" marginBottom={2}>
-              Data NFT Activity
-            </Heading>
-            <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} />
-            </Box>
-          </VStack>
-        </Box>
-      ) : (
+                </Flex>
+                {owner && (
+                  <Box color="gray.600" fontSize="lg">
+                    Owner: <ShortAddress fontSize="lg" address={new Address(owner)}></ShortAddress>
+                    <Link href={`${ChainExplorer}/accounts/${owner}`} isExternal>
+                      <ExternalLinkIcon mx="4px" />
+                    </Link>
+                  </Box>)}
+                <Flex direction={"column"} gap="1" color="gray.600" fontSize="lg">
+                  {listed > 0 && <Text>{`Listed: ${listed}`}</Text>}
+                  <Text>{`Total supply: ${nftData.supply}`}</Text>
+                  <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
+                </Flex>
+              </VStack>
+            </Stack>
+          </Box>
+        </Flex>
+        <VStack alignItems={"flex-start"}>
+          <Heading size="lg" marginBottom={2}>
+            Data NFT Activity
+          </Heading>
+          <Box width={"100%"}>
+            <TokenTxTable page={1} tokenId={tokenId} />
+          </Box>
+        </VStack>
+      </Box>
+      : (
         <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
           <Spinner size={"xl"} thickness="4px" speed="0.64s" emptyColor="gray.200" color="teal" label="Fetching Data NFT-FT details..." />
         </Flex>

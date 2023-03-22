@@ -11,10 +11,10 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, ItemType, RecordStringNumberType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
+import { DataNftWalletLowerCard } from "./DataNftWalletLowerCard";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
-import { DataNftWalletLowerCard } from "./DataNftWalletLowerCard";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();

@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
@@ -20,9 +21,11 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
+import moment from "moment/moment";
 import { convertToLocalString, printPrice } from "libs/util2";
 import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
@@ -30,9 +33,6 @@ import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/token
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 import { ShortAddress } from "../UtilComps/ShortAddress";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import moment from "moment/moment";
-import { Address } from "@multiversx/sdk-core/out";
 
 type MyListedDataLowerCardProps = {
   item: ItemType;
@@ -85,12 +85,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
     const _fee =
       marketRequirements && item
         ? convertWeiToEsdt(
-            BigNumber(item.wanted_token_amount)
-              .multipliedBy(amountOfTokens[index] as number)
-              .multipliedBy(10000)
-              .div(10000 + (marketRequirements.buyer_fee as number)),
-            tokenDecimals(item.wanted_token_identifier)
-          ).toNumber()
+          BigNumber(item.wanted_token_amount)
+            .multipliedBy(amountOfTokens[index] as number)
+            .multipliedBy(10000)
+            .div(10000 + (marketRequirements.buyer_fee as number)),
+          tokenDecimals(item.wanted_token_identifier)
+        ).toNumber()
         : 0;
     setFee(_fee);
   }, [marketRequirements, index]);
@@ -234,7 +234,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
               Fee per NFT: {` `}
               {marketRequirements ? (
                 <>
-                  {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                  {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                 </>
               ) : (
                 " -"
@@ -434,8 +434,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                     Current Price per Data NFT
                   </Text>
                   <Box>
-                    : {fee} {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}{" "}
-                    {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                    :{" "}{fee}{" "}
+                    {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                    {" "}{fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}
                   </Box>
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center">
