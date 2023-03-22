@@ -340,7 +340,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                   <Box>
                     :{" "}{fee}{" "}
                     {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
-                    {" "}{fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}
+                    {" "}{fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}
                   </Box>
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center">
