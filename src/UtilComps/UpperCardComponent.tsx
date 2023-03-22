@@ -1,7 +1,6 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
   Flex,
   Image,
@@ -17,14 +16,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import BigNumber from "bignumber.js";
-import moment from "moment/moment";
-import { ShortAddress } from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { CHAIN_TX_VIEWER } from "../libs/util";
 import { getApi } from "../MultiversX/api";
-import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
+import { hexZero } from "../MultiversX/tokenUtils";
+import { DataNftMetadataType, ItemType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
@@ -33,58 +28,24 @@ type UpperCardComponentProps = {
   nftMetadataLoading: boolean;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
-  marketRequirements: MarketplaceRequirementsType | undefined;
   item?: ItemType;
   index: number;
   marketFreezedNonces: number[];
   children?: React.ReactNode;
   loadDetailsDrawer?: any;
-  itheumPrice: number | undefined;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const {
-    nftImageLoading,
-    nftMetadataLoading,
-    setNftImageLoading,
-    nftMetadatas,
-    userData,
-    index,
-    children,
-    item,
-    marketRequirements,
-    marketFreezedNonces,
-    loadDetailsDrawer,
-    itheumPrice,
-  } = props;
+  const { nftImageLoading, nftMetadataLoading, setNftImageLoading, nftMetadatas, userData, index, children, item, marketFreezedNonces, loadDetailsDrawer } =
+    props;
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
-  const [feePrice, setFeePrice] = useState<string>("");
-  const [fee, setFee] = useState<number>(0);
-
-  useEffect(() => {
-    setFeePrice(
-      printPrice(
-        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
-      )
-    );
-    setFee(convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber());
-  }, []);
-
   return (
     <Flex wrap="wrap" gap="5" key={index}>
-      <Box
-        maxW="xs"
-        borderWidth="1px"
-        borderRadius="lg"
-        overflow="wrap"
-        mb="1rem"
-        position="relative"
-        w="13.5rem">
+      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
         <Flex justifyContent="center" pt={5}>
           <Skeleton isLoaded={nftImageLoading} h={200}>
             {item?.offered_token_identifier ? (
@@ -99,7 +60,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                 onClick={() => loadDetailsDrawer(nftMetadatas[index].id)}
               />
             ) : (
-              <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setNftImageLoading(true)} />
+              <Image src={item?.nftImgUrl} alt={item?.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => setNftImageLoading(true)} />
             )}
           </Skeleton>
         </Flex>
@@ -154,12 +115,14 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backgroundColor="blackAlpha.800"
           rounded="lg"
           visibility={
-            userData.addressFrozen
-              || (userData.frozenNonces && item
-                && (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce)))
-              ? "visible" : "collapse"
-          }
-        >
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+              ? "visible"
+              : "collapse"
+          }>
           <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it

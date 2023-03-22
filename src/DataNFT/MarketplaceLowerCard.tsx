@@ -26,7 +26,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
-import { printPrice, convertToLocalString, printPrice } from "../libs/util2";
+import { printPrice, convertToLocalString } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
@@ -68,6 +68,36 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   const { address } = useGetAccountInfo();
 
   useEffect(() => {
+    setFeePrice(
+      printPrice(
+        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
+      )
+    );
+    setFee(convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber());
+  }, []);
+
+  // useEffect(() => {
+  //   setFeePrice(
+  //     printPrice(
+  //       convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+  //       getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
+  //     )
+  //   );
+  //   const _fee =
+  //     marketRequirements && item
+  //       ? convertWeiToEsdt(
+  //           BigNumber(item.wanted_token_amount)
+  //             .multipliedBy(amountOfTokens[index] as number)
+  //             .multipliedBy(10000)
+  //             .div(10000 + (marketRequirements.buyer_fee as number)),
+  //           tokenDecimals(item.wanted_token_identifier)
+  //         ).toNumber()
+  //       : 0;
+  //   setFee(_fee);
+  // }, [marketRequirements, index]);
+
+  useEffect(() => {
     (async () => {
       // init - no selection
       setSelectedOfferIndex(-1);
@@ -103,13 +133,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
   }, [address, offers, selectedOfferIndex, hasPendingTransactions]);
 
   useEffect(() => {
-    setFeePrice(
-      printPrice(
-        convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
-      )
-    );
-    setFee(convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber());
     (async () => {
       const _marketRequirements = await contract.getRequirements();
       // console.log("_marketRequirements", _marketRequirements);
@@ -237,6 +260,23 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
           {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
           {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
         </Box>
+      )}
+
+      {!!nftMetadatas[index] && fee && (
+        <>
+          <Box fontSize="xs" mt="2">
+            <Text>
+              Fee per NFT: {` `}
+              {marketRequirements ? (
+                <>
+                  {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                </>
+              ) : (
+                " -"
+              )}
+            </Text>
+          </Box>
+        </>
       )}
 
       <Button
@@ -381,7 +421,13 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 <Box w="140px">Total Fee</Box>
                 <Box>
                   {": "}
-                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}</> : "-"}
+                  {marketRequirements ? (
+                    <>
+                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                    </>
+                  ) : (
+                    "-"
+                  )}
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">

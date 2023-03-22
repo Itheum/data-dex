@@ -48,6 +48,7 @@ import imgGuidePopup from "../img/guide-unblock-popups.png";
 
 type DataNftWalletLowerCardProps = {
   dataNftItem: ItemType;
+  itheumPrice: number | undefined;
   index: number;
 };
 

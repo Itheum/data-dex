@@ -343,12 +343,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     userData={userData}
                     index={index}
                     marketFreezedNonces={marketFreezedNonces}
-                    loadDetailsDrawer={openDetailsView}
-                    itheumPrice={itheumPrice}>
+                    loadDetailsDrawer={openDetailsView}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} itheumPrice={itheumPrice} />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
+                      <MyListedDataLowerCard index={index} item={item} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
                     )}
                   </UpperCardComponent>
                 </div>

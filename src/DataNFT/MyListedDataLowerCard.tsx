@@ -23,8 +23,8 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { convertToLocalString } from "libs/util2";
-import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
+import { convertToLocalString, printPrice } from "libs/util2";
+import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
@@ -32,12 +32,11 @@ import { useChainMeta } from "../store/ChainMetaContext";
 import { ShortAddress } from "../UtilComps/ShortAddress";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import moment from "moment/moment";
-import { convertToLocalString, printPrice } from "../libs/util2";
 import { Address } from "@multiversx/sdk-core/out";
 
 type MyListedDataLowerCardProps = {
   item: ItemType;
-  offers: OfferType[];
+  offers: ItemType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
   itheumPrice: number | undefined;
@@ -47,6 +46,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const { offers, index, nftMetadatas, item, itheumPrice } = props;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const contract = new DataNftMarketContract(_chainMeta.networkId);
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -63,17 +63,37 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
+  const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
+
+  // useEffect(() => {
+  //   setFeePrice(
+  //     printPrice(
+  //       convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+  //       getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
+  //     )
+  //   );
+  // }, []);
+
   useEffect(() => {
-    const _fee = marketRequirements && offers[selectedOfferIndex] ? convertWeiToEsdt(
-      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-        .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
-        .multipliedBy(10000)
-        .div(10000 + (marketRequirements.buyer_fee as number)),
-      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
-    ).toNumber() : 0;
+    setFeePrice(
+      printPrice(
+        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
+      )
+    );
+    const _fee =
+      marketRequirements && item
+        ? convertWeiToEsdt(
+            BigNumber(item.wanted_token_amount)
+              .multipliedBy(amountOfTokens[index] as number)
+              .multipliedBy(10000)
+              .div(10000 + (marketRequirements.buyer_fee as number)),
+            tokenDecimals(item.wanted_token_identifier)
+          ).toNumber()
+        : 0;
     setFee(_fee);
-  }, [marketRequirements, selectedOfferIndex, offers]);
+  }, [marketRequirements, index]);
 
   const onDelist = async () => {
     if (!address) {
@@ -205,6 +225,23 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
           {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
           {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
         </Box>
+      )}
+
+      {!!nftMetadatas[index] && fee && (
+        <>
+          <Box fontSize="xs" mt="2">
+            <Text>
+              Fee per NFT: {` `}
+              {marketRequirements ? (
+                <>
+                  {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                </>
+              ) : (
+                " -"
+              )}
+            </Text>
+          </Box>
+        </>
       )}
 
       <Button
@@ -397,9 +434,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                     Current Price per Data NFT
                   </Text>
                   <Box>
-                    :{" "}{fee}{" "}
-                    {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
-                    {" "}{fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}
+                    : {fee} {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}{" "}
+                    {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
                   </Box>
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center">

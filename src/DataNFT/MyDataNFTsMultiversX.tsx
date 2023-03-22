@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {Flex, Heading, Stack, Text, useDisclosure, useToast,} from "@chakra-ui/react";
-import {AbiRegistry, BinaryCodec, SmartContractAbi} from "@multiversx/sdk-core/out";
-import {useGetAccountInfo} from "@multiversx/sdk-dapp/hooks/account";
-import {useGetPendingTransactions} from "@multiversx/sdk-dapp/hooks/transactions";
-import {useLocalStorage, useSessionStorage} from "libs/hooks";
-import {convertWeiToEsdt} from "libs/util";
-import {getNftsOfACollectionForAnAddress} from "MultiversX/api";
-import {DataNftMarketContract} from "MultiversX/dataNftMarket";
-import {DataNftMintContract} from "MultiversX/dataNftMint";
-import {DataNftType, ItemType, RecordStringNumberType, UserDataType} from "MultiversX/types";
-import {useChainMeta} from "store/ChainMetaContext";
-import {SkeletonLoadingList} from "UtilComps/SkeletonLoadingList";
+import React, { useEffect, useState } from "react";
+import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useLocalStorage } from "libs/hooks";
+import { convertWeiToEsdt } from "libs/util";
+import { getItheumPriceFromApi, getNftsOfACollectionForAnAddress } from "MultiversX/api";
+import { DataNftMarketContract } from "MultiversX/dataNftMarket";
+import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { DataNftType, ItemType, RecordStringNumberType } from "MultiversX/types";
+import { useChainMeta } from "store/ChainMetaContext";
+import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
-import {tokenDecimals} from "../MultiversX/tokenUtils.js";
+import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
-import {DataNftWalletLowerCard} from "./DataNftWalletLowerCard";
+import { DataNftWalletLowerCard } from "./DataNftWalletLowerCard";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -59,6 +59,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [userData, setUserData] = useState<any>(undefined);
+  const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
   useEffect(() => {
@@ -66,6 +67,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
     (async () => {
       if (!_chainMeta.networkId) return;
+
+      const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
+      setMarketFreezedNonces(_marketFreezedNonces);
 
       const _marketRequirements = await marketContract.getRequirements();
       const _maxPaymentFeeMap: RecordStringNumberType = {};
@@ -86,7 +90,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const getItheumPrice = () => {
     (async () => {
       const _itheumPrice = await getItheumPriceFromApi();
-      console.log('_itheumPrice', _itheumPrice);
+      console.log("_itheumPrice", _itheumPrice);
       setItheumPrice(_itheumPrice);
     })();
   };
@@ -169,7 +173,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
             dataPreview: dataNft.dataPreview,
             nftImgUrl: dataNft.nftImgUrl,
             collection: dataNft.collection,
-            nonce: dataNft.nonce
+            nonce: dataNft.nonce,
           };
         });
       });
@@ -204,18 +208,28 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {!noData && dataNfts.length === 0 ? <>{(<SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</> :
+      {!noData && dataNfts.length === 0 ? (
+        <>{<SkeletonLoadingList /> || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>
+      ) : (
         <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
           {items &&
             items.map((item, index) => (
               <div key={index}>
-                <UpperCardComponent nftImageLoading={oneNFTImgLoaded} setNftImageLoading={setOneNFTImgLoaded} nftMetadatas={dataNfts} userData={userData} item={item} index={index}>
-                  <DataNftWalletLowerCard dataNftItem={item} index={index}/>
+                <UpperCardComponent
+                  nftImageLoading={oneNFTImgLoaded}
+                  setNftImageLoading={setOneNFTImgLoaded}
+                  nftMetadataLoading={oneNFTImgLoaded}
+                  nftMetadatas={dataNfts}
+                  userData={userData}
+                  item={item}
+                  index={index}
+                  marketFreezedNonces={marketFreezedNonces}>
+                  <DataNftWalletLowerCard dataNftItem={item} index={index} itheumPrice={itheumPrice} />
                 </UpperCardComponent>
               </div>
             ))}
         </Flex>
-      }
+      )}
     </Stack>
   );
 }
