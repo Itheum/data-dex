@@ -59,11 +59,14 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [userData, setUserData] = useState<any>(undefined);
+  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
   useEffect(() => {
     // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketRequirements = await marketContract.getRequirements();
       const _maxPaymentFeeMap: RecordStringNumberType = {};
 
@@ -78,11 +81,26 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
       setMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
+  }, [_chainMeta.networkId]);
+
+  const getItheumPrice = () => {
+    (async () => {
+      const _itheumPrice = await getItheumPriceFromApi();
+      console.log('_itheumPrice', _itheumPrice);
+      setItheumPrice(_itheumPrice);
+    })();
+  };
+
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   const getOnChainNFTs = async () => {
-    const chainId = _chainMeta.networkId === "ED" ? "D" : "E1";
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, chainId);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
     console.log("onChainNfts", onChainNfts);
 
     if (onChainNfts.length > 0) {
@@ -160,23 +178,24 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       setNoData(true);
       setDataNfts([]);
     }
-
   };
 
   useEffect(() => {
     if (hasPendingTransactions) return;
+    if (!_chainMeta.networkId) return;
+
     getOnChainNFTs();
-  }, [hasPendingTransactions]);
+  }, [hasPendingTransactions, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
+      if (!_chainMeta.networkId) return;
       if (address && !hasPendingTransactions) {
         const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
-        console.log("User data", _userData);
         setUserData(_userData);
       }
     })();
-  }, [address, hasPendingTransactions]);
+  }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
   return (
     <Stack spacing={5}>

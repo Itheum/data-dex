@@ -23,7 +23,8 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "../libs/util";
+import { convertToLocalString } from "libs/util2";
+import { CHAIN_TX_VIEWER, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
@@ -39,14 +40,14 @@ type MyListedDataLowerCardProps = {
   offers: OfferType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
+  itheumPrice: number | undefined;
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
-  const { offers, index, nftMetadatas, item } = props;
+  const { offers, index, nftMetadatas, item, itheumPrice } = props;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  const contract = new DataNftMarketContract("ED");
+  const contract = new DataNftMarketContract(_chainMeta.networkId);
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
@@ -61,6 +62,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const itheumToken = _chainMeta.contracts.itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
+
+  const [fee, setFee] = useState<number>(0);
+  useEffect(() => {
+    const _fee = marketRequirements && offers[selectedOfferIndex] ? convertWeiToEsdt(
+      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+        .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
+        .multipliedBy(10000)
+        .div(10000 + (marketRequirements.buyer_fee as number)),
+      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+    ).toNumber() : 0;
+    setFee(_fee);
+  }, [marketRequirements, selectedOfferIndex, offers]);
 
   const onDelist = async () => {
     if (!address) {
@@ -305,7 +318,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                       ml="2"
                       onClick={() => {
                         setDelistAmount(offers[selectedOfferIndex]?.quantity);
-                        console.log(offers[selectedOfferIndex]?.quantity);
                       }}>
                       De-List All
                     </Button>
@@ -385,16 +397,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                     Current Price per Data NFT
                   </Text>
                   <Box>
-                    :{" "}
-                    {marketRequirements &&
-                      convertWeiToEsdt(
-                        BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-                          .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
-                          .multipliedBy(10000)
-                          .div(10000 + (marketRequirements.buyer_fee as number)),
-                        tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier)
-                      ).toNumber()}{" "}
+                    :{" "}{fee}{" "}
                     {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
+                    {" "}{fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}
                   </Box>
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center">

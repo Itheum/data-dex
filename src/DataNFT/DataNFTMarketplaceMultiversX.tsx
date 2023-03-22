@@ -20,7 +20,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt } from "libs/util";
-import { getAccountTokenFromApi, getNftsByIds } from "MultiversX/api";
+import { getAccountTokenFromApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -49,8 +49,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const marketContract = new DataNftMarketContract("ED");
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
+  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
@@ -115,6 +116,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     // console.log('********** DataNFTMarketplaceMultiversX A LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketRequirements = await marketContract.getRequirements();
       console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
@@ -132,21 +135,39 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         setMaxPaymentFeeMap({});
       }
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   useEffect(() => {
     // console.log('********** DataNFTMarketplaceMultiversX B LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
       console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
+  }, [_chainMeta.networkId]);
+
+  const getItheumPrice = () => {
+    (async () => {
+      const _itheumPrice = await getItheumPriceFromApi();
+      setItheumPrice(_itheumPrice);
+    })();
+  };
+
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     (async () => {
       if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       let _numberOfOffers = 0;
       if (tabState === 1) {
@@ -165,11 +186,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         onGotoPage(0);
       }
     })();
-  }, [hasPendingTransactions, tabState]);
+  }, [hasPendingTransactions, tabState, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
       if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       // init - no selection
       setSelectedOfferIndex(-1);
@@ -219,12 +241,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
     })();
-  }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
+  }, [pageIndex, pageSize, tabState, hasPendingTransactions, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
       if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
       if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
       const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
@@ -234,7 +257,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         setWantedTokenBalance("0");
       }
     })();
-  }, [address, offers, selectedOfferIndex, hasPendingTransactions]);
+  }, [address, offers, selectedOfferIndex, hasPendingTransactions, _chainMeta.networkId]);
 
   const getUserData = async () => {
     if (address) {
@@ -245,8 +268,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     if (hasPendingTransactions) return;
+    if (!_chainMeta.networkId) return;
+
     getUserData();
-  }, [address, hasPendingTransactions]);
+  }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
   function openDetailsView(dataNftId: string) {
     setDataNftIdForDetails(dataNftId);
@@ -318,11 +343,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     userData={userData}
                     index={index}
                     marketFreezedNonces={marketFreezedNonces}
-                    loadDetailsDrawer={openDetailsView}>
+                    loadDetailsDrawer={openDetailsView}
+                    itheumPrice={itheumPrice}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} />
+                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} itheumPrice={itheumPrice} />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={offers} nftMetadatas={nftMetadatas} item={item} />
+                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
                     )}
                   </UpperCardComponent>
                 </div>
