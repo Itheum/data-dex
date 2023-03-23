@@ -77,27 +77,18 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   return (
     <Flex wrap="wrap" gap="5" key={index}>
-      <Box
-        maxW="xs"
-        borderWidth="1px"
-        borderRadius="lg"
-        overflow="wrap"
-        mb="1rem"
-        position="relative"
-        w="13.5rem">
+      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
         <Flex justifyContent="center" pt={5}>
-          <Skeleton isLoaded={nftImageLoading} h={200}>
-            <Image
-              src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
-              alt={"item.dataPreview"}
-              h={200}
-              w={200}
-              borderRadius="md"
-              cursor="pointer"
-              onLoad={() => setNftImageLoading(true)}
-              onClick={() => loadDetailsDrawer(nftMetadatas[index].id)}
-            />
-          </Skeleton>
+          <Image
+            src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
+            alt={"item.dataPreview"}
+            h={200}
+            w={200}
+            borderRadius="md"
+            cursor="pointer"
+            onLoad={() => setNftImageLoading(true)}
+            onClick={() => loadDetailsDrawer(nftMetadatas[index].id)}
+          />
         </Flex>
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
@@ -184,7 +175,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               <Box fontSize="xs" mt="2">
                 <Text>
                   Fee per NFT: {` `}
-                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}</> : " -"}
+                  {marketRequirements ? (
+                    <>
+                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ""}
+                    </>
+                  ) : (
+                    " -"
+                  )}
                 </Text>
               </Box>
             </>
@@ -203,10 +200,14 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backgroundColor="blackAlpha.800"
           rounded="lg"
           visibility={
-            userData && (userData.addressFrozen || (userData.frozenNonces && item && (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
-              ? "visible" : "collapse"
-          }
-        >
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+              ? "visible"
+              : "collapse"
+          }>
           <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it
