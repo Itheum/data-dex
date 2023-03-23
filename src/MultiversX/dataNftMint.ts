@@ -157,7 +157,7 @@ export class DataNftMintContract {
       receiver: new Address(sender),
       sender: new Address(sender),
       gasLimit: 12_000_000,
-      chainID: "D",
+      chainID: this.chainID,
     });
     await refreshAccount();
     await sendTransactions({

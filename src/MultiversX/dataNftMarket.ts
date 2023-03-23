@@ -92,18 +92,18 @@ export class DataNftMarketContract {
     const data =
       BigNumber(paymentAmount).comparedTo(0) > 0
         ? TransactionPayload.contractCall()
-          .setFunction(new ContractFunction("ESDTTransfer"))
-          .addArg(new TokenIdentifierValue(tokenId))
-          .addArg(new BigUIntValue(paymentAmount))
-          .addArg(new StringValue("acceptOffer"))
-          .addArg(new U64Value(index))
-          .addArg(new BigUIntValue(amount))
-          .build()
+            .setFunction(new ContractFunction("ESDTTransfer"))
+            .addArg(new TokenIdentifierValue(tokenId))
+            .addArg(new BigUIntValue(paymentAmount))
+            .addArg(new StringValue("acceptOffer"))
+            .addArg(new U64Value(index))
+            .addArg(new BigUIntValue(amount))
+            .build()
         : TransactionPayload.contractCall()
-          .setFunction(new ContractFunction("acceptOffer"))
-          .addArg(new U64Value(index))
-          .addArg(new BigUIntValue(amount))
-          .build();
+            .setFunction(new ContractFunction("acceptOffer"))
+            .addArg(new U64Value(index))
+            .addArg(new BigUIntValue(amount))
+            .build();
 
     const offerEsdtTx = new Transaction({
       value: 0,
@@ -111,7 +111,7 @@ export class DataNftMarketContract {
       receiver: new Address(this.dataNftMarketContractAddress),
       sender: new Address(sender),
       gasLimit: 12000000,
-      chainID: "D",
+      chainID: this.chainID,
     });
 
     await refreshAccount();
@@ -145,7 +145,7 @@ export class DataNftMarketContract {
       receiver: new Address(senderAddress),
       sender: new Address(senderAddress),
       gasLimit: 12000000,
-      chainID: "D",
+      chainID: this.chainID,
     });
 
     await refreshAccount();
@@ -174,7 +174,7 @@ export class DataNftMarketContract {
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
-      chainID: "D",
+      chainID: this.chainID,
     });
 
     await refreshAccount();
@@ -199,7 +199,7 @@ export class DataNftMarketContract {
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
-      chainID: "D",
+      chainID: this.chainID,
     });
 
     await refreshAccount();
@@ -236,7 +236,7 @@ export class DataNftMarketContract {
       receiver: new Address(addressOfSender),
       sender: new Address(addressOfSender),
       gasLimit: 12000000,
-      chainID: "D",
+      chainID: this.chainID,
     });
     await refreshAccount();
     await sendTransactions({
@@ -263,7 +263,7 @@ export class DataNftMarketContract {
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
-      chainID: "D",
+      chainID: this.chainID,
     });
 
     await refreshAccount();
@@ -317,10 +317,7 @@ export class DataNftMarketContract {
 
   async viewOffers(startIndex: number, stopIndex: number): Promise<OfferType[]> {
     // this will spread out a new array from startIndex to stopIndex e.g. startIndex=0, stopIndex=5 : you get [1,2,3,4,5]
-    const indexRange = Array.from(
-      { length: stopIndex - startIndex },
-      (_, i) => new U64Value(startIndex + 1 + i)
-    );
+    const indexRange = Array.from({ length: stopIndex - startIndex }, (_, i) => new U64Value(startIndex + 1 + i));
 
     const interaction = this.contract.methodsExplicit.viewOffers(indexRange);
     const query = interaction.buildQuery();
@@ -430,7 +427,7 @@ export class DataNftMarketContract {
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
-      chainID: "D",
+      chainID: this.chainID,
     });
 
     await refreshAccount();
