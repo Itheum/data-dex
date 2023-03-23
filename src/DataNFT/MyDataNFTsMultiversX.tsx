@@ -141,7 +141,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const getItheumPrice = () => {
     (async () => {
       const _itheumPrice = await getItheumPriceFromApi();
-      console.log('_itheumPrice', _itheumPrice);
+      console.log("_itheumPrice", _itheumPrice);
       setItheumPrice(_itheumPrice);
     })();
   };
@@ -624,7 +624,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                   backgroundColor="blackAlpha.800"
                   rounded="lg"
                   visibility={
-                    userData && (userData.addressFrozen || (userData.frozenNonces && userData.frozenNonces.includes(item.nonce))) ? "visible" : "collapse"
+                    userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(item?.nonce))) ? "visible" : "collapse"
                   }
                   backdropFilter="auto"
                   backdropBlur="6px">
@@ -773,7 +773,12 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 How many to list: {amounts[selectedDataNft.index]}
               </Text>
               <Text fontSize="md" mt="2">
-                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM (${prices[selectedDataNft.index] && itheumPrice ? convertToLocalString(prices[selectedDataNft.index] * itheumPrice) + " USD" : ""})` : "FREE"}{" "}
+                Listing fee per NFT:{" "}
+                {prices[selectedDataNft.index]
+                  ? `${prices[selectedDataNft.index]} ITHEUM (${
+                      prices[selectedDataNft.index] && itheumPrice ? convertToLocalString(prices[selectedDataNft.index] * itheumPrice) + " USD" : ""
+                    })`
+                  : "FREE"}{" "}
               </Text>
 
               <Text display="none" fontSize="md" mt="8">
