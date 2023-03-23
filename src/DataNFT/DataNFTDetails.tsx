@@ -5,8 +5,8 @@ import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import axios from "axios";
 import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
-import { convertWeiToEsdt, uxConfig } from "libs/util";
-import { getApi, getExplorer, getNftLink } from "MultiversX/api";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "libs/util";
+import { getApi, getNftLink } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
@@ -33,15 +33,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
-  let explorerUrl = '';
-  let nftExplorerUrl = '';
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const nftExplorerUrl = _chainMeta.networkId ? getNftLink(_chainMeta.networkId, tokenId || "") : "";
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
       // console.log('********** DataNFTDetails LOAD A _chainMeta READY ', _chainMeta);
-
-      explorerUrl = getExplorer(_chainMeta.networkId);
-      nftExplorerUrl = getNftLink(_chainMeta.networkId, tokenId || "");
 
       getTokenDetails();
       getTokenHistory();
@@ -169,6 +166,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               <Text fontSize="36px" noOfLines={2}>
                 {nftData.attributes?.title}
               </Text>
+              <Box color="gray.100" fontSize="xl">
+                <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
+                  {nftData.identifier}
+                  <ExternalLinkIcon mx="6px" />
+                </Link>
+              </Box>
               <Flex direction={{ base: "column", md: "row" }} gap="3">
                 <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
                   {price > 0 ? `Last listing price: ${price} ITHEUM` : price === 0 ? "Last listing price: FREE" : "Not Listed"}
@@ -188,14 +191,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               <Flex direction={"column"} gap="1">
                 <Box color="gray.600" fontSize="lg">
                   Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
-                  <Link href={`https://${explorerUrl}/accounts/${nftData.attributes?.creator}`} isExternal>
+                  <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
                     <ExternalLinkIcon mx="4px" />
                   </Link>
                 </Box>
                 {owner && (
                   <Box color="gray.600" fontSize="lg">
                     Owner: <ShortAddress fontSize="lg" address={owner}></ShortAddress>
-                    <Link href={`https://${explorerUrl}/accounts/${owner}`} isExternal>
+                    <Link href={`${ChainExplorer}/accounts/${owner}`} isExternal>
                       <ExternalLinkIcon mx="4px" />
                     </Link>
                   </Box>

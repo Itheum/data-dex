@@ -773,7 +773,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 How many to list: {amounts[selectedDataNft.index]}
               </Text>
               <Text fontSize="md" mt="2">
-                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM (${prices[selectedDataNft.index] && itheumPrice ? convertToLocalString(prices[selectedDataNft.index] * itheumPrice) + " USD" : ""})` : "FREE"}{" "}
+                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM (${prices[selectedDataNft.index] && itheumPrice ? convertToLocalString(prices[selectedDataNft.index] * itheumPrice, 2) + " USD" : ""})` : "FREE"}{" "}
               </Text>
 
               <Text display="none" fontSize="md" mt="8">
