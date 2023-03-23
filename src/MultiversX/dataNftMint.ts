@@ -29,7 +29,6 @@ export class DataNftMintContract {
   timeout: number;
   dataNftMarketContractAddress: any;
   chainID: string;
-  networkProvider: ProxyNetworkProvider;
   contract: SmartContract;
   abiRegistry: AbiRegistry;
   dataNftMintContractAddress: string;
@@ -40,12 +39,7 @@ export class DataNftMintContract {
     this.chainID = "D";
 
     if (networkId === "E1") {
-      this.networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
       this.chainID = "1";
-    } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-        timeout: this.timeout,
-      });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -177,10 +171,19 @@ export class DataNftMintContract {
     const result = [];
 
     try {
-      const res = await this.networkProvider.queryContract(query);
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
+      const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
-      const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+      const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
       if (returnCode && returnCode.isSuccess() && firstValue) {
         const userData = firstValue.valueOf();
@@ -241,9 +244,18 @@ export class DataNftMintContract {
 
   async getSftsFreezedForAddress(targetAddress: string): Promise<number[]> {
     try {
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
       const interaction = this.contract.methods.getSftsFreezedForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();
-      const res = await this.networkProvider.queryContract(query);
+      const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
       const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);

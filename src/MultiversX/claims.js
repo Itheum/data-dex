@@ -22,12 +22,7 @@ export class ClaimsContract {
     this.chainID = "D";
 
     if (networkId === "E1") {
-      this.networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
       this.chainID = "1";
-    } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-        timeout: this.timeout,
-      });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -46,7 +41,16 @@ export class ClaimsContract {
     const result = [];
 
     try {
-      const res = await this.networkProvider.queryContract(query);
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
+      const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
       const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
@@ -79,10 +83,19 @@ export class ClaimsContract {
     let result = false;
 
     try {
-      const res = await this.networkProvider.queryContract(query);
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
+      const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
-      const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+      const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
       if (returnCode && returnCode.isSuccess()) {
         result = firstValue.valueOf();
