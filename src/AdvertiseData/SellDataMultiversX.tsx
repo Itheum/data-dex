@@ -56,7 +56,7 @@ import { useGetPendingTransactions, useTrackTransactionStatus } from "@multivers
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
 import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
-import { checkBalance } from "MultiversX/api";
+import { checkBalance, getGateway } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -208,9 +208,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     // console.log('********** SellDataMultiversX LOAD _chainMeta ', _chainMeta);
 
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       if (firstValue) {
@@ -219,9 +220,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       }
     })();
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       if (firstValue) {
@@ -230,9 +232,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       }
     })();
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       if (firstValue) {
@@ -241,9 +244,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       }
     })();
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
       if (firstValue) {
