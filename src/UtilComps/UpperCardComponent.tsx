@@ -38,7 +38,7 @@ type UpperCardComponentProps = {
   index: number;
   marketFreezedNonces: number[];
   children?: React.ReactNode;
-  loadDetailsDrawer?: any;
+  openNftDetailsDrawer?: (e: number) => void;
   itheumPrice: number | undefined;
 };
 
@@ -54,7 +54,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     item,
     marketRequirements,
     marketFreezedNonces,
-    loadDetailsDrawer,
+    openNftDetailsDrawer,
     itheumPrice,
   } = props;
   // Multiversx API
@@ -87,7 +87,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
             borderRadius="md"
             cursor="pointer"
             onLoad={() => setNftImageLoading(true)}
-            onClick={() => loadDetailsDrawer(nftMetadatas[index].id)}
+            onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
           />
         </Flex>
 
@@ -195,10 +195,10 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             userData &&
-            (userData?.addressFrozen ||
-              (userData?.frozenNonces &&
-                item &&
-                (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
+              (userData?.addressFrozen ||
+                (userData?.frozenNonces &&
+                  item &&
+                  (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>

@@ -4,9 +4,10 @@ import { Box, Button, Heading, HStack, Link, VStack, Text, Image, Stack, Flex, B
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import axios from "axios";
 import moment from "moment";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link as ReactRouterLink } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "libs/util";
-import { getApi, getNftLink } from "MultiversX/api";
+import { convertToLocalString } from "libs/util2";
+import { getApi, getItheumPriceFromApi, getNftLink } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
@@ -17,22 +18,25 @@ type DataNFTDetailsProps = {
   listed?: number;
   showConnectWallet?: boolean;
   tokenIdProp?: string;
-  offerId?: number;
+  offerIdProp?: number;
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { tokenId: tokenIdParam } = useParams();
+  const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
   const [price, setPrice] = useState<number>(0);
+  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
+
   const owner = props.owner || "";
   const listed = props.listed || 0;
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
+  const offerId = props.offerIdProp || offerIdParam?.split('-')[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const nftExplorerUrl = _chainMeta.networkId ? getNftLink(_chainMeta.networkId, tokenId || "") : "";
 
@@ -42,6 +46,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
       getTokenDetails();
       getTokenHistory();
+
+      (async () => {
+        const _itheumPrice = await getItheumPriceFromApi();
+        setItheumPrice(_itheumPrice);
+      })();
 
     }
   }, [_chainMeta]);
@@ -144,9 +153,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 marginRight={2}>
                 Public Marketplace
               </Button>
-              <Link href={nftExplorerUrl} isExternal>
+              {/* <Link href={nftExplorerUrl} isExternal>
                 {nftData.name} <ExternalLinkIcon mx="2px" />
-              </Link>
+              </Link> */}
             </HStack>
           </>
         }
@@ -155,13 +164,19 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             flexDirection={{ base: "column", md: "row" }}
             justifyContent={{ base: "center", md: "flex-start" }}
             alignItems={{ base: "center", md: "flex-start" }}>
-            <Image
-              boxSize={{ base: "240px", md: "400px" }}
-              objectFit={"cover"}
-              src={nftData.url}
-              alt={"Data NFT Image"}
-              marginRight={{ base: 0, md: "2.4rem" }}
-            />
+            <Link
+              as={ReactRouterLink}
+              to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
+            >
+              <Image
+                boxSize={{ base: "240px", md: "400px" }}
+                objectFit={"cover"}
+                src={nftData.url}
+                alt={"Data NFT Image"}
+                marginRight={{ base: 0, md: "2.4rem" }}
+              />
+            </Link>
+
             <VStack alignItems={"flex-start"} gap={"15px"}>
               <Text fontSize="36px" noOfLines={2}>
                 {nftData.attributes?.title}
@@ -174,7 +189,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Box>
               <Flex direction={{ base: "column", md: "row" }} gap="3">
                 <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
-                  {price > 0 ? `Last listing price: ${price} ITHEUM` : price === 0 ? "Last listing price: FREE" : "Not Listed"}
+                  {price > 0 ? `Last listing price: ${price} ITHEUM ` + (itheumPrice ? `(${convertToLocalString(price * itheumPrice, 2)} USD)` : '') : price === 0 ? "Last listing price: FREE" : "Not Listed"}
                 </Text>
                 {showConnectWallet && (
                   <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>

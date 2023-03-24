@@ -20,6 +20,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt } from "libs/util";
+import { createNftId } from "libs/util2";
 import { getAccountTokenFromApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
@@ -230,7 +231,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       //
       setNftMetadatasLoading(true);
-      const nftIds = _offers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
+      const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
       const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
@@ -271,13 +272,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     getUserData();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
-  function openDetailsView(dataNftId: string) {
-    setDataNftIdForDetails(dataNftId);
+  function openNftDetailsDrawer(index: number) {
+    setSelectedOfferIndex(index);
     onOpenDrawerTradeStream();
   }
 
   function closeDetailsView() {
-    setDataNftIdForDetails(null);
+    setSelectedOfferIndex(-1);
     onCloseDrawerTradeStream();
   }
 
@@ -342,7 +343,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     userData={userData}
                     index={index}
                     marketFreezedNonces={marketFreezedNonces}
-                    loadDetailsDrawer={openDetailsView}
+                    openNftDetailsDrawer={openNftDetailsDrawer}
                     itheumPrice={itheumPrice}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
                       <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} itheumPrice={itheumPrice} />
@@ -377,7 +378,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             </HStack>
           </DrawerHeader>
           <DrawerBody>
-            <DataNFTDetails tokenIdProp={dataNftIdForDetails} />
+            {
+              selectedOfferIndex > 0 && offers.length > selectedOfferIndex &&
+              <DataNFTDetails
+                tokenIdProp={createNftId(offers[selectedOfferIndex].offered_token_identifier, offers[selectedOfferIndex].offered_token_nonce)}
+                offerIdProp={offers[selectedOfferIndex].index}
+              />
+            }
           </DrawerBody>
         </DrawerContent>
       </Drawer>
