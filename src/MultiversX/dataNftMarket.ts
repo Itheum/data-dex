@@ -420,6 +420,51 @@ export class DataNftMarketContract {
     }
   }
 
+  async viewOffer(index: number): Promise<OfferType | undefined> {
+    const interaction = this.contract.methodsExplicit.viewOffer([
+      new U64Value(index),
+    ]);
+    const query = interaction.buildQuery();
+
+    try {
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
+      const res = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (!firstValue || !returnCode.isSuccess()) {
+        console.error(returnMessage);
+        return undefined;
+      }
+
+      const value = firstValue.valueOf();
+      const decoded = {
+        index: value.index.toNumber(),
+        owner: value.owner.toString(),
+        offered_token_identifier: value.offered_token_identifier.toString(),
+        offered_token_nonce: value.offered_token_nonce.toNumber(),
+        offered_token_amount: value.offered_token_amount.toFixed(),
+        wanted_token_identifier: value.wanted_token_identifier.toString(),
+        wanted_token_nonce: value.wanted_token_nonce.toNumber(),
+        wanted_token_amount: value.wanted_token_amount.toFixed(),
+        quantity: value.quantity.toNumber(),
+      };
+
+      return decoded;
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
+  }
+
   async getUserTotalOffers(userAddress: string): Promise<number> {
     const interaction = this.contract.methodsExplicit.getUserTotalOffers([new AddressValue(new Address(userAddress))]);
     const query = interaction.buildQuery();
