@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Button, Heading, HStack, Link, VStack, Text, Image, Stack, Flex, Badge, useToast, Spinner } from "@chakra-ui/react";
+import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { Box, Button, Heading, HStack, Link, VStack, Text, Image, Stack, Flex, Badge, useToast, Spinner, useClipboard } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import axios from "axios";
 import moment from "moment";
@@ -38,7 +38,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split('-')[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  const nftExplorerUrl = _chainMeta.networkId ? getNftLink(_chainMeta.networkId, tokenId || "") : "";
+  // const nftExplorerUrl = _chainMeta.networkId ? getNftLink(_chainMeta.networkId, tokenId || "") : "";
+
+  const { onCopy, value } = useClipboard(`${window.location.protocol + "//" + window.location.host}/dataNfts/marketplace/${tokenId}/offer-${offerId}`);
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
@@ -167,20 +169,36 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             <Link
               as={ReactRouterLink}
               to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
+              boxSize={{ base: "240px", md: "400px" }}
+              marginRight={{ base: 0, md: "2.4rem" }}
             >
               <Image
-                boxSize={{ base: "240px", md: "400px" }}
                 objectFit={"cover"}
                 src={nftData.url}
                 alt={"Data NFT Image"}
-                marginRight={{ base: 0, md: "2.4rem" }}
               />
             </Link>
 
             <VStack alignItems={"flex-start"} gap={"15px"}>
-              <Text fontSize="36px" noOfLines={2}>
-                {nftData.attributes?.title}
-              </Text>
+              <Flex direction="row" alignItems="center" gap="3">
+                <Text fontSize="36px" noOfLines={2}>
+                  {nftData.attributes?.title}
+                </Text>
+                <Button
+                  fontSize="xl"
+                  onClick={() => {
+                    onCopy();
+                    toast({
+                      title: "NFT detail page link is copied!",
+                      status: "success",
+                      isClosable: true,
+                    });
+                  }}
+                >
+                  <CopyIcon />
+                </Button>
+              </Flex>
+
               <Box color="gray.100" fontSize="xl">
                 <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
                   {nftData.identifier}
