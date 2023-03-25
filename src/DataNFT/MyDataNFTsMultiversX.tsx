@@ -733,6 +733,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           marketContract={marketContract}
           sellerFee={sellerFee || 0}
           offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: prices[selectedDataNft.index], wanted_token_nonce: 0 }}
+          amount={amounts[selectedDataNft.index]}
         />
       )}
       <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>

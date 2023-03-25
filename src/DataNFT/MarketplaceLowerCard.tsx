@@ -269,6 +269,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
           buyerFee={marketRequirements?.buyer_fee || 0}
           nftData={nftMetadatas[selectedOfferIndex]}
           offer={offers[selectedOfferIndex]}
+          amount={amountOfTokens[selectedOfferIndex]}
         />
       )}
     </>

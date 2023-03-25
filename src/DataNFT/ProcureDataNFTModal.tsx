@@ -17,6 +17,7 @@ export type ProcureAccessModalProps = {
   offer: OfferType;
   itheumPrice: number;
   marketContract: any;
+  amount: number;
 }
 
 
@@ -24,7 +25,6 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const [amount, setAmount] = useState<number>(1);
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
@@ -49,13 +49,13 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
     if (props.offer) {
       setFeePrice(
         printPrice(
-          convertWeiToEsdt(props.offer.wanted_token_amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber(),
+          convertWeiToEsdt(Number(props.offer.wanted_token_amount) * props.amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber(),
           getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
         )
       );
       setFee(convertWeiToEsdt(props.offer.wanted_token_amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber());
     }
-  }, [props.offer]);
+  }, [props]);
 
   const onProcure = async () => {
     if (!address) {
@@ -91,16 +91,16 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
       return;
     }
 
-    const paymentAmount = BigNumber(props.offer.wanted_token_amount).multipliedBy(amount);
+    const paymentAmount = BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount);
     if (props.offer.wanted_token_identifier == "EGLD") {
-      props.marketContract.sendAcceptOfferEgldTransaction(props.offer.index, paymentAmount.toFixed(), amount, address);
+      props.marketContract.sendAcceptOfferEgldTransaction(props.offer.index, paymentAmount.toFixed(), props.amount, address);
     } else {
       if (props.offer.wanted_token_nonce === 0) {
         props.marketContract.sendAcceptOfferEsdtTransaction(
           props.offer.index,
           paymentAmount.toFixed(),
           props.offer.wanted_token_identifier,
-          amount,
+          props.amount,
           address
         );
       } else {
@@ -109,7 +109,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
           paymentAmount.toFixed(),
           props.offer.wanted_token_identifier,
           props.offer.wanted_token_nonce,
-          amount,
+          props.amount,
           address
         );
       }
@@ -141,7 +141,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
             </HStack>
             <Flex fontSize="md" mt="2">
               <Box w="140px">How many</Box>
-              <Box>: {amount ? amount : 1}</Box>
+              <Box>: {props.amount ? props.amount : 1}</Box>
             </Flex>
             <Flex fontSize="md" mt="2">
               <Box w="140px">Fee per NFT</Box>
@@ -165,7 +165,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               </Box>
             </Flex>
             <Flex>
-              {BigNumber(props.offer.wanted_token_amount).multipliedBy(amount).comparedTo(wantedTokenBalance) >
+              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) >
                 0 && (
                   <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
                     Your wallet token balance is too low to proceed
@@ -208,7 +208,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                         {" " +
                           convertWeiToEsdt(
                             BigNumber(props.offer.wanted_token_amount)
-                              .multipliedBy(amount)
+                              .multipliedBy(props.amount)
                               .multipliedBy(10000)
                               .div(10000 + props.buyerFee),
                             tokenDecimals(props.offer.wanted_token_identifier)
@@ -218,7 +218,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                         {" + "}
                         {convertWeiToEsdt(
                           BigNumber(props.offer.wanted_token_amount)
-                            .multipliedBy(amount)
+                            .multipliedBy(props.amount)
                             .multipliedBy(props.buyerFee)
                             .div(10000 + props.buyerFee),
                           tokenDecimals(props.offer.wanted_token_identifier)
@@ -249,7 +249,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                 onClick={onProcure}
                 isDisabled={
                   !readTermsChecked
-                  || BigNumber(props.offer.wanted_token_amount).multipliedBy(amount).comparedTo(wantedTokenBalance) > 0
+                  || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
                 }>
                 Proceed
               </Button>

@@ -404,7 +404,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             marketContract={marketContract}
             buyerFee={marketRequirements?.buyer_fee || 0}
             nftData={nftData}
-            offer={offer} />
+            offer={offer}
+            amount={amount} />
         )
       }
     </Box>

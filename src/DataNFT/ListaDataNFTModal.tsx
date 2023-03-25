@@ -16,6 +16,7 @@ export type ListModalProps = {
   offer: any;
   itheumPrice: number;
   marketContract: any;
+  amount: number;
 }
 
 
@@ -23,7 +24,6 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const [amount, setAmount] = useState<number>(1);
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
@@ -48,11 +48,11 @@ export default function ListDataNFTModal(props: ListModalProps) {
     if (props.offer) {
       setFeePrice(
         printPrice(
-          convertWeiToEsdt(props.offer.wanted_token_amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber(),
+          props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee) / 10000,
           getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
         )
       );
-      setFee(convertWeiToEsdt(props.offer.wanted_token_amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber());
+      setFee(props.offer.wanted_token_amount);
     }
   }, [props.offer]);
 
@@ -90,47 +90,12 @@ export default function ListDataNFTModal(props: ListModalProps) {
       return;
     }
 
-    const paymentAmount = BigNumber(props.offer.wanted_token_amount).multipliedBy(amount);
-    if (props.offer.wanted_token_identifier == "EGLD") {
-      props.marketContract.sendAcceptOfferEgldTransaction(props.offer.index, paymentAmount.toFixed(), amount, address);
-    } else {
-      if (props.offer.wanted_token_nonce === 0) {
-        props.marketContract.sendAcceptOfferEsdtTransaction(
-          props.offer.index,
-          paymentAmount.toFixed(),
-          props.offer.wanted_token_identifier,
-          amount,
-          address
-        );
-      } else {
-        props.marketContract.sendAcceptOfferNftEsdtTransaction(
-          props.offer.index,
-          paymentAmount.toFixed(),
-          props.offer.wanted_token_identifier,
-          props.offer.wanted_token_nonce,
-          amount,
-          address
-        );
-      }
-    }
+    props.marketContract.addToMarket(props.nftData.collection, props.nftData.nonce, props.amount, props.offer.wanted_token_amount, address);
 
     // a small delay for visual effect
     await sleep(0.5);
     props.onClose();
   };
-
-  useEffect(() => {
-    console.log(BigNumber(props.offer.wanted_token_amount));
-    console.log(printPrice(
-      convertWeiToEsdt(
-        BigNumber(props.offer.wanted_token_amount)
-          .multipliedBy(10000)
-          .div(10000 + props.sellerFee),
-        tokenDecimals(props.offer.wanted_token_identifier)
-      ).toNumber(),
-      getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
-    ));
-  }, []);
 
   return (
     <>
@@ -153,7 +118,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
             </HStack>
             <Flex fontSize="md" mt="2">
               <Box w="140px">How many</Box>
-              <Box>: {amount ? amount : 1}</Box>
+              <Box>: {props.amount ? props.amount : 1}</Box>
             </Flex>
             <Flex fontSize="md" mt="2">
               <Box w="140px">Fee per NFT</Box>
@@ -162,12 +127,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   <>
                     {": "}
                     {printPrice(
-                      convertWeiToEsdt(
-                        BigNumber(props.offer.wanted_token_amount)
-                          .multipliedBy(10000)
-                          .div(10000 + props.sellerFee),
-                        tokenDecimals(props.offer.wanted_token_identifier)
-                      ).toNumber(),
+                      BigNumber(props.offer.wanted_token_amount).toNumber(),
                       getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
                     )}
                   </>
@@ -177,7 +137,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               </Box>
             </Flex>
             <Flex>
-              {BigNumber(props.offer.wanted_token_amount).multipliedBy(amount).comparedTo(wantedTokenBalance) >
+              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) >
                 0 && (
                   <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
                     Your wallet token balance is too low to proceed
@@ -189,23 +149,20 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box>
                 :{" "}
                 {props.sellerFee
-                  ? `${props.sellerFee / 100}% (${convertWeiToEsdt(
-                    BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.sellerFee)
-                      .div(10000 + props.sellerFee),
-                    tokenDecimals(props.offer.wanted_token_identifier)
-                  ).toNumber()} ${getTokenWantedRepresentation(
-                    props.offer.wanted_token_identifier,
-                    props.offer.wanted_token_nonce
-                  )})`
+                  ? `${props.sellerFee / 100}% (${BigNumber(props.offer.wanted_token_amount)
+                    .multipliedBy(props.sellerFee)
+                    .div(10000).toNumber()} ${getTokenWantedRepresentation(
+                      props.offer.wanted_token_identifier,
+                      props.offer.wanted_token_nonce
+                    )})`
                   : "-"}
               </Box>
             </Flex>
             <Flex fontSize="md" mt="2">
-              <Box w="140px">Total Fee</Box>
+              <Box w="140px">You will receive</Box>
               <Box>
                 {": "}
-                {props.sellerFee ? <>{feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ''}</> : "-"}
+                {props.sellerFee ? <>{feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ''}</> : "-"}
               </Box>
             </Flex>
             <Flex fontSize="xs" mt="0">
@@ -218,23 +175,16 @@ export default function ListDataNFTModal(props: ListModalProps) {
                     ) : (
                       <>
                         {" " +
-                          convertWeiToEsdt(
-                            BigNumber(props.offer.wanted_token_amount)
-                              .multipliedBy(amount)
-                              .multipliedBy(10000)
-                              .div(10000 + props.sellerFee),
-                            tokenDecimals(props.offer.wanted_token_identifier)
-                          ).toNumber() +
+                          BigNumber(props.offer.wanted_token_amount)
+                            .multipliedBy(props.amount).toNumber() +
                           " "}
                         {getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
-                        {" + "}
-                        {convertWeiToEsdt(
+                        {" - "}
+                        {
                           BigNumber(props.offer.wanted_token_amount)
-                            .multipliedBy(amount)
+                            .multipliedBy(props.amount)
                             .multipliedBy(props.sellerFee)
-                            .div(10000 + props.sellerFee),
-                          tokenDecimals(props.offer.wanted_token_identifier)
-                        ).toNumber()}
+                            .div(10000).toNumber()}
                         {" " +
                           getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                       </>
@@ -261,7 +211,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 onClick={onProcure}
                 isDisabled={
                   !readTermsChecked
-                  || BigNumber(props.offer.wanted_token_amount).multipliedBy(amount).comparedTo(wantedTokenBalance) > 0
+                  || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
                 }>
                 Proceed
               </Button>
