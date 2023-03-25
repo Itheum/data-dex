@@ -175,7 +175,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               <Box fontSize="xs" mt="2">
                 <Text>
                   Fee per NFT: {` `}
-                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}</> : " -"}
+                  {marketRequirements ? (
+                    <>
+                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                    </>
+                  ) : (
+                    " -"
+                  )}
                 </Text>
               </Box>
             </>
@@ -202,7 +208,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               ? "visible"
               : "collapse"
           }>
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
+          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2" color="white">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it
           </Text>
