@@ -206,6 +206,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   // query settings from Data NFT Minter SC
   useEffect(() => {
     // console.log('********** SellDataMultiversX LOAD _chainMeta ', _chainMeta);
+    if (!_chainMeta.networkId) return;
 
     (async () => {
       const networkProvider = getGateway(_chainMeta.networkId);
@@ -255,11 +256,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         setAntiSpamTax(convertWeiToEsdt(value).toNumber());
       }
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   // query Itheum balance of User
   useEffect(() => {
-    if (mxAddress && _chainMeta) {
+    if (mxAddress && _chainMeta && _chainMeta.networkId) {
       (async () => {
         const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
         if (typeof data.balance !== "undefined") {
@@ -267,12 +268,12 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         }
       })();
     }
-  }, [mxAddress, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
 
   //
   const [userData, setUserData] = useState<UserDataType | undefined>();
   const getUserData = async () => {
-    if (mxAddress) {
+    if (mxAddress && _chainMeta.networkId) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
@@ -280,7 +281,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   useEffect(() => {
     getUserData();
-  }, [mxAddress, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
 
   // set initial states for validation
   useEffect(() => {
