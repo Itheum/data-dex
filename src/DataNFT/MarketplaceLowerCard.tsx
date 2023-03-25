@@ -23,6 +23,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
+import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
@@ -330,7 +331,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
                 <Box w="140px">Total Fee</Box>
                 <Box>
                   {": "}
-                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice)} USD)` : ''}</> : "-"}
+                  {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}</> : "-"}
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">
@@ -404,25 +405,11 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
         </Modal>
       )}
 
-      <Modal isOpen={isReadTermsModalOpen} onClose={onReadTermsModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
-        <ModalContent>
-          <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
-          <ModalBody pb={6}>
-            <Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since
-              the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-              but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-              sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-            </Text>
-            <Flex justifyContent="end" mt="6 !important">
-              <Button colorScheme="teal" onClick={onReadTermsModalClose}>
-                I have read this
-              </Button>
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <DataNFTProcureReadModal
+        isReadTermsModalOpen={isReadTermsModalOpen}
+        onReadTermsModalOpen={onReadTermsModalOpen}
+        onReadTermsModalClose={onReadTermsModalClose}
+      />
     </>
   );
 };

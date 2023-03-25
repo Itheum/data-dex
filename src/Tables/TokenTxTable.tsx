@@ -94,20 +94,22 @@ export default function TokenTxTable(props: TokenTableProps) {
     const apiUrl = getApi(_chainMeta.networkId);
     axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=10000`).then((res) => {
       const txs = res.data;
-      setData(
-        txs.map((tx: any) => {
+      const items = [];
+      for (const tx of txs) {
+        if (tx.action) {
           const transfers = tx.action.arguments.transfers.filter((t: any) => t.identifier === props.tokenId);
           const value = transfers.reduce((acc: any, t: any) => acc + parseInt(t.value), 0);
-          return {
+          items.push({
             hash: tx.txHash,
             timestamp: tx.timestamp,
             from: tx.sender,
             to: tx.action.arguments.receiver,
             method: tx.function,
             value: value,
-          };
-        })
-      );
+          });
+        }
+      }
+      setData(items);
     });
   }, []);
 
