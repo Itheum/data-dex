@@ -12,7 +12,7 @@ import DataNFTProcureReadModal from './DataNFTProcureReadModal';
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  marketRequirements: MarketplaceRequirementsType | undefined;
+  buyerFee: number;
   nftData: any;
   offer: OfferType;
   itheumPrice: number;
@@ -20,7 +20,7 @@ export type ProcureAccessModalProps = {
 }
 
 
-export default function ProcureAccessModal(props: ProcureAccessModalProps) {
+export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
@@ -66,7 +66,7 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
       });
       return;
     }
-    if (!props.marketRequirements || !props.marketContract) {
+    if (!props.buyerFee || !props.marketContract) {
       toast({
         title: "Data is not loaded",
         status: "error",
@@ -146,14 +146,14 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
             <Flex fontSize="md" mt="2">
               <Box w="140px">Fee per NFT</Box>
               <Box>
-                {props.marketRequirements ? (
+                {props.buyerFee ? (
                   <>
                     {": "}
                     {printPrice(
                       convertWeiToEsdt(
                         BigNumber(props.offer.wanted_token_amount)
                           .multipliedBy(10000)
-                          .div(10000 + props.marketRequirements.buyer_fee),
+                          .div(10000 + props.buyerFee),
                         tokenDecimals(props.offer.wanted_token_identifier)
                       ).toNumber(),
                       getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
@@ -173,14 +173,14 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
                 )}
             </Flex>
             <Flex fontSize="md" mt="2">
-              <Box w="140px">Buyer Fee (per NFT)</Box>
+              <Box w="140px">Buyer Tax (per NFT)</Box>
               <Box>
                 :{" "}
-                {props.marketRequirements
-                  ? `${props.marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
+                {props.buyerFee
+                  ? `${props.buyerFee / 100}% (${convertWeiToEsdt(
                     BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.marketRequirements.buyer_fee)
-                      .div(10000 + props.marketRequirements.buyer_fee),
+                      .multipliedBy(props.buyerFee)
+                      .div(10000 + props.buyerFee),
                     tokenDecimals(props.offer.wanted_token_identifier)
                   ).toNumber()} ${getTokenWantedRepresentation(
                     props.offer.wanted_token_identifier,
@@ -193,13 +193,13 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
               <Box w="140px">Total Fee</Box>
               <Box>
                 {": "}
-                {props.marketRequirements ? <>{feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ''}</> : "-"}
+                {props.buyerFee ? <>{feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ''}</> : "-"}
               </Box>
             </Flex>
             <Flex fontSize="xs" mt="0">
               <Box w="146px"></Box>
               <Box>
-                {props.marketRequirements ? (
+                {props.buyerFee ? (
                   <>
                     {BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
                       ""
@@ -210,7 +210,7 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
                             BigNumber(props.offer.wanted_token_amount)
                               .multipliedBy(amount)
                               .multipliedBy(10000)
-                              .div(10000 + props.marketRequirements.buyer_fee),
+                              .div(10000 + props.buyerFee),
                             tokenDecimals(props.offer.wanted_token_identifier)
                           ).toNumber() +
                           " "}
@@ -219,8 +219,8 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
                         {convertWeiToEsdt(
                           BigNumber(props.offer.wanted_token_amount)
                             .multipliedBy(amount)
-                            .multipliedBy(props.marketRequirements.buyer_fee)
-                            .div(10000 + props.marketRequirements.buyer_fee),
+                            .multipliedBy(props.buyerFee)
+                            .div(10000 + props.buyerFee),
                           tokenDecimals(props.offer.wanted_token_identifier)
                         ).toNumber()}
                         {" " +
@@ -241,11 +241,6 @@ export default function ProcureAccessModal(props: ProcureAccessModalProps) {
             <Checkbox size="sm" mt="3 !important" isChecked={readTermsChecked} onChange={(e: any) => setReadTermsChecked(e.target.checked)}>
               I have read all terms and agree to them
             </Checkbox>
-            {!readTermsChecked && (
-              <Text color="red.400" fontSize="xs" mt="1 !important">
-                You must READ and Agree on Terms of Use
-              </Text>
-            )}
             <Flex justifyContent="end" mt="4 !important">
               <Button
                 colorScheme="teal"

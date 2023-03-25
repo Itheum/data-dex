@@ -56,6 +56,7 @@ import { DataNftType, ItemType, RecordStringNumberType, UserDataType } from "Mul
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
+import ListDataNFTModal from "./ListaDataNFTModal";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
@@ -65,27 +66,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
-  const [items, setItems] = useState<ItemType[]>([
-    {
-      index: 0,
-      owner: "",
-      wanted_token_identifier: "",
-      wanted_token_amount: "",
-      wanted_token_nonce: 0,
-      offered_token_identifier: "",
-      offered_token_nonce: 0,
-      balance: 0,
-      supply: 0,
-      royalties: 0,
-      id: "",
-      dataPreview: "",
-      quantity: 0,
-      nonce: 0,
-      nftImgUrl: "",
-      title: "",
-      tokenName: "",
-    },
-  ]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
   const [amounts, setAmounts] = useState<number[]>([]);
@@ -115,6 +95,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
+  const [sellerFee, setSellerFee] = useState<number | undefined>();
 
   useEffect(() => {
     // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
@@ -123,6 +104,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       if (!_chainMeta.networkId) return;
 
       const _marketRequirements = await marketContract.getRequirements();
+      setSellerFee(_marketRequirements?.seller_fee);
       const _maxPaymentFeeMap: RecordStringNumberType = {};
 
       if (_marketRequirements) {
@@ -141,7 +123,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const getItheumPrice = () => {
     (async () => {
       const _itheumPrice = await getItheumPriceFromApi();
-      console.log("_itheumPrice", _itheumPrice);
       setItheumPrice(_itheumPrice);
     })();
   };
@@ -157,8 +138,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const onChangeDataNftBurnAmount = (valueAsString: string) => {
     let error = "";
     const valueAsNumber = Number(valueAsString);
-    console.log("valueAsNumber", valueAsNumber);
-    console.log("selectedDataNft", selectedDataNft);
     if (valueAsNumber < 1) {
       error = "Burn Amount cannot be zero or negative";
     } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
@@ -183,7 +162,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   const getOnChainNFTs = async () => {
     const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
-    console.log("onChainNfts", onChainNfts);
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
@@ -328,8 +306,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     } else {
       try {
         const signatureObj = await signMessage({ message });
-        console.log("signatureObj");
-        console.log(signatureObj);
 
         if (signatureObj?.signature && signatureObj?.address) {
           // Maiar App V2 / Ledger
@@ -344,8 +320,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         signResult.exception = e.toString();
       }
 
-      console.log("signResult");
-      console.log(signResult);
     }
 
     if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
@@ -751,54 +725,16 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       )}
 
       {selectedDataNft && (
-        <Modal isOpen={isListNFTOpen} onClose={onListNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
-          <ModalContent>
-            <ModalBody py={6}>
-              <HStack spacing="5" alignItems="center">
-                <Box flex="4" alignContent="center">
-                  <Text fontSize="lg">List my Data NFT on the Public Marketplace</Text>
-                  <Flex mt="1">
-                    <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
-                      {selectedDataNft.tokenName}
-                    </Text>
-                  </Flex>
-                </Box>
-                <Box flex="1">
-                  <Image src={selectedDataNft.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
-                </Box>
-              </HStack>
-
-              <Text fontSize="md" mt="4">
-                How many to list: {amounts[selectedDataNft.index]}
-              </Text>
-              <Text fontSize="md" mt="2">
-                Listing fee per NFT: {prices[selectedDataNft.index] ? `${prices[selectedDataNft.index]} ITHEUM (${prices[selectedDataNft.index] && itheumPrice ? convertToLocalString(prices[selectedDataNft.index] * itheumPrice, 2) + " USD" : ""})` : "FREE"}{" "}
-              </Text>
-
-              <Text display="none" fontSize="md" mt="8">
-                Advanced:
-              </Text>
-              <Flex display="none" mt="2" justifyContent="flex-start" alignItems="center" gap="4">
-                <Text fontSize="md">Access Time Limit per SFT: </Text>
-                <Select size="sm" width="120px" defaultValue="unlimited">
-                  <option value="unlimited">Unlimited</option>
-                </Select>
-              </Flex>
-
-              <Flex justifyContent="end" mt="8 !important">
-                <Button colorScheme="teal" size="sm" mx="3" onClick={onList} isDisabled={hasPendingTransactions}>
-                  Proceed
-                </Button>
-                <Button colorScheme="teal" size="sm" variant="outline" onClick={onListNFTClose}>
-                  Cancel
-                </Button>
-              </Flex>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+        <ListDataNFTModal
+          isOpen={isListNFTOpen}
+          onClose={onListNFTClose}
+          nftData={selectedDataNft}
+          itheumPrice={itheumPrice || 0}
+          marketContract={marketContract}
+          sellerFee={sellerFee || 0}
+          offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: prices[selectedDataNft.index], wanted_token_nonce: 0 }}
+        />
       )}
-
       <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>

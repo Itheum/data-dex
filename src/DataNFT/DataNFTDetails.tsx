@@ -42,7 +42,7 @@ import { MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
-import ProcureAccessModal from "./ProcureAccessModal";
+import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import jsonData from "../MultiversX/ABIs/datanftmint.abi.json";
 
 type DataNFTDetailsProps = {
@@ -397,12 +397,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
       {
         nftData && offer && (
-          <ProcureAccessModal
+          <ProcureDataNFTModal
             isOpen={isProcureModalOpen}
             onClose={onProcureModalClose}
             itheumPrice={itheumPrice || 0}
             marketContract={marketContract}
-            marketRequirements={marketRequirements}
+            buyerFee={marketRequirements?.buyer_fee || 0}
             nftData={nftData}
             offer={offer} />
         )

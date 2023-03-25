@@ -24,7 +24,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
-import ProcureAccessModal from "./ProcureAccessModal";
+import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
@@ -261,12 +261,12 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
       )}
 
       {selectedOfferIndex >= 0 && nftMetadatas.length > selectedOfferIndex && (
-        <ProcureAccessModal
+        <ProcureDataNFTModal
           isOpen={isProcureModalOpen}
           onClose={onProcureModalClose}
           itheumPrice={itheumPrice || 0}
           marketContract={contract}
-          marketRequirements={marketRequirements}
+          buyerFee={marketRequirements?.buyer_fee || 0}
           nftData={nftMetadatas[selectedOfferIndex]}
           offer={offers[selectedOfferIndex]}
         />

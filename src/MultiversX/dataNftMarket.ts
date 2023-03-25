@@ -317,8 +317,10 @@ export class DataNftMarketContract {
         percentage_cut_from_buyer: value.percentage_cut_from_buyer.toNumber(),
         percentage_cut_from_seller: value.percentage_cut_from_seller.toNumber(),
         buyer_fee: 0,
+        seller_fee: 0,
       };
       decoded.buyer_fee = decoded.percentage_cut_from_buyer - decoded.discount_fee_percentage_buyer;
+      decoded.seller_fee = decoded.percentage_cut_from_seller - decoded.discount_fee_percentage_seller;
 
       return decoded;
     } catch (e) {
@@ -421,9 +423,7 @@ export class DataNftMarketContract {
   }
 
   async viewOffer(index: number): Promise<OfferType | undefined> {
-    const interaction = this.contract.methodsExplicit.viewOffer([
-      new U64Value(index),
-    ]);
+    const interaction = this.contract.methodsExplicit.viewOffer([new U64Value(index)]);
     const query = interaction.buildQuery();
 
     try {
