@@ -305,9 +305,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 marginRight={2}>
                 Public Marketplace
               </Button>
-              {/* <Link href={nftExplorerUrl} isExternal>
-                {nftData.name} <ExternalLinkIcon mx="2px" />
-              </Link> */}
             </HStack>
           </>
         }

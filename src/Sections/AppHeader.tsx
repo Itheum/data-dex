@@ -56,6 +56,7 @@ const exploreRouterMenu = [
         label: "Trade Data",
         shortLbl: "Trade",
         Icon: MdOutlineDataSaverOn,
+        needToBeLoggedIn: true,
       },
       {
         menuEnum: MENU.NFTMINE,
@@ -63,6 +64,7 @@ const exploreRouterMenu = [
         label: "Data NFT Wallet",
         shortLbl: "Wallet",
         Icon: MdOutlineAccountBalanceWallet,
+        needToBeLoggedIn: true,
       },
       {
         menuEnum: MENU.NFTALL,
@@ -70,6 +72,7 @@ const exploreRouterMenu = [
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: MdOnlinePrediction,
+        needToBeLoggedIn: false,
       },
     ],
   },
@@ -162,100 +165,92 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
         </HStack>
 
         <Flex backgroundColor="none" flex="1" justifyContent="right">
-          {(onLaunchMode && !isMxLoggedIn) && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
-
-          {isMxLoggedIn &&
-            <HStack alignItems={"center"} spacing={2}>
-              <HStack display={{ base: "none", md: "none", xl: "block" }}>
-                {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
-                  const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
-                  return (
-                    <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
-                      <Button
-                        colorScheme="teal"
-                        variant="outline"
-                        isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
-                        _disabled={menuButtonDisabledStyle(menuEnum)}
-                        opacity={0.6}
-                        key={shortLbl}
-                        leftIcon={<Icon size={"1.25em"} />}
-                        size="sm"
-                        onClick={() => navigateToDiscover(menuEnum)}>
-                        {shortLbl}
-                      </Button>
-                    </Link>
-                  );
-                })}
-              </HStack>
-
-              <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
-
-              <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
-
-              <Box display={{ base: "none", md: "block" }}>
-                {exploreRouterMenu.map((menu) => (
-                  <Menu key={menu.sectionId}>
-                    <MenuButton as={Button} size={"sm"} rightIcon={<MdExpandMore />}>
-                      <ShortAddress address={mxAddress} fontSize="md" />
-                    </MenuButton>
-                    <MenuList maxW={"fit-content"}>
-                      {menu.sectionItems.map((menuItem) => {
-                        const { label, path, menuEnum, Icon } = menuItem;
-                        return (
-                          <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
-                            <MenuItem key={label} isDisabled={hasPendingTransactions} onClick={() => navigateToDiscover(menuEnum)}>
-                              <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
-                              {label}
-                            </MenuItem>
-                          </Link>
-                        );
-                      })}
-
-                      <MenuDivider />
-
-                      <MenuGroup title="My Address Quick Copy">
-                        <MenuItemOption closeOnSelect={false}>
-                          <ShortAddress address={mxAddress} fontSize="sm" />
-                        </MenuItemOption>
+          <HStack alignItems={"center"} spacing={2}>
+            <HStack display={{ base: "none", md: "none", xl: "block" }}>
+              {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
+                const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
+                return (
+                  <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path} display={shouldDisplayquickMenuItem(quickMenuItem, isMxLoggedIn)}>
+                    <Button
+                      colorScheme="teal"
+                      variant="outline"
+                      isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
+                      _disabled={menuButtonDisabledStyle(menuEnum)}
+                      opacity={0.6}
+                      key={shortLbl}
+                      leftIcon={<Icon size={"1.25em"} />}
+                      size="sm"
+                      onClick={() => navigateToDiscover(menuEnum)}>
+                      {shortLbl}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </HStack>
+            {isMxLoggedIn &&
+              <>
+                <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
+                <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
+                <Box display={{ base: "none", md: "block" }}>
+                  {exploreRouterMenu.map((menu) => (
+                    <Menu key={menu.sectionId}>
+                      <MenuButton as={Button} size={"sm"} rightIcon={<MdExpandMore />}>
+                        <ShortAddress address={mxAddress} fontSize="md" />
+                      </MenuButton>
+                      <MenuList maxW={"fit-content"}>
+                        {menu.sectionItems.map((menuItem) => {
+                          const { label, path, menuEnum, Icon } = menuItem;
+                          return (
+                            <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                              <MenuItem key={label} isDisabled={hasPendingTransactions} onClick={() => navigateToDiscover(menuEnum)}>
+                                <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
+                                {label}
+                              </MenuItem>
+                            </Link>
+                          );
+                        })}
 
                         <MenuDivider />
-                      </MenuGroup>
 
-                      <MenuGroup>
-                        {isMxLoggedIn && (
-                          <ChainSupportedComponent feature={MENU.CLAIMS}>
-                            <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
-                              <Text fontSize="sm">View claims history</Text>
-                            </MenuItem>
-                          </ChainSupportedComponent>
-                        )}
+                        <MenuGroup title="My Address Quick Copy">
+                          <MenuItemOption closeOnSelect={false}>
+                            <ShortAddress address={mxAddress} fontSize="sm" />
+                          </MenuItemOption>
 
-                        <MenuItem onClick={handleLogout} fontSize="sm" isDisabled={hasPendingTransactions}>
-                          Logout
-                        </MenuItem>
-                      </MenuGroup>
-                    </MenuList>
-                  </Menu>
-                ))}
-              </Box>
+                          <MenuDivider />
+                        </MenuGroup>
 
-              <Link as={ReactRouterLink} to={"home"} style={{ textDecoration: "none" }}>
-                <IconButton
-                  size={"sm"}
-                  icon={<AiFillHome />}
-                  aria-label={"Back to Home"}
-                  isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
-                  _disabled={menuButtonDisabledStyle(MENU.HOME)}
-                  opacity={0.6}
-                  onClick={() => {
-                    navigateToDiscover(MENU.HOME);
-                  }}
-                />
-              </Link>
+                        <MenuGroup>
+                          {isMxLoggedIn && (
+                            <ChainSupportedComponent feature={MENU.CLAIMS}>
+                              <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
+                                <Text fontSize="sm">View claims history</Text>
+                              </MenuItem>
+                            </ChainSupportedComponent>
+                          )}
 
-              <IconButton size="sm" icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} aria-label="Change Color Theme" onClick={toggleColorMode} />
-            </HStack>
-          }
+                          <MenuItem onClick={handleLogout} fontSize="sm" isDisabled={hasPendingTransactions}>
+                            Logout
+                          </MenuItem>
+                        </MenuGroup>
+                      </MenuList>
+                    </Menu>
+                  ))}
+                </Box><Link as={ReactRouterLink} to={"home"} style={{ textDecoration: "none" }}>
+                  <IconButton
+                    size={"sm"}
+                    icon={<AiFillHome />}
+                    aria-label={"Back to Home"}
+                    isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(MENU.HOME)}
+                    opacity={0.6}
+                    onClick={() => {
+                      navigateToDiscover(MENU.HOME);
+                    }} />
+                </Link><IconButton size="sm" icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} aria-label="Change Color Theme" onClick={toggleColorMode} /></>
+            }
+          </HStack>
+          {(onLaunchMode && !isMxLoggedIn) && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
         </Flex>
       </Flex>
 
@@ -369,7 +364,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       closeOnBlur={true}
       isLazy
       lazyBehavior="keepMounted">
-      <HStack>
+      <HStack marginLeft={3}>
         <PopoverTrigger>
           <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }}>
             Connect MultiversX Wallet
@@ -409,6 +404,10 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
     </Popover>
   );
 };
+
+function shouldDisplayquickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
+  return quickMenuItem.needToBeLoggedIn ? isMxLoggedIn ? "inline" : "none" : "inline";
+}
 
 function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
