@@ -16,6 +16,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import { useLocalStorage } from "libs/hooks";
 import { isValidNumericCharacter, sleep } from "libs/util";
+import { convertToLocalString } from "libs/util2";
 import { DataNftType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -131,10 +132,6 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
       console.log(e);
     }
   };
-
-  function convertToLocalString(arg0: number) {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <>

@@ -35,14 +35,14 @@ import moment from "moment";
 import { useNavigate, useParams, Link as ReactRouterLink } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
 import { convertToLocalString, printPrice } from "libs/util2";
-import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "MultiversX/api";
+import { getApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, tokenDecimals } from "MultiversX/tokenUtils";
 import { MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
-import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
+import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import jsonData from "../MultiversX/ABIs/datanftmint.abi.json";
 
 type DataNFTDetailsProps = {
@@ -67,7 +67,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
   const owner = props.owner || "";
-  const listed = props.listed || 0;
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
@@ -80,13 +79,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [offer, setOffer] = useState<OfferType | undefined>();
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>('');
-  const [readTermsChecked, setReadTermsChecked] = useState(false);
-  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
-  const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
-  const [feePrice, setFeePrice] = useState<string>("");
-  const [fee, setFee] = useState<number>(0);
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
@@ -119,30 +113,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
     }
   }, [_chainMeta, offerId]);
-  useEffect(() => {
-    if (_chainMeta.networkId && offer) {
-      (async () => {
-        // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
-        const _token = await getAccountTokenFromApi(address, offer.wanted_token_identifier, _chainMeta.networkId);
-        if (_token) {
-          setWantedTokenBalance(_token.balance ? _token.balance : "0");
-        } else {
-          setWantedTokenBalance("0");
-        }
-      })();
-    }
-  }, [_chainMeta, offer]);
-  useEffect(() => {
-    if (offer) {
-      setFeePrice(
-        printPrice(
-          convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-        )
-      );
-      setFee(convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber());
-    }
-  }, [offer]);
 
   function getTokenDetails() {
     const apiLink = getApi(_chainMeta.networkId);
@@ -222,69 +192,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return (isLoadingDetails || isLoadingPrice);
   }
 
-  const onProcure = async () => {
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!marketRequirements || !marketContract) {
-      toast({
-        title: "Data is not loaded",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!(offer && nftData)) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!readTermsChecked) {
-      toast({
-        title: "You must READ and Agree on Terms of Use",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-
-    const paymentAmount = BigNumber(offer.wanted_token_amount).multipliedBy(amount);
-    if (offer.wanted_token_identifier == "EGLD") {
-      marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
-    } else {
-      if (offer.wanted_token_nonce === 0) {
-        marketContract.sendAcceptOfferEsdtTransaction(
-          offer.index,
-          paymentAmount.toFixed(),
-          offer.wanted_token_identifier,
-          amount,
-          address
-        );
-      } else {
-        marketContract.sendAcceptOfferNftEsdtTransaction(
-          offer.index,
-          paymentAmount.toFixed(),
-          offer.wanted_token_identifier,
-          offer.wanted_token_nonce,
-          amount,
-          address
-        );
-      }
-    }
-
-    // a small delay for visual effect
-    await sleep(0.5);
-    onProcureModalClose();
-  };
-
   return (
     <Box>{!isLoadingNftData() ? <Box>
       <Flex direction={"column"} alignItems={"flex-start"}>
@@ -305,9 +212,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 marginRight={2}>
                 Public Marketplace
               </Button>
-              {/* <Link href={nftExplorerUrl} isExternal>
-                {nftData.name} <ExternalLinkIcon mx="2px" />
-              </Link> */}
             </HStack>
           </>
         }
@@ -467,10 +371,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       colorScheme="teal"
                       width="72px"
                       isDisabled={hasPendingTransactions || !!amountError}
-                      onClick={() => {
-                        setReadTermsChecked(false);
-                        onProcureModalOpen();
-                      }}>
+                      onClick={onProcureModalOpen}>
                       Procure
                     </Button>
                   </HStack>
@@ -496,157 +397,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
       {
         nftData && offer && (
-          <Modal isOpen={isProcureModalOpen} onClose={onProcureModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-            <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
-            <ModalContent>
-              <ModalBody py={6}>
-                <HStack spacing="5" alignItems="center">
-                  <Box flex="4" alignContent="center">
-                    <Text fontSize="lg">Procure Access to Data NFTs</Text>
-                    <Flex mt="1">
-                      <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
-                        {nftData.tokenName}
-                      </Text>
-                    </Flex>
-                  </Box>
-                  <Box flex="1">
-                    <Image src={nftData.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
-                  </Box>
-                </HStack>
-                <Flex fontSize="md" mt="2">
-                  <Box w="140px">How many</Box>
-                  <Box>: {amount ? amount : 1}</Box>
-                </Flex>
-                <Flex fontSize="md" mt="2">
-                  <Box w="140px">Fee per NFT</Box>
-                  <Box>
-                    {marketRequirements ? (
-                      <>
-                        {": "}
-                        {printPrice(
-                          convertWeiToEsdt(
-                            BigNumber(offer.wanted_token_amount)
-                              .multipliedBy(10000)
-                              .div(10000 + marketRequirements.buyer_fee),
-                            tokenDecimals(offer.wanted_token_identifier)
-                          ).toNumber(),
-                          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                        )}
-                      </>
-                    ) : (
-                      "-"
-                    )}
-                  </Box>
-                </Flex>
-                <Flex>
-                  {BigNumber(offer.wanted_token_amount).multipliedBy(amount).comparedTo(wantedTokenBalance) >
-                    0 && (
-                      <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                        Your wallet token balance is too low to proceed
-                      </Text>
-                    )}
-                </Flex>
-                <Flex fontSize="md" mt="2">
-                  <Box w="140px">Buyer Fee (per NFT)</Box>
-                  <Box>
-                    :{" "}
-                    {marketRequirements
-                      ? `${marketRequirements.buyer_fee / 100}% (${convertWeiToEsdt(
-                        BigNumber(offer.wanted_token_amount)
-                          .multipliedBy(marketRequirements.buyer_fee)
-                          .div(10000 + marketRequirements.buyer_fee),
-                        tokenDecimals(offer.wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(
-                        offer.wanted_token_identifier,
-                        offer.wanted_token_nonce
-                      )})`
-                      : "-"}
-                  </Box>
-                </Flex>
-                <Flex fontSize="md" mt="2">
-                  <Box w="140px">Total Fee</Box>
-                  <Box>
-                    {": "}
-                    {marketRequirements ? <>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}</> : "-"}
-                  </Box>
-                </Flex>
-                <Flex fontSize="xs" mt="0">
-                  <Box w="146px"></Box>
-                  <Box>
-                    {marketRequirements ? (
-                      <>
-                        {BigNumber(offer.wanted_token_amount).comparedTo(0) <= 0 ? (
-                          ""
-                        ) : (
-                          <>
-                            {" " +
-                              convertWeiToEsdt(
-                                BigNumber(offer.wanted_token_amount)
-                                  .multipliedBy(amount)
-                                  .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
-                                tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber() +
-                              " "}
-                            {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
-                            {" + "}
-                            {convertWeiToEsdt(
-                              BigNumber(offer.wanted_token_amount)
-                                .multipliedBy(amount)
-                                .multipliedBy(marketRequirements.buyer_fee)
-                                .div(10000 + marketRequirements.buyer_fee),
-                              tokenDecimals(offer.wanted_token_identifier)
-                            ).toNumber()}
-                            {" " +
-                              getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
-                          </>
-                        )}
-                      </>
-                    ) : (
-                      "-"
-                    )}
-                  </Box>
-                </Flex>
-                <Flex mt="4 !important">
-                  <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
-                    Read Terms of Use
-                  </Button>
-                </Flex>
-                <Checkbox size="sm" mt="3 !important" isChecked={readTermsChecked} onChange={(e: any) => setReadTermsChecked(e.target.checked)}>
-                  I have read all terms and agree to them
-                </Checkbox>
-                {!readTermsChecked && (
-                  <Text color="red.400" fontSize="xs" mt="1 !important">
-                    You must READ and Agree on Terms of Use
-                  </Text>
-                )}
-                <Flex justifyContent="end" mt="4 !important">
-                  <Button
-                    colorScheme="teal"
-                    size="sm"
-                    mx="3"
-                    onClick={onProcure}
-                    isDisabled={
-                      !readTermsChecked
-                      || BigNumber(offer.wanted_token_amount).multipliedBy(amount).comparedTo(wantedTokenBalance) > 0
-                    }>
-                    Proceed
-                  </Button>
-                  <Button colorScheme="teal" size="sm" variant="outline" onClick={onProcureModalClose}>
-                    Cancel
-                  </Button>
-                </Flex>
-              </ModalBody>
-            </ModalContent>
-          </Modal>
+          <ProcureDataNFTModal
+            isOpen={isProcureModalOpen}
+            onClose={onProcureModalClose}
+            itheumPrice={itheumPrice || 0}
+            marketContract={marketContract}
+            buyerFee={marketRequirements?.buyer_fee || 0}
+            nftData={nftData}
+            offer={offer}
+            amount={amount} />
         )
       }
-
-      <DataNFTProcureReadModal
-        isReadTermsModalOpen={isReadTermsModalOpen}
-        onReadTermsModalOpen={onReadTermsModalOpen}
-        onReadTermsModalClose={onReadTermsModalClose}
-      />
     </Box>
       : <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
         <Spinner size={"xl"} thickness="4px" speed="0.64s" emptyColor="gray.200" color="teal" label="Fetching Data NFT-FT details..." />

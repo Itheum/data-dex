@@ -1,4 +1,4 @@
-import { numberToPaddedHex } from '@multiversx/sdk-core/out/utils.codec';
+import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 
 export const convertToLocalString = (value: BigNumber.Value, precision?: number): string => {
