@@ -17,6 +17,8 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  FormControl,
+  FormErrorMessage,
   Heading,
   HStack,
   Image,
@@ -46,12 +48,10 @@ import {
   Tag,
   Text,
   Textarea,
+  useColorMode,
   useDisclosure,
   useToast,
   Wrap,
-  useColorMode,
-  FormErrorMessage,
-  FormControl,
 } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core";
 import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
@@ -222,8 +222,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   // React hook form + yup integration
 
   const validationSchema = Yup.object().shape({
-    dataNFTStreamUrlForm: Yup.string().required("Data Stream URL is required").max(10, "Maximum 10 characters"),
-    dataNFTStreamPreviewUrlForm: Yup.string().required("Data Preview URL is required"),
+    dataStreamUrlForm: Yup.string().max(10, "Maximum 10 characters").required("Data Stream URL is required"),
+    dataPreviewUrlForm: Yup.string().required("Data Preview URL is required"),
     dataMarshalUrlForm: Yup.string().required("Data Marshal URL is required"),
     tokenNameForm: Yup.string().required("Token name is required"),
     datasetTitleForm: Yup.string().required("Dataset title is required"),
@@ -233,7 +233,17 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   });
 
   const tradeDataForm = useForm<TradeDataFormType>({
-    mode: "all",
+    mode: "onBlur",
+    defaultValues: {
+      dataStreamUrlForm: "",
+      dataPreviewUrlForm: "",
+      dataMarshalUrlForm: "",
+      tokenNameForm: "",
+      datasetTitleForm: "",
+      datasetDescriptionForm: "",
+      numberOfCopiesForm: "",
+      royaltiesForm: "",
+    },
     resolver: yupResolver(validationSchema),
   });
 
@@ -241,7 +251,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     register,
     formState: { errors },
     handleSubmit,
-    setValue,
   } = tradeDataForm;
 
   const onSubmit = (data: any) => {
@@ -922,60 +931,60 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 setUserFocusedForm(true);
               }
             }}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing="5" mt="5">
-                {(minRoyalties < 0 ||
-                  maxRoyalties < 0 ||
-                  maxSupply < 0 ||
-                  antiSpamTax < 0 ||
-                  !!dataNFTMarshalServiceStatus ||
-                  !dataNFTImgGenServiceValid ||
-                  (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-                  (!!userData && userData.contractPaused)) && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Uptime Errors
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
-                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
-                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
-                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!!dataNFTMarshalServiceStatus && <Text fontSize="md">Data Marshal service is not responding.</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                          <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                        )}
-                        {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+            <Stack spacing="5" mt="5">
+              {(minRoyalties < 0 ||
+                maxRoyalties < 0 ||
+                maxSupply < 0 ||
+                antiSpamTax < 0 ||
+                !!dataNFTMarshalServiceStatus ||
+                !dataNFTImgGenServiceValid ||
+                (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+                (!!userData && userData.contractPaused)) && (
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Uptime Errors
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                      {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                      {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                      {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                      {!!dataNFTMarshalServiceStatus && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                      {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      )}
+                      {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
-                {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Alerts
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
-                          <Text fontSize="md">{`There is a time interval enforced between mints. You can mint your next Data NFT-FT after ${new Date(
-                            userData.lastUserMintTime + userData.mintTimeLimit
-                          ).toLocaleString()}`}</Text>
-                        )}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+              {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Alerts
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
+                        <Text fontSize="md">{`There is a time interval enforced between mints. You can mint your next Data NFT-FT after ${new Date(
+                          userData.lastUserMintTime + userData.mintTimeLimit
+                        ).toLocaleString()}`}</Text>
+                      )}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <Text fontSize="sm" color="gray.400">
                   * required fields
                 </Text>
@@ -997,36 +1006,12 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   <Input
                     mt="1 !important"
                     placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                    value={dataNFTStreamUrl}
                     id="dataStreamUrlForm"
-                    {...register("dataStreamUrlForm", {
-                      required: "this is required",
-                      minLength: { value: 4, message: "Minimum length should be 4" },
-                    })}
-                    onChange={(event) => {
-                      onChangeDataNFTStreamUrl(event.currentTarget.value);
-                      validateDataStreamUrl(event.currentTarget.value);
-                    }}
                     isDisabled={!!selectedProgramId}
+                    {...register("dataStreamUrlForm")}
                   />
-
                   <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
                 </FormControl>
-                {/*{userFocusedForm && dataNFTStreamUrlError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTStreamUrlError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
-                {/*{userFocusedForm && dataNFTStreamUrlStatus && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTStreamUrlStatus}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
-                {/*{userFocusedForm && dataStreamUrlValidation && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    Data Stream URL doesn&apos;t accept Google Drive URLs*/}
-                {/*  </Text>*/}
-                {/*)}*/}
 
                 <InputLabelWithPopover tkey="data-preview-url">
                   <Text fontWeight="bold" fontSize="md">
@@ -1039,27 +1024,23 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                   value={dataNFTStreamPreviewUrl}
                   {...register("dataPreviewUrlForm")}
-                  onChange={(event) => {
-                    onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
-                    validateDataPreviewUrl(event.currentTarget.value);
-                  }}
                   isDisabled={!!selectedProgramId}
                 />
-                {userFocusedForm && dataNFTStreamPreviewUrlError && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {dataNFTStreamPreviewUrlError}
-                  </Text>
-                )}
-                {userFocusedForm && !!dataNFTStreamPreviewUrlStatus && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {dataNFTStreamPreviewUrlStatus}
-                  </Text>
-                )}
-                {userFocusedForm && dataPreviewUrlValidation && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    Data Preview URL doesn&apos;t accept Google Drive URLs
-                  </Text>
-                )}
+                {/*{userFocusedForm && dataNFTStreamPreviewUrlError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {dataNFTStreamPreviewUrlError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
+                {/*{userFocusedForm && !!dataNFTStreamPreviewUrlStatus && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {dataNFTStreamPreviewUrlStatus}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
+                {/*{userFocusedForm && dataPreviewUrlValidation && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    Data Preview URL doesn&apos;t accept Google Drive URLs*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
                 <InputLabelWithPopover tkey="data-marshal-url">
                   <Text fontWeight="bold" fontSize="md">
@@ -1269,8 +1250,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Button>
                   </ChainSupportedInput>
                 </Flex>
-              </Stack>
-            </form>
+              </form>
+            </Stack>
             <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false}>
               <ModalOverlay />
               <ModalContent>
