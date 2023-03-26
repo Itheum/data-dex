@@ -278,7 +278,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               ? "visible"
               : "collapse"
           }>
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
+          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2" color="white">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it
           </Text>
