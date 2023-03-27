@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import React, { useEffect, useState } from "react";
+import { ArrowBackIcon, ArrowForwardIcon, ArrowLeftIcon, ArrowRightIcon, RepeatIcon, TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import {
   Table,
   Thead,
@@ -19,6 +19,7 @@ import {
   Select,
   Show,
   VStack,
+  Flex,
 } from "@chakra-ui/react";
 import {
   useReactTable,
@@ -78,6 +79,28 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
 
   return (
     <Box className="hidden-overflow-x">
+      <Flex justifyContent={"center"} gap={2}>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
+          <ArrowLeftIcon />
+        </Button>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          <ArrowBackIcon />
+        </Button>
+        <Button border={1} borderRadius={"0.24rem"} marginBottom={2} onClick={() => setColumnFilters([])} disabled={columnFilters.length === 0}>
+          <RepeatIcon marginRight={2} /> Reset filters
+        </Button>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <ArrowForwardIcon />
+        </Button>
+        <Button
+          border={1}
+          borderRadius={"0.24rem"}
+          padding={1}
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}>
+          <ArrowRightIcon />
+        </Button>
+      </Flex>
       <Table style={styles.table} className="data-table">
         <Thead style={styles.th}>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -125,25 +148,6 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
       </Table>
       <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
         <VStack>
-          <HStack>
-            <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
-              {"<<"}
-            </Button>
-            <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              {"<"}
-            </Button>
-            <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              {">"}
-            </Button>
-            <Button
-              border={1}
-              borderRadius={"0.24rem"}
-              padding={1}
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}>
-              {">>"}
-            </Button>
-          </HStack>
           <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
             Page
             <strong>{table.getState().pagination.pageIndex + 1}</strong>

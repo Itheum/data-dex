@@ -21,9 +21,9 @@ export interface DataNftMetadataType {
 }
 
 export interface DataNftCondensedView {
-  data_nft_id: string // API (as id)
-  offered_token_identifier: string // SC
-  offered_token_nonce: number // SC
+  data_nft_id: string; // API (as id)
+  offered_token_identifier: string; // SC
+  offered_token_nonce: number; // SC
   offer_index: number; // SC
   offered_token_amount: string; // SC
   quantity: number; // SC
@@ -45,6 +45,7 @@ export interface MarketplaceRequirementsType {
   percentage_cut_from_buyer: number;
   percentage_cut_from_seller: number;
   buyer_fee: number;
+  seller_fee: number;
 }
 
 export interface OfferType {
