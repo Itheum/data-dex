@@ -1,3 +1,4 @@
+import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 
 export const convertToLocalString = (value: BigNumber.Value, precision?: number): string => {
@@ -9,4 +10,8 @@ export const convertToLocalString = (value: BigNumber.Value, precision?: number)
 
 export const printPrice = (price: number, token: string): string => {
   return price <= 0 ? "FREE" : `${price} ${token}`;
+};
+
+export const createNftId = (collection_id: string, nft_nonce: number) => {
+  return `${collection_id}-${numberToPaddedHex(nft_nonce)}`;
 };
