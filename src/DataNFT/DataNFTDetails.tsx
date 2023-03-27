@@ -77,7 +77,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
-
       getTokenDetails();
       getTokenHistory();
 
@@ -143,7 +142,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           if (hexPrice.trim() !== "") {
             _price = parseInt("0x" + hexPrice, 16);
             if (marketRequirements) {
-              _price += _price * marketRequirements.buyer_fee / 10000;
+              _price += (_price * marketRequirements.buyer_fee) / 10000;
             }
           }
           setPriceFromApi(_price);
@@ -173,8 +172,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return esdtPrice > 0
       ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-        ? "Listing Price: FREE"
-        : "Not Listed";
+      ? "Listing Price: FREE"
+      : "Not Listed";
   }
 
   return (
@@ -295,14 +294,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           )}{" "}
                           {itheumPrice
                             ? `(${convertToLocalString(
-                              convertWeiToEsdt(
-                                BigNumber(offer.wanted_token_amount)
-                                  .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
-                                tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber() * itheumPrice,
-                              2
-                            )} USD)`
+                                convertWeiToEsdt(
+                                  BigNumber(offer.wanted_token_amount)
+                                    .multipliedBy(10000)
+                                    .div(10000 + marketRequirements.buyer_fee),
+                                  tokenDecimals(offer.wanted_token_identifier)
+                                ).toNumber() * itheumPrice,
+                                2
+                              )} USD)`
                             : ""}
                         </>
                       ) : (
