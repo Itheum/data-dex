@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Heading,
-  Image,
-  Text,
-  Link,
-  Card,
-  CardBody,
-  Stack,
-  SimpleGrid,
-  Skeleton,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid, Skeleton, useColorMode } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
 import { sleep, convertWeiToEsdt, styleStrings } from "libs/util";
 import { getNftsByIds } from "MultiversX/api";
@@ -26,23 +14,33 @@ const latestOffersSkeleton: DataNftCondensedView[] = [];
 // create the placeholder offers for skeleton loading
 for (let i = 0; i < 10; i++) {
   latestOffersSkeleton.push({
-    data_nft_id: '',
-    offered_token_identifier: '',
+    data_nft_id: "",
+    offered_token_identifier: "",
     offered_token_nonce: 0,
     offer_index: 0,
-    offered_token_amount: '',
+    offered_token_amount: "",
     quantity: 0,
-    wanted_token_amount: '',
-    creator: '',
-    tokenName: '',
-    title: '',
-    nftImgUrl: '',
+    wanted_token_amount: "",
+    creator: "",
+    tokenName: "",
+    title: "",
+    nftImgUrl: "",
     royalties: 0,
-    feePerSFT: 0
+    feePerSFT: 0,
   });
 }
 
-const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorStyle }: { headingText: string, networkId: string, headingSize?: string, borderMultiColorStyle?: boolean }) => {
+const RecentDataNFTs = ({
+  headingText,
+  networkId,
+  headingSize,
+  borderMultiColorStyle,
+}: {
+  headingText: string;
+  networkId: string;
+  headingSize?: string;
+  borderMultiColorStyle?: boolean;
+}) => {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { colorMode } = useColorMode();
 
@@ -64,14 +62,14 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorS
         const offers = await marketContract.viewOffers(startIndex, stopIndex);
 
         // get these offers metadata from the API
-        const nftIds = offers.map(offer => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
+        const nftIds = offers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
         const dataNfts = await getNftsByIds(nftIds, networkId);
 
         // merge the offer data and meta data
         const _latestOffers: DataNftCondensedView[] = [];
 
         offers.forEach((offer, idx) => {
-          const _nft = dataNfts.find(nft => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
+          const _nft = dataNfts.find((nft) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
 
           if (_nft !== undefined) {
             const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
@@ -91,7 +89,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorS
               title: _nftMetaData.title,
               nftImgUrl: _nftMetaData.nftImgUrl,
               royalties: _nftMetaData.royalties,
-              feePerSFT: tokenAmount
+              feePerSFT: tokenAmount,
             });
           }
         });
@@ -112,20 +110,20 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorS
 
   return (
     <>
-      <Heading as="h4" size={headingSize as any || "lg"} mb="5" textAlign={["center", "initial"]}>
+      <Heading as="h4" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
-      {(loadedOffers && latestOffers.length === 0) &&
+      {loadedOffers && latestOffers.length === 0 && (
         <Box minHeight={200}>
           <Text>No recent offers available for display...</Text>
         </Box>
-      }
+      )}
 
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
-        {
-          latestOffers.map((item: DataNftCondensedView, idx: number) => {
-            return <Card
+        {latestOffers.map((item: DataNftCondensedView, idx: number) => {
+          return (
+            <Card
               key={idx}
               maxW="sm"
               variant="outline"
@@ -134,26 +132,24 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize, borderMultiColorS
               border=".1rem solid transparent"
               style={{ "background": gradientBorder }}>
               <CardBody>
-                <Skeleton height='180px' isLoaded={loadedOffers} fadeDuration={1}>
+                <Skeleton height="180px" isLoaded={loadedOffers} fadeDuration={1}>
                   <Link href={`/dataNfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
-                    <Image
-                      src={item.nftImgUrl}
-                      alt="Green double couch with wooden legs"
-                      borderRadius="lg"
-                    />
+                    <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
                   </Link>
                 </Skeleton>
-                <Skeleton height='75px' isLoaded={loadedOffers} fadeDuration={2}>
+                <Skeleton height="75px" isLoaded={loadedOffers} fadeDuration={2}>
                   <Stack mt="3">
-                    <Heading size="md" noOfLines={1}>{item.title}</Heading>
+                    <Heading size="md" noOfLines={1}>
+                      {item.title}
+                    </Heading>
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>
-                    <Text fontSize="sm">Unlock for {item.feePerSFT === 0 ? 'Free' : `${item.feePerSFT} ITHEUM/NFT`}</Text>
+                    <Text fontSize="sm">Unlock for {item.feePerSFT === 0 ? "Free" : `${item.feePerSFT} ITHEUM/NFT`}</Text>
                   </Stack>
                 </Skeleton>
               </CardBody>
-            </Card>;
-          })
-        }
+            </Card>
+          );
+        })}
 
         {/* <Card
                 maxW="sm"

@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Flex,
-  Heading, Stack,
-  Text
-} from "@chakra-ui/react";
+import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -117,8 +113,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       }
     })();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
-
-
 
   return (
     <Stack spacing={5}>

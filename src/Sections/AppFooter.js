@@ -1,8 +1,6 @@
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import {
-  Box, Text, Flex, HStack, Link, useColorMode
-} from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, Link, useColorMode } from "@chakra-ui/react";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `env:${process.env.REACT_APP_ENV_SENTRY_PROFILE}`;

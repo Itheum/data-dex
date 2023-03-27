@@ -57,13 +57,16 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
 
   const [fee, setFee] = useState<number>(0);
   useEffect(() => {
-    const _fee = marketRequirements && offers[selectedOfferIndex] ? convertWeiToEsdt(
-      BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-        .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
-        .multipliedBy(10000)
-        .div(10000 + (marketRequirements.buyer_fee as number)),
-      tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
-    ).toNumber() : 0;
+    const _fee =
+      marketRequirements && offers[selectedOfferIndex]
+        ? convertWeiToEsdt(
+            BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+              .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
+              .multipliedBy(10000)
+              .div(10000 + (marketRequirements.buyer_fee as number)),
+            tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+          ).toNumber()
+        : 0;
     setFee(_fee);
   }, [marketRequirements, selectedOfferIndex, offers]);
 
@@ -338,9 +341,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
                     Current Price per Data NFT
                   </Text>
                   <Box>
-                    :{" "}{fee}{" "}
-                    {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}
-                    {" "}{fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ''}
+                    : {fee} {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}{" "}
+                    {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                   </Box>
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center">
