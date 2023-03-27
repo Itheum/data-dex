@@ -197,14 +197,16 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           right="0"
           height="100%"
           width="100%"
-          backgroundColor="blackAlpha.800"
+          backgroundColor="blackAlpha.700"
+          backdropFilter="auto"
+          backdropBlur="4px"
           rounded="lg"
           visibility={
             userData &&
-              (userData?.addressFrozen ||
-                (userData?.frozenNonces &&
-                  item &&
-                  (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
+            (userData?.addressFrozen ||
+              (userData?.frozenNonces &&
+                item &&
+                (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
