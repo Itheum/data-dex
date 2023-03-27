@@ -235,8 +235,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       {price > 0
                         ? `Last listing price: ${price} ITHEUM ` + (itheumPrice ? `(${convertToLocalString(price * itheumPrice, 2)} USD)` : "")
                         : price === 0
-                        ? "Last listing price: FREE"
-                        : "Not Listed"}
+                          ? "Last listing price: FREE"
+                          : "Not Listed"}
                     </Text>
                     {showConnectWallet && (
                       <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -288,14 +288,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           )}{" "}
                           {itheumPrice
                             ? `(${convertToLocalString(
-                                convertWeiToEsdt(
-                                  BigNumber(offer.wanted_token_amount)
-                                    .multipliedBy(10000)
-                                    .div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber() * itheumPrice,
-                                2
-                              )} USD)`
+                              convertWeiToEsdt(
+                                BigNumber(offer.wanted_token_amount)
+                                  .multipliedBy(10000)
+                                  .div(10000 + marketRequirements.buyer_fee),
+                                tokenDecimals(offer.wanted_token_identifier)
+                              ).toNumber() * itheumPrice,
+                              2
+                            )} USD)`
                             : ""}
                         </>
                       ) : (
@@ -311,7 +311,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     height="7"
                     variant="outline"
                     onClick={() => {
-                      window.open(nftData.dataPreview);
+                      window.open(nftData.attributes.dataPreview);
                     }}>
                     Preview Data
                   </Button>
