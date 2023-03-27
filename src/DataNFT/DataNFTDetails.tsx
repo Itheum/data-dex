@@ -336,7 +336,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 }}>
                 Preview Data
               </Button>
-              {offer ? (
+              {(offer && address) ? (
                 <Box>
                   <HStack>
                     <Text fontSize="md">How many to procure </Text>
@@ -380,7 +380,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   </Text>
                 </Box>
               ) : (
-                <HStack h="3rem"></HStack>
+                <HStack h="2.4rem"></HStack>
               )}
             </VStack>
           </Stack>
