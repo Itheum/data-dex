@@ -57,8 +57,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
-  const [price, setPrice] = useState<number>(0);
-  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
+  const [priceFromApi, setPriceFromApi] = useState<number>(0);
+  const [itheumPrice, setItheumPrice] = useState<number>(0);
 
   const owner = props.owner || "";
   const showConnectWallet = props.showConnectWallet || false;
@@ -66,7 +66,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  // const nftExplorerUrl = _chainMeta.networkId ? getNftLink(_chainMeta.networkId, tokenId || "") : "";
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/dataNfts/marketplace/${tokenId}/offer-${offerId}`);
@@ -78,14 +77,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
-      // console.log('********** DataNFTDetails LOAD A _chainMeta READY ', _chainMeta);
 
       getTokenDetails();
       getTokenHistory();
 
       (async () => {
         const _itheumPrice = await getItheumPriceFromApi();
-        setItheumPrice(_itheumPrice);
+        setItheumPrice(_itheumPrice || 0);
       })();
 
       (async () => {
@@ -100,7 +98,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-
+        console.log(_offer);
         if (_offer) {
           setAmount(Number(_offer.quantity));
         }
@@ -143,11 +141,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           const hexPrice = Buffer.from(tx.data, "base64").toString().split("@")[8];
           let _price = 0;
           if (hexPrice.trim() !== "") {
-            _price = convertWeiToEsdt(parseInt("0x" + hexPrice, 16)).toNumber();
+            _price = parseInt("0x" + hexPrice, 16);
+            if (marketRequirements) {
+              _price += _price * marketRequirements.buyer_fee / 10000;
+            }
           }
-          setPrice(_price);
+          setPriceFromApi(_price);
         } else {
-          setPrice(-1);
+          setPriceFromApi(-1);
         }
         setIsLoadingPrice(false);
       })
@@ -165,6 +166,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   function isLoadingNftData() {
     return isLoadingDetails || isLoadingPrice;
+  }
+
+  function getListingText(price: number) {
+    const esdtPrice = convertWeiToEsdt(price).toNumber();
+    return esdtPrice > 0
+      ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      : esdtPrice === 0
+        ? "Listing Price: FREE"
+        : "Not Listed";
   }
 
   return (
@@ -232,11 +242,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   </Box>
                   <Flex direction={{ base: "column", md: "row" }} gap="3">
                     <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
-                      {price > 0
-                        ? `Last listing price: ${price} ITHEUM ` + (itheumPrice ? `(${convertToLocalString(price * itheumPrice, 2)} USD)` : "")
-                        : price === 0
-                        ? "Last listing price: FREE"
-                        : "Not Listed"}
+                      {!offer && getListingText(priceFromApi)}
+                      {offer && getListingText(Number(offer.wanted_token_amount))}
                     </Text>
                     {showConnectWallet && (
                       <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -288,14 +295,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           )}{" "}
                           {itheumPrice
                             ? `(${convertToLocalString(
-                                convertWeiToEsdt(
-                                  BigNumber(offer.wanted_token_amount)
-                                    .multipliedBy(10000)
-                                    .div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber() * itheumPrice,
-                                2
-                              )} USD)`
+                              convertWeiToEsdt(
+                                BigNumber(offer.wanted_token_amount)
+                                  .multipliedBy(10000)
+                                  .div(10000 + marketRequirements.buyer_fee),
+                                tokenDecimals(offer.wanted_token_identifier)
+                              ).toNumber() * itheumPrice,
+                              2
+                            )} USD)`
                             : ""}
                         </>
                       ) : (
