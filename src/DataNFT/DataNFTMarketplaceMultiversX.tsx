@@ -59,14 +59,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
-  const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [userData, setUserData] = useState<any>({});
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
-
-  const [dataNftIdForDetails, setDataNftIdForDetails] = useState<any>(null);
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
@@ -287,8 +284,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       <Stack spacing={5}>
         <Heading size="lg">Data NFT Marketplace</Heading>
 
-        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "row", md: "row" }} flexWrap={"wrap"}>
-          <HStack>
+        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"}>
+          <HStack justifyContent={"center"}>
             <Button
               colorScheme="teal"
               width={{ base: "120px", md: "160px" }}
@@ -359,7 +356,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {
           /* show bottom pagination only if offers exist */
           offers.length > 0 && (
-            <Flex justifyContent="right" mt="5" pr="5">
+            <Flex justifyContent={{ base: "center", md: "right" }} mt="5">
               <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
             </Flex>
           )

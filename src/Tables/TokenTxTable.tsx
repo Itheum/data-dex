@@ -81,9 +81,9 @@ export default function TokenTxTable(props: TokenTableProps) {
         footer: (footerProps) => footerProps.column.id,
       },
       {
-        id: "value",
+        id: "amount",
         accessorFn: (row) => row.value,
-        header: "Value",
+        header: "Amount",
         footer: (footerProps) => footerProps.column.id,
       },
     ],
