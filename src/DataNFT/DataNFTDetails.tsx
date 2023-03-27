@@ -37,13 +37,13 @@ import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxCo
 import { convertToLocalString, printPrice } from "libs/util2";
 import { getApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
+import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { getTokenWantedRepresentation, tokenDecimals } from "MultiversX/tokenUtils";
 import { MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
-import jsonData from "../MultiversX/ABIs/datanftmint.abi.json";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -99,7 +99,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         setMarketRequirements(_marketRequirements);
       })();
     }
-  }, [_chainMeta]);
+  }, [_chainMeta, hasPendingTransactions]);
 
   useEffect(() => {
     if (_chainMeta.networkId && offerId != null) {
@@ -112,14 +112,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         }
       })();
     }
-  }, [_chainMeta, offerId]);
+  }, [_chainMeta, offerId, hasPendingTransactions]);
 
   function getTokenDetails() {
     const apiLink = getApi(_chainMeta.networkId);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
     axios.get(nftApiLink).then((res) => {
       const _nftData = res.data;
-      const attributes = decodeNftAttributes(_nftData);
+      const attributes = new DataNftMintContract(_chainMeta.networkId).decodeNftAttributes(_nftData);
       _nftData.attributes = attributes;
       setNftData(_nftData);
       setIsLoadingDetails(false);
@@ -161,31 +161,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         isClosable: true,
       });
     });
-  }
-
-  function decodeNftAttributes(nft: any) {
-    const json = JSON.parse(JSON.stringify(jsonData));
-    const abiRegistry = AbiRegistry.create(json);
-    const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
-    const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes).valueOf();
-    const dataNFT = {
-      id: nft.identifier,
-      nftImgUrl: nft.url,
-      dataPreview: decodedAttributes["data_preview_url"].toString(),
-      dataStream: decodedAttributes["data_stream_url"].toString(),
-      dataMarshal: decodedAttributes["data_marshal_url"].toString(),
-      tokenName: nft.name,
-      creator: decodedAttributes["creator"].toString(),
-      creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000),
-      supply: nft.supply ? Number(nft.supply) : 0,
-      description: decodedAttributes["description"].toString(),
-      title: decodedAttributes["title"].toString(),
-      royalties: nft.royalties ? nft.royalties / 100 : 0,
-      nonce: nft.nonce,
-      collection: nft.collection,
-      balance: 0,
-    };
-    return dataNFT;
   }
 
   function isLoadingNftData() {
