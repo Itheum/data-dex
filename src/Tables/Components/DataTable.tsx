@@ -92,12 +92,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
           <ArrowForwardIcon />
         </Button>
-        <Button
-          border={1}
-          borderRadius={"0.24rem"}
-          padding={1}
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
           <ArrowRightIcon />
         </Button>
       </Flex>
@@ -162,6 +157,8 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
           <NumberInput
             defaultValue={table.getState().pagination.pageIndex + 1}
             maxWidth={"4.4rem"}
+            min={1}
+            max={table.getPageCount()}
             onChange={(e: string) => {
               const page = e ? Number(e) - 1 : 0;
               table.setPageIndex(page);

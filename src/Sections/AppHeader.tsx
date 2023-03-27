@@ -19,8 +19,26 @@ import {
   Box,
   Spinner,
   Stack,
-  Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, MenuDivider,
-  Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerCloseButton, DrawerBody, Accordion, AccordionItem, AccordionButton, AccordionPanel, List, ListIcon, ListItem,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuDivider,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerCloseButton,
+  DrawerBody,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  List,
+  ListIcon,
+  ListItem,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -33,12 +51,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
-import {
-  CHAINS,
-  CHAIN_TOKEN_SYMBOL,
-  formatNumberRoundFloor,
-  MENU,
-} from "libs/util";
+import { CHAINS, CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor, MENU } from "libs/util";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
@@ -78,7 +91,19 @@ const exploreRouterMenu = [
   },
 ];
 
-const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any, tokenBalance?: number, menuItem: number, setMenuItem: any, handleLogout: any }) => {
+const AppHeader = ({
+  onLaunchMode,
+  tokenBalance,
+  menuItem,
+  setMenuItem,
+  handleLogout,
+}: {
+  onLaunchMode?: any;
+  tokenBalance?: number;
+  menuItem: number;
+  setMenuItem: any;
+  handleLogout: any;
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user: _user } = useUser();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -120,16 +145,9 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
 
   return (
     <>
-      <Flex
-        h="5rem"
-        alignItems="center"
-        backgroundColor={colorMode === "light" ? "white" : "black"}
-        borderBottom="solid .1rem"
-        borderColor="teal.300"
-        p="5">
-
+      <Flex h="5rem" alignItems="center" backgroundColor={colorMode === "light" ? "white" : "black"} borderBottom="solid .1rem" borderColor="teal.300" p="5">
         <HStack alignItems={"center"} backgroundColor="none" width="15rem">
-          {isMxLoggedIn &&
+          {isMxLoggedIn && (
             <IconButton
               size={"sm"}
               variant={"ghost"}
@@ -146,7 +164,7 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
               aria-label={"Open Menu"}
               onClick={isOpen ? onClose : onOpen}
             />
-          }
+          )}
 
           <Link
             as={ReactRouterLink}
@@ -157,9 +175,7 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading size={"md"}>
-                Itheum Data DEX
-              </Heading>
+              <Heading size={"md"}>Itheum Data DEX</Heading>
             </HStack>
           </Link>
         </HStack>
@@ -170,7 +186,12 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
                 const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
                 return (
-                  <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path} display={shouldDisplayquickMenuItem(quickMenuItem, isMxLoggedIn)}>
+                  <Link
+                    as={ReactRouterLink}
+                    to={path}
+                    style={{ textDecoration: "none" }}
+                    key={path}
+                    display={shouldDisplayquickMenuItem(quickMenuItem, isMxLoggedIn)}>
                     <Button
                       colorScheme="teal"
                       variant="outline"
@@ -187,7 +208,7 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
                 );
               })}
             </HStack>
-            {isMxLoggedIn &&
+            {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
@@ -236,7 +257,8 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
                       </MenuList>
                     </Menu>
                   ))}
-                </Box><Link as={ReactRouterLink} to={"home"} style={{ textDecoration: "none" }}>
+                </Box>
+                <Link as={ReactRouterLink} to={"home"} style={{ textDecoration: "none" }}>
                   <IconButton
                     size={"sm"}
                     icon={<AiFillHome />}
@@ -246,11 +268,19 @@ const AppHeader = ({ onLaunchMode, tokenBalance, menuItem, setMenuItem, handleLo
                     opacity={0.6}
                     onClick={() => {
                       navigateToDiscover(MENU.HOME);
-                    }} />
-                </Link><IconButton size="sm" icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} aria-label="Change Color Theme" onClick={toggleColorMode} /></>
-            }
+                    }}
+                  />
+                </Link>
+                <IconButton
+                  size="sm"
+                  icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
+                  aria-label="Change Color Theme"
+                  onClick={toggleColorMode}
+                />
+              </>
+            )}
           </HStack>
-          {(onLaunchMode && !isMxLoggedIn) && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
+          {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
         </Flex>
       </Flex>
 
@@ -406,7 +436,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
 };
 
 function shouldDisplayquickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
-  return quickMenuItem.needToBeLoggedIn ? isMxLoggedIn ? "inline" : "none" : "inline";
+  return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
 }
 
 function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {
