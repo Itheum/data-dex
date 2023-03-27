@@ -197,7 +197,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           right="0"
           height="100%"
           width="100%"
-          backgroundColor="blackAlpha.800"
+          backgroundColor="blackAlpha.700"
+          backdropFilter="auto"
+          backdropBlur="4px"
           rounded="lg"
           visibility={
             userData &&
@@ -208,7 +210,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               ? "visible"
               : "collapse"
           }>
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
+          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2" color="white">
             - FROZEN - <br />
             Data NFT is under investigation by the DAO as there was a complaint received against it
           </Text>
