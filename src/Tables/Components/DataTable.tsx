@@ -157,6 +157,8 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
           <NumberInput
             defaultValue={table.getState().pagination.pageIndex + 1}
             maxWidth={"4.4rem"}
+            min={1}
+            max={table.getPageCount()}
             onChange={(e: string) => {
               const page = e ? Number(e) - 1 : 0;
               table.setPageIndex(page);

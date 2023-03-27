@@ -172,8 +172,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return esdtPrice > 0
       ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-      ? "Listing Price: FREE"
-      : "Not Listed";
+        ? "Listing Price: FREE"
+        : "Not Listed";
   }
 
   return (
@@ -294,14 +294,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           )}{" "}
                           {itheumPrice
                             ? `(${convertToLocalString(
-                                convertWeiToEsdt(
-                                  BigNumber(offer.wanted_token_amount)
-                                    .multipliedBy(10000)
-                                    .div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber() * itheumPrice,
-                                2
-                              )} USD)`
+                              convertWeiToEsdt(
+                                BigNumber(offer.wanted_token_amount)
+                                  .multipliedBy(10000)
+                                  .div(10000 + marketRequirements.buyer_fee),
+                                tokenDecimals(offer.wanted_token_identifier)
+                              ).toNumber() * itheumPrice,
+                              2
+                            )} USD)`
                             : ""}
                         </>
                       ) : (
@@ -317,7 +317,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     height="7"
                     variant="outline"
                     onClick={() => {
-                      window.open(nftData.dataPreview);
+                      window.open(nftData.attributes.dataPreview);
                     }}>
                     Preview Data
                   </Button>
