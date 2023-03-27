@@ -69,7 +69,6 @@ export default function AppMarketplace() {
             backgroundColor="none"
             borderRadius="1.5rem"
             style={{ "background": gradientBorder }}>
-
             <Image src={imgProgGaPa} />
 
             <Box p="3">

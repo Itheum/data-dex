@@ -514,8 +514,8 @@ export const dataCATDemoUserData = {
 };
 
 export const styleStrings = {
-  gradientBorderMulticolor: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, rgb(79 209 197 / 100%)) border-box',
-  gradientBorderMulticolorLight: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, rgb(79 209 197 / 100%)) border-box',
-  gradientBorderPassive: 'linear-gradient(black, black) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box',
-  gradientBorderPassiveLight: 'linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box',
+  gradientBorderMulticolor: "linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, rgb(79 209 197 / 100%)) border-box",
+  gradientBorderMulticolorLight: "linear-gradient(black, black) padding-box, linear-gradient(to right, #FF439D, rgb(79 209 197 / 100%)) border-box",
+  gradientBorderPassive: "linear-gradient(black, black) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
+  gradientBorderPassiveLight: "linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
 };

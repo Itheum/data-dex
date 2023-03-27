@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, useDisclosure, useToast } from '@chakra-ui/react';
-import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks';
-import BigNumber from 'bignumber.js';
-import { convertWeiToEsdt, sleep } from 'libs/util';
-import { printPrice, convertToLocalString } from 'libs/util2';
-import { getAccountTokenFromApi } from 'MultiversX/api';
-import { tokenDecimals, getTokenWantedRepresentation } from 'MultiversX/tokenUtils';
-import { MarketplaceRequirementsType, OfferType } from 'MultiversX/types';
-import { useChainMeta } from 'store/ChainMetaContext';
-import DataNFTProcureReadModal from './DataNFTProcureReadModal';
+import React, { useEffect, useState } from "react";
+import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, useDisclosure, useToast } from "@chakra-ui/react";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import BigNumber from "bignumber.js";
+import { convertWeiToEsdt, sleep } from "libs/util";
+import { printPrice, convertToLocalString } from "libs/util2";
+import { getAccountTokenFromApi } from "MultiversX/api";
+import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
+import { MarketplaceRequirementsType, OfferType } from "MultiversX/types";
+import { useChainMeta } from "store/ChainMetaContext";
+import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -18,8 +18,7 @@ export type ProcureAccessModalProps = {
   itheumPrice: number;
   marketContract: any;
   amount: number;
-}
-
+};
 
 export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -165,12 +164,11 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               </Box>
             </Flex>
             <Flex>
-              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) >
-                0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
+              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
+                <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                  Your wallet token balance is too low to proceed
+                </Text>
+              )}
             </Flex>
             <Flex fontSize="md" mt="2">
               <Box w="140px">Buyer Tax (per NFT)</Box>
@@ -178,14 +176,11 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                 :{" "}
                 {props.buyerFee
                   ? `${props.buyerFee / 100}% (${convertWeiToEsdt(
-                    BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.buyerFee)
-                      .div(10000 + props.buyerFee),
-                    tokenDecimals(props.offer.wanted_token_identifier)
-                  ).toNumber()} ${getTokenWantedRepresentation(
-                    props.offer.wanted_token_identifier,
-                    props.offer.wanted_token_nonce
-                  )})`
+                      BigNumber(props.offer.wanted_token_amount)
+                        .multipliedBy(props.buyerFee)
+                        .div(10000 + props.buyerFee),
+                      tokenDecimals(props.offer.wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
                   : "-"}
               </Box>
             </Flex>
@@ -193,7 +188,13 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               <Box w="140px">Total Fee</Box>
               <Box>
                 {": "}
-                {props.buyerFee ? <>{feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ''}</> : "-"}
+                {props.buyerFee ? (
+                  <>
+                    {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ""}
+                  </>
+                ) : (
+                  "-"
+                )}
               </Box>
             </Flex>
             <Flex fontSize="xs" mt="0">
@@ -223,8 +224,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                             .div(10000 + props.buyerFee),
                           tokenDecimals(props.offer.wanted_token_identifier)
                         ).toNumber()}
-                        {" " +
-                          getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
+                        {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                       </>
                     )}
                   </>
@@ -247,10 +247,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                 size="sm"
                 mx="3"
                 onClick={onProcure}
-                isDisabled={
-                  !readTermsChecked
-                  || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
-                }>
+                isDisabled={!readTermsChecked || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={props.onClose}>
@@ -267,4 +264,4 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
       />
     </>
   );
-};
+}

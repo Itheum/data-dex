@@ -19,7 +19,7 @@ import {
   useDisclosure,
   useToast,
   SimpleGrid,
-  useColorMode
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -120,7 +120,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
-          { amount: 0, date: 0 }
+          { amount: 0, date: 0 },
         ];
 
         const claimBalanceValues = [];
@@ -492,10 +492,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
       </Stack>
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
-        <RecentDataNFTs
-          headingText="Recent Data NFTs"
-          headingSize="md"
-          networkId={_chainMeta.networkId} />
+        <RecentDataNFTs headingText="Recent Data NFTs" headingSize="md" networkId={_chainMeta.networkId} />
       </Box>
 
       <AppMarketplace />

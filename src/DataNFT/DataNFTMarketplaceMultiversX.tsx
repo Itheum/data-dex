@@ -375,13 +375,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             </HStack>
           </DrawerHeader>
           <DrawerBody>
-            {
-              selectedOfferIndex >= 0 && offers.length > selectedOfferIndex &&
+            {selectedOfferIndex >= 0 && offers.length > selectedOfferIndex && (
               <DataNFTDetails
                 tokenIdProp={createNftId(offers[selectedOfferIndex].offered_token_identifier, offers[selectedOfferIndex].offered_token_nonce)}
                 offerIdProp={offers[selectedOfferIndex].index}
               />
-            }
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

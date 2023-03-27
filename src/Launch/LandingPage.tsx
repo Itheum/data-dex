@@ -1,18 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Box,
-  Flex,
-  Heading,
-  Image,
-  Text,
-  Center,
-  Link,
-  Card,
-  CardBody,
-  Stack,
-  SimpleGrid,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
 import imgHeroDataNFTs from "img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "img/landing/hero-metaverse-mask.png";
 import { styleStrings } from "libs/util";
@@ -44,16 +31,15 @@ const LandingPage = () => {
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
-
         <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
-          <Flex w="100%"
+          <Flex
+            w="100%"
             h={["40rem", "45rem"]}
             bgImage={imgHeroMetaverseMask}
             bgSize="contain"
             bgPosition="bottom"
             bgRepeat="no-repeat"
             justifyContent="center">
-
             <Center w="95%" pt="5rem" backgroundColor="none">
               <Flex w="100%" backgroundColor="none" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]}>
                 <Box
@@ -92,13 +78,8 @@ const LandingPage = () => {
             </Heading>
 
             <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
-              {Array.from("123").map(idx => (
-                <Card
-                  key={idx}
-                  variant="outline"
-                  backgroundColor="none"
-                  border="none"
-                >
+              {Array.from("123").map((idx) => (
+                <Card key={idx} variant="outline" backgroundColor="none" border="none">
                   <CardBody>
                     <Box>
                       <Image
@@ -111,9 +92,15 @@ const LandingPage = () => {
                     </Box>
                     <Stack mt="6" spacing="2">
                       <Text>10 March,2023</Text>
-                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>Article Title GOES IN HERE, CAPS AND it might be two to three lines long</Heading>
-                      <Text noOfLines={2}>Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....</Text>
-                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">Read More</Link>
+                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>
+                        Article Title GOES IN HERE, CAPS AND it might be two to three lines long
+                      </Heading>
+                      <Text noOfLines={2}>
+                        Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....
+                      </Text>
+                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">
+                        Read More
+                      </Link>
                     </Stack>
                   </CardBody>
                 </Card>
@@ -127,13 +114,8 @@ const LandingPage = () => {
             </Heading>
 
             <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
-              {Array.from("123").map(idx => (
-                <Card
-                  key={idx}
-                  variant="outline"
-                  backgroundColor="none"
-                  border="none"
-                >
+              {Array.from("123").map((idx) => (
+                <Card key={idx} variant="outline" backgroundColor="none" border="none">
                   <CardBody>
                     <Box>
                       <Image
@@ -146,16 +128,21 @@ const LandingPage = () => {
                     </Box>
                     <Stack mt="6" spacing="2">
                       <Text>10 March, 2023</Text>
-                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>Article Title GOES IN HERE, CAPS AND it might be two to three lines long</Heading>
-                      <Text noOfLines={2}>Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....</Text>
-                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">Read More</Link>
+                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>
+                        Article Title GOES IN HERE, CAPS AND it might be two to three lines long
+                      </Heading>
+                      <Text noOfLines={2}>
+                        Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....
+                      </Text>
+                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">
+                        Read More
+                      </Link>
                     </Stack>
                   </CardBody>
                 </Card>
               ))}
             </SimpleGrid>
           </Box>
-
         </Box>
       </Flex>
     </Box>
