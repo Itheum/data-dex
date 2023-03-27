@@ -132,12 +132,12 @@ const RecentDataNFTs = ({
               border=".1rem solid transparent"
               style={{ "background": gradientBorder }}>
               <CardBody>
-                <Skeleton height="180px" isLoaded={loadedOffers} fadeDuration={1}>
+                <Skeleton height={{ base: "300px", md: "200px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/dataNfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
                   </Link>
                 </Skeleton>
-                <Skeleton height="75px" isLoaded={loadedOffers} fadeDuration={2}>
+                <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
                   <Stack mt="3">
                     <Heading size="md" noOfLines={1}>
                       {item.title}
