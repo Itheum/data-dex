@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, useDisclosure, useToast } from '@chakra-ui/react';
-import { useGetAccountInfo } from '@multiversx/sdk-dapp/hooks';
-import BigNumber from 'bignumber.js';
-import { convertWeiToEsdt, sleep } from 'libs/util';
-import { printPrice, convertToLocalString } from 'libs/util2';
-import { getAccountTokenFromApi } from 'MultiversX/api';
-import { tokenDecimals, getTokenWantedRepresentation } from 'MultiversX/tokenUtils';
-import { useChainMeta } from 'store/ChainMetaContext';
-import DataNFTProcureReadModal from './DataNFTProcureReadModal';
+import React, { useEffect, useState } from "react";
+import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, useDisclosure, useToast } from "@chakra-ui/react";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import BigNumber from "bignumber.js";
+import { convertWeiToEsdt, sleep } from "libs/util";
+import { printPrice, convertToLocalString } from "libs/util2";
+import { getAccountTokenFromApi } from "MultiversX/api";
+import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
+import { useChainMeta } from "store/ChainMetaContext";
+import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 export type ListModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -17,8 +17,7 @@ export type ListModalProps = {
   itheumPrice: number;
   marketContract: any;
   amount: number;
-}
-
+};
 
 export default function ListDataNFTModal(props: ListModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -48,7 +47,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
     if (props.offer) {
       setFeePrice(
         printPrice(
-          props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee) / 10000,
+          (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee)) / 10000,
           getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
         )
       );
@@ -137,12 +136,11 @@ export default function ListDataNFTModal(props: ListModalProps) {
               </Box>
             </Flex>
             <Flex>
-              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) >
-                0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
+              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
+                <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                  Your wallet token balance is too low to proceed
+                </Text>
+              )}
             </Flex>
             <Flex fontSize="md" mt="2">
               <Box w="140px">Seller Tax (per NFT)</Box>
@@ -150,11 +148,9 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 :{" "}
                 {props.sellerFee
                   ? `${props.sellerFee / 100}% (${BigNumber(props.offer.wanted_token_amount)
-                    .multipliedBy(props.sellerFee)
-                    .div(10000).toNumber()} ${getTokenWantedRepresentation(
-                      props.offer.wanted_token_identifier,
-                      props.offer.wanted_token_nonce
-                    )})`
+                      .multipliedBy(props.sellerFee)
+                      .div(10000)
+                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
                   : "-"}
               </Box>
             </Flex>
@@ -162,7 +158,13 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box w="140px">You will receive</Box>
               <Box>
                 {": "}
-                {props.sellerFee ? <>{feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ''}</> : "-"}
+                {props.sellerFee ? (
+                  <>
+                    {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
+                  </>
+                ) : (
+                  "-"
+                )}
               </Box>
             </Flex>
             <Flex fontSize="xs" mt="0">
@@ -174,19 +176,11 @@ export default function ListDataNFTModal(props: ListModalProps) {
                       ""
                     ) : (
                       <>
-                        {" " +
-                          BigNumber(props.offer.wanted_token_amount)
-                            .multipliedBy(props.amount).toNumber() +
-                          " "}
+                        {" " + BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).toNumber() + " "}
                         {getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                         {" - "}
-                        {
-                          BigNumber(props.offer.wanted_token_amount)
-                            .multipliedBy(props.amount)
-                            .multipliedBy(props.sellerFee)
-                            .div(10000).toNumber()}
-                        {" " +
-                          getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
+                        {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.sellerFee).div(10000).toNumber()}
+                        {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                       </>
                     )}
                   </>
@@ -209,10 +203,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 size="sm"
                 mx="3"
                 onClick={onProcure}
-                isDisabled={
-                  !readTermsChecked
-                  || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
-                }>
+                isDisabled={!readTermsChecked || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={props.onClose}>
@@ -229,4 +220,4 @@ export default function ListDataNFTModal(props: ListModalProps) {
       />
     </>
   );
-};
+}

@@ -61,7 +61,7 @@ export default function AppMarketplace() {
       <Stack pt="5">
         <Heading size="md">App Marketplace</Heading>
         <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
-        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
+        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5} justify={{ base: "center", md: "start" }}>
           <Box
             maxW="container.sm"
             overflow="hidden"
@@ -69,7 +69,6 @@ export default function AppMarketplace() {
             backgroundColor="none"
             borderRadius="1.5rem"
             style={{ "background": gradientBorder }}>
-
             <Image src={imgProgGaPa} />
 
             <Box p="3">

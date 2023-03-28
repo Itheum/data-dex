@@ -266,6 +266,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     if (hasPendingTransactions) return;
     if (!_chainMeta.networkId) return;
 
+    // close NFT Details Drawer if it's opened after a transaction is finished
+    if (isDrawerOpenTradeStream) {
+      console.log('close modal');
+      closeDetailsView();
+    }
+
     getUserData();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
@@ -375,13 +381,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             </HStack>
           </DrawerHeader>
           <DrawerBody>
-            {
-              selectedOfferIndex >= 0 && offers.length > selectedOfferIndex &&
+            {selectedOfferIndex >= 0 && offers.length > selectedOfferIndex && (
               <DataNFTDetails
                 tokenIdProp={createNftId(offers[selectedOfferIndex].offered_token_identifier, offers[selectedOfferIndex].offered_token_nonce)}
                 offerIdProp={offers[selectedOfferIndex].index}
               />
-            }
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

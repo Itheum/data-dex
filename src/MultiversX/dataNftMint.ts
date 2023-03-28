@@ -217,11 +217,11 @@ export class DataNftMintContract {
     }
   }
 
-  decodeNftAttributes(nft: NftType, index: number): DataNftMetadataType {
+  decodeNftAttributes(nft: NftType, index?: number): DataNftMetadataType {
     const dataNftAttributes = this.abiRegistry.getStruct("DataNftAttributes");
     const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes).valueOf();
     const dataNFT: DataNftMetadataType = {
-      index, // only for view & query
+      index: index || 0, // only for view & query
       id: nft.identifier, // ID of NFT -> done
       nftImgUrl: nft.url, // image URL of of NFT -> done
       dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
