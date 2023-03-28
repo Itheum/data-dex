@@ -266,6 +266,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     if (hasPendingTransactions) return;
     if (!_chainMeta.networkId) return;
 
+    // close NFT Details Drawer if it's opened after a transaction is finished
+    if (isDrawerOpenTradeStream) {
+      console.log('close modal');
+      closeDetailsView();
+    }
+
     getUserData();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
