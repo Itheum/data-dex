@@ -222,8 +222,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   // React hook form + yup integration
 
   const validationSchema = Yup.object().shape({
-    dataStreamUrlForm: Yup.string().max(10, "Maximum 10 characters").required("Data Stream URL is required"),
-    dataPreviewUrlForm: Yup.string().required("Data Preview URL is required"),
+    dataStreamUrlForm: Yup.string()
+      .url("Data Stream must be URL")
+      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
+      .required("Data Stream URL is required"),
+    dataPreviewUrlForm: Yup.string()
+      .url("Data Preview must be URL")
+      .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
+      .required("Data Preview URL is required"),
     dataMarshalUrlForm: Yup.string().required("Data Marshal URL is required"),
     tokenNameForm: Yup.string().required("Token name is required"),
     datasetTitleForm: Yup.string().required("Dataset title is required"),
@@ -1015,7 +1021,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 </FormControl>
 
                 <InputLabelWithPopover tkey="data-preview-url">
-                  <Text fontWeight="bold" fontSize="md">
+                  <Text fontWeight="bold" fontSize="md" mt={1}>
                     Data Preview URL *
                   </Text>
                 </InputLabelWithPopover>
