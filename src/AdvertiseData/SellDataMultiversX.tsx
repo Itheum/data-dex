@@ -156,7 +156,6 @@ const checkUrlReturns200 = async (url: string) => {
 type TradeDataFormType = {
   dataStreamUrlForm: string;
   dataPreviewUrlForm: string;
-  dataMarshalUrlForm: string;
   tokenNameForm: string;
   datasetTitleForm: string;
   datasetDescriptionForm: string;
@@ -219,47 +218,63 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
+  // Textarea link detect
+  function transformLink(text: string) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, (url) => `<a href="${url}">${url}</a>`);
+  }
+
   // React hook form + yup integration
 
   const validationSchema = Yup.object().shape({
     dataStreamUrlForm: Yup.string()
+      .required("Data Stream URL is required")
       .url("Data Stream must be URL")
-      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .required("Data Stream URL is required"),
+      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`),
     dataPreviewUrlForm: Yup.string()
+      .required("Data Preview URL is required")
       .url("Data Preview must be URL")
-      .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
-      .required("Data Preview URL is required"),
-    dataMarshalUrlForm: Yup.string().required("Data Marshal URL is required"),
-    tokenNameForm: Yup.string().required("Token name is required"),
-    datasetTitleForm: Yup.string().required("Dataset title is required"),
-    datasetDescriptionForm: Yup.string().required("Dataset description is required"),
-    numberOfCopiesForm: Yup.string().required("Number of copies is required"),
-    royaltiesForm: Yup.string().required("Royalties is required"),
-  });
-
-  const tradeDataForm = useForm<TradeDataFormType>({
-    mode: "onBlur",
-    defaultValues: {
-      dataStreamUrlForm: "",
-      dataPreviewUrlForm: "",
-      dataMarshalUrlForm: "",
-      tokenNameForm: "",
-      datasetTitleForm: "",
-      datasetDescriptionForm: "",
-      numberOfCopiesForm: "",
-      royaltiesForm: "",
-    },
-    resolver: yupResolver(validationSchema),
+      .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`),
+    tokenNameForm: Yup.string()
+      .required("Token name is required")
+      .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
+      .min(3, "Token name must have at least 3 characters.")
+      .max(20, "Token name must have maximum of 20 characters."),
+    datasetTitleForm: Yup.string()
+      .required("Dataset title is required")
+      .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
+      .min(10, "Dataset title must have at least 10 characters.")
+      .max(50, "Dataset title must have maximum of 50 characters."),
+    datasetDescriptionForm: Yup.string()
+      .required("Dataset description is required")
+      .min(10, "Dataset description must have at least 10 characters.")
+      .max(250, "Dataset description must have maximum of 250 characters."),
+    numberOfCopiesForm: Yup.number()
+      .min(1, "Minimum number of copies should be 1 or greater.")
+      .max(20, "Number of copies should be less than 20.")
+      .required("Number of copies is required"),
+    royaltiesForm: Yup.number().min(0, "Minimum value of royalties is 0%.").max(80, "Maximum value of royalties is 80%.").required("Royalties is required"),
   });
 
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = tradeDataForm;
+  } = useForm<TradeDataFormType>({
+    mode: "onBlur",
+    defaultValues: {
+      dataStreamUrlForm: "",
+      dataPreviewUrlForm: "",
+      tokenNameForm: "",
+      datasetTitleForm: "",
+      datasetDescriptionForm: "",
+      numberOfCopiesForm: "1",
+      royaltiesForm: "0",
+    },
+    resolver: yupResolver(validationSchema),
+  });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
   };
 
@@ -1014,48 +1029,46 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     mt="1 !important"
                     placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                     id="dataStreamUrlForm"
-                    isDisabled={!!selectedProgramId}
                     {...register("dataStreamUrlForm")}
+                    isDisabled={!!selectedProgramId}
+                    value={dataNFTStreamUrl}
+                    onChange={(event) => {
+                      onChangeDataNFTStreamUrl(event.currentTarget.value);
+                      validateDataStreamUrl(event.currentTarget.value);
+                    }}
                   />
                   <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
                 </FormControl>
 
-                <InputLabelWithPopover tkey="data-preview-url">
-                  <Text fontWeight="bold" fontSize="md" mt={1}>
-                    Data Preview URL *
-                  </Text>
-                </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
+                  <InputLabelWithPopover tkey="data-preview-url">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Data Preview URL *
+                    </Text>
+                  </InputLabelWithPopover>
 
-                <Input
-                  mt="1 !important"
-                  placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                  value={dataNFTStreamPreviewUrl}
-                  {...register("dataPreviewUrlForm")}
-                  isDisabled={!!selectedProgramId}
-                />
-                {/*{userFocusedForm && dataNFTStreamPreviewUrlError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTStreamPreviewUrlError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
-                {/*{userFocusedForm && !!dataNFTStreamPreviewUrlStatus && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTStreamPreviewUrlStatus}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
-                {/*{userFocusedForm && dataPreviewUrlValidation && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    Data Preview URL doesn&apos;t accept Google Drive URLs*/}
-                {/*  </Text>*/}
-                {/*)}*/}
+                  <Input
+                    mt="1 !important"
+                    placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                    id="dataPreviewUrlForm"
+                    isDisabled={!!selectedProgramId}
+                    {...register("dataPreviewUrlForm")}
+                    value={dataNFTStreamPreviewUrl}
+                    onChange={(event) => {
+                      onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                      validateDataPreviewUrl(event.currentTarget.value);
+                    }}
+                  />
+                  <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
+                </FormControl>
 
                 <InputLabelWithPopover tkey="data-marshal-url">
-                  <Text fontWeight="bold" fontSize="md">
+                  <Text fontWeight="bold" fontSize="md" mt={1}>
                     Data Marshal Url
                   </Text>
                 </InputLabelWithPopover>
 
-                <Input mt="1 !important" value={dataNFTMarshalService} disabled {...register("dataMarshalUrlForm")} />
+                <Input mt="1 !important" value={dataNFTMarshalService} disabled />
                 {userFocusedForm && !!dataNFTMarshalServiceStatus && (
                   <Text color="red.400" fontSize="sm" mt="1 !important">
                     {dataNFTMarshalServiceStatus}
@@ -1066,137 +1079,130 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   NFT Token Metadata
                 </Text>
 
-                <InputLabelWithPopover tkey="token-name">
-                  <Text fontWeight="bold" fontSize="md">
-                    Token Name (Short Title) *
-                  </Text>
-                </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.tokenNameForm}>
+                  <InputLabelWithPopover tkey="token-name">
+                    <Text fontWeight="bold" fontSize="md">
+                      Token Name (Short Title) *
+                    </Text>
+                  </InputLabelWithPopover>
 
-                <Input
-                  mt="1 !important"
-                  placeholder="NFT Token Name"
-                  value={dataNFTTokenName}
-                  {...register("tokenNameForm")}
-                  onChange={(event) => onChangeDataNFTTokenName(event.currentTarget.value)}
-                />
-                <Text color="gray.400" fontSize="sm" mt="0 !important">
-                  Between 3 and 20 alphanumeric characters only
-                </Text>
-                {userFocusedForm && dataNFTTokenNameError && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {dataNFTTokenNameError}
-                  </Text>
-                )}
+                  <Input mt="1 !important" placeholder="NFT Token Name" id="tokenNameForm" {...register("tokenNameForm")} />
+                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                  {/*  Between 3 and 20 alphanumeric characters only*/}
+                  {/*</Text>*/}
+                  <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
+                </FormControl>
 
-                <InputLabelWithPopover tkey="dataset-title">
-                  <Text fontWeight="bold" fontSize="md">
-                    Dataset Title *
-                  </Text>
-                </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.datasetTitleForm}>
+                  <InputLabelWithPopover tkey="dataset-title">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Dataset Title *
+                    </Text>
+                  </InputLabelWithPopover>
 
-                <Input
-                  mt="1 !important"
-                  placeholder="Dataset Title"
-                  value={datasetTitle}
-                  {...register("datasetTitleForm")}
-                  onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
-                />
-                <Text color="gray.400" fontSize="sm" mt="0 !important">
-                  Between 10 and 50 alphanumeric characters only
-                </Text>
-                {userFocusedForm && datasetTitleError && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {datasetTitleError}
-                  </Text>
-                )}
+                  <Input mt="1 !important" placeholder="Dataset Title" id="datasetTitleForm" {...register("datasetTitleForm")} />
+                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                  {/*  Between 10 and 50 alphanumeric characters only*/}
+                  {/*</Text>*/}
+                  <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
+                </FormControl>
 
-                <InputLabelWithPopover tkey="dataset-description">
-                  <Text fontWeight="bold" fontSize="md">
-                    Dataset Description *
-                  </Text>
-                </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.datasetDescriptionForm}>
+                  <InputLabelWithPopover tkey="dataset-description">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Dataset Description *
+                    </Text>
+                  </InputLabelWithPopover>
 
-                <Textarea
-                  mt="1 !important"
-                  placeholder="Enter a description here"
-                  value={datasetDescription}
-                  {...register("datasetDescriptionForm")}
-                  onChange={(event) => onChangeDatasetDescription(event.currentTarget.value)}
-                />
-                <Text color="gray.400" fontSize="sm" mt="0 !important">
-                  Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.
-                </Text>
-                {userFocusedForm && datasetDescriptionError && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {datasetDescriptionError}
-                  </Text>
-                )}
+                  <Textarea
+                    mt="1 !important"
+                    placeholder="Enter a description here"
+                    id={"datasetDescriptionForm"}
+                    {...register("datasetDescriptionForm")}
+                    onChange={(e) => transformLink(e.target.value)}
+                  />
+                  <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
+                </FormControl>
+                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                {/*  Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.*/}
+                {/*</Text>*/}
+                {/*{userFocusedForm && datasetDescriptionError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {datasetDescriptionError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
-                <InputLabelWithPopover tkey="number-of-copies">
-                  <Text fontWeight="bold" fontSize="md">
-                    Number of copies
-                  </Text>
-                </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.numberOfCopiesForm}>
+                  <InputLabelWithPopover tkey="number-of-copies">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Number of copies
+                    </Text>
+                  </InputLabelWithPopover>
 
-                <NumberInput
-                  mt="1 !important"
-                  size="md"
-                  {...register("numberOfCopiesForm")}
-                  maxW={24}
-                  step={1}
-                  defaultValue={1}
-                  min={1}
-                  max={maxSupply > 0 ? maxSupply : 1}
-                  value={dataNFTCopies}
-                  isValidCharacter={isValidNumericCharacter}
-                  onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                <Text color="gray.400" fontSize="sm" mt="0 !important">
-                  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
-                </Text>
-                {userFocusedForm && dataNFTCopiesError && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {dataNFTCopiesError}
-                  </Text>
-                )}
+                  <NumberInput
+                    mt="1 !important"
+                    size="md"
+                    {...register("numberOfCopiesForm")}
+                    id="numberOfCopiesForm"
+                    maxW={24}
+                    step={1}
+                    defaultValue={1}
+                    min={1}
+                    max={20}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+                </FormControl>
+                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                {/*  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}*/}
+                {/*</Text>*/}
+                {/*{userFocusedForm && dataNFTCopiesError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {dataNFTCopiesError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
-                <InputLabelWithPopover tkey="royalties">
-                  <Text fontWeight="bold" fontSize="md">
-                    Royalties
-                  </Text>
-                </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.royaltiesForm}>
+                  <InputLabelWithPopover tkey="royalties">
+                    <Text fontWeight="bold" fontSize="md">
+                      Royalties
+                    </Text>
+                  </InputLabelWithPopover>
 
-                <NumberInput
-                  mt="1 !important"
-                  size="md"
-                  {...register("royaltiesForm")}
-                  maxW={24}
-                  step={5}
-                  defaultValue={minRoyalties}
-                  min={minRoyalties > 0 ? minRoyalties : 0}
-                  max={maxRoyalties > 0 ? maxRoyalties : 0}
-                  isValidCharacter={isValidNumericCharacter}
-                  value={dataNFTRoyalty}
-                  onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                <Text color="gray.400" fontSize="sm" mt="0 !important">
-                  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                </Text>
-                {userFocusedForm && dataNFTRoyaltyError && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {dataNFTRoyaltyError}
-                  </Text>
-                )}
+                  <NumberInput
+                    mt="1 !important"
+                    size="md"
+                    {...register("royaltiesForm")}
+                    id="royaltiesForm"
+                    maxW={24}
+                    step={5}
+                    defaultValue={minRoyalties}
+                    min={minRoyalties > 0 ? minRoyalties : 0}
+                    max={maxRoyalties > 0 ? maxRoyalties : 0}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                </FormControl>
+                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                {/*  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%*/}
+                {/*</Text>*/}
+                {/*{userFocusedForm && dataNFTRoyaltyError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {dataNFTRoyaltyError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
                 <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
                   Terms and Fees
