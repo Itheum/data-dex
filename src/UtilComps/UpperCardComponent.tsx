@@ -19,6 +19,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
@@ -88,105 +89,111 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
             cursor="pointer"
             onLoad={() => setNftImageLoading(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null; // prevents looping
+              currentTarget.src = DEFAULT_NFT_IMAGE;
+            }}
           />
         </Flex>
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
-          {nftMetadataLoading && <Skeleton />}
-          {!nftMetadataLoading && nftMetadatas[index] && (
-            <>
-              <Text fontSize="xs">
-                <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
-                  {nftMetadatas[index].tokenName} <ExternalLinkIcon mx="2px" />
-                </Link>
-              </Text>
-              <Popover trigger="hover" placement="auto">
-                <PopoverTrigger>
-                  <div>
-                    <Text fontWeight="bold" fontSize="lg" mt="2">
-                      {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
-                    </Text>
+          {nftMetadataLoading && !nftMetadatas[index] ? <Skeleton />
+            : (
+              <>
+                <Text fontSize="xs">
+                  <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
+                    {nftMetadatas[index].tokenName} <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </Text>
+                <Popover trigger="hover" placement="auto">
+                  <PopoverTrigger>
+                    <div>
+                      <Text fontWeight="bold" fontSize="lg" mt="2">
+                        {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
+                      </Text>
 
-                    <Flex flexGrow="1">
-                      <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
+                      <Flex flexGrow="1">
+                        <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
+                          {nftMetadatas[index].description}
+                        </Text>
+                      </Flex>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent mx="2" width="220px" mt="-7">
+                    <PopoverHeader fontWeight="semibold">{nftMetadatas[index].title}</PopoverHeader>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody>
+                      <Text fontSize="sm" mt="2" color="gray.200">
                         {nftMetadatas[index].description}
                       </Text>
-                    </Flex>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent mx="2" width="220px" mt="-7">
-                  <PopoverHeader fontWeight="semibold">{nftMetadatas[index].title}</PopoverHeader>
-                  <PopoverArrow />
-                  <PopoverCloseButton />
-                  <PopoverBody>
-                    <Text fontSize="sm" mt="2" color="gray.200">
-                      {nftMetadatas[index].description}
-                    </Text>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-              <Flex display="flex" flexDirection="column">
-                <Box color="gray.600" fontSize="sm">
-                  Creator: <ShortAddress address={nftMetadatas[index].creator} />
-                  <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </Box>
-                <Box color="gray.600" fontSize="sm">
-                  Owner: <ShortAddress address={item?.owner} />
-                  <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
-                    <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </Box>
-                <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
-                  {address && address == nftMetadatas[index].creator && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Creator</Text>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+                <Flex display="flex" flexDirection="column">
+                  <Box color="gray.600" fontSize="sm">
+                    Creator: <ShortAddress address={nftMetadatas[index].creator} />
+                    <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                      <ExternalLinkIcon mx="2px" />
+                    </Link>
+                  </Box>
+                  <Box color="gray.600" fontSize="sm">
+                    Owner: <ShortAddress address={item?.owner} />
+                    <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
+                      <ExternalLinkIcon mx="2px" />
+                    </Link>
+                  </Box>
+                  <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
+                    {address && address == nftMetadatas[index].creator && (
+                      <Badge borderRadius="full" px="2" colorScheme="teal">
+                        <Text>You are the Creator</Text>
+                      </Badge>
+                    )}
+
+                    {address && address == item?.owner && (
+                      <Badge borderRadius="full" px="2" colorScheme="teal">
+                        <Text>You are the Owner</Text>
+                      </Badge>
+                    )}
+
+                    <Badge borderRadius="full" px="2" colorScheme="blue">
+                      Fully Transferable License
                     </Badge>
-                  )}
+                  </Box>
+                </Flex>
 
-                  {address && address == item?.owner && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Owner</Text>
-                    </Badge>
-                  )}
-
-                  <Badge borderRadius="full" px="2" colorScheme="blue">
-                    Fully Transferable License
-                  </Badge>
+                <Box display="flex" justifyContent="flex-start" mt="2">
+                  <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
                 </Box>
-              </Flex>
 
-              <Box display="flex" justifyContent="flex-start" mt="2">
-                <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
-              </Box>
+                {nftMetadatas[index] && (
+                  <Box color="gray.600" fontSize="sm">
+                    {`Listed: ${item?.quantity}`} <br />
+                    {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
+                    {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
+                  </Box>
+                )}
 
-              {nftMetadatas[index] && (
-                <Box color="gray.600" fontSize="sm">
-                  {`Listed: ${item?.quantity}`} <br />
-                  {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
-                  {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
-                </Box>
-              )}
-            </>
-          )}
-          {!nftMetadataLoading && !!nftMetadatas[index] && feePrice && (
-            <>
-              <Box fontSize="xs" mt="2">
-                <Text>
-                  Fee per NFT: {` `}
-                  {marketRequirements ? (
-                    <>
-                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
-                    </>
-                  ) : (
-                    " -"
-                  )}
-                </Text>
-              </Box>
-            </>
-          )}
-          {address && <>{children}</>}
+                {feePrice && (
+                  <>
+                    <Box fontSize="xs" mt="2">
+                      <Text>
+                        Fee per NFT: {` `}
+                        {marketRequirements ? (
+                          <>
+                            {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                          </>
+                        ) : (
+                          " -"
+                        )}
+                      </Text>
+                    </Box>
+                  </>
+                )}
+
+                {address && <>{children}</>}
+              </>
+            )}
         </Flex>
 
         <Box
@@ -203,10 +210,10 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             userData &&
-            (userData?.addressFrozen ||
-              (userData?.frozenNonces &&
-                item &&
-                (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
+              (userData?.addressFrozen ||
+                (userData?.frozenNonces &&
+                  item &&
+                  (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
