@@ -242,7 +242,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                         if (marketRequirements) {
                           setNewListingPrice(
                             convertWeiToEsdt(
-                              BigNumber(offers[index].wanted_token_amount)
+                              new BigNumber(offers[index].wanted_token_amount)
                                 .multipliedBy(amountOfTokens[index])
                                 .multipliedBy(10000)
                                 .div(10000 + marketRequirements.buyer_fee),

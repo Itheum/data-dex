@@ -60,12 +60,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
     const _fee =
       marketRequirements && offers[selectedOfferIndex]
         ? convertWeiToEsdt(
-            BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-              .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
-              .multipliedBy(10000)
-              .div(10000 + (marketRequirements.buyer_fee as number)),
-            tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
-          ).toNumber()
+          new BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+            .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
+            .multipliedBy(10000)
+            .div(10000 + (marketRequirements.buyer_fee as number)),
+          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+        ).toNumber()
         : 0;
     setFee(_fee);
   }, [marketRequirements, selectedOfferIndex, offers]);
@@ -195,7 +195,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  BigNumber(offers[index].wanted_token_amount)
+                  new BigNumber(offers[index].wanted_token_amount)
                     .multipliedBy(amountOfTokens[index])
                     .multipliedBy(10000)
                     .div(10000 + marketRequirements.buyer_fee),

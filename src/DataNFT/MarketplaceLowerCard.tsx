@@ -160,7 +160,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
       return;
     }
     const offer = offers[selectedOfferIndex];
-    const paymentAmount = BigNumber(offer.wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]);
+    const paymentAmount = new BigNumber(offer.wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]);
     if (offer.wanted_token_identifier == "EGLD") {
       contract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amountOfTokens[selectedOfferIndex], address);
     } else {
