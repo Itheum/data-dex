@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Flex, Heading, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -9,7 +9,6 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import WalletDataNFTMX from "./WalletDataNFTMX";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
@@ -21,6 +20,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [loadingNfts, setLoadingNfts] = useState(true);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
@@ -53,6 +53,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   }, [_chainMeta.networkId]);
 
   const getOnChainNFTs = async () => {
+    setLoadingNfts(true);
     const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
 
     if (onChainNfts.length > 0) {
@@ -95,6 +96,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       setNoData(true);
       setDataNfts([]);
     }
+    setLoadingNfts(false);
   };
 
   useEffect(() => {
@@ -121,12 +123,11 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
-        <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
-          {dataNfts &&
-            dataNfts.map((item, index) => (
+      {(noData ? <Text onClick={getOnChainNFTs}>No data yet...</Text> : (
+        <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "space-around" }} margin={"auto"}>
+          {dataNfts.map((item, index) => (
+            <Skeleton isLoaded={!loadingNfts && oneNFTImgLoaded} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
               <WalletDataNFTMX
-                key={index}
                 hasLoaded={oneNFTImgLoaded}
                 setHasLoaded={setOneNFTImgLoaded}
                 userData={userData}
@@ -134,9 +135,10 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 sellerFee={sellerFee || 0}
                 {...item}
               />
-            ))}
+            </Skeleton>
+          ))}
         </Flex>
-      )}
+      ))}
     </Stack>
   );
 }
