@@ -321,7 +321,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     }}>
                     Preview Data
                   </Button>
-                  {offer && address ? (
+                  {offer && address && address != offer.owner ? (
                     <Box>
                       <HStack>
                         <Text fontSize="md">How many to procure </Text>
