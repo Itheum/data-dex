@@ -19,6 +19,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
@@ -88,6 +89,10 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
             cursor="pointer"
             onLoad={() => setNftImageLoading(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null; // prevents looping
+              currentTarget.src = DEFAULT_NFT_IMAGE;
+            }}
           />
         </Flex>
 
@@ -203,10 +208,10 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             userData &&
-            (userData?.addressFrozen ||
-              (userData?.frozenNonces &&
-                item &&
-                (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
+              (userData?.addressFrozen ||
+                (userData?.frozenNonces &&
+                  item &&
+                  (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
