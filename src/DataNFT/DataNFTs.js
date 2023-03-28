@@ -41,8 +41,7 @@ export default function ({ setMenuItem }) {
                 onClick={() => {
                   setMenuItem(MENU.NFTMINE);
                   navigate("wallet");
-                }}
-              >
+                }}>
                 Data NFT Wallet
               </Button>
               <Button
@@ -50,8 +49,7 @@ export default function ({ setMenuItem }) {
                 onClick={() => {
                   setMenuItem(MENU.NFTALL);
                   navigate("marketplace");
-                }}
-              >
+                }}>
                 Data NFT Marketplace
               </Button>
             </HStack>

@@ -18,7 +18,8 @@ import {
   Tooltip,
   useDisclosure,
   useToast,
-  Wrap,
+  SimpleGrid,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -27,20 +28,20 @@ import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, debugui, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
+import RecentDataNFTs from "Sections/RecentDataNFTs";
 import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 
 let mxFaucetContract = null;
 let mxClaimsContract = null;
 
 export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheumAccount }) {
+  const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { user: _user } = useUser();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
@@ -56,8 +57,13 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   const [loadingCfTestData, setLoadingDataCatTestUser] = useState(false);
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   console.log('********** HomeMultiversX LOAD _chainMeta ', _chainMeta);
+  //   console.log('********** HomeMultiversX LOAD _user ', _user);
+  // }, []);
+
   useEffect(() => {
-    if (_chainMeta?.networkId && _user?.isMxAuthenticated) {
+    if (_chainMeta?.networkId && isMxLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         try {
           mxFaucetContract = new FaucetContract(_chainMeta.networkId);
@@ -114,6 +120,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
           { amount: 0, date: 0 },
+          { amount: 0, date: 0 },
         ];
 
         const claimBalanceValues = [];
@@ -127,7 +134,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
             claimBalanceDates.push(claim.date);
           });
         } else if (claims.error) {
-          claimBalanceValues.push("-2", "-2", "-2"); // errors
+          claimBalanceValues.push("-2", "-2", "-2", "-2"); // errors
 
           if (!toast.isActive("er2")) {
             toast({
@@ -272,20 +279,30 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     onItheumAccount(dataCATDemoUserData);
   };
 
-  debugui(`_chainMeta.networkId ${_chainMeta.networkId}`);
-
   const tileBoxMdW = "310px";
   const tileBoxH = "360px";
   const claimsStackMinW = "220px";
+
+  let gradientBorder = styleStrings.gradientBorderPassive;
+
+  if (colorMode === "light") {
+    gradientBorder = styleStrings.gradientBorderPassiveLight;
+  }
 
   return (
     <Stack>
       <Heading size="lg">Home</Heading>
 
       <Stack>
-        <Wrap pt="5" shouldWrapChildren={true} wrap="wrap" spacing={2}>
-          <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
-            <Stack p="5" h={tileBoxH} w={tileBoxMdW}>
+        <SimpleGrid columns={[1, null, 4]} spacing={20} m="auto" backgroundColor="none">
+          <Box
+            maxW="container.sm"
+            w={tileBoxMdW}
+            border=".1rem solid transparent"
+            backgroundColor="none"
+            borderRadius="1.5rem"
+            style={{ "background": gradientBorder }}>
+            <Stack p="5" h={tileBoxH}>
               {!itheumAccount && <Heading size="md">Linked Itheum Data CAT Account</Heading>}
               {!itheumAccount && (
                 <Alert>
@@ -333,8 +350,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                   onClick={() => {
                     setMenuItem(2);
                     navigate("/tradedata");
-                  }}
-                >
+                  }}>
                   Trade My Data
                 </Button>
               )}
@@ -342,7 +358,13 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
           </Box>
 
           <ChainSupportedComponent feature={MENU.FAUCET}>
-            <Box maxW="container.sm" w={tileBoxMdW} borderWidth="1px" borderRadius="lg">
+            <Box
+              maxW="container.sm"
+              w={tileBoxMdW}
+              border=".1rem solid transparent"
+              backgroundColor="none"
+              borderRadius="1.5rem"
+              style={{ "background": gradientBorder }}>
               <Stack p="5" h={tileBoxH}>
                 <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
                 <Text fontSize="sm" pb={5}>
@@ -358,7 +380,13 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
             </Box>
           </ChainSupportedComponent>
 
-          <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={tileBoxMdW}>
+          <Box
+            maxW="container.sm"
+            w={tileBoxMdW}
+            border=".1rem solid transparent"
+            backgroundColor="none"
+            borderRadius="1.5rem"
+            style={{ "background": gradientBorder }}>
             <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
               <Heading size="md" align="center">
                 NFMe ID Avatar
@@ -371,7 +399,13 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
           </Box>
 
           <ChainSupportedComponent feature={MENU.CLAIMS}>
-            <Box maxW="container.sm" borderWidth="1px" borderRadius="lg" w={[tileBoxMdW, "initial"]}>
+            <Box
+              maxW="container.sm"
+              w={[tileBoxMdW, "initial"]}
+              border=".1rem solid transparent"
+              backgroundColor="none"
+              borderRadius="1.5rem"
+              style={{ "background": gradientBorder }}>
               <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                 <Heading size="md">My Claims</Heading>
 
@@ -454,8 +488,12 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
               </Stack>
             </Box>
           </ChainSupportedComponent>
-        </Wrap>
+        </SimpleGrid>
       </Stack>
+
+      <Box m="auto" pt="10" pb="10" backgroundColor="none">
+        <RecentDataNFTs headingText="Recent Data NFTs" headingSize="md" networkId={_chainMeta.networkId} />
+      </Box>
 
       <AppMarketplace />
     </Stack>

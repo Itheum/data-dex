@@ -1,4 +1,5 @@
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
+import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 
 import { uxConfig } from "libs/util";
@@ -9,6 +10,14 @@ export const getApi = (networkId: string) => {
   } else {
     return "devnet-api.multiversx.com";
     return "elrond-api-devnet.blastapi.io/0bc98858-cb7a-44c6-ad1b-8c8bfaec7128";
+  }
+};
+
+export const getGateway = (networkId: string) => {
+  if (networkId === "E1") {
+    return new ProxyNetworkProvider("https://gateway.multiversx.com");
+  } else {
+    return new ProxyNetworkProvider("https://devnet-gateway.multiversx.com");
   }
 };
 
@@ -24,8 +33,12 @@ export const getTransactionLink = (networkId: string, txHash: string) => {
   return `https://${getExplorer(networkId)}/transactions/${txHash}`;
 };
 
+export const getNftLink = (networkId: string, nftId: string) => {
+  return `https://${getExplorer(networkId)}/nfts/${nftId}`;
+};
+
 // check token balance on Mx
-export const checkBalance = async (token: string, address: string, networkId: string) => {
+export const checkBalance = async (token: string, address: string, networkId: string): Promise<{ balance: any }> => {
   const api = getApi(networkId);
 
   return new Promise((resolve, reject) => {
@@ -44,10 +57,10 @@ export const checkBalance = async (token: string, address: string, networkId: st
             if (error.response.status === 404 || error.response.status === 500) {
               resolve({ balance: 0 }); // no ITHEUM => 404, nonce account 0 => 500
             } else {
-              resolve({ error });
+              resolve({ balance: undefined });
             }
           } else {
-            resolve({ error });
+            resolve({ balance: undefined });
           }
         }
       });
@@ -172,6 +185,20 @@ export const getAccountTokenFromApi = async (address: string, tokenId: string, n
     });
 
     return data;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
+export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
+  try {
+    const url = "https://api.multiversx.com/tokens/ITHEUM-df6f26";
+    const { data } = await axios.get<TokenType>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+
+    return data.price;
   } catch (error) {
     console.error(error);
     return undefined;

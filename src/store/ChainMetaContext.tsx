@@ -10,6 +10,7 @@ const chainMetaContext = createContext<ChainMetaType>({
   chainMeta: undefined,
   setChainMeta: undefined,
 });
+
 export const ChainMetaContextProvider = ({ children }: { children: ReactElement }) => {
   const [chainMeta, setChainMeta] = useState({
     chainMeta: undefined,

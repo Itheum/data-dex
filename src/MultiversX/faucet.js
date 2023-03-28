@@ -20,9 +20,7 @@ export class FaucetContract {
     this.claimsContractAddress = contractsForChain(networkId).faucet;
 
     if (networkId === "E1") {
-      throw new Error("Faucet not available on MultiversX mainnet");
-    } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { timeout: this.timeout });
+      this.chainID = "1";
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -36,9 +34,18 @@ export class FaucetContract {
   }
 
   async getFaucetTime(address) {
+    let networkProvider;
+    if (this.chainID === "1") {
+      networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+    } else {
+      networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+        timeout: this.timeout,
+      });
+    }
+
     const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
     const query = interaction.buildQuery();
-    const res = await this.networkProvider.queryContract(query);
+    const res = await networkProvider.queryContract(query);
     const endpointDefinition = interaction.getEndpoint();
     const { firstValue } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 

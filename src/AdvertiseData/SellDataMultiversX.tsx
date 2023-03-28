@@ -24,6 +24,7 @@ import {
   Link,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -48,20 +49,20 @@ import {
   useDisclosure,
   useToast,
   Wrap,
+  useColorMode,
 } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core";
 import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import axios from "axios";
-import mime from "mime";
 import { File, NFTStorage } from "nft.storage";
-import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/util";
-import { checkBalance } from "MultiversX/api";
+import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
+import { checkBalance, getGateway } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
-const InputLabelWithPopover = ({ children, tkey }) => {
+const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
   let title = "",
     text = "";
   if (tkey === "data-stream-url") {
@@ -106,22 +107,53 @@ const InputLabelWithPopover = ({ children, tkey }) => {
   );
 };
 
-const checkUrlReturns200 = async (url) => {
-  // check that URL returns 200 code
-  try {
-    const res = await axios.get(url);
-    return res.status === 200;
-  } catch (err) {
-    return false;
+function makeRequest(url: string): Promise<{ statusCode: number; isError: boolean }> {
+  return new Promise(function (resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onload = function (e) {
+      resolve({
+        statusCode: this.status,
+        isError: false,
+      });
+    };
+    xhr.onerror = function (e) {
+      resolve({
+        statusCode: this.status,
+        isError: true,
+      });
+    };
+    xhr.send();
+  });
+}
+
+const checkUrlReturns200 = async (url: string) => {
+  const { statusCode, isError } = await makeRequest(url);
+
+  let isSuccess = false;
+  let message = "";
+  if (isError) {
+    message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
+  } else if (statusCode === 200) {
+    isSuccess = true;
+  } else if (statusCode === 404) {
+    message = "Data Stream URL is not reachable (Status Code 404 received)";
+  } else {
+    message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
   }
+
+  return {
+    isSuccess,
+    message,
+  };
 };
 
-export default function SellDataMX({ onRfMount, itheumAccount }) {
+export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
+  const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const toast = useToast();
-  // const [sellerData, setSellerData] = useState("");
   const [saveProgress, setSaveProgress] = useState({
     s1: 0,
     s2: 0,
@@ -132,19 +164,19 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
-  const [currSellObject, setCurrSellObject] = useState(null);
+  const [currSellObject, setCurrSellObject] = useState<any>(null);
 
   const [isStreamTrade, setIsStreamTrade] = useState(0);
 
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [dataNFTImg, setDataNFTImg] = useState(null);
+  const [dataNFTImg, setDataNFTImg] = useState("");
   const [dataNFTTokenName, setDataNFTTokenName] = useState("");
   const [dataNFTCopies, setDataNFTCopies] = useState(1);
   const [dataNFTRoyalty, setDataNFTRoyalty] = useState(0);
   const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState("");
   const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState("");
-  const [dataNFTMarshalService, setDataNFTMarshalService] = useState();
-  const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState(null);
+  const [dataNFTMarshalService, setDataNFTMarshalService] = useState("");
+  const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
 
   const [datasetTitle, setDatasetTitle] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
@@ -156,9 +188,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [maxSupply, setMaxSupply] = useState(-1);
   const [antiSpamTax, setAntiSpamTax] = useState(-1);
 
-  const [dataNFTStreamUrlValid, setDataNFTStreamUrlValid] = useState(false);
-  const [dataNFTStreamPreviewUrlValid, setDataNFTStreamPreviewUrlValid] = useState(false);
-  const [dataNFTMarshalServiceValid, setDataNFTMarshalServiceValid] = useState(false);
+  const [dataNFTStreamUrlStatus, setDataNFTStreamUrlStatus] = useState("");
+  const [dataNFTStreamPreviewUrlStatus, setDataNFTStreamPreviewUrlStatus] = useState("");
+  const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState(false);
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const [itheumBalance, setItheumBalance] = useState(0);
@@ -167,51 +199,68 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [dataStreamUrlValidation, setDataStreamUrlValidation] = useState(false);
   const [dataPreviewUrlValidation, setDataPreviewUrlValidation] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState(null);
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+
   // query settings from Data NFT Minter SC
   useEffect(() => {
+    // console.log('********** SellDataMultiversX LOAD _chainMeta ', _chainMeta);
+    if (!_chainMeta.networkId) return;
+
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setMinRoyalties(value.toNumber() / 100);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMinRoyalties(value.toNumber() / 100);
+      }
     })();
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setMaxRoyalties(value.toNumber() / 100);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMaxRoyalties(value.toNumber() / 100);
+      }
     })();
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setMaxSupply(value.toNumber());
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMaxSupply(value.toNumber());
+      }
     })();
     (async () => {
+      const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
-      const queryResponse = await mxDataNftMintContract.networkProvider.queryContract(query);
+      const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
       const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      const value = firstValue.valueOf();
-      setAntiSpamTax(convertWeiToEsdt(value).toNumber());
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setAntiSpamTax(convertWeiToEsdt(value).toNumber());
+      }
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   // query Itheum balance of User
   useEffect(() => {
-    if (mxAddress && _chainMeta) {
+    if (mxAddress && _chainMeta && _chainMeta.networkId) {
       (async () => {
         const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
         if (typeof data.balance !== "undefined") {
@@ -219,19 +268,20 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         }
       })();
     }
-  }, [mxAddress, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
 
   //
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState<UserDataType | undefined>();
   const getUserData = async () => {
-    if (mxAddress && !hasPendingTransactions) {
+    if (mxAddress && _chainMeta.networkId) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
       setUserData(_userData);
     }
   };
+
   useEffect(() => {
     getUserData();
-  }, [mxAddress, hasPendingTransactions]);
+  }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
 
   // set initial states for validation
   useEffect(() => {
@@ -255,7 +305,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   // validation logic
 
   const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
-  const onChangeDataNFTStreamUrl = (value) => {
+  const onChangeDataNFTStreamUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
 
@@ -269,7 +319,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       error = "Length of Data Stream URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then((res) => setDataNFTStreamUrlValid(res));
+      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+        setDataNFTStreamUrlStatus(message);
+      });
     }
 
     setDataNFTStreamUrlError(error);
@@ -277,11 +329,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
-  const onChangeDataNFTStreamPreviewUrl = (value) => {
+  const onChangeDataNFTStreamPreviewUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
-
-    // debugger; // eslint-disable-line
 
     if (!trimmedValue.startsWith("https://")) {
       error = "Data Preview URL must start with 'https://'";
@@ -293,29 +343,35 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       error = "Length of Data Preview URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then((res) => setDataNFTStreamPreviewUrlValid(res));
+      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+        setDataNFTStreamPreviewUrlStatus(message);
+      });
     }
 
     setDataNFTStreamPreviewUrlError(error);
     setDataNFTStreamPreviewUrl(trimmedValue);
   };
 
-  const onChangeDataNFTMarshalService = (value) => {
+  const onChangeDataNFTMarshalService = (value: string) => {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then((res) => setDataNFTMarshalServiceValid(res));
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then(({ isSuccess, message }) => {
+      setDataNFTMarshalServiceStatus(!isSuccess);
+    });
 
     setDataNFTMarshalService(trimmedValue);
   };
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then((res) => setDataNFTImgGenService(res));
+    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then(({ isSuccess, message }) => {
+      setDataNFTImgGenService(isSuccess);
+    });
   };
 
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
-  const onChangeDataNFTTokenName = (value) => {
+  const onChangeDataNFTTokenName = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
 
@@ -330,7 +386,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [datasetTitleError, setDatasetTitleError] = useState("");
-  const onChangeDatasetTitle = (value) => {
+  const onChangeDatasetTitle = (value: string) => {
     let error = "";
 
     if (value.length < 10 || value.length > 50) {
@@ -344,7 +400,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [datasetDescriptionError, setDatasetDescriptionError] = useState("");
-  const onChangeDatasetDescription = (value) => {
+  const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
     if (value.length < 10 || value.length > 250) {
@@ -356,7 +412,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
-  const handleChangeDataNftCopies = (value) => {
+  const handleChangeDataNftCopies = (value: number) => {
     let error = "";
     if (value < 1) {
       error = "Number of copies cannot be negative";
@@ -369,7 +425,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   };
 
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
-  const handleChangeDataNftRoyalties = (value) => {
+  const handleChangeDataNftRoyalties = (value: number) => {
     let error = "";
     if (value < 0) {
       error = "Royalties cannot be negative";
@@ -395,26 +451,27 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   useEffect(() => {
     setMintDataNFTDisabled(
       !!dataNFTStreamUrlError ||
-      !!dataNFTStreamPreviewUrlError ||
-      !!dataNFTTokenNameError ||
-      !!datasetTitleError ||
-      !!datasetDescriptionError ||
-      !!dataNFTCopiesError ||
-      !!dataNFTRoyaltyError ||
-      !dataNFTStreamUrlValid ||
-      !dataNFTStreamPreviewUrlValid ||
-      !dataNFTMarshalServiceValid ||
-      !dataNFTImgGenServiceValid ||
-      !readTermsChecked ||
-      !readAntiSpamFeeChecked ||
-      minRoyalties < 0 ||
-      maxRoyalties < 0 ||
-      maxSupply < 0 ||
-      antiSpamTax < 0 ||
-      itheumBalance < antiSpamTax ||
-      // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
-      (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-      (userData && userData.contractPaused)
+        !!dataNFTStreamPreviewUrlError ||
+        !!dataNFTTokenNameError ||
+        !!datasetTitleError ||
+        !!datasetDescriptionError ||
+        !!dataNFTCopiesError ||
+        !!dataNFTRoyaltyError ||
+        !!dataNFTStreamUrlStatus ||
+        !!dataNFTStreamPreviewUrlStatus ||
+        !!dataNFTMarshalServiceStatus ||
+        !dataNFTImgGenServiceValid ||
+        !readTermsChecked ||
+        !readAntiSpamFeeChecked ||
+        minRoyalties < 0 ||
+        maxRoyalties < 0 ||
+        maxSupply < 0 ||
+        antiSpamTax < 0 ||
+        itheumBalance < antiSpamTax ||
+        // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
+        (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+        (!!userData && userData.contractPaused) ||
+        (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
     );
   }, [
     dataNFTStreamUrlError,
@@ -424,9 +481,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     datasetDescriptionError,
     dataNFTCopiesError,
     dataNFTRoyaltyError,
-    dataNFTStreamUrlValid,
-    dataNFTStreamPreviewUrlValid,
-    dataNFTMarshalServiceValid,
+    dataNFTStreamUrlStatus,
+    dataNFTStreamPreviewUrlStatus,
+    dataNFTMarshalServiceStatus,
     dataNFTImgGenServiceValid,
     readTermsChecked,
     readAntiSpamFeeChecked,
@@ -441,19 +498,19 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   ]);
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const mintTxFail = (foo) => {
+  const mintTxFail = (foo: any) => {
     console.log("mintTxFail", foo);
-    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    // setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
-  const mintTxCancelled = (foo) => {
+  const mintTxCancelled = (foo: any) => {
     console.log("mintTxCancelled", foo);
-    setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
+    // setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
-  const mintTxSuccess = async (foo) => {
+  const mintTxSuccess = async (foo: any) => {
     console.log("mintTxSuccess", foo);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
     await sleep(3);
@@ -463,14 +520,15 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
 
   const [mintSessionId, setMintSessionId] = useState(null);
 
-  const getDataForSale = async (programId) => {
-    let selObj = {};
+  const getDataForSale = async (programId: any) => {
+    setSelectedProgramId(programId);
+    let selObj: any;
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
 
     if (programId) {
       selObj = {
-        ...itheumAccount.programsAllocation.find((i) => i.program === programId),
+        ...itheumAccount.programsAllocation.find((i: any) => i.program === programId),
         ...itheumAccount._lookups.programs[programId],
       };
       setCurrSellObject(selObj);
@@ -534,7 +592,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     onProgressModalOpen();
 
     const myHeaders = new Headers();
-    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY);
+    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY || "");
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
 
@@ -568,19 +626,34 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   };
 
-  async function createFileFromUrl(url) {
+  async function createFileFromUrl(url: string) {
     const res = await fetch(url);
-    // console.log('res', res);
     const data = await res.blob();
-    const type = mime.getType(data);
-    // console.log('type', type);
-    const _file = new File([data], "image", { type: "image/png" });
-    // console.log('file', _file);
-
-    return _file;
+    const _imageFile = new File([data], "image.png", { type: "image/png" });
+    const traits = createIpfsMetadata(res.headers.get("x-nft-traits") || "");
+    const _traitsFile = new File([JSON.stringify(traits)], "metadata.json", { type: "application/json" });
+    return { image: _imageFile, traits: _traitsFile };
   }
 
-  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }) => {
+  function createIpfsMetadata(traits: string) {
+    const metadata = {
+      description: `${datasetTitle} : ${datasetDescription}`,
+      attributes: [] as object[],
+    };
+    const attributes = traits.split(",").filter((element) => element.trim() !== "");
+    const metadataAttributes = [];
+    for (const attribute of attributes) {
+      const [key, value] = attribute.split(":");
+      const trait = { trait_type: key.trim(), value: value.trim() };
+      metadataAttributes.push(trait);
+    }
+    metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTStreamPreviewUrl });
+    metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
+    metadata.attributes = metadataAttributes;
+    return metadata;
+  }
+
+  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
     const newNFTImg = `https://d37x5igq4vw5mq.cloudfront.net/datadexapi/v1/generateNFTArt?hash=${dataNFTHash}`;
 
@@ -589,11 +662,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     let res;
     // catch IPFS error
     try {
-      const image = await createFileFromUrl(newNFTImg);
+      const { image, traits } = await createFileFromUrl(newNFTImg);
       const nftstorage = new NFTStorage({
-        token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY,
+        token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
       });
-      res = await nftstorage.storeBlob(image);
+      res = await nftstorage.storeDirectory([image, traits]);
     } catch (e) {
       setErrDataNFTStreamGeneric(new Error("Uploading the image on IPFS has failed"));
       return;
@@ -603,23 +676,32 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
       setErrDataNFTStreamGeneric(new Error("Uploading the image on IPFS has failed"));
       return;
     }
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}`;
-    // console.log('imageOnIpfsUrl', imageOnIpfsUrl);
+    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
+    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
+    console.log("metadataOnIpfsUrl", metadataOnIpfsUrl);
 
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
 
-    handleOnChainMint({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted });
+    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl, dataNFTStreamUrlEncrypted });
   };
 
-  const handleOnChainMint = async ({ imageOnIpfsUrl, dataNFTStreamUrlEncrypted }) => {
+  const handleOnChainMint = async ({
+    imageOnIpfsUrl,
+    metadataOnIpfsUrl,
+    dataNFTStreamUrlEncrypted,
+  }: {
+    imageOnIpfsUrl: string;
+    metadataOnIpfsUrl: string;
+    dataNFTStreamUrlEncrypted: string;
+  }) => {
     await sleep(3);
-
     const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
       name: dataNFTTokenName,
       media: imageOnIpfsUrl,
+      metadata: metadataOnIpfsUrl,
       data_marchal: dataNFTMarshalService,
       data_stream: dataNFTStreamUrlEncrypted,
       data_preview: dataNFTStreamPreviewUrl,
@@ -643,21 +725,24 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
   });
 
   const closeProgressModal = () => {
-    toast({
-      title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
-      status: "success",
-      isClosable: true,
-    });
+    if (mintingSuccessful) {
+      toast({
+        title: 'Success! Data NFT Minted. Head over to your "Data NFT Wallet" to view your new NFT',
+        status: "success",
+        isClosable: true,
+      });
+
+      onCloseDrawerTradeStream();
+
+      // remount the component (quick way to rest all state to pristine)
+      onRfMount();
+    }
 
     onProgressModalClose();
-    onCloseDrawerTradeStream();
 
     // initialize modal status
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
-
-    // remount the component (quick way to rest all state to pristine)
-    onRfMount();
   };
 
   async function validateBaseInput() {
@@ -673,14 +758,14 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   }
 
-  const validateDataStreamUrl = (value) => {
+  const validateDataStreamUrl = (value: string) => {
     if (value.includes("https://drive.google.com")) {
       setDataStreamUrlValidation(true);
     } else {
       setDataStreamUrlValidation(false);
     }
   };
-  const validateDataPreviewUrl = (value) => {
+  const validateDataPreviewUrl = (value: string) => {
     if (value.includes("https://drive.google.com")) {
       setDataPreviewUrlValidation(true);
     } else {
@@ -688,15 +773,29 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
     }
   };
 
+  let gradientBorder = styleStrings.gradientBorderPassive;
+
+  if (colorMode === "light") {
+    gradientBorder = styleStrings.gradientBorderPassiveLight;
+  }
+
   return (
-    <Stack spacing={5}>
+    <Stack>
       <Heading size="lg">Trade Data</Heading>
       <Heading size="xs" opacity=".7">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
-      <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-        <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden" mt={5}>
+      <Wrap shouldWrapChildren={true} spacing={5}>
+        <Box
+          maxW="xs"
+          borderWidth="1px"
+          overflow="hidden"
+          mt={5}
+          border=".1rem solid transparent"
+          backgroundColor="none"
+          borderRadius="1.5rem"
+          style={{ "background": gradientBorder }}>
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" />
 
           <Box p="6">
@@ -712,37 +811,43 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
         </Box>
       </Wrap>
 
-      {
-        itheumAccount && itheumAccount.programsAllocation.length > 0 && (
-          <>
-            <Heading size="md" m="3rem 0 1rem 0 !important">Supported Data CAT Programs</Heading>
-            <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5}>
-              {itheumAccount.programsAllocation.map((item) => (
-                <Box key={item.program} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="hidden">
-                  <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
+      {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
+        <>
+          <Heading size="md" m="3rem 0 1rem 0 !important">
+            Supported Data CAT Programs
+          </Heading>
+          <Wrap shouldWrapChildren={true} spacing={5}>
+            {itheumAccount.programsAllocation.map((item: any) => (
+              <Box
+                key={item.program}
+                maxW="xs"
+                borderWidth="1px"
+                overflow="hidden"
+                border=".1rem solid transparent"
+                backgroundColor="none"
+                borderRadius="1.5rem"
+                style={{ "background": gradientBorder }}>
+                <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
 
-                  <Box p="6">
-                    <Box display="flex" alignItems="baseline">
-                      <Badge borderRadius="full" px="2" colorScheme="teal">
-                        {" "}
-                        New
-                      </Badge>
-                      <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                        {itheumAccount._lookups.programs[item.program].programName}
-                      </Box>
+                <Box p="6">
+                  <Box display="flex" alignItems="baseline">
+                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                      {" "}
+                      New
+                    </Badge>
+                    <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                      {itheumAccount._lookups.programs[item.program].programName}
                     </Box>
-                    <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
-                      Trade Program Data
-                    </Button>
                   </Box>
+                  <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
+                    Trade Program Data
+                  </Button>
                 </Box>
-              ))}
-            </Wrap>
-          </>
-        )
-      }
-
-
+              </Box>
+            ))}
+          </Wrap>
+        </>
+      )}
 
       <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
@@ -761,10 +866,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   </Text>
                 </Stack>
               )) || (
-                  <Heading as="h4" size="lg">
-                    Trade a Data Stream as a Data NFT-FT
-                  </Heading>
-                )}
+                <Heading as="h4" size="lg">
+                  Trade a Data Stream as a Data NFT-FT
+                </Heading>
+              )}
             </HStack>
           </DrawerHeader>
           <DrawerBody
@@ -772,40 +877,59 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               if (!userFocusedForm) {
                 setUserFocusedForm(true);
               }
-            }}
-          >
+            }}>
             <Stack spacing="5" mt="5">
               {(minRoyalties < 0 ||
                 maxRoyalties < 0 ||
                 maxSupply < 0 ||
                 antiSpamTax < 0 ||
-                !dataNFTMarshalServiceValid ||
+                !!dataNFTMarshalServiceStatus ||
                 !dataNFTImgGenServiceValid ||
-                (userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-                (userData && userData.contractPaused)) && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Uptime Errors
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
-                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
-                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
-                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!dataNFTMarshalServiceValid && <Text fontSize="md">Data Marshal service is not responding.</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                          <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                        )}
-                        {userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+                (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+                (!!userData && userData.contractPaused)) && (
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Uptime Errors
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                      {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                      {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                      {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                      {!!dataNFTMarshalServiceStatus && <Text fontSize="md">Data Marshal service is not responding.</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                      {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      )}
+                      {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
+
+              {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Alerts
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
+                        <Text fontSize="md">{`There is a time interval enforced between mints. You can mint your next Data NFT-FT after ${new Date(
+                          userData.lastUserMintTime + userData.mintTimeLimit
+                        ).toLocaleString()}`}</Text>
+                      )}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
               <Text fontSize="sm" color="gray.400">
                 * required fields
@@ -832,15 +956,16 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamUrl(event.currentTarget.value);
                   validateDataStreamUrl(event.currentTarget.value);
                 }}
+                isDisabled={!!selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
                   {dataNFTStreamUrlError}
                 </Text>
               )}
-              {userFocusedForm && !dataNFTStreamUrlValid && (
+              {userFocusedForm && dataNFTStreamUrlStatus && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Stream URL must be a publicly accessible url
+                  {dataNFTStreamUrlStatus}
                 </Text>
               )}
               {userFocusedForm && dataStreamUrlValidation && (
@@ -863,15 +988,16 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                   onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
                   validateDataPreviewUrl(event.currentTarget.value);
                 }}
+                isDisabled={!!selectedProgramId}
               />
               {userFocusedForm && dataNFTStreamPreviewUrlError && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
                   {dataNFTStreamPreviewUrlError}
                 </Text>
               )}
-              {userFocusedForm && !dataNFTStreamPreviewUrlValid && (
+              {userFocusedForm && !!dataNFTStreamPreviewUrlStatus && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Stream Preview URL must be a publicly accessible url
+                  {dataNFTStreamPreviewUrlStatus}
                 </Text>
               )}
               {userFocusedForm && dataPreviewUrlValidation && (
@@ -887,9 +1013,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               </InputLabelWithPopover>
 
               <Input mt="1 !important" value={dataNFTMarshalService} disabled />
-              {userFocusedForm && !dataNFTMarshalServiceValid && (
+              {userFocusedForm && !!dataNFTMarshalServiceStatus && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Marshal Service is currently offline
+                  {dataNFTMarshalServiceStatus}
                 </Text>
               )}
 
@@ -971,8 +1097,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 max={maxSupply > 0 ? maxSupply : 1}
                 value={dataNFTCopies}
                 isValidCharacter={isValidNumericCharacter}
-                onChange={handleChangeDataNftCopies}
-              >
+                onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -1004,8 +1129,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                 max={maxRoyalties > 0 ? maxRoyalties : 0}
                 isValidCharacter={isValidNumericCharacter}
                 value={dataNFTRoyalty}
-                onChange={handleChangeDataNftRoyalties}
-              >
+                onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -1041,7 +1165,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               </Checkbox>
               {userFocusedForm && !readTermsChecked && (
                 <Text color="red.400" fontSize="sm" mt="1 !important">
-                  You must READ and Agree on Terms of Use
+                  Please read and agree to terms of use.
                 </Text>
               )}
 
@@ -1086,6 +1210,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>Data Advertising Progress</ModalHeader>
+                {!!errDataNFTStreamGeneric && <ModalCloseButton />}
                 <ModalBody pb={6}>
                   <Stack spacing={5}>
                     <HStack>
@@ -1144,7 +1269,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
                             Process Error
                           </AlertTitle>
                           {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => onProgressModalClose()} />
+                          <CloseButton position="absolute" right="8px" top="8px" onClick={() => closeProgressModal()} />
                         </Stack>
                       </Alert>
                     )}
@@ -1175,6 +1300,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }) {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Stack >
+    </Stack>
   );
 }

@@ -21,7 +21,7 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
-import { contractsForChain, convertEsdtToWei } from "libs/util";
+import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/util";
 import jsonData from "./ABIs/datanftmint.abi.json";
 import { DataNftMetadataType, UserDataType } from "./types";
 
@@ -29,21 +29,17 @@ export class DataNftMintContract {
   timeout: number;
   dataNftMarketContractAddress: any;
   chainID: string;
-  networkProvider: ProxyNetworkProvider;
   contract: SmartContract;
   abiRegistry: AbiRegistry;
   dataNftMintContractAddress: string;
 
   constructor(networkId: string) {
-    this.timeout = 5000;
+    this.timeout = uxConfig.mxAPITimeoutMs;
     this.dataNftMintContractAddress = contractsForChain(networkId).dataNftMint || "";
     this.chainID = "D";
 
     if (networkId === "E1") {
-      this.networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
       this.chainID = "1";
-    } else {
-      this.networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { timeout: this.timeout });
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -59,6 +55,7 @@ export class DataNftMintContract {
   async sendMintTransaction({
     name,
     media,
+    metadata,
     data_marchal,
     data_stream,
     data_preview,
@@ -72,6 +69,7 @@ export class DataNftMintContract {
   }: {
     name: string;
     media: string;
+    metadata: string;
     data_marchal: string;
     data_stream: string;
     data_preview: string;
@@ -92,6 +90,7 @@ export class DataNftMintContract {
         .addArg(new StringValue("mint"))
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
+        .addArg(new StringValue(metadata))
         .addArg(new StringValue(data_marchal))
         .addArg(new StringValue(data_stream))
         .addArg(new StringValue(data_preview))
@@ -152,7 +151,7 @@ export class DataNftMintContract {
       receiver: new Address(sender),
       sender: new Address(sender),
       gasLimit: 12_000_000,
-      chainID: "D",
+      chainID: this.chainID,
     });
     await refreshAccount();
     await sendTransactions({
@@ -172,10 +171,19 @@ export class DataNftMintContract {
     const result = [];
 
     try {
-      const res = await this.networkProvider.queryContract(query);
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
+      const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
-      const { firstValue, secondValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+      const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
       if (returnCode && returnCode.isSuccess() && firstValue) {
         const userData = firstValue.valueOf();
@@ -209,11 +217,11 @@ export class DataNftMintContract {
     }
   }
 
-  decodeNftAttributes(nft: NftType, index: number): DataNftMetadataType {
+  decodeNftAttributes(nft: NftType, index?: number): DataNftMetadataType {
     const dataNftAttributes = this.abiRegistry.getStruct("DataNftAttributes");
     const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes).valueOf();
     const dataNFT: DataNftMetadataType = {
-      index, // only for view & query
+      index: index || 0, // only for view & query
       id: nft.identifier, // ID of NFT -> done
       nftImgUrl: nft.url, // image URL of of NFT -> done
       dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
@@ -232,5 +240,40 @@ export class DataNftMintContract {
     };
 
     return dataNFT;
+  }
+
+  async getSftsFreezedForAddress(targetAddress: string): Promise<number[]> {
+    try {
+      let networkProvider;
+      if (this.chainID === "1") {
+        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
+      } else {
+        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
+          timeout: this.timeout,
+        });
+      }
+
+      const interaction = this.contract.methods.getSftsFreezedForAddress([new Address(targetAddress)]);
+      const query = interaction.buildQuery();
+      const res = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (returnCode && returnCode.isSuccess() && firstValue) {
+        const values = firstValue.valueOf();
+        const decoded = values.map((value: any) => value.toNumber());
+
+        return decoded;
+      } else {
+        console.error(returnMessage);
+
+        return [];
+      }
+    } catch (error) {
+      console.error(error);
+
+      return [];
+    }
   }
 }
