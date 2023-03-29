@@ -98,9 +98,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
         console.log(_offer);
-        if (_offer) {
-          setAmount(Number(_offer.quantity));
-        }
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
