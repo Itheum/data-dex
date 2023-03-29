@@ -285,17 +285,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <>
                           {printPrice(
                             convertWeiToEsdt(
-                              BigNumber(offer.wanted_token_amount)
+                              new BigNumber(offer.wanted_token_amount)
                                 .multipliedBy(10000)
                                 .div(10000 + marketRequirements.buyer_fee),
                               tokenDecimals(offer.wanted_token_identifier)
                             ).toNumber(),
                             getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                           )}{" "}
-                          {itheumPrice
+                          {itheumPrice && convertWeiToEsdt(new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
                             ? `(${convertToLocalString(
                               convertWeiToEsdt(
-                                BigNumber(offer.wanted_token_amount)
+                                new BigNumber(offer.wanted_token_amount)
                                   .multipliedBy(10000)
                                   .div(10000 + marketRequirements.buyer_fee),
                                 tokenDecimals(offer.wanted_token_identifier)
@@ -321,7 +321,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     }}>
                     Preview Data
                   </Button>
-                  {offer && address ? (
+                  {offer && address && address != offer.owner ? (
                     <Box>
                       <HStack>
                         <Text fontSize="md">How many to procure </Text>

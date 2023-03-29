@@ -126,7 +126,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   <>
                     {": "}
                     {printPrice(
-                      BigNumber(props.offer.wanted_token_amount).toNumber(),
+                      new BigNumber(props.offer.wanted_token_amount).toNumber(),
                       getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
                     )}
                   </>
@@ -136,7 +136,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               </Box>
             </Flex>
             <Flex>
-              {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
+              {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
                 <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
                   Your wallet token balance is too low to proceed
                 </Text>
@@ -147,10 +147,10 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box>
                 :{" "}
                 {props.sellerFee
-                  ? `${props.sellerFee / 100}% (${BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.sellerFee)
-                      .div(10000)
-                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
+                  ? `${props.sellerFee / 100}% (${new BigNumber(props.offer.wanted_token_amount)
+                    .multipliedBy(props.sellerFee)
+                    .div(10000)
+                    .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
                   : "-"}
               </Box>
             </Flex>
@@ -172,14 +172,14 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box>
                 {props.sellerFee ? (
                   <>
-                    {BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
+                    {new BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
                       ""
                     ) : (
                       <>
-                        {" " + BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).toNumber() + " "}
+                        {" " + new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).toNumber() + " "}
                         {getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                         {" - "}
-                        {BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.sellerFee).div(10000).toNumber()}
+                        {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.sellerFee).div(10000).toNumber()}
                         {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                       </>
                     )}
@@ -203,7 +203,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 size="sm"
                 mx="3"
                 onClick={onProcure}
-                isDisabled={!readTermsChecked || BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
+                isDisabled={!readTermsChecked || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={props.onClose}>

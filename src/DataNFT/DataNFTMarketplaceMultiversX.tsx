@@ -13,6 +13,7 @@ import {
   DrawerHeader,
   DrawerBody,
   useDisclosure,
+  Skeleton,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -25,7 +26,6 @@ import { getAccountTokenFromApi, getItheumPriceFromApi, getNftsByIds } from "Mul
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import MarketplaceLowerCard from "./MarketplaceLowerCard";
 import MyListedDataLowerCard from "./MyListedDataLowerCard";
@@ -266,6 +266,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     if (hasPendingTransactions) return;
     if (!_chainMeta.networkId) return;
 
+    // close NFT Details Drawer if it's opened after a transaction is finished
+    if (isDrawerOpenTradeStream) {
+      console.log('close modal');
+      closeDetailsView();
+    }
+
     getUserData();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
@@ -321,19 +327,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
         </Flex>
 
-        {loadingOffers ? (
-          <SkeletonLoadingList />
-        ) : offers.length === 0 ? (
+        {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
+          <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "space-around" }}>
             {offers.length > 0 &&
               items?.map((item, index) => (
-                <div key={index}>
+                <Skeleton isLoaded={!loadingOffers && oneNFTImgLoaded} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
                   <UpperCardComponent
                     nftImageLoading={oneNFTImgLoaded}
                     setNftImageLoading={setOneNFTImgLoaded}
-                    nftMetadataLoading={nftMetadatasLoading}
                     nftMetadatas={nftMetadatas}
                     marketRequirements={marketRequirements}
                     item={item}
@@ -348,7 +351,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
                     )}
                   </UpperCardComponent>
-                </div>
+                </Skeleton>
               ))}
           </Flex>
         )}
