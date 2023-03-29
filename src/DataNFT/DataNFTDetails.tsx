@@ -22,7 +22,7 @@ import {
   NumberDecrementStepper,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
@@ -45,6 +45,7 @@ type DataNFTDetailsProps = {
   showConnectWallet?: boolean;
   tokenIdProp?: string;
   offerIdProp?: number;
+  closeDetailsView?: () => void;
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
@@ -74,6 +75,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
+  const [sessionId, setSessionId] = useState<any>();
+
+  useTrackTransactionStatus({
+    transactionId: sessionId,
+    onSuccess: () => {
+      console.log('useTrackTransactionStatus onSuccess', sessionId);
+      if (props.closeDetailsView) {
+        props.closeDetailsView();
+      }
+    },
+  });
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
@@ -97,9 +109,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-        if (_offer) {
-          setAmount(Number(_offer.quantity));
-        }
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -192,7 +201,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     _disabled={{ opacity: 1 }}
                     fontSize={{ base: "sm", md: "md" }}
                     onClick={() => {
-                      navigate("/datanfts/marketplace/market/0");
+                      navigate("/datanfts/marketplace/market/1");
                     }}
                     marginRight={2}>
                     Public Marketplace
@@ -384,6 +393,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               nftData={nftData}
               offer={offer}
               amount={amount}
+              setSessionId={setSessionId}
             />
           )}
         </Box>

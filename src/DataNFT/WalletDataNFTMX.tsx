@@ -87,6 +87,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
+
+  const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
   const onBurn = () => {
     if (!address) {
       toast({
@@ -276,7 +278,19 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
               <Flex flexGrow="1">
                 <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
-                  {item.description}
+                  {item.description.replace(regex, " ")}
+                  {item.description
+                    .toString()
+                    .split(regex)
+                    .map((word, i) => {
+                      if (word?.match(regex)) {
+                        return (
+                          <Link key={i} href={word} isExternal color={"blue.300"}>
+                            {word}
+                          </Link>
+                        );
+                      }
+                    })}
                 </Text>
               </Flex>
             </div>
@@ -287,7 +301,19 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             <PopoverCloseButton />
             <PopoverBody>
               <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                {item.description}
+                {item.description.replace(regex, " ")}
+                {item.description
+                  .toString()
+                  .split(regex)
+                  .map((word, i) => {
+                    if (word?.match(regex)) {
+                      return (
+                        <Link key={i} href={word} isExternal color={"blue.300"}>
+                          {word}
+                        </Link>
+                      );
+                    }
+                  })}
               </Text>
             </PopoverBody>
           </PopoverContent>

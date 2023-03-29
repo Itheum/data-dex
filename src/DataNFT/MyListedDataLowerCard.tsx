@@ -33,10 +33,13 @@ type MyListedDataLowerCardProps = {
   nftMetadatas: DataNftMetadataType[];
   index: number;
   itheumPrice: number | undefined;
+  marketRequirements: MarketplaceRequirementsType | undefined;
+  maxPaymentFeeMap: Record<string, number>;
 };
 
-const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
-  const { offers, index, nftMetadatas, itheumPrice } = props;
+const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
+  offers, index, nftMetadatas, itheumPrice, marketRequirements, maxPaymentFeeMap
+}) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const contract = new DataNftMarketContract(_chainMeta.networkId);
@@ -45,11 +48,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [delistAmount, setDelistAmount] = useState<number>(1);
   const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
-  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [delistAmountError, setDelistAmountError] = useState<string>("");
   const itheumToken = _chainMeta.contracts.itheumToken;
   const toast = useToast();
@@ -123,26 +124,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
     await sleep(0.5);
     onUpdatePriceModalClose();
   };
-
-  useEffect(() => {
-    (async () => {
-      const _marketRequirements = await contract.getRequirements();
-      setMarketRequirements(_marketRequirements);
-
-      if (_marketRequirements) {
-        const _maxPaymentFeeMap: Record<string, number> = {};
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
-          ).toNumber();
-        }
-        setMaxPaymentFeeMap(_maxPaymentFeeMap);
-      } else {
-        setMaxPaymentFeeMap({});
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     (async () => {
