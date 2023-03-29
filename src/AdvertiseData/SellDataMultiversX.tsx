@@ -243,7 +243,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
-      .max(250, "Dataset description must have maximum of 250 characters."),
+      .max(400, "Dataset description must have maximum of 400 characters."),
     numberOfCopiesForm: Yup.number()
       .min(1, "Minimum number of copies should be 1 or greater.")
       .max(20, "Number of copies should be less than 20.")
@@ -458,24 +458,25 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const [datasetTitleError, setDatasetTitleError] = useState("");
   const onChangeDatasetTitle = (value: string) => {
+    const trimmedValue = value.trim();
     let error = "";
 
     if (value.length < 10 || value.length > 50) {
       error = "Length of Dataset Title must be between 10 and 50 characters";
-    } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
+    } else if (!trimmedValue.match(/^[0-9a-zA-Z]+$/)) {
       error = "Dataset Title can only contain alphanumeric characters";
     }
 
     setDatasetTitleError(error);
-    setDatasetTitle(value);
+    setDatasetTitle(trimmedValue);
   };
 
   const [datasetDescriptionError, setDatasetDescriptionError] = useState("");
   const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
-    if (value.length < 10 || value.length > 250) {
-      error = "Length of Dataset Description must be between 10 and 250 characters";
+    if (value.length < 10 || value.length > 400) {
+      error = "Length of Dataset Description must be between 10 and 400 characters";
     }
 
     setDatasetDescriptionError(error);
@@ -1086,8 +1087,11 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     mt="1 !important"
                     placeholder="NFT Token Name"
                     id="tokenNameForm"
+                    value={dataNFTTokenName}
                     {...register("tokenNameForm")}
-                    onChange={(event) => onChangeDataNFTTokenName(event.currentTarget.value)}
+                    onChange={(event) => {
+                      onChangeDataNFTTokenName(event.currentTarget.value);
+                    }}
                   />
                   {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
                   {/*  Between 3 and 20 alphanumeric characters only*/}
@@ -1106,6 +1110,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     mt="1 !important"
                     placeholder="Dataset Title"
                     id="datasetTitleForm"
+                    value={datasetTitle}
                     {...register("datasetTitleForm")}
                     onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
                   />
