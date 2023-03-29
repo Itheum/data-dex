@@ -153,14 +153,15 @@ const checkUrlReturns200 = async (url: string) => {
   };
 };
 
+// Declaring the form types
 type TradeDataFormType = {
   dataStreamUrlForm: string;
   dataPreviewUrlForm: string;
   tokenNameForm: string;
   datasetTitleForm: string;
   datasetDescriptionForm: string;
-  numberOfCopiesForm: string;
-  royaltiesForm: string;
+  numberOfCopiesForm: number;
+  royaltiesForm: number;
 };
 
 export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
@@ -218,14 +219,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
-  // Textarea link detect
-  function transformLink(text: string) {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, (url) => `<a href="${url}">${url}</a>`);
-  }
-
   // React hook form + yup integration
-
+  // Declaring a validation schema for the form with the validation needed
   const validationSchema = Yup.object().shape({
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
@@ -256,27 +251,28 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     royaltiesForm: Yup.number().min(0, "Minimum value of royalties is 0%.").max(80, "Maximum value of royalties is 80%.").required("Royalties is required"),
   });
 
+  // Destructure the methods needed from React Hook Form useForm component
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<TradeDataFormType>({
-    mode: "onBlur",
+    mode: "onBlur", // mode stay for when the validation should be applied
     defaultValues: {
       dataStreamUrlForm: "",
       dataPreviewUrlForm: "",
       tokenNameForm: "",
       datasetTitleForm: "",
       datasetDescriptionForm: "",
-      numberOfCopiesForm: "1",
-      royaltiesForm: "0",
-    },
-    resolver: yupResolver(validationSchema),
+      numberOfCopiesForm: 1,
+      royaltiesForm: 0,
+    }, // declaring default values for inputs not necessary to declare
+    resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
-  };
+  }; // here you can make every logic that we want to happen on submit
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
@@ -1132,7 +1128,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     id={"datasetDescriptionForm"}
                     {...register("datasetDescriptionForm")}
                     onChange={(event) => {
-                      transformLink(event.target.value);
                       onChangeDatasetDescription(event.currentTarget.value);
                     }}
                   />

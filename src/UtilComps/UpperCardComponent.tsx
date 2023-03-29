@@ -63,11 +63,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
 
-  function transformLink(text: string) {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, (url) => `<a href="${url}">${url}</a>`);
-  }
-
+  // Regex for check if description have link
   const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
 
   useEffect(() => {
@@ -101,7 +97,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
         </Flex>
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
-          {(nftMetadatas[index] &&
+          {nftMetadatas[index] && (
             <>
               <Text fontSize="xs">
                 <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
@@ -236,11 +232,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backdropBlur="4px"
           rounded="lg"
           visibility={
-            marketFreezedNonces && item && userData &&
-              (userData.addressFrozen ||
-                (userData.frozenNonces &&
-                  item &&
-                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+            marketFreezedNonces &&
+            item &&
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
