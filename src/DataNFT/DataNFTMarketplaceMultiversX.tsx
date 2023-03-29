@@ -346,9 +346,23 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     openNftDetailsDrawer={openNftDetailsDrawer}
                     itheumPrice={itheumPrice}>
                     {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} itheumPrice={itheumPrice} />
+                      <MarketplaceLowerCard
+                        nftMetadatas={nftMetadatas}
+                        index={index}
+                        item={item}
+                        offers={offers}
+                        itheumPrice={itheumPrice}
+                        marketRequirements={marketRequirements}
+                      />
                     ) : (
-                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
+                      <MyListedDataLowerCard
+                        index={index}
+                        offers={items}
+                        nftMetadatas={nftMetadatas}
+                        itheumPrice={itheumPrice}
+                        marketRequirements={marketRequirements}
+                        maxPaymentFeeMap={maxPaymentFeeMap}
+                      />
                     )}
                   </UpperCardComponent>
                 </Skeleton>
