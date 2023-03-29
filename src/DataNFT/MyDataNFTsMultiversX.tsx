@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Heading, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -124,20 +124,19 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       </Heading>
 
       {(noData ? <Text onClick={getOnChainNFTs}>No data yet...</Text> : (
-        <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "space-around" }} margin={"auto"}>
+        <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
           {dataNfts.map((item, index) => (
-            <Skeleton isLoaded={!loadingNfts && oneNFTImgLoaded} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <WalletDataNFTMX
-                hasLoaded={oneNFTImgLoaded}
-                setHasLoaded={setOneNFTImgLoaded}
-                userData={userData}
-                maxPayment={maxPaymentFeeMap[itheumToken]}
-                sellerFee={sellerFee || 0}
-                {...item}
-              />
-            </Skeleton>
+            <WalletDataNFTMX
+              key={index}
+              hasLoaded={oneNFTImgLoaded}
+              setHasLoaded={setOneNFTImgLoaded}
+              userData={userData}
+              maxPayment={maxPaymentFeeMap[itheumToken]}
+              sellerFee={sellerFee || 0}
+              {...item}
+            />
           ))}
-        </Flex>
+        </SimpleGrid>
       ))}
     </Stack>
   );

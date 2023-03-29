@@ -151,11 +151,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
         Preview Data
       </Button>
 
-      <Flex mt="2" gap="2">
+      <Flex justifyContent="space-between" mt="2" gap="2">
         <Button
           size="xs"
           colorScheme="teal"
-          width="90px"
+          width={"48%"}
           isDisabled={hasPendingTransactions}
           onClick={() => {
             setSelectedOfferIndex(index);
@@ -169,7 +169,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
         <Button
           size="xs"
           colorScheme="teal"
-          width="90px"
+          width={"48%"}
           isDisabled={hasPendingTransactions}
           onClick={() => {
             setSelectedOfferIndex(index);
@@ -186,7 +186,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
             } else {
               setNewListingPrice(0);
             }
-            console.log(amountOfTokens[index]);
             onUpdatePriceModalOpen();
           }}>
           Update Price
