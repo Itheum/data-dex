@@ -237,7 +237,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .max(20, "Token name must have maximum of 20 characters."),
     datasetTitleForm: Yup.string()
       .required("Dataset title is required")
-      .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
       .max(50, "Dataset title must have maximum of 50 characters."),
     datasetDescriptionForm: Yup.string()
@@ -458,17 +457,16 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const [datasetTitleError, setDatasetTitleError] = useState("");
   const onChangeDatasetTitle = (value: string) => {
-    const trimmedValue = value.trim();
     let error = "";
 
     if (value.length < 10 || value.length > 50) {
       error = "Length of Dataset Title must be between 10 and 50 characters";
-    } else if (!trimmedValue.match(/^[0-9a-zA-Z]+$/)) {
+    } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
       error = "Dataset Title can only contain alphanumeric characters";
     }
 
     setDatasetTitleError(error);
-    setDatasetTitle(trimmedValue);
+    setDatasetTitle(value);
   };
 
   const [datasetDescriptionError, setDatasetDescriptionError] = useState("");
