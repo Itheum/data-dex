@@ -1268,7 +1268,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}>
-                    <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit}>
+                    <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} isDisabled={mintDataNFTDisabled}>
                       Mint and Trade as NFT
                     </Button>
                   </ChainSupportedInput>
