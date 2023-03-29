@@ -93,7 +93,7 @@ export class DataNftMarketContract {
 
   async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
     const data =
-      BigNumber(paymentAmount).comparedTo(0) > 0
+      new BigNumber(paymentAmount).comparedTo(0) > 0
         ? TransactionPayload.contractCall()
             .setFunction(new ContractFunction("ESDTTransfer"))
             .addArg(new TokenIdentifierValue(tokenId))
