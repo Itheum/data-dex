@@ -62,7 +62,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
-
   // Regex for check if description have link
   const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
 
