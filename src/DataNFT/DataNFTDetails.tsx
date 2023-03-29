@@ -193,7 +193,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     _disabled={{ opacity: 1 }}
                     fontSize={{ base: "sm", md: "md" }}
                     onClick={() => {
-                      navigate("/datanfts/marketplace/market/0");
+                      navigate("/datanfts/marketplace/market/1");
                     }}
                     marginRight={2}>
                     Public Marketplace

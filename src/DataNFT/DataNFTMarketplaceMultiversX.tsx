@@ -42,7 +42,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const navigate = useNavigate();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pageNumber } = useParams();
-  const pageIndex = pageNumber ? Number(pageNumber) : 0;
+  const pageIndex = pageNumber ? Number(pageNumber) - 1 : 0;
 
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta?.contracts?.itheumToken || null;
@@ -95,11 +95,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const marketplace = `/datanfts/marketplace/market/${pageIndex}`;
+  const marketplace = `/datanfts/marketplace/market/${pageIndex + 1}`;
   const location = useLocation();
 
   const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}/${newPageIndex}`);
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}/${newPageIndex + 1}`);
   };
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
@@ -302,7 +302,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               onClick={() => {
                 if (hasPendingTransactions) return;
                 setPageIndex(0);
-                navigate("/datanfts/marketplace/market/0");
+                navigate("/datanfts/marketplace/market/1");
               }}>
               Public Marketplace
             </Button>
@@ -317,7 +317,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 onClick={() => {
                   if (hasPendingTransactions) return;
                   setPageIndex(0);
-                  navigate("/datanfts/marketplace/my/0");
+                  navigate("/datanfts/marketplace/my/1");
                 }}>
                 My Listed Data NFTs
               </Button>
