@@ -62,7 +62,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
-  // console.log(nftMetadatas);
+  // Regex for check if description have link
+  const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
 
   useEffect(() => {
     setFeePrice(
@@ -95,7 +96,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
         </Flex>
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
-          {(nftMetadatas[index] &&
+          {nftMetadatas[index] && (
             <>
               <Text fontSize="xs">
                 <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
@@ -111,7 +112,19 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
                     <Flex flexGrow="1">
                       <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                        {nftMetadatas[index].description}
+                        {nftMetadatas[index].description.replace(regex, " ")}
+                        {nftMetadatas[index].description
+                          .toString()
+                          .split(regex)
+                          .map((word, i) => {
+                            if (word?.match(regex)) {
+                              return (
+                                <Link key={i} href={word} isExternal color={"blue.300"}>
+                                  {word}
+                                </Link>
+                              );
+                            }
+                          })}
                       </Text>
                     </Flex>
                   </div>
@@ -122,7 +135,19 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   <PopoverCloseButton />
                   <PopoverBody>
                     <Text fontSize="sm" mt="2" color="gray.200">
-                      {nftMetadatas[index].description}
+                      {nftMetadatas[index].description.replace(regex, " ")}
+                      {nftMetadatas[index].description
+                        .toString()
+                        .split(regex)
+                        .map((word, i) => {
+                          if (word?.match(regex)) {
+                            return (
+                              <Link key={i} href={word} isExternal color={"blue.300"}>
+                                {word}
+                              </Link>
+                            );
+                          }
+                        })}
                     </Text>
                   </PopoverBody>
                 </PopoverContent>
@@ -206,11 +231,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backdropBlur="4px"
           rounded="lg"
           visibility={
-            marketFreezedNonces && item && userData &&
-              (userData.addressFrozen ||
-                (userData.frozenNonces &&
-                  item &&
-                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+            marketFreezedNonces &&
+            item &&
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
