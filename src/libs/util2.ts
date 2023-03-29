@@ -2,7 +2,7 @@ import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 
 export const convertToLocalString = (value: BigNumber.Value, precision?: number): string => {
-  return BigNumber(value)
+  return new BigNumber(value)
     .decimalPlaces(precision ? precision : 4, BigNumber.ROUND_FLOOR)
     .toNumber()
     .toLocaleString();

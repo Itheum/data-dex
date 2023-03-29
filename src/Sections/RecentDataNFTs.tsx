@@ -74,7 +74,7 @@ const RecentDataNFTs = ({
           if (_nft !== undefined) {
             const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
 
-            const tokenAmount = convertWeiToEsdt(BigNumber(offer.wanted_token_amount)).toNumber();
+            const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
 
             _latestOffers.push({
               data_nft_id: _nftMetaData.id,

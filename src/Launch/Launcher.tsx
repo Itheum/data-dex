@@ -36,6 +36,10 @@ function Launcher() {
           name: "customConfig",
           apiTimeout: uxConfig.mxAPITimeoutMs,
           walletConnectV2ProjectId,
+
+        }}
+        dappConfig={{
+          shouldUseWebViewProvider: true,
         }}>
         <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
         <NotificationModal />

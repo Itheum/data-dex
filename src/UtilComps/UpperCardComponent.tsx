@@ -13,7 +13,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Skeleton,
   Text,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -31,7 +30,6 @@ import { useChainMeta } from "../store/ChainMetaContext";
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
-  nftMetadataLoading: boolean;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
   marketRequirements: MarketplaceRequirementsType | undefined;
@@ -46,7 +44,6 @@ type UpperCardComponentProps = {
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const {
     nftImageLoading,
-    nftMetadataLoading,
     setNftImageLoading,
     nftMetadatas,
     userData,
@@ -85,8 +82,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   return (
     <Flex wrap="wrap" gap="5" key={index}>
-      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
-        <Flex justifyContent="center" pt={5}>
+      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" position="relative" w="13.5rem">
+        <Flex justifyContent="center" pt={3}>
           <Image
             src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
             alt={"item.dataPreview"}
@@ -104,9 +101,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
         </Flex>
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
-          {nftMetadataLoading && !nftMetadatas[index] ? (
-            <Skeleton />
-          ) : (
+          {(nftMetadatas[index] &&
             <>
               <Text fontSize="xs">
                 <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
@@ -241,11 +236,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backdropBlur="4px"
           rounded="lg"
           visibility={
-            userData &&
-            (userData?.addressFrozen ||
-              (userData?.frozenNonces &&
-                item &&
-                (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
+            marketFreezedNonces && item && userData &&
+              (userData.addressFrozen ||
+                (userData.frozenNonces &&
+                  item &&
+                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>

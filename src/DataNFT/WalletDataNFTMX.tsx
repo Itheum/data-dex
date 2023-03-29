@@ -255,7 +255,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   return (
     <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
-      <Flex justifyContent="center" pt={5}>
+      <Flex justifyContent="center" pt={3}>
         <Skeleton isLoaded={item.hasLoaded} h={200}>
           <Image src={item.nftImgUrl} alt={item.dataPreview} h={200} w={200} borderRadius="md" onLoad={() => item.setHasLoaded(true)} />
         </Skeleton>
