@@ -1086,7 +1086,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Input mt="1 !important" placeholder="NFT Token Name" id="tokenNameForm" {...register("tokenNameForm")} />
+                  <Input
+                    mt="1 !important"
+                    placeholder="NFT Token Name"
+                    id="tokenNameForm"
+                    {...register("tokenNameForm")}
+                    onChange={(event) => onChangeDataNFTTokenName(event.currentTarget.value)}
+                  />
                   {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
                   {/*  Between 3 and 20 alphanumeric characters only*/}
                   {/*</Text>*/}
@@ -1100,7 +1106,13 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Input mt="1 !important" placeholder="Dataset Title" id="datasetTitleForm" {...register("datasetTitleForm")} />
+                  <Input
+                    mt="1 !important"
+                    placeholder="Dataset Title"
+                    id="datasetTitleForm"
+                    {...register("datasetTitleForm")}
+                    onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
+                  />
                   {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
                   {/*  Between 10 and 50 alphanumeric characters only*/}
                   {/*</Text>*/}
@@ -1119,7 +1131,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     placeholder="Enter a description here"
                     id={"datasetDescriptionForm"}
                     {...register("datasetDescriptionForm")}
-                    onChange={(e) => transformLink(e.target.value)}
+                    onChange={(event) => {
+                      transformLink(event.target.value);
+                      onChangeDatasetDescription(event.currentTarget.value);
+                    }}
                   />
                   <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                 </FormControl>
