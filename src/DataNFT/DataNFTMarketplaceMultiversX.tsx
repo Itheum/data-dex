@@ -65,6 +65,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
+  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
   const [items, setItems] = useState<ItemType[]>([
@@ -266,23 +268,17 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     if (hasPendingTransactions) return;
     if (!_chainMeta.networkId) return;
 
-    // close NFT Details Drawer if it's opened after a transaction is finished
-    if (isDrawerOpenTradeStream) {
-      console.log('close modal');
-      closeDetailsView();
-    }
-
     getUserData();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
   function openNftDetailsDrawer(index: number) {
-    setSelectedOfferIndex(index);
+    setOfferForDrawer(offers[index]);
     onOpenDrawerTradeStream();
   }
 
   function closeDetailsView() {
-    setSelectedOfferIndex(-1);
     onCloseDrawerTradeStream();
+    setOfferForDrawer(undefined);
   }
 
   return (
@@ -380,27 +376,30 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         }
       </Stack>
 
-      <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader>
-            <HStack spacing="5">
-              <CloseButton size="lg" onClick={closeDetailsView} />
-              <Heading as="h4" size="lg">
-                Data NFT Details
-              </Heading>
-            </HStack>
-          </DrawerHeader>
-          <DrawerBody>
-            {selectedOfferIndex >= 0 && offers.length > selectedOfferIndex && (
-              <DataNFTDetails
-                tokenIdProp={createNftId(offers[selectedOfferIndex].offered_token_identifier, offers[selectedOfferIndex].offered_token_nonce)}
-                offerIdProp={offers[selectedOfferIndex].index}
-              />
-            )}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      {
+        offerForDrawer && (<>
+          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerHeader>
+                <HStack spacing="5">
+                  <CloseButton size="lg" onClick={closeDetailsView} />
+                  <Heading as="h4" size="lg">
+                    Data NFT Details
+                  </Heading>
+                </HStack>
+              </DrawerHeader>
+              <DrawerBody>
+                <DataNFTDetails
+                  tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
+                  offerIdProp={offerForDrawer.index}
+                  closeDetailsView={closeDetailsView}
+                />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>)
+      }
     </>
   );
 };

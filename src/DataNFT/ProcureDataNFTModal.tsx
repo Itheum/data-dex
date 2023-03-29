@@ -6,7 +6,7 @@ import { convertWeiToEsdt, sleep } from "libs/util";
 import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
-import { MarketplaceRequirementsType, OfferType } from "MultiversX/types";
+import { OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 export type ProcureAccessModalProps = {
@@ -18,6 +18,7 @@ export type ProcureAccessModalProps = {
   itheumPrice: number;
   marketContract: any;
   amount: number;
+  setSessionId?: (e: any) => void;
 };
 
 export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
@@ -95,15 +96,20 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
       props.marketContract.sendAcceptOfferEgldTransaction(props.offer.index, paymentAmount.toFixed(), props.amount, address);
     } else {
       if (props.offer.wanted_token_nonce === 0) {
-        props.marketContract.sendAcceptOfferEsdtTransaction(
+        const { sessionId } = await props.marketContract.sendAcceptOfferEsdtTransaction(
           props.offer.index,
           paymentAmount.toFixed(),
           props.offer.wanted_token_identifier,
           props.amount,
           address
         );
+
+        // if offer is sold out by this transaction, close Drawer if opened
+        if (props.setSessionId && props.amount == props.offer.quantity) {
+          props.setSessionId(sessionId);
+        }
       } else {
-        props.marketContract.sendAcceptOfferNftEsdtTransaction(
+        const { sessionId } = await props.marketContract.sendAcceptOfferNftEsdtTransaction(
           props.offer.index,
           paymentAmount.toFixed(),
           props.offer.wanted_token_identifier,
@@ -111,6 +117,11 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
           props.amount,
           address
         );
+
+        // if offer is sold out by this transaction, close Drawer if opened
+        if (props.setSessionId && props.amount == props.offer.quantity) {
+          props.setSessionId(sessionId);
+        }
       }
     }
 
