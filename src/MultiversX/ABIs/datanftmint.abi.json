@@ -1,11 +1,11 @@
 {
   "buildInfo": {
     "rustc": {
-      "version": "1.68.0-nightly",
-      "commitHash": "ce85c98575e3016cf2007d90a85be321e592aa96",
-      "commitDate": "2022-12-30",
+      "version": "1.69.0-nightly",
+      "commitHash": "8996ea93b6e554148c4286e62b613f12a3ee505c",
+      "commitDate": "2023-02-09",
       "channel": "Nightly",
-      "short": "rustc 1.68.0-nightly (ce85c9857 2022-12-30)"
+      "short": "rustc 1.69.0-nightly (8996ea93b 2023-02-09)"
     },
     "contractCrate": {
       "name": "datanftmint",
@@ -13,7 +13,7 @@
     },
     "framework": {
       "name": "multiversx-sc",
-      "version": "0.39.5"
+      "version": "0.39.7"
     }
   },
   "name": "DataNftMint",
@@ -26,7 +26,9 @@
       "name": "initializeContract",
       "onlyOwner": true,
       "mutability": "mutable",
-      "payableInTokens": ["EGLD"],
+      "payableInTokens": [
+        "EGLD"
+      ],
       "inputs": [
         {
           "name": "collection_name",
@@ -56,9 +58,18 @@
       "outputs": []
     },
     {
+      "name": "setLocalRoles",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
+    {
       "name": "mint",
       "mutability": "mutable",
-      "payableInTokens": ["*"],
+      "payableInTokens": [
+        "*"
+      ],
       "inputs": [
         {
           "name": "name",
@@ -66,6 +77,10 @@
         },
         {
           "name": "media",
+          "type": "bytes"
+        },
+        {
+          "name": "metadata",
           "type": "bytes"
         },
         {
@@ -106,7 +121,9 @@
     {
       "name": "burn",
       "mutability": "mutable",
-      "payableInTokens": ["*"],
+      "payableInTokens": [
+        "*"
+      ],
       "inputs": [],
       "outputs": []
     },
@@ -334,16 +351,6 @@
       ]
     },
     {
-      "name": "getContractInitialized",
-      "mutability": "readonly",
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "bool"
-        }
-      ]
-    },
-    {
       "name": "mintTimeLimit",
       "mutability": "readonly",
       "inputs": [],
@@ -380,7 +387,7 @@
       ]
     },
     {
-      "name": "getCollectionFreezedList",
+      "name": "getCollectionFrozenList",
       "mutability": "readonly",
       "inputs": [],
       "outputs": [
@@ -391,7 +398,7 @@
       ]
     },
     {
-      "name": "getSftsFreezedForAddress",
+      "name": "getSftsFrozenForAddress",
       "mutability": "readonly",
       "inputs": [
         {
@@ -407,7 +414,7 @@
       ]
     },
     {
-      "name": "getFreezedCount",
+      "name": "getFrozenCount",
       "mutability": "readonly",
       "inputs": [
         {
@@ -432,6 +439,16 @@
       ]
     },
     {
+      "name": "rolesAreSet",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool"
+        }
+      ]
+    },
+    {
       "name": "getAdministrator",
       "mutability": "readonly",
       "inputs": [],
@@ -445,10 +462,6 @@
       "name": "getUserDataOut",
       "mutability": "readonly",
       "inputs": [
-        {
-          "name": "address",
-          "type": "Address"
-        },
         {
           "name": "tax_token",
           "type": "EgldOrEsdtTokenIdentifier"
@@ -596,7 +609,7 @@
       ]
     },
     {
-      "identifier": "freezedSftsPerAddress",
+      "identifier": "frozenSftsPerAddress",
       "inputs": [
         {
           "name": "address",
@@ -611,7 +624,7 @@
       ]
     },
     {
-      "identifier": "unFreezedSftsPerAddress",
+      "identifier": "unfrozenSftsPerAddress",
       "inputs": [
         {
           "name": "address",

@@ -166,7 +166,7 @@ export class DataNftMintContract {
   }
 
   async getUserDataOut(address: string, spamTaxTokenId: string): Promise<UserDataType | undefined> {
-    const interaction = this.contract.methods.getUserDataOut([new Address(address), spamTaxTokenId]);
+    const interaction = this.contract.methods.getUserDataOut([spamTaxTokenId]).withQuerent(new Address(address));
     const query = interaction.buildQuery();
     const result = [];
 
@@ -242,7 +242,7 @@ export class DataNftMintContract {
     return dataNFT;
   }
 
-  async getSftsFreezedForAddress(targetAddress: string): Promise<number[]> {
+  async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
     try {
       let networkProvider;
       if (this.chainID === "1") {
@@ -253,7 +253,7 @@ export class DataNftMintContract {
         });
       }
 
-      const interaction = this.contract.methods.getSftsFreezedForAddress([new Address(targetAddress)]);
+      const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
