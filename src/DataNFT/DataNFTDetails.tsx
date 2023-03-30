@@ -98,7 +98,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
 
       (async () => {
-        const _marketRequirements = await marketContract.getRequirements();
+        const _marketRequirements = await marketContract.viewRequirements();
         setMarketRequirements(_marketRequirements);
       })();
     }
@@ -202,7 +202,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     _disabled={{ opacity: 1 }}
                     fontSize={{ base: "sm", md: "md" }}
                     onClick={() => {
-                      navigate("/datanfts/marketplace/market/1");
+                      navigate("/datanfts/marketplace/market");
                     }}
                     marginRight={2}>
                     Public Marketplace

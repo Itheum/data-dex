@@ -81,7 +81,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.NFTALL,
-        path: "datanfts/marketplace/market/1",
+        path: "datanfts/marketplace/market",
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: MdOnlinePrediction,
