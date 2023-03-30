@@ -53,7 +53,7 @@ const RecentDataNFTs = ({
   useEffect(() => {
     if (_chainMeta?.networkId) {
       (async () => {
-        const highestOfferIndex = await marketContract.getHighestOfferIndex(); // 53
+        const highestOfferIndex = await marketContract.getLastValidOfferId(); // 53
 
         // get latest 10 offers from the SC
         const startIndex = Math.max(highestOfferIndex - 11, 0); // 42
