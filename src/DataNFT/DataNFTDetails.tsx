@@ -98,7 +98,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
 
       (async () => {
-        const _marketRequirements = await marketContract.getRequirements();
+        const _marketRequirements = await marketContract.viewRequirements();
         setMarketRequirements(_marketRequirements);
       })();
     }

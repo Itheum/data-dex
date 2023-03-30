@@ -35,7 +35,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketRequirements = await marketContract.getRequirements();
+      const _marketRequirements = await marketContract.viewRequirements();
       setSellerFee(_marketRequirements?.seller_fee);
       const _maxPaymentFeeMap: RecordStringNumberType = {};
 

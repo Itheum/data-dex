@@ -116,7 +116,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketRequirements = await marketContract.getRequirements();
+      const _marketRequirements = await marketContract.viewRequirements();
       console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
@@ -170,10 +170,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = await marketContract.getNumberOfOffers();
+        _numberOfOffers = await marketContract.viewNumberOfOffers();
       } else {
         // offers of User
-        _numberOfOffers = await marketContract.getUserTotalOffers(address);
+        _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
       console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
