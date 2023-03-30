@@ -141,7 +141,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
+      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
       console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
