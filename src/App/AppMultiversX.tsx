@@ -227,8 +227,9 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                 <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                 <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
-                <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                 <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
               </Route>
 
