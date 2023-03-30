@@ -88,7 +88,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
-  const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
+  // Function to transform description that have a link into an actual link
+  const transformDescription = (description: string) => {
+    const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
+
+    return description.split(regex).map((word, i) => {
+      if (word?.match(regex)) {
+        return (
+          <Link key={i} href={word} isExternal color={"blue.300"}>
+            {" " + word}
+          </Link>
+        );
+      }
+      return word;
+    });
+  };
+
   const onBurn = () => {
     if (!address) {
       toast({
@@ -278,19 +293,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
               <Flex flexGrow="1">
                 <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
-                  {item.description.replace(regex, " ")}
-                  {item.description
-                    .toString()
-                    .split(regex)
-                    .map((word, i) => {
-                      if (word?.match(regex)) {
-                        return (
-                          <Link key={i} href={word} isExternal color={"blue.300"}>
-                            {word}
-                          </Link>
-                        );
-                      }
-                    })}
+                  {transformDescription(item.description)}
                 </Text>
               </Flex>
             </div>
@@ -301,19 +304,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             <PopoverCloseButton />
             <PopoverBody>
               <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                {item.description.replace(regex, " ")}
-                {item.description
-                  .toString()
-                  .split(regex)
-                  .map((word, i) => {
-                    if (word?.match(regex)) {
-                      return (
-                        <Link key={i} href={word} isExternal color={"blue.300"}>
-                          {word}
-                        </Link>
-                      );
-                    }
-                  })}
+                {transformDescription(item.description)}
               </Text>
             </PopoverBody>
           </PopoverContent>
