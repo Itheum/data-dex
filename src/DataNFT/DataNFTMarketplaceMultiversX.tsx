@@ -98,8 +98,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const marketplace = `/datanfts/marketplace/market/${pageIndex}`;
+  const marketplace = '/datanfts/marketplace/market';
   const location = useLocation();
+  console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 && ('/' + newPageIndex)}`);
@@ -342,7 +343,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   marketFreezedNonces={marketFreezedNonces}
                   openNftDetailsDrawer={openNftDetailsDrawer}
                   itheumPrice={itheumPrice}>
-                  {location.pathname === marketplace && nftMetadatas.length > 0 ? (
+                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 ? (
                     <MarketplaceLowerCard
                       nftMetadatas={nftMetadatas}
                       index={index}
