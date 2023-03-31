@@ -379,7 +379,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       {
         offerForDrawer && (<>
-          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
+          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
             <DrawerContent>
               <DrawerHeader>
