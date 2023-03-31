@@ -221,7 +221,6 @@ export class DataNftMarketContract {
   }
 
   async addToMarket(addTokenCollection: string, addTokenNonce: number, addTokenQuantity: number, price: number, addressOfSender: string) {
-    const askDenominator = 10 ** 18;
     const addERewTx = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -234,6 +233,7 @@ export class DataNftMarketContract {
         .addArg(new TokenIdentifierValue(this.itheumToken)) //what token id to ask for
         .addArg(new U64Value(0)) //what nonce to ask for
         .addArg(new BigUIntValue(price * 10 ** 18)) //how much to ask for
+        .addArg(new BigUIntValue(0)) // minimum amount for seller - setting will be introduced in the future
         .addArg(new BigUIntValue(addTokenQuantity)) //how many times to divide the amount of tokens sent into
         .build(),
       receiver: new Address(addressOfSender),
