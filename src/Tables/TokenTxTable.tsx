@@ -96,7 +96,7 @@ export default function TokenTxTable(props: TokenTableProps) {
       const txs = res.data;
       const items = [];
       for (const tx of txs) {
-        if (tx.action) {
+        if (tx.action && tx.function) {
           const transfers = tx.action.arguments.transfers.filter((t: any) => t.identifier === props.tokenId);
           const value = transfers.reduce((acc: any, t: any) => acc + parseInt(t.value), 0);
           items.push({

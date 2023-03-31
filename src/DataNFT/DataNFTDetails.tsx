@@ -109,7 +109,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-        console.log(_offer);
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -218,9 +217,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Link
                   as={ReactRouterLink}
                   to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
-                  boxSize={{ base: "240px", md: "400px" }}
-                  marginRight={{ base: 0, md: "2.4rem" }}>
-                  <Image objectFit={"cover"} src={nftData.url} alt={"Data NFT Image"} />
+                  minW={{ base: "240px", md: "400px" }} p={10}>
+                  <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
                 </Link>
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>

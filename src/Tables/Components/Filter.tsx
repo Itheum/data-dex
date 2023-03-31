@@ -60,9 +60,9 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
   ) : (
     <Box>
       <datalist id={column.id + "list"}>
-        {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
-        ))}
+        {sortedUniqueValues.slice(0, 5000).map((value: any) => {
+          return <option value={value} key={value} />;
+        })}
       </datalist>
       <DebouncedInput
         type="text"

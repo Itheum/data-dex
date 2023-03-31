@@ -33,6 +33,7 @@ import {
   getPaginationRowModel,
   ColumnFiltersState,
 } from "@tanstack/react-table";
+import { isValidNumericCharacter } from "libs/util";
 import Filter from "./Filter";
 import { DataTableProps, fuzzyFilter } from "./tableUtils";
 
@@ -80,19 +81,19 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
   return (
     <Box className="hidden-overflow-x">
       <Flex justifyContent={"center"} gap={2}>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(0)} isDisabled={!table.getCanPreviousPage()}>
           <ArrowLeftIcon />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
           <ArrowBackIcon />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} marginBottom={2} onClick={() => setColumnFilters([])} disabled={columnFilters.length === 0}>
+        <Button border={1} borderRadius={"0.24rem"} marginBottom={2} onClick={() => setColumnFilters([])} isDisabled={columnFilters.length === 0}>
           <RepeatIcon marginRight={2} /> Reset filters
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} isDisabled={!table.getCanNextPage()}>
           <ArrowForwardIcon />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
+        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(table.getPageCount() - 1)} isDisabled={!table.getCanNextPage() || table.getState().pagination.pageIndex >= table.getPageCount() - 1}>
           <ArrowRightIcon />
         </Button>
       </Flex>
@@ -159,8 +160,11 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
             maxWidth={"4.4rem"}
             min={1}
             max={table.getPageCount()}
-            onChange={(e: string) => {
-              const page = e ? Number(e) - 1 : 0;
+            isValidCharacter={isValidNumericCharacter}
+            onBlur={(e: any) => {
+              let page = e ? Number(e.target.value) - 1 : 0;
+              page = Math.max(0, page);
+              page = Math.min(table.getPageCount() - 1, page);
               table.setPageIndex(page);
             }}>
             <NumberInputField />
