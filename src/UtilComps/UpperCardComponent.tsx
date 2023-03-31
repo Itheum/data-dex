@@ -30,7 +30,7 @@ import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
-  setNftImageLoading: Dispatch<SetStateAction<boolean>>;
+  setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
   marketRequirements: MarketplaceRequirementsType | undefined;
@@ -45,7 +45,7 @@ type UpperCardComponentProps = {
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const {
     nftImageLoading,
-    setNftImageLoading,
+    setNftImageLoaded,
     nftMetadatas,
     userData,
     index,
@@ -77,8 +77,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   }, []);
 
   return (
-    <Skeleton fitContent={true} isLoaded={!nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
-      <Box maxW="230px" borderWidth="1px" borderRadius="lg" overflow="wrap" position="relative">
+    <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
+      <Box maxW="230px" borderWidth="1px" borderRadius="lg" position="relative">
         <Flex justifyContent="center" pt={3}>
           <Image
             src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
@@ -88,7 +88,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
             mx={4}
             borderRadius="md"
             cursor="pointer"
-            onLoad={() => setNftImageLoading(true)}
+            onLoad={() => setNftImageLoaded(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping

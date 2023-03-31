@@ -100,6 +100,28 @@ export interface DataNftType {
   collection: string;
 }
 
+export function createDataNftType() {
+  return {
+    index: 0,
+    id: "",
+    nftImgUrl: "",
+    dataPreview: "",
+    dataStream: "",
+    dataMarshal: "",
+    tokenName: "",
+    feeInTokens: 0,
+    creator: "",
+    creationTime: new Date(),
+    supply: 0,
+    balance: 0,
+    description: "",
+    title: "",
+    royalties: 0,
+    nonce: 0,
+    collection: "",
+  };
+}
+
 export interface UserDataType {
   antiSpamTaxValue: number;
   addressFrozen: boolean;

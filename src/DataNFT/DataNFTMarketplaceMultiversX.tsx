@@ -332,8 +332,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               items?.map((item, index) => (
                 <UpperCardComponent
                   key={index}
-                  nftImageLoading={loadingOffers && oneNFTImgLoaded}
-                  setNftImageLoading={setOneNFTImgLoaded}
+                  nftImageLoading={oneNFTImgLoaded}
+                  setNftImageLoaded={setOneNFTImgLoaded}
                   nftMetadatas={nftMetadatas}
                   marketRequirements={marketRequirements}
                   item={item}
