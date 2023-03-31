@@ -403,8 +403,9 @@ export class DataNftMarketContract {
       }
 
       const values = firstValue.valueOf();
+      console.log(values);
       const decoded = values.map((value: any) => ({
-        index: value.index.toNumber(),
+        index: value.offer_id.toNumber(),
         owner: value.owner.toString(),
         offered_token_identifier: value.offered_token_identifier.toString(),
         offered_token_nonce: value.offered_token_nonce.toNumber(),
