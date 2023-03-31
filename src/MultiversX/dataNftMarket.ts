@@ -56,8 +56,8 @@ export class DataNftMarketContract {
     this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
   }
 
-  async getNumberOfOffers() {
-    const interaction = this.contract.methods.numberOfOffers([]);
+  async viewNumberOfOffers() {
+    const interaction = this.contract.methods.viewNumberOfOffers([]);
     const query = interaction.buildQuery();
 
     try {
@@ -79,7 +79,7 @@ export class DataNftMarketContract {
         const firstValueAsStruct = firstValue as U32Value;
         return firstValueAsStruct.valueOf().toNumber();
       } else {
-        const nonOKErr = new Error("getNumberOfOffers returnCode returned a non OK value");
+        const nonOKErr = new Error("viewNumberOfOffers returnCode returned a non OK value");
         console.error(nonOKErr);
 
         return 0;
@@ -284,8 +284,8 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async getRequirements(): Promise<MarketplaceRequirementsType | undefined> {
-    const interaction = this.contract.methodsExplicit.getRequirements();
+  async viewRequirements(): Promise<MarketplaceRequirementsType | undefined> {
+    const interaction = this.contract.methodsExplicit.viewRequirements();
     const query = interaction.buildQuery();
 
     try {
@@ -465,8 +465,8 @@ export class DataNftMarketContract {
     }
   }
 
-  async getUserTotalOffers(userAddress: string): Promise<number> {
-    const interaction = this.contract.methodsExplicit.getUserTotalOffers([new AddressValue(new Address(userAddress))]);
+  async viewUserTotalOffers(userAddress: string): Promise<number> {
+    const interaction = this.contract.methodsExplicit.viewUserTotalOffers().withQuerent(new Address(userAddress));
     const query = interaction.buildQuery();
 
     try {
@@ -529,8 +529,8 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async getHighestOfferIndex(): Promise<number> {
-    const interaction = this.contract.methodsExplicit.getHighestOfferIndex();
+  async getLastValidOfferId(): Promise<number> {
+    const interaction = this.contract.methodsExplicit.getLastValidOfferId();
     const query = interaction.buildQuery();
 
     try {
