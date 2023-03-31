@@ -80,7 +80,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
-      console.log('useTrackTransactionStatus onSuccess', sessionId);
       if (props.closeDetailsView) {
         props.closeDetailsView();
       }
@@ -257,7 +256,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     )}
                   </Flex>
-                  <Text fontSize={"22px"} noOfLines={2}>
+                  <Text fontSize={"22px"}>
                     {nftData.attributes?.description}
                   </Text>
                   <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">
