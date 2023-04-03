@@ -463,6 +463,10 @@
       "mutability": "readonly",
       "inputs": [
         {
+          "name": "address",
+          "type": "Address"
+        },
+        {
           "name": "tax_token",
           "type": "EgldOrEsdtTokenIdentifier"
         }

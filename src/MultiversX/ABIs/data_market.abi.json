@@ -505,7 +505,12 @@
     {
       "name": "viewUserTotalOffers",
       "mutability": "readonly",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
       "outputs": [
         {
           "type": "u32"
@@ -515,7 +520,12 @@
     {
       "name": "viewUserListedOffers",
       "mutability": "readonly",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
       "outputs": [
         {
           "type": "List<OfferOut>"
@@ -525,7 +535,12 @@
     {
       "name": "viewCancelledOffers",
       "mutability": "readonly",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
       "outputs": [
         {
           "type": "List<OfferOut>"
