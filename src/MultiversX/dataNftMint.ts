@@ -166,7 +166,7 @@ export class DataNftMintContract {
   }
 
   async getUserDataOut(address: string, spamTaxTokenId: string): Promise<UserDataType | undefined> {
-    const interaction = this.contract.methods.getUserDataOut([spamTaxTokenId]).withQuerent(new Address(address));
+    const interaction = this.contract.methods.getUserDataOut([address, spamTaxTokenId]);
     const query = interaction.buildQuery();
     const result = [];
 
