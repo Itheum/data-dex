@@ -1,4 +1,6 @@
 import { TokenPayment } from "@multiversx/sdk-core/out";
+import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
 
@@ -29,6 +31,45 @@ export type TransactionInTable = {
   method: string;
   value: TokenPayment;
 };
+
+export class DataNftOnNetwork {
+  hash = "";
+  timestamp = 0;
+  from = "";
+  to = "";
+  method = "";
+  methodArgs = [""];
+  value = "";
+  transfers: any = "";
+
+  constructor(init?: Partial<DataNftOnNetwork>) {
+    Object.assign(this, init);
+  }
+
+
+  static fromTransactionOnNetwork(payload: TransactionOnNetwork): DataNftOnNetwork {
+    const metadata = new TransactionDecoder().getTransactionMetadata(
+      {
+        sender: payload.sender.bech32(),
+        receiver: payload.receiver.bech32(),
+        data: payload.data.toString("base64"),
+        value: payload.value,
+      });
+
+    const result = new DataNftOnNetwork();
+
+    result.hash = payload["hash"] || "";
+    result.timestamp = payload["timestamp"] || 0;
+    result.to = payload.receiver.bech32() || "";
+    result.from = payload.sender.bech32() || "";
+    result.method = metadata["functionName"] || "";
+    result.methodArgs = metadata["functionArgs"] || [""];
+    result.value = payload["value"] || "";
+    result.transfers = metadata["transfers"] || "";
+
+    return result;
+  }
+}
 
 export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);

@@ -10,6 +10,7 @@
     "@multiversx/sdk-core": "11.3.0",
     "@multiversx/sdk-dapp": "2.8.7",
     "@multiversx/sdk-network-providers": "1.3.0",
+    "@multiversx/sdk-transaction-decoder": "^1.0.2",
     "@sentry/react": "^7.42.0",
     "@sentry/tracing": "^7.42.0",
     "@tanstack/match-sorter-utils": "8.7.6",

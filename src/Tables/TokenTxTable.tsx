@@ -9,7 +9,9 @@ import { getApi } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
-import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const [data, setData] = useState<TransactionInTable[]>([]);
@@ -92,8 +94,15 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   useEffect(() => {
     const apiUrl = getApi(_chainMeta.networkId);
-    axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=10000`).then((res) => {
+    axios.get(`https://${apiUrl}/accounts/erd1qqqqqqqqqqqqqpgqca3crd27vj8cruuxzkkma548fy8q69hxfsxsw2wxwy/transactions?status=success&function=addOffer%2CacceptOffer%2CchangePrice%2Cburn&size=10000`).then((res) => {
       const txs = res.data;
+      const history = txs.map((tx: any) =>
+        DataNftOnNetwork.fromTransactionOnNetwork(TransactionOnNetwork.fromApiHttpResponse(tx.txHash, tx))
+      );
+      console.log(props.tokenId);
+      const filter = history.filter((tx: DataNftOnNetwork) => { tx?.transfers[0]?.properties["identifier"] === props.tokenId; });
+      console.log(filter);
+
       const items = [];
       for (const tx of txs) {
         if (tx.action) {
