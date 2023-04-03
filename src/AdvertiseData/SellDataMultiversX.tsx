@@ -255,7 +255,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     datasetTitleForm: Yup.string()
       .required("Dataset title is required")
       .min(10, "Dataset title must have at least 10 characters.")
-      .max(50, "Dataset title must have maximum of 50 characters."),
+      .max(30, "Dataset title must have maximum of 30 characters."),
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
