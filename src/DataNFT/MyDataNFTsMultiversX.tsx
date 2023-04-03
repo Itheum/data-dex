@@ -1,6 +1,18 @@
-/* eslint-disable no-constant-condition */
 import React, { useEffect, useState } from "react";
-import { Flex, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import {
+  CloseButton,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
+  Heading,
+  HStack,
+  SimpleGrid,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -10,6 +22,7 @@ import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
+import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTMX from "./WalletDataNFTMX";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
@@ -32,6 +45,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
   const [sellerFee, setSellerFee] = useState<number | undefined>();
+
+  const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
+  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
 
   useEffect(() => {
     // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
@@ -117,27 +133,63 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     })();
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
-  return (
-    <Stack spacing={5}>
-      <Heading size="lg">Data NFT Wallet</Heading>
-      <Heading size="xs" opacity=".7">
-        Below are the Data NFTs you created and/or purchased on the current chain
-      </Heading>
+  function openNftDetailsDrawer(index: number) {
+    setNftForDrawer(dataNfts[index]);
+    onOpenDrawerTradeStream();
+  }
 
-      {dataNfts.length > 0 ?
-        <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
-          {dataNfts.map((item, index) => (
-            <WalletDataNFTMX
-              key={index}
-              hasLoaded={oneNFTImgLoaded}
-              setHasLoaded={setOneNFTImgLoaded}
-              userData={userData}
-              maxPayment={maxPaymentFeeMap[itheumToken]}
-              sellerFee={sellerFee || 0}
-              {...item}
-            />
-          ))}
-        </SimpleGrid> : <Text onClick={getOnChainNFTs}>No data yet...</Text>}
-    </Stack>
+  function closeDetailsView() {
+    onCloseDrawerTradeStream();
+    setNftForDrawer(undefined);
+  }
+
+  return (
+    <>
+      <Stack spacing={5}>
+        <Heading size="lg">Data NFT Wallet</Heading>
+        <Heading size="xs" opacity=".7">
+          Below are the Data NFTs you created and/or purchased on the current chain
+        </Heading>
+
+        {dataNfts.length > 0 ?
+          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
+            {dataNfts.map((item, index) => (
+              <WalletDataNFTMX
+                key={index}
+                hasLoaded={oneNFTImgLoaded}
+                setHasLoaded={setOneNFTImgLoaded}
+                userData={userData}
+                maxPayment={maxPaymentFeeMap[itheumToken]}
+                sellerFee={sellerFee || 0}
+                openNftDetailsDrawer={openNftDetailsDrawer}
+                {...item}
+              />
+            ))}
+          </SimpleGrid> : <Text onClick={getOnChainNFTs}>No data yet...</Text>}
+      </Stack>
+      {
+        nftForDrawer && (<>
+          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerHeader>
+                <HStack spacing="5">
+                  <CloseButton size="lg" onClick={closeDetailsView} />
+                  <Heading as="h4" size="lg">
+                    Data NFT Details
+                  </Heading>
+                </HStack>
+              </DrawerHeader>
+              <DrawerBody>
+                <DataNFTDetails
+                  tokenIdProp={nftForDrawer.id}
+                  closeDetailsView={closeDetailsView}
+                />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>)
+      }
+    </>
   );
 }
