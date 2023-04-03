@@ -19,6 +19,7 @@ import {
   U32Value,
   AddressType,
   OptionalValue,
+  BooleanValue,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -198,7 +199,11 @@ export class DataNftMarketContract {
   async sendCancelOfferTransaction(index: number, senderAddress: string) {
     const cancelTx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("cancelOffer")).addArg(new U64Value(index)).build(),
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction("cancelOffer"))
+        .addArg(new U64Value(index))
+        .addArg(new BooleanValue(true))
+        .build(),
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
@@ -466,7 +471,7 @@ export class DataNftMarketContract {
   }
 
   async viewUserTotalOffers(userAddress: string): Promise<number> {
-    const interaction = this.contract.methodsExplicit.viewUserTotalOffers().withQuerent(new Address(userAddress));
+    const interaction = this.contract.methodsExplicit.viewUserTotalOffers([new AddressValue(new Address(userAddress))]);
     const query = interaction.buildQuery();
 
     try {
@@ -503,6 +508,7 @@ export class DataNftMarketContract {
       .setFunction(new ContractFunction("changeOfferPrice"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(newPrice))
+      .addArg(new BigUIntValue(0))
       .build();
 
     const tx = new Transaction({
