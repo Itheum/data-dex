@@ -225,13 +225,27 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .url("Data Stream must be URL")
-      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`),
+      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
+      .test("is-200", "Data Stream URL must be public", async function (value: string) {
+        const { isSuccess, message } = await checkUrlReturns200(value);
+        if (!isSuccess) {
+          return this.createError({ message });
+        }
+        return true;
+      }),
     dataPreviewUrlForm: Yup.string()
       .required("Data Preview URL is required")
       .url("Data Preview must be URL")
       .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
       .test("is-distinct", "Data Preview URL must be distinct from Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
+      })
+      .test("is-200", "Data Stream URL must be public", async function (value: string) {
+        const { isSuccess, message } = await checkUrlReturns200(value);
+        if (!isSuccess) {
+          return this.createError({ message });
+        }
+        return true;
       }),
     tokenNameForm: Yup.string()
       .required("Token name is required")
@@ -279,7 +293,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
-  }; // here you can make every logic that we want to happen on submit
+  }; // here you can make logic that you want to happen on submit
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
