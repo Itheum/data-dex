@@ -226,6 +226,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .required("Data Stream URL is required")
       .url("Data Stream must be URL")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
+      .test("is-distinct", "Data Stream URL must be distinct from Data Preview URL", function (value) {
+        return value !== this.parent.dataPreviewUrlForm;
+      })
       .test("is-200", "Data Stream URL must be public", async function (value: string) {
         const { isSuccess, message } = await checkUrlReturns200(value);
         if (!isSuccess) {
