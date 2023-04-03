@@ -80,7 +80,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
-      console.log('useTrackTransactionStatus onSuccess', sessionId);
       if (props.closeDetailsView) {
         props.closeDetailsView();
       }
@@ -109,7 +108,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-        console.log(_offer);
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -218,9 +216,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Link
                   as={ReactRouterLink}
                   to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
-                  boxSize={{ base: "240px", md: "400px" }}
-                  marginRight={{ base: 0, md: "2.4rem" }}>
-                  <Image objectFit={"cover"} src={nftData.url} alt={"Data NFT Image"} />
+                  minW={{ base: "240px", md: "400px" }} p={10}>
+                  <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
                 </Link>
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
@@ -259,7 +256,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     )}
                   </Flex>
-                  <Text fontSize={"22px"} noOfLines={2}>
+                  <Text fontSize={"22px"}>
                     {nftData.attributes?.description}
                   </Text>
                   <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">

@@ -14,6 +14,7 @@ import {
   DrawerBody,
   useDisclosure,
   Skeleton,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -97,8 +98,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const marketplace = `/datanfts/marketplace/market/${pageIndex}`;
+  const marketplace = '/datanfts/marketplace/market';
   const location = useLocation();
+  console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 && ('/' + newPageIndex)}`);
@@ -326,44 +328,43 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "space-around" }}>
+          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
             {offers.length > 0 &&
               items?.map((item, index) => (
-                <Skeleton isLoaded={!loadingOffers && oneNFTImgLoaded} key={index} borderWidth="1px" borderRadius="lg" overflow="hidden">
-                  <UpperCardComponent
-                    nftImageLoading={oneNFTImgLoaded}
-                    setNftImageLoading={setOneNFTImgLoaded}
-                    nftMetadatas={nftMetadatas}
-                    marketRequirements={marketRequirements}
-                    item={item}
-                    userData={userData}
-                    index={index}
-                    marketFreezedNonces={marketFreezedNonces}
-                    openNftDetailsDrawer={openNftDetailsDrawer}
-                    itheumPrice={itheumPrice}>
-                    {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard
-                        nftMetadatas={nftMetadatas}
-                        index={index}
-                        item={item}
-                        offers={offers}
-                        itheumPrice={itheumPrice}
-                        marketRequirements={marketRequirements}
-                      />
-                    ) : (
-                      <MyListedDataLowerCard
-                        index={index}
-                        offers={items}
-                        nftMetadatas={nftMetadatas}
-                        itheumPrice={itheumPrice}
-                        marketRequirements={marketRequirements}
-                        maxPaymentFeeMap={maxPaymentFeeMap}
-                      />
-                    )}
-                  </UpperCardComponent>
-                </Skeleton>
+                <UpperCardComponent
+                  key={index}
+                  nftImageLoading={oneNFTImgLoaded}
+                  setNftImageLoaded={setOneNFTImgLoaded}
+                  nftMetadatas={nftMetadatas}
+                  marketRequirements={marketRequirements}
+                  item={item}
+                  userData={userData}
+                  index={index}
+                  marketFreezedNonces={marketFreezedNonces}
+                  openNftDetailsDrawer={openNftDetailsDrawer}
+                  itheumPrice={itheumPrice}>
+                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 ? (
+                    <MarketplaceLowerCard
+                      nftMetadatas={nftMetadatas}
+                      index={index}
+                      item={item}
+                      offers={offers}
+                      itheumPrice={itheumPrice}
+                      marketRequirements={marketRequirements}
+                    />
+                  ) : (
+                    <MyListedDataLowerCard
+                      index={index}
+                      offers={items}
+                      nftMetadatas={nftMetadatas}
+                      itheumPrice={itheumPrice}
+                      marketRequirements={marketRequirements}
+                      maxPaymentFeeMap={maxPaymentFeeMap}
+                    />
+                  )}
+                </UpperCardComponent>
               ))}
-          </Flex>
+          </SimpleGrid>
         )}
 
         {

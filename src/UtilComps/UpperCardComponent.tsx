@@ -13,6 +13,7 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
+  Skeleton,
   Text,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -29,7 +30,7 @@ import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
-  setNftImageLoading: Dispatch<SetStateAction<boolean>>;
+  setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
   marketRequirements: MarketplaceRequirementsType | undefined;
@@ -44,7 +45,7 @@ type UpperCardComponentProps = {
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const {
     nftImageLoading,
-    setNftImageLoading,
+    setNftImageLoaded,
     nftMetadatas,
     userData,
     index,
@@ -90,17 +91,18 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   }, []);
 
   return (
-    <Flex wrap="wrap" gap="5" key={index}>
-      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" position="relative" w="13.5rem">
+    <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
+      <Box maxW="230px" borderWidth="1px" borderRadius="lg" position="relative">
         <Flex justifyContent="center" pt={3}>
           <Image
             src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
             alt={"item.dataPreview"}
             h={200}
             w={200}
+            mx={4}
             borderRadius="md"
             cursor="pointer"
-            onLoad={() => setNftImageLoading(true)}
+            onLoad={() => setNftImageLoaded(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping
@@ -222,12 +224,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             marketFreezedNonces &&
-            item &&
-            userData &&
-            (userData.addressFrozen ||
-              (userData.frozenNonces &&
-                item &&
-                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+              item &&
+              userData &&
+              (userData.addressFrozen ||
+                (userData.frozenNonces &&
+                  item &&
+                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
@@ -237,7 +239,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           </Text>
         </Box>
       </Box>
-    </Flex>
+    </Skeleton>
   );
 };
 
