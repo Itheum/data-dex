@@ -169,6 +169,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (hasPendingTransactions) return;
       if (!_chainMeta.networkId) return;
 
+      // start loading offers
+      setLoadingOffers(true);
+
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
@@ -333,7 +336,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               items?.map((item, index) => (
                 <UpperCardComponent
                   key={index}
-                  nftImageLoading={oneNFTImgLoaded}
+                  nftImageLoading={oneNFTImgLoaded && !loadingOffers}
                   setNftImageLoaded={setOneNFTImgLoaded}
                   nftMetadatas={nftMetadatas}
                   marketRequirements={marketRequirements}
