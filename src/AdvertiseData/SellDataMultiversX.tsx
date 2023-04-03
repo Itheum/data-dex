@@ -254,6 +254,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .max(20, "Token name must have maximum of 20 characters."),
     datasetTitleForm: Yup.string()
       .required("Dataset title is required")
+      .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
       .max(30, "Dataset title must have maximum of 30 characters."),
     datasetDescriptionForm: Yup.string()
@@ -268,7 +269,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     royaltiesForm: Yup.number()
       .typeError("Royalties must be a number.")
       .min(0, "Minimum value of royalties is 0%.")
-      .max(80, "Maximum value of royalties is 80%.")
+      .max(maxRoyalties, `Maximum value of royalties is ${maxRoyalties}`)
       .required("Royalties is required"),
   });
 
@@ -1128,7 +1129,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
                   <Input
                     mt="1 !important"
-                    placeholder="Between 10 and 50 alphanumeric characters only"
+                    placeholder="Between 10 and 30 alphanumeric characters only"
                     id="datasetTitleForm"
                     value={datasetTitle}
                     {...register("datasetTitleForm")}
@@ -1149,7 +1150,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
                   <Textarea
                     mt="1 !important"
-                    placeholder="Between 10 and 250 characters only. URL allowed."
+                    placeholder="Between 10 and 400 characters only. URL allowed."
                     id={"datasetDescriptionForm"}
                     {...register("datasetDescriptionForm")}
                     onChange={(event) => {
