@@ -213,30 +213,34 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 flexDirection={{ base: "column", md: "row" }}
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
-                <Link
-                  as={ReactRouterLink}
-                  to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
-                  minW={{ base: "240px", md: "400px" }} p={10}>
-                  <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                </Link>
+                {
+                  offerId ? <Link
+                    as={ReactRouterLink}
+                    to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
+                    minW={{ base: "240px", md: "400px" }} p={10}>
+                    <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
+                  </Link> : <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
+                }
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
                   <Flex direction="row" alignItems="center" gap="3">
                     <Text fontSize="36px" noOfLines={2}>
                       {nftData.attributes?.title}
                     </Text>
-                    <Button
-                      fontSize="xl"
-                      onClick={() => {
-                        onCopy();
-                        toast({
-                          title: "NFT detail page link is copied!",
-                          status: "success",
-                          isClosable: true,
-                        });
-                      }}>
-                      <CopyIcon />
-                    </Button>
+                    {
+                      !!offerId && <Button
+                        fontSize="xl"
+                        onClick={() => {
+                          onCopy();
+                          toast({
+                            title: "NFT detail page link is copied!",
+                            status: "success",
+                            isClosable: true,
+                          });
+                        }}>
+                        <CopyIcon />
+                      </Button>
+                    }
                   </Flex>
 
                   <Box color="gray.100" fontSize="xl">
@@ -282,38 +286,42 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <Text fontSize="lg">{`Creation time: ${moment(nftData.attributes?.creationTime).format(uxConfig.dateStr)}`}</Text>
                   </Box>
                   <Flex direction={"column"} gap="1" color="gray.400" fontSize="lg">
-                    <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
-                    <Text>{`Total supply: ${nftData.supply}`}</Text>
-                    <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
-                    <Text>
-                      {`Fee per NFT: `}
-                      {marketRequirements && offer ? (
-                        <>
-                          {printPrice(
-                            convertWeiToEsdt(
-                              new BigNumber(offer.wanted_token_amount)
-                                .multipliedBy(10000)
-                                .div(10000 + marketRequirements.buyer_fee),
-                              tokenDecimals(offer.wanted_token_identifier)
-                            ).toNumber(),
-                            getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                          )}{" "}
-                          {itheumPrice && convertWeiToEsdt(new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
-                            ? `(${convertToLocalString(
-                              convertWeiToEsdt(
-                                new BigNumber(offer.wanted_token_amount)
-                                  .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
-                                tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber() * itheumPrice,
-                              2
-                            )} USD)`
-                            : ""}
-                        </>
-                      ) : (
-                        "-"
-                      )}
-                    </Text>
+                    {
+                      !!offerId && (<>
+                        <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
+                        <Text>{`Total supply: ${nftData.supply}`}</Text>
+                        <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
+                        <Text>
+                          {`Fee per NFT: `}
+                          {marketRequirements && offer ? (
+                            <>
+                              {printPrice(
+                                convertWeiToEsdt(
+                                  new BigNumber(offer.wanted_token_amount)
+                                    .multipliedBy(10000)
+                                    .div(10000 + marketRequirements.buyer_fee),
+                                  tokenDecimals(offer.wanted_token_identifier)
+                                ).toNumber(),
+                                getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                              )}{" "}
+                              {itheumPrice && convertWeiToEsdt(new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
+                                ? `(${convertToLocalString(
+                                  convertWeiToEsdt(
+                                    new BigNumber(offer.wanted_token_amount)
+                                      .multipliedBy(10000)
+                                      .div(10000 + marketRequirements.buyer_fee),
+                                    tokenDecimals(offer.wanted_token_identifier)
+                                  ).toNumber() * itheumPrice,
+                                  2
+                                )} USD)`
+                                : ""}
+                            </>
+                          ) : (
+                            "-"
+                          )}
+                        </Text>
+                      </>)
+                    }
                   </Flex>
 
                   <Button
