@@ -1,5 +1,14 @@
 import { ProxyNetworkProvider } from '@multiversx/sdk-network-providers/out';
-import { AbiRegistry, SmartContractAbi, SmartContract, Address, ResultsParser, Transaction, TransactionPayload, ContractFunction } from '@multiversx/sdk-core/out';
+import {
+  AbiRegistry,
+  SmartContractAbi,
+  SmartContract,
+  Address,
+  ResultsParser,
+  Transaction,
+  TransactionPayload,
+  ContractFunction,
+} from '@multiversx/sdk-core/out';
 import { refreshAccount } from '@multiversx/sdk-dapp/utils/account';
 import { sendTransactions } from '@multiversx/sdk-dapp/services';
 import jsonData from './ABIs/devnetfaucet.abi.json';
@@ -13,7 +22,10 @@ export class FaucetContract {
     if (networkId === 'E1') {
       throw new Error('Faucet not available on MultiversX mainnet');
     } else {
-      this.networkProvider = new ProxyNetworkProvider('https://devnet-gateway.elrond.com', { timeout: this.timeout });
+      this.networkProvider = new ProxyNetworkProvider(
+        'https://devnet-gateway.multiversx.com',
+        { timeout: this.timeout }
+      );
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -27,11 +39,16 @@ export class FaucetContract {
   }
 
   async getFaucetTime(address) {
-    const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
+    const interaction = this.contract.methods.getLastFaucet([
+      new Address(address),
+    ]);
     const query = interaction.buildQuery();
     const res = await this.networkProvider.queryContract(query);
     const endpointDefinition = interaction.getEndpoint();
-    const { firstValue } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+    const { firstValue } = new ResultsParser().parseQueryResponse(
+      res,
+      endpointDefinition
+    );
 
     return firstValue.valueOf().toNumber() * 1000;
   }
