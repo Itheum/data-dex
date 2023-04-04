@@ -165,9 +165,9 @@ export const qsParams = () => {
 
 export const itheumTokenRoundUtil = (balance: BigNumber.Value, decimals: number) => {
   const balanceWeiString = balance.toString();
-  const balanceWeiBN = BigNumber(balanceWeiString);
-  const decimalsBN = BigNumber(decimals);
-  const divisor = BigNumber(10).pow(decimalsBN);
+  const balanceWeiBN = new BigNumber(balanceWeiString);
+  const decimalsBN = new BigNumber(decimals);
+  const divisor = new BigNumber(10).pow(decimalsBN);
   const beforeDecimal = balanceWeiBN.div(divisor);
 
   return beforeDecimal.toString();
@@ -392,11 +392,11 @@ export const formatNumberRoundFloor = (num: number, decimals = 2) => {
 };
 
 export const convertWeiToEsdt = (amount: BigNumber.Value, decimals = 18, precision = 4) => {
-  return BigNumber(amount).shiftedBy(-decimals).decimalPlaces(precision);
+  return new BigNumber(amount).shiftedBy(-decimals).decimalPlaces(precision);
 };
 
 export const convertEsdtToWei = (amount: BigNumber.Value, decimals = 18) => {
-  return BigNumber(amount).shiftedBy(decimals);
+  return new BigNumber(amount).shiftedBy(decimals);
 };
 
 export const tryParseInt = (value: any, defaultValue = 0) => {

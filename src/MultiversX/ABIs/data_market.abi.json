@@ -2,10 +2,10 @@
   "buildInfo": {
     "rustc": {
       "version": "1.69.0-nightly",
-      "commitHash": "75a0be98f25a4b9de5afa0e15eb016e7f9627032",
-      "commitDate": "2023-02-05",
+      "commitHash": "8996ea93b6e554148c4286e62b613f12a3ee505c",
+      "commitDate": "2023-02-09",
       "channel": "Nightly",
-      "short": "rustc 1.69.0-nightly (75a0be98f 2023-02-05)"
+      "short": "rustc 1.69.0-nightly (8996ea93b 2023-02-09)"
     },
     "contractCrate": {
       "name": "data_market",
@@ -13,7 +13,7 @@
     },
     "framework": {
       "name": "multiversx-sc",
-      "version": "0.39.4"
+      "version": "0.39.8"
     }
   },
   "name": "DataMarket",
@@ -77,7 +77,54 @@
       "outputs": []
     },
     {
+      "name": "setClaimsContract",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "claims_contract",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "setRoyaltiesClaimToken",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "royalties_claims_token",
+          "type": "TokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "setClaimIsEnabled",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "is_enabled",
+          "type": "bool"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "name": "addAcceptedToken",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "TokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "removeAcceptedToken",
       "mutability": "mutable",
       "inputs": [
         {
@@ -103,6 +150,17 @@
       "outputs": []
     },
     {
+      "name": "removeAcceptedPayment",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "EgldOrEsdtTokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "name": "setIsPaused",
       "mutability": "mutable",
       "inputs": [
@@ -116,7 +174,9 @@
     {
       "name": "addOffer",
       "mutability": "mutable",
-      "payableInTokens": ["*"],
+      "payableInTokens": [
+        "*"
+      ],
       "inputs": [
         {
           "name": "payment_token_id",
@@ -128,6 +188,10 @@
         },
         {
           "name": "payment_token_fee",
+          "type": "BigUint"
+        },
+        {
+          "name": "min_amount_for_seller",
           "type": "BigUint"
         },
         {
@@ -143,11 +207,15 @@
       "mutability": "mutable",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64"
         },
         {
           "name": "new_fee",
+          "type": "BigUint"
+        },
+        {
+          "name": "min_amount_for_seller",
           "type": "BigUint"
         }
       ],
@@ -158,12 +226,27 @@
       "mutability": "mutable",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64"
         },
         {
           "name": "quantity",
           "type": "BigUint"
+        },
+        {
+          "name": "send_funds_back",
+          "type": "bool"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "withdrawCancelledOffer",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "offer_id",
+          "type": "u64"
         }
       ],
       "outputs": []
@@ -171,10 +254,12 @@
     {
       "name": "acceptOffer",
       "mutability": "mutable",
-      "payableInTokens": ["*"],
+      "payableInTokens": [
+        "*"
+      ],
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64"
         },
         {
@@ -212,6 +297,22 @@
       "name": "getOffers",
       "mutability": "readonly",
       "inputs": [],
+      "outputs": [
+        {
+          "type": "variadic<multi<u64,Offer>>",
+          "multi_result": true
+        }
+      ]
+    },
+    {
+      "name": "getCancelledOffer",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
       "outputs": [
         {
           "type": "variadic<multi<u64,Offer>>",
@@ -298,18 +399,7 @@
       ]
     },
     {
-      "name": "getEmptyOfferIndexes",
-      "mutability": "readonly",
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "variadic<u64>",
-          "multi_result": true
-        }
-      ]
-    },
-    {
-      "name": "getHighestOfferIndex",
+      "name": "getLastValidOfferId",
       "mutability": "readonly",
       "inputs": [],
       "outputs": [
@@ -339,6 +429,26 @@
       ]
     },
     {
+      "name": "getClaimsAddress",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "getRoyaltiesClaimToken",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "TokenIdentifier"
+        }
+      ]
+    },
+    {
       "name": "getAdministrator",
       "mutability": "readonly",
       "inputs": [],
@@ -349,7 +459,17 @@
       ]
     },
     {
-      "name": "getRequirements",
+      "name": "getClaimIsEnabled",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "viewRequirements",
       "mutability": "readonly",
       "inputs": [],
       "outputs": [
@@ -383,7 +503,7 @@
       ]
     },
     {
-      "name": "getUserTotalOffers",
+      "name": "viewUserTotalOffers",
       "mutability": "readonly",
       "inputs": [
         {
@@ -413,11 +533,26 @@
       ]
     },
     {
+      "name": "viewCancelledOffers",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "List<OfferOut>"
+        }
+      ]
+    },
+    {
       "name": "viewOffers",
       "mutability": "readonly",
       "inputs": [
         {
-          "name": "indexes",
+          "name": "offer_ids",
           "type": "variadic<u64>",
           "multi_arg": true
         }
@@ -433,7 +568,7 @@
       "mutability": "readonly",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64"
         }
       ],
@@ -444,7 +579,7 @@
       ]
     },
     {
-      "name": "numberOfOffers",
+      "name": "viewNumberOfOffers",
       "mutability": "readonly",
       "inputs": [],
       "outputs": [
@@ -476,11 +611,41 @@
       ]
     },
     {
+      "identifier": "setClaimContract",
+      "inputs": [
+        {
+          "name": "claim_contract",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "setClaimIsEnabled",
+      "inputs": [
+        {
+          "name": "is_enabled",
+          "type": "bool",
+          "indexed": true
+        }
+      ]
+    },
+    {
       "identifier": "setAdministrator",
       "inputs": [
         {
           "name": "administrator",
           "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "setRoyaltiesAcceptedToken",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "TokenIdentifier",
           "indexed": true
         }
       ]
@@ -526,6 +691,16 @@
       ]
     },
     {
+      "identifier": "removeAcceptedToken",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "TokenIdentifier",
+          "indexed": true
+        }
+      ]
+    },
+    {
       "identifier": "setAcceptedPaymentToken",
       "inputs": [
         {
@@ -541,10 +716,20 @@
       ]
     },
     {
+      "identifier": "removeAcceptedPaymentToken",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        }
+      ]
+    },
+    {
       "identifier": "addedOffer",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64",
           "indexed": true
         },
@@ -559,7 +744,7 @@
       "identifier": "updatedOfferPrice",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64",
           "indexed": true
         },
@@ -574,7 +759,27 @@
       "identifier": "cancelledOffer",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
+          "type": "u64",
+          "indexed": true
+        },
+        {
+          "name": "quantity",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "with_funds",
+          "type": "bool",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "withdrawCancelledOffer",
+      "inputs": [
+        {
+          "name": "offer_id",
           "type": "u64",
           "indexed": true
         }
@@ -584,7 +789,7 @@
       "identifier": "acceptedOffer",
       "inputs": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64",
           "indexed": true
         },
@@ -686,6 +891,10 @@
           "type": "EgldOrEsdtTokenPayment"
         },
         {
+          "name": "min_amount_for_seller",
+          "type": "BigUint"
+        },
+        {
           "name": "quantity",
           "type": "BigUint"
         }
@@ -695,7 +904,7 @@
       "type": "struct",
       "fields": [
         {
-          "name": "index",
+          "name": "offer_id",
           "type": "u64"
         },
         {

@@ -17,6 +17,8 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  FormControl,
+  FormErrorMessage,
   Heading,
   HStack,
   Image,
@@ -46,10 +48,10 @@ import {
   Tag,
   Text,
   Textarea,
+  useColorMode,
   useDisclosure,
   useToast,
   Wrap,
-  useColorMode,
 } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core";
 import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
@@ -61,6 +63,9 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
+import * as Yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
   let title = "",
@@ -148,6 +153,17 @@ const checkUrlReturns200 = async (url: string) => {
   };
 };
 
+// Declaring the form types
+type TradeDataFormType = {
+  dataStreamUrlForm: string;
+  dataPreviewUrlForm: string;
+  tokenNameForm: string;
+  datasetTitleForm: string;
+  datasetDescriptionForm: string;
+  numberOfCopiesForm: number;
+  royaltiesForm: number;
+};
+
 export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
@@ -202,6 +218,60 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [selectedProgramId, setSelectedProgramId] = useState(null);
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+
+  // React hook form + yup integration
+  // Declaring a validation schema for the form with the validation needed
+  const validationSchema = Yup.object().shape({
+    dataStreamUrlForm: Yup.string()
+      .required("Data Stream URL is required")
+      .url("Data Stream must be URL")
+      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`),
+    dataPreviewUrlForm: Yup.string()
+      .required("Data Preview URL is required")
+      .url("Data Preview must be URL")
+      .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`),
+    tokenNameForm: Yup.string()
+      .required("Token name is required")
+      .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
+      .min(3, "Token name must have at least 3 characters.")
+      .max(20, "Token name must have maximum of 20 characters."),
+    datasetTitleForm: Yup.string()
+      .required("Dataset title is required")
+      .min(10, "Dataset title must have at least 10 characters.")
+      .max(50, "Dataset title must have maximum of 50 characters."),
+    datasetDescriptionForm: Yup.string()
+      .required("Dataset description is required")
+      .min(10, "Dataset description must have at least 10 characters.")
+      .max(400, "Dataset description must have maximum of 400 characters."),
+    numberOfCopiesForm: Yup.number()
+      .min(1, "Minimum number of copies should be 1 or greater.")
+      .max(20, "Number of copies should be less than 20.")
+      .required("Number of copies is required"),
+    royaltiesForm: Yup.number().min(0, "Minimum value of royalties is 0%.").max(80, "Maximum value of royalties is 80%.").required("Royalties is required"),
+  });
+
+  // Destructure the methods needed from React Hook Form useForm component
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<TradeDataFormType>({
+    mode: "onBlur", // mode stay for when the validation should be applied
+    defaultValues: {
+      dataStreamUrlForm: "",
+      dataPreviewUrlForm: "",
+      tokenNameForm: "",
+      datasetTitleForm: "",
+      datasetDescriptionForm: "",
+      numberOfCopiesForm: 1,
+      royaltiesForm: 0,
+    }, // declaring default values for inputs not necessary to declare
+    resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
+  });
+
+  const onSubmit = (data: TradeDataFormType) => {
+    console.log(data);
+  }; // here you can make every logic that we want to happen on submit
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
@@ -403,8 +473,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
-    if (value.length < 10 || value.length > 250) {
-      error = "Length of Dataset Description must be between 10 and 250 characters";
+    if (value.length < 10 || value.length > 400) {
+      error = "Length of Dataset Description must be between 10 and 400 characters";
     }
 
     setDatasetDescriptionError(error);
@@ -931,281 +1001,283 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 </Alert>
               )}
 
-              <Text fontSize="sm" color="gray.400">
-                * required fields
-              </Text>
-              <Text fontSize="sm" color="gray.400" mt="0 !important">
-                + click on an item&apos;s title to learn more
-              </Text>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Text fontSize="sm" color="gray.400">
+                  * required fields
+                </Text>
+                <Text fontSize="sm" color="gray.400" mt="0 !important">
+                  + click on an item&apos;s title to learn more
+                </Text>
 
-              <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
-                Data Asset Detail
-              </Text>
+                <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                  Data Asset Detail
+                </Text>
 
-              <InputLabelWithPopover tkey="data-stream-url">
-                <Text fontWeight="bold" fontSize="md">
-                  Data Stream URL *
-                </Text>
-              </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.dataStreamUrlForm}>
+                  <InputLabelWithPopover tkey="data-stream-url">
+                    <Text fontWeight="bold" fontSize="md">
+                      Data Stream URL *
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <Input
-                mt="1 !important"
-                placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                value={dataNFTStreamUrl}
-                onChange={(event) => {
-                  onChangeDataNFTStreamUrl(event.currentTarget.value);
-                  validateDataStreamUrl(event.currentTarget.value);
-                }}
-                isDisabled={!!selectedProgramId}
-              />
-              {userFocusedForm && dataNFTStreamUrlError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTStreamUrlError}
-                </Text>
-              )}
-              {userFocusedForm && dataNFTStreamUrlStatus && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTStreamUrlStatus}
-                </Text>
-              )}
-              {userFocusedForm && dataStreamUrlValidation && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Stream URL doesn&apos;t accept Google Drive URLs
-                </Text>
-              )}
+                  <Input
+                    mt="1 !important"
+                    placeholder="e.g. https://mydomain.com/my_hosted_file.json"
+                    id="dataStreamUrlForm"
+                    {...register("dataStreamUrlForm")}
+                    isDisabled={!!selectedProgramId}
+                    value={dataNFTStreamUrl}
+                    onChange={(event) => {
+                      onChangeDataNFTStreamUrl(event.currentTarget.value);
+                      validateDataStreamUrl(event.currentTarget.value);
+                    }}
+                  />
+                  <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
+                </FormControl>
 
-              <InputLabelWithPopover tkey="data-preview-url">
-                <Text fontWeight="bold" fontSize="md">
-                  Data Preview URL *
-                </Text>
-              </InputLabelWithPopover>
+                <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
+                  <InputLabelWithPopover tkey="data-preview-url">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Data Preview URL *
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <Input
-                mt="1 !important"
-                placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                value={dataNFTStreamPreviewUrl}
-                onChange={(event) => {
-                  onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
-                  validateDataPreviewUrl(event.currentTarget.value);
-                }}
-                isDisabled={!!selectedProgramId}
-              />
-              {userFocusedForm && dataNFTStreamPreviewUrlError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTStreamPreviewUrlError}
-                </Text>
-              )}
-              {userFocusedForm && !!dataNFTStreamPreviewUrlStatus && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTStreamPreviewUrlStatus}
-                </Text>
-              )}
-              {userFocusedForm && dataPreviewUrlValidation && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Data Preview URL doesn&apos;t accept Google Drive URLs
-                </Text>
-              )}
+                  <Input
+                    mt="1 !important"
+                    placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                    id="dataPreviewUrlForm"
+                    isDisabled={!!selectedProgramId}
+                    {...register("dataPreviewUrlForm")}
+                    value={dataNFTStreamPreviewUrl}
+                    onChange={(event) => {
+                      onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                      validateDataPreviewUrl(event.currentTarget.value);
+                    }}
+                  />
+                  <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
+                </FormControl>
 
-              <InputLabelWithPopover tkey="data-marshal-url">
-                <Text fontWeight="bold" fontSize="md">
-                  Data Marshal Url
-                </Text>
-              </InputLabelWithPopover>
+                <InputLabelWithPopover tkey="data-marshal-url">
+                  <Text fontWeight="bold" fontSize="md" mt={1}>
+                    Data Marshal Url
+                  </Text>
+                </InputLabelWithPopover>
 
-              <Input mt="1 !important" value={dataNFTMarshalService} disabled />
-              {userFocusedForm && !!dataNFTMarshalServiceStatus && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTMarshalServiceStatus}
-                </Text>
-              )}
+                <Input mt="1 !important" value={dataNFTMarshalService} disabled />
+                {userFocusedForm && !!dataNFTMarshalServiceStatus && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    {dataNFTMarshalServiceStatus}
+                  </Text>
+                )}
 
-              <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
-                NFT Token Metadata
-              </Text>
-
-              <InputLabelWithPopover tkey="token-name">
-                <Text fontWeight="bold" fontSize="md">
-                  Token Name (Short Title) *
+                <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                  NFT Token Metadata
                 </Text>
-              </InputLabelWithPopover>
 
-              <Input
-                mt="1 !important"
-                placeholder="NFT Token Name"
-                value={dataNFTTokenName}
-                onChange={(event) => onChangeDataNFTTokenName(event.currentTarget.value)}
-              />
-              <Text color="gray.400" fontSize="sm" mt="0 !important">
-                Between 3 and 20 alphanumeric characters only
-              </Text>
-              {userFocusedForm && dataNFTTokenNameError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTTokenNameError}
-                </Text>
-              )}
+                <FormControl isInvalid={!!errors.tokenNameForm}>
+                  <InputLabelWithPopover tkey="token-name">
+                    <Text fontWeight="bold" fontSize="md">
+                      Token Name (Short Title) *
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <InputLabelWithPopover tkey="dataset-title">
-                <Text fontWeight="bold" fontSize="md">
-                  Dataset Title *
-                </Text>
-              </InputLabelWithPopover>
+                  <Input
+                    mt="1 !important"
+                    placeholder="NFT Token Name"
+                    id="tokenNameForm"
+                    value={dataNFTTokenName}
+                    {...register("tokenNameForm")}
+                    onChange={(event) => {
+                      onChangeDataNFTTokenName(event.currentTarget.value);
+                    }}
+                  />
+                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                  {/*  Between 3 and 20 alphanumeric characters only*/}
+                  {/*</Text>*/}
+                  <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
+                </FormControl>
 
-              <Input mt="1 !important" placeholder="Dataset Title" value={datasetTitle} onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)} />
-              <Text color="gray.400" fontSize="sm" mt="0 !important">
-                Between 10 and 50 alphanumeric characters only
-              </Text>
-              {userFocusedForm && datasetTitleError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {datasetTitleError}
-                </Text>
-              )}
+                <FormControl isInvalid={!!errors.datasetTitleForm}>
+                  <InputLabelWithPopover tkey="dataset-title">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Dataset Title *
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <InputLabelWithPopover tkey="dataset-description">
-                <Text fontWeight="bold" fontSize="md">
-                  Dataset Description *
-                </Text>
-              </InputLabelWithPopover>
+                  <Input
+                    mt="1 !important"
+                    placeholder="Dataset Title"
+                    id="datasetTitleForm"
+                    value={datasetTitle}
+                    {...register("datasetTitleForm")}
+                    onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
+                  />
+                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                  {/*  Between 10 and 50 alphanumeric characters only*/}
+                  {/*</Text>*/}
+                  <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
+                </FormControl>
 
-              <Textarea
-                mt="1 !important"
-                placeholder="Enter a description here"
-                value={datasetDescription}
-                onChange={(event) => onChangeDatasetDescription(event.currentTarget.value)}
-              />
-              <Text color="gray.400" fontSize="sm" mt="0 !important">
-                Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.
-              </Text>
-              {userFocusedForm && datasetDescriptionError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {datasetDescriptionError}
-                </Text>
-              )}
+                <FormControl isInvalid={!!errors.datasetDescriptionForm}>
+                  <InputLabelWithPopover tkey="dataset-description">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Dataset Description *
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <InputLabelWithPopover tkey="number-of-copies">
-                <Text fontWeight="bold" fontSize="md">
-                  Number of copies
-                </Text>
-              </InputLabelWithPopover>
+                  <Textarea
+                    mt="1 !important"
+                    placeholder="Enter a description here"
+                    id={"datasetDescriptionForm"}
+                    {...register("datasetDescriptionForm")}
+                    onChange={(event) => {
+                      onChangeDatasetDescription(event.currentTarget.value);
+                    }}
+                  />
+                  <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
+                </FormControl>
+                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                {/*  Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.*/}
+                {/*</Text>*/}
+                {/*{userFocusedForm && datasetDescriptionError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {datasetDescriptionError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
-              <NumberInput
-                mt="1 !important"
-                size="md"
-                maxW={24}
-                step={1}
-                defaultValue={1}
-                min={1}
-                max={maxSupply > 0 ? maxSupply : 1}
-                value={dataNFTCopies}
-                isValidCharacter={isValidNumericCharacter}
-                onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <Text color="gray.400" fontSize="sm" mt="0 !important">
-                Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
-              </Text>
-              {userFocusedForm && dataNFTCopiesError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTCopiesError}
-                </Text>
-              )}
+                <FormControl isInvalid={!!errors.numberOfCopiesForm}>
+                  <InputLabelWithPopover tkey="number-of-copies">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Number of copies
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <InputLabelWithPopover tkey="royalties">
-                <Text fontWeight="bold" fontSize="md">
-                  Royalties
-                </Text>
-              </InputLabelWithPopover>
+                  <NumberInput
+                    mt="1 !important"
+                    size="md"
+                    {...register("numberOfCopiesForm")}
+                    id="numberOfCopiesForm"
+                    maxW={24}
+                    step={1}
+                    defaultValue={1}
+                    min={1}
+                    max={20}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+                </FormControl>
+                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                {/*  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}*/}
+                {/*</Text>*/}
+                {/*{userFocusedForm && dataNFTCopiesError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {dataNFTCopiesError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
-              <NumberInput
-                mt="1 !important"
-                size="md"
-                maxW={24}
-                step={5}
-                defaultValue={minRoyalties}
-                min={minRoyalties > 0 ? minRoyalties : 0}
-                max={maxRoyalties > 0 ? maxRoyalties : 0}
-                isValidCharacter={isValidNumericCharacter}
-                value={dataNFTRoyalty}
-                onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <Text color="gray.400" fontSize="sm" mt="0 !important">
-                Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-              </Text>
-              {userFocusedForm && dataNFTRoyaltyError && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  {dataNFTRoyaltyError}
-                </Text>
-              )}
+                <FormControl isInvalid={!!errors.royaltiesForm}>
+                  <InputLabelWithPopover tkey="royalties">
+                    <Text fontWeight="bold" fontSize="md">
+                      Royalties
+                    </Text>
+                  </InputLabelWithPopover>
 
-              <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
-                Terms and Fees
-              </Text>
-              <Text fontSize="md" mt="4 !important">
-                Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that
-                the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is
-                always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there
-                are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use
-                before proceeding.
-              </Text>
-              <Flex mt="3 !important">
-                <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
-                  Read Terms of Use
-                </Button>
-              </Flex>
-              <Checkbox size="md" mt="3 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
-                I have read and I agree to the Terms of Use
-              </Checkbox>
-              {userFocusedForm && !readTermsChecked && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  Please read and agree to terms of use.
-                </Text>
-              )}
+                  <NumberInput
+                    mt="1 !important"
+                    size="md"
+                    {...register("royaltiesForm")}
+                    id="royaltiesForm"
+                    maxW={24}
+                    step={5}
+                    defaultValue={minRoyalties}
+                    min={minRoyalties > 0 ? minRoyalties : 0}
+                    max={maxRoyalties > 0 ? maxRoyalties : 0}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                </FormControl>
+                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                {/*  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%*/}
+                {/*</Text>*/}
+                {/*{userFocusedForm && dataNFTRoyaltyError && (*/}
+                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
+                {/*    {dataNFTRoyaltyError}*/}
+                {/*  </Text>*/}
+                {/*)}*/}
 
-              <Text fontSize="md" mt="8 !important">
-                An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
-                dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
-              </Text>
-              <Flex mt="3 !important">
-                <Tag variant="solid" colorScheme="teal">
-                  Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens
-                </Tag>
-              </Flex>
-              {itheumBalance < antiSpamTax && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  You don&apos;t have enough ITHEUM for Anti-Spam Tax
+                <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                  Terms and Fees
                 </Text>
-              )}
-              <Flex mt="3 !important">
-                <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
-                  Read about the Anti-Spam fee
-                </Button>
-              </Flex>
-              <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
-                I accept the deduction of the anti-spam minting fee from my wallet
-              </Checkbox>
-              {userFocusedForm && !readAntiSpamFeeChecked && (
-                <Text color="red.400" fontSize="sm" mt="1 !important">
-                  You need to agree to anti-spam deduction to mint
+                <Text fontSize="md" mt="4 !important">
+                  Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
+                  that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
+                  is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But
+                  there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
+                  of use before proceeding.
                 </Text>
-              )}
-
-              <Flex>
-                <ChainSupportedInput feature={MENU.SELL}>
-                  <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} isDisabled={mintDataNFTDisabled}>
-                    Mint and Trade as NFT
+                <Flex mt="3 !important">
+                  <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
+                    Read Terms of Use
                   </Button>
-                </ChainSupportedInput>
-              </Flex>
-            </Stack>
+                </Flex>
+                <Checkbox size="md" mt="3 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
+                  I have read and I agree to the Terms of Use
+                </Checkbox>
+                {userFocusedForm && !readTermsChecked && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    Please read and agree to terms of use.
+                  </Text>
+                )}
 
+                <Text fontSize="md" mt="8 !important">
+                  An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
+                  dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
+                </Text>
+                <Flex mt="3 !important">
+                  <Tag variant="solid" colorScheme="teal">
+                    Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens
+                  </Tag>
+                </Flex>
+                {itheumBalance < antiSpamTax && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    You don&apos;t have enough ITHEUM for Anti-Spam Tax
+                  </Text>
+                )}
+                <Flex mt="3 !important">
+                  <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
+                    Read about the Anti-Spam fee
+                  </Button>
+                </Flex>
+                <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+                  I accept the deduction of the anti-spam minting fee from my wallet
+                </Checkbox>
+                {userFocusedForm && !readAntiSpamFeeChecked && (
+                  <Text color="red.400" fontSize="sm" mt="1 !important">
+                    You need to agree to anti-spam deduction to mint
+                  </Text>
+                )}
+
+                <Flex>
+                  <ChainSupportedInput feature={MENU.SELL}>
+                    <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} isDisabled={mintDataNFTDisabled}>
+                      Mint and Trade as NFT
+                    </Button>
+                  </ChainSupportedInput>
+                </Flex>
+              </form>
+            </Stack>
             <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false}>
               <ModalOverlay />
               <ModalContent>

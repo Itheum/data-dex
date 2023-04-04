@@ -1,5 +1,6 @@
+/* eslint-disable no-constant-condition */
 import React, { useEffect, useState } from "react";
-import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -7,9 +8,8 @@ import { convertWeiToEsdt } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import WalletDataNFTMX from "./WalletDataNFTMX";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
@@ -18,15 +18,19 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
-  const [dataNfts, setDataNfts] = useState<DataNftType[]>([]);
+  const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
+    const _dataNfts: DataNftType[] = [];
+    for (let index = 0; index < 5; index++) {
+      _dataNfts.push(createDataNftType());
+    }
+    return _dataNfts;
+  });
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [noData, setNoData] = useState(false);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
-
   const [sellerFee, setSellerFee] = useState<number | undefined>();
 
   useEffect(() => {
@@ -35,7 +39,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketRequirements = await marketContract.getRequirements();
+      const _marketRequirements = await marketContract.viewRequirements();
       setSellerFee(_marketRequirements?.seller_fee);
       const _maxPaymentFeeMap: RecordStringNumberType = {};
 
@@ -92,7 +96,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       setDataNfts(_dataNfts);
     } else {
       // await sleep(4);
-      setNoData(true);
       setDataNfts([]);
     }
   };
@@ -121,22 +124,20 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         Below are the Data NFTs you created and/or purchased on the current chain
       </Heading>
 
-      {(dataNfts.length === 0 && <>{(!noData && <SkeletonLoadingList />) || <Text onClick={getOnChainNFTs}>No data yet...</Text>}</>) || (
-        <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
-          {dataNfts &&
-            dataNfts.map((item, index) => (
-              <WalletDataNFTMX
-                key={index}
-                hasLoaded={oneNFTImgLoaded}
-                setHasLoaded={setOneNFTImgLoaded}
-                userData={userData}
-                maxPayment={maxPaymentFeeMap[itheumToken]}
-                sellerFee={sellerFee || 0}
-                {...item}
-              />
-            ))}
-        </Flex>
-      )}
+      {dataNfts.length > 0 ?
+        <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
+          {dataNfts.map((item, index) => (
+            <WalletDataNFTMX
+              key={index}
+              hasLoaded={oneNFTImgLoaded}
+              setHasLoaded={setOneNFTImgLoaded}
+              userData={userData}
+              maxPayment={maxPaymentFeeMap[itheumToken]}
+              sellerFee={sellerFee || 0}
+              {...item}
+            />
+          ))}
+        </SimpleGrid> : <Text onClick={getOnChainNFTs}>No data yet...</Text>}
     </Stack>
   );
 }

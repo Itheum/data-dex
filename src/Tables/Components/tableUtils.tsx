@@ -1,5 +1,5 @@
 import { TokenPayment } from "@multiversx/sdk-core/out";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { TransactionLogs, TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
@@ -20,6 +20,7 @@ export type DataTableProps<Data extends object> = {
 
 export type TokenTableProps = {
   tokenId?: string;
+  offerId?: string | number;
   page: number;
 };
 
@@ -29,10 +30,14 @@ export type TransactionInTable = {
   from: string;
   to: string;
   method: string;
-  value: TokenPayment;
+  value: string;
 };
 
 export class DataNftOnNetwork {
+  static addOfferIndex = 0;
+  static ids: number[] = [];
+
+  id = 0;
   hash = "";
   timestamp = 0;
   from = "";
@@ -40,14 +45,15 @@ export class DataNftOnNetwork {
   method = "";
   methodArgs = [""];
   value = "";
-  transfers: any = "";
+  transfers: TransactionMetadataTransfer[] = [new TransactionMetadataTransfer()];
+
 
   constructor(init?: Partial<DataNftOnNetwork>) {
     Object.assign(this, init);
   }
 
 
-  static fromTransactionOnNetwork(payload: TransactionOnNetwork): DataNftOnNetwork {
+  static fromTransactionOnNetwork(payload: TransactionOnNetwork, token_identifier?: string): DataNftOnNetwork {
     const metadata = new TransactionDecoder().getTransactionMetadata(
       {
         sender: payload.sender.bech32(),
@@ -65,11 +71,67 @@ export class DataNftOnNetwork {
     result.method = metadata["functionName"] || "";
     result.methodArgs = metadata["functionArgs"] || [""];
     result.value = payload["value"] || "";
-    result.transfers = metadata["transfers"] || "";
+    result.transfers = metadata["transfers"] || [new TransactionMetadataTransfer()];
 
+
+
+    if (result.method === "addOffer") {
+      DataNftOnNetwork.addOfferIndex += 1;
+      result.id = DataNftOnNetwork.addOfferIndex;
+
+      if (result.transfers[0].properties?.identifier === token_identifier) {
+        DataNftOnNetwork.ids.push(result.id);
+      }
+    }
     return result;
   }
+
 }
+
+export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] => {
+
+  const result: TransactionInTable[] = [];
+
+  payload.forEach((item) => {
+    switch (item.method) {
+      case "addOffer" || "burn":
+        result.push({
+          hash: item.hash,
+          timestamp: item.timestamp,
+          from: item.from,
+          to: item.to,
+          method: item.method,
+          value: item.transfers[0].value.toString(),
+
+        });
+        break;
+      case "acceptOffer":
+        result.push({
+          hash: item.hash,
+          timestamp: item.timestamp,
+          from: item.from,
+          to: item.to,
+          method: item.method,
+          value: item.transfers[0].value.toString(),
+        });
+        break;
+
+      case "changeOfferPrice":
+        result.push({
+          hash: item.hash,
+          timestamp: item.timestamp,
+          from: item.from,
+          to: item.to,
+          method: item.method,
+          value: parseInt(item.methodArgs[1], 16).toString()
+        });
+        break;
+    }
+  });
+
+  return result.reverse();
+};
+
 
 export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);

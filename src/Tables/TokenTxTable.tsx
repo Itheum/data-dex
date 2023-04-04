@@ -9,12 +9,15 @@ import { getApi } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
-import { DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { DataNftMarketContract } from "MultiversX/dataNftMarket";
+import { init } from "@sentry/browser";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const [data, setData] = useState<TransactionInTable[]>([]);
+
 
   const linkIconStyle = { display: "flex" };
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
@@ -94,31 +97,21 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   useEffect(() => {
     const apiUrl = getApi(_chainMeta.networkId);
-    axios.get(`https://${apiUrl}/accounts/erd1qqqqqqqqqqqqqpgqca3crd27vj8cruuxzkkma548fy8q69hxfsxsw2wxwy/transactions?status=success&function=addOffer%2CacceptOffer%2CchangePrice%2Cburn&size=10000`).then((res) => {
+    let dataNfts: DataNftOnNetwork[] = [];
+    axios.get(`https://${apiUrl}/accounts/erd1qqqqqqqqqqqqqpgqw29wx58pzm7zau2zcprfk93a60hw8vnvfsxs25rqjm/transactions?status=success&function=addOffer%2CacceptOffer%2CchangeOfferPrice%2Cburn&size=10000&order=asc`).then((res) => {
       const txs = res.data;
-      const history = txs.map((tx: any) =>
-        DataNftOnNetwork.fromTransactionOnNetwork(TransactionOnNetwork.fromApiHttpResponse(tx.txHash, tx))
-      );
-      console.log(props.tokenId);
-      const filter = history.filter((tx: DataNftOnNetwork) => { tx?.transfers[0]?.properties["identifier"] === props.tokenId; });
-      console.log(filter);
+      DataNftOnNetwork.ids = [];
+      DataNftOnNetwork.addOfferIndex = 0;
+      dataNfts = txs.map((tx: any) =>
+        DataNftOnNetwork.fromTransactionOnNetwork(TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx), props.tokenId)
+      ).filter((data: DataNftOnNetwork) => data?.transfers[0]?.properties?.identifier === props.tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16)));
+      console.log(DataNftOnNetwork.ids);
+      const history = buildHistory(dataNfts);
+      console.log(dataNfts);
 
-      const items = [];
-      for (const tx of txs) {
-        if (tx.action) {
-          const transfers = tx.action.arguments.transfers.filter((t: any) => t.identifier === props.tokenId);
-          const value = transfers.reduce((acc: any, t: any) => acc + parseInt(t.value), 0);
-          items.push({
-            hash: tx.txHash,
-            timestamp: tx.timestamp,
-            from: tx.sender,
-            to: tx.action.arguments.receiver,
-            method: tx.function,
-            value: value,
-          });
-        }
-      }
-      setData(items);
+
+
+      setData(history);
     });
   }, []);
 

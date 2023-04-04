@@ -19,6 +19,7 @@ import {
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice } from "../libs/util2";
@@ -29,8 +30,7 @@ import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
-  setNftImageLoading: Dispatch<SetStateAction<boolean>>;
-  nftMetadataLoading: boolean;
+  setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
   marketRequirements: MarketplaceRequirementsType | undefined;
@@ -45,8 +45,7 @@ type UpperCardComponentProps = {
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const {
     nftImageLoading,
-    nftMetadataLoading,
-    setNftImageLoading,
+    setNftImageLoaded,
     nftMetadatas,
     userData,
     index,
@@ -64,6 +63,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
+  // Regex for check if description have link
+  const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
 
   useEffect(() => {
     setFeePrice(
@@ -76,24 +77,28 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   }, []);
 
   return (
-    <Flex wrap="wrap" gap="5" key={index}>
-      <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
-        <Flex justifyContent="center" pt={5}>
+    <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
+      <Box maxW="230px" borderWidth="1px" borderRadius="lg" position="relative">
+        <Flex justifyContent="center" pt={3}>
           <Image
             src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
             alt={"item.dataPreview"}
             h={200}
             w={200}
+            mx={4}
             borderRadius="md"
             cursor="pointer"
-            onLoad={() => setNftImageLoading(true)}
+            onLoad={() => setNftImageLoaded(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null; // prevents looping
+              currentTarget.src = DEFAULT_NFT_IMAGE;
+            }}
           />
         </Flex>
 
         <Flex h="28rem" p="3" direction="column" justify="space-between">
-          {nftMetadataLoading && <Skeleton />}
-          {!nftMetadataLoading && nftMetadatas[index] && (
+          {nftMetadatas[index] && (
             <>
               <Text fontSize="xs">
                 <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
@@ -109,7 +114,19 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
                     <Flex flexGrow="1">
                       <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                        {nftMetadatas[index].description}
+                        {nftMetadatas[index].description.replace(regex, " ")}
+                        {nftMetadatas[index].description
+                          .toString()
+                          .split(regex)
+                          .map((word, i) => {
+                            if (word?.match(regex)) {
+                              return (
+                                <Link key={i} href={word} isExternal color={"blue.300"}>
+                                  {word}
+                                </Link>
+                              );
+                            }
+                          })}
                       </Text>
                     </Flex>
                   </div>
@@ -120,7 +137,19 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   <PopoverCloseButton />
                   <PopoverBody>
                     <Text fontSize="sm" mt="2" color="gray.200">
-                      {nftMetadatas[index].description}
+                      {nftMetadatas[index].description.replace(regex, " ")}
+                      {nftMetadatas[index].description
+                        .toString()
+                        .split(regex)
+                        .map((word, i) => {
+                          if (word?.match(regex)) {
+                            return (
+                              <Link key={i} href={word} isExternal color={"blue.300"}>
+                                {word}
+                              </Link>
+                            );
+                          }
+                        })}
                     </Text>
                   </PopoverBody>
                 </PopoverContent>
@@ -168,25 +197,27 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
                 </Box>
               )}
+
+              {feePrice && (
+                <>
+                  <Box fontSize="xs" mt="2">
+                    <Text>
+                      Fee per NFT: {` `}
+                      {marketRequirements ? (
+                        <>
+                          {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                        </>
+                      ) : (
+                        " -"
+                      )}
+                    </Text>
+                  </Box>
+                </>
+              )}
+
+              {address && <>{children}</>}
             </>
           )}
-          {!nftMetadataLoading && !!nftMetadatas[index] && feePrice && (
-            <>
-              <Box fontSize="xs" mt="2">
-                <Text>
-                  Fee per NFT: {` `}
-                  {marketRequirements ? (
-                    <>
-                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
-                    </>
-                  ) : (
-                    " -"
-                  )}
-                </Text>
-              </Box>
-            </>
-          )}
-          {address && <>{children}</>}
         </Flex>
 
         <Box
@@ -202,11 +233,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           backdropBlur="4px"
           rounded="lg"
           visibility={
-            userData &&
-            (userData?.addressFrozen ||
-              (userData?.frozenNonces &&
-                item &&
-                (userData?.frozenNonces.includes(item?.offered_token_nonce) || marketFreezedNonces?.includes(item?.offered_token_nonce))))
+            marketFreezedNonces &&
+              item &&
+              userData &&
+              (userData.addressFrozen ||
+                (userData.frozenNonces &&
+                  item &&
+                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
@@ -216,7 +249,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           </Text>
         </Box>
       </Box>
-    </Flex>
+    </Skeleton>
   );
 };
 

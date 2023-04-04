@@ -22,7 +22,7 @@ import {
   NumberDecrementStepper,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
@@ -45,6 +45,7 @@ type DataNFTDetailsProps = {
   showConnectWallet?: boolean;
   tokenIdProp?: string;
   offerIdProp?: number;
+  closeDetailsView?: () => void;
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
@@ -74,6 +75,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
+  const [sessionId, setSessionId] = useState<any>();
+
+  useTrackTransactionStatus({
+    transactionId: sessionId,
+    onSuccess: () => {
+      if (props.closeDetailsView) {
+        props.closeDetailsView();
+      }
+    },
+  });
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
@@ -86,7 +97,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
 
       (async () => {
-        const _marketRequirements = await marketContract.getRequirements();
+        const _marketRequirements = await marketContract.viewRequirements();
         setMarketRequirements(_marketRequirements);
       })();
     }
@@ -97,10 +108,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-        console.log(_offer);
-        if (_offer) {
-          setAmount(Number(_offer.quantity));
-        }
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -193,7 +200,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     _disabled={{ opacity: 1 }}
                     fontSize={{ base: "sm", md: "md" }}
                     onClick={() => {
-                      navigate("/datanfts/marketplace/market/0");
+                      navigate("/datanfts/marketplace/market");
                     }}
                     marginRight={2}>
                     Public Marketplace
@@ -209,9 +216,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Link
                   as={ReactRouterLink}
                   to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
-                  boxSize={{ base: "240px", md: "400px" }}
-                  marginRight={{ base: 0, md: "2.4rem" }}>
-                  <Image objectFit={"cover"} src={nftData.url} alt={"Data NFT Image"} />
+                  minW={{ base: "240px", md: "400px" }} p={10}>
+                  <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
                 </Link>
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
@@ -250,7 +256,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     )}
                   </Flex>
-                  <Text fontSize={"22px"} noOfLines={2}>
+                  <Text fontSize={"22px"}>
                     {nftData.attributes?.description}
                   </Text>
                   <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">
@@ -285,17 +291,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <>
                           {printPrice(
                             convertWeiToEsdt(
-                              BigNumber(offer.wanted_token_amount)
+                              new BigNumber(offer.wanted_token_amount)
                                 .multipliedBy(10000)
                                 .div(10000 + marketRequirements.buyer_fee),
                               tokenDecimals(offer.wanted_token_identifier)
                             ).toNumber(),
                             getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                           )}{" "}
-                          {itheumPrice
+                          {itheumPrice && convertWeiToEsdt(new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
                             ? `(${convertToLocalString(
                               convertWeiToEsdt(
-                                BigNumber(offer.wanted_token_amount)
+                                new BigNumber(offer.wanted_token_amount)
                                   .multipliedBy(10000)
                                   .div(10000 + marketRequirements.buyer_fee),
                                 tokenDecimals(offer.wanted_token_identifier)
@@ -321,7 +327,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     }}>
                     Preview Data
                   </Button>
-                  {offer && address ? (
+                  {offer && address && address != offer.owner ? (
                     <Box>
                       <HStack>
                         <Text fontSize="md">How many to procure </Text>
@@ -371,7 +377,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} />
             </Box>
           </VStack>
 
@@ -385,6 +391,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               nftData={nftData}
               offer={offer}
               amount={amount}
+              setSessionId={setSessionId}
             />
           )}
         </Box>
