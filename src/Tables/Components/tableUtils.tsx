@@ -3,6 +3,7 @@ import { TransactionLogs, TransactionOnNetwork } from "@multiversx/sdk-network-p
 import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
+import { convertWeiToEsdt } from "libs/util";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -36,6 +37,7 @@ export type TransactionInTable = {
 export class DataNftOnNetwork {
   static addOfferIndex = 0;
   static ids: number[] = [];
+  static token_identifier?= "";
 
   id = 0;
   hash = "";
@@ -53,7 +55,7 @@ export class DataNftOnNetwork {
   }
 
 
-  static fromTransactionOnNetwork(payload: TransactionOnNetwork, token_identifier?: string): DataNftOnNetwork {
+  static fromTransactionOnNetwork(payload: TransactionOnNetwork): DataNftOnNetwork {
     const metadata = new TransactionDecoder().getTransactionMetadata(
       {
         sender: payload.sender.bech32(),
@@ -79,7 +81,7 @@ export class DataNftOnNetwork {
       DataNftOnNetwork.addOfferIndex += 1;
       result.id = DataNftOnNetwork.addOfferIndex;
 
-      if (result.transfers[0].properties?.identifier === token_identifier) {
+      if (result.transfers[0].properties?.identifier === DataNftOnNetwork.token_identifier) {
         DataNftOnNetwork.ids.push(result.id);
       }
     }
@@ -92,44 +94,31 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
 
   const result: TransactionInTable[] = [];
 
-  payload.forEach((item) => {
-    switch (item.method) {
-      case "addOffer" || "burn":
-        result.push({
-          hash: item.hash,
-          timestamp: item.timestamp,
-          from: item.from,
-          to: item.to,
-          method: item.method,
-          value: item.transfers[0].value.toString(),
 
-        });
+  payload.forEach((item) => {
+    let value = "";
+    switch (item.method) {
+      case "addOffer":
+        value = item.transfers[0].value.toString();
         break;
       case "acceptOffer":
-        result.push({
-          hash: item.hash,
-          timestamp: item.timestamp,
-          from: item.from,
-          to: item.to,
-          method: item.method,
-          value: item.transfers[0].value.toString(),
-        });
+        value = convertWeiToEsdt(Number(item.transfers[0].value)).toString();
         break;
-
       case "changeOfferPrice":
-      case "cancelOffer":
-        result.push({
-          hash: item.hash,
-          timestamp: item.timestamp,
-          from: item.from,
-          to: item.to,
-          method: item.method,
-          value: parseInt(item.methodArgs[1], 16).toString()
-        });
+        value = convertWeiToEsdt(parseInt(item.methodArgs[1], 16)).toString();
         break;
-
-
+      case "cancelOffer":
+        value = parseInt(item.methodArgs[1], 16).toString();
+        break;
     }
+    result.push({
+      hash: item.hash,
+      timestamp: item.timestamp,
+      from: item.from,
+      to: item.to,
+      method: item.method,
+      value: value
+    });
   });
   return result.reverse();
 };
