@@ -61,7 +61,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
   const [itheumPrice, setItheumPrice] = useState<number>(0);
 
-  const owner = props.owner || "";
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
@@ -273,10 +272,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <ExternalLinkIcon mx="4px" />
                       </Link>
                     </Box>
-                    {owner && (
+                    {offer && offer.owner && (
                       <Box color="gray.400" fontSize="lg">
-                        Owner: <ShortAddress fontSize="lg" address={owner}></ShortAddress>
-                        <Link href={`${ChainExplorer}/accounts/${owner}`} isExternal>
+                        Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
+                        <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                           <ExternalLinkIcon mx="4px" />
                         </Link>
                       </Box>
