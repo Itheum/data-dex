@@ -89,7 +89,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
-  const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g;
+  // Function to transform description that have a link into an actual link
+  const transformDescription = (description: string) => {
+    const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
+
+    return description.split(regex).map((word, i) => {
+      if (word?.match(regex)) {
+        return (
+          <Link key={i} href={word} isExternal color={"blue.300"}>
+            {" " + word}
+          </Link>
+        );
+      }
+      return word;
+    });
+  };
+
   const onBurn = () => {
     if (!address) {
       toast({
@@ -285,57 +300,33 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   {item.title}
                 </Text>
 
-                <Flex flexGrow="1">
-                  <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
-                    {item.description.replace(regex, " ")}
-                    {item.description
-                      .toString()
-                      .split(regex)
-                      .map((word, i) => {
-                        if (word?.match(regex)) {
-                          return (
-                            <Link key={i} href={word} isExternal color={"blue.300"}>
-                              {word}
-                            </Link>
-                          );
-                        }
-                      })}
-                  </Text>
-                </Flex>
-              </div>
-            </PopoverTrigger>
-            <PopoverContent mx="2" width="220px" mt="-7">
-              <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
-              <PopoverArrow />
-              <PopoverCloseButton />
-              <PopoverBody>
-                <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                  {item.description.replace(regex, " ")}
-                  {item.description
-                    .toString()
-                    .split(regex)
-                    .map((word, i) => {
-                      if (word?.match(regex)) {
-                        return (
-                          <Link key={i} href={word} isExternal color={"blue.300"}>
-                            {word}
-                          </Link>
-                        );
-                      }
-                    })}
+              <Flex flexGrow="1">
+                <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                  {transformDescription(item.description)}
                 </Text>
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
-          <Box>
-            {
-              <Box color="gray.600" fontSize="sm">
-                Creator: <ShortAddress address={item.creator}></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon mx="2px" />
-                </Link>
-              </Box>
-            }
+              </Flex>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent mx="2" width="220px" mt="-7">
+            <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverBody>
+              <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
+                {transformDescription(item.description)}
+              </Text>
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+        <Box>
+          {
+            <Box color="gray.600" fontSize="sm">
+              Creator: <ShortAddress address={item.creator}></ShortAddress>
+              <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                <ExternalLinkIcon mx="2px" />
+              </Link>
+            </Box>
+          }
 
             <Box color="gray.600" fontSize="sm">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}

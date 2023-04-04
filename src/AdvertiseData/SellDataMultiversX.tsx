@@ -225,11 +225,31 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .url("Data Stream must be URL")
-      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`),
+      .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
+      .test("is-distinct", "Data Stream URL must be distinct from Data Preview URL", function (value) {
+        return value !== this.parent.dataPreviewUrlForm;
+      })
+      .test("is-200", "Data Stream URL must be public", async function (value: string) {
+        const { isSuccess, message } = await checkUrlReturns200(value);
+        if (!isSuccess) {
+          return this.createError({ message });
+        }
+        return true;
+      }),
     dataPreviewUrlForm: Yup.string()
       .required("Data Preview URL is required")
       .url("Data Preview must be URL")
-      .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`),
+      .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
+      .test("is-distinct", "Data Preview URL must be distinct from Data Stream URL", function (value) {
+        return value !== this.parent.dataStreamUrlForm;
+      })
+      .test("is-200", "Data Stream URL must be public", async function (value: string) {
+        const { isSuccess, message } = await checkUrlReturns200(value);
+        if (!isSuccess) {
+          return this.createError({ message });
+        }
+        return true;
+      }),
     tokenNameForm: Yup.string()
       .required("Token name is required")
       .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
@@ -237,17 +257,23 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .max(20, "Token name must have maximum of 20 characters."),
     datasetTitleForm: Yup.string()
       .required("Dataset title is required")
+      .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
-      .max(50, "Dataset title must have maximum of 50 characters."),
+      .max(30, "Dataset title must have maximum of 30 characters."),
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
       .max(400, "Dataset description must have maximum of 400 characters."),
     numberOfCopiesForm: Yup.number()
+      .typeError("Number of copies must be a number.")
       .min(1, "Minimum number of copies should be 1 or greater.")
-      .max(20, "Number of copies should be less than 20.")
+      .max(maxSupply, `Number of copies should be less than ${maxSupply}.`)
       .required("Number of copies is required"),
-    royaltiesForm: Yup.number().min(0, "Minimum value of royalties is 0%.").max(80, "Maximum value of royalties is 80%.").required("Royalties is required"),
+    royaltiesForm: Yup.number()
+      .typeError("Royalties must be a number.")
+      .min(0, "Minimum value of royalties is 0%.")
+      .max(maxRoyalties, `Maximum value of royalties is ${maxRoyalties}`)
+      .required("Royalties is required"),
   });
 
   // Destructure the methods needed from React Hook Form useForm component
@@ -271,7 +297,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
-  }; // here you can make every logic that we want to happen on submit
+  }; // here you can make logic that you want to happen on submit
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
@@ -1083,7 +1109,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
                   <Input
                     mt="1 !important"
-                    placeholder="NFT Token Name"
+                    placeholder="Between 3 and 20 alphanumeric characters only"
                     id="tokenNameForm"
                     value={dataNFTTokenName}
                     {...register("tokenNameForm")}
@@ -1091,7 +1117,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       onChangeDataNFTTokenName(event.currentTarget.value);
                     }}
                   />
-                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
+                  {/*<Text color="gray.400" fontSize="sm" mt="0.5 !important">*/}
                   {/*  Between 3 and 20 alphanumeric characters only*/}
                   {/*</Text>*/}
                   <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
@@ -1106,7 +1132,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
                   <Input
                     mt="1 !important"
-                    placeholder="Dataset Title"
+                    placeholder="Between 10 and 30 alphanumeric characters only"
                     id="datasetTitleForm"
                     value={datasetTitle}
                     {...register("datasetTitleForm")}
@@ -1127,7 +1153,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
                   <Textarea
                     mt="1 !important"
-                    placeholder="Enter a description here"
+                    placeholder="Between 10 and 400 characters only. URL allowed."
                     id={"datasetDescriptionForm"}
                     {...register("datasetDescriptionForm")}
                     onChange={(event) => {
@@ -1137,7 +1163,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                 </FormControl>
                 {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                {/*  Between 10 and 250 characters only. URL allowed. Markdown (MD) allowed.*/}
+                {/*  Between 10 and 250 characters only. URL allowed.*/}
                 {/*</Text>*/}
                 {/*{userFocusedForm && datasetDescriptionError && (*/}
                 {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
@@ -1161,7 +1187,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     step={1}
                     defaultValue={1}
                     min={1}
-                    max={20}
+                    value={dataNFTCopies}
+                    max={maxSupply > 0 ? maxSupply : 1}
                     isValidCharacter={isValidNumericCharacter}
                     onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
                     <NumberInputField />
@@ -1172,9 +1199,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   </NumberInput>
                   <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                 </FormControl>
-                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                {/*  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}*/}
-                {/*</Text>*/}
+                <Text color="gray.400" fontSize="sm" mt="1 !important">
+                  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                </Text>
                 {/*{userFocusedForm && dataNFTCopiesError && (*/}
                 {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
                 {/*    {dataNFTCopiesError}*/}
@@ -1208,9 +1235,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   </NumberInput>
                   <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
                 </FormControl>
-                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                {/*  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%*/}
-                {/*</Text>*/}
+                <Text color="gray.400" fontSize="sm" mt="1 !important">
+                  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                </Text>
                 {/*{userFocusedForm && dataNFTRoyaltyError && (*/}
                 {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
                 {/*    {dataNFTRoyaltyError}*/}
