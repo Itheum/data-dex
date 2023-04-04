@@ -117,6 +117,7 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
         break;
 
       case "changeOfferPrice":
+      case "cancelOffer":
         result.push({
           hash: item.hash,
           timestamp: item.timestamp,
@@ -126,9 +127,10 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
           value: parseInt(item.methodArgs[1], 16).toString()
         });
         break;
+
+
     }
   });
-
   return result.reverse();
 };
 

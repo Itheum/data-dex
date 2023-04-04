@@ -98,8 +98,9 @@ export default function TokenTxTable(props: TokenTableProps) {
   useEffect(() => {
     const apiUrl = getApi(_chainMeta.networkId);
     let dataNfts: DataNftOnNetwork[] = [];
-    axios.get(`https://${apiUrl}/accounts/erd1qqqqqqqqqqqqqpgqw29wx58pzm7zau2zcprfk93a60hw8vnvfsxs25rqjm/transactions?status=success&function=addOffer%2CacceptOffer%2CchangeOfferPrice%2Cburn&size=10000&order=asc`).then((res) => {
+    axios.get(`https://${apiUrl}/accounts/erd1qqqqqqqqqqqqqpgqw29wx58pzm7zau2zcprfk93a60hw8vnvfsxs25rqjm/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`).then((res) => {
       const txs = res.data;
+      console.log(txs);
       DataNftOnNetwork.ids = [];
       DataNftOnNetwork.addOfferIndex = 0;
       dataNfts = txs.map((tx: any) =>
@@ -108,9 +109,6 @@ export default function TokenTxTable(props: TokenTableProps) {
       console.log(DataNftOnNetwork.ids);
       const history = buildHistory(dataNfts);
       console.log(dataNfts);
-
-
-
       setData(history);
     });
   }, []);
