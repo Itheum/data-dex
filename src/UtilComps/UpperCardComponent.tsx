@@ -22,7 +22,7 @@ import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
@@ -63,22 +63,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
-
-  // Function to transform description that have a link into an actual link
-  const transformDescription = (description: string) => {
-    const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
-
-    return description.split(regex).map((word, i) => {
-      if (word?.match(regex)) {
-        return (
-          <Link key={i} href={word} isExternal color={"blue.300"}>
-            {" " + word}
-          </Link>
-        );
-      }
-      return word;
-    });
-  };
 
   useEffect(() => {
     setFeePrice(
@@ -224,12 +208,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             marketFreezedNonces &&
-              item &&
-              userData &&
-              (userData.addressFrozen ||
-                (userData.frozenNonces &&
-                  item &&
-                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+            item &&
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
