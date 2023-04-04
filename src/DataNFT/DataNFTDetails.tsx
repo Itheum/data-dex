@@ -212,14 +212,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 flexDirection={{ base: "column", md: "row" }}
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
-                {
-                  offerId ? <Link
-                    as={ReactRouterLink}
-                    to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
-                    minW={{ base: "240px", md: "400px" }} p={10}>
-                    <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                  </Link> : <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                }
+                <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
                   <Flex direction="row" alignItems="center" gap="3">
