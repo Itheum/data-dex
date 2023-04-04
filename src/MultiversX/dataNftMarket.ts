@@ -263,6 +263,7 @@ export class DataNftMarketContract {
       .setFunction(new ContractFunction("cancelOffer"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(delistAmount))
+      .addArg(new BooleanValue(true))
       .build();
 
     const tx = new Transaction({
