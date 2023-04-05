@@ -1,5 +1,5 @@
-import { TokenPayment } from "@multiversx/sdk-core/out";
-import { TransactionLogs, TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { BytesValue, StringValue, TokenIdentifierType, TokenIdentifierValue } from "@multiversx/sdk-core/out";
+import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
@@ -80,7 +80,6 @@ export class DataNftOnNetwork {
     if (result.method === "addOffer") {
       DataNftOnNetwork.addOfferIndex += 1;
       result.id = DataNftOnNetwork.addOfferIndex;
-
       if (result.transfers[0].properties?.identifier === DataNftOnNetwork.token_identifier) {
         DataNftOnNetwork.ids.push(result.id);
       }
@@ -95,14 +94,17 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
   const result: TransactionInTable[] = [];
 
 
+
   payload.forEach((item) => {
     let value = "";
+    const { identifier } = item.transfers[0].properties || {};
+    const identifierSplited = (identifier || '').split('-')[0];
     switch (item.method) {
       case "addOffer":
         value = item.transfers[0].value.toString();
         break;
       case "acceptOffer":
-        value = convertWeiToEsdt(Number(item.transfers[0].value)).toString();
+        value = convertWeiToEsdt(Number(item.transfers[0].value)).toString() + " " + identifierSplited;
         break;
       case "changeOfferPrice":
         value = convertWeiToEsdt(parseInt(item.methodArgs[1], 16)).toString();
