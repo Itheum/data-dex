@@ -14,9 +14,5 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-<<<<<<< HEAD
-  "typescript.tsdk": "node_modules/typescript/lib"
-=======
   "typescript.tsdk": "node_modules\\typescript\\lib"
->>>>>>> origin/feature/data-nft-market
 }

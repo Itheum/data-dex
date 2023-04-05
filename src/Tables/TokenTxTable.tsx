@@ -104,18 +104,8 @@ export default function TokenTxTable(props: TokenTableProps) {
       axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
       axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`)
     ]).then((responses) => {
-      const txs1 = responses[0].data;
-      const txs2 = responses[1].data;
-
-      const transactionsWithId1 = getHistory(txs1, props.tokenId);
-      const transactionsWithId2 = getHistory(txs2, props.tokenId);
-
-      const mergedTransactions = transactionsWithId1.concat(transactionsWithId2);
-
-      console.log(mergedTransactions);
-
+      const mergedTransactions = getHistory(responses, props.tokenId);
       const history = buildHistory(mergedTransactions);
-
       setData(history);
     });
 
@@ -126,15 +116,22 @@ export default function TokenTxTable(props: TokenTableProps) {
 
 
 
-function getHistory(txs: any, tokenId?: string) {
+function getHistory(responses: any[], tokenId?: string) {
   DataNftOnNetwork.ids = [];
   DataNftOnNetwork.token_identifier = tokenId;
   DataNftOnNetwork.addOfferIndex = 0;
-  const transactionsWithId = txs.map((tx: any) => {
-    const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
-    return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
-  }).filter((data: DataNftOnNetwork) => {
-    return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
+  const transactionsWithId: DataNftOnNetwork[] = [];
+
+  responses.forEach((response: any) => {
+    const txs = response.data;
+    const transactions = txs.map((tx: any) => {
+      const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
+      return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
+    });
+    const filteredTransactions = transactions.filter((data: DataNftOnNetwork) => {
+      return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
+    });
+    transactionsWithId.push(...filteredTransactions);
   });
   return transactionsWithId;
 }
