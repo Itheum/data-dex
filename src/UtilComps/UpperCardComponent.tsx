@@ -22,7 +22,7 @@ import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
@@ -217,12 +217,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             marketFreezedNonces &&
-              item &&
-              userData &&
-              (userData.addressFrozen ||
-                (userData.frozenNonces &&
-                  item &&
-                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+            item &&
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
