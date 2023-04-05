@@ -103,7 +103,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 && ('/' + newPageIndex)}`);
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? ('/' + newPageIndex) : ''}`);
   };
 
   const onGotoPage = useThrottle((newPageIndex: number) => {

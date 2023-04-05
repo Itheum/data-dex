@@ -61,7 +61,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
   const [itheumPrice, setItheumPrice] = useState<number>(0);
 
-  const owner = props.owner || "";
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
@@ -213,13 +212,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 flexDirection={{ base: "column", md: "row" }}
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
-                {offerId ? (
-                  <Link as={ReactRouterLink} to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`} minW={{ base: "240px", md: "400px" }} p={10}>
-                    <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                  </Link>
-                ) : (
-                  <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                )}
+                <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
                   <Flex direction="row" alignItems="center" gap="3">
@@ -270,10 +263,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <ExternalLinkIcon mx="4px" />
                       </Link>
                     </Box>
-                    {owner && (
+                    {offer && offer.owner && (
                       <Box color="gray.400" fontSize="lg">
-                        Owner: <ShortAddress fontSize="lg" address={owner}></ShortAddress>
-                        <Link href={`${ChainExplorer}/accounts/${owner}`} isExternal>
+                        Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
+                        <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                           <ExternalLinkIcon mx="4px" />
                         </Link>
                       </Box>
