@@ -112,6 +112,10 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
       case "cancelOffer":
         value = parseInt(item.methodArgs[1], 16).toString();
         break;
+      case "burn":
+        value = item.transfers[0].value.toString();
+        break;
+
     }
     result.push({
       hash: item.hash,
@@ -122,7 +126,7 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
       value: value
     });
   });
-  return result.reverse();
+  return result.sort((a: TransactionInTable, b: TransactionInTable) => b.timestamp - a.timestamp);
 };
 
 

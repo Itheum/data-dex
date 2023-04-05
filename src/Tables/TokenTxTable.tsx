@@ -99,10 +99,23 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   useEffect(() => {
     const apiUrl = getApi(_chainMeta.networkId);
-    axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`).then((res) => {
-      const txs = res.data;
-      const transactionsWithId = getHistory(txs, props.tokenId);
-      const history = buildHistory(transactionsWithId);
+
+    Promise.all([
+      axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
+      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`)
+    ]).then((responses) => {
+      const txs1 = responses[0].data;
+      const txs2 = responses[1].data;
+
+      const transactionsWithId1 = getHistory(txs1, props.tokenId);
+      const transactionsWithId2 = getHistory(txs2, props.tokenId);
+
+      const mergedTransactions = transactionsWithId1.concat(transactionsWithId2);
+
+      console.log(mergedTransactions);
+
+      const history = buildHistory(mergedTransactions);
+
       setData(history);
     });
 
