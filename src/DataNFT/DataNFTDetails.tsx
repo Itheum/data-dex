@@ -28,7 +28,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment";
 import { useNavigate, useParams, Link as ReactRouterLink } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
-import { convertToLocalString, printPrice } from "libs/util2";
+import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
 import { getApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -61,7 +61,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
   const [itheumPrice, setItheumPrice] = useState<number>(0);
 
-  const owner = props.owner || "";
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
@@ -179,8 +178,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return esdtPrice > 0
       ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-        ? "Listing Price: FREE"
-        : "Not Listed";
+      ? "Listing Price: FREE"
+      : "Not Listed";
   }
 
   return (
@@ -213,22 +212,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 flexDirection={{ base: "column", md: "row" }}
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
-                {
-                  offerId ? <Link
-                    as={ReactRouterLink}
-                    to={`/dataNfts/marketplace/${tokenId}/offer-${offerId}`}
-                    minW={{ base: "240px", md: "400px" }} p={10}>
-                    <Image boxSize={{ base: "240px", md: "400px" }} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                  </Link> : <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
-                }
+                <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
                   <Flex direction="row" alignItems="center" gap="3">
                     <Text fontSize="36px" noOfLines={2}>
                       {nftData.attributes?.title}
                     </Text>
-                    {
-                      !!offerId && <Button
+                    {!!offerId && (
+                      <Button
                         fontSize="xl"
                         onClick={() => {
                           onCopy();
@@ -240,7 +232,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         }}>
                         <CopyIcon />
                       </Button>
-                    }
+                    )}
                   </Flex>
 
                   <Box color="gray.100" fontSize="xl">
@@ -260,9 +252,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     )}
                   </Flex>
-                  <Text fontSize={"22px"}>
-                    {nftData.attributes?.description}
-                  </Text>
+                  <Text fontSize={"22px"}>{transformDescription(nftData.attributes?.description)}</Text>
                   <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">
                     Fully Transferable License
                   </Badge>
@@ -273,10 +263,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <ExternalLinkIcon mx="4px" />
                       </Link>
                     </Box>
-                    {owner && (
+                    {offer && offer.owner && (
                       <Box color="gray.400" fontSize="lg">
-                        Owner: <ShortAddress fontSize="lg" address={owner}></ShortAddress>
-                        <Link href={`${ChainExplorer}/accounts/${owner}`} isExternal>
+                        Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
+                        <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                           <ExternalLinkIcon mx="4px" />
                         </Link>
                       </Box>
@@ -286,8 +276,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <Text fontSize="lg">{`Creation time: ${moment(nftData.attributes?.creationTime).format(uxConfig.dateStr)}`}</Text>
                   </Box>
                   <Flex direction={"column"} gap="1" color="gray.400" fontSize="lg">
-                    {
-                      !!offerId && (<>
+                    {!!offerId && (
+                      <>
                         <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
                         <Text>{`Total supply: ${nftData.supply}`}</Text>
                         <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
@@ -297,31 +287,31 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             <>
                               {printPrice(
                                 convertWeiToEsdt(
-                                  new BigNumber(offer.wanted_token_amount)
-                                    .multipliedBy(10000)
-                                    .div(10000 + marketRequirements.buyer_fee),
+                                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
                                   tokenDecimals(offer.wanted_token_identifier)
                                 ).toNumber(),
                                 getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                               )}{" "}
-                              {itheumPrice && convertWeiToEsdt(new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
+                              {itheumPrice &&
+                              convertWeiToEsdt(
+                                new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                tokenDecimals(offer.wanted_token_identifier)
+                              ).toNumber() > 0
                                 ? `(${convertToLocalString(
-                                  convertWeiToEsdt(
-                                    new BigNumber(offer.wanted_token_amount)
-                                      .multipliedBy(10000)
-                                      .div(10000 + marketRequirements.buyer_fee),
-                                    tokenDecimals(offer.wanted_token_identifier)
-                                  ).toNumber() * itheumPrice,
-                                  2
-                                )} USD)`
+                                    convertWeiToEsdt(
+                                      new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                      tokenDecimals(offer.wanted_token_identifier)
+                                    ).toNumber() * itheumPrice,
+                                    2
+                                  )} USD)`
                                 : ""}
                             </>
                           ) : (
                             "-"
                           )}
                         </Text>
-                      </>)
-                    }
+                      </>
+                    )}
                   </Flex>
 
                   <Button
@@ -385,7 +375,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} />
             </Box>
           </VStack>
 

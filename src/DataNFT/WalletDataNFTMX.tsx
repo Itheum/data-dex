@@ -44,7 +44,7 @@ import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
 import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep } from "libs/util";
-import { convertToLocalString } from "libs/util2";
+import { convertToLocalString, transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -96,22 +96,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }, 60_000);
     return () => clearInterval(interval);
   }, []);
-
-  // Function to transform description that have a link into an actual link
-  const transformDescription = (description: string) => {
-    const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
-
-    return description.split(regex).map((word, i) => {
-      if (word?.match(regex)) {
-        return (
-          <Link key={i} href={word} isExternal color={"blue.300"}>
-            {" " + word}
-          </Link>
-        );
-      }
-      return word;
-    });
-  };
 
   const onBurn = () => {
     if (!address) {
@@ -501,8 +485,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
                     <Text fontSize="md" mt="4">
                       Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
-                      one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not be
-                      able to recover them again.
+                      one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not
+                      be able to recover them again.
                     </Text>
 
                     <HStack mt="8">

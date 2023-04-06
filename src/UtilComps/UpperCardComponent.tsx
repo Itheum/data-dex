@@ -22,7 +22,7 @@ import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getApi } from "../MultiversX/api";
 import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
@@ -61,9 +61,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
-  const [feePrice, setFeePrice] = useState<string>("");
-  const [fee, setFee] = useState<number>(0);
-
   // Function to transform description that have a link into an actual link
   const transformDescription = (description: string) => {
     const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
@@ -80,15 +77,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     });
   };
 
-  useEffect(() => {
-    setFeePrice(
-      printPrice(
-        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
-      )
-    );
-    setFee(convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber());
-  }, []);
+  const feePrice = item ? printPrice(
+    convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber(),
+    getTokenWantedRepresentation(item?.wanted_token_identifier, item.wanted_token_nonce)
+  ) : '';
+  const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
 
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
@@ -224,12 +217,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           rounded="lg"
           visibility={
             marketFreezedNonces &&
-              item &&
-              userData &&
-              (userData.addressFrozen ||
-                (userData.frozenNonces &&
-                  item &&
-                  (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
+            item &&
+            userData &&
+            (userData.addressFrozen ||
+              (userData.frozenNonces &&
+                item &&
+                (userData.frozenNonces.includes(item.offered_token_nonce) || marketFreezedNonces.includes(item.offered_token_nonce))))
               ? "visible"
               : "collapse"
           }>
