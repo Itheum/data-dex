@@ -89,6 +89,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
   const onBurn = () => {
     if (!address) {
       toast({
@@ -159,15 +167,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     })();
   };
 
-  useEffect(() => {
-    getItheumPrice();
-    const interval = setInterval(() => {
-      getItheumPrice();
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const accessDataStream = async (NFTid: string, myAddress: string) => {
+  const accessDataStream = async (dataMarshal: string, NFTId: string, myAddress: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -177,8 +177,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalOpen();
 
     try {
-      // const chainId = _chainMeta.networkId;
-      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/preaccess?chainId=${_chainMeta.networkId}`);
+      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -201,7 +200,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           const link = document.createElement("a");
           link.target = "_blank";
           link.setAttribute("target", "_blank");
-          link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
+          link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
           await sleep(3);
@@ -250,10 +249,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmountError(error);
     setDataNftBurnAmount(valueAsNumber);
   };
-
-  useEffect(() => {
-    console.log(item);
-  }, [item]);
 
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
@@ -324,7 +319,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               Fully Transferable License
             </Badge>
 
-            <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(_e) => onBurnButtonClick(item)}>
+            <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={() => onBurnButtonClick(item)}>
               Burn
             </Button>
 
@@ -340,7 +335,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 height="7"
                 onClick={() => {
-                  accessDataStream(item.id, address);
+                  accessDataStream(item.dataMarshal, item.id, address);
                 }}>
                 View Data
               </Button>

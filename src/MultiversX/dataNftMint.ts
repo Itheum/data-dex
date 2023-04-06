@@ -8,10 +8,7 @@ import {
   TransactionPayload,
   ContractFunction,
   BigUIntValue,
-  BytesValue,
   StringValue,
-  TokenPayment,
-  ArgSerializer,
   TokenIdentifierValue,
   U64Value,
   AddressValue,
@@ -56,7 +53,7 @@ export class DataNftMintContract {
     name,
     media,
     metadata,
-    data_marchal,
+    data_marshal,
     data_stream,
     data_preview,
     royalties,
@@ -70,7 +67,7 @@ export class DataNftMintContract {
     name: string;
     media: string;
     metadata: string;
-    data_marchal: string;
+    data_marshal: string;
     data_stream: string;
     data_preview: string;
     royalties: number;
@@ -91,7 +88,7 @@ export class DataNftMintContract {
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
         .addArg(new StringValue(metadata))
-        .addArg(new StringValue(data_marchal))
+        .addArg(new StringValue(data_marshal))
         .addArg(new StringValue(data_stream))
         .addArg(new StringValue(data_preview))
         .addArg(new BigUIntValue(royalties))
@@ -104,7 +101,7 @@ export class DataNftMintContract {
         .setFunction(new ContractFunction("mint"))
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
-        .addArg(new StringValue(data_marchal))
+        .addArg(new StringValue(data_marshal))
         .addArg(new StringValue(data_stream))
         .addArg(new StringValue(data_preview))
         .addArg(new BigUIntValue(royalties))
@@ -158,7 +155,7 @@ export class DataNftMintContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "Burning Data NFT",
-        errorMessage: "Error occured",
+        errorMessage: "Error occurred during burning NFT",
         successMessage: "Data NFT burnt",
       },
       redirectAfterSign: false,

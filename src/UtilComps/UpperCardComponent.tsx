@@ -61,18 +61,27 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
-  const [feePrice, setFeePrice] = useState<string>("");
-  const [fee, setFee] = useState<number>(0);
+  // Function to transform description that have a link into an actual link
+  const transformDescription = (description: string) => {
+    const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
 
-  useEffect(() => {
-    setFeePrice(
-      printPrice(
-        convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(item?.wanted_token_identifier, item?.wanted_token_nonce)
-      )
-    );
-    setFee(convertWeiToEsdt(item?.wanted_token_amount as BigNumber.Value, tokenDecimals(item?.wanted_token_identifier)).toNumber());
-  }, []);
+    return description.split(regex).map((word, i) => {
+      if (word?.match(regex)) {
+        return (
+          <Link key={i} href={word} isExternal color={"blue.300"}>
+            {" " + word}
+          </Link>
+        );
+      }
+      return word;
+    });
+  };
+
+  const feePrice = item ? printPrice(
+    convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber(),
+    getTokenWantedRepresentation(item?.wanted_token_identifier, item.wanted_token_nonce)
+  ) : '';
+  const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
 
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
