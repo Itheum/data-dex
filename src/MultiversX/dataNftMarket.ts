@@ -5,17 +5,13 @@ import {
   Address,
   ResultsParser,
   BigUIntValue,
-  VariadicValue,
   Transaction,
   TransactionPayload,
   ContractFunction,
-  List,
   U64Value,
-  TokenPayment,
   TokenIdentifierValue,
   AddressValue,
   StringValue,
-  TypedValue,
   U32Value,
   AddressType,
   OptionalValue,
@@ -124,8 +120,8 @@ export class DataNftMarketContract {
       transactions: offerEsdtTx,
       transactionsDisplayInfo: {
         processingMessage: "Accepting offer",
-        errorMessage: "Error occured during accepting offer",
-        successMessage: "Offer accepted successfuly",
+        errorMessage: "Error occurred during accepting offer",
+        successMessage: "Offer accepted successfully",
       },
       redirectAfterSign: false,
     });
@@ -158,8 +154,8 @@ export class DataNftMarketContract {
       transactions: offerEsdtTx,
       transactionsDisplayInfo: {
         processingMessage: "Accepting offer",
-        errorMessage: "Error occured during accepting offer",
-        successMessage: "Offer accepted successfuly",
+        errorMessage: "Error occurred during accepting offer",
+        successMessage: "Offer accepted successfully",
       },
       redirectAfterSign: false,
     });
@@ -187,8 +183,8 @@ export class DataNftMarketContract {
       transactions: offerEgldTx,
       transactionsDisplayInfo: {
         processingMessage: "Accepting offer",
-        errorMessage: "Error occured during accepting offer",
-        successMessage: "Offer accepted successfuly",
+        errorMessage: "Error occurred during accepting offer",
+        successMessage: "Offer accepted successfully",
       },
       redirectAfterSign: false,
     });
@@ -216,8 +212,8 @@ export class DataNftMarketContract {
       transactions: cancelTx,
       transactionsDisplayInfo: {
         processingMessage: "Cancelling offer",
-        errorMessage: "Error occured during offer cancellation",
-        successMessage: "Offer cancelled successfuly",
+        errorMessage: "Error occurred during offer cancellation",
+        successMessage: "Offer cancelled successfully",
       },
       redirectAfterSign: false,
     });
@@ -251,7 +247,7 @@ export class DataNftMarketContract {
       transactions: addERewTx,
       transactionsDisplayInfo: {
         processingMessage: "Adding Data NFT to marketplace",
-        errorMessage: "Error occured",
+        errorMessage: "Error occurred",
         successMessage: "Data NFT added to marketplace",
       },
       redirectAfterSign: false,
@@ -281,8 +277,8 @@ export class DataNftMarketContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "De-Listing offer",
-        errorMessage: "Error occured during de-listing offer",
-        successMessage: "Offer de-listed successfuly",
+        errorMessage: "Error occurred during de-listing offer",
+        successMessage: "Offer de-listed successfully",
       },
       redirectAfterSign: false,
     });
