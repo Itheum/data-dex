@@ -31,6 +31,7 @@ import { useChainMeta } from "../store/ChainMetaContext";
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
+  imageUrl: string;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
   marketRequirements: MarketplaceRequirementsType | undefined;
@@ -46,6 +47,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const {
     nftImageLoading,
     setNftImageLoaded,
+    imageUrl,
     nftMetadatas,
     userData,
     index,
@@ -77,10 +79,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     });
   };
 
-  const feePrice = item ? printPrice(
-    convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber(),
-    getTokenWantedRepresentation(item?.wanted_token_identifier, item.wanted_token_nonce)
-  ) : '';
+  const feePrice = item
+    ? printPrice(
+        convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber(),
+        getTokenWantedRepresentation(item?.wanted_token_identifier, item.wanted_token_nonce)
+      )
+    : "";
   const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
 
   return (
@@ -88,7 +92,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
       <Box maxW="230px" borderWidth="1px" borderRadius="lg" position="relative">
         <Flex justifyContent="center" pt={3}>
           <Image
-            src={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
+            src={imageUrl}
             alt={"item.dataPreview"}
             h={200}
             w={200}
