@@ -374,7 +374,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 <Spacer />
 
                 <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                  Send me 50 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                  Send me 1000 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
                 </Button>
               </Stack>
             </Box>
