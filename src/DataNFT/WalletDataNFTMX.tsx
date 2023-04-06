@@ -89,6 +89,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Function to transform description that have a link into an actual link
   const transformDescription = (description: string) => {
     const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
@@ -175,15 +183,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     })();
   };
 
-  useEffect(() => {
-    getItheumPrice();
-    const interval = setInterval(() => {
-      getItheumPrice();
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const accessDataStream = async (NFTid: string, myAddress: string) => {
+  const accessDataStream = async (dataMarshal: string, NFTId: string, myAddress: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -193,8 +193,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalOpen();
 
     try {
-      // const chainId = _chainMeta.networkId;
-      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/preaccess?chainId=${_chainMeta.networkId}`);
+      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -217,7 +216,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           const link = document.createElement("a");
           link.target = "_blank";
           link.setAttribute("target", "_blank");
-          link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
+          link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
           await sleep(3);
@@ -267,10 +266,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
-  useEffect(() => {
-    console.log(item);
-  }, [item]);
-
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" mb="1rem" position="relative" w="13.5rem">
@@ -300,33 +295,33 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   {item.title}
                 </Text>
 
-              <Flex flexGrow="1">
-                <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                <Flex flexGrow="1">
+                  <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                    {transformDescription(item.description)}
+                  </Text>
+                </Flex>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent mx="2" width="220px" mt="-7">
+              <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
+              <PopoverArrow />
+              <PopoverCloseButton />
+              <PopoverBody>
+                <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
                   {transformDescription(item.description)}
                 </Text>
-              </Flex>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent mx="2" width="220px" mt="-7">
-            <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverBody>
-              <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
-                {transformDescription(item.description)}
-              </Text>
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
-        <Box>
-          {
-            <Box color="gray.600" fontSize="sm">
-              Creator: <ShortAddress address={item.creator}></ShortAddress>
-              <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                <ExternalLinkIcon mx="2px" />
-              </Link>
-            </Box>
-          }
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+          <Box>
+            {
+              <Box color="gray.600" fontSize="sm">
+                Creator: <ShortAddress address={item.creator}></ShortAddress>
+                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                  <ExternalLinkIcon mx="2px" />
+                </Link>
+              </Box>
+            }
 
             <Box color="gray.600" fontSize="sm">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -340,7 +335,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               Fully Transferable License
             </Badge>
 
-            <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={(_e) => onBurnButtonClick(item)}>
+            <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={() => onBurnButtonClick(item)}>
               Burn
             </Button>
 
@@ -356,7 +351,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 height="7"
                 onClick={() => {
-                  accessDataStream(item.id, address);
+                  accessDataStream(item.dataMarshal, item.id, address);
                 }}>
                 View Data
               </Button>
