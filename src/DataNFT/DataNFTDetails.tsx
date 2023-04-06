@@ -178,8 +178,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return esdtPrice > 0
       ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-      ? "Listing Price: FREE"
-      : "Not Listed";
+        ? "Listing Price: FREE"
+        : "Not Listed";
   }
 
   return (
@@ -276,11 +276,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <Text fontSize="lg">{`Creation time: ${moment(nftData.attributes?.creationTime).format(uxConfig.dateStr)}`}</Text>
                   </Box>
                   <Flex direction={"column"} gap="1" color="gray.400" fontSize="lg">
+                    {!!nftData && (
+                      <>
+                        <Text>{`Total supply: ${nftData.supply}`}</Text>
+                        <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
+                      </>
+                    )}
                     {!!offerId && (
                       <>
                         <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
-                        <Text>{`Total supply: ${nftData.supply}`}</Text>
-                        <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
                         <Text>
                           {`Fee per NFT: `}
                           {marketRequirements && offer ? (
@@ -293,17 +297,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                               )}{" "}
                               {itheumPrice &&
-                              convertWeiToEsdt(
-                                new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber() > 0
+                                convertWeiToEsdt(
+                                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                  tokenDecimals(offer.wanted_token_identifier)
+                                ).toNumber() > 0
                                 ? `(${convertToLocalString(
-                                    convertWeiToEsdt(
-                                      new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                      tokenDecimals(offer.wanted_token_identifier)
-                                    ).toNumber() * itheumPrice,
-                                    2
-                                  )} USD)`
+                                  convertWeiToEsdt(
+                                    new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                    tokenDecimals(offer.wanted_token_identifier)
+                                  ).toNumber() * itheumPrice,
+                                  2
+                                )} USD)`
                                 : ""}
                             </>
                           ) : (
