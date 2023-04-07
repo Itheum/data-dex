@@ -23,7 +23,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt } from "libs/util";
 import { createNftId } from "libs/util2";
-import { getAccountTokenFromApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
+import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -70,6 +70,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [items, setItems] = useState<ItemType[]>([
     {
       index: 0,
@@ -98,12 +99,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const marketplace = '/datanfts/marketplace/market';
+  const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
   console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? ('/' + newPageIndex) : ''}`);
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
   };
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
@@ -337,6 +338,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 <UpperCardComponent
                   key={index}
                   nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                  imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
                   setNftImageLoaded={setOneNFTImgLoaded}
                   nftMetadatas={nftMetadatas}
                   marketRequirements={marketRequirements}
@@ -380,8 +382,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         }
       </Stack>
 
-      {
-        offerForDrawer && (<>
+      {offerForDrawer && (
+        <>
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
             <DrawerContent>
@@ -402,8 +404,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               </DrawerBody>
             </DrawerContent>
           </Drawer>
-        </>)
-      }
+        </>
+      )}
     </>
   );
 };
