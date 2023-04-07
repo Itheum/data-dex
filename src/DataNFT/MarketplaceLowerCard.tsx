@@ -13,20 +13,13 @@ import {
   Text,
   useDisclosure,
   useToast,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
-  Modal,
-  Checkbox,
-  ModalHeader,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { printPrice } from "../libs/util2";
 import { getAccountTokenFromApi } from "../MultiversX/api";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { tokenDecimals, getTokenWantedRepresentation } from "../MultiversX/tokenUtils";
@@ -39,23 +32,22 @@ type MarketplaceLowerCardProps = {
   nftMetadatas: DataNftMetadataType[];
   index: number;
   itheumPrice: number | undefined;
+  marketRequirements: MarketplaceRequirementsType | undefined;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
-  const { item, index, offers, nftMetadatas, itheumPrice } = props;
-
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({
+  item, index, offers, nftMetadatas, itheumPrice, marketRequirements,
+}) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
-  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
   const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const contract = new DataNftMarketContract(_chainMeta.networkId);
   const [isMyNft, setIsMyNft] = useState<boolean>(false);
@@ -105,25 +97,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
       )
     );
     setFee(convertWeiToEsdt(item?.wanted_token_amount, tokenDecimals(item?.wanted_token_identifier)).toNumber());
-    (async () => {
-      const _marketRequirements = await contract.getRequirements();
-      // console.log("_marketRequirements", _marketRequirements);
-      setMarketRequirements(_marketRequirements);
-
-      if (_marketRequirements) {
-        const _maxPaymentFeeMap: Record<string, number> = {};
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
-          ).toNumber();
-        }
-        setMaxPaymentFeeMap(_maxPaymentFeeMap);
-        // console.log("_maxPaymentFeeMap", _maxPaymentFeeMap);
-      } else {
-        setMaxPaymentFeeMap({});
-      }
-    })();
   }, []);
 
   const onProcure = async () => {
@@ -160,7 +133,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = (props) => {
       return;
     }
     const offer = offers[selectedOfferIndex];
-    const paymentAmount = BigNumber(offer.wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]);
+    const paymentAmount = new BigNumber(offer.wanted_token_amount).multipliedBy(amountOfTokens[selectedOfferIndex]);
     if (offer.wanted_token_identifier == "EGLD") {
       contract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amountOfTokens[selectedOfferIndex], address);
     } else {

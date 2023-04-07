@@ -33,10 +33,13 @@ type MyListedDataLowerCardProps = {
   nftMetadatas: DataNftMetadataType[];
   index: number;
   itheumPrice: number | undefined;
+  marketRequirements: MarketplaceRequirementsType | undefined;
+  maxPaymentFeeMap: Record<string, number>;
 };
 
-const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
-  const { offers, index, nftMetadatas, itheumPrice } = props;
+const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
+  offers, index, nftMetadatas, itheumPrice, marketRequirements, maxPaymentFeeMap
+}) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const contract = new DataNftMarketContract(_chainMeta.networkId);
@@ -45,11 +48,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [delistAmount, setDelistAmount] = useState<number>(1);
   const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
-  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [delistAmountError, setDelistAmountError] = useState<string>("");
   const itheumToken = _chainMeta.contracts.itheumToken;
   const toast = useToast();
@@ -60,12 +61,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
     const _fee =
       marketRequirements && offers[selectedOfferIndex]
         ? convertWeiToEsdt(
-            BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-              .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
-              .multipliedBy(10000)
-              .div(10000 + (marketRequirements.buyer_fee as number)),
-            tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
-          ).toNumber()
+          new BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+            .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
+            .multipliedBy(10000)
+            .div(10000 + (marketRequirements.buyer_fee as number)),
+          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+        ).toNumber()
         : 0;
     setFee(_fee);
   }, [marketRequirements, selectedOfferIndex, offers]);
@@ -126,26 +127,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
 
   useEffect(() => {
     (async () => {
-      const _marketRequirements = await contract.getRequirements();
-      setMarketRequirements(_marketRequirements);
-
-      if (_marketRequirements) {
-        const _maxPaymentFeeMap: Record<string, number> = {};
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
-          ).toNumber();
-        }
-        setMaxPaymentFeeMap(_maxPaymentFeeMap);
-      } else {
-        setMaxPaymentFeeMap({});
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
       // init - no selection
       setSelectedOfferIndex(-1);
     })();
@@ -170,11 +151,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
         Preview Data
       </Button>
 
-      <Flex mt="2" gap="2">
+      <Flex justifyContent="space-between" mt="2" gap="2">
         <Button
           size="xs"
           colorScheme="teal"
-          width="90px"
+          width={"48%"}
           isDisabled={hasPendingTransactions}
           onClick={() => {
             setSelectedOfferIndex(index);
@@ -188,14 +169,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
         <Button
           size="xs"
           colorScheme="teal"
-          width="90px"
+          width={"48%"}
           isDisabled={hasPendingTransactions}
           onClick={() => {
             setSelectedOfferIndex(index);
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  BigNumber(offers[index].wanted_token_amount)
+                  new BigNumber(offers[index].wanted_token_amount)
                     .multipliedBy(amountOfTokens[index])
                     .multipliedBy(10000)
                     .div(10000 + marketRequirements.buyer_fee),
@@ -205,7 +186,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = (props) => {
             } else {
               setNewListingPrice(0);
             }
-            console.log(amountOfTokens[index]);
             onUpdatePriceModalOpen();
           }}>
           Update Price

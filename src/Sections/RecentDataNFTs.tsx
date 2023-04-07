@@ -53,7 +53,7 @@ const RecentDataNFTs = ({
   useEffect(() => {
     if (_chainMeta?.networkId) {
       (async () => {
-        const highestOfferIndex = await marketContract.getHighestOfferIndex(); // 53
+        const highestOfferIndex = await marketContract.getLastValidOfferId(); // 53
 
         // get latest 10 offers from the SC
         const startIndex = Math.max(highestOfferIndex - 11, 0); // 42
@@ -74,7 +74,7 @@ const RecentDataNFTs = ({
           if (_nft !== undefined) {
             const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
 
-            const tokenAmount = convertWeiToEsdt(BigNumber(offer.wanted_token_amount)).toNumber();
+            const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
 
             _latestOffers.push({
               data_nft_id: _nftMetaData.id,

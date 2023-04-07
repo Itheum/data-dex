@@ -13,6 +13,8 @@ import {
   DrawerHeader,
   DrawerBody,
   useDisclosure,
+  Skeleton,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -21,11 +23,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt } from "libs/util";
 import { createNftId } from "libs/util2";
-import { getAccountTokenFromApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
+import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import { SkeletonLoadingList } from "UtilComps/SkeletonLoadingList";
 import { CustomPagination } from "./CustomPagination";
 import MarketplaceLowerCard from "./MarketplaceLowerCard";
 import MyListedDataLowerCard from "./MyListedDataLowerCard";
@@ -65,8 +66,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
+  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [items, setItems] = useState<ItemType[]>([
     {
       index: 0,
@@ -95,11 +99,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const marketplace = `/datanfts/marketplace/market/${pageIndex}`;
+  const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
+  console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
-    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}/${newPageIndex}`);
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
   };
 
   const onGotoPage = useThrottle((newPageIndex: number) => {
@@ -114,7 +119,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketRequirements = await marketContract.getRequirements();
+      const _marketRequirements = await marketContract.viewRequirements();
       console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
@@ -139,7 +144,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketFreezedNonces = await mintContract.getSftsFreezedForAddress(marketContract.dataNftMarketContractAddress);
+      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
       console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
@@ -165,13 +170,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (hasPendingTransactions) return;
       if (!_chainMeta.networkId) return;
 
+      // start loading offers
+      setLoadingOffers(true);
+
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = await marketContract.getNumberOfOffers();
+        _numberOfOffers = await marketContract.viewNumberOfOffers();
       } else {
         // offers of User
-        _numberOfOffers = await marketContract.getUserTotalOffers(address);
+        _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
       console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
@@ -270,13 +278,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, [address, hasPendingTransactions, _chainMeta.networkId]);
 
   function openNftDetailsDrawer(index: number) {
-    setSelectedOfferIndex(index);
+    setOfferForDrawer(offers[index]);
     onOpenDrawerTradeStream();
   }
 
   function closeDetailsView() {
-    setSelectedOfferIndex(-1);
     onCloseDrawerTradeStream();
+    setOfferForDrawer(undefined);
   }
 
   return (
@@ -296,7 +304,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               onClick={() => {
                 if (hasPendingTransactions) return;
                 setPageIndex(0);
-                navigate("/datanfts/marketplace/market/0");
+                navigate("/datanfts/marketplace/market");
               }}>
               Public Marketplace
             </Button>
@@ -311,7 +319,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 onClick={() => {
                   if (hasPendingTransactions) return;
                   setPageIndex(0);
-                  navigate("/datanfts/marketplace/my/0");
+                  navigate("/datanfts/marketplace/my");
                 }}>
                 My Listed Data NFTs
               </Button>
@@ -321,36 +329,47 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
         </Flex>
 
-        {loadingOffers ? (
-          <SkeletonLoadingList />
-        ) : offers.length === 0 ? (
+        {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <Flex wrap="wrap" gap="5" justifyContent={{ base: "center", md: "flex-start" }}>
+          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
             {offers.length > 0 &&
               items?.map((item, index) => (
-                <div key={index}>
-                  <UpperCardComponent
-                    nftImageLoading={oneNFTImgLoaded}
-                    setNftImageLoading={setOneNFTImgLoaded}
-                    nftMetadataLoading={nftMetadatasLoading}
-                    nftMetadatas={nftMetadatas}
-                    marketRequirements={marketRequirements}
-                    item={item}
-                    userData={userData}
-                    index={index}
-                    marketFreezedNonces={marketFreezedNonces}
-                    openNftDetailsDrawer={openNftDetailsDrawer}
-                    itheumPrice={itheumPrice}>
-                    {location.pathname === marketplace && nftMetadatas.length > 0 ? (
-                      <MarketplaceLowerCard nftMetadatas={nftMetadatas} index={index} item={item} offers={offers} itheumPrice={itheumPrice} />
-                    ) : (
-                      <MyListedDataLowerCard index={index} offers={items} nftMetadatas={nftMetadatas} itheumPrice={itheumPrice} />
-                    )}
-                  </UpperCardComponent>
-                </div>
+                <UpperCardComponent
+                  key={index}
+                  nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                  imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
+                  setNftImageLoaded={setOneNFTImgLoaded}
+                  nftMetadatas={nftMetadatas}
+                  marketRequirements={marketRequirements}
+                  item={item}
+                  userData={userData}
+                  index={index}
+                  marketFreezedNonces={marketFreezedNonces}
+                  openNftDetailsDrawer={openNftDetailsDrawer}
+                  itheumPrice={itheumPrice}>
+                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 ? (
+                    <MarketplaceLowerCard
+                      nftMetadatas={nftMetadatas}
+                      index={index}
+                      item={item}
+                      offers={offers}
+                      itheumPrice={itheumPrice}
+                      marketRequirements={marketRequirements}
+                    />
+                  ) : (
+                    <MyListedDataLowerCard
+                      index={index}
+                      offers={items}
+                      nftMetadatas={nftMetadatas}
+                      itheumPrice={itheumPrice}
+                      marketRequirements={marketRequirements}
+                      maxPaymentFeeMap={maxPaymentFeeMap}
+                    />
+                  )}
+                </UpperCardComponent>
               ))}
-          </Flex>
+          </SimpleGrid>
         )}
 
         {
@@ -363,27 +382,30 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         }
       </Stack>
 
-      <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader>
-            <HStack spacing="5">
-              <CloseButton size="lg" onClick={closeDetailsView} />
-              <Heading as="h4" size="lg">
-                Data NFT Details
-              </Heading>
-            </HStack>
-          </DrawerHeader>
-          <DrawerBody>
-            {selectedOfferIndex >= 0 && offers.length > selectedOfferIndex && (
-              <DataNFTDetails
-                tokenIdProp={createNftId(offers[selectedOfferIndex].offered_token_identifier, offers[selectedOfferIndex].offered_token_nonce)}
-                offerIdProp={offers[selectedOfferIndex].index}
-              />
-            )}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      {offerForDrawer && (
+        <>
+          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerHeader>
+                <HStack spacing="5">
+                  <CloseButton size="lg" onClick={closeDetailsView} />
+                  <Heading as="h4" size="lg">
+                    Data NFT Details
+                  </Heading>
+                </HStack>
+              </DrawerHeader>
+              <DrawerBody>
+                <DataNFTDetails
+                  tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
+                  offerIdProp={offerForDrawer.index}
+                  closeDetailsView={closeDetailsView}
+                />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>
+      )}
     </>
   );
 };

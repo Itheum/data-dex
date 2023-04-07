@@ -9,10 +9,17 @@ import { getApi } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
-import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { DataNftMarketContract } from "MultiversX/dataNftMarket";
+import { init } from "@sentry/browser";
+
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const [data, setData] = useState<TransactionInTable[]>([]);
+
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
+
 
   const linkIconStyle = { display: "flex" };
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
@@ -92,26 +99,39 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   useEffect(() => {
     const apiUrl = getApi(_chainMeta.networkId);
-    axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=10000`).then((res) => {
-      const txs = res.data;
-      const items = [];
-      for (const tx of txs) {
-        if (tx.action) {
-          const transfers = tx.action.arguments.transfers.filter((t: any) => t.identifier === props.tokenId);
-          const value = transfers.reduce((acc: any, t: any) => acc + parseInt(t.value), 0);
-          items.push({
-            hash: tx.txHash,
-            timestamp: tx.timestamp,
-            from: tx.sender,
-            to: tx.action.arguments.receiver,
-            method: tx.function,
-            value: value,
-          });
-        }
-      }
-      setData(items);
+
+    Promise.all([
+      axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
+      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`)
+    ]).then((responses) => {
+      const mergedTransactions = getHistory(responses, props.tokenId);
+      const history = buildHistory(mergedTransactions);
+      setData(history);
     });
+
   }, []);
 
   return <DataTable columns={columns} data={data} />;
+}
+
+
+
+function getHistory(responses: any[], tokenId?: string) {
+  DataNftOnNetwork.ids = [];
+  DataNftOnNetwork.token_identifier = tokenId;
+  DataNftOnNetwork.addOfferIndex = 0;
+  const transactionsWithId: DataNftOnNetwork[] = [];
+
+  responses.forEach((response: any) => {
+    const txs = response.data;
+    const transactions = txs.map((tx: any) => {
+      const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
+      return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
+    });
+    const filteredTransactions = transactions.filter((data: DataNftOnNetwork) => {
+      return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
+    });
+    transactionsWithId.push(...filteredTransactions);
+  });
+  return transactionsWithId;
 }

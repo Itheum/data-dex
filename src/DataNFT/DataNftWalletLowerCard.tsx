@@ -94,7 +94,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
     return signResult;
   };
 
-  const accessDataStream = async (NFTid: string, myAddress: string) => {
+  const accessDataStream = async (dataMarshal: string, NFTId: string, myAddress: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -105,7 +105,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
 
     try {
       // const chainId = _chainMeta.networkId;
-      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/preaccess?chainId=${_chainMeta.networkId}`);
+      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -120,7 +120,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
           const link = document.createElement("a");
           link.target = "_blank";
           link.setAttribute("target", "_blank");
-          link.href = `${process.env.REACT_APP_ENV_DATAMARSHAL_API}/v1/access?nonce=${data.nonce}&NFTid=${NFTid}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
+          link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
           await sleep(3);
@@ -146,7 +146,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
             colorScheme="teal"
             height="7"
             onClick={() => {
-              accessDataStream(dataNftItem.id, address);
+              accessDataStream(dataNftItem.dataMarshal, dataNftItem.id, address);
             }}>
             View Data
           </Button>

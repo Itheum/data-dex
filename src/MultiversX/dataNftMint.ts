@@ -8,10 +8,7 @@ import {
   TransactionPayload,
   ContractFunction,
   BigUIntValue,
-  BytesValue,
   StringValue,
-  TokenPayment,
-  ArgSerializer,
   TokenIdentifierValue,
   U64Value,
   AddressValue,
@@ -56,7 +53,7 @@ export class DataNftMintContract {
     name,
     media,
     metadata,
-    data_marchal,
+    data_marshal,
     data_stream,
     data_preview,
     royalties,
@@ -70,7 +67,7 @@ export class DataNftMintContract {
     name: string;
     media: string;
     metadata: string;
-    data_marchal: string;
+    data_marshal: string;
     data_stream: string;
     data_preview: string;
     royalties: number;
@@ -91,7 +88,7 @@ export class DataNftMintContract {
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
         .addArg(new StringValue(metadata))
-        .addArg(new StringValue(data_marchal))
+        .addArg(new StringValue(data_marshal))
         .addArg(new StringValue(data_stream))
         .addArg(new StringValue(data_preview))
         .addArg(new BigUIntValue(royalties))
@@ -104,7 +101,7 @@ export class DataNftMintContract {
         .setFunction(new ContractFunction("mint"))
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
-        .addArg(new StringValue(data_marchal))
+        .addArg(new StringValue(data_marshal))
         .addArg(new StringValue(data_stream))
         .addArg(new StringValue(data_preview))
         .addArg(new BigUIntValue(royalties))
@@ -158,7 +155,7 @@ export class DataNftMintContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "Burning Data NFT",
-        errorMessage: "Error occured",
+        errorMessage: "Error occurred during burning NFT",
         successMessage: "Data NFT burnt",
       },
       redirectAfterSign: false,
@@ -166,9 +163,8 @@ export class DataNftMintContract {
   }
 
   async getUserDataOut(address: string, spamTaxTokenId: string): Promise<UserDataType | undefined> {
-    const interaction = this.contract.methods.getUserDataOut([new Address(address), spamTaxTokenId]);
+    const interaction = this.contract.methods.getUserDataOut([address, spamTaxTokenId]);
     const query = interaction.buildQuery();
-    const result = [];
 
     try {
       let networkProvider;
@@ -242,7 +238,7 @@ export class DataNftMintContract {
     return dataNFT;
   }
 
-  async getSftsFreezedForAddress(targetAddress: string): Promise<number[]> {
+  async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
     try {
       let networkProvider;
       if (this.chainID === "1") {
@@ -253,7 +249,7 @@ export class DataNftMintContract {
         });
       }
 
-      const interaction = this.contract.methods.getSftsFreezedForAddress([new Address(targetAddress)]);
+      const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

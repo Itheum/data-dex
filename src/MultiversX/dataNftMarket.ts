@@ -5,20 +5,17 @@ import {
   Address,
   ResultsParser,
   BigUIntValue,
-  VariadicValue,
   Transaction,
   TransactionPayload,
   ContractFunction,
-  List,
   U64Value,
-  TokenPayment,
   TokenIdentifierValue,
   AddressValue,
   StringValue,
-  TypedValue,
   U32Value,
   AddressType,
   OptionalValue,
+  BooleanValue,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -56,8 +53,8 @@ export class DataNftMarketContract {
     this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
   }
 
-  async getNumberOfOffers() {
-    const interaction = this.contract.methods.numberOfOffers([]);
+  async viewNumberOfOffers() {
+    const interaction = this.contract.methods.viewNumberOfOffers([]);
     const query = interaction.buildQuery();
 
     try {
@@ -79,7 +76,7 @@ export class DataNftMarketContract {
         const firstValueAsStruct = firstValue as U32Value;
         return firstValueAsStruct.valueOf().toNumber();
       } else {
-        const nonOKErr = new Error("getNumberOfOffers returnCode returned a non OK value");
+        const nonOKErr = new Error("viewNumberOfOffers returnCode returned a non OK value");
         console.error(nonOKErr);
 
         return 0;
@@ -93,7 +90,7 @@ export class DataNftMarketContract {
 
   async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
     const data =
-      BigNumber(paymentAmount).comparedTo(0) > 0
+      new BigNumber(paymentAmount).comparedTo(0) > 0
         ? TransactionPayload.contractCall()
             .setFunction(new ContractFunction("ESDTTransfer"))
             .addArg(new TokenIdentifierValue(tokenId))
@@ -123,8 +120,8 @@ export class DataNftMarketContract {
       transactions: offerEsdtTx,
       transactionsDisplayInfo: {
         processingMessage: "Accepting offer",
-        errorMessage: "Error occured during accepting offer",
-        successMessage: "Offer accepted successfuly",
+        errorMessage: "Error occurred during accepting offer",
+        successMessage: "Offer accepted successfully",
       },
       redirectAfterSign: false,
     });
@@ -157,8 +154,8 @@ export class DataNftMarketContract {
       transactions: offerEsdtTx,
       transactionsDisplayInfo: {
         processingMessage: "Accepting offer",
-        errorMessage: "Error occured during accepting offer",
-        successMessage: "Offer accepted successfuly",
+        errorMessage: "Error occurred during accepting offer",
+        successMessage: "Offer accepted successfully",
       },
       redirectAfterSign: false,
     });
@@ -186,8 +183,8 @@ export class DataNftMarketContract {
       transactions: offerEgldTx,
       transactionsDisplayInfo: {
         processingMessage: "Accepting offer",
-        errorMessage: "Error occured during accepting offer",
-        successMessage: "Offer accepted successfuly",
+        errorMessage: "Error occurred during accepting offer",
+        successMessage: "Offer accepted successfully",
       },
       redirectAfterSign: false,
     });
@@ -198,7 +195,11 @@ export class DataNftMarketContract {
   async sendCancelOfferTransaction(index: number, senderAddress: string) {
     const cancelTx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("cancelOffer")).addArg(new U64Value(index)).build(),
+      data: TransactionPayload.contractCall()
+        .setFunction(new ContractFunction("cancelOffer"))
+        .addArg(new U64Value(index))
+        .addArg(new BooleanValue(true))
+        .build(),
       receiver: new Address(this.dataNftMarketContractAddress),
       gasLimit: 12000000,
       sender: new Address(senderAddress),
@@ -211,8 +212,8 @@ export class DataNftMarketContract {
       transactions: cancelTx,
       transactionsDisplayInfo: {
         processingMessage: "Cancelling offer",
-        errorMessage: "Error occured during offer cancellation",
-        successMessage: "Offer cancelled successfuly",
+        errorMessage: "Error occurred during offer cancellation",
+        successMessage: "Offer cancelled successfully",
       },
       redirectAfterSign: false,
     });
@@ -221,7 +222,6 @@ export class DataNftMarketContract {
   }
 
   async addToMarket(addTokenCollection: string, addTokenNonce: number, addTokenQuantity: number, price: number, addressOfSender: string) {
-    const askDenominator = 10 ** 18;
     const addERewTx = new Transaction({
       value: 0,
       data: TransactionPayload.contractCall()
@@ -234,6 +234,7 @@ export class DataNftMarketContract {
         .addArg(new TokenIdentifierValue(this.itheumToken)) //what token id to ask for
         .addArg(new U64Value(0)) //what nonce to ask for
         .addArg(new BigUIntValue(price * 10 ** 18)) //how much to ask for
+        .addArg(new BigUIntValue(0)) // minimum amount for seller - setting will be introduced in the future
         .addArg(new BigUIntValue(addTokenQuantity)) //how many times to divide the amount of tokens sent into
         .build(),
       receiver: new Address(addressOfSender),
@@ -246,7 +247,7 @@ export class DataNftMarketContract {
       transactions: addERewTx,
       transactionsDisplayInfo: {
         processingMessage: "Adding Data NFT to marketplace",
-        errorMessage: "Error occured",
+        errorMessage: "Error occurred",
         successMessage: "Data NFT added to marketplace",
       },
       redirectAfterSign: false,
@@ -258,6 +259,7 @@ export class DataNftMarketContract {
       .setFunction(new ContractFunction("cancelOffer"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(delistAmount))
+      .addArg(new BooleanValue(true))
       .build();
 
     const tx = new Transaction({
@@ -275,8 +277,8 @@ export class DataNftMarketContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "De-Listing offer",
-        errorMessage: "Error occured during de-listing offer",
-        successMessage: "Offer de-listed successfuly",
+        errorMessage: "Error occurred during de-listing offer",
+        successMessage: "Offer de-listed successfully",
       },
       redirectAfterSign: false,
     });
@@ -284,8 +286,8 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async getRequirements(): Promise<MarketplaceRequirementsType | undefined> {
-    const interaction = this.contract.methodsExplicit.getRequirements();
+  async viewRequirements(): Promise<MarketplaceRequirementsType | undefined> {
+    const interaction = this.contract.methodsExplicit.viewRequirements();
     const query = interaction.buildQuery();
 
     try {
@@ -357,7 +359,7 @@ export class DataNftMarketContract {
 
       const values = firstValue.valueOf();
       const decoded = values.map((value: any) => ({
-        index: value.index.toNumber(),
+        index: value.offer_id.toNumber(),
         owner: value.owner.toString(),
         offered_token_identifier: value.offered_token_identifier.toString(),
         offered_token_nonce: value.offered_token_nonce.toNumber(),
@@ -404,7 +406,7 @@ export class DataNftMarketContract {
 
       const values = firstValue.valueOf();
       const decoded = values.map((value: any) => ({
-        index: value.index.toNumber(),
+        index: value.offer_id.toNumber(),
         owner: value.owner.toString(),
         offered_token_identifier: value.offered_token_identifier.toString(),
         offered_token_nonce: value.offered_token_nonce.toNumber(),
@@ -447,7 +449,7 @@ export class DataNftMarketContract {
 
       const value = firstValue.valueOf();
       const decoded = {
-        index: value.index.toNumber(),
+        index: value.offer_id.toNumber(),
         owner: value.owner.toString(),
         offered_token_identifier: value.offered_token_identifier.toString(),
         offered_token_nonce: value.offered_token_nonce.toNumber(),
@@ -465,8 +467,8 @@ export class DataNftMarketContract {
     }
   }
 
-  async getUserTotalOffers(userAddress: string): Promise<number> {
-    const interaction = this.contract.methodsExplicit.getUserTotalOffers([new AddressValue(new Address(userAddress))]);
+  async viewUserTotalOffers(userAddress: string): Promise<number> {
+    const interaction = this.contract.methodsExplicit.viewUserTotalOffers([new AddressValue(new Address(userAddress))]);
     const query = interaction.buildQuery();
 
     try {
@@ -503,6 +505,7 @@ export class DataNftMarketContract {
       .setFunction(new ContractFunction("changeOfferPrice"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(newPrice))
+      .addArg(new BigUIntValue(0))
       .build();
 
     const tx = new Transaction({
@@ -529,8 +532,8 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async getHighestOfferIndex(): Promise<number> {
-    const interaction = this.contract.methodsExplicit.getHighestOfferIndex();
+  async getLastValidOfferId(): Promise<number> {
+    const interaction = this.contract.methodsExplicit.getLastValidOfferId();
     const query = interaction.buildQuery();
 
     try {
