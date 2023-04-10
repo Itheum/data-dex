@@ -93,7 +93,12 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} isDisabled={!table.getCanNextPage()}>
           <ArrowForwardIcon />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(table.getPageCount() - 1)} isDisabled={!table.getCanNextPage() || table.getState().pagination.pageIndex >= table.getPageCount() - 1}>
+        <Button
+          border={1}
+          borderRadius={"0.24rem"}
+          padding={1}
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          isDisabled={!table.getCanNextPage() || table.getState().pagination.pageIndex >= table.getPageCount() - 1}>
           <ArrowRightIcon />
         </Button>
       </Flex>

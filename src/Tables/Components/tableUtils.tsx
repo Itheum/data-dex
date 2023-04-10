@@ -37,7 +37,7 @@ export type TransactionInTable = {
 export class DataNftOnNetwork {
   static addOfferIndex = 0;
   static ids: number[] = [];
-  static token_identifier?= "";
+  static token_identifier? = "";
 
   id = 0;
   hash = "";
@@ -49,20 +49,17 @@ export class DataNftOnNetwork {
   value = "";
   transfers: TransactionMetadataTransfer[] = [new TransactionMetadataTransfer()];
 
-
   constructor(init?: Partial<DataNftOnNetwork>) {
     Object.assign(this, init);
   }
 
-
   static fromTransactionOnNetwork(payload: TransactionOnNetwork): DataNftOnNetwork {
-    const metadata = new TransactionDecoder().getTransactionMetadata(
-      {
-        sender: payload.sender.bech32(),
-        receiver: payload.receiver.bech32(),
-        data: payload.data.toString("base64"),
-        value: payload.value,
-      });
+    const metadata = new TransactionDecoder().getTransactionMetadata({
+      sender: payload.sender.bech32(),
+      receiver: payload.receiver.bech32(),
+      data: payload.data.toString("base64"),
+      value: payload.value,
+    });
 
     const result = new DataNftOnNetwork();
 
@@ -75,8 +72,6 @@ export class DataNftOnNetwork {
     result.value = payload["value"] || "";
     result.transfers = metadata["transfers"] || [new TransactionMetadataTransfer()];
 
-
-
     if (result.method === "addOffer") {
       DataNftOnNetwork.addOfferIndex += 1;
       result.id = DataNftOnNetwork.addOfferIndex;
@@ -86,19 +81,15 @@ export class DataNftOnNetwork {
     }
     return result;
   }
-
 }
 
 export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] => {
-
   const result: TransactionInTable[] = [];
-
-
 
   payload.forEach((item) => {
     let value = "";
     const { identifier } = item.transfers[0].properties || {};
-    const identifierSplited = (identifier || '').split('-')[0];
+    const identifierSplited = (identifier || "").split("-")[0];
     switch (item.method) {
       case "addOffer":
         value = item.transfers[0].value.toString();
@@ -115,7 +106,6 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
       case "burn":
         value = item.transfers[0].value.toString();
         break;
-
     }
     result.push({
       hash: item.hash,
@@ -123,12 +113,11 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
       from: item.from,
       to: item.to,
       method: item.method,
-      value: value
+      value: value,
     });
   });
   return result.sort((a: TransactionInTable, b: TransactionInTable) => b.timestamp - a.timestamp);
 };
-
 
 export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);

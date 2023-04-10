@@ -274,12 +274,7 @@ const AppHeader = ({
               </>
             )}
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
-            <IconButton
-              size="sm"
-              icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
-              aria-label="Change Color Theme"
-              onClick={toggleColorMode}
-            />
+            <IconButton size="sm" icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} aria-label="Change Color Theme" onClick={toggleColorMode} />
           </HStack>
         </Flex>
       </Flex>
