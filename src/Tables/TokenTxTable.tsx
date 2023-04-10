@@ -20,7 +20,6 @@ export default function TokenTxTable(props: TokenTableProps) {
 
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
-
   const linkIconStyle = { display: "flex" };
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
     () => [
@@ -102,19 +101,18 @@ export default function TokenTxTable(props: TokenTableProps) {
 
     Promise.all([
       axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
-      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`)
+      axios.get(
+        `https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`
+      ),
     ]).then((responses) => {
       const mergedTransactions = getHistory(responses, props.tokenId);
       const history = buildHistory(mergedTransactions);
       setData(history);
     });
-
   }, []);
 
   return <DataTable columns={columns} data={data} />;
 }
-
-
 
 function getHistory(responses: any[], tokenId?: string) {
   DataNftOnNetwork.ids = [];

@@ -151,29 +151,21 @@ export const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir;
 };
 
-export function timeSince(unixTimestamp: number) {
+export function timeSince(unixTimestamp: number): string {
   const seconds = Math.floor((new Date().getTime() - unixTimestamp * 1000) / 1000);
 
-  let interval = seconds / 31536000;
+  const interval = [
+    { seconds: 3153600000, unit: "century" },
+    { seconds: 31536000, unit: "year" },
+    { seconds: 2592000, unit: "month" },
+    { seconds: 86400, unit: "day" },
+    { seconds: 3600, unit: "hour" },
+    { seconds: 60, unit: "minute" },
+    { seconds: 1, unit: "second" },
+  ].find((i) => i.seconds <= seconds);
 
-  if (interval > 1) {
-    return Math.floor(interval) + " years";
-  }
-  interval = seconds / 2592000;
-  if (interval > 1) {
-    return Math.floor(interval) + " months";
-  }
-  interval = seconds / 86400;
-  if (interval > 1) {
-    return Math.floor(interval) + " days";
-  }
-  interval = seconds / 3600;
-  if (interval > 1) {
-    return Math.floor(interval) + " hours";
-  }
-  interval = seconds / 60;
-  if (interval > 1) {
-    return Math.floor(interval) + " minutes";
-  }
-  return Math.floor(seconds) + " seconds";
+  const count = Math.floor(seconds / interval!.seconds);
+  const unit = count === 1 ? interval!.unit : interval!.unit + "s";
+
+  return `${count} ${unit}`;
 }

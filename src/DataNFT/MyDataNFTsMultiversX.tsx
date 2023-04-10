@@ -151,7 +151,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           Below are the Data NFTs you created and/or purchased on the current chain
         </Heading>
 
-        {dataNfts.length > 0 ?
+        {dataNfts.length > 0 ? (
           <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
             {dataNfts.map((item, index) => (
               <WalletDataNFTMX
@@ -165,10 +165,13 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 {...item}
               />
             ))}
-          </SimpleGrid> : <Text onClick={getOnChainNFTs}>No data yet...</Text>}
+          </SimpleGrid>
+        ) : (
+          <Text onClick={getOnChainNFTs}>No data yet...</Text>
+        )}
       </Stack>
-      {
-        nftForDrawer && (<>
+      {nftForDrawer && (
+        <>
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
             <DrawerContent>
@@ -181,15 +184,12 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 </HStack>
               </DrawerHeader>
               <DrawerBody>
-                <DataNFTDetails
-                  tokenIdProp={nftForDrawer.id}
-                  closeDetailsView={closeDetailsView}
-                />
+                <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
               </DrawerBody>
             </DrawerContent>
           </Drawer>
-        </>)
-      }
+        </>
+      )}
     </>
   );
 }
