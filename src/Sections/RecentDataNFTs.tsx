@@ -150,33 +150,6 @@ const RecentDataNFTs = ({
             </Card>
           );
         })}
-
-        {/* <Card
-                maxW="sm"
-                variant="outline"
-                backgroundColor="none"
-                borderRadius="1.5rem"
-                border=".1rem solid transparent"
-                style={{ "background": gradientBorder }}>
-                <CardBody>
-                  <Skeleton height='180px' isLoaded={isLoaded} fadeDuration={1}>
-                    <Link href="/dataNfts/marketplace/DATANFTFT2-71ac28-79">
-                      <Image
-                        src="https://devnet-media.elrond.com/nfts/asset/bafkreih7pf65lgyi5gm7n3aapvyai5b23m7tz5m5iwdclw6y4ecwsg35du"
-                        alt="Green double couch with wooden legs"
-                        borderRadius="lg"
-                      />
-                    </Link>
-                  </Skeleton>
-                  <Skeleton height='40px' isLoaded={isLoaded} fadeDuration={2}>
-                    <Stack mt="6" spacing="2">
-                      <Heading size="md">NFT Short Name</Heading>
-                      <Text>Supply Available : 2</Text>
-                      <Text>Price : 102 ITHEUM</Text>
-                    </Stack>
-                  </Skeleton>
-                </CardBody>
-              </Card> */}
       </SimpleGrid>
     </>
   );
