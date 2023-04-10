@@ -397,14 +397,18 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 maxW={16}
                 step={5}
                 defaultValue={10}
-                min={0}
+                min={1}
                 isValidCharacter={isValidNumericCharacter}
                 max={item.maxPayment ? item.maxPayment : 0}
                 value={price}
-                onChange={(valueString, valueAsNumber) => {
+                onChange={(valueString) => {
                   let error = "";
-                  if (valueAsNumber < 0) error = "Cannot be negative";
-                  if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) error = "Cannot exceed maximum listing price";
+                  const valueAsNumber = Number(valueString);
+                  if (valueAsNumber <= 0) {
+                    error = "Cannot be negative";
+                  } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
+                    error = "Cannot exceed maximum listing price";
+                  }
                   setPriceError(error);
                   setPrice(valueAsNumber);
                 }}
