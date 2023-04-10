@@ -161,9 +161,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                     {": "}
                     {printPrice(
                       convertWeiToEsdt(
-                        new BigNumber(props.offer.wanted_token_amount)
-                          .multipliedBy(10000)
-                          .div(10000 + props.buyerFee),
+                        new BigNumber(props.offer.wanted_token_amount).multipliedBy(10000).div(10000 + props.buyerFee),
                         tokenDecimals(props.offer.wanted_token_identifier)
                       ).toNumber(),
                       getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
@@ -187,11 +185,9 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                 :{" "}
                 {props.buyerFee
                   ? `${props.buyerFee / 100}% (${convertWeiToEsdt(
-                    new BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.buyerFee)
-                      .div(10000 + props.buyerFee),
-                    tokenDecimals(props.offer.wanted_token_identifier)
-                  ).toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
+                      new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.buyerFee).div(10000 + props.buyerFee),
+                      tokenDecimals(props.offer.wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
                   : "-"}
               </Box>
             </Flex>

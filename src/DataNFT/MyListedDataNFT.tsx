@@ -109,7 +109,9 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
 
                       <Flex flexGrow="1">
                         <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                          {nftMetadata[index].description.length > 54 ? nftMetadata[index].description.substring(0, 53) + "..." : nftMetadata[index].description}
+                          {nftMetadata[index].description.length > 54
+                            ? nftMetadata[index].description.substring(0, 53) + "..."
+                            : nftMetadata[index].description}
                         </Text>
                       </Flex>
                     </div>

@@ -47,10 +47,7 @@ export class FaucetContract {
     const query = interaction.buildQuery();
     const res = await networkProvider.queryContract(query);
     const endpointDefinition = interaction.getEndpoint();
-    const { firstValue } = new ResultsParser().parseQueryResponse(
-      res,
-      endpointDefinition
-    );
+    const { firstValue } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
     return firstValue.valueOf().toNumber() * 1000;
   }

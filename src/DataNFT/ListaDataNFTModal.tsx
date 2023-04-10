@@ -45,15 +45,17 @@ export default function ListDataNFTModal(props: ListModalProps) {
 
   useEffect(() => {
     if (props.offer) {
-      setFeePrice(address !== props.nftData.creator ?
-        printPrice(
-          (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee - props.nftData.royalties * 10000)) / 10000,
-          getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
-        )
-        : printPrice(
-          (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee)) / 10000,
-          getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
-        ));
+      setFeePrice(
+        address !== props.nftData.creator
+          ? printPrice(
+              (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee - props.nftData.royalties * 10000)) / 10000,
+              getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
+            )
+          : printPrice(
+              (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee)) / 10000,
+              getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
+            )
+      );
       setFee(props.offer.wanted_token_amount);
     }
   }, [props.offer]);
@@ -149,9 +151,11 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box w="140px">Royalties (per NFT)</Box>
               <Box>
                 :{" "}
-                {(address !== props.nftData.creator) ? `${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
-                  .multipliedBy(props.nftData.royalties)
-                  .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})` : '0 (You are the creator)'}
+                {address !== props.nftData.creator
+                  ? `${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
+                      .multipliedBy(props.nftData.royalties)
+                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
+                  : "0 (You are the creator)"}
               </Box>
             </Flex>
             <Flex fontSize="md" mt="2">
@@ -178,7 +182,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
             <Flex fontSize="xs" mt="0">
               <Box w="146px"></Box>
               <Box>
-                {(
+                {
                   <>
                     {new BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
                       ""
@@ -199,7 +203,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                       </>
                     )}
                   </>
-                )}
+                }
               </Box>
             </Flex>
             <Flex mt="4 !important">

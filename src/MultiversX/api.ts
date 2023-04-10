@@ -8,7 +8,7 @@ export const getApi = (networkId: string) => {
   if (networkId === "E1") {
     return "api.multiversx.com";
   } else {
-    return "devnet-api.multiversx.com";
+    // return "devnet-api.multiversx.com";
     return "elrond-api-devnet.blastapi.io/0bc98858-cb7a-44c6-ad1b-8c8bfaec7128";
   }
 };

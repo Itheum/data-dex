@@ -2,17 +2,17 @@ import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Link } from "@chakra-ui/react";
 import { Address } from "@multiversx/sdk-core/out";
+import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { init } from "@sentry/browser";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import { CHAIN_TX_VIEWER } from "libs/util";
 import { getApi } from "MultiversX/api";
+import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
 import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
-import { DataNftMarketContract } from "MultiversX/dataNftMarket";
-import { init } from "@sentry/browser";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
