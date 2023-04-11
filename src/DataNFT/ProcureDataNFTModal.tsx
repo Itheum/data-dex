@@ -153,7 +153,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               <Box>: {props.amount ? props.amount : 1}</Box>
             </Flex>
             <Flex fontSize="md" mt="2">
-              <Box w="140px">Fee per NFT</Box>
+              <Box w="140px">Unlock Fee (per NFT)</Box>
               <Box>
                 {props.buyerFee ? (
                   <>

@@ -176,9 +176,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   function getListingText(price: number) {
     const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
-      ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-      ? "Listing Price: FREE"
+      ? "Unlock for: FREE"
       : "Not Listed";
   }
 
@@ -286,7 +286,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       <>
                         <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
                         <Text>
-                          {`Fee per NFT: `}
+                          {`Unlock Fee per NFT: `}
                           {marketRequirements && offer ? (
                             <>
                               {printPrice(

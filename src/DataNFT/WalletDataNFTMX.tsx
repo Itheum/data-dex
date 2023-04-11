@@ -274,7 +274,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           </Text>
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
-              <div>
+              <Box>
                 <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
                   {item.title}
                 </Text>
@@ -284,10 +284,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     {transformDescription(item.description)}
                   </Text>
                 </Flex>
-              </div>
+              </Box>
             </PopoverTrigger>
             <PopoverContent mx="2" width="220px" mt="-7">
-              <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
+              <PopoverHeader fontWeight="semibold" fontSize="md">{item.title}</PopoverHeader>
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
@@ -353,7 +353,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
             <HStack mt="5">
               <Text fontSize="xs" w="110px">
-                How many to list:{" "}
+                How many to list{" "}
               </Text>
               <NumberInput
                 size="xs"
@@ -390,7 +390,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
             <HStack mt="2">
               <Text fontSize="xs" w="110px">
-                Listing price for each:{" "}
+                Unlock fee for each{" "}
               </Text>
               <NumberInput
                 size="xs"
@@ -407,7 +407,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   if (valueAsNumber <= 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
-                    error = "Cannot exceed maximum listing price";
+                    error = "Cannot exceed maximum listing fee";
                   }
                   setPriceError(error);
                   setPrice(valueAsNumber);
