@@ -37,9 +37,7 @@ type MyListedDataLowerCardProps = {
   maxPaymentFeeMap: Record<string, number>;
 };
 
-const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
-  offers, index, nftMetadatas, itheumPrice, marketRequirements, maxPaymentFeeMap
-}) => {
+const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, nftMetadatas, itheumPrice, marketRequirements, maxPaymentFeeMap }) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const contract = new DataNftMarketContract(_chainMeta.networkId);
@@ -61,12 +59,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
     const _fee =
       marketRequirements && offers[selectedOfferIndex]
         ? convertWeiToEsdt(
-          new BigNumber(offers[selectedOfferIndex].wanted_token_amount)
-            .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
-            .multipliedBy(10000)
-            .div(10000 + (marketRequirements.buyer_fee as number)),
-          tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
-        ).toNumber()
+            new BigNumber(offers[selectedOfferIndex].wanted_token_amount)
+              .multipliedBy(amountOfTokens[selectedOfferIndex] as number)
+              .multipliedBy(10000)
+              .div(10000 + (marketRequirements.buyer_fee as number)),
+            tokenDecimals(offers[selectedOfferIndex].wanted_token_identifier as number)
+          ).toNumber()
         : 0;
     setFee(_fee);
   }, [marketRequirements, selectedOfferIndex, offers]);
@@ -341,7 +339,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing fee";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}

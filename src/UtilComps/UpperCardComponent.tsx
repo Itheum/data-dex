@@ -131,7 +131,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </div>
                 </PopoverTrigger>
                 <PopoverContent mx="2" width="220px" mt="-7">
-                  <PopoverHeader fontWeight="semibold">{nftMetadatas[index].title}</PopoverHeader>
+                  <PopoverHeader fontWeight="semibold" fontSize="md">{nftMetadatas[index].title}</PopoverHeader>
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverBody>
@@ -189,7 +189,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                 <>
                   <Box fontSize="xs" mt="2">
                     <Text>
-                      Fee per NFT: {` `}
+                      Unlock from: {` `}
                       {marketRequirements ? (
                         <>
                           {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}

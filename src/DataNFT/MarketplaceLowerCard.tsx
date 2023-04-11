@@ -35,9 +35,7 @@ type MarketplaceLowerCardProps = {
   marketRequirements: MarketplaceRequirementsType | undefined;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({
-  item, index, offers, nftMetadatas, itheumPrice, marketRequirements,
-}) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas, itheumPrice, marketRequirements }) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});

@@ -174,9 +174,7 @@
     {
       "name": "addOffer",
       "mutability": "mutable",
-      "payableInTokens": [
-        "*"
-      ],
+      "payableInTokens": ["*"],
       "inputs": [
         {
           "name": "payment_token_id",
@@ -254,9 +252,7 @@
     {
       "name": "acceptOffer",
       "mutability": "mutable",
-      "payableInTokens": [
-        "*"
-      ],
+      "payableInTokens": ["*"],
       "inputs": [
         {
           "name": "offer_id",

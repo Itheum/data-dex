@@ -109,13 +109,15 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
 
                       <Flex flexGrow="1">
                         <Text fontSize="md" mt="2" color="#929497" noOfLines={[1, 2, 3]} w="100%">
-                          {nftMetadata[index].description.length > 54 ? nftMetadata[index].description.substring(0, 53) + "..." : nftMetadata[index].description}
+                          {nftMetadata[index].description.length > 54
+                            ? nftMetadata[index].description.substring(0, 53) + "..."
+                            : nftMetadata[index].description}
                         </Text>
                       </Flex>
                     </div>
                   </PopoverTrigger>
                   <PopoverContent mx="2" width="220px" mt="-7">
-                    <PopoverHeader fontWeight="semibold">{nftMetadata[index].title}</PopoverHeader>
+                    <PopoverHeader fontWeight="semibold" fontSize="md">{nftMetadata[index].title}</PopoverHeader>
                     <PopoverArrow />
                     <PopoverCloseButton />
                     <PopoverBody>
@@ -172,7 +174,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               <>
                 <Box fontSize="xs" mt="2">
                   <Text>
-                    Fee per NFT: {` `}
+                    Unlock from: {` `}
                     {marketRequirements ? (
                       <>
                         {printPrice(

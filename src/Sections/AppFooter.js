@@ -9,7 +9,7 @@ export default function () {
   const { colorMode } = useColorMode();
 
   return (
-    <Box backgroundColor={colorMode === "light" ? "white" : "black"} height="5rem" borderTop="solid .1rem" borderColor="teal.300">
+    <Box backgroundColor={colorMode === "light" ? "white" : "black"} height="5rem" borderTop="solid .1rem" borderColor="teal.200">
       <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
         <Text fontSize="xx-small">
           {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}
