@@ -58,7 +58,7 @@ import { ResultsParser } from "@multiversx/sdk-core";
 import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { labels } from "libs/language";
 import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
@@ -260,7 +260,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .required("Dataset title is required")
       .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
-      .max(30, "Dataset title must have maximum of 30 characters."),
+      .max(60, "Dataset title must have maximum of 30 characters."),
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
@@ -279,11 +279,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
-    register,
+    control,
     formState: { errors },
     handleSubmit,
   } = useForm<TradeDataFormType>({
-    mode: "onBlur", // mode stay for when the validation should be applied
     defaultValues: {
       dataStreamUrlForm: "",
       dataPreviewUrlForm: "",
@@ -293,6 +292,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
     }, // declaring default values for inputs not necessary to declare
+    mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
@@ -486,8 +486,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const onChangeDatasetTitle = (value: string) => {
     let error = "";
 
-    if (value.length < 10 || value.length > 50) {
-      error = "Length of Dataset Title must be between 10 and 50 characters";
+    if (value.length < 10 || value.length > 60) {
+      error = "Length of Dataset Title must be between 10 and 60 characters";
     } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
       error = "Dataset Title can only contain alphanumeric characters";
     }
@@ -548,27 +548,27 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   useEffect(() => {
     setMintDataNFTDisabled(
       !!dataNFTStreamUrlError ||
-      !!dataNFTStreamPreviewUrlError ||
-      !!dataNFTTokenNameError ||
-      !!datasetTitleError ||
-      !!datasetDescriptionError ||
-      !!dataNFTCopiesError ||
-      !!dataNFTRoyaltyError ||
-      !!dataNFTStreamUrlStatus ||
-      !!dataNFTStreamPreviewUrlStatus ||
-      !!dataNFTMarshalServiceStatus ||
-      !dataNFTImgGenServiceValid ||
-      !readTermsChecked ||
-      !readAntiSpamFeeChecked ||
-      minRoyalties < 0 ||
-      maxRoyalties < 0 ||
-      maxSupply < 0 ||
-      antiSpamTax < 0 ||
-      itheumBalance < antiSpamTax ||
-      // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
-      (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
-      (!!userData && userData.contractPaused) ||
-      (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
+        !!dataNFTStreamPreviewUrlError ||
+        !!dataNFTTokenNameError ||
+        !!datasetTitleError ||
+        !!datasetDescriptionError ||
+        !!dataNFTCopiesError ||
+        !!dataNFTRoyaltyError ||
+        !!dataNFTStreamUrlStatus ||
+        !!dataNFTStreamPreviewUrlStatus ||
+        !!dataNFTMarshalServiceStatus ||
+        !dataNFTImgGenServiceValid ||
+        !readTermsChecked ||
+        !readAntiSpamFeeChecked ||
+        minRoyalties < 0 ||
+        maxRoyalties < 0 ||
+        maxSupply < 0 ||
+        antiSpamTax < 0 ||
+        itheumBalance < antiSpamTax ||
+        // if userData.contractWhitelistEnabled is true, it means whitelist mode is on; only whitelisted users can mint
+        (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
+        (!!userData && userData.contractPaused) ||
+        (!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit)
     );
   }, [
     dataNFTStreamUrlError,
@@ -657,7 +657,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         title: "Connect your wallet",
         status: "error",
         isClosable: true,
-        duration: 20000
+        duration: 20000,
       });
       return;
     }
@@ -667,7 +667,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         title: `You can mint next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
         status: "error",
         isClosable: true,
-        duration: 20000
+        duration: 20000,
       });
       return;
     }
@@ -850,7 +850,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         title: labels.ERR_URL_MISSING_HTTPS,
         status: "error",
         isClosable: true,
-        duration: 20000
+        duration: 20000,
       });
       return true;
     } else {
@@ -966,10 +966,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   </Text>
                 </Stack>
               )) || (
-                  <Heading as="h4" size="lg">
-                    Trade a Data Stream as a Data NFT-FT
-                  </Heading>
-                )}
+                <Heading as="h4" size="lg">
+                  Trade a Data Stream as a Data NFT-FT
+                </Heading>
+              )}
             </HStack>
           </DrawerHeader>
           <DrawerBody
@@ -987,29 +987,29 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 !dataNFTImgGenServiceValid ||
                 (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
                 (!!userData && userData.contractPaused)) && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md" mb={2}>
-                        <AlertIcon display="inline-block" />
-                        <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
-                          Uptime Errors
-                        </Text>
-                      </AlertTitle>
-                      <AlertDescription>
-                        {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
-                        {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
-                        {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
-                        {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
-                        {!!dataNFTMarshalServiceStatus && <Text fontSize="md">{labels.ERR_DATA_MARSHAL_DOWN}</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
-                        {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
-                          <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
-                        )}
-                        {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
-                      </AlertDescription>
-                    </Stack>
-                  </Alert>
-                )}
+                <Alert status="error">
+                  <Stack>
+                    <AlertTitle fontSize="md" mb={2}>
+                      <AlertIcon display="inline-block" />
+                      <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
+                        Uptime Errors
+                      </Text>
+                    </AlertTitle>
+                    <AlertDescription>
+                      {minRoyalties < 0 && <Text fontSize="md">Unable to read default value of Min Royalties.</Text>}
+                      {maxRoyalties < 0 && <Text fontSize="md">Unable to read default value of Max Royalties.</Text>}
+                      {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
+                      {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
+                      {!!dataNFTMarshalServiceStatus && <Text fontSize="md">{labels.ERR_DATA_MARSHAL_DOWN}</Text>}
+                      {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                      {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
+                        <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
+                      )}
+                      {!!userData && userData.contractPaused && <Text fontSize="md">The minter smart contract is paused for maintenance.</Text>}
+                    </AlertDescription>
+                  </Stack>
+                </Alert>
+              )}
 
               {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
                 <Alert status="error">
@@ -1050,19 +1050,26 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Input
-                    mt="1 !important"
-                    placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                    id="dataStreamUrlForm"
-                    {...register("dataStreamUrlForm")}
-                    isDisabled={!!selectedProgramId}
-                    value={dataNFTStreamUrl}
-                    onChange={(event) => {
-                      onChangeDataNFTStreamUrl(event.currentTarget.value);
-                      validateDataStreamUrl(event.currentTarget.value);
-                    }}
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <Input
+                        mt="1 !important"
+                        placeholder="e.g. https://mydomain.com/my_hosted_file.json"
+                        id="dataStreamUrlForm"
+                        isDisabled={!!selectedProgramId}
+                        value={dataNFTStreamUrl}
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                          onChangeDataNFTStreamUrl(event.currentTarget.value);
+                          validateDataStreamUrl(event.currentTarget.value);
+                        }}
+                      />
+                    )}
+                    name={"dataStreamUrlForm"}
                   />
-                  <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
+                  {errors?.dataStreamUrlForm && <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>}
+                  {/*<FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>*/}
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
@@ -1072,17 +1079,23 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Input
-                    mt="1 !important"
-                    placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                    id="dataPreviewUrlForm"
-                    isDisabled={!!selectedProgramId}
-                    {...register("dataPreviewUrlForm")}
-                    value={dataNFTStreamPreviewUrl}
-                    onChange={(event) => {
-                      onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
-                      validateDataPreviewUrl(event.currentTarget.value);
-                    }}
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <Input
+                        mt="1 !important"
+                        placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                        id="dataPreviewUrlForm"
+                        isDisabled={!!selectedProgramId}
+                        value={dataNFTStreamPreviewUrl}
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                          onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                          validateDataPreviewUrl(event.currentTarget.value);
+                        }}
+                      />
+                    )}
+                    name="dataPreviewUrlForm"
                   />
                   <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
                 </FormControl>
@@ -1111,19 +1124,22 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Input
-                    mt="1 !important"
-                    placeholder="Between 3 and 20 alphanumeric characters only"
-                    id="tokenNameForm"
-                    value={dataNFTTokenName}
-                    {...register("tokenNameForm")}
-                    onChange={(event) => {
-                      onChangeDataNFTTokenName(event.currentTarget.value);
-                    }}
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <Input
+                        mt="1 !important"
+                        placeholder="Between 3 and 20 alphanumeric characters only"
+                        id="tokenNameForm"
+                        value={dataNFTTokenName}
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                          onChangeDataNFTTokenName(event.currentTarget.value);
+                        }}
+                      />
+                    )}
+                    name={"tokenNameForm"}
                   />
-                  {/*<Text color="gray.400" fontSize="sm" mt="0.5 !important">*/}
-                  {/*  Between 3 and 20 alphanumeric characters only*/}
-                  {/*</Text>*/}
                   <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
                 </FormControl>
 
@@ -1134,17 +1150,22 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Input
-                    mt="1 !important"
-                    placeholder="Between 10 and 30 alphanumeric characters only"
-                    id="datasetTitleForm"
-                    value={datasetTitle}
-                    {...register("datasetTitleForm")}
-                    onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <Input
+                        mt="1 !important"
+                        placeholder="Between 10 and 60 alphanumeric characters only"
+                        id="datasetTitleForm"
+                        value={datasetTitle}
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                          onChangeDatasetTitle(event.currentTarget.value);
+                        }}
+                      />
+                    )}
+                    name="datasetTitleForm"
                   />
-                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                  {/*  Between 10 and 50 alphanumeric characters only*/}
-                  {/*</Text>*/}
                   <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
                 </FormControl>
 
@@ -1155,25 +1176,23 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <Textarea
-                    mt="1 !important"
-                    placeholder="Between 10 and 400 characters only. URL allowed."
-                    id={"datasetDescriptionForm"}
-                    {...register("datasetDescriptionForm")}
-                    onChange={(event) => {
-                      onChangeDatasetDescription(event.currentTarget.value);
-                    }}
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <Textarea
+                        mt="1 !important"
+                        placeholder="Between 10 and 400 characters only. URL allowed."
+                        id={"datasetDescriptionForm"}
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                          onChangeDatasetDescription(event.currentTarget.value);
+                        }}
+                      />
+                    )}
+                    name="datasetDescriptionForm"
                   />
                   <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                 </FormControl>
-                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                {/*  Between 10 and 250 characters only. URL allowed.*/}
-                {/*</Text>*/}
-                {/*{userFocusedForm && datasetDescriptionError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {datasetDescriptionError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
 
                 <FormControl isInvalid={!!errors.numberOfCopiesForm}>
                   <InputLabelWithPopover tkey="number-of-copies">
@@ -1182,35 +1201,38 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <NumberInput
-                    mt="1 !important"
-                    size="md"
-                    {...register("numberOfCopiesForm")}
-                    id="numberOfCopiesForm"
-                    maxW={24}
-                    step={1}
-                    defaultValue={1}
-                    min={1}
-                    value={dataNFTCopies}
-                    max={maxSupply > 0 ? maxSupply : 1}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <NumberInput
+                        mt="1 !important"
+                        size="md"
+                        id="numberOfCopiesForm"
+                        maxW={24}
+                        step={1}
+                        defaultValue={1}
+                        min={1}
+                        value={dataNFTCopies}
+                        max={maxSupply > 0 ? maxSupply : 1}
+                        isValidCharacter={isValidNumericCharacter}
+                        onChange={(valueAsString: string) => {
+                          onChange(valueAsString);
+                          handleChangeDataNftCopies(Number(valueAsString));
+                        }}>
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    )}
+                    name="numberOfCopiesForm"
+                  />
                   <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                 </FormControl>
                 <Text color="gray.400" fontSize="sm" mt="1 !important">
                   Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
                 </Text>
-                {/*{userFocusedForm && dataNFTCopiesError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTCopiesError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
 
                 <FormControl isInvalid={!!errors.royaltiesForm}>
                   <InputLabelWithPopover tkey="royalties">
@@ -1219,24 +1241,32 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     </Text>
                   </InputLabelWithPopover>
 
-                  <NumberInput
-                    mt="1 !important"
-                    size="md"
-                    {...register("royaltiesForm")}
-                    id="royaltiesForm"
-                    maxW={24}
-                    step={5}
-                    defaultValue={minRoyalties}
-                    min={minRoyalties > 0 ? minRoyalties : 0}
-                    max={maxRoyalties > 0 ? maxRoyalties : 0}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
+                  <Controller
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <NumberInput
+                        mt="1 !important"
+                        size="md"
+                        id="royaltiesForm"
+                        maxW={24}
+                        step={5}
+                        defaultValue={minRoyalties}
+                        min={minRoyalties > 0 ? minRoyalties : 0}
+                        max={maxRoyalties > 0 ? maxRoyalties : 0}
+                        isValidCharacter={isValidNumericCharacter}
+                        onChange={(valueAsString: string) => {
+                          onChange(valueAsString);
+                          handleChangeDataNftRoyalties(Number(valueAsString));
+                        }}>
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    )}
+                    name="royaltiesForm"
+                  />
                   <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
                 </FormControl>
                 <Text color="gray.400" fontSize="sm" mt="1 !important">
