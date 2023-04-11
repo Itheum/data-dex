@@ -488,7 +488,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     </HStack>
 
                     <Text fontSize="md" mt="4">
-                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
+                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so no
                       one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not
                       be able to recover them again.
                     </Text>
