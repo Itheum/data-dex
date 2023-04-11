@@ -68,7 +68,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
-  const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/dataNfts/marketplace/${tokenId}/offer-${offerId}`);
+  const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");

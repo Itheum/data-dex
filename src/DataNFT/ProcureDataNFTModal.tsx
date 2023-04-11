@@ -8,7 +8,6 @@ import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -241,7 +240,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               </Box>
             </Flex>
             <Flex mt="4 !important">
-              <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
+              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
                 Read Terms of Use
               </Button>
             </Flex>
@@ -264,11 +263,6 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <DataNFTProcureReadModal
-        isReadTermsModalOpen={isReadTermsModalOpen}
-        onReadTermsModalOpen={onReadTermsModalOpen}
-        onReadTermsModalClose={onReadTermsModalClose}
-      />
     </>
   );
 }

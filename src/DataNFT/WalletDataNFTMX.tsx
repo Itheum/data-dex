@@ -43,6 +43,7 @@ import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
+import { labels } from "libs/language";
 import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep } from "libs/util";
 import { convertToLocalString, transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
@@ -51,7 +52,7 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
-import ListDataNFTModal from "./ListaDataNFTModal";
+import ListDataNFTModal from "./ListDataNFTModal";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -74,7 +75,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     s3: 0,
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
-  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
@@ -100,7 +101,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const onBurn = () => {
     if (!address) {
       toast({
-        title: "Connect your wallet",
+        title: labels.ERR_BURN_NO_WALLET_CONN,
         status: "error",
         isClosable: true,
       });
@@ -108,7 +109,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
     if (!selectedDataNft) {
       toast({
-        title: "No NFT is selected",
+        title: labels.ERR_BURN_NO_NFT_SELECTED,
         status: "error",
         isClosable: true,
       });
@@ -116,9 +117,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
 
     mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
-
-    // close modal
-    onBurnNFTClose();
+    
+    onBurnNFTClose(); // close modal
   };
 
   const fetchAccountSignature = async (message: string) => {
@@ -129,22 +129,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       exception: "",
     };
 
-    let customError = "Signature result not received from wallet";
+    let customError = labels.ERR_WALLET_SIG_GENERIC;
 
     if (walletUsedSession === "el_webwallet") {
       // web wallet not supported
-      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
+      customError = labels.ERR_WALLET_SIG_NOT_SUPPORTED;
     } else {
       try {
         const signatureObj = await signMessage({ message });
 
         if (signatureObj?.signature && signatureObj?.address) {
-          // Maiar App V2 / Ledger
+          // XPortal App V2 / Ledger
           signResult.signature = signatureObj.signature.hex();
           signResult.addrInHex = signatureObj.address.hex();
           signResult.success = true;
         } else {
-          signResult.exception = "Signature result from wallet was malformed";
+          signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
         }
       } catch (e: any) {
         signResult.success = false;
@@ -167,7 +167,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     })();
   };
 
-  const accessDataStream = async (dataMarshal: string, NFTId: string, myAddress: string) => {
+  const accessDataStream = async (dataMarshal: string, NFTId: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -211,7 +211,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         if (data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
         } else {
-          setErrUnlockAccessGeneric("Data Marshal responded with an unknown error trying to generate your access links");
+          setErrUnlockAccessGeneric(labels.ERR_DATA_MARSHAL_GEN_ACCESS_FAIL);
         }
       }
     } catch (e: any) {
@@ -227,7 +227,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   const onBurnButtonClick = (nft: DataNftType) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(Number(nft.balance)); // init
+    setDataNftBurnAmount(Number(nft.balance));
     setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
@@ -241,7 +241,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     let error = "";
     const valueAsNumber = Number(valueAsString);
     if (valueAsNumber < 1) {
-      error = "Burn Amount cannot be zero or negative";
+      error = "Burn amount cannot be zero or negative";
     } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
       error = "Data NFT balance exceeded";
     }
@@ -251,7 +251,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   };
 
   return (
-    <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
+    <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" mb="1rem" position="relative" w="13.5rem">
         <Flex justifyContent="center" pt={3}>
           <Image
@@ -335,7 +335,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 height="7"
                 onClick={() => {
-                  accessDataStream(item.dataMarshal, item.id, address);
+                  accessDataStream(item.dataMarshal, item.id);
                 }}>
                 View Data
               </Button>

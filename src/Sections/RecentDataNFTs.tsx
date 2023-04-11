@@ -133,7 +133,7 @@ const RecentDataNFTs = ({
               style={{ "background": gradientBorder }}>
               <CardBody>
                 <Skeleton height={{ base: "300px", md: "200px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
-                  <Link href={`/dataNfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
+                  <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
                   </Link>
                 </Skeleton>
