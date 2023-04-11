@@ -13,7 +13,6 @@ import {
   DrawerHeader,
   DrawerBody,
   useDisclosure,
-  Skeleton,
   SimpleGrid,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -70,7 +69,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
-  const [imageUrl, setImageUrl] = useState<string>("");
   const [items, setItems] = useState<ItemType[]>([
     {
       index: 0,
@@ -114,8 +112,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   });
 
   useEffect(() => {
-    // console.log('********** DataNFTMarketplaceMultiversX A LOAD _chainMeta ', _chainMeta);
-
     (async () => {
       if (!_chainMeta.networkId) return;
 
@@ -139,8 +135,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, [_chainMeta.networkId]);
 
   useEffect(() => {
-    // console.log('********** DataNFTMarketplaceMultiversX B LOAD _chainMeta ', _chainMeta);
-
     (async () => {
       if (!_chainMeta.networkId) return;
 

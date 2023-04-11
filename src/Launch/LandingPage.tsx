@@ -49,15 +49,14 @@ const LandingPage = () => {
                   m={["auto", "initial"]}>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
                     Own and trade{" "}
-                    <Text as="span" color="teal.300">
+                    <Text as="span" color="teal.200">
                       your data
                     </Text>{" "}
                     in the Web3 Multiverse
                   </Heading>
 
                   <Text mt="1rem">
-                    Lorem ipsum dolor sit amet consectetur. Turpis vulputate vel elementum nibh viverra cras dui faucibus. Risus in sem viverra adipiscing quam
-                    in. Dictum aliquam semper orci molesti.
+                  Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties if your data is re-traded. The future of data access licensing is here.
                   </Text>
                 </Box>
 

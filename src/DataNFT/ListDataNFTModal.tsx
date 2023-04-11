@@ -7,7 +7,6 @@ import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { useChainMeta } from "store/ChainMetaContext";
-import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 export type ListModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -125,7 +124,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box>: {props.amount ? props.amount : 1}</Box>
             </Flex>
             <Flex fontSize="md" mt="2">
-              <Box w="140px">Fee per NFT</Box>
+              <Box w="140px">Unlock Fee (per NFT)</Box>
               <Box>
                 {props.sellerFee ? (
                   <>
@@ -207,7 +206,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               </Box>
             </Flex>
             <Flex mt="4 !important">
-              <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
+              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
                 Read Terms of Use
               </Button>
             </Flex>
@@ -230,11 +229,6 @@ export default function ListDataNFTModal(props: ListModalProps) {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <DataNFTProcureReadModal
-        isReadTermsModalOpen={isReadTermsModalOpen}
-        onReadTermsModalOpen={onReadTermsModalOpen}
-        onReadTermsModalClose={onReadTermsModalClose}
-      />
     </>
   );
 }

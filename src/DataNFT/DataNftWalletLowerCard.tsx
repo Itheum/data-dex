@@ -209,7 +209,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
 
         <HStack mt="2">
           <Text fontSize="xs" w="110px">
-            Listing price for each:{" "}
+            Unlock fee for each:{" "}
           </Text>
           <NumberInput
             size="xs"
@@ -223,7 +223,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
             onChange={(valueString, valueAsNumber) => {
               let error = "";
               if (valueAsNumber < 0) error = "Cannot be negative";
-              if (valueAsNumber > 0) error = "Cannot exceed maximum listing price";
+              if (valueAsNumber > 0) error = "Cannot exceed maximum listing fee";
               setPriceErrors((oldErrors) => {
                 const newErrors = [...oldErrors];
                 newErrors[index] = error;

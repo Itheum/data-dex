@@ -117,7 +117,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent mx="2" width="220px" mt="-7">
-                    <PopoverHeader fontWeight="semibold">{nftMetadata[index].title}</PopoverHeader>
+                    <PopoverHeader fontWeight="semibold" fontSize="md">{nftMetadata[index].title}</PopoverHeader>
                     <PopoverArrow />
                     <PopoverCloseButton />
                     <PopoverBody>
@@ -174,7 +174,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               <>
                 <Box fontSize="xs" mt="2">
                   <Text>
-                    Fee per NFT: {` `}
+                    Unlock from: {` `}
                     {marketRequirements ? (
                       <>
                         {printPrice(

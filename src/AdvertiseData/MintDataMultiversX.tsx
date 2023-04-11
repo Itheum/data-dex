@@ -69,37 +69,36 @@ import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
-  let title = "",
-    text = "";
+  let title = "", text = "";
+
   if (tkey === "data-stream-url") {
     title = "Data Stream URL";
-    text =
-      "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)";
+    text = labels.MINT_FORM_POPUP_INFO_DATA_STREAM;
   } else if (tkey === "data-preview-url") {
     title = "Data Preview URL";
-    text = "A URL of a free preview of full data asset which should be publicly accessible behind a secure domain (one that starts with https://)";
+    text = labels.MINT_FORM_POPUP_INFO_DATA_PREVIEW;
   } else if (tkey === "data-marshal-url") {
     title = "Data Marshal URL";
-    text = "The Data Marshal is the service that brokers the on-chain access control for your data asset";
+    text = labels.MINT_FORM_POPUP_INFO_DATA_MARSHAL;
   } else if (tkey === "token-name") {
     title = "Token Name (Short Title)";
-    text = "A short title to describe your data asset. This will be used as the NFT token name";
+    text = labels.MINT_FORM_POPUP_INFO_TOKEN_NAME;
   } else if (tkey === "dataset-title") {
     title = "Dataset Title";
-    text = "A longer title to describe your data asset";
+    text = labels.MINT_FORM_POPUP_INFO_TITLE;
   } else if (tkey === "dataset-description") {
     title = "Dataset Description";
-    text = "A description of your data asset";
+    text = labels.MINT_FORM_POPUP_INFO_DESC;
   } else if (tkey === "number-of-copies") {
     title = "Number of Copies";
-    text = 'The total "supply" you would like to mint (i.e. individual copies of your data access license)';
+    text = labels.MINT_FORM_POPUP_INFO_SUPPLY;
   } else if (tkey === "royalties") {
     title = "Royalties";
-    text = 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace';
+    text = labels.MINT_FORM_POPUP_INFO_ROYALTY;
   }
 
   return (
-    <Flex>
+    <Flex fontSize="small">
       <Popover trigger="hover" placement="auto">
         <PopoverTrigger>{children}</PopoverTrigger>
         <PopoverContent>
@@ -165,11 +164,11 @@ type TradeDataFormType = {
   royaltiesForm: number;
 };
 
-export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
+export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
   const [saveProgress, setSaveProgress] = useState({
     s1: 0,
@@ -180,11 +179,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [mintingSuccessful, setMintingSuccessful] = useState(false);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
-  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
+  
   const [currSellObject, setCurrSellObject] = useState<any>(null);
-
   const [isStreamTrade, setIsStreamTrade] = useState(0);
-
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [dataNFTImg, setDataNFTImg] = useState("");
   const [dataNFTTokenName, setDataNFTTokenName] = useState("");
@@ -194,30 +191,34 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState("");
   const [dataNFTMarshalService, setDataNFTMarshalService] = useState("");
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
-
   const [datasetTitle, setDatasetTitle] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState(false);
-
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
   const [maxSupply, setMaxSupply] = useState(-1);
   const [antiSpamTax, setAntiSpamTax] = useState(-1);
-
   const [dataNFTStreamUrlStatus, setDataNFTStreamUrlStatus] = useState("");
   const [dataNFTStreamPreviewUrlStatus, setDataNFTStreamPreviewUrlStatus] = useState("");
   const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState(false);
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
-
   const [itheumBalance, setItheumBalance] = useState(0);
-
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
-  const [dataStreamUrlValidation, setDataStreamUrlValidation] = useState(false);
-  const [dataPreviewUrlValidation, setDataPreviewUrlValidation] = useState(false);
+  const [, setDataStreamUrlValidation] = useState(false);
+  const [, setDataPreviewUrlValidation] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState(null);
-
+  const [userData, setUserData] = useState<UserDataType | undefined>();
+  const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
+  const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
+  const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
+  const [datasetTitleError, setDatasetTitleError] = useState("");
+  const [datasetDescriptionError, setDatasetDescriptionError] = useState("");
+  const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
+  const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
+  const [mintSessionId, setMintSessionId] = useState(null);
+  
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   // React hook form + yup integration
@@ -227,7 +228,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .required("Data Stream URL is required")
       .url("Data Stream must be URL")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .test("is-distinct", "Data Stream URL must be distinct from Data Preview URL", function (value) {
+      .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
       })
       .test("is-200", "Data Stream URL must be public", async function (value: string) {
@@ -237,11 +238,12 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         }
         return true;
       }),
+
     dataPreviewUrlForm: Yup.string()
       .required("Data Preview URL is required")
       .url("Data Preview must be URL")
       .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
-      .test("is-distinct", "Data Preview URL must be distinct from Data Stream URL", function (value) {
+      .test("is-distinct", "Data Preview URL cannot be the same as the Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
       })
       .test("is-200", "Data Stream URL must be public", async function (value: string) {
@@ -251,25 +253,30 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         }
         return true;
       }),
+
     tokenNameForm: Yup.string()
       .required("Token name is required")
       .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
       .min(3, "Token name must have at least 3 characters.")
       .max(20, "Token name must have maximum of 20 characters."),
+
     datasetTitleForm: Yup.string()
       .required("Dataset title is required")
       .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
       .max(30, "Dataset title must have maximum of 30 characters."),
+
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
       .max(400, "Dataset description must have maximum of 400 characters."),
+
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
       .min(1, "Minimum number of copies should be 1 or greater.")
       .max(maxSupply, `Number of copies should be less than ${maxSupply}.`)
       .required("Number of copies is required"),
+
     royaltiesForm: Yup.number()
       .typeError("Royalties must be a number.")
       .min(0, "Minimum value of royalties is 0%.")
@@ -298,11 +305,10 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
-  }; // here you can make logic that you want to happen on submit
+  }; // here you can make logic that you want to happen on submit (used for debugging)
 
   // query settings from Data NFT Minter SC
   useEffect(() => {
-    // console.log('********** SellDataMultiversX LOAD _chainMeta ', _chainMeta);
     if (!_chainMeta.networkId) return;
 
     (async () => {
@@ -317,6 +323,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         setMinRoyalties(value.toNumber() / 100);
       }
     })();
+
     (async () => {
       const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
@@ -329,6 +336,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         setMaxRoyalties(value.toNumber() / 100);
       }
     })();
+
     (async () => {
       const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
@@ -341,6 +349,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         setMaxSupply(value.toNumber());
       }
     })();
+    
     (async () => {
       const networkProvider = getGateway(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
@@ -366,9 +375,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       })();
     }
   }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
-
-  //
-  const [userData, setUserData] = useState<UserDataType | undefined>();
+  
   const getUserData = async () => {
     if (mxAddress && _chainMeta.networkId) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
@@ -399,9 +406,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   }, []);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // validation logic
-
-  const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
+  // S: validation logic
+  
   const onChangeDataNFTStreamUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
@@ -425,7 +431,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDataNFTStreamUrl(trimmedValue);
   };
 
-  const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
   const onChangeDataNFTStreamPreviewUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
@@ -467,7 +472,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     });
   };
 
-  const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
   const onChangeDataNFTTokenName = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
@@ -482,7 +486,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDataNFTTokenName(trimmedValue);
   };
 
-  const [datasetTitleError, setDatasetTitleError] = useState("");
   const onChangeDatasetTitle = (value: string) => {
     let error = "";
 
@@ -495,8 +498,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDatasetTitleError(error);
     setDatasetTitle(value);
   };
-
-  const [datasetDescriptionError, setDatasetDescriptionError] = useState("");
+  
   const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
@@ -507,8 +509,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDatasetDescriptionError(error);
     setDatasetDescription(value);
   };
-
-  const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
+  
   const handleChangeDataNftCopies = (value: number) => {
     let error = "";
     if (value < 1) {
@@ -520,8 +521,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDataNFTCopiesError(error);
     setDataNFTCopies(value);
   };
-
-  const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
+  
   const handleChangeDataNftRoyalties = (value: number) => {
     let error = "";
     if (value < 0) {
@@ -540,6 +540,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     // init value
     handleChangeDataNftRoyalties(minRoyalties);
   }, [minRoyalties, maxRoyalties]);
+
   useEffect(() => {
     // init value
     handleChangeDataNftCopies(1);
@@ -593,6 +594,8 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     userData,
   ]);
+  
+  // E: validation logic
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const mintTxFail = (foo: any) => {
@@ -613,9 +616,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     await sleep(3);
 
     setMintingSuccessful(true);
-  };
-
-  const [mintSessionId, setMintSessionId] = useState(null);
+  };  
 
   const getDataForSale = async (programId: any) => {
     setSelectedProgramId(programId);
@@ -654,7 +655,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const dataNFTSellSubmit = async () => {
     if (!mxAddress) {
       toast({
-        title: "Connect your wallet",
+        title: labels.ERR_MINT_FORM_NO_WALLET_CONN,
         status: "error",
         isClosable: true,
         duration: 20000,
@@ -664,7 +665,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     if (userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit) {
       toast({
-        title: `You can mint next Data NFT-FT after ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
+        title: `${labels.ERR_MINT_FORM_MINT_AGAIN_WAIT} ${new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString()}`,
         status: "error",
         isClosable: true,
         duration: 20000,
@@ -682,7 +683,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const dataNFTDataStreamAdvertise = async () => {
     /*
       1) Call the data marshal and get a encrypted data stream url and hash of url (s1)
-      2) Use the hash for to generate the robot img URL from the generative API (s2)
+      2) Use the hash for to generate the gen img URL from the generative API (s2)
         2.1) Save the new generative image to IPFS and get it's IPFS url (s3)
       3) Mint the SFT via the Minter Contract (s4)
     */
@@ -715,9 +716,9 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         });
       } else {
         if (data.success === false) {
-          setErrDataNFTStreamGeneric(new Error(`${data.error.code}, ${data.error.message}`));
+          setErrDataNFTStreamGeneric(new Error(`${labels.ERR_MINT_FORM_ENCRYPT_MARSHAL_FAIL} [${data.error.code}], ${data.error.message}`));
         } else {
-          setErrDataNFTStreamGeneric(new Error("Data Marshal responded with an unknown error trying to generate your encrypted links"));
+          setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_ENCRYPT_MARSHAL_FAIL));
         }
       }
     } catch (e) {
@@ -754,31 +755,33 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
-    const newNFTImg = `https://d37x5igq4vw5mq.cloudfront.net/datadexapi/v1/generateNFTArt?hash=${dataNFTHash}`;
+    const newNFTImg = `${process.env.REACT_APP_ENV_DATADEX_API}/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
     let res;
-    // catch IPFS error
-    try {
+    
+    try { // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
+
       const nftstorage = new NFTStorage({
         token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
       });
+
       res = await nftstorage.storeDirectory([image, traits]);
     } catch (e) {
-      setErrDataNFTStreamGeneric(new Error("Uploading the image on IPFS has failed"));
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
       return;
     }
 
     if (!res) {
-      setErrDataNFTStreamGeneric(new Error("Uploading the image on IPFS has failed"));
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
       return;
     }
+
     const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
     const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
-    console.log("metadataOnIpfsUrl", metadataOnIpfsUrl);
-
+    
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
@@ -816,6 +819,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setMintSessionId(sessionId);
   };
 
+  // is this used? @TODO check and remove
   const transactionStatus = useTrackTransactionStatus({
     transactionId: mintSessionId,
     onSuccess: mintTxSuccess,
@@ -844,7 +848,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setMintingSuccessful(false);
   };
 
-  async function validateBaseInput() {
+  function validateBaseInput() {
     if (!dataNFTStreamUrl.includes("https://") || !dataNFTStreamPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS,
@@ -852,7 +856,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         isClosable: true,
         duration: 20000,
       });
-      return true;
+      return false;
     } else {
       return true;
     }
@@ -865,6 +869,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       setDataStreamUrlValidation(false);
     }
   };
+
   const validateDataPreviewUrl = (value: string) => {
     if (value.includes("https://drive.google.com")) {
       setDataPreviewUrlValidation(true);
@@ -1121,9 +1126,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       onChangeDataNFTTokenName(event.currentTarget.value);
                     }}
                   />
-                  {/*<Text color="gray.400" fontSize="sm" mt="0.5 !important">*/}
-                  {/*  Between 3 and 20 alphanumeric characters only*/}
-                  {/*</Text>*/}
                   <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
                 </FormControl>
 
@@ -1142,9 +1144,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     {...register("datasetTitleForm")}
                     onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
                   />
-                  {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                  {/*  Between 10 and 50 alphanumeric characters only*/}
-                  {/*</Text>*/}
                   <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
                 </FormControl>
 
@@ -1166,14 +1165,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   />
                   <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                 </FormControl>
-                {/*<Text color="gray.400" fontSize="sm" mt="0 !important">*/}
-                {/*  Between 10 and 250 characters only. URL allowed.*/}
-                {/*</Text>*/}
-                {/*{userFocusedForm && datasetDescriptionError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {datasetDescriptionError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
 
                 <FormControl isInvalid={!!errors.numberOfCopiesForm}>
                   <InputLabelWithPopover tkey="number-of-copies">
@@ -1206,11 +1197,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 <Text color="gray.400" fontSize="sm" mt="1 !important">
                   Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
                 </Text>
-                {/*{userFocusedForm && dataNFTCopiesError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTCopiesError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
 
                 <FormControl isInvalid={!!errors.royaltiesForm}>
                   <InputLabelWithPopover tkey="royalties">
@@ -1242,11 +1228,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 <Text color="gray.400" fontSize="sm" mt="1 !important">
                   Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
                 </Text>
-                {/*{userFocusedForm && dataNFTRoyaltyError && (*/}
-                {/*  <Text color="red.400" fontSize="sm" mt="1 !important">*/}
-                {/*    {dataNFTRoyaltyError}*/}
-                {/*  </Text>*/}
-                {/*)}*/}
 
                 <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
                   Terms and Fees
@@ -1259,7 +1240,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   of use before proceeding.
                 </Text>
                 <Flex mt="3 !important">
-                  <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
+                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
                     Read Terms of Use
                   </Button>
                 </Flex>
@@ -1286,11 +1267,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                     You don&apos;t have enough ITHEUM for Anti-Spam Tax
                   </Text>
                 )}
-                <Flex mt="3 !important">
-                  <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
-                    Read about the Anti-Spam fee
-                  </Button>
-                </Flex>
                 <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
                   I accept the deduction of the anti-spam minting fee from my wallet
                 </Checkbox>
@@ -1303,7 +1279,7 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}>
                     <Button mt="5" colorScheme="teal" isLoading={isProgressModalOpen} onClick={dataNFTSellSubmit} isDisabled={mintDataNFTDisabled}>
-                      Mint and Trade as NFT
+                      Mint Your Data NFT
                     </Button>
                   </ChainSupportedInput>
                 </Flex>
@@ -1383,26 +1359,6 @@ export default function SellDataMX({ onRfMount, itheumAccount }: { onRfMount: an
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-
-      <Modal isOpen={isReadTermsModalOpen} onClose={onReadTermsModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
-        <ModalContent>
-          <ModalHeader>Data NFT-FT Terms of Use</ModalHeader>
-          <ModalBody pb={6}>
-            <Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since
-              the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-              but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-              sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-            </Text>
-            <Flex justifyContent="end" mt="6 !important">
-              <Button colorScheme="teal" onClick={onReadTermsModalClose}>
-                I have read this
-              </Button>
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </Stack>
   );
 }

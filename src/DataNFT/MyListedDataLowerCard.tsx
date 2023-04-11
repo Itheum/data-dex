@@ -339,7 +339,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing fee";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}
