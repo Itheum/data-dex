@@ -8,7 +8,6 @@ import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
-import DataNFTProcureReadModal from "./DataNFTProcureReadModal";
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -154,16 +153,14 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               <Box>: {props.amount ? props.amount : 1}</Box>
             </Flex>
             <Flex fontSize="md" mt="2">
-              <Box w="140px">Fee per NFT</Box>
+              <Box w="140px">Unlock Fee (per NFT)</Box>
               <Box>
                 {props.buyerFee ? (
                   <>
                     {": "}
                     {printPrice(
                       convertWeiToEsdt(
-                        new BigNumber(props.offer.wanted_token_amount)
-                          .multipliedBy(10000)
-                          .div(10000 + props.buyerFee),
+                        new BigNumber(props.offer.wanted_token_amount).multipliedBy(10000).div(10000 + props.buyerFee),
                         tokenDecimals(props.offer.wanted_token_identifier)
                       ).toNumber(),
                       getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
@@ -187,11 +184,9 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                 :{" "}
                 {props.buyerFee
                   ? `${props.buyerFee / 100}% (${convertWeiToEsdt(
-                    new BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.buyerFee)
-                      .div(10000 + props.buyerFee),
-                    tokenDecimals(props.offer.wanted_token_identifier)
-                  ).toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
+                      new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.buyerFee).div(10000 + props.buyerFee),
+                      tokenDecimals(props.offer.wanted_token_identifier)
+                    ).toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
                   : "-"}
               </Box>
             </Flex>
@@ -245,7 +240,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               </Box>
             </Flex>
             <Flex mt="4 !important">
-              <Button colorScheme="teal" variant="outline" size="sm" onClick={onReadTermsModalOpen}>
+              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
                 Read Terms of Use
               </Button>
             </Flex>
@@ -268,11 +263,6 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <DataNFTProcureReadModal
-        isReadTermsModalOpen={isReadTermsModalOpen}
-        onReadTermsModalOpen={onReadTermsModalOpen}
-        onReadTermsModalClose={onReadTermsModalClose}
-      />
     </>
   );
 }

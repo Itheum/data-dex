@@ -2,24 +2,23 @@ import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Link } from "@chakra-ui/react";
 import { Address } from "@multiversx/sdk-core/out";
+import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
+import { init } from "@sentry/browser";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import { CHAIN_TX_VIEWER } from "libs/util";
 import { getApi } from "MultiversX/api";
+import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
 import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
-import { DataNftMarketContract } from "MultiversX/dataNftMarket";
-import { init } from "@sentry/browser";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
   const [data, setData] = useState<TransactionInTable[]>([]);
 
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
-
 
   const linkIconStyle = { display: "flex" };
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
@@ -102,19 +101,18 @@ export default function TokenTxTable(props: TokenTableProps) {
 
     Promise.all([
       axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
-      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`)
+      axios.get(
+        `https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`
+      ),
     ]).then((responses) => {
       const mergedTransactions = getHistory(responses, props.tokenId);
       const history = buildHistory(mergedTransactions);
       setData(history);
     });
-
   }, []);
 
   return <DataTable columns={columns} data={data} />;
 }
-
-
 
 function getHistory(responses: any[], tokenId?: string) {
   DataNftOnNetwork.ids = [];
