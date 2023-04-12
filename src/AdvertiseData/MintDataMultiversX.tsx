@@ -69,7 +69,8 @@ import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
-  let title = "", text = "";
+  let title = "",
+    text = "";
 
   if (tkey === "data-stream-url") {
     title = "Data Stream URL";
@@ -264,7 +265,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .required("Dataset title is required")
       .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
-      .max(60, "Dataset title must have maximum of 30 characters."),
+      .max(60, "Dataset title must have maximum of 60 characters."),
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
@@ -760,7 +761,8 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     let res;
 
-    try { // catch IPFS error
+    try {
+      // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
 
       const nftstorage = new NFTStorage({
@@ -1287,7 +1289,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   of use before proceeding.
                 </Text>
                 <Flex mt="3 !important">
-                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
+                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
                     Read Terms of Use
                   </Button>
                 </Flex>

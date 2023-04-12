@@ -70,6 +70,15 @@ const theme = extendTheme({
       900: "#1D4044",
     },
   },
+  components: {
+    Icon: {
+      baseStyle: {
+        icon: {
+          color: "teal.200",
+        },
+      },
+    },
+  },
 });
 
 const container = document.getElementById("root");

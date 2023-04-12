@@ -45,8 +45,7 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { MdDarkMode, MdExpandLess, MdExpandMore, MdLightMode, MdMenu } from "react-icons/md";
-import { MdOutlineAccountBalanceWallet, MdOutlineDataSaverOn, MdOnlinePrediction } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDarkMode, MdExpandLess, MdExpandMore, MdLightMode, MdMenu } from "react-icons/md";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "img/logo-sml-d.png";
@@ -56,6 +55,10 @@ import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ShortAddress from "UtilComps/ShortAddress";
+import { TbSunset2 } from "react-icons/tb";
+import { TiArrowSortedDown } from "react-icons/ti";
+import { RiExchangeFill } from "react-icons/ri";
+import { FaStore } from "react-icons/fa";
 
 const exploreRouterMenu = [
   {
@@ -67,7 +70,7 @@ const exploreRouterMenu = [
         path: "tradedata",
         label: "Trade Data",
         shortLbl: "Trade",
-        Icon: MdOutlineDataSaverOn,
+        Icon: RiExchangeFill,
         needToBeLoggedIn: true,
       },
       {
@@ -75,7 +78,7 @@ const exploreRouterMenu = [
         path: "datanfts/wallet",
         label: "Data NFT Wallet",
         shortLbl: "Wallet",
-        Icon: MdOutlineAccountBalanceWallet,
+        Icon: MdAccountBalanceWallet,
         needToBeLoggedIn: true,
       },
       {
@@ -83,7 +86,7 @@ const exploreRouterMenu = [
         path: "datanfts/marketplace/market",
         label: "Data NFT Marketplace",
         shortLbl: "Market",
-        Icon: MdOnlinePrediction,
+        Icon: FaStore,
         needToBeLoggedIn: false,
       },
     ],
@@ -138,7 +141,7 @@ const AppHeader = ({
 
   return (
     <>
-      <Flex h="5rem" alignItems="center" backgroundColor={colorMode === "light" ? "white" : "black"} borderBottom="solid .1rem" borderColor="teal.200" p="5">
+      <Flex h="6rem" alignItems="center" backgroundColor={colorMode === "light" ? "white" : "black"} borderBottom="solid .1rem" borderColor="teal.200" p="5">
         <HStack alignItems={"center"} backgroundColor="none" width="15rem">
           {isMxLoggedIn && (
             <IconButton
@@ -168,7 +171,9 @@ const AppHeader = ({
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>Itheum Data DEX</Heading>
+              <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>
+                Itheum Data DEX
+              </Heading>
             </HStack>
           </Link>
         </HStack>
@@ -186,22 +191,26 @@ const AppHeader = ({
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
                     <Button
-                      colorScheme="teal"
+                      borderColor="teal.200"
+                      textColor="white"
+                      fontSize="md"
                       variant="outline"
+                      h={"12"}
                       isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(menuEnum)}
-                      opacity={0.6}
                       key={shortLbl}
-                      leftIcon={<Icon size={"1.25em"} />}
-                      size={isMxLoggedIn ? "sm": "md"}
+                      size={isMxLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
-                      {shortLbl}
+                      <Flex justifyContent="center" alignItems="center" px={1.5}>
+                        <Icon size={"1.6em"} />
+                        <Text pl={2}>{shortLbl}</Text>
+                      </Flex>
                     </Button>
                   </Link>
                 );
               })}
             </HStack>
-            
+
             {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
@@ -209,7 +218,7 @@ const AppHeader = ({
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId}>
-                      <MenuButton as={Button} size={"sm"} rightIcon={<MdExpandMore />}>
+                      <MenuButton as={Button} size={"lg"} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"}>
@@ -254,8 +263,8 @@ const AppHeader = ({
                 </Box>
                 <Link as={ReactRouterLink} to={"home"} style={{ textDecoration: "none" }}>
                   <IconButton
-                    size={"sm"}
-                    icon={<AiFillHome />}
+                    size={"lg"}
+                    icon={<AiFillHome size={"1.4rem"} color={"teal.200"} />}
                     aria-label={"Back to Home"}
                     isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
                     _disabled={menuButtonDisabledStyle(MENU.HOME)}
@@ -271,11 +280,12 @@ const AppHeader = ({
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
 
             <Box display={{ base: "none", md: "block", xl: "block" }}>
-              <IconButton               
-                size={isMxLoggedIn ? "sm": "md"}
-                icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} 
-                aria-label="Change Color Theme" 
-                onClick={toggleColorMode} />
+              <IconButton
+                size={"lg"}
+                icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} color="teal.200" />}
+                aria-label="Change Color Theme"
+                onClick={toggleColorMode}
+              />
             </Box>
           </HStack>
         </Flex>
@@ -445,12 +455,12 @@ function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance
       fontSize={["xs", "md"]}
       minWidth="5.5rem"
       textAlign="center"
-      color="white"
-      fontWeight="bold"
+      color="black"
+      bgColor="teal.200"
       borderRadius="md"
-      height="2rem"
-      padding="6px 11px"
-      bgGradient="linear(to-l, #7928CA, #FF0080)">
+      h={"12"}
+      paddingX="5"
+      paddingY="14px">
       {tokenBalance === -1 ? (
         <Spinner size="xs" />
       ) : tokenBalance === -2 ? (
@@ -470,9 +480,8 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
       display={displayParams}
       fontSize={["xs", "md"]}
       textAlign="center"
-      color="rgb(243, 183, 30)"
-      fontWeight="bold"
-      bg="rgba(243, 132, 30, 0.05)"
+      color="teal.200"
+      fontWeight="semibold"
       borderRadius="md"
       height="2rem"
       padding="6px 11px">
