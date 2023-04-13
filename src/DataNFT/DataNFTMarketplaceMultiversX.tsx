@@ -296,8 +296,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               opacity={0.4}
               fontSize={{ base: "sm", md: "md" }}
               onClick={() => {
-                if (hasPendingTransactions) return;
-                setPageIndex(0);
+                if (hasPendingTransactions || loadingOffers || nftMetadatasLoading) return;
+                setLoadingOffers(true);
                 navigate("/datanfts/marketplace/market");
               }}>
               Public Marketplace
@@ -311,8 +311,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 opacity={0.4}
                 fontSize={{ base: "sm", md: "md" }}
                 onClick={() => {
-                  if (hasPendingTransactions) return;
-                  setPageIndex(0);
+                  if (hasPendingTransactions || loadingOffers || nftMetadatasLoading) return;
+                  setLoadingOffers(true);
                   navigate("/datanfts/marketplace/my");
                 }}>
                 My Listed Data NFTs
@@ -342,7 +342,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   marketFreezedNonces={marketFreezedNonces}
                   openNftDetailsDrawer={openNftDetailsDrawer}
                   itheumPrice={itheumPrice}>
-                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 ? (
+                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 && !loadingOffers && !nftMetadatasLoading ? (
                     <MarketplaceLowerCard
                       nftMetadatas={nftMetadatas}
                       index={index}
