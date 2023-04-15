@@ -72,11 +72,7 @@ const theme = extendTheme({
   },
   components: {
     Icon: {
-      baseStyle: {
-        icon: {
-          color: "teal.200",
-        },
-      },
+      colorScheme: "teal",
     },
   },
 });

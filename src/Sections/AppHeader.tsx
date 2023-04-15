@@ -1,56 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
-  Flex,
-  Heading,
-  Image,
-  HStack,
-  Button,
-  Text,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  IconButton,
-  Link,
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
   Box,
-  Spinner,
-  Stack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuDivider,
+  Button,
   Drawer,
-  DrawerOverlay,
+  DrawerBody,
+  DrawerCloseButton,
   DrawerContent,
   DrawerHeader,
-  DrawerCloseButton,
-  DrawerBody,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
+  DrawerOverlay,
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Image,
+  Link,
   List,
   ListIcon,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuGroup,
+  MenuItem,
+  MenuItemOption,
+  MenuList,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Spinner,
+  Stack,
+  Text,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { MdAccountBalanceWallet, MdDarkMode, MdExpandLess, MdExpandMore, MdLightMode, MdMenu } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDarkMode, MdExpandLess, MdExpandMore, MdMenu } from "react-icons/md";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
-import { CHAINS, CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor, MENU } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU } from "libs/util";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
@@ -128,9 +128,15 @@ const AppHeader = ({
     let styleProps: any = {
       cursor: "not-allowed",
     };
-    if (isMenuItemSelected(currentMenuItem)) {
+    if (isMenuItemSelected(currentMenuItem) && colorMode === "dark") {
       styleProps = {
-        opacity: 1,
+        backgroundColor: "#44444450",
+        opacity: 0.6,
+        ...styleProps,
+      };
+    } else if (isMenuItemSelected(currentMenuItem) && colorMode !== "dark") {
+      styleProps = {
+        backgroundColor: "#EDF2F7",
         ...styleProps,
       };
     }
@@ -192,7 +198,6 @@ const AppHeader = ({
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
                     <Button
                       borderColor="teal.200"
-                      textColor="white"
                       fontSize="md"
                       variant="outline"
                       h={"12"}
@@ -201,9 +206,11 @@ const AppHeader = ({
                       key={shortLbl}
                       size={isMxLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
-                      <Flex justifyContent="center" alignItems="center" px={1.5}>
+                      <Flex justifyContent="center" alignItems="center" px={1.5} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
-                        <Text pl={2}>{shortLbl}</Text>
+                        <Text pl={2} color={colorMode === "dark" ? "white" : "black"}>
+                          {shortLbl}
+                        </Text>
                       </Flex>
                     </Button>
                   </Link>
@@ -226,9 +233,9 @@ const AppHeader = ({
                           const { label, path, menuEnum, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
-                              <MenuItem key={label} isDisabled={hasPendingTransactions} onClick={() => navigateToDiscover(menuEnum)}>
+                              <MenuItem key={label} isDisabled={hasPendingTransactions} onClick={() => navigateToDiscover(menuEnum)} color="teal.200">
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
-                                {label}
+                                <Text color={colorMode === "dark" ? "white" : "black"}>{label}</Text>
                               </MenuItem>
                             </Link>
                           );
@@ -261,14 +268,14 @@ const AppHeader = ({
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"home"} style={{ textDecoration: "none" }}>
+                <Link as={ReactRouterLink} to={"home"}>
                   <IconButton
                     size={"lg"}
-                    icon={<AiFillHome size={"1.4rem"} color={"teal.200"} />}
+                    color="teal.200"
+                    icon={<AiFillHome size={"1.4rem"} />}
                     aria-label={"Back to Home"}
                     isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
                     _disabled={menuButtonDisabledStyle(MENU.HOME)}
-                    opacity={0.6}
                     onClick={() => {
                       navigateToDiscover(MENU.HOME);
                     }}
@@ -282,8 +289,9 @@ const AppHeader = ({
             <Box display={{ base: "none", md: "block", xl: "block" }}>
               <IconButton
                 size={"lg"}
-                icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} color="teal.200" />}
+                icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} />}
                 aria-label="Change Color Theme"
+                color="teal.200"
                 onClick={toggleColorMode}
               />
             </Box>
@@ -403,7 +411,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack marginLeft={3}>
         <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="md">
+          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="lg">
             Connect MultiversX Wallet
           </Button>
         </PopoverTrigger>
