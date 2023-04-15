@@ -1,9 +1,10 @@
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Text, Flex, HStack, Link, useColorMode } from "@chakra-ui/react";
+import { getSentryProfile } from "../libs/util2";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
-const nonProdEnv = `env:${process.env.REACT_APP_ENV_SENTRY_PROFILE}`;
+const nonProdEnv = `env:${getSentryProfile()}`;
 
 export default function () {
   const { colorMode } = useColorMode();
