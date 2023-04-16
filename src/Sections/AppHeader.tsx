@@ -147,7 +147,15 @@ const AppHeader = ({
 
   return (
     <>
-      <Flex h="6rem" alignItems="center" backgroundColor={colorMode === "light" ? "white" : "black"} borderBottom="solid .1rem" borderColor="teal.200" p="5">
+      <Flex
+        h="6rem"
+        justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
+        paddingX={!isMxLoggedIn ? 32 : 0}
+        alignItems="center"
+        backgroundColor={colorMode === "light" ? "white" : "black"}
+        borderBottom="solid .1rem"
+        borderColor="teal.200"
+        paddingY="5">
         <HStack alignItems={"center"} backgroundColor="none" width="15rem">
           {isMxLoggedIn && (
             <IconButton
@@ -183,8 +191,7 @@ const AppHeader = ({
             </HStack>
           </Link>
         </HStack>
-
-        <Flex backgroundColor="none" flex="1" justifyContent="right">
+        <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "block", xl: "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {

@@ -886,8 +886,10 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   }
 
   return (
-    <Stack>
-      <Heading size="lg">Trade Data</Heading>
+    <Stack mt={5} mx={20}>
+      <Heading size="lg" fontWeight="medium">
+        Trade Data
+      </Heading>
       <Heading size="xs" opacity=".7">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
@@ -902,7 +904,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
           backgroundColor="none"
           borderRadius="1.5rem"
           style={{ "background": gradientBorder }}>
-          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" />
+          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
           <Box p="6">
             <Box display="flex" alignItems="baseline">
@@ -911,7 +913,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
               </Box>
             </Box>
             <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null)}>
-              Advertise Data
+              <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
             </Button>
           </Box>
         </Box>
