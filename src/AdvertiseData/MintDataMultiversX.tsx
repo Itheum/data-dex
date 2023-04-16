@@ -879,10 +879,12 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     }
   };
 
-  let gradientBorder = styleStrings.gradientBorderPassive;
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
+  let gradientBorderCards = styleStrings.gradientBorderMulticolor;
 
   if (colorMode === "light") {
-    gradientBorder = styleStrings.gradientBorderPassiveLight;
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
+    gradientBorderCards = styleStrings.gradientBorderMulticolorLight;
   }
 
   return (
@@ -890,20 +892,19 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       <Heading size="lg" fontWeight="medium">
         Trade Data
       </Heading>
-      <Heading size="xs" opacity=".7">
+      <Heading size="sm" opacity=".7" fontWeight="normal">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
       <Wrap shouldWrapChildren={true} spacing={5}>
         <Box
           maxW="xs"
-          borderWidth="1px"
           overflow="hidden"
           mt={5}
-          border=".1rem solid transparent"
+          border=".01rem solid transparent"
           backgroundColor="none"
-          borderRadius="1.5rem"
-          style={{ "background": gradientBorder }}>
+          borderRadius="0.75rem"
+          style={{ "background": gradientBorderForTrade }}>
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
           <Box p="6">
@@ -912,7 +913,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 Any Data Stream as Data NFT-FT
               </Box>
             </Box>
-            <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null)}>
+            <Button mt="3" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(null)}>
               <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
             </Button>
           </Box>
@@ -921,8 +922,11 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
       {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
         <>
-          <Heading size="md" m="3rem 0 1rem 0 !important">
+          <Heading size="lg" fontWeight="normal" marginTop="6rem !important">
             Supported Data CAT Programs
+          </Heading>
+          <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="9 !important">
+            Join a community built app and earn ITHEUM when you trade your data
           </Heading>
           <Wrap shouldWrapChildren={true} spacing={5}>
             {itheumAccount.programsAllocation.map((item: any) => (
@@ -933,9 +937,14 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 overflow="hidden"
                 border=".1rem solid transparent"
                 backgroundColor="none"
-                borderRadius="1.5rem"
-                style={{ "background": gradientBorder }}>
-                <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
+                borderRadius="1.5rem">
+                <Image
+                  src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`}
+                  alt=""
+                  border=".1rem solid transparent"
+                  borderRadius="1.5rem"
+                  style={{ "background": gradientBorderCards }}
+                />
 
                 <Box p="6">
                   <Box display="flex" alignItems="baseline">
@@ -943,12 +952,12 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       {" "}
                       New
                     </Badge>
-                    <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                    <Box ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
                       {itheumAccount._lookups.programs[item.program].programName}
                     </Box>
                   </Box>
-                  <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
-                    Trade Program Data
+                  <Button mt="3" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item.program)}>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Trade Program Data</Text>
                   </Button>
                 </Box>
               </Box>
