@@ -922,17 +922,17 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
       {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
         <>
-          <Heading size="lg" fontWeight="normal" marginTop="6rem !important">
+          <Heading size="lg" fontWeight="semibold" marginTop="6rem !important">
             Supported Data CAT Programs
           </Heading>
-          <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="9 !important">
+          <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="5 !important">
             Join a community built app and earn ITHEUM when you trade your data
           </Heading>
-          <Wrap shouldWrapChildren={true} spacing={5}>
+          <Wrap shouldWrapChildren={true} spacingX={5}>
             {itheumAccount.programsAllocation.map((item: any) => (
               <Box
                 key={item.program}
-                maxW="xs"
+                maxW="22.4rem"
                 borderWidth="1px"
                 overflow="hidden"
                 border=".1rem solid transparent"
@@ -942,21 +942,22 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`}
                   alt=""
                   border=".1rem solid transparent"
+                  height="13.375rem"
                   borderRadius="1.5rem"
                   style={{ "background": gradientBorderCards }}
                 />
 
-                <Box p="6">
-                  <Box display="flex" alignItems="baseline">
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                <Box paddingTop="6" paddingBottom="2">
+                  <Box display="flex" alignItems="center">
+                    <Badge borderRadius="sm" px="2" py="0.08rem" colorScheme="teal">
                       {" "}
                       New
                     </Badge>
-                    <Box ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                    <Box ml="2" fontWeight="semibold" lineHeight="tight" fontSize="2xl" noOfLines={1}>
                       {itheumAccount._lookups.programs[item.program].programName}
                     </Box>
                   </Box>
-                  <Button mt="3" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item.program)}>
+                  <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item.program)}>
                     <Text color={colorMode === "dark" ? "white" : "black"}>Trade Program Data</Text>
                   </Button>
                 </Box>
