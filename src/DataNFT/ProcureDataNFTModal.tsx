@@ -27,7 +27,6 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
-  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
 
   useEffect(() => {
@@ -240,7 +239,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               </Box>
             </Flex>
             <Flex mt="4 !important">
-              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
+              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
                 Read Terms of Use
               </Button>
             </Flex>
