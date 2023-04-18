@@ -1,13 +1,4 @@
-import {
-  AbiRegistry,
-  SmartContractAbi,
-  SmartContract,
-  Address,
-  ResultsParser,
-  Transaction,
-  TransactionPayload,
-  ContractFunction,
-} from "@multiversx/sdk-core/out";
+import { AbiRegistry, SmartContract, Address, ResultsParser, Transaction, ContractFunction, ContractCallPayloadBuilder } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
@@ -25,11 +16,10 @@ export class FaucetContract {
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
-    const abi = new SmartContractAbi(abiRegistry, ["DevNetFaucet"]);
 
     this.contract = new SmartContract({
       address: new Address(this.claimsContractAddress),
-      abi: abi,
+      abi: abiRegistry,
     });
   }
 
@@ -55,7 +45,7 @@ export class FaucetContract {
   async sendActivateFaucetTransaction(address) {
     const faucetTransaction = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("activateFaucet")).build(),
+      data: new ContractCallPayloadBuilder().setFunction(new ContractFunction("activateFaucet")).build(),
       receiver: new Address(this.claimsContractAddress),
       sender: new Address(address),
       gasLimit: 20000000,

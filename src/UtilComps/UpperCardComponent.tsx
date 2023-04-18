@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
@@ -22,9 +22,8 @@ import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
-import { getApi } from "../MultiversX/api";
-import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "../MultiversX/tokenUtils";
+import { convertToLocalString, printPrice } from "../libs/util2";
+import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
@@ -131,7 +130,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </div>
                 </PopoverTrigger>
                 <PopoverContent mx="2" width="220px" mt="-7">
-                  <PopoverHeader fontWeight="semibold" fontSize="md">{nftMetadatas[index].title}</PopoverHeader>
+                  <PopoverHeader fontWeight="semibold" fontSize="md">
+                    {nftMetadatas[index].title}
+                  </PopoverHeader>
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverBody>

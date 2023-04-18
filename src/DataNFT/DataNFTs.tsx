@@ -1,12 +1,10 @@
 import React from "react";
-import { Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider, Text } from "@chakra-ui/react";
+import { Box, Button, Center, Heading, HStack, Link, Stack, StackDivider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { MENU } from "libs/util";
-import { useChainMeta } from "store/ChainMetaContext";
 
-export default function ({ setMenuItem }: { setMenuItem: any}) {
+export default function ({ setMenuItem }: { setMenuItem: any }) {
   const navigate = useNavigate();
-  const { chainMeta: _chainMeta } = useChainMeta();
 
   return (
     <Stack spacing={5} mt={10}>
@@ -20,8 +18,7 @@ export default function ({ setMenuItem }: { setMenuItem: any}) {
               Highly personal or sensitive datasets can essentially function as a NFT allowing for uniqueness and limited availability
             </Box>
             <Box fontSize="sm" flex="1">
-              Allow for resale in secondary markets and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn
-              a % as royalty
+              Allow for resale in secondary markets and earn royalties if your data is resold. i.e. if a buyer resells your data, you can earn a % as royalty
             </Box>
             <Box fontSize="sm" flex="1">
               To make it more akin to a collectible, datasets are converted to a unique visual representation of that data using unique hash algorithms.
