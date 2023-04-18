@@ -888,7 +888,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   }
 
   return (
-    <Stack mt={5} mx={20}>
+    <Stack mt={5} mx={24}>
       <Heading size="lg" fontWeight="medium">
         Trade Data
       </Heading>
