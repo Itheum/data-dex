@@ -108,7 +108,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           />
         </Flex>
 
-        <Flex h="28rem" p="3" direction="column" justify="space-between">
+        <Flex h={address ? "28rem" : "18rem"} p="3" direction="column" justify="space-between">
           {nftMetadatas[index] && (
             <>
               <Text fontSize="xs">
@@ -154,7 +154,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                     <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Box>
-                <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
+                <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" mt="2" mb="1" height="auto">
                   {address && address == nftMetadatas[index].creator && (
                     <Badge borderRadius="full" px="2" colorScheme="teal">
                       <Text>You are the Creator</Text>
@@ -173,7 +173,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                 </Box>
               </Flex>
 
-              <Box display="flex" justifyContent="flex-start" mt="2">
+              <Box display="flex" justifyContent="flex-start" mt="0">
                 <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
               </Box>
 
