@@ -130,6 +130,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     };
 
     let customError = labels.ERR_WALLET_SIG_GENERIC;
+    debugger; // eslint-disable-line
 
     if (walletUsedSession === "el_webwallet") {
       // web wallet not supported
@@ -177,7 +178,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalOpen();
 
     try {
-      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
+      const res = await fetch(`${dataMarshal.replace('https', 'http')}/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -200,7 +201,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           const link = document.createElement("a");
           link.target = "_blank";
           link.setAttribute("target", "_blank");
-          link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
+          link.href = `${dataMarshal.replace('https', 'http')}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
           await sleep(3);
