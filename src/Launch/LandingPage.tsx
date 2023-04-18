@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
 import imgHeroDataNFTs from "img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "img/landing/hero-metaverse-mask.png";
@@ -56,7 +56,9 @@ const LandingPage = () => {
                   </Heading>
 
                   <Text mt="1rem">
-                  Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties if your data is re-traded. The future of data access licensing is here.
+                    Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market
+                    price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties
+                    if your data is re-traded. The future of data access licensing is here.
                   </Text>
                 </Box>
 
