@@ -1,4 +1,3 @@
-import { BytesValue, StringValue, TokenIdentifierType, TokenIdentifierValue } from "@multiversx/sdk-core/out";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";

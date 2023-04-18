@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, useDisclosure, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
-import { convertWeiToEsdt, sleep } from "libs/util";
+import { sleep } from "libs/util";
 import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
-import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
+import { getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { useChainMeta } from "store/ChainMetaContext";
 export type ListModalProps = {
   isOpen: boolean;
@@ -25,7 +25,6 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
-  const { isOpen: isReadTermsModalOpen, onOpen: onReadTermsModalOpen, onClose: onReadTermsModalClose } = useDisclosure();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
 
   useEffect(() => {
@@ -206,7 +205,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               </Box>
             </Flex>
             <Flex mt="4 !important">
-              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
+              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
                 Read Terms of Use
               </Button>
             </Flex>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Flex,
@@ -168,7 +168,9 @@ const AppHeader = ({
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>Itheum Data DEX</Heading>
+              <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>
+                Itheum Data DEX
+              </Heading>
             </HStack>
           </Link>
         </HStack>
@@ -193,7 +195,7 @@ const AppHeader = ({
                       opacity={0.6}
                       key={shortLbl}
                       leftIcon={<Icon size={"1.25em"} />}
-                      size={isMxLoggedIn ? "sm": "md"}
+                      size={isMxLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
                       {shortLbl}
                     </Button>
@@ -201,7 +203,7 @@ const AppHeader = ({
                 );
               })}
             </HStack>
-            
+
             {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
@@ -271,11 +273,12 @@ const AppHeader = ({
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
 
             <Box display={{ base: "none", md: "block", xl: "block" }}>
-              <IconButton               
-                size={isMxLoggedIn ? "sm": "md"}
-                icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} 
-                aria-label="Change Color Theme" 
-                onClick={toggleColorMode} />
+              <IconButton
+                size={isMxLoggedIn ? "sm" : "md"}
+                icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
+                aria-label="Change Color Theme"
+                onClick={toggleColorMode}
+              />
             </Box>
           </HStack>
         </Flex>

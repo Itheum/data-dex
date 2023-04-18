@@ -1,12 +1,10 @@
 import {
   AbiRegistry,
-  SmartContractAbi,
   SmartContract,
   Address,
   ResultsParser,
   BigUIntValue,
   Transaction,
-  TransactionPayload,
   ContractFunction,
   U64Value,
   TokenIdentifierValue,
@@ -16,6 +14,7 @@ import {
   AddressType,
   OptionalValue,
   BooleanValue,
+  ContractCallPayloadBuilder,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -43,11 +42,10 @@ export class DataNftMarketContract {
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
-    const abi = new SmartContractAbi(abiRegistry, ["DataNftMintContract"]);
 
     this.contract = new SmartContract({
       address: new Address(this.dataNftMarketContractAddress),
-      abi: abi,
+      abi: abiRegistry,
     });
 
     this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
@@ -91,7 +89,7 @@ export class DataNftMarketContract {
   async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
     const data =
       new BigNumber(paymentAmount).comparedTo(0) > 0
-        ? TransactionPayload.contractCall()
+        ? new ContractCallPayloadBuilder()
             .setFunction(new ContractFunction("ESDTTransfer"))
             .addArg(new TokenIdentifierValue(tokenId))
             .addArg(new BigUIntValue(paymentAmount))
@@ -99,7 +97,7 @@ export class DataNftMarketContract {
             .addArg(new U64Value(index))
             .addArg(new BigUIntValue(amount))
             .build()
-        : TransactionPayload.contractCall()
+        : new ContractCallPayloadBuilder()
             .setFunction(new ContractFunction("acceptOffer"))
             .addArg(new U64Value(index))
             .addArg(new BigUIntValue(amount))
@@ -132,7 +130,7 @@ export class DataNftMarketContract {
   async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: string, tokenId: string, nonce: number, amount: number, senderAddress: string) {
     const offerEsdtTx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall()
+      data: new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("ESDTNFTTransfer"))
         .addArg(new TokenIdentifierValue(tokenId))
         .addArg(new U64Value(nonce))
@@ -166,7 +164,7 @@ export class DataNftMarketContract {
   async sendAcceptOfferEgldTransaction(index: number, paymentAmount: string, amount: number, senderAddress: string) {
     const offerEgldTx = new Transaction({
       value: paymentAmount,
-      data: TransactionPayload.contractCall()
+      data: new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("acceptOffer"))
         .addArg(new U64Value(index))
         .addArg(new BigUIntValue(amount))
@@ -195,7 +193,7 @@ export class DataNftMarketContract {
   async sendCancelOfferTransaction(index: number, senderAddress: string) {
     const cancelTx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall()
+      data: new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("cancelOffer"))
         .addArg(new U64Value(index))
         .addArg(new BooleanValue(true))
@@ -224,7 +222,7 @@ export class DataNftMarketContract {
   async addToMarket(addTokenCollection: string, addTokenNonce: number, addTokenQuantity: number, price: number, addressOfSender: string) {
     const addERewTx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall()
+      data: new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("ESDTNFTTransfer")) //method
         .addArg(new TokenIdentifierValue(addTokenCollection)) //what token id to send
         .addArg(new U64Value(addTokenNonce)) //what token nonce to send
@@ -255,7 +253,7 @@ export class DataNftMarketContract {
   }
 
   async delistDataNft(index: number, delistAmount: number, senderAddress: string) {
-    const data = TransactionPayload.contractCall()
+    const data = new ContractCallPayloadBuilder()
       .setFunction(new ContractFunction("cancelOffer"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(delistAmount))
@@ -501,7 +499,7 @@ export class DataNftMarketContract {
   }
 
   async updateOfferPrice(index: number, newPrice: string, senderAddress: string) {
-    const data = TransactionPayload.contractCall()
+    const data = new ContractCallPayloadBuilder()
       .setFunction(new ContractFunction("changeOfferPrice"))
       .addArg(new U64Value(index))
       .addArg(new BigUIntValue(newPrice))
