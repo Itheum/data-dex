@@ -96,7 +96,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(8);
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
   console.log(location.pathname);
@@ -326,7 +326,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
+          <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={"24 !important"}>
             {offers.length > 0 &&
               items?.map((item, index) => (
                 <UpperCardComponent
