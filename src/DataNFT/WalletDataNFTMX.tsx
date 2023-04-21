@@ -130,7 +130,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     };
 
     let customError = labels.ERR_WALLET_SIG_GENERIC;
-    debugger; // eslint-disable-line
 
     if (walletUsedSession === "el_webwallet") {
       // web wallet not supported

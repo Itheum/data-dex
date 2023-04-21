@@ -124,6 +124,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
       ) : (
         <HStack h="3rem"></HStack>
       )}
+
       {amountErrors[index] && (
         <Text color="red.400" fontSize="xs">
           {amountErrors[index]}

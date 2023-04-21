@@ -1304,7 +1304,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
             <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false}>
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader>Data Advertising Progress</ModalHeader>
+                <ModalHeader>Data NFT Minting Progress</ModalHeader>
                 {!!errDataNFTStreamGeneric && <ModalCloseButton />}
                 <ModalBody pb={6}>
                   <Stack spacing={5}>

@@ -13,6 +13,7 @@ export const labels = {
   "ERR_MINT_FORM_ENCRYPT_MARSHAL_UNKNOWN_FAIL": "Data Marshal responded with an unknown error trying to generate your encrypted link. (ER-12)",
   "ERR_MINT_FORM_MINT_AGAIN_WAIT": "(ER-13) You can mint next Data NFT-FT after ",
   "ERR_MINT_FORM_NO_WALLET_CONN": "Connect your wallet to proceed with mint. (ER-14)",
+  "ERR_PROCURE_UPTIME_CHECK_DOWN": "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-15)",
 
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM": "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",

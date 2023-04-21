@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  HStack,
+  Flex,
+  Button,
+  Checkbox,
+  Divider,
+  useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import { sleep } from "libs/util";
@@ -7,6 +20,7 @@ import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
 import { getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { useChainMeta } from "store/ChainMetaContext";
+import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
 export type ListModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +40,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
   const [readTermsChecked, setReadTermsChecked] = useState(false);
+  const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
 
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
@@ -118,107 +133,122 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 <Image src={props.nftData.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
               </Box>
             </HStack>
-            <Flex fontSize="md" mt="2">
-              <Box w="140px">How many</Box>
-              <Box>: {props.amount ? props.amount : 1}</Box>
-            </Flex>
-            <Flex fontSize="md" mt="2">
-              <Box w="140px">Unlock Fee (per NFT)</Box>
-              <Box>
-                {props.sellerFee ? (
-                  <>
-                    {": "}
-                    {printPrice(
-                      new BigNumber(props.offer.wanted_token_amount).toNumber(),
-                      getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
-                    )}
-                  </>
-                ) : (
-                  "-"
+
+            <Box>
+              <Flex fontSize="md" mt="2">
+                <Box w="140px">How many</Box>
+                <Box>: {props.amount ? props.amount : 1}</Box>
+              </Flex>
+              <Flex fontSize="md" mt="2">
+                <Box w="140px">Unlock Fee (per NFT)</Box>
+                <Box>
+                  {props.sellerFee ? (
+                    <>
+                      {": "}
+                      {printPrice(
+                        new BigNumber(props.offer.wanted_token_amount).toNumber(),
+                        getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
+                      )}
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </Box>
+              </Flex>
+              <Flex>
+                {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
+                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
+                    Your wallet token balance is too low to proceed
+                  </Text>
                 )}
-              </Box>
-            </Flex>
-            <Flex>
-              {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
-                <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                  Your wallet token balance is too low to proceed
-                </Text>
-              )}
-            </Flex>
-            <Flex fontSize="md" mt="2">
-              <Box w="140px">Royalties (per NFT)</Box>
-              <Box>
-                :{" "}
-                {address !== props.nftData.creator
-                  ? `${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.nftData.royalties)
-                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
-                  : "0 (You are the creator)"}
-              </Box>
-            </Flex>
-            <Flex fontSize="md" mt="2">
-              <Box w="140px">Seller Tax (per NFT)</Box>
-              <Box>
-                :{" "}
-                {`${props.sellerFee / 100}% (${new BigNumber(props.offer.wanted_token_amount)
-                  .multipliedBy(props.sellerFee)
-                  .div(10000)
-                  .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
-              </Box>
-            </Flex>
-            <Flex fontSize="md" mt="2">
-              <Box w="140px">You will receive</Box>
-              <Box>
-                {": "}
-                {
-                  <>
-                    {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
-                  </>
-                }
-              </Box>
-            </Flex>
-            <Flex fontSize="xs" mt="0">
-              <Box w="146px"></Box>
-              <Box>
-                {
-                  <>
-                    {new BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
-                      ""
-                    ) : (
-                      <>
-                        {" " + new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).toNumber() + " "}
-                        {getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
-                        {address != props.nftData.creator && (
-                          <>
-                            {" - "}
-                            {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.nftData.royalties).toNumber()}
-                            {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
-                          </>
-                        )}
-                        {" - "}
-                        {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.sellerFee).div(10000).toNumber()}
-                        {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
-                      </>
-                    )}
-                  </>
-                }
-              </Box>
-            </Flex>
-            <Flex mt="4 !important">
-              <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
-                Read Terms of Use
-              </Button>
-            </Flex>
-            <Checkbox size="sm" mt="3 !important" isChecked={readTermsChecked} onChange={(e: any) => setReadTermsChecked(e.target.checked)}>
-              I have read all terms and agree to them
-            </Checkbox>
+              </Flex>
+              <Flex fontSize="md" mt="2">
+                <Box w="140px">Royalties (per NFT)</Box>
+                <Box>
+                  :{" "}
+                  {address !== props.nftData.creator
+                    ? `${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
+                        .multipliedBy(props.nftData.royalties)
+                        .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
+                    : "0 (You are the creator)"}
+                </Box>
+              </Flex>
+              <Flex fontSize="md" mt="2">
+                <Box w="140px">Seller Tax (per NFT)</Box>
+                <Box>
+                  :{" "}
+                  {`${props.sellerFee / 100}% (${new BigNumber(props.offer.wanted_token_amount)
+                    .multipliedBy(props.sellerFee)
+                    .div(10000)
+                    .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
+                </Box>
+              </Flex>
+              <Flex fontSize="md" mt="2">
+                <Box w="140px">You will receive</Box>
+                <Box>
+                  {": "}
+                  {
+                    <>
+                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
+                    </>
+                  }
+                </Box>
+              </Flex>
+              <Flex fontSize="xs" mt="0">
+                <Box w="146px"></Box>
+                <Box>
+                  {
+                    <>
+                      {new BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
+                        ""
+                      ) : (
+                        <>
+                          {" " + new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).toNumber() + " "}
+                          {getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
+                          {address != props.nftData.creator && (
+                            <>
+                              {" - "}
+                              {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.nftData.royalties).toNumber()}
+                              {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
+                            </>
+                          )}
+                          {" - "}
+                          {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.sellerFee).div(10000).toNumber()}
+                          {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
+                        </>
+                      )}
+                    </>
+                  }
+                </Box>
+              </Flex>              
+            </Box>
+
+            <DataNFTLiveUptime
+              dataMarshal={props.nftData.dataMarshal}
+              NFTId={props.nftData.id}
+              handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
+            />
+
+            <Divider />
+
+            <Box>
+              <Flex mt="4 !important">
+                <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
+                  Read Terms of Use
+                </Button>
+              </Flex>
+              <Checkbox size="sm" mt="3 !important" isChecked={readTermsChecked} onChange={(e: any) => setReadTermsChecked(e.target.checked)}>
+                I have read all terms and agree to them
+              </Checkbox>
+            </Box>
+            
             <Flex justifyContent="end" mt="4 !important">
               <Button
                 colorScheme="teal"
                 size="sm"
                 mx="3"
                 onClick={onProcure}
-                isDisabled={!readTermsChecked || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
+                isDisabled={!readTermsChecked || liveUptimeFAIL || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={props.onClose}>
