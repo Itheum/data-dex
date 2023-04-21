@@ -54,14 +54,13 @@ import logoSmlL from "img/logo-sml-l.png";
 import { CHAINS, CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor, MENU } from "libs/util";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ShortAddress from "UtilComps/ShortAddress";
 
 const exploreRouterMenu = [
   {
-    sectionId: "Movies",
-    sectionLabel: "Movies",
+    sectionId: "MainSections",
+    sectionLabel: "Main Sections",
     sectionItems: [
       {
         menuEnum: MENU.SELL,
@@ -105,18 +104,12 @@ const AppHeader = ({
   handleLogout: any;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { user: _user } = useUser();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-
-  // useEffect(() => {
-  //   console.log('********** AppHeader LOAD _chainMeta ', _chainMeta);
-  //   console.log('********** AppHeader LOAD _user ', _user);
-  // }, []);
 
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
@@ -145,7 +138,7 @@ const AppHeader = ({
 
   return (
     <>
-      <Flex h="5rem" alignItems="center" backgroundColor={colorMode === "light" ? "white" : "black"} borderBottom="solid .1rem" borderColor="teal.300" p="5">
+      <Flex h="5rem" alignItems="center" backgroundColor={colorMode === "light" ? "white" : "black"} borderBottom="solid .1rem" borderColor="teal.200" p="5">
         <HStack alignItems={"center"} backgroundColor="none" width="15rem">
           {isMxLoggedIn && (
             <IconButton
@@ -175,14 +168,14 @@ const AppHeader = ({
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading size={"md"}>Itheum Data DEX</Heading>
+              <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>Itheum Data DEX</Heading>
             </HStack>
           </Link>
         </HStack>
 
         <Flex backgroundColor="none" flex="1" justifyContent="right">
           <HStack alignItems={"center"} spacing={2}>
-            <HStack display={{ base: "none", md: "none", xl: "block" }}>
+            <HStack display={{ base: "none", md: "block", xl: "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
                 const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
                 return (
@@ -191,7 +184,7 @@ const AppHeader = ({
                     to={path}
                     style={{ textDecoration: "none" }}
                     key={path}
-                    display={shouldDisplayquickMenuItem(quickMenuItem, isMxLoggedIn)}>
+                    display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
                     <Button
                       colorScheme="teal"
                       variant="outline"
@@ -200,7 +193,7 @@ const AppHeader = ({
                       opacity={0.6}
                       key={shortLbl}
                       leftIcon={<Icon size={"1.25em"} />}
-                      size="sm"
+                      size={isMxLoggedIn ? "sm": "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
                       {shortLbl}
                     </Button>
@@ -208,6 +201,7 @@ const AppHeader = ({
                 );
               })}
             </HStack>
+            
             {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
@@ -273,13 +267,16 @@ const AppHeader = ({
                 </Link>
               </>
             )}
+
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
-            <IconButton
-              size="sm"
-              icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
-              aria-label="Change Color Theme"
-              onClick={toggleColorMode}
-            />
+
+            <Box display={{ base: "none", md: "block", xl: "block" }}>
+              <IconButton               
+                size={isMxLoggedIn ? "sm": "md"}
+                icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />} 
+                aria-label="Change Color Theme" 
+                onClick={toggleColorMode} />
+            </Box>
           </HStack>
         </Flex>
       </Flex>
@@ -396,7 +393,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack marginLeft={3}>
         <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }}>
+          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="md">
             Connect MultiversX Wallet
           </Button>
         </PopoverTrigger>
@@ -435,7 +432,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   );
 };
 
-function shouldDisplayquickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
+function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
 }
 

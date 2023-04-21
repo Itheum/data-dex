@@ -68,7 +68,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
-  const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/dataNfts/marketplace/${tokenId}/offer-${offerId}`);
+  const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
@@ -176,10 +176,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   function getListingText(price: number) {
     const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
-      ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-        ? "Listing Price: FREE"
-        : "Not Listed";
+      ? "Unlock for: FREE"
+      : "Not Listed";
   }
 
   return (
@@ -286,7 +286,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       <>
                         <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
                         <Text>
-                          {`Fee per NFT: `}
+                          {`Unlock Fee per NFT: `}
                           {marketRequirements && offer ? (
                             <>
                               {printPrice(
@@ -297,17 +297,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                               )}{" "}
                               {itheumPrice &&
-                                convertWeiToEsdt(
-                                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber() > 0
+                              convertWeiToEsdt(
+                                new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                tokenDecimals(offer.wanted_token_identifier)
+                              ).toNumber() > 0
                                 ? `(${convertToLocalString(
-                                  convertWeiToEsdt(
-                                    new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                    tokenDecimals(offer.wanted_token_identifier)
-                                  ).toNumber() * itheumPrice,
-                                  2
-                                )} USD)`
+                                    convertWeiToEsdt(
+                                      new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                      tokenDecimals(offer.wanted_token_identifier)
+                                    ).toNumber() * itheumPrice,
+                                    2
+                                  )} USD)`
                                 : ""}
                             </>
                           ) : (
