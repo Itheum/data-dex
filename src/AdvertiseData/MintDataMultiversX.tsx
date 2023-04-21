@@ -806,7 +806,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       name: dataNFTTokenName,
       media: imageOnIpfsUrl,
       metadata: metadataOnIpfsUrl,
-      data_marshal: dataNFTMarshalService.replace('http', 'https'),
+      data_marshal: dataNFTMarshalService,
       data_stream: dataNFTStreamUrlEncrypted,
       data_preview: dataNFTStreamPreviewUrl,
       royalties: Math.ceil(dataNFTRoyalty * 100),

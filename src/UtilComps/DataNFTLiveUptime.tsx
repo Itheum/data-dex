@@ -44,7 +44,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
     props.handleFlagAsFailed(true);
 
     try {
-      const res = await fetch(`${props.dataMarshal.replace('https', 'http')}/uptime?NFTId=${props.NFTId}&chainId=${_chainMeta.networkId}`);
+      const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data?.response_code) {
