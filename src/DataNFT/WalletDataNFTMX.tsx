@@ -37,6 +37,7 @@ import {
   CloseButton,
   ModalCloseButton,
   Spinner,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
@@ -44,7 +45,7 @@ import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep } from "libs/util";
+import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/util";
 import { convertToLocalString, transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -64,6 +65,7 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
+  const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -250,24 +252,32 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
+
+  if (colorMode === "light") {
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
+  }
+
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
-      <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" mb="1rem" position="relative" w="13.5rem">
-        <Flex justifyContent="center" pt={3}>
+      <Box w="275px" h="810px" key={item.id} borderWidth="0.5px" borderRadius="xl" mb="1rem" position="relative" style={{ background: gradientBorderForTrade }}>
+        <Flex justifyContent="center">
           <Image
             src={item.nftImgUrl}
             alt={item.dataPreview}
-            h={200}
-            w={200}
-            borderRadius="md"
+            h={236}
+            w={236}
+            mx={6}
+            mt={6}
+            borderRadius="32px"
             cursor="pointer"
             onLoad={() => item.setHasLoaded(true)}
             onClick={() => item.openNftDetailsDrawer(item.index)}
           />
         </Flex>
 
-        <Flex h="28rem" p="3" direction="column" justify="space-between">
-          <Text fontSize="xs">
+        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+          <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
@@ -275,25 +285,25 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <Box>
-                <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
+                <Text fontWeight="semibold" fontSize="lg" mt="1.5" noOfLines={1}>
                   {item.title}
                 </Text>
 
                 <Flex flexGrow="1">
-                  <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                  <Text fontSize="md" color="#929497" mt="2" wordBreak="break-word" noOfLines={2}>
                     {transformDescription(item.description)}
                   </Text>
                 </Flex>
               </Box>
             </PopoverTrigger>
             <PopoverContent mx="2" width="220px" mt="-7">
-              <PopoverHeader fontWeight="semibold" fontSize="md">
+              <PopoverHeader fontWeight="semibold" fontSize="lg">
                 {item.title}
               </PopoverHeader>
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
-                <Text fontSize="sm" my="2" color="#929497" w="100%" h="10">
+                <Text fontSize="md" mt="1" color="#929497" w="100%" h="10">
                   {transformDescription(item.description)}
                 </Text>
               </PopoverBody>
@@ -301,31 +311,43 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           </Popover>
           <Box>
             {
-              <Box color="gray.600" fontSize="sm">
-                Creator: <ShortAddress address={item.creator}></ShortAddress>
+              <Box color="#8c8f9282" fontSize="md">
+                Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
                 <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon mx="2px" />
+                  <ExternalLinkIcon ml="5px" fontSize="sm" />
                 </Link>
               </Box>
             }
 
-            <Box color="gray.600" fontSize="sm">
+            <Box color="#8c8f9282" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
             </Box>
 
-            <Badge borderRadius="full" px="2" colorScheme="teal">
-              <Text>You are the {item.creator !== address ? "Owner" : "Creator"}</Text>
+            <Badge borderRadius="md" px="3" py="1" my="1" colorScheme="teal">
+              <Text fontSize={"sm"} fontWeight="semibold">
+                You are the {item.creator !== address ? "Owner" : "Creator"}
+              </Text>
             </Badge>
 
-            <Badge borderRadius="full" px="2" colorScheme="blue">
-              Fully Transferable License
+            <Badge borderRadius="md" px="3" py="1" my="1" bgColor="#E2AEEA30">
+              <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
+                Fully Transferable License
+              </Text>
             </Badge>
 
-            <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={() => onBurnButtonClick(item)}>
+            <Button
+              mt="1"
+              size="md"
+              borderRadius="xl"
+              fontSize="sm"
+              bgColor="#FF439D"
+              _hover={{ backgroundColor: "#FF439D70" }}
+              isDisabled={hasPendingTransactions}
+              onClick={() => onBurnButtonClick(item)}>
               Burn
             </Button>
 
-            <Box color="gray.600" fontSize="sm" my={2}>
+            <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
@@ -335,7 +357,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Button
                 size="sm"
                 colorScheme="teal"
-                height="7"
+                w="full"
                 onClick={() => {
                   accessDataStream(item.dataMarshal, item.id);
                 }}>
@@ -344,21 +366,24 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Button
                 size="sm"
                 colorScheme="teal"
-                height="7"
+                w="full"
                 variant="outline"
                 onClick={() => {
                   window.open(item.dataPreview);
                 }}>
-                Preview Data
+                <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                  Preview Data
+                </Text>
               </Button>
             </HStack>
 
-            <HStack mt="5">
-              <Text fontSize="xs" w="110px">
-                How many to list{" "}
+            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+              <Text fontSize="md" color="#929497">
+                How many to list:{" "}
               </Text>
               <NumberInput
-                size="xs"
+                size="sm"
+                borderRadius="4.65px !important"
                 maxW={16}
                 step={1}
                 defaultValue={1}
@@ -383,19 +408,19 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
-            </HStack>
+            </Flex>
             {amountError && (
               <Text color="red.400" fontSize="xs">
                 {amountError}
               </Text>
             )}
 
-            <HStack mt="2">
-              <Text fontSize="xs" w="110px">
-                Unlock fee for each{" "}
+            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+              <Text fontSize="md" color="#929497">
+                Unlock fee for each:{" "}
               </Text>
               <NumberInput
-                size="xs"
+                size="sm"
                 maxW={16}
                 step={5}
                 defaultValue={10}
@@ -421,21 +446,23 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
-            </HStack>
+            </Flex>
             {priceError && (
               <Text color="red.400" fontSize="xs">
                 {priceError}
               </Text>
             )}
             <Button
-              size="xs"
-              mt={3}
-              width="100%"
+              size="sm"
+              mt={6}
+              width="85%"
               colorScheme="teal"
               variant="outline"
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}
               onClick={() => onListButtonClick(item)}>
-              List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+              <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+              </Text>
             </Button>
           </Box>
         </Flex>
