@@ -1,18 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Text,
-  Image,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  HStack,
-  Flex,
-  Button,
-  Checkbox,
-  Divider,
-  useToast } from "@chakra-ui/react";
+import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import { sleep } from "libs/util";
@@ -155,24 +142,17 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   )}
                 </Box>
               </Flex>
-              <Flex>
-                {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
-              </Flex>
-              <Flex fontSize="md" mt="2">
-                <Box w="140px">Royalties (per NFT)</Box>
-                <Box>
-                  :{" "}
-                  {address !== props.nftData.creator
-                    ? `${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
-                        .multipliedBy(props.nftData.royalties)
-                        .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
-                    : "0 (You are the creator)"}
-                </Box>
-              </Flex>
+              {address !== props.nftData.creator && (
+                <Flex fontSize="md" mt="2">
+                  <Box w="140px">Royalties (per NFT)</Box>
+                  <Box>
+                    :{" "}
+                    {`${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
+                      .multipliedBy(props.nftData.royalties)
+                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
+                  </Box>
+                </Flex>
+              )}
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Seller Tax (per NFT)</Box>
                 <Box>
@@ -220,7 +200,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                     </>
                   }
                 </Box>
-              </Flex>              
+              </Flex>
             </Box>
 
             <DataNFTLiveUptime
@@ -241,14 +221,18 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 I have read all terms and agree to them
               </Checkbox>
             </Box>
-            
+
             <Flex justifyContent="end" mt="4 !important">
               <Button
                 colorScheme="teal"
                 size="sm"
                 mx="3"
                 onClick={onProcure}
-                isDisabled={!readTermsChecked || liveUptimeFAIL || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
+                isDisabled={
+                  !readTermsChecked ||
+                  liveUptimeFAIL ||
+                  new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
+                }>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={props.onClose}>
