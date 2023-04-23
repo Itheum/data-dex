@@ -260,7 +260,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
-      <Box w="275px" h="810px" key={item.id} borderWidth="0.5px" borderRadius="xl" mb="1rem" position="relative" style={{ background: gradientBorderForTrade }}>
+      <Box
+        w="275px"
+        h="810px"
+        mx="3 !important"
+        key={item.id}
+        borderWidth="0.5px"
+        borderRadius="xl"
+        mb="1rem"
+        position="relative"
+        style={{ background: gradientBorderForTrade }}>
         <Flex justifyContent="center">
           <Image
             src={item.nftImgUrl}

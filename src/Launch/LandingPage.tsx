@@ -56,7 +56,9 @@ const LandingPage = () => {
                   </Heading>
 
                   <Text mt="1rem">
-                  Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties if your data is re-traded. The future of data access licensing is here.
+                    Seamlessly enable web3 gated access to your data by minting and listing Data NFTs on a peer-to-peer marketplace. Allow organic open-market
+                    price discovery for data by minting multiple supplies to satisfy high demand or burning supply to correct low demand. Earn creator royalties
+                    if your data is re-traded. The future of data access licensing is here.
                   </Text>
                 </Box>
 
@@ -67,11 +69,11 @@ const LandingPage = () => {
             </Center>
           </Flex>
 
-          <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
+          <Box backgroundColor="none" pt="10" pb="10" mx={24}>
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
           </Box>
 
-          <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
+          <Box backgroundColor="none" mx={24} pt="10" pb="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Data NFT 101
             </Heading>
@@ -107,7 +109,7 @@ const LandingPage = () => {
             </SimpleGrid>
           </Box>
 
-          <Box backgroundColor="none" w="95%" m="auto" pt="10" pb="10">
+          <Box backgroundColor="none" mx={24} pt="10" pb="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Articles
             </Heading>

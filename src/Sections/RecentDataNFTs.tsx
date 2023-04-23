@@ -102,15 +102,15 @@ const RecentDataNFTs = ({
     }
   }, [_chainMeta]);
 
-  let gradientBorder = borderMultiColorStyle ? styleStrings.gradientBorderMulticolor : styleStrings.gradientBorderPassive;
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
 
   if (colorMode === "light") {
-    gradientBorder = borderMultiColorStyle ? styleStrings.gradientBorderMulticolorLight : styleStrings.gradientBorderPassiveLight;
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
   }
 
   return (
     <>
-      <Heading as="h4" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
+      <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
@@ -130,7 +130,7 @@ const RecentDataNFTs = ({
               backgroundColor="none"
               borderRadius="1.5rem"
               border=".1rem solid transparent"
-              style={{ "background": gradientBorder }}>
+              style={{ "background": gradientBorderForTrade }}>
               <CardBody>
                 <Skeleton height={{ base: "300px", md: "200px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>

@@ -20,6 +20,7 @@ import {
   useToast,
   SimpleGrid,
   useColorMode,
+  Flex,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -289,32 +290,46 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
     gradientBorder = styleStrings.gradientBorderPassiveLight;
   }
 
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
+
+  if (colorMode === "light") {
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
+  }
+
   return (
-    <Stack>
-      <Heading size="lg">Home</Heading>
+    <Stack mx={24} my={5}>
+      <Heading size="xl" fontWeight="medium" my={7}>
+        Home
+      </Heading>
 
       <Stack>
-        <SimpleGrid columns={[1, null, 4]} spacing={20} m="auto" backgroundColor="none">
+        <SimpleGrid columns={[1, null, 4]} spacing={10} backgroundColor="none">
           <Box
             maxW="container.sm"
             w={tileBoxMdW}
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderForTrade }}>
             <Stack p="5" h={tileBoxH}>
-              {!itheumAccount && <Heading size="md">Linked Itheum Data CAT Account</Heading>}
               {!itheumAccount && (
-                <Alert>
+                <Heading size="md" fontWeight="semibold" pb={2}>
+                  Linked Itheum Data CAT Account
+                </Heading>
+              )}
+              {!itheumAccount && (
+                <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
                   <Stack>
                     <AlertTitle fontSize="md">
-                      <AlertIcon mb={2} /> Sorry! You don&apos;t seem to have a{" "}
-                      <Link href="https://itheum.com" isExternal>
-                        itheum.com
-                      </Link>{" "}
-                      Data CAT account
+                      <AlertIcon mb={2} mt={1} color="#ED5D5D" /> <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a </Text>
+                      <Flex>
+                        <Link href="https://itheum.com" isExternal color="blue.400">
+                          itheum.com
+                        </Link>{" "}
+                        <Text color="#ED5D5D">&nbsp;Data CAT account</Text>
+                      </Flex>
                     </AlertTitle>
-                    <AlertDescription fontSize="md">
+                    <AlertDescription fontSize="md" color="#929497" pb="2">
                       But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
                     </AlertDescription>
                   </Stack>
@@ -338,7 +353,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
               <Spacer />
 
               {!itheumAccount && (
-                <Button isLoading={loadingCfTestData} colorScheme="teal" variant="outline" onClick={doDataCatTestUser}>
+                <Button size="lg" borderRadius="xl" isLoading={loadingCfTestData} colorScheme="teal" variant="solid" fontSize="lg" onClick={doDataCatTestUser}>
                   Load Test Data
                 </Button>
               )}
@@ -364,17 +379,19 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
               border=".1rem solid transparent"
               backgroundColor="none"
               borderRadius="1.5rem"
-              style={{ "background": gradientBorder }}>
+              style={{ "background": gradientBorderForTrade }}>
               <Stack p="5" h={tileBoxH}>
-                <Heading size="md">{CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet</Heading>
-                <Text fontSize="sm" pb={5}>
+                <Heading size="md" fontWeight="semibold" pb={2}>
+                  {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
+                </Heading>
+                <Text fontSize="md" color="#929497" pb={5}>
                   Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
                 </Text>
 
                 <Spacer />
 
-                <Button colorScheme="teal" variant="outline" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                  Send me 1000 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
+                  <Text color={colorMode === "dark" ? "white" : "black"}>Send me 1000 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
                 </Button>
               </Stack>
             </Box>
@@ -386,9 +403,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderForTrade }}>
             <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
-              <Heading size="md" align="center">
+              <Heading size="md" pb={2}>
                 NFMe ID Avatar
               </Heading>
               <Spacer />
@@ -405,17 +422,18 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
               border=".1rem solid transparent"
               backgroundColor="none"
               borderRadius="1.5rem"
-              style={{ "background": gradientBorder }}>
+              style={{ "background": gradientBorderForTrade }}>
               <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
-                <Heading size="md">My Claims</Heading>
+                <Heading size="md" pb={2}>
+                  My Claims
+                </Heading>
 
-                <Spacer />
                 <HStack justifyContent={"space-between"}>
-                  <Text>Rewards</Text>
+                  <Text color="#929497">Rewards</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                       {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[0])
+                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[0])}</Text>
                       ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
                         <Spinner size="xs" />
                       ) : (
@@ -429,11 +447,11 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
                 <Spacer />
                 <HStack justifyContent={"space-between"}>
-                  <Text>Airdrops</Text>
+                  <Text color="#929497">Airdrops</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                       {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[1])
+                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[1])}</Text>
                       ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
                         <Spinner size="xs" />
                       ) : (
@@ -447,11 +465,11 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 <Spacer />
 
                 <HStack justifyContent={"space-between"}>
-                  <Text>Royalties</Text>
+                  <Text color="#929497">Royalties</Text>
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
                       {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                        formatNumberRoundFloor(claimsBalances.claimBalanceValues[3])
+                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[3])}</Text>
                       ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
                         <Spinner size="xs" />
                       ) : (
@@ -467,11 +485,11 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
                 {(claimsBalances.claimBalanceValues[2] > 0 && (
                   <Box h="40px">
                     <HStack justifyContent={"space-between"}>
-                      <Text>Allocations</Text>
+                      <Text color="#929497">Allocations</Text>
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                           {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
-                            formatNumberRoundFloor(claimsBalances.claimBalanceValues[2])
+                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[2])}</Text>
                           ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
                             <Spinner size="xs" />
                           ) : (
@@ -492,7 +510,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
       </Stack>
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
-        <RecentDataNFTs headingText="Recent Data NFTs" headingSize="md" networkId={_chainMeta.networkId} />
+        <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
       </Box>
 
       <AppMarketplace />

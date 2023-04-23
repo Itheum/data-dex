@@ -51,16 +51,22 @@ export default function AppMarketplace() {
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   let gradientBorder = styleStrings.gradientBorderPassive;
+  let gradientBorderCards = styleStrings.gradientBorderMulticolor;
 
   if (colorMode === "light") {
     gradientBorder = styleStrings.gradientBorderPassiveLight;
+    gradientBorderCards = styleStrings.gradientBorderMulticolorLight;
   }
 
   return (
     <>
       <Stack pt="5">
-        <Heading size="md">App Marketplace</Heading>
-        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
+        <Heading size="lg" fontWeight="semibold">
+          App Marketplace
+        </Heading>
+        <Text size="sm" opacity=".7" fontWeight="normal">
+          Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data
+        </Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5} justify={{ base: "center", md: "start" }}>
           <Box
             maxW="container.sm"
@@ -68,7 +74,7 @@ export default function AppMarketplace() {
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderCards }}>
             <Image src={imgProgGaPa} />
 
             <Box p="3">
@@ -100,7 +106,7 @@ export default function AppMarketplace() {
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderCards }}>
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -128,7 +134,7 @@ export default function AppMarketplace() {
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderCards }}>
             <Image src={imgProgWfh} />
 
             <Box p="3">
