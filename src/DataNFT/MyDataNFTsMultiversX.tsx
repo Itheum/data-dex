@@ -37,7 +37,6 @@ import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
 import { Icon } from "@chakra-ui/icons";
-import { px } from "framer-motion";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();

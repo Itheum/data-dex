@@ -164,8 +164,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
   return (
     <>
       <Button
-        mt="3"
-        mb="3"
+        my="3"
         size="sm"
         colorScheme="teal"
         variant="outline"
