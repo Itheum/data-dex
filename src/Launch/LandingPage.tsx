@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
 import imgHeroDataNFTs from "img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "img/landing/hero-metaverse-mask.png";

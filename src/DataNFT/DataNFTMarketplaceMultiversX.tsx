@@ -24,7 +24,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
-import { convertWeiToEsdt } from "libs/util";
+import { convertWeiToEsdt, sleep } from "libs/util";
 import { createNftId } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -221,8 +221,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         });
       });
       console.log("items", items);
-      // end loading offers
-      setLoadingOffers(false);
 
       //
       const amounts: any = {};
@@ -244,6 +242,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       }
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
+
+      // end loading offers
+      await sleep(0.5);
+      setLoadingOffers(false);
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions, _chainMeta.networkId]);
 
@@ -371,7 +373,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   marketFreezedNonces={marketFreezedNonces}
                   openNftDetailsDrawer={openNftDetailsDrawer}
                   itheumPrice={itheumPrice}>
-                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 ? (
+                  {location.pathname.includes(marketplace) && nftMetadatas.length > 0 && !loadingOffers && !nftMetadatasLoading ? (
                     <MarketplaceLowerCard
                       nftMetadatas={nftMetadatas}
                       index={index}

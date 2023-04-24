@@ -17,7 +17,7 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
-import { Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import MintDataMX from "AdvertiseData/MintDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
@@ -227,6 +227,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                 <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
                 <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
+                <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />

@@ -20,7 +20,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
+import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { convertWeiToEsdt } from "libs/util";
@@ -120,7 +120,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       const codec = new BinaryCodec();
       const json = JSON.parse(JSON.stringify(dataNftMintJson));
       const abiRegistry = AbiRegistry.create(json);
-      const abi = new SmartContractAbi(abiRegistry, ["DataNftMint"]);
       const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
 
       // some logic to loop through the raw onChainNFTs and build the dataNfts

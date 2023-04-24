@@ -118,7 +118,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           />
         </Flex>
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
           {nftMetadatas[index] && (
             <>
               <Text fontSize="md" color="#929497">

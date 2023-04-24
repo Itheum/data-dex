@@ -520,13 +520,15 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                           You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                           {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                           {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} are not under your ownership.`}
+                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} ${
+                              selectedDataNft.supply - selectedDataNft.balance > 1 ? "are" : "is"
+                            } not under your ownership.`}
                         </Text>
                       </Box>
                     </HStack>
 
                     <Text fontSize="md" mt="4">
-                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
+                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so no
                       one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not
                       be able to recover them again.
                     </Text>
