@@ -22,6 +22,17 @@ export const getNetworkProvider = (networkId?: string, chainId?: string) => {
   return isApi ? new ApiNetworkProvider(envValue) : new ProxyNetworkProvider(envValue || defaultUrl);
 };
 
+export const getNetworkProviderCodification = (networkId?: string, chainId?: string) => {
+  const environment = networkId === "E1" || chainId === "1" ? "mainnet" : "devnet";
+  const envKey = environment === "mainnet" ? "REACT_APP_ENV_GATEWAY_MAINNET_KEY" : "REACT_APP_ENV_GATEWAY_DEVNET_KEY";
+  const defaultUrl = environment === "mainnet" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
+
+  const envValue = process.env[envKey];
+  const isApi = envValue && envValue.includes("api");
+
+  return isApi ? envValue : envValue || defaultUrl;
+};
+
 export const getExplorer = (networkId: string) => {
   return networkId === "E1" ? "explorer.multiversx.com" : "devnet-explorer.multiversx.com";
 };
