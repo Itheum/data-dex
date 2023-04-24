@@ -98,7 +98,15 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
-      <Box w="275px" h="810px" borderWidth="0.5px" borderRadius="xl" position="relative" style={{ background: gradientBorderForTrade }}>
+      <Box
+        w="275px"
+        h="760px"
+        mx="3 !important"
+        borderWidth="0.5px"
+        borderRadius="xl"
+        position="relative"
+        mb="1rem"
+        style={{ background: gradientBorderForTrade }}>
         <Flex justifyContent="center">
           <Image
             src={imageUrl}
@@ -153,7 +161,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
-              <Flex display="flex" flexDirection="column">
+              <Flex display="flex" flexDirection="column" mt={1}>
                 <Box color="#8c8f9282" fontSize="md">
                   Creator: <ShortAddress address={nftMetadatas[index].creator} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
@@ -182,7 +190,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   )}
 
                   <Box borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                    <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
+                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
                       Fully Transferable License
                     </Text>
                   </Box>
@@ -205,7 +213,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
               {feePrice && (
                 <>
-                  <Box fontSize="md" mt="2">
+                  <Box fontSize="xs" mt="2">
                     <Text>
                       Unlock from: {` `}
                       {marketRequirements ? (

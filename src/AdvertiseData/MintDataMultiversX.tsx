@@ -1072,26 +1072,26 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                        id="dataStreamUrlForm"
-                        isDisabled={!!selectedProgramId}
-                        value={dataNFTStreamUrl}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                          onChangeDataNFTStreamUrl(event.currentTarget.value);
-                          validateDataStreamUrl(event.currentTarget.value);
-                        }}
-                      />
-                    )}
-                    name={"dataStreamUrlForm"}
-                  />
-                  <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="e.g. https://mydomain.com/my_hosted_file.json"
+                          id="dataStreamUrlForm"
+                          isDisabled={!!selectedProgramId}
+                          value={dataNFTStreamUrl}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTStreamUrl(event.currentTarget.value);
+                            validateDataStreamUrl(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name={"dataStreamUrlForm"}
+                    />
+                    <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
+                  </FormControl>
 
                   <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
                     <InputLabelWithPopover tkey="data-preview-url">
@@ -1100,26 +1100,26 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                        id="dataPreviewUrlForm"
-                        isDisabled={!!selectedProgramId}
-                        value={dataNFTStreamPreviewUrl}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                          onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
-                          validateDataPreviewUrl(event.currentTarget.value);
-                        }}
-                      />
-                    )}
-                    name="dataPreviewUrlForm"
-                  />
-                  <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                          id="dataPreviewUrlForm"
+                          isDisabled={!!selectedProgramId}
+                          value={dataNFTStreamPreviewUrl}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                            validateDataPreviewUrl(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="dataPreviewUrlForm"
+                    />
+                    <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
+                  </FormControl>
 
                   <InputLabelWithPopover tkey="data-marshal-url">
                     <Text fontWeight="bold" fontSize="md" mt={1}>
@@ -1148,24 +1148,24 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        placeholder="Between 3 and 20 alphanumeric characters only"
-                        id="tokenNameForm"
-                        value={dataNFTTokenName}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                          onChangeDataNFTTokenName(event.currentTarget.value);
-                        }}
-                      />
-                    )}
-                    name={"tokenNameForm"}
-                  />
-                  <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="Between 3 and 20 alphanumeric characters only"
+                          id="tokenNameForm"
+                          value={dataNFTTokenName}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTTokenName(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name={"tokenNameForm"}
+                    />
+                    <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
+                  </FormControl>
 
                   <FormControl isInvalid={!!errors.datasetTitleForm}>
                     <InputLabelWithPopover tkey="dataset-title">
@@ -1174,24 +1174,24 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        placeholder="Between 10 and 60 alphanumeric characters only"
-                        id="datasetTitleForm"
-                        value={datasetTitle}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                          onChangeDatasetTitle(event.currentTarget.value);
-                        }}
-                      />
-                    )}
-                    name="datasetTitleForm"
-                  />
-                  <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="Between 10 and 60 alphanumeric characters only"
+                          id="datasetTitleForm"
+                          value={datasetTitle}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDatasetTitle(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="datasetTitleForm"
+                    />
+                    <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
+                  </FormControl>
 
                   <FormControl isInvalid={!!errors.datasetDescriptionForm}>
                     <InputLabelWithPopover tkey="dataset-description">
@@ -1200,23 +1200,23 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <Textarea
-                        mt="1 !important"
-                        placeholder="Between 10 and 400 characters only. URL allowed."
-                        id={"datasetDescriptionForm"}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                          onChangeDatasetDescription(event.currentTarget.value);
-                        }}
-                      />
-                    )}
-                    name="datasetDescriptionForm"
-                  />
-                  <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
-                </FormControl>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Textarea
+                          mt="1 !important"
+                          placeholder="Between 10 and 400 characters only. URL allowed."
+                          id={"datasetDescriptionForm"}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDatasetDescription(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="datasetDescriptionForm"
+                    />
+                    <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
+                  </FormControl>
 
                   <FormControl isInvalid={!!errors.numberOfCopiesForm}>
                     <InputLabelWithPopover tkey="number-of-copies">
@@ -1225,38 +1225,38 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <NumberInput
-                        mt="1 !important"
-                        size="md"
-                        id="numberOfCopiesForm"
-                        maxW={24}
-                        step={1}
-                        defaultValue={1}
-                        min={1}
-                        value={dataNFTCopies}
-                        max={maxSupply > 0 ? maxSupply : 1}
-                        isValidCharacter={isValidNumericCharacter}
-                        onChange={(valueAsString: string) => {
-                          onChange(valueAsString);
-                          handleChangeDataNftCopies(Number(valueAsString));
-                        }}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    )}
-                    name="numberOfCopiesForm"
-                  />
-                  <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
-                </FormControl>
-                <Text color="gray.400" fontSize="sm" mt="1 !important">
-                  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
-                </Text>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <NumberInput
+                          mt="1 !important"
+                          size="md"
+                          id="numberOfCopiesForm"
+                          maxW={24}
+                          step={1}
+                          defaultValue={1}
+                          min={1}
+                          value={dataNFTCopies}
+                          max={maxSupply > 0 ? maxSupply : 1}
+                          isValidCharacter={isValidNumericCharacter}
+                          onChange={(valueAsString: string) => {
+                            onChange(valueAsString);
+                            handleChangeDataNftCopies(Number(valueAsString));
+                          }}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )}
+                      name="numberOfCopiesForm"
+                    />
+                    <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+                  </FormControl>
+                  <Text color="gray.400" fontSize="sm" mt="1 !important">
+                    Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                  </Text>
 
                   <FormControl isInvalid={!!errors.royaltiesForm}>
                     <InputLabelWithPopover tkey="royalties">
@@ -1265,38 +1265,38 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       </Text>
                     </InputLabelWithPopover>
 
-                  <Controller
-                    control={control}
-                    render={({ field: { value, onChange } }) => (
-                      <NumberInput
-                        mt="1 !important"
-                        size="md"
-                        id="royaltiesForm"
-                        maxW={24}
-                        step={5}
-                        defaultValue={minRoyalties}
-                        min={minRoyalties > 0 ? minRoyalties : 0}
-                        max={maxRoyalties > 0 ? maxRoyalties : 0}
-                        isValidCharacter={isValidNumericCharacter}
-                        onChange={(valueAsString: string) => {
-                          onChange(valueAsString);
-                          handleChangeDataNftRoyalties(Number(valueAsString));
-                        }}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    )}
-                    name="royaltiesForm"
-                  />
-                  <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
-                </FormControl>
-                <Text color="gray.400" fontSize="sm" mt="1 !important">
-                  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                </Text>
-
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <NumberInput
+                          mt="1 !important"
+                          size="md"
+                          id="royaltiesForm"
+                          maxW={24}
+                          step={5}
+                          defaultValue={minRoyalties}
+                          min={minRoyalties > 0 ? minRoyalties : 0}
+                          max={maxRoyalties > 0 ? maxRoyalties : 0}
+                          isValidCharacter={isValidNumericCharacter}
+                          onChange={(valueAsString: string) => {
+                            onChange(valueAsString);
+                            handleChangeDataNftRoyalties(Number(valueAsString));
+                          }}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )}
+                      name="royaltiesForm"
+                    />
+                    <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                  </FormControl>
+                  <Text color="gray.400" fontSize="sm" mt="1 !important">
+                    Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                  </Text>
+                </Stack>
                 <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
                   Terms and Fees
                 </Text>

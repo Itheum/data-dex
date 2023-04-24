@@ -18,6 +18,7 @@ import {
   Tabs,
   Tab,
   useColorMode,
+  Box,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -357,7 +358,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={"24 !important"} mt="5 !important">
+          <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
             {offers.length > 0 &&
               items?.map((item, index) => (
                 <UpperCardComponent

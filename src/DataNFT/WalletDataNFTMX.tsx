@@ -293,17 +293,17 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           </Text>
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
-              <Box>
-                <Text fontWeight="semibold" fontSize="lg" mt="1.5" noOfLines={1}>
+              <div>
+                <Text fontWeight="semibold" fontSize="lg" mt="1.5">
                   {item.title}
                 </Text>
 
                 <Flex flexGrow="1">
-                  <Text fontSize="md" color="#929497" mt="2" wordBreak="break-word" noOfLines={2}>
+                  <Text fontSize="md" color="#929497" mt="2" wordBreak="break-word" noOfLines={2} w="100%" h="10">
                     {transformDescription(item.description)}
                   </Text>
                 </Flex>
-              </Box>
+              </div>
             </PopoverTrigger>
             <PopoverContent mx="2" width="220px" mt="-7">
               <PopoverHeader fontWeight="semibold" fontSize="lg">
@@ -312,7 +312,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
-                <Text fontSize="md" mt="1" color="#929497" w="100%" h="10">
+                <Text fontSize="md" mt="1" color="#929497">
                   {transformDescription(item.description)}
                 </Text>
               </PopoverBody>
@@ -332,30 +332,31 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
             </Box>
 
-            <Badge borderRadius="md" px="3" py="1" my="1" colorScheme="teal">
-              <Text fontSize={"sm"} fontWeight="semibold">
-                You are the {item.creator !== address ? "Owner" : "Creator"}
-              </Text>
-            </Badge>
+            <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="2" height="7rem">
+              <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
+                <Text fontSize={"sm"} fontWeight="semibold">
+                  You are the {item.creator !== address ? "Owner" : "Creator"}
+                </Text>
+              </Badge>
 
-            <Badge borderRadius="md" px="3" py="1" my="1" bgColor="#E2AEEA30">
-              <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
-                Fully Transferable License
-              </Text>
-            </Badge>
+              <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
+                  Fully Transferable License
+                </Text>
+              </Badge>
 
-            <Button
-              mt="1"
-              size="md"
-              borderRadius="xl"
-              fontSize="sm"
-              bgColor="#FF439D"
-              _hover={{ backgroundColor: "#FF439D70" }}
-              isDisabled={hasPendingTransactions}
-              onClick={() => onBurnButtonClick(item)}>
-              Burn
-            </Button>
-
+              <Button
+                mt="1"
+                size="md"
+                borderRadius="lg"
+                fontSize="sm"
+                bgColor="#FF439D"
+                _hover={{ backgroundColor: "#FF439D70" }}
+                isDisabled={hasPendingTransactions}
+                onClick={() => onBurnButtonClick(item)}>
+                Burn
+              </Button>
+            </Stack>
             <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
@@ -393,7 +394,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <NumberInput
                 size="sm"
                 borderRadius="4.65px !important"
-                maxW={16}
+                maxW={20}
                 step={1}
                 defaultValue={1}
                 min={1}
@@ -430,7 +431,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Text>
               <NumberInput
                 size="sm"
-                maxW={16}
+                maxW={20}
                 step={5}
                 defaultValue={10}
                 min={0}
@@ -463,8 +464,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             )}
             <Button
               size="sm"
-              mt={6}
-              width="85%"
+              mt={4}
+              width="100%"
               colorScheme="teal"
               variant="outline"
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}

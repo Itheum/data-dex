@@ -297,7 +297,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   }
 
   return (
-    <Stack mx={24} my={5}>
+    <Stack mx={{ base: 5, "2xl": 24 }} my={5}>
       <Heading size="xl" fontWeight="medium" my={7}>
         Home
       </Heading>
@@ -306,7 +306,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
         <SimpleGrid columns={[1, null, 4]} spacing={10} backgroundColor="none">
           <Box
             maxW="container.sm"
-            w={tileBoxMdW}
+            w={{ base: "280px", "2xl": tileBoxMdW }}
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
@@ -319,20 +319,23 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
               )}
               {!itheumAccount && (
                 <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
-                  <Stack>
+                  <Flex direction="column">
                     <AlertTitle fontSize="md">
-                      <AlertIcon mb={2} mt={1} color="#ED5D5D" /> <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a </Text>
-                      <Flex>
-                        <Link href="https://itheum.com" isExternal color="blue.400">
-                          itheum.com
-                        </Link>{" "}
-                        <Text color="#ED5D5D">&nbsp;Data CAT account</Text>
+                      <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
+                      <Flex direction="row">
+                        <Text color="#ED5D5D">
+                          Sorry! You don&apos;t seem to have a&nbsp;
+                          <Link href="https://itheum.com" isExternal color="blue.400">
+                            itheum.com
+                          </Link>{" "}
+                          &nbsp;Data CAT account
+                        </Text>
                       </Flex>
                     </AlertTitle>
                     <AlertDescription fontSize="md" color="#929497" pb="2">
                       But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
                     </AlertDescription>
-                  </Stack>
+                  </Flex>
                 </Alert>
               )}
 
@@ -375,7 +378,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
           <ChainSupportedComponent feature={MENU.FAUCET}>
             <Box
               maxW="container.sm"
-              w={tileBoxMdW}
+              w={{ base: "280px", "2xl": tileBoxMdW }}
               border=".1rem solid transparent"
               backgroundColor="none"
               borderRadius="1.5rem"
@@ -399,7 +402,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
           <Box
             maxW="container.sm"
-            w={tileBoxMdW}
+            w={{ base: "280px", "2xl": tileBoxMdW }}
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"

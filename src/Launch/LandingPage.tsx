@@ -41,7 +41,12 @@ const LandingPage = () => {
             bgRepeat="no-repeat"
             justifyContent="center">
             <Center w="95%" pt="5rem" backgroundColor="none">
-              <Flex w="100%" backgroundColor="none" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]}>
+              <Flex
+                w="100%"
+                backgroundColor="none"
+                justifyContent={[null, null, null, "space-between"]}
+                flexDirection={["column", null, "row"]}
+                mx={{ base: 0, "2xl": 20 }}>
                 <Box
                   width={["300px", null, null, "500px", "690px"]}
                   backgroundColor="none"
@@ -69,11 +74,11 @@ const LandingPage = () => {
             </Center>
           </Flex>
 
-          <Box backgroundColor="none" pt="10" pb="10" mx={24}>
+          <Box backgroundColor="none" pt="10" pb="10" mx={{ base: 8, "2xl": 24 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
           </Box>
 
-          <Box backgroundColor="none" mx={24} pt="10" pb="10">
+          <Box backgroundColor="none" mx={{ base: 8, "2xl": 24 }} py="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Data NFT 101
             </Heading>
@@ -109,7 +114,7 @@ const LandingPage = () => {
             </SimpleGrid>
           </Box>
 
-          <Box backgroundColor="none" mx={24} pt="10" pb="10">
+          <Box backgroundColor="none" mx={{ base: 8, "2xl": 24 }} py="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Articles
             </Heading>
