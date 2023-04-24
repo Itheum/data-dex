@@ -117,7 +117,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
 
     mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
-    
+
     onBurnNFTClose(); // close modal
   };
 
@@ -287,7 +287,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Box>
             </PopoverTrigger>
             <PopoverContent mx="2" width="220px" mt="-7">
-              <PopoverHeader fontWeight="semibold" fontSize="md">{item.title}</PopoverHeader>
+              <PopoverHeader fontWeight="semibold" fontSize="md">
+                {item.title}
+              </PopoverHeader>
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
@@ -404,7 +406,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 onChange={(valueString) => {
                   let error = "";
                   const valueAsNumber = Number(valueString);
-                  if (valueAsNumber <= 0) {
+                  if (valueAsNumber < 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
                     error = "Cannot exceed maximum listing fee";
@@ -482,7 +484,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                           You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                           {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                           {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} ${selectedDataNft.supply - selectedDataNft.balance > 1 ? "are" : "is"} not under your ownership.`}
+                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} ${
+                              selectedDataNft.supply - selectedDataNft.balance > 1 ? "are" : "is"
+                            } not under your ownership.`}
                         </Text>
                       </Box>
                     </HStack>
