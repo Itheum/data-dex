@@ -326,67 +326,62 @@ const AppHeader = ({
                 <AccordionItem key={menu.sectionId}>
                   {({ isExpanded }) => (
                     <>
-                      <AccordionButton display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-                        <Text m={0} fontWeight={"bold"}>
-                          <ShortAddress address={mxAddress} fontSize="md" />
-                        </Text>
-                        {isExpanded ? <MdExpandLess /> : <MdExpandMore />}
-                      </AccordionButton>
-                      <AccordionPanel p={0}>
-                        <List>
-                          {menu.sectionItems.map((menuItem) => {
-                            const { label, menuEnum, path, Icon } = menuItem;
-                            return (
-                              <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
-                                <ListItem
-                                  as={Button}
-                                  variant={"ghost"}
-                                  w={"full"}
-                                  borderRadius={"0"}
-                                  display={"flex"}
-                                  justifyContent={"start"}
-                                  p={3}
-                                  key={label}
-                                  onClick={() => navigateToDiscover(menuEnum)}>
-                                  <ListIcon
-                                    as={() =>
-                                      Icon({
-                                        size: "1.25em",
-                                        style: { marginRight: "0.75rem" },
-                                      })
-                                    }
-                                  />
-                                  <Text mt={-1}>{label}</Text>
-                                </ListItem>
-                              </Link>
-                            );
-                          })}
+                      <Text m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                        <ShortAddress address={mxAddress} fontSize="md" />
+                      </Text>
+                      <List>
+                        {menu.sectionItems.map((menuItem) => {
+                          const { label, menuEnum, path, Icon } = menuItem;
+                          return (
+                            <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
+                              <ListItem
+                                as={Button}
+                                variant={"ghost"}
+                                w={"full"}
+                                borderRadius={"0"}
+                                display={"flex"}
+                                justifyContent={"start"}
+                                p={3}
+                                key={label}
+                                onClick={() => navigateToDiscover(menuEnum)}>
+                                <ListIcon
+                                  as={() =>
+                                    Icon({
+                                      size: "1.25em",
+                                      style: { marginRight: "0.75rem" },
+                                    })
+                                  }
+                                />
+                                <Text mt={-1}>{label}</Text>
+                              </ListItem>
+                            </Link>
+                          );
+                        })}
 
-                          <ListItem
-                            as={Button}
-                            variant={"ghost"}
-                            w={"full"}
-                            borderRadius={"0"}
-                            display={"flex"}
-                            justifyContent={"start"}
-                            p={3}
-                            onClick={() => setMxShowClaimsHistory(true)}>
-                            View claims history
-                          </ListItem>
+                        <ListItem
+                          as={Button}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          display={"flex"}
+                          justifyContent={"start"}
+                          p={3}
+                          onClick={() => setMxShowClaimsHistory(true)}>
+                          View claims history
+                        </ListItem>
 
-                          <ListItem
-                            as={Button}
-                            variant={"ghost"}
-                            w={"full"}
-                            borderRadius={"0"}
-                            display={"flex"}
-                            justifyContent={"start"}
-                            p={3}
-                            onClick={handleLogout}>
-                            Logout
-                          </ListItem>
-                        </List>
-                      </AccordionPanel>
+                        <ListItem
+                          as={Button}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          display={"flex"}
+                          justifyContent={"start"}
+                          p={3}
+                          onClick={handleLogout}>
+                          Logout
+                        </ListItem>
+                      </List>
                     </>
                   )}
                 </AccordionItem>
