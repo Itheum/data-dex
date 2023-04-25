@@ -299,7 +299,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
 
                 <Flex flexGrow="1">
-                  <Text fontSize="md" color="#929497" mt="2" wordBreak="break-word" noOfLines={2} w="100%" h="10">
+                  <Text fontSize="md" color="#929497" noOfLines={2} w="100%" h="10">
                     {transformDescription(item.description)}
                   </Text>
                 </Flex>
@@ -318,7 +318,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </PopoverBody>
             </PopoverContent>
           </Popover>
-          <Box>
+          <Box mt={1}>
             {
               <Box color="#8c8f9282" fontSize="md">
                 Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
@@ -332,7 +332,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
             </Box>
 
-            <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="2" height="7rem">
+            <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
                 <Text fontSize={"sm"} fontWeight="semibold">
                   You are the {item.creator !== address ? "Owner" : "Creator"}
