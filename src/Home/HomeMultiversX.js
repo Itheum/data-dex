@@ -32,6 +32,7 @@ import myNFMe from "img/my-nfme.png";
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
+import RecentArticles from "Sections/RecentArticles";
 import RecentDataNFTs from "Sections/RecentDataNFTs";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
@@ -514,6 +515,14 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
         <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
+      </Box>
+
+      <Box m="auto" pt="10" pb="10" backgroundColor="none">
+        <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+          Articles
+        </Heading>
+
+        <RecentArticles />
       </Box>
 
       <AppMarketplace />

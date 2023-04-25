@@ -293,13 +293,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   return (
     <>
       <Stack spacing={5}>
-        <Heading size="xl" fontWeight="medium" my={10} mx={24}>
+        <Heading size="xl" fontWeight="medium" my={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Data NFT Marketplace
         </Heading>
 
         <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} w="full" flexWrap={"wrap"}>
           <Tabs w="full" alignItems="center">
-            <TabList justifyContent="space-evenly">
+            <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
               <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
                 <Button
                   colorScheme="teal"

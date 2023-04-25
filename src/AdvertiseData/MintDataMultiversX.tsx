@@ -62,7 +62,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { labels } from "libs/language";
 import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
-import { checkBalance, getGateway } from "MultiversX/api";
+import { checkBalance, getNetworkProvider } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -312,7 +312,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     if (!_chainMeta.networkId) return;
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -325,7 +325,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -338,7 +338,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -351,7 +351,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);

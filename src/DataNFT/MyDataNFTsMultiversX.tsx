@@ -186,15 +186,15 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   return (
     <>
       <Stack>
-        <Heading size="xl" fontWeight="medium" mt={10} mx={24}>
+        <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Data NFT Wallet
         </Heading>
-        <Heading size="1rem" opacity=".7" fontWeight="light" px={24}>
+        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Below are the Data NFTs you created and/or purchased on the current chain
         </Heading>
 
         <Tabs pt={10}>
-          <TabList>
+          <TabList overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
             {walletTabs.map((tab, index) => {
               return (
                 <Tab key={index} isDisabled={tab.isDisabled} _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>

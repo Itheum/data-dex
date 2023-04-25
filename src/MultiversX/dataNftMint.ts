@@ -20,6 +20,7 @@ import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/util";
 import jsonData from "./ABIs/datanftmint.abi.json";
 import { DataNftMetadataType, UserDataType } from "./types";
+import { getNetworkProvider } from "./api";
 
 export class DataNftMintContract {
   timeout: number;
@@ -165,14 +166,7 @@ export class DataNftMintContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -238,14 +232,7 @@ export class DataNftMintContract {
 
   async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();
