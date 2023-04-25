@@ -623,6 +623,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             sellerFee={item.sellerFee || 0}
             offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
+            setAmount={setAmount}
           />
         )}
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>

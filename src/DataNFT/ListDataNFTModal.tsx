@@ -17,6 +17,7 @@ export type ListModalProps = {
   itheumPrice: number;
   marketContract: any;
   amount: number;
+  setAmount: (amount: number) => void;
 };
 
 export default function ListDataNFTModal(props: ListModalProps) {
@@ -95,7 +96,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
     }
 
     props.marketContract.addToMarket(props.nftData.collection, props.nftData.nonce, props.amount, props.offer.wanted_token_amount, address);
-
+    props.setAmount(1);
     // a small delay for visual effect
     await sleep(0.5);
     props.onClose();
