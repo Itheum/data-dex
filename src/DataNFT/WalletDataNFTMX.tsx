@@ -205,9 +205,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
-          await sleep(3);
-
-          cleanupAccessDataStreamProcess();
+          setUnlockAccessProgress((prevProgress) => ({
+            ...prevProgress,
+            s3: 1,
+          }));
         }
       } else {
         if (data.success === false) {
@@ -671,6 +672,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                     </Stack>
                   </Alert>
+                )}
+                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
+                  <Button colorScheme="teal" variant="outline" onClick={cleanupAccessDataStreamProcess}>
+                    Close & Return
+                  </Button>
                 )}
               </Stack>
             </ModalBody>
