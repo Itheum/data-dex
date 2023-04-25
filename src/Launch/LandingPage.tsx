@@ -3,17 +3,11 @@ import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, S
 import imgHeroDataNFTs from "img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "img/landing/hero-metaverse-mask.png";
 import { styleStrings } from "libs/util";
+import RecentArticles from "Sections/RecentArticles";
 import RecentDataNFTs from "Sections/RecentDataNFTs";
-// import { useChainMeta } from "store/ChainMetaContext";
 
 const LandingPage = () => {
   const { colorMode } = useColorMode();
-  // const { chainMeta: _chainMeta } = useChainMeta();
-
-  // useEffect(() => {
-  //   console.log('********** AppHeader LOAD _chainMeta ', _chainMeta);
-  // }, []);
-
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
   let gradientBorder = styleStrings.gradientBorderMulticolor;
 
@@ -84,7 +78,7 @@ const LandingPage = () => {
             </Heading>
 
             <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
-              {Array.from("123").map((idx) => (
+              {Array.from("1234").map((idx) => (
                 <Card key={idx} variant="outline" backgroundColor="none" border="none">
                   <CardBody>
                     <Box>
@@ -98,7 +92,7 @@ const LandingPage = () => {
                     </Box>
                     <Stack mt="6" spacing="2">
                       <Text>10 March,2023</Text>
-                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>
+                      <Heading size="md" noOfLines={2}>
                         Article Title GOES IN HERE, CAPS AND it might be two to three lines long
                       </Heading>
                       <Text noOfLines={2}>
@@ -119,35 +113,7 @@ const LandingPage = () => {
               Articles
             </Heading>
 
-            <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
-              {Array.from("123").map((idx) => (
-                <Card key={idx} variant="outline" backgroundColor="none" border="none">
-                  <CardBody>
-                    <Box>
-                      <Image
-                        src="https://www.colorbook.io/imagecreator.php?hex=none&width=350&height=200"
-                        alt=">Article Title GOES IN HERE"
-                        borderRadius="1.5rem"
-                        border=".1rem solid transparent"
-                        style={{ "background": gradientBorder }}
-                      />
-                    </Box>
-                    <Stack mt="6" spacing="2">
-                      <Text>10 March, 2023</Text>
-                      <Heading size="md" noOfLines={2} h={{ "xl": "12" }}>
-                        Article Title GOES IN HERE, CAPS AND it might be two to three lines long
-                      </Heading>
-                      <Text noOfLines={2}>
-                        Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....
-                      </Text>
-                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">
-                        Read More
-                      </Link>
-                    </Stack>
-                  </CardBody>
-                </Card>
-              ))}
-            </SimpleGrid>
+            <RecentArticles />
           </Box>
         </Box>
       </Flex>
