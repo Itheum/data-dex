@@ -138,7 +138,7 @@ const RecentDataNFTs = ({
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt="3">
+                  <Stack mt="7">
                     <Heading size="md" noOfLines={1}>
                       {item.title}
                     </Heading>
