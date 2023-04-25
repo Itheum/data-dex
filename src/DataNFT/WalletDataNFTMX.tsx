@@ -294,7 +294,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <div>
-                <Text fontWeight="semibold" fontSize="lg" mt="1.5">
+                <Text fontWeight="semibold" fontSize="lg" mt="1.5" noOfLines={1}>
                   {item.title}
                 </Text>
 
