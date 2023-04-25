@@ -293,15 +293,16 @@ const AppHeader = ({
 
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
 
-            <Box display={{ base: "none", md: "block", xl: "block" }}>
-              <IconButton
-                size={"lg"}
-                icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
-              />
-            </Box>
+            {/*Toggle Mode*/}
+            {/*<Box display={{ base: "none", md: "block", xl: "block" }}>*/}
+            {/*  <IconButton*/}
+            {/*    size={"lg"}*/}
+            {/*    icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} />}*/}
+            {/*    aria-label="Change Color Theme"*/}
+            {/*    color="teal.200"*/}
+            {/*    onClick={toggleColorMode}*/}
+            {/*  />*/}
+            {/*</Box>*/}
           </HStack>
         </Flex>
       </Flex>
