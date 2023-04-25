@@ -23,6 +23,7 @@ import BigNumber from "bignumber.js";
 import jsonData from "./ABIs/data_market.abi.json";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain, uxConfig } from "../libs/util";
+import { getNetworkProvider } from "./api";
 
 export class DataNftMarketContract {
   timeout: number;
@@ -56,14 +57,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -289,14 +283,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -337,14 +324,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -384,14 +364,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -427,14 +400,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -470,14 +436,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -535,14 +494,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

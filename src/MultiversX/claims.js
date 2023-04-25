@@ -13,6 +13,7 @@ import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { contractsForChain } from "libs/util";
 import jsonData from "./ABIs/claims.abi.json";
+import { getNetworkProvider } from "./api";
 
 export class ClaimsContract {
   constructor(networkId) {
@@ -39,14 +40,7 @@ export class ClaimsContract {
     const result = [];
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -81,14 +75,7 @@ export class ClaimsContract {
     let result = false;
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
