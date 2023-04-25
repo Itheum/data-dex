@@ -891,7 +891,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   }
 
   return (
-    <Stack mt={5} mx={24}>
+    <Stack mt={5} mx={{ base: 0, "2xl": "24 !important" }}>
       <Heading size="lg" fontWeight="medium">
         Trade Data
       </Heading>
