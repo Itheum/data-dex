@@ -62,14 +62,15 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { labels } from "libs/language";
 import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
-import { checkBalance, getGateway } from "MultiversX/api";
+import { checkBalance, getNetworkProvider } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
-  let title = "", text = "";
+  let title = "",
+    text = "";
 
   if (tkey === "data-stream-url") {
     title = "Data Stream URL";
@@ -179,7 +180,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [mintingSuccessful, setMintingSuccessful] = useState(false);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
-  
+
   const [currSellObject, setCurrSellObject] = useState<any>(null);
   const [isStreamTrade, setIsStreamTrade] = useState(0);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -218,7 +219,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
   const [mintSessionId, setMintSessionId] = useState(null);
-  
+
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   // React hook form + yup integration
@@ -312,7 +313,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     if (!_chainMeta.networkId) return;
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -325,7 +326,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -338,7 +339,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -349,9 +350,9 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         setMaxSupply(value.toNumber());
       }
     })();
-    
+
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -375,7 +376,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       })();
     }
   }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
-  
+
   const getUserData = async () => {
     if (mxAddress && _chainMeta.networkId) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
@@ -407,7 +408,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // S: validation logic
-  
+
   const onChangeDataNFTStreamUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
@@ -498,7 +499,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDatasetTitleError(error);
     setDatasetTitle(value);
   };
-  
+
   const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
@@ -509,7 +510,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDatasetDescriptionError(error);
     setDatasetDescription(value);
   };
-  
+
   const handleChangeDataNftCopies = (value: number) => {
     let error = "";
     if (value < 1) {
@@ -521,7 +522,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDataNFTCopiesError(error);
     setDataNFTCopies(value);
   };
-  
+
   const handleChangeDataNftRoyalties = (value: number) => {
     let error = "";
     if (value < 0) {
@@ -594,7 +595,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     userData,
   ]);
-  
+
   // E: validation logic
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -614,7 +615,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     await sleep(3);
 
     setMintingSuccessful(true);
-  };  
+  };
 
   const getDataForSale = async (programId: any) => {
     setSelectedProgramId(programId);
@@ -741,17 +742,17 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     const attributes = traits.split(",").filter((element) => element.trim() !== "");
     const metadataAttributes = [];
-    
+
     for (const attribute of attributes) {
       const [key, value] = attribute.split(":");
       const trait = { trait_type: key.trim(), value: value.trim() };
       metadataAttributes.push(trait);
     }
-    
+
     metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTStreamPreviewUrl });
     metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
     metadata.attributes = metadataAttributes;
-    
+
     return metadata;
   }
 
@@ -762,8 +763,9 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
     let res;
-    
-    try { // catch IPFS error
+
+    try {
+      // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
 
       const nftstorage = new NFTStorage({
@@ -783,7 +785,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
     const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
-    
+
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
@@ -1103,7 +1105,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   </InputLabelWithPopover>
 
                   <Input mt="1 !important" value={dataNFTMarshalService} disabled />
-                  
+
                   {userFocusedForm && !!dataNFTMarshalServiceStatus && (
                     <Text color="red.400" fontSize="sm" mt="1 !important">
                       {dataNFTMarshalServiceStatus}
@@ -1250,7 +1252,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 </Text>
 
                 <Box mt="3 !important">
-                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
+                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
                     Read Terms of Use
                   </Button>
                 </Box>
@@ -1285,7 +1287,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
                   I accept the deduction of the anti-spam minting fee from my wallet
                 </Checkbox>
-                
+
                 {userFocusedForm && !readAntiSpamFeeChecked && (
                   <Text color="red.400" fontSize="sm" mt="1 !important">
                     You need to agree to anti-spam deduction to mint
