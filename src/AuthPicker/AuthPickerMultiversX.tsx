@@ -115,7 +115,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
 
                 <Text fontSize="sm">
                   By logging in, you are agreeing to the{" "}
-                  <Link href="https://itheum.com/termsofuse" isExternal>
+                  <Link href="https://itheum.com/legal/datadex/termsofuse" isExternal>
                     Terms of Use <ExternalLinkIcon mx="2px" />
                   </Link>{" "}
                   &{" "}
