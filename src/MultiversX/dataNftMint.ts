@@ -129,7 +129,6 @@ export class DataNftMintContract {
       },
       redirectAfterSign: false,
     });
-
     return { sessionId, error };
   }
 

@@ -615,7 +615,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
     setMintingSuccessful(true);
   };
 
-  const getDataForSale = async (dataCATProgram: any) => {    
+  const getDataForSale = async (dataCATProgram: any) => {
     let selObj: any;
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
@@ -628,7 +628,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
 
       setCurrDataCATSellObj(selObj);
 
-      if (selObj?.group === 'custom') {
+      if (selObj?.group === "custom") {
         dataCATStreamUrl = selObj.dataStreamURL;
         dataCATStreamPreviewUrl = selObj.dataPreviewURL;
       } else {
@@ -822,12 +822,14 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
       itheumToken: _chainMeta.contracts.itheumToken,
       antiSpamTax: antiSpamTax,
     });
+    if (error) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+    }
 
     setMintSessionId(sessionId);
   };
 
-  // is this used? @TODO check and remove
-  const transactionStatus = useTrackTransactionStatus({
+  useTrackTransactionStatus({
     transactionId: mintSessionId,
     onSuccess: mintTxSuccess,
     onFail: mintTxFail,
@@ -1103,7 +1105,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         Data Preview URL *
                       </Text>
                     </InputLabelWithPopover>
-                    
+
                     <Controller
                       control={control}
                       render={({ field: { value, onChange } }) => (
@@ -1124,9 +1126,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     />
                     <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
 
-                    {currDataCATSellObj && 
-                     <Link fontSize="sm" href={dataNFTStreamPreviewUrl} isExternal>View Preview Data <ExternalLinkIcon mx="2px" /></Link>              
-                    }
+                    {currDataCATSellObj && (
+                      <Link fontSize="sm" href={dataNFTStreamPreviewUrl} isExternal>
+                        View Preview Data <ExternalLinkIcon mx="2px" />
+                      </Link>
+                    )}
                   </FormControl>
 
                   <InputLabelWithPopover tkey="data-marshal-url">
