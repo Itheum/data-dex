@@ -28,24 +28,15 @@ const LandingPage = () => {
         <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
           <Flex
             w="100%"
-            h={["40rem", "45rem"]}
+            h={["45rem", "45rem"]}
             bgImage={imgHeroMetaverseMask}
             bgSize="contain"
             bgPosition="bottom"
             bgRepeat="no-repeat"
             justifyContent="center">
             <Center w="95%" pt="5rem">
-              <Flex
-                w="100%"
-              
-                justifyContent={[null, null, null, "space-between"]}
-                flexDirection={["column", null, "row"]}
-                mx={{ base: 0, "2xl": 20 }}>
-                <Box
-                  width={["300px", null, null, "500px", "690px"]}
-                
-                  textAlign={["center", null, null, "center", "left"]}
-                  m={["auto", "initial"]}>
+              <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "2xl": 20 }}>
+                <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
                     Own and trade{" "}
                     <Text as="span" color="teal.200">
@@ -68,7 +59,7 @@ const LandingPage = () => {
             </Center>
           </Flex>
 
-          <Box pt="10" pb="10" mx={{ base: 8, "2xl": 24 }}>
+          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "2xl": 24 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
           </Box>
 
