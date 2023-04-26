@@ -12,7 +12,7 @@ const baseUserContext = {
 
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
   const { user: _user, setUser } = useUser();
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { setChainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);

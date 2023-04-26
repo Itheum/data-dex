@@ -1,8 +1,6 @@
 import React from "react";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
-
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
 import Launcher from "./Launch/Launcher";
@@ -19,17 +17,10 @@ if (process.env.NODE_ENV === "production") {
     // this is so we can use the environments filter in sentry to filter staging production vs actual production
     environment: getSentryProfile(),
 
-    // (BrowserTracing) Set tracesSampleRate to 1.0 to capture 100%  of transactions for performance monitoring.
-    tracesSampleRate: 1.0,
+    integrations: [new Sentry.BrowserTracing()],
 
-    // (Replay) This sets the sample rate to be 10%. You may want this to be 100% while
-    // in development and sample at a lower rate in production
-    replaysSessionSampleRate: 1.0,
-    // (Replay) If the entire session is not sampled, use the below sample rate to sample
-    // sessions when an error occurs.
-    replaysOnErrorSampleRate: 1.0,
-
-    integrations: [new BrowserTracing(), new Sentry.Replay()],
+    // Performance Monitoring
+    tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
   });
 }
 
@@ -69,6 +60,11 @@ const theme = extendTheme({
       700: "#285E61",
       800: "#234E52",
       900: "#1D4044",
+    },
+  },
+  components: {
+    Icon: {
+      colorScheme: "teal",
     },
   },
 });

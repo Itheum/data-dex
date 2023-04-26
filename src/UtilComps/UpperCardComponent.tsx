@@ -1,7 +1,6 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
   Flex,
   Image,
@@ -14,15 +13,17 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Skeleton,
+  Stack,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice } from "../libs/util2";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, styleStrings, uxConfig } from "../libs/util";
+import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
@@ -43,6 +44,7 @@ type UpperCardComponentProps = {
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
+  const { colorMode } = useColorMode();
   const {
     nftImageLoading,
     setNftImageLoaded,
@@ -62,22 +64,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
-  // Function to transform description that have a link into an actual link
-  const transformDescription = (description: string) => {
-    const regex = /(?:^|[\s\n])(?:\((.*?)\))?((?:https?:\/\/|www\.)[^\s\n]+)/g; // Regex for check if description have link
-
-    return description.split(regex).map((word, i) => {
-      if (word?.match(regex)) {
-        return (
-          <Link key={i} href={word} isExternal color={"blue.300"}>
-            {" " + word}
-          </Link>
-        );
-      }
-      return word;
-    });
-  };
-
   const feePrice = item
     ? printPrice(
         convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber(),
@@ -86,17 +72,32 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     : "";
   const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
 
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
+
+  if (colorMode === "light") {
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
+  }
+
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
-      <Box maxW="230px" borderWidth="1px" borderRadius="lg" position="relative">
-        <Flex justifyContent="center" pt={3}>
+      <Box
+        w="275px"
+        h="760px"
+        mx="3 !important"
+        borderWidth="0.5px"
+        borderRadius="xl"
+        position="relative"
+        mb="1rem"
+        style={{ background: gradientBorderForTrade }}>
+        <Flex justifyContent="center">
           <Image
             src={imageUrl}
             alt={"item.dataPreview"}
-            h={200}
-            w={200}
-            mx={4}
-            borderRadius="md"
+            h={236}
+            w={236}
+            mx={6}
+            mt={6}
+            borderRadius="32px"
             cursor="pointer"
             onLoad={() => setNftImageLoaded(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
@@ -107,10 +108,10 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
           />
         </Flex>
 
-        <Flex h={address ? "28rem" : "18rem"} p="3" direction="column" justify="space-between">
+        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
           {nftMetadatas[index] && (
             <>
-              <Text fontSize="xs">
+              <Text fontSize="md" color="#929497">
                 <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
                   {nftMetadatas[index].tokenName} <ExternalLinkIcon mx="2px" />
                 </Link>
@@ -118,68 +119,76 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               <Popover trigger="hover" placement="auto">
                 <PopoverTrigger>
                   <div>
-                    <Text fontWeight="bold" fontSize="lg" mt="2">
+                    <Text fontWeight="semibold" fontSize="lg" mt="1.5">
                       {nftMetadatas[index].title.length > 20 ? nftMetadatas[index].title.substring(0, 19) + "..." : nftMetadatas[index].title}
                     </Text>
 
                     <Flex flexGrow="1">
-                      <Text fontSize="md" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
+                      <Text fontSize="md" color="#929497" noOfLines={2} w="100%" h="10">
                         {transformDescription(nftMetadatas[index].description)}
                       </Text>
                     </Flex>
                   </div>
                 </PopoverTrigger>
                 <PopoverContent mx="2" width="220px" mt="-7">
-                  <PopoverHeader fontWeight="semibold" fontSize="md">
+                  <PopoverHeader fontWeight="semibold" fontSize="lg">
                     {nftMetadatas[index].title}
                   </PopoverHeader>
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverBody>
-                    <Text fontSize="sm" mt="2" color="gray.200">
+                    <Text fontSize="md" mt="1" color="gray.300">
                       {transformDescription(nftMetadatas[index].description)}
                     </Text>
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
-              <Flex display="flex" flexDirection="column">
-                <Box color="gray.600" fontSize="sm">
-                  Creator: <ShortAddress address={nftMetadatas[index].creator} />
+              <Flex display="flex" flexDirection="column" mt={1}>
+                <Box color="#8c8f9282" fontSize="md">
+                  Creator: <ShortAddress address={nftMetadatas[index].creator} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                    <ExternalLinkIcon mx="2px" />
+                    <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Box color="gray.600" fontSize="sm">
-                  Owner: <ShortAddress address={item?.owner} />
+                <Box color="#8c8f9282" fontSize="md">
+                  Owner: <ShortAddress address={item?.owner} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
-                    <ExternalLinkIcon mx="2px" />
+                    <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" mt="2" mb="1" height="auto">
+                <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="5rem">
                   {address && address == nftMetadatas[index].creator && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Creator</Text>
-                    </Badge>
+                    <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
+                      <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                        You are the Creator
+                      </Text>
+                    </Box>
                   )}
 
                   {address && address == item?.owner && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Owner</Text>
-                    </Badge>
+                    <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
+                      <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
+                        You are the Owner
+                      </Text>
+                    </Box>
                   )}
 
-                  <Badge borderRadius="full" px="2" colorScheme="blue">
-                    Fully Transferable License
-                  </Badge>
-                </Box>
+                  <Box borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                      Fully Transferable License
+                    </Text>
+                  </Box>
+                </Stack>
               </Flex>
 
-              <Box display="flex" justifyContent="flex-start" mt="0">
-                <Text fontSize="xs">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(uxConfig.dateStr)}`}</Text>
+              <Box display="flex" justifyContent="flex-start" mt="2">
+                <Text fontSize="md" fontWeight="medium" color="#929497">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(
+                  uxConfig.dateStr
+                )}`}</Text>
               </Box>
 
               {nftMetadatas[index] && (
-                <Box color="gray.600" fontSize="sm">
+                <Box color="#8c8f9282" fontSize="md" fontWeight="normal">
                   {`Listed: ${item?.quantity}`} <br />
                   {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
                   {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}

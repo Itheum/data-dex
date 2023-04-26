@@ -1,19 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Box, 
-  Text, 
-  Image, 
-  Modal, 
-  ModalOverlay, 
-  ModalContent, 
-  ModalBody,
-  HStack, 
-  Flex, 
-  Button, 
-  Checkbox, 
-  Divider,
-  useToast
-} from "@chakra-ui/react";
+import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import { convertWeiToEsdt, sleep } from "libs/util";
@@ -44,6 +30,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const [fee, setFee] = useState<number>(0);
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
+  const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
@@ -255,13 +242,14 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                     "-"
                   )}
                 </Box>
-              </Flex>              
+              </Flex>
             </Box>
 
             <DataNFTLiveUptime
               dataMarshal={props.nftData.dataMarshal}
               NFTId={props.nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
+              setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
             />
 
             <Divider />
@@ -283,7 +271,12 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                 size="sm"
                 mx="3"
                 onClick={onProcure}
-                isDisabled={!readTermsChecked || liveUptimeFAIL || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0}>
+                isDisabled={
+                  !readTermsChecked ||
+                  liveUptimeFAIL ||
+                  new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 ||
+                  !isLiveUptimeSuccessful
+                }>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={props.onClose}>

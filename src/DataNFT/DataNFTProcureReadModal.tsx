@@ -7,7 +7,7 @@ interface DataNFTProcureReadModalProps {
   onReadTermsModalClose: () => void;
 }
 
-const DataNFTProcureReadModal: FC<DataNFTProcureReadModalProps> = ({ isReadTermsModalOpen, onReadTermsModalOpen, onReadTermsModalClose }) => {
+const DataNFTProcureReadModal: FC<DataNFTProcureReadModalProps> = ({ isReadTermsModalOpen, onReadTermsModalClose }) => {
   return (
     <Modal isOpen={isReadTermsModalOpen} onClose={onReadTermsModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />

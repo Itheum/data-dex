@@ -30,7 +30,7 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const [mxClaims, setMxClaims] = useState([]);
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import {
   AbiRegistry,
   SmartContract,
@@ -18,12 +19,12 @@ import {
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import BigNumber from "bignumber.js";
+import { labels } from "libs/language";
 import jsonData from "./ABIs/data_market.abi.json";
+import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain, uxConfig } from "../libs/util";
-import { getNetworkProvider } from "./api";
 
 export class DataNftMarketContract {
   timeout: number;
@@ -31,6 +32,8 @@ export class DataNftMarketContract {
   chainID: string;
   contract: SmartContract;
   itheumToken: string;
+
+  toast = useToast();
 
   constructor(networkId: string) {
     this.timeout = uxConfig.mxAPITimeoutMs;
@@ -312,6 +315,12 @@ export class DataNftMarketContract {
       return decoded;
     } catch (e) {
       console.error(e);
+      this.toast({
+        title: labels.ERR_MARKET_REQ_FAIL,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
       return undefined;
     }
   }
@@ -351,6 +360,12 @@ export class DataNftMarketContract {
       return decoded;
     } catch (e) {
       console.error(e);
+      this.toast({
+        title: labels.ERR_MARKET_OFFERS_FAIL,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
       return [];
     }
   }
@@ -391,6 +406,12 @@ export class DataNftMarketContract {
       return decoded;
     } catch (e) {
       console.error(e);
+      this.toast({
+        title: labels.ERR_MARKET_OFFERS_FAIL,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
       return [];
     }
   }
@@ -427,6 +448,12 @@ export class DataNftMarketContract {
       return decoded;
     } catch (e) {
       console.error(e);
+      this.toast({
+        title: labels.ERR_MARKET_OFFERS_FAIL,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
       return undefined;
     }
   }
@@ -453,6 +480,12 @@ export class DataNftMarketContract {
       return decoded;
     } catch (e) {
       console.error(e);
+      this.toast({
+        title: labels.ERR_MARKET_OFFERS_FAIL,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
       return 0;
     }
   }
@@ -511,6 +544,12 @@ export class DataNftMarketContract {
       return decoded;
     } catch (e) {
       console.error(e);
+      this.toast({
+        title: labels.ERR_MARKET_OFFERS_FAIL,
+        status: "error",
+        isClosable: true,
+        duration: 20000,
+      });
       return 0;
     }
   }

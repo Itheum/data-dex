@@ -27,7 +27,7 @@ import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
 import LandingPage from "Launch/LandingPage";
 import { useLocalStorage } from "libs/hooks";
-import { CHAINS, clearAppSessionsLaunchMode, consoleNotice, gtagGo, MENU, PATHS, SUPPORTED_CHAINS } from "libs/util";
+import { CHAINS, clearAppSessionsLaunchMode, consoleNotice, gtagGo, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS, sleep } from "libs/util";
 import { checkBalance } from "MultiversX/api";
 import AppFooter from "Sections/AppFooter";
 import AppHeader from "Sections/AppHeader";
@@ -39,6 +39,8 @@ import { useChainMeta } from "store/ChainMetaContext";
 const mxLogout = logout;
 
 function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; resetAppContexts: any; onLaunchMode: any }) {
+  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
@@ -58,9 +60,9 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { colorMode, toggleColorMode } = useColorMode();
   const { pathname } = useLocation();
-  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
-  const [itheumAccount, setItheumAccount] = useState(null);
+  const [dataCATAccount, setDataCATAccount] = useState<any>(null);
+  const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
 
   // context hooks
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -68,8 +70,6 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
   useEffect(() => {
-    // console.log('********** AppMultiversX LOAD _chainMeta ', _chainMeta);
-
     if (path) {
       // we can use - to tag path keys. e.g. offer-44 is path key offer. So remove anything after - if needed
       // also, NFTDETAILS key is for path like DATANFTFT2-71ac28-79 so allow for this custom logic
@@ -96,6 +96,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
       } else {
         itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
+
+      linkOrRefreshDataDATAccount();
     }
   }, [_chainMeta]);
 
@@ -181,6 +183,22 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     }
   };
 
+  const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
+    setLoadingDataCATAccount(true);
+    await sleep(5);
+
+    // setExplicit = to link the demo account after notifying user
+    if ((dataCatLinkedSession === "1" && !dataCATAccount) || setExplicit) {
+      if (setExplicit) {
+        setDataCatLinkedSession("1");
+      }
+
+      setDataCATAccount(dataCATDemoUserData);
+    }
+
+    setLoadingDataCATAccount(false);
+  };
+
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
 
   if (colorMode === "light") {
@@ -189,7 +207,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   return (
     <>
-      <Container maxW="container.xl">
+      <Container maxW="97.5rem">
         <Flex
           bgColor={colorMode === "dark" ? "black" : "white"}
           flexDirection="column"
@@ -212,15 +230,16 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                     key={rfKeys.tools}
                     onRfMount={() => handleRfMount("tools")}
                     setMenuItem={setMenuItem}
-                    itheumAccount={itheumAccount}
-                    onItheumAccount={setItheumAccount}
+                    dataCATAccount={dataCATAccount}
+                    loadingDataCATAccount={loadingDataCATAccount}
+                    onDataCATAccount={linkOrRefreshDataDATAccount}
                   />
                 }
               />
 
               <Route
                 path="tradedata"
-                element={<MintDataMX key={rfKeys.sellData} itheumAccount={itheumAccount} onRfMount={() => handleRfMount("sellData")} />}
+                element={<MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
               />
 
               <Route path="datanfts" element={<Outlet />}>
