@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -165,7 +165,7 @@ type TradeDataFormType = {
   royaltiesForm: number;
 };
 
-export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
+export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: any; dataCATAccount: any }) {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -181,7 +181,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
 
-  const [currSellObject, setCurrSellObject] = useState<any>(null);
+  const [currDataCATSellObj, setCurrDataCATSellObj] = useState<any>(null);
   const [isStreamTrade, setIsStreamTrade] = useState(0);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [dataNFTImg, setDataNFTImg] = useState("");
@@ -209,7 +209,6 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [, setDataStreamUrlValidation] = useState(false);
   const [, setDataPreviewUrlValidation] = useState(false);
-  const [selectedProgramId, setSelectedProgramId] = useState(null);
   const [userData, setUserData] = useState<UserDataType | undefined>();
   const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
   const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
@@ -616,21 +615,26 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setMintingSuccessful(true);
   };
 
-  const getDataForSale = async (programId: any) => {
-    setSelectedProgramId(programId);
+  const getDataForSale = async (dataCATProgram: any) => {    
     let selObj: any;
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
 
-    if (programId) {
+    if (dataCATProgram?.program) {
       selObj = {
-        ...itheumAccount.programsAllocation.find((i: any) => i.program === programId),
-        ...itheumAccount._lookups.programs[programId],
+        ...dataCATAccount.programsAllocation.find((i: any) => i.program === dataCATProgram.program),
+        ...dataCATAccount._lookups.programs[dataCATProgram.program],
       };
-      setCurrSellObject(selObj);
 
-      dataCATStreamUrl = `https://itheumapi.com/readingsStream/${selObj.userId}/${selObj.program}`;
-      dataCATStreamPreviewUrl = `https://itheumapi.com/programReadingPreview/${selObj.program}`;
+      setCurrDataCATSellObj(selObj);
+
+      if (selObj?.group === 'custom') {
+        dataCATStreamUrl = selObj.dataStreamURL;
+        dataCATStreamPreviewUrl = selObj.dataPreviewURL;
+      } else {
+        dataCATStreamUrl = `https://itheumapi.com/readingsStream/${selObj.userId}/${selObj.program}`;
+        dataCATStreamPreviewUrl = `https://itheumapi.com/programReadingPreview/${selObj.program}`;
+      }
 
       setDataNFTStreamUrl(dataCATStreamUrl);
       setDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
@@ -640,7 +644,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     onOpenDrawerTradeStream();
 
     // as we are setting the stream and preview urls, we need to trigger the onchange of those fields and form to validate it. This only works if we pull off the UI thread (i.e. sleep)
-    if (programId) {
+    if (dataCATProgram?.program) {
       await sleep(3);
 
       onChangeDataNFTStreamUrl(dataCATStreamUrl);
@@ -923,16 +927,16 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         </Box>
       </Wrap>
 
-      {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
+      {dataCATAccount?.programsAllocation?.length > 0 && (
         <>
           <Heading size="lg" fontWeight="semibold" marginTop="6rem !important">
             Supported Data CAT Programs
           </Heading>
           <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="5 !important">
-            Join a community built app and earn ITHEUM when you trade your data
+            Join a community built app and earn rewards if you trade your data
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5}>
-            {itheumAccount.programsAllocation.map((item: any) => (
+            {dataCATAccount.programsAllocation.map((item: any) => (
               <Box
                 key={item.program}
                 maxW="22.4rem"
@@ -942,7 +946,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 backgroundColor="none"
                 borderRadius="1.5rem">
                 <Image
-                  src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`}
+                  src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${dataCATAccount._lookups.programs[item.program].img}.png`}
                   alt=""
                   border=".1rem solid transparent"
                   height="13.375rem"
@@ -957,10 +961,10 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       New
                     </Badge>
                     <Box ml="2" fontWeight="semibold" lineHeight="tight" fontSize="2xl" noOfLines={1}>
-                      {itheumAccount._lookups.programs[item.program].programName}
+                      {dataCATAccount._lookups.programs[item.program].programName}
                     </Box>
                   </Box>
-                  <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item.program)}>
+                  <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item)}>
                     <Text color={colorMode === "dark" ? "white" : "black"}>Trade Program Data</Text>
                   </Button>
                 </Box>
@@ -976,15 +980,15 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
           <DrawerHeader>
             <HStack spacing="5">
               <CloseButton size="lg" onClick={onRfMount} />
-              {(currSellObject && (
+              {(currDataCATSellObj && (
                 <Stack>
-                  <Text fontSize="2xl">
+                  <Box fontSize="2xl">
                     Trade data from your{" "}
-                    <Text color="teal" fontSize="2xl">
-                      {currSellObject.programName}
+                    <Text color="teal.200" fontSize="2xl">
+                      {currDataCATSellObj.programName}
                     </Text>{" "}
                     program as a Data NFT-FT
-                  </Text>
+                  </Box>
                 </Stack>
               )) || (
                 <Heading as="h4" size="lg">
@@ -1079,7 +1083,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                           mt="1 !important"
                           placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                           id="dataStreamUrlForm"
-                          isDisabled={!!selectedProgramId}
+                          isDisabled={!!currDataCATSellObj}
                           value={dataNFTStreamUrl}
                           onChange={(event) => {
                             onChange(event.target.value);
@@ -1099,7 +1103,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                         Data Preview URL *
                       </Text>
                     </InputLabelWithPopover>
-
+                    
                     <Controller
                       control={control}
                       render={({ field: { value, onChange } }) => (
@@ -1107,7 +1111,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                           mt="1 !important"
                           placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                           id="dataPreviewUrlForm"
-                          isDisabled={!!selectedProgramId}
+                          isDisabled={!!currDataCATSellObj}
                           value={dataNFTStreamPreviewUrl}
                           onChange={(event) => {
                             onChange(event.target.value);
@@ -1119,6 +1123,10 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                       name="dataPreviewUrlForm"
                     />
                     <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
+
+                    {currDataCATSellObj && 
+                     <Link fontSize="sm" href={dataNFTStreamPreviewUrl} isExternal>View Preview Data <ExternalLinkIcon mx="2px" /></Link>              
+                    }
                   </FormControl>
 
                   <InputLabelWithPopover tkey="data-marshal-url">

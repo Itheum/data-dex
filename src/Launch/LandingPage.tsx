@@ -34,16 +34,16 @@ const LandingPage = () => {
             bgPosition="bottom"
             bgRepeat="no-repeat"
             justifyContent="center">
-            <Center w="95%" pt="5rem" backgroundColor="none">
+            <Center w="95%" pt="5rem">
               <Flex
                 w="100%"
-                backgroundColor="none"
+              
                 justifyContent={[null, null, null, "space-between"]}
                 flexDirection={["column", null, "row"]}
                 mx={{ base: 0, "2xl": 20 }}>
                 <Box
                   width={["300px", null, null, "500px", "690px"]}
-                  backgroundColor="none"
+                
                   textAlign={["center", null, null, "center", "left"]}
                   m={["auto", "initial"]}>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
@@ -61,25 +61,25 @@ const LandingPage = () => {
                   </Text>
                 </Box>
 
-                <Box backgroundColor="none" mt={["2rem", "initial"]}>
+                <Box mt={["2rem", "initial"]}>
                   <Image boxSize="480px" height="auto" src={imgHeroDataNFTs} alt="Data NFTs Preview" />
                 </Box>
               </Flex>
             </Center>
           </Flex>
 
-          <Box backgroundColor="none" pt="10" pb="10" mx={{ base: 8, "2xl": 24 }}>
+          <Box pt="10" pb="10" mx={{ base: 8, "2xl": 24 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
           </Box>
 
-          <Box backgroundColor="none" mx={{ base: 8, "2xl": 24 }} py="10">
+          <Box mx={{ base: 8, "2xl": 24 }} py="10" display="none">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Data NFT 101
             </Heading>
 
             <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
               {Array.from("1234").map((idx) => (
-                <Card key={idx} variant="outline" backgroundColor="none" border="none">
+                <Card key={idx} variant="outline" border="none">
                   <CardBody>
                     <Box>
                       <Image
@@ -108,9 +108,9 @@ const LandingPage = () => {
             </SimpleGrid>
           </Box>
 
-          <Box backgroundColor="none" mx={{ base: 8, "2xl": 24 }} py="10">
+          <Box mx={{ base: 8, "2xl": 24 }} py="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
-              Articles
+              Featured Articles
             </Heading>
 
             <RecentArticles />

@@ -82,7 +82,7 @@ const RecentArticles = () => {
             </Link>
           </Box>
           <Stack mt="6" spacing="2">
-            <Text>21 Jan, 2023</Text>
+            <Text>13 Jan, 2023</Text>
             <Heading size="md" noOfLines={2}>
               The Story Behind Your Data
             </Heading>
@@ -110,7 +110,7 @@ const RecentArticles = () => {
             </Link>
           </Box>
           <Stack mt="6" spacing="2">
-            <Text>21 Jan, 2023</Text>
+            <Text>23 Dec, 2022</Text>
             <Heading size="md" noOfLines={2}>
               Problems with Data Privacy in the Web 2.0
             </Heading>
