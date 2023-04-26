@@ -15,7 +15,8 @@ import { useChainMeta } from "store/ChainMetaContext";
 export type DataNFTLiveUptimeProps = {
   dataMarshal: string;
   NFTId: string;
-  handleFlagAsFailed: (hasFailed: boolean) => (void)
+  handleFlagAsFailed: (hasFailed: boolean) => (void),
+  setIsLiveUptimeSuccessful: (e: boolean) => void,
 };
 
 const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
@@ -43,6 +44,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
     
     props.handleFlagAsFailed(true);
 
+    let _isLiveUptimeSuccessful = false;
     try {
       const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=${_chainMeta.networkId}`);
       const data = await res.json();
@@ -53,6 +55,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
           setLiveUptimeOKMsg(`The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, which indicates that it is available.`);
           
           props.handleFlagAsFailed(false);
+          _isLiveUptimeSuccessful = true;
         } else {
           setLiveUptimeFAILMsg(`The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, this means the Data Creator did not maintain the Data Stream that's wrapped within this Data NFT. Do not proceed with the transaction.`);
         }
@@ -64,6 +67,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
     }
 
     setLiveUptimeCheckInProgress(false);
+    props.setIsLiveUptimeSuccessful(_isLiveUptimeSuccessful);
   }
 
   return (

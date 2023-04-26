@@ -28,6 +28,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const [fee, setFee] = useState<number>(0);
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
+  const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
@@ -207,6 +208,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               dataMarshal={props.nftData.dataMarshal}
               NFTId={props.nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
+              setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
             />
 
             <Divider />
@@ -229,9 +231,10 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 mx="3"
                 onClick={onProcure}
                 isDisabled={
-                  !readTermsChecked ||
-                  liveUptimeFAIL ||
-                  new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
+                  !readTermsChecked
+                  || liveUptimeFAIL
+                  || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
+                  || !isLiveUptimeSuccessful
                 }>
                 Proceed
               </Button>
