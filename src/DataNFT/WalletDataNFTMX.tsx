@@ -205,9 +205,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
-          await sleep(3);
-
-          cleanupAccessDataStreamProcess();
+          setUnlockAccessProgress((prevProgress) => ({
+            ...prevProgress,
+            s3: 1,
+          }));
         }
       } else {
         if (data.success === false) {
@@ -294,12 +295,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <div>
-                <Text fontWeight="semibold" fontSize="lg" mt="1.5">
+                <Text fontWeight="semibold" fontSize="lg" mt="1.5" noOfLines={1}>
                   {item.title}
                 </Text>
 
                 <Flex flexGrow="1">
-                  <Text fontSize="md" color="#929497" mt="2" wordBreak="break-word" noOfLines={2} w="100%" h="10">
+                  <Text fontSize="md" color="#929497" noOfLines={2} w="100%" h="10">
                     {transformDescription(item.description)}
                   </Text>
                 </Flex>
@@ -318,7 +319,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </PopoverBody>
             </PopoverContent>
           </Popover>
-          <Box>
+          <Box mt={1}>
             {
               <Box color="#8c8f9282" fontSize="md">
                 Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
@@ -332,7 +333,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
             </Box>
 
-            <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="2" height="7rem">
+            <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
                 <Text fontSize={"sm"} fontWeight="semibold">
                   You are the {item.creator !== address ? "Owner" : "Creator"}
@@ -622,6 +623,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             sellerFee={item.sellerFee || 0}
             offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
+            setAmount={setAmount}
           />
         )}
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
@@ -671,6 +673,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                     </Stack>
                   </Alert>
+                )}
+                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
+                  <Button colorScheme="teal" variant="outline" onClick={cleanupAccessDataStreamProcess}>
+                    Close & Return
+                  </Button>
                 )}
               </Stack>
             </ModalBody>

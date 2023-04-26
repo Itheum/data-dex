@@ -174,16 +174,18 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="2" height="5rem">
+                <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="5rem">
                   {address && address == nftMetadatas[index].creator && (
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
-                      <Text>You are the Creator</Text>
-                    </Badge>
+                    <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
+                      <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                        You are the Creator
+                      </Text>
+                    </Box>
                   )}
 
                   {address && address == item?.owner && (
-                    <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
-                      <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                    <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
+                      <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
                         You are the Owner
                       </Text>
                     </Box>
