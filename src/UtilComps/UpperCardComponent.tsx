@@ -1,7 +1,6 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
   Flex,
   Image,

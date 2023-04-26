@@ -39,7 +39,7 @@ import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 let mxFaucetContract = null;
 let mxClaimsContract = null;
 
-export default function HomeMx({ setMenuItem, dataCATAccount, loadingDataCATAccount, onDataCATAccount }) {
+export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loadingDataCATAccount, onDataCATAccount }) {
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
