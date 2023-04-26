@@ -19,7 +19,8 @@ import {
   useDisclosure,
   useColorMode,
 } from "@chakra-ui/react";
-import imgProgGaPa from "img/prog-gaming.jpg";
+import imgProgGaPa from "img/prog-gaming-passport.png";
+import imgProgGaPaES from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
 import imgProgWfh from "img/prog-wfh.png";
 import { CHAIN_TOKEN_SYMBOL, progInfoMeta, styleStrings } from "libs/util";
@@ -51,30 +52,35 @@ export default function AppMarketplace() {
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   let gradientBorder = styleStrings.gradientBorderPassive;
+  let gradientBorderCards = styleStrings.gradientBorderMulticolor;
 
   if (colorMode === "light") {
     gradientBorder = styleStrings.gradientBorderPassiveLight;
+    gradientBorderCards = styleStrings.gradientBorderMulticolorLight;
   }
 
   return (
     <>
       <Stack pt="5">
-        <Heading size="md">App Marketplace</Heading>
-        <Text fontSize="md">Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data</Text>
+        <Heading size="lg" fontWeight="semibold">
+          App Marketplace
+        </Heading>
+        <Text size="sm" opacity=".7" fontWeight="normal">
+          Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data
+        </Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5} justify={{ base: "center", md: "start" }}>
-          <Box
-            maxW="container.sm"
+          <Box            
             overflow="hidden"
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderCards }}>
             <Image src={imgProgGaPa} />
 
             <Box p="3">
               <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                  Gamer Passport
+                  Web3 Gamer Passport
                 </Box>
                 <Badge borderRadius="full" px="2" colorScheme="teal">
                   {" "}
@@ -93,14 +99,37 @@ export default function AppMarketplace() {
               </Button>
             </Box>
           </Box>
-
-          <Box
-            maxW="container.sm"
+          
+          <Box            
             overflow="hidden"
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderCards }}>
+            <Image src={imgProgGaPaES} />
+
+            <Box p="3">
+              <Box display="flex" alignItems="baseline">
+                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                  Gamer Passport - ESports
+                </Box>
+                <Badge borderRadius="full" px="2" colorScheme="blue">
+                  {" "}
+                  Coming Soon
+                </Badge>
+              </Box>
+              <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gpes")}>
+                Learn More
+              </Button>
+            </Box>
+          </Box>
+
+          <Box
+            overflow="hidden"
+            border=".1rem solid transparent"
+            backgroundColor="none"
+            borderRadius="1.5rem"
+            style={{ "background": gradientBorderCards }}>
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -108,7 +137,7 @@ export default function AppMarketplace() {
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
                   Red Heart Challenge
                 </Box>
-                <Badge borderRadius="full" px="2" colorScheme="teal">
+                <Badge borderRadius="full" px="2" colorScheme="blue">
                   {" "}
                   Coming Soon
                 </Badge>
@@ -116,19 +145,15 @@ export default function AppMarketplace() {
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
                 Learn More
               </Button>
-              <Button size="sm" mt="3" colorScheme="teal" onClick={() => appendUserAddressAndRedirect("https://itheum.com/redheartchallenge")}>
-                Join Now
-              </Button>
             </Box>
           </Box>
 
           <Box
-            maxW="container.sm"
             overflow="hidden"
             border=".1rem solid transparent"
             backgroundColor="none"
             borderRadius="1.5rem"
-            style={{ "background": gradientBorder }}>
+            style={{ "background": gradientBorderCards }}>
             <Image src={imgProgWfh} />
 
             <Box p="3">
@@ -143,9 +168,6 @@ export default function AppMarketplace() {
               </Box>
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("wfa")}>
                 Learn More
-              </Button>
-              <Button size="sm" disabled={true} mt="3" colorScheme="teal" onClick={() => window.open("")}>
-                Join Now
               </Button>
             </Box>
           </Box>

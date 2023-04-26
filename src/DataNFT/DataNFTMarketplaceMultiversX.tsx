@@ -14,10 +14,16 @@ import {
   DrawerBody,
   useDisclosure,
   SimpleGrid,
+  TabList,
+  Tabs,
+  Tab,
+  useColorMode,
+  Box,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { FaStore, FaBrush } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt, sleep } from "libs/util";
@@ -39,6 +45,7 @@ interface PropsType {
 }
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
+  const { colorMode } = useColorMode();
   const navigate = useNavigate();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pageNumber } = useParams();
@@ -96,7 +103,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   // pagination
   const [pageCount, setPageCount] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(8);
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
   console.log(location.pathname);
@@ -286,49 +293,72 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   return (
     <>
       <Stack spacing={5}>
-        <Heading size="lg">Data NFT Marketplace</Heading>
+        <Heading size="xl" fontWeight="medium" my={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+          Data NFT Marketplace
+        </Heading>
 
-        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"}>
-          <HStack justifyContent={"center"}>
-            <Button
-              colorScheme="teal"
-              width={{ base: "120px", md: "160px" }}
-              isDisabled={tabState === 1}
-              _disabled={{ opacity: 1 }}
-              opacity={0.4}
-              fontSize={{ base: "sm", md: "md" }}
-              onClick={() => {
-                if (hasPendingTransactions || loadingOffers || nftMetadatasLoading) return;
-                setLoadingOffers(true);
-                navigate("/datanfts/marketplace/market");
-              }}>
-              Public Marketplace
-            </Button>
-            {isMxLoggedIn && (
-              <Button
-                colorScheme="teal"
-                width={{ base: "120px", md: "160px" }}
-                isDisabled={tabState === 2}
-                _disabled={{ opacity: 1 }}
-                opacity={0.4}
-                fontSize={{ base: "sm", md: "md" }}
-                onClick={() => {
-                  if (hasPendingTransactions || loadingOffers || nftMetadatasLoading) return;
-                  setLoadingOffers(true);
-                  navigate("/datanfts/marketplace/my");
-                }}>
-                My Listed Data NFTs
-              </Button>
-            )}
-          </HStack>
-
-          <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} w="full" flexWrap={"wrap"}>
+          <Tabs w="full" alignItems="center">
+            <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+                <Button
+                  colorScheme="teal"
+                  flexDirection="row"
+                  isDisabled={tabState === 1}
+                  variant="unstyled"
+                  _disabled={{ opacity: 1 }}
+                  opacity={0.4}
+                  fontSize={{ base: "sm", md: "md" }}
+                  onClick={() => {
+                    if (hasPendingTransactions) return;
+                    setPageIndex(0);
+                    navigate("/datanfts/marketplace/market");
+                  }}>
+                  <Flex mx="5" alignItems="center" gap={1.5}>
+                    <FaStore size="0.95rem" />
+                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                      Public Marketplace
+                    </Text>
+                  </Flex>
+                </Button>
+              </Tab>
+              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+                {isMxLoggedIn && (
+                  <Button
+                    colorScheme="teal"
+                    isDisabled={tabState === 2}
+                    variant="unstyled"
+                    _disabled={{ opacity: 1 }}
+                    opacity={0.4}
+                    fontSize={{ base: "sm", md: "md" }}
+                    onClick={() => {
+                      if (hasPendingTransactions) return;
+                      setPageIndex(0);
+                      navigate("/datanfts/marketplace/my");
+                    }}>
+                    <Flex mx="5" alignItems="center" gap={1.5}>
+                      <FaBrush size="0.95rem" />
+                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                        My Listed Data NFT(s)
+                      </Text>
+                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                        {offers && offers?.length}
+                      </Text>
+                    </Flex>
+                  </Button>
+                )}
+              </Tab>
+              <Flex py={3}>
+                <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+              </Flex>
+            </TabList>
+          </Tabs>
         </Flex>
 
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <Text>No data yet...</Text>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
+          <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
             {offers.length > 0 &&
               items?.map((item, index) => (
                 <UpperCardComponent
@@ -371,7 +401,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {
           /* show bottom pagination only if offers exist */
           offers.length > 0 && (
-            <Flex justifyContent={{ base: "center", md: "right" }} mt="5">
+            <Flex justifyContent={{ base: "center", md: "center" }} py="5">
               <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
             </Flex>
           )
