@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import ClaimModalMx from "ClaimModel/ClaimModalMultiversX";
 import AppMarketplace from "Home/AppMarketplace";
 import myNFMe from "img/my-nfme.png";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, dataCATDemoUserData, formatNumberRoundFloor, MENU, sleep, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, formatNumberRoundFloor, MENU, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/util";
 import { ClaimsContract } from "MultiversX/claims";
 import { FaucetContract } from "MultiversX/faucet";
 import RecentArticles from "Sections/RecentArticles";
@@ -40,7 +40,7 @@ import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 let mxFaucetContract = null;
 let mxClaimsContract = null;
 
-export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheumAccount }) {
+export default function HomeMx({ onRfMount, setMenuItem, dataCATAccount, loadingDataCATAccount, onDataCATAccount }) {
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -56,13 +56,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
-  const [loadingCfTestData, setLoadingDataCatTestUser] = useState(false);
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   console.log('********** HomeMultiversX LOAD _chainMeta ', _chainMeta);
-  //   console.log('********** HomeMultiversX LOAD _user ', _user);
-  // }, []);
 
   useEffect(() => {
     if (_chainMeta?.networkId && isMxLoggedIn) {
@@ -72,6 +66,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
         } catch (e) {
           console.log(e);
         }
+
         mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
       }
     }
@@ -263,33 +258,9 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
   };
   // E: claims related logic
 
-  const doDataCatTestUser = async () => {
-    setLoadingDataCatTestUser(true);
-
-    await sleep(1);
-
-    setLoadingDataCatTestUser(false);
-
-    toast({
-      title: "Congrats! an Itheum Data CAT test account has been linked",
-      description: "You can now advertise your data for trade on the Data DEX",
-      status: "success",
-      duration: 6000,
-      isClosable: true,
-    });
-
-    onItheumAccount(dataCATDemoUserData);
-  };
-
   const tileBoxMdW = "310px";
   const tileBoxH = "360px";
   const claimsStackMinW = "220px";
-
-  let gradientBorder = styleStrings.gradientBorderPassive;
-
-  if (colorMode === "light") {
-    gradientBorder = styleStrings.gradientBorderPassiveLight;
-  }
 
   let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
 
@@ -313,66 +284,76 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
             borderRadius="1.5rem"
             style={{ "background": gradientBorderForTrade }}>
             <Stack p="5" h={tileBoxH}>
-              {!itheumAccount && (
+              {!dataCATAccount && (
                 <Heading size="md" fontWeight="semibold" pb={2}>
-                  Linked Itheum Data CAT Account
+                  Linked Data CAT Accounts
                 </Heading>
               )}
-              {!itheumAccount && (
-                <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
-                  <Flex direction="column">
-                    <AlertTitle fontSize="md">
-                      <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
-                      <Flex direction="row">
-                        <Text color="#ED5D5D">
-                          Sorry! You don&apos;t seem to have a&nbsp;
-                          <Link href="https://itheum.com" isExternal color="blue.400">
-                            itheum.com
-                          </Link>{" "}
-                          &nbsp;Data CAT account
-                        </Text>
+
+              {loadingDataCATAccount &&
+                <Box textAlign="center" mt="40% !important">
+                  <Spinner speed="0.64s" color="teal.200" label="Fetching Data" />
+                </Box>
+                ||
+
+                !dataCATAccount && (
+                  <>
+                    <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
+                      <Flex direction="column">
+                        <AlertTitle fontSize="md">
+                          <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
+                          <Flex direction="row">
+                            <Text color="#ED5D5D">
+                              Sorry! You don&apos;t seem to have a linked Data CAT account
+                            </Text>
+                          </Flex>
+                        </AlertTitle>
+                        <AlertDescription fontSize="md" color="#929497" pb="2">
+                          But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
+                        </AlertDescription>
                       </Flex>
-                    </AlertTitle>
-                    <AlertDescription fontSize="md" color="#929497" pb="2">
-                      But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
-                    </AlertDescription>
-                  </Flex>
-                </Alert>
-              )}
+                    </Alert>
 
-              {itheumAccount && (
-                <Stack>
-                  <Text fontSize="xl">Welcome {`${itheumAccount.firstName} ${itheumAccount.lastName}`}</Text>
-                  <Text fontSize="sm">You have data available to trade from the following programs you are participating in... </Text>
-                  {itheumAccount.programsAllocation.map((item) => (
-                    <Stack direction="row" key={item.program}>
-                      <Badge borderRadius="full" px="2" colorScheme="teal">
-                        {itheumAccount._lookups.programs[item.program].programName}
-                      </Badge>
+                    <Spacer />
+
+                    <Button 
+                      size="lg" 
+                      borderRadius="xl" 
+                      colorScheme="teal" 
+                      variant="solid" 
+                      onClick={() => onDataCATAccount(true)}>
+                      <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
+                    </Button>
+                  </>
+                ) || 
+                  <>
+                    <Stack>
+                      <Text fontSize="xl">Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}</Text>
+                      <Text fontSize="sm" mb="4 !important">You have data available to trade from the following programs</Text>
+                      {dataCATAccount.programsAllocation.map((item) => (
+                        <Stack direction="row" key={item.program}>
+                          <Badge borderRadius="full" px="2" colorScheme="teal">
+                            {dataCATAccount._lookups.programs[item.program].programName}
+                          </Badge>
+                        </Stack>
+                      ))}
                     </Stack>
-                  ))}
-                </Stack>
-              )}
 
-              <Spacer />
+                    <Spacer />
 
-              {!itheumAccount && (
-                <Button size="lg" borderRadius="xl" isLoading={loadingCfTestData} colorScheme="teal" variant="solid" fontSize="lg" onClick={doDataCatTestUser}>
-                  Load Test Data
-                </Button>
-              )}
-
-              {itheumAccount && (
-                <Button
-                  colorScheme="teal"
-                  variant="outline"
-                  onClick={() => {
-                    setMenuItem(2);
-                    navigate("/tradedata");
-                  }}>
-                  Trade My Data
-                </Button>
-              )}
+                    <Button
+                      size="lg"
+                      borderRadius="xl"
+                      colorScheme="teal"
+                      variant="outline"
+                      onClick={() => {
+                        setMenuItem(2);
+                        navigate("/tradedata");
+                      }}>
+                       <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
+                    </Button>
+                  </>
+                }
             </Stack>
           </Box>
 
@@ -519,7 +500,7 @@ export default function HomeMx({ onRfMount, setMenuItem, onItheumAccount, itheum
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
         <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
-          Articles
+          Featured Articles
         </Heading>
 
         <RecentArticles />

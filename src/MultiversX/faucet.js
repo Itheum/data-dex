@@ -57,7 +57,6 @@ export class FaucetContract {
       },
       redirectAfterSign: false,
     });
-
     return { sessionId, error };
   }
 }

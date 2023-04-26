@@ -23,6 +23,7 @@ import {
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { FaStore, FaBrush } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt, sleep } from "libs/util";
@@ -37,7 +38,6 @@ import MyListedDataLowerCard from "./MyListedDataLowerCard";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
-import { FaStore, FaBrush } from "react-icons/fa";
 import useThrottle from "../UtilComps/UseThrottle";
 
 interface PropsType {

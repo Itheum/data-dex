@@ -110,7 +110,7 @@ export const uxConfig = {
 export const progInfoMeta = {
   rhc: {
     name: "Red Heart Challenge",
-    desc: "Take this 3 week program and get unique insights into the health of your heart. This app uses a first of it’s kind technology to coach you through every step and to puts you in the center of the entire process.",
+    desc: "Take this 3-week program and get unique insights into the health of your heart. This app uses a first of its kind technology to coach you through every step and to puts you in the center of the entire process.",
     medium: "Telegram App",
     outcome: "Data produced from this program can be used to assess the impact blood pressure, stress, diet and activity has on overall cardiovascular health.",
     targetBuyer: 'Research Institutes, Drug Manufacturers, Health "Care Teams", Private Health Insurance',
@@ -121,8 +121,8 @@ export const progInfoMeta = {
     canJoin: 1,
   },
   gdc: {
-    name: "Gamer Passport",
-    desc: "Calling all web3 gamers! The Gamer Passport app will empower you to claim and own your web3 gaming data as you move between games and guilds. You will then be able to attach it to your NFMe ID Avatar and trade your data with participants in the gaming industry.",
+    name: "Web3 Gamer Passport",
+    desc: "Calling all web3 gamers! The Gamer Passport app will empower you to claim and control your web3 gaming data as you move between games and guilds. You will then be able to attach it to your NFMe ID Avatar and trade your data with participants in the gaming industry.",
     medium: "Data Adaptors",
     outcome: 'Data produced from this app can be used to power "proof-of-play" and "proof-of-community-reputation"',
     targetBuyer: "Games, Game Platforms, Guilds, Guild Hubs, GameFi Platforms",
@@ -132,9 +132,21 @@ export const progInfoMeta = {
     id: "foo",
     canJoin: 0,
   },
+  gpes: {
+    name: "Gamer Passport - ESSports",
+    desc: "The Gamer Passport app will empower you to claim and control your web2 and web3 gaming data. You can then attach it to your NFMe ID Avatar, serving as your ESports 'resume.'",
+    medium: "Data Adaptors",
+    outcome: 'Data produced from this app can be used to power "proof-of-play" and "proof-of-skill"',
+    targetBuyer: "Games, Game Platforms, ESSport Scouts",
+    data: "web2 and web3 on-chain gaming performance",
+    url: "https://itheum.com/program",
+    dc: "Gamer Passport Data",
+    id: "foo",
+    canJoin: 0,
+  },
   wfa: {
     name: "Strava Fitness",
-    desc: "This ongoing program will automatically connect to your Strava account and will download your latest activity from wearables like FitBit, Garmin, TomTom. Strava has a large global user base (76 million users) so dataset will be large and uniform and be worth a lot.",
+    desc: "This ongoing program will automatically connect to your Strava account and download your latest activity from wearables like FitBit, Garmin, etc. Strava has an extensive global user base (76 million), so the dataset will be significant, uniform, and highly valued.",
     medium: "Telegram App + Strava API",
     outcome: "Data produced from this program is fully normalised and will be very valuable",
     targetBuyer: "Researchers",
@@ -150,10 +162,10 @@ export const tmpProgIdMapping = {
   "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": "Red Heart Challenge",
   "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": "Hypertension Insights Intense",
   "476ab840-1cb7-11e9-84fe-e935b365220a": "Blood Pressure OnDemand",
-  "2553c3b0-51b0-11e7-9bd2-2f33680a66b6": "Pregnancy Condition Monitoring",
   "183f0290-f726-11e7-9186-3bcb5c5d22db": "Chronic Wounds Healing Progress Tracker",
   "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
+  "custom-gamer-activity": "Gamer Passport Activity",
 };
 
 export const qsParams = () => {
@@ -384,6 +396,7 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-wallet-used");
   localStorage?.removeItem("itm-launch-mode");
   localStorage?.removeItem("itm-launch-env");
+  localStorage?.removeItem("itm-datacat-linked");
 };
 
 export const formatNumberRoundFloor = (num: number, decimals = 2) => {
@@ -414,7 +427,17 @@ export const dataCATDemoUserData = {
   "firstName": "DexDemo",
   "programsAllocation": [
     {
-      "program": "70dc6bd0-59b0-11e8-8d54-2d562f6cba54",
+      "program": "custom-gamer-activity",
+      "group": "custom",
+      "userId": "custom-x",
+      "status": "stop",
+      "shortId": "1",
+      "type": "1",
+      "fromTs": 1528448026784,
+      "toTs": 1535951753305,
+    },
+    {
+      "program": "70dc6bd0-59b0-11e8-8d54-2d562f6cba54", // red heart challenge
       "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
       "status": "complete",
       "shortId": "1",
@@ -423,7 +446,7 @@ export const dataCATDemoUserData = {
       "toTs": 1546073965694,
     },
     {
-      "program": "48d7b020-eab0-11ea-a466-0334ff0e8bf2",
+      "program": "48d7b020-eab0-11ea-a466-0334ff0e8bf2", // okpulse
       "userId": "d879d170-e5a8-11ea-8fbc-3f6bc955eff0",
       "status": "active",
       "shortId": "104",
@@ -432,7 +455,7 @@ export const dataCATDemoUserData = {
       "toTs": 1623154409311,
     },
     {
-      "program": "ef62c220-50e1-11e7-9bd2-2f33680a66b6",
+      "program": "ef62c220-50e1-11e7-9bd2-2f33680a66b6", // blood pressure tracker
       "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
       "status": "stop",
       "shortId": "1",
@@ -441,22 +464,13 @@ export const dataCATDemoUserData = {
       "toTs": 1536402897123,
     },
     {
-      "program": "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42",
+      "program": "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42", // hypertension insights intense 
       "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
       "status": "stop",
       "shortId": "1",
       "type": "1",
       "fromTs": 1504262112978,
       "toTs": 1535607089747,
-    },
-    {
-      "program": "2553c3b0-51b0-11e7-9bd2-2f33680a66b6",
-      "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
-      "status": "stop",
-      "shortId": "1",
-      "type": "1",
-      "fromTs": 1528448026784,
-      "toTs": 1535951753305,
     },
     {
       "program": "476ab840-1cb7-11e9-84fe-e935b365220a",
@@ -470,6 +484,13 @@ export const dataCATDemoUserData = {
   ],
   "_lookups": {
     "programs": {
+      "custom-gamer-activity": {
+        "programName": "Gamer Passport Activity",
+        "dataStreamURL": "https://itheumapi.com/readingsStream/db5e2d6c-d90a-11ec-9d64-0242ac120002/02f2d3f0-cbaa-11ec-864d-c9ca0d926d97",
+        "dataPreviewURL": "https://itheum-static.s3.ap-southeast-2.amazonaws.com/gamer-passport-activity-dashboard-preview.png",
+        "img": "gamer-passport-data",
+        "description": "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
+      },
       "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
         "programName": "Hypertension Insights Intense",
         "img": "hii",
@@ -482,12 +503,6 @@ export const dataCATDemoUserData = {
         "img": "bpo",
         "description": "A program for users to log and check blood pressure as they feel.",
         "duration": "ongoing",
-      },
-      "2553c3b0-51b0-11e7-9bd2-2f33680a66b6": {
-        "programName": "Pregnancy Condition Monitoring",
-        "img": "pcm",
-        "description": "New Hypertension occurs in 8-10% of pregnancies and many women develop depression during this period.",
-        "duration": "30_weeks",
       },
       "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": {
         "programName": "Red Heart Challenge",

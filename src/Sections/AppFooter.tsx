@@ -27,7 +27,7 @@ export default function () {
         </Text>
         <Text fontSize="xx-small">API Provider: {isPublicApi ? "Public" : "Private"}</Text>
         <HStack>
-          <Link fontSize="xs" href="https://itheum.com/termsofuse" isExternal>
+          <Link fontSize="xs" href="https://itheum.com/legal/datadex/termsofuse" isExternal>
             Terms of Use <ExternalLinkIcon mx={1} />
           </Link>
           <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
