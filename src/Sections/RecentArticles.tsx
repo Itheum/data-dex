@@ -31,9 +31,13 @@ const RecentArticles = () => {
               Empowering You to Take Ownership of Your Personal Data
             </Heading>
             <Text noOfLines={2}>
-              In today’s digital age, personal data has become a commodity that’s worth big bucks. From joining websites and apps to making online purchases and using wearables, we constantly exchange our private information for the goods and services offered by businesses.
+              In today’s digital age, personal data has become a commodity that’s worth big bucks. From joining websites and apps to making online purchases and
+              using wearables, we constantly exchange our private information for the goods and services offered by businesses.
             </Text>
-            <Link href="https://itheum.medium.com/itheum-empowering-you-to-take-ownership-of-your-personal-data-fa4af7acb154" isExternal textDecoration="underline">
+            <Link
+              href="https://itheum.medium.com/itheum-empowering-you-to-take-ownership-of-your-personal-data-fa4af7acb154"
+              isExternal
+              textDecoration="underline">
               Read More
             </Link>
           </Stack>
@@ -59,9 +63,13 @@ const RecentArticles = () => {
               Navigating the Data Exchange Market: Centralized vs Decentralized Brokers
             </Heading>
             <Text noOfLines={2}>
-              Data is a valuable resource in today’s digital age and its exchange is crucial for the growth and development of various industries. The data exchange market has two main approaches: centralized and decentralized.
+              Data is a valuable resource in today’s digital age and its exchange is crucial for the growth and development of various industries. The data
+              exchange market has two main approaches: centralized and decentralized.
             </Text>
-            <Link href="https://itheum.medium.com/navigating-the-data-exchange-market-centralized-vs-decentralized-brokers-683659f6ce27" isExternal textDecoration="underline">
+            <Link
+              href="https://itheum.medium.com/navigating-the-data-exchange-market-centralized-vs-decentralized-brokers-683659f6ce27"
+              isExternal
+              textDecoration="underline">
               Read More
             </Link>
           </Stack>
@@ -87,7 +95,8 @@ const RecentArticles = () => {
               The Story Behind Your Data
             </Heading>
             <Text noOfLines={2}>
-              Big Data has become a vital aspect of the 21st century, with the rise of GAFAM (Google, Apple, Facebook, Amazon, and Microsoft) raising important concerns regarding privacy.
+              Big Data has become a vital aspect of the 21st century, with the rise of GAFAM (Google, Apple, Facebook, Amazon, and Microsoft) raising important
+              concerns regarding privacy.
             </Text>
             <Link href="https://itheum.medium.com/the-story-behind-your-data-b6e0f6a88d97" isExternal textDecoration="underline">
               Read More
@@ -117,7 +126,10 @@ const RecentArticles = () => {
             <Text noOfLines={2}>
               Data privacy is a major concern for Web2 Users. Let’s delve into Web2 and examine challenges with data privacy, data trade, and data collection.
             </Text>
-            <Link href="https://itheum.medium.com/problems-with-data-privacy-in-the-web2-world-and-solutions-with-the-advent-of-web3-c51b27b2d064" isExternal textDecoration="underline">
+            <Link
+              href="https://itheum.medium.com/problems-with-data-privacy-in-the-web2-world-and-solutions-with-the-advent-of-web3-c51b27b2d064"
+              isExternal
+              textDecoration="underline">
               Read More
             </Link>
           </Stack>

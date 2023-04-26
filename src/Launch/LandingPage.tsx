@@ -35,17 +35,8 @@ const LandingPage = () => {
             bgRepeat="no-repeat"
             justifyContent="center">
             <Center w="95%" pt="5rem">
-              <Flex
-                w="100%"
-              
-                justifyContent={[null, null, null, "space-between"]}
-                flexDirection={["column", null, "row"]}
-                mx={{ base: 0, "2xl": 20 }}>
-                <Box
-                  width={["300px", null, null, "500px", "690px"]}
-                
-                  textAlign={["center", null, null, "center", "left"]}
-                  m={["auto", "initial"]}>
+              <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "2xl": 20 }}>
+                <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]}>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
                     Own and trade{" "}
                     <Text as="span" color="teal.200">

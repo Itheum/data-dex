@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Accordion,
-  AccordionButton,
   AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Drawer,
@@ -45,7 +43,10 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { MdAccountBalanceWallet, MdDarkMode, MdExpandLess, MdExpandMore, MdMenu } from "react-icons/md";
+import { FaStore } from "react-icons/fa";
+import { MdAccountBalanceWallet, MdMenu } from "react-icons/md";
+import { RiExchangeFill } from "react-icons/ri";
+import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "img/logo-sml-d.png";
@@ -55,10 +56,6 @@ import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ShortAddress from "UtilComps/ShortAddress";
-import { TbSunset2 } from "react-icons/tb";
-import { TiArrowSortedDown } from "react-icons/ti";
-import { RiExchangeFill } from "react-icons/ri";
-import { FaStore } from "react-icons/fa";
 
 const exploreRouterMenu = [
   {

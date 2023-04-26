@@ -16,11 +16,10 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/util";
 import jsonData from "./ABIs/datanftmint.abi.json";
-import { DataNftMetadataType, UserDataType } from "./types";
 import { getNetworkProvider } from "./api";
+import { DataNftMetadataType, UserDataType } from "./types";
 
 export class DataNftMintContract {
   timeout: number;

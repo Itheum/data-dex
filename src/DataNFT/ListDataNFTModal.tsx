@@ -232,10 +232,10 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 mx="3"
                 onClick={onProcure}
                 isDisabled={
-                  !readTermsChecked
-                  || liveUptimeFAIL
-                  || new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
-                  || !isLiveUptimeSuccessful
+                  !readTermsChecked ||
+                  liveUptimeFAIL ||
+                  new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 ||
+                  !isLiveUptimeSuccessful
                 }>
                 Proceed
               </Button>

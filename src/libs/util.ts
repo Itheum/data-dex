@@ -464,7 +464,7 @@ export const dataCATDemoUserData = {
       "toTs": 1536402897123,
     },
     {
-      "program": "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42", // hypertension insights intense 
+      "program": "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42", // hypertension insights intense
       "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
       "status": "stop",
       "shortId": "1",
@@ -489,7 +489,8 @@ export const dataCATDemoUserData = {
         "dataStreamURL": "https://itheumapi.com/readingsStream/db5e2d6c-d90a-11ec-9d64-0242ac120002/02f2d3f0-cbaa-11ec-864d-c9ca0d926d97",
         "dataPreviewURL": "https://itheum-static.s3.ap-southeast-2.amazonaws.com/gamer-passport-activity-dashboard-preview.png",
         "img": "gamer-passport-data",
-        "description": "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
+        "description":
+          "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
       },
       "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
         "programName": "Hypertension Insights Intense",

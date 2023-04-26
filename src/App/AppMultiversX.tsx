@@ -183,16 +183,16 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     }
   };
 
-  const linkOrRefreshDataDATAccount = async (setExplicit? : boolean | undefined) => {
+  const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
     await sleep(5);
 
     // setExplicit = to link the demo account after notifying user
-    if ((dataCatLinkedSession === '1' && !dataCATAccount) || setExplicit) {      
+    if ((dataCatLinkedSession === "1" && !dataCATAccount) || setExplicit) {
       if (setExplicit) {
-        setDataCatLinkedSession('1');
+        setDataCatLinkedSession("1");
       }
-      
+
       setDataCATAccount(dataCATDemoUserData);
     }
 
@@ -239,10 +239,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route
                 path="tradedata"
-                element={<MintDataMX 
-                  key={rfKeys.sellData} 
-                  dataCATAccount={dataCATAccount} 
-                  onRfMount={() => handleRfMount("sellData")} />}
+                element={<MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
               />
 
               <Route path="datanfts" element={<Outlet />}>

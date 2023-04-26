@@ -117,7 +117,9 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent mx="2" width="220px" mt="-7">
-                    <PopoverHeader fontWeight="semibold" fontSize="md">{nftMetadata[index].title}</PopoverHeader>
+                    <PopoverHeader fontWeight="semibold" fontSize="md">
+                      {nftMetadata[index].title}
+                    </PopoverHeader>
                     <PopoverArrow />
                     <PopoverCloseButton />
                     <PopoverBody>

@@ -13,7 +13,7 @@ import { DataTable } from "./Components/DataTable";
 import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 
 export default function TokenTxTable(props: TokenTableProps) {
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const [data, setData] = useState<TransactionInTable[]>([]);
 
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
