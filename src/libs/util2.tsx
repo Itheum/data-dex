@@ -36,7 +36,7 @@ export const transformDescription = (description: string) => {
 
 // Utility function to report a correct sentry profile for clear bucket logging
 export const getSentryProfile = () => {
-  let profile = 'unknown';
+  let profile = "unknown";
 
   // this will handle production, dev and feature cicd build
   if (process.env.REACT_APP_ENV_SENTRY_PROFILE) {
@@ -44,8 +44,8 @@ export const getSentryProfile = () => {
   }
 
   // we cannot set ENV for our cicd stg build, so we do this manually
-  if (location?.host?.toLowerCase() === 'stg.datadex.itheum.io') {
-    profile = 'stage';
+  if (location?.host?.toLowerCase() === "stg.datadex.itheum.io") {
+    profile = "stage";
   }
 
   return profile;

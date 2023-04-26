@@ -26,8 +26,8 @@ import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { useNavigate, useParams, Link as ReactRouterLink } from "react-router-dom";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { useNavigate, useParams } from "react-router-dom";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig } from "libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
 import { getApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -279,7 +279,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     {!!nftData && (
                       <>
                         <Text>{`Total supply: ${nftData.supply}`}</Text>
-                        <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
+                        <Text>
+                          {`Royalty: `}
+                          {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
+                        </Text>
                       </>
                     )}
                     {!!offerId && (

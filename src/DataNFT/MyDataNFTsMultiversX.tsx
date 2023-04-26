@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Icon } from "@chakra-ui/icons";
 import {
   CloseButton,
   Drawer,
@@ -6,16 +7,26 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
+  Flex,
   Heading,
   HStack,
   SimpleGrid,
   Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AbiRegistry, BinaryCodec, SmartContractAbi } from "@multiversx/sdk-core/out";
+import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { BsClockHistory } from "react-icons/bs";
+import { FaBrush } from "react-icons/fa";
+import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "react-icons/md";
 import { convertWeiToEsdt } from "libs/util";
 import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -28,6 +39,7 @@ import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
+  const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
@@ -48,6 +60,35 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
+
+  const walletTabs = [
+    {
+      tabName: "Your Data NFT(s)",
+      icon: FaBrush,
+      isDisabled: false,
+      pieces: dataNfts ? dataNfts.length : 0,
+    },
+    {
+      tabName: "Purchased",
+      icon: MdOutlineShoppingBag,
+      isDisabled: true,
+    },
+    {
+      tabName: "Favorite",
+      icon: MdFavoriteBorder,
+      isDisabled: true,
+    },
+    {
+      tabName: "Activity",
+      icon: BsClockHistory,
+      isDisabled: true,
+    },
+    {
+      tabName: "Offers",
+      icon: MdOutlineLocalOffer,
+      isDisabled: true,
+    },
+  ];
 
   useEffect(() => {
     // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
@@ -79,7 +120,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       const codec = new BinaryCodec();
       const json = JSON.parse(JSON.stringify(dataNftMintJson));
       const abiRegistry = AbiRegistry.create(json);
-      const abi = new SmartContractAbi(abiRegistry, ["DataNftMint"]);
       const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
 
       // some logic to loop through the raw onChainNFTs and build the dataNfts
@@ -145,30 +185,60 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   return (
     <>
-      <Stack spacing={5}>
-        <Heading size="lg">Data NFT Wallet</Heading>
-        <Heading size="xs" opacity=".7">
+      <Stack>
+        <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+          Data NFT Wallet
+        </Heading>
+        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Below are the Data NFTs you created and/or purchased on the current chain
         </Heading>
 
-        {dataNfts.length > 0 ? (
-          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4}>
-            {dataNfts.map((item, index) => (
-              <WalletDataNFTMX
-                key={index}
-                hasLoaded={oneNFTImgLoaded}
-                setHasLoaded={setOneNFTImgLoaded}
-                userData={userData}
-                maxPayment={maxPaymentFeeMap[itheumToken]}
-                sellerFee={sellerFee || 0}
-                openNftDetailsDrawer={openNftDetailsDrawer}
-                {...item}
-              />
-            ))}
-          </SimpleGrid>
-        ) : (
-          <Text onClick={getOnChainNFTs}>No data yet...</Text>
-        )}
+        <Tabs pt={10}>
+          <TabList overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+            {walletTabs.map((tab, index) => {
+              return (
+                <Tab key={index} isDisabled={tab.isDisabled} _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+                  <Flex ml="4.7rem" alignItems="center">
+                    <Icon as={tab.icon} mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
+                    <Text fontSize="lg" color={colorMode === "dark" ? "white" : "black"}>
+                      {tab.tabName}
+                    </Text>
+                    <Text fontSize="sm" px={2} color="whiteAlpha.800">
+                      {tab.pieces}
+                    </Text>
+                  </Flex>
+                </Tab>
+              );
+            })}
+          </TabList>
+
+          <TabPanels>
+            <TabPanel mt={10}>
+              {dataNfts.length > 0 ? (
+                <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={"24 !important"}>
+                  {dataNfts.map((item, index) => (
+                    <WalletDataNFTMX
+                      key={index}
+                      hasLoaded={oneNFTImgLoaded}
+                      setHasLoaded={setOneNFTImgLoaded}
+                      userData={userData}
+                      maxPayment={maxPaymentFeeMap[itheumToken]}
+                      sellerFee={sellerFee || 0}
+                      openNftDetailsDrawer={openNftDetailsDrawer}
+                      {...item}
+                    />
+                  ))}
+                </SimpleGrid>
+              ) : (
+                <Text onClick={getOnChainNFTs}>No data yet...</Text>
+              )}
+            </TabPanel>
+            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel>Nothing here yet...</TabPanel>
+          </TabPanels>
+        </Tabs>
       </Stack>
       {nftForDrawer && (
         <>

@@ -30,9 +30,9 @@ window.requestToBuy = (objectId) => {
 
 const sendBuyOffer = () => {
   if (btnRefs.reasonToBuy.value.trim() === "") {
-    alert("You need to provide a reason to buy this");
+    alert("You need to provide a reason to procure this");
   } else {
-    console.log("lets buy ", window.state.currBuyObjectId);
+    console.log("lets procure ", window.state.currBuyObjectId);
     console.log("reason ", btnRefs.reasonToBuy.value);
   }
 };

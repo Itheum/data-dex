@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -58,18 +58,19 @@ import { ResultsParser } from "@multiversx/sdk-core";
 import { useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { labels } from "libs/language";
 import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
-import { checkBalance, getGateway } from "MultiversX/api";
+import { checkBalance, getNetworkProvider } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
-  let title = "", text = "";
+  let title = "",
+    text = "";
 
   if (tkey === "data-stream-url") {
     title = "Data Stream URL";
@@ -164,7 +165,7 @@ type TradeDataFormType = {
   royaltiesForm: number;
 };
 
-export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: any; itheumAccount: any }) {
+export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: any; dataCATAccount: any }) {
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -179,8 +180,8 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [mintingSuccessful, setMintingSuccessful] = useState(false);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
-  
-  const [currSellObject, setCurrSellObject] = useState<any>(null);
+
+  const [currDataCATSellObj, setCurrDataCATSellObj] = useState<any>(null);
   const [isStreamTrade, setIsStreamTrade] = useState(0);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [dataNFTImg, setDataNFTImg] = useState("");
@@ -208,7 +209,6 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [, setDataStreamUrlValidation] = useState(false);
   const [, setDataPreviewUrlValidation] = useState(false);
-  const [selectedProgramId, setSelectedProgramId] = useState(null);
   const [userData, setUserData] = useState<UserDataType | undefined>();
   const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
   const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
@@ -218,7 +218,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
   const [mintSessionId, setMintSessionId] = useState(null);
-  
+
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   // React hook form + yup integration
@@ -264,8 +264,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       .required("Dataset title is required")
       .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
-      .max(30, "Dataset title must have maximum of 30 characters."),
-
+      .max(60, "Dataset title must have maximum of 60 characters."),
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
@@ -286,11 +285,10 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
-    register,
+    control,
     formState: { errors },
     handleSubmit,
   } = useForm<TradeDataFormType>({
-    mode: "onBlur", // mode stay for when the validation should be applied
     defaultValues: {
       dataStreamUrlForm: "",
       dataPreviewUrlForm: "",
@@ -300,6 +298,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
     }, // declaring default values for inputs not necessary to declare
+    mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
 
@@ -312,7 +311,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     if (!_chainMeta.networkId) return;
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -325,7 +324,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -338,7 +337,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     })();
 
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -349,9 +348,9 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         setMaxSupply(value.toNumber());
       }
     })();
-    
+
     (async () => {
-      const networkProvider = getGateway(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -375,7 +374,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       })();
     }
   }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
-  
+
   const getUserData = async () => {
     if (mxAddress && _chainMeta.networkId) {
       const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
@@ -407,7 +406,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // S: validation logic
-  
+
   const onChangeDataNFTStreamUrl = (value: string) => {
     const trimmedValue = value.trim();
     let error = "";
@@ -489,8 +488,8 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
   const onChangeDatasetTitle = (value: string) => {
     let error = "";
 
-    if (value.length < 10 || value.length > 50) {
-      error = "Length of Dataset Title must be between 10 and 50 characters";
+    if (value.length < 10 || value.length > 60) {
+      error = "Length of Dataset Title must be between 10 and 60 characters";
     } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
       error = "Dataset Title can only contain alphanumeric characters";
     }
@@ -498,7 +497,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDatasetTitleError(error);
     setDatasetTitle(value);
   };
-  
+
   const onChangeDatasetDescription = (value: string) => {
     let error = "";
 
@@ -509,7 +508,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDatasetDescriptionError(error);
     setDatasetDescription(value);
   };
-  
+
   const handleChangeDataNftCopies = (value: number) => {
     let error = "";
     if (value < 1) {
@@ -521,7 +520,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setDataNFTCopiesError(error);
     setDataNFTCopies(value);
   };
-  
+
   const handleChangeDataNftRoyalties = (value: number) => {
     let error = "";
     if (value < 0) {
@@ -594,19 +593,17 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     userData,
   ]);
-  
+
   // E: validation logic
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const mintTxFail = (foo: any) => {
     console.log("mintTxFail", foo);
-    // setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
   const mintTxCancelled = (foo: any) => {
     console.log("mintTxCancelled", foo);
-    // setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
@@ -616,23 +613,28 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     await sleep(3);
 
     setMintingSuccessful(true);
-  };  
+  };
 
-  const getDataForSale = async (programId: any) => {
-    setSelectedProgramId(programId);
+  const getDataForSale = async (dataCATProgram: any) => {
     let selObj: any;
     let dataCATStreamUrl = "";
     let dataCATStreamPreviewUrl = "";
 
-    if (programId) {
+    if (dataCATProgram?.program) {
       selObj = {
-        ...itheumAccount.programsAllocation.find((i: any) => i.program === programId),
-        ...itheumAccount._lookups.programs[programId],
+        ...dataCATAccount.programsAllocation.find((i: any) => i.program === dataCATProgram.program),
+        ...dataCATAccount._lookups.programs[dataCATProgram.program],
       };
-      setCurrSellObject(selObj);
 
-      dataCATStreamUrl = `https://itheumapi.com/readingsStream/${selObj.userId}/${selObj.program}`;
-      dataCATStreamPreviewUrl = `https://itheumapi.com/programReadingPreview/${selObj.program}`;
+      setCurrDataCATSellObj(selObj);
+
+      if (selObj?.group === "custom") {
+        dataCATStreamUrl = selObj.dataStreamURL;
+        dataCATStreamPreviewUrl = selObj.dataPreviewURL;
+      } else {
+        dataCATStreamUrl = `https://itheumapi.com/readingsStream/${selObj.userId}/${selObj.program}`;
+        dataCATStreamPreviewUrl = `https://itheumapi.com/programReadingPreview/${selObj.program}`;
+      }
 
       setDataNFTStreamUrl(dataCATStreamUrl);
       setDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
@@ -642,7 +644,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     onOpenDrawerTradeStream();
 
     // as we are setting the stream and preview urls, we need to trigger the onchange of those fields and form to validate it. This only works if we pull off the UI thread (i.e. sleep)
-    if (programId) {
+    if (dataCATProgram?.program) {
       await sleep(3);
 
       onChangeDataNFTStreamUrl(dataCATStreamUrl);
@@ -740,16 +742,20 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       description: `${datasetTitle} : ${datasetDescription}`,
       attributes: [] as object[],
     };
+
     const attributes = traits.split(",").filter((element) => element.trim() !== "");
     const metadataAttributes = [];
+
     for (const attribute of attributes) {
       const [key, value] = attribute.split(":");
       const trait = { trait_type: key.trim(), value: value.trim() };
       metadataAttributes.push(trait);
     }
+
     metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTStreamPreviewUrl });
     metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
     metadata.attributes = metadataAttributes;
+
     return metadata;
   }
 
@@ -760,8 +766,9 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
     let res;
-    
-    try { // catch IPFS error
+
+    try {
+      // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
 
       const nftstorage = new NFTStorage({
@@ -781,7 +788,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
     const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
-    
+
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
@@ -815,12 +822,14 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
       itheumToken: _chainMeta.contracts.itheumToken,
       antiSpamTax: antiSpamTax,
     });
+    if (error) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+    }
 
     setMintSessionId(sessionId);
   };
 
-  // is this used? @TODO check and remove
-  const transactionStatus = useTrackTransactionStatus({
+  useTrackTransactionStatus({
     transactionId: mintSessionId,
     onSuccess: mintTxSuccess,
     onFail: mintTxFail,
@@ -843,9 +852,10 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
 
     onProgressModalClose();
 
-    // initialize modal status
+    // re-initialize modal status
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
+    setDataNFTImg("");
   };
 
   function validateBaseInput() {
@@ -856,7 +866,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
         isClosable: true,
         duration: 20000,
       });
-      return false;
+      return true;
     } else {
       return true;
     }
@@ -878,30 +888,33 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
     }
   };
 
-  let gradientBorder = styleStrings.gradientBorderPassive;
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
+  let gradientBorderCards = styleStrings.gradientBorderMulticolor;
 
   if (colorMode === "light") {
-    gradientBorder = styleStrings.gradientBorderPassiveLight;
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
+    gradientBorderCards = styleStrings.gradientBorderMulticolorLight;
   }
 
   return (
-    <Stack>
-      <Heading size="lg">Trade Data</Heading>
-      <Heading size="xs" opacity=".7">
+    <Stack mt={5} mx={{ base: 0, "2xl": "24 !important" }}>
+      <Heading size="lg" fontWeight="medium">
+        Trade Data
+      </Heading>
+      <Heading size="sm" opacity=".7" fontWeight="normal">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
       <Wrap shouldWrapChildren={true} spacing={5}>
         <Box
           maxW="xs"
-          borderWidth="1px"
           overflow="hidden"
           mt={5}
-          border=".1rem solid transparent"
+          border=".01rem solid transparent"
           backgroundColor="none"
-          borderRadius="1.5rem"
-          style={{ "background": gradientBorder }}>
-          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" />
+          borderRadius="0.75rem"
+          style={{ "background": gradientBorderForTrade }}>
+          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
           <Box p="6">
             <Box display="flex" alignItems="baseline">
@@ -909,43 +922,52 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                 Any Data Stream as Data NFT-FT
               </Box>
             </Box>
-            <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(null)}>
-              Advertise Data
+            <Button mt="3" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(null)}>
+              <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
             </Button>
           </Box>
         </Box>
       </Wrap>
 
-      {itheumAccount && itheumAccount.programsAllocation.length > 0 && (
+      {dataCATAccount?.programsAllocation?.length > 0 && (
         <>
-          <Heading size="md" m="3rem 0 1rem 0 !important">
+          <Heading size="lg" fontWeight="semibold" marginTop="6rem !important">
             Supported Data CAT Programs
           </Heading>
-          <Wrap shouldWrapChildren={true} spacing={5}>
-            {itheumAccount.programsAllocation.map((item: any) => (
+          <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="5 !important">
+            Join a community built app and earn rewards if you trade your data
+          </Heading>
+          <Wrap shouldWrapChildren={true} spacingX={5}>
+            {dataCATAccount.programsAllocation.map((item: any) => (
               <Box
                 key={item.program}
-                maxW="xs"
+                maxW="22.4rem"
                 borderWidth="1px"
                 overflow="hidden"
                 border=".1rem solid transparent"
                 backgroundColor="none"
-                borderRadius="1.5rem"
-                style={{ "background": gradientBorder }}>
-                <Image src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${itheumAccount._lookups.programs[item.program].img}.png`} alt="" />
+                borderRadius="1.5rem">
+                <Image
+                  src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${dataCATAccount._lookups.programs[item.program].img}.png`}
+                  alt=""
+                  border=".1rem solid transparent"
+                  height="13.375rem"
+                  borderRadius="1.5rem"
+                  style={{ "background": gradientBorderCards }}
+                />
 
-                <Box p="6">
-                  <Box display="flex" alignItems="baseline">
-                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                <Box paddingTop="6" paddingBottom="2">
+                  <Box display="flex" alignItems="center">
+                    <Badge borderRadius="sm" px="2" py="0.08rem" colorScheme="teal">
                       {" "}
                       New
                     </Badge>
-                    <Box mt="1" ml="2" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                      {itheumAccount._lookups.programs[item.program].programName}
+                    <Box ml="2" fontWeight="semibold" lineHeight="tight" fontSize="2xl" noOfLines={1}>
+                      {dataCATAccount._lookups.programs[item.program].programName}
                     </Box>
                   </Box>
-                  <Button mt="3" colorScheme="teal" variant="outline" onClick={() => getDataForSale(item.program)}>
-                    Trade Program Data
+                  <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item)}>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Trade Program Data</Text>
                   </Button>
                 </Box>
               </Box>
@@ -960,15 +982,15 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
           <DrawerHeader>
             <HStack spacing="5">
               <CloseButton size="lg" onClick={onRfMount} />
-              {(currSellObject && (
+              {(currDataCATSellObj && (
                 <Stack>
-                  <Text fontSize="2xl">
+                  <Box fontSize="2xl">
                     Trade data from your{" "}
-                    <Text color="teal" fontSize="2xl">
-                      {currSellObject.programName}
+                    <Text color="teal.200" fontSize="2xl">
+                      {currDataCATSellObj.programName}
                     </Text>{" "}
                     program as a Data NFT-FT
-                  </Text>
+                  </Box>
                 </Stack>
               )) || (
                 <Heading as="h4" size="lg">
@@ -1044,194 +1066,253 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   + click on an item&apos;s title to learn more
                 </Text>
 
-                <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
-                  Data Asset Detail
-                </Text>
-
-                <FormControl isInvalid={!!errors.dataStreamUrlForm}>
-                  <InputLabelWithPopover tkey="data-stream-url">
-                    <Text fontWeight="bold" fontSize="md">
-                      Data Stream URL *
-                    </Text>
-                  </InputLabelWithPopover>
-
-                  <Input
-                    mt="1 !important"
-                    placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                    id="dataStreamUrlForm"
-                    {...register("dataStreamUrlForm")}
-                    isDisabled={!!selectedProgramId}
-                    value={dataNFTStreamUrl}
-                    onChange={(event) => {
-                      onChangeDataNFTStreamUrl(event.currentTarget.value);
-                      validateDataStreamUrl(event.currentTarget.value);
-                    }}
-                  />
-                  <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
-                  <InputLabelWithPopover tkey="data-preview-url">
-                    <Text fontWeight="bold" fontSize="md" mt={1}>
-                      Data Preview URL *
-                    </Text>
-                  </InputLabelWithPopover>
-
-                  <Input
-                    mt="1 !important"
-                    placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                    id="dataPreviewUrlForm"
-                    isDisabled={!!selectedProgramId}
-                    {...register("dataPreviewUrlForm")}
-                    value={dataNFTStreamPreviewUrl}
-                    onChange={(event) => {
-                      onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
-                      validateDataPreviewUrl(event.currentTarget.value);
-                    }}
-                  />
-                  <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
-                </FormControl>
-
-                <InputLabelWithPopover tkey="data-marshal-url">
-                  <Text fontWeight="bold" fontSize="md" mt={1}>
-                    Data Marshal Url
+                <Stack spacing="3">
+                  <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                    Data Asset Detail
                   </Text>
-                </InputLabelWithPopover>
 
-                <Input mt="1 !important" value={dataNFTMarshalService} disabled />
-                {userFocusedForm && !!dataNFTMarshalServiceStatus && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    {dataNFTMarshalServiceStatus}
+                  <FormControl isInvalid={!!errors.dataStreamUrlForm}>
+                    <InputLabelWithPopover tkey="data-stream-url">
+                      <Text fontWeight="bold" fontSize="md">
+                        Data Stream URL *
+                      </Text>
+                    </InputLabelWithPopover>
+
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="e.g. https://mydomain.com/my_hosted_file.json"
+                          id="dataStreamUrlForm"
+                          isDisabled={!!currDataCATSellObj}
+                          value={dataNFTStreamUrl}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTStreamUrl(event.currentTarget.value);
+                            validateDataStreamUrl(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name={"dataStreamUrlForm"}
+                    />
+                    <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
+                  </FormControl>
+
+                  <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
+                    <InputLabelWithPopover tkey="data-preview-url">
+                      <Text fontWeight="bold" fontSize="md" mt={1}>
+                        Data Preview URL *
+                      </Text>
+                    </InputLabelWithPopover>
+
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                          id="dataPreviewUrlForm"
+                          isDisabled={!!currDataCATSellObj}
+                          value={dataNFTStreamPreviewUrl}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
+                            validateDataPreviewUrl(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="dataPreviewUrlForm"
+                    />
+                    <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
+
+                    {currDataCATSellObj && (
+                      <Link fontSize="sm" href={dataNFTStreamPreviewUrl} isExternal>
+                        View Preview Data <ExternalLinkIcon mx="2px" />
+                      </Link>
+                    )}
+                  </FormControl>
+
+                  <InputLabelWithPopover tkey="data-marshal-url">
+                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                      Data Marshal Url
+                    </Text>
+                  </InputLabelWithPopover>
+
+                  <Input mt="1 !important" value={dataNFTMarshalService} disabled />
+
+                  {userFocusedForm && !!dataNFTMarshalServiceStatus && (
+                    <Text color="red.400" fontSize="sm" mt="1 !important">
+                      {dataNFTMarshalServiceStatus}
+                    </Text>
+                  )}
+                </Stack>
+
+                <Stack spacing="3">
+                  <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                    NFT Token Metadata
                   </Text>
-                )}
 
-                <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
-                  NFT Token Metadata
-                </Text>
+                  <FormControl isInvalid={!!errors.tokenNameForm}>
+                    <InputLabelWithPopover tkey="token-name">
+                      <Text fontWeight="bold" fontSize="md">
+                        Token Name (Short Title) *
+                      </Text>
+                    </InputLabelWithPopover>
 
-                <FormControl isInvalid={!!errors.tokenNameForm}>
-                  <InputLabelWithPopover tkey="token-name">
-                    <Text fontWeight="bold" fontSize="md">
-                      Token Name (Short Title) *
-                    </Text>
-                  </InputLabelWithPopover>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="Between 3 and 20 alphanumeric characters only"
+                          id="tokenNameForm"
+                          value={dataNFTTokenName}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTTokenName(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name={"tokenNameForm"}
+                    />
+                    <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
+                  </FormControl>
 
-                  <Input
-                    mt="1 !important"
-                    placeholder="Between 3 and 20 alphanumeric characters only"
-                    id="tokenNameForm"
-                    value={dataNFTTokenName}
-                    {...register("tokenNameForm")}
-                    onChange={(event) => {
-                      onChangeDataNFTTokenName(event.currentTarget.value);
-                    }}
-                  />
-                  <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
-                </FormControl>
+                  <FormControl isInvalid={!!errors.datasetTitleForm}>
+                    <InputLabelWithPopover tkey="dataset-title">
+                      <Text fontWeight="bold" fontSize="md" mt={1}>
+                        Dataset Title *
+                      </Text>
+                    </InputLabelWithPopover>
 
-                <FormControl isInvalid={!!errors.datasetTitleForm}>
-                  <InputLabelWithPopover tkey="dataset-title">
-                    <Text fontWeight="bold" fontSize="md" mt={1}>
-                      Dataset Title *
-                    </Text>
-                  </InputLabelWithPopover>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="Between 10 and 60 alphanumeric characters only"
+                          id="datasetTitleForm"
+                          value={datasetTitle}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDatasetTitle(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="datasetTitleForm"
+                    />
+                    <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
+                  </FormControl>
 
-                  <Input
-                    mt="1 !important"
-                    placeholder="Between 10 and 30 alphanumeric characters only"
-                    id="datasetTitleForm"
-                    value={datasetTitle}
-                    {...register("datasetTitleForm")}
-                    onChange={(event) => onChangeDatasetTitle(event.currentTarget.value)}
-                  />
-                  <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
-                </FormControl>
+                  <FormControl isInvalid={!!errors.datasetDescriptionForm}>
+                    <InputLabelWithPopover tkey="dataset-description">
+                      <Text fontWeight="bold" fontSize="md" mt={1}>
+                        Dataset Description *
+                      </Text>
+                    </InputLabelWithPopover>
 
-                <FormControl isInvalid={!!errors.datasetDescriptionForm}>
-                  <InputLabelWithPopover tkey="dataset-description">
-                    <Text fontWeight="bold" fontSize="md" mt={1}>
-                      Dataset Description *
-                    </Text>
-                  </InputLabelWithPopover>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Textarea
+                          mt="1 !important"
+                          placeholder="Between 10 and 400 characters only. URL allowed."
+                          id={"datasetDescriptionForm"}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDatasetDescription(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="datasetDescriptionForm"
+                    />
+                    <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
+                  </FormControl>
 
-                  <Textarea
-                    mt="1 !important"
-                    placeholder="Between 10 and 400 characters only. URL allowed."
-                    id={"datasetDescriptionForm"}
-                    {...register("datasetDescriptionForm")}
-                    onChange={(event) => {
-                      onChangeDatasetDescription(event.currentTarget.value);
-                    }}
-                  />
-                  <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
-                </FormControl>
+                  <FormControl isInvalid={!!errors.numberOfCopiesForm}>
+                    <InputLabelWithPopover tkey="number-of-copies">
+                      <Text fontWeight="bold" fontSize="md" mt={1}>
+                        Number of copies
+                      </Text>
+                    </InputLabelWithPopover>
 
-                <FormControl isInvalid={!!errors.numberOfCopiesForm}>
-                  <InputLabelWithPopover tkey="number-of-copies">
-                    <Text fontWeight="bold" fontSize="md" mt={1}>
-                      Number of copies
-                    </Text>
-                  </InputLabelWithPopover>
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <NumberInput
+                          mt="1 !important"
+                          size="md"
+                          id="numberOfCopiesForm"
+                          maxW={24}
+                          step={1}
+                          defaultValue={1}
+                          min={1}
+                          value={dataNFTCopies}
+                          max={maxSupply > 0 ? maxSupply : 1}
+                          isValidCharacter={isValidNumericCharacter}
+                          onChange={(valueAsString: string) => {
+                            onChange(valueAsString);
+                            handleChangeDataNftCopies(Number(valueAsString));
+                          }}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )}
+                      name="numberOfCopiesForm"
+                    />
+                    <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+                  </FormControl>
+                  <Text color="gray.400" fontSize="sm" mt="1 !important">
+                    Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                  </Text>
 
-                  <NumberInput
-                    mt="1 !important"
-                    size="md"
-                    {...register("numberOfCopiesForm")}
-                    id="numberOfCopiesForm"
-                    maxW={24}
-                    step={1}
-                    defaultValue={1}
-                    min={1}
-                    value={dataNFTCopies}
-                    max={maxSupply > 0 ? maxSupply : 1}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(valueAsString: string) => handleChangeDataNftCopies(Number(valueAsString))}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
-                </FormControl>
-                <Text color="gray.400" fontSize="sm" mt="1 !important">
-                  Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
-                </Text>
+                  <FormControl isInvalid={!!errors.royaltiesForm}>
+                    <InputLabelWithPopover tkey="royalties">
+                      <Text fontWeight="bold" fontSize="md">
+                        Royalties
+                      </Text>
+                    </InputLabelWithPopover>
 
-                <FormControl isInvalid={!!errors.royaltiesForm}>
-                  <InputLabelWithPopover tkey="royalties">
-                    <Text fontWeight="bold" fontSize="md">
-                      Royalties
-                    </Text>
-                  </InputLabelWithPopover>
-
-                  <NumberInput
-                    mt="1 !important"
-                    size="md"
-                    {...register("royaltiesForm")}
-                    id="royaltiesForm"
-                    maxW={24}
-                    step={5}
-                    defaultValue={minRoyalties}
-                    min={minRoyalties > 0 ? minRoyalties : 0}
-                    max={maxRoyalties > 0 ? maxRoyalties : 0}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(valueAsString: string) => handleChangeDataNftRoyalties(Number(valueAsString))}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
-                </FormControl>
-                <Text color="gray.400" fontSize="sm" mt="1 !important">
-                  Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                </Text>
-
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <NumberInput
+                          mt="1 !important"
+                          size="md"
+                          id="royaltiesForm"
+                          maxW={24}
+                          step={5}
+                          defaultValue={minRoyalties}
+                          min={minRoyalties > 0 ? minRoyalties : 0}
+                          max={maxRoyalties > 0 ? maxRoyalties : 0}
+                          isValidCharacter={isValidNumericCharacter}
+                          onChange={(valueAsString: string) => {
+                            onChange(valueAsString);
+                            handleChangeDataNftRoyalties(Number(valueAsString));
+                          }}>
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      )}
+                      name="royaltiesForm"
+                    />
+                    <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                  </FormControl>
+                  <Text color="gray.400" fontSize="sm" mt="1 !important">
+                    Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                  </Text>
+                </Stack>
                 <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
                   Terms and Fees
                 </Text>
+
                 <Text fontSize="md" mt="4 !important">
                   Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
                   that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
@@ -1239,14 +1320,16 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
                   of use before proceeding.
                 </Text>
+
                 <Flex mt="3 !important">
-                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open('https://itheum.com/legal/datadex/termsofuse')}>
+                  <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
                     Read Terms of Use
                   </Button>
                 </Flex>
                 <Checkbox size="md" mt="3 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
                   I have read and I agree to the Terms of Use
                 </Checkbox>
+
                 {userFocusedForm && !readTermsChecked && (
                   <Text color="red.400" fontSize="sm" mt="1 !important">
                     Please read and agree to terms of use.
@@ -1257,19 +1340,23 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
                   An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
                   dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
                 </Text>
-                <Flex mt="3 !important">
+
+                <Box mt="3 !important">
                   <Tag variant="solid" colorScheme="teal">
                     Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens
                   </Tag>
-                </Flex>
+                </Box>
+
                 {itheumBalance < antiSpamTax && (
                   <Text color="red.400" fontSize="sm" mt="1 !important">
                     You don&apos;t have enough ITHEUM for Anti-Spam Tax
                   </Text>
                 )}
+
                 <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
                   I accept the deduction of the anti-spam minting fee from my wallet
                 </Checkbox>
+
                 {userFocusedForm && !readAntiSpamFeeChecked && (
                   <Text color="red.400" fontSize="sm" mt="1 !important">
                     You need to agree to anti-spam deduction to mint
@@ -1288,7 +1375,7 @@ export default function MintDataMX({ onRfMount, itheumAccount }: { onRfMount: an
             <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false}>
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader>Data Advertising Progress</ModalHeader>
+                <ModalHeader>Data NFT Minting Progress</ModalHeader>
                 {!!errDataNFTStreamGeneric && <ModalCloseButton />}
                 <ModalBody pb={6}>
                   <Stack spacing={5}>
