@@ -651,7 +651,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <Text>Verifying data access rights to unlock Data Stream</Text>
                 </HStack>
 
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && !unlockAccessProgress.s3 && (
+                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && (
                   <Stack border="solid .04rem" padding={3} borderRadius={5}>
                     <Text fontSize="sm" lineHeight={1.7}>
                       <InfoIcon boxSize={5} mr={1} />
