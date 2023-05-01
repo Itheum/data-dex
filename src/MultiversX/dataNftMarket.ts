@@ -19,7 +19,6 @@ import {
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import BigNumber from "bignumber.js";
 import { labels } from "libs/language";
 import jsonData from "./ABIs/data_market.abi.json";

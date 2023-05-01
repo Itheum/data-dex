@@ -10,7 +10,6 @@ import {
   Button,
   Heading,
   HStack,
-  Link,
   Spacer,
   Spinner,
   Stack,
@@ -40,7 +39,7 @@ import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 let mxFaucetContract = null;
 let mxClaimsContract = null;
 
-export default function HomeMx({ onRfMount, setMenuItem, dataCATAccount, loadingDataCATAccount, onDataCATAccount }) {
+export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loadingDataCATAccount, onDataCATAccount }) {
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -290,22 +289,19 @@ export default function HomeMx({ onRfMount, setMenuItem, dataCATAccount, loading
                 </Heading>
               )}
 
-              {loadingDataCATAccount &&
+              {(loadingDataCATAccount && (
                 <Box textAlign="center" mt="40% !important">
                   <Spinner speed="0.64s" color="teal.200" label="Fetching Data" />
                 </Box>
-                ||
-
-                !dataCATAccount && (
+              )) ||
+                (!dataCATAccount && (
                   <>
                     <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
                       <Flex direction="column">
                         <AlertTitle fontSize="md">
                           <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
                           <Flex direction="row">
-                            <Text color="#ED5D5D">
-                              Sorry! You don&apos;t seem to have a linked Data CAT account
-                            </Text>
+                            <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
                           </Flex>
                         </AlertTitle>
                         <AlertDescription fontSize="md" color="#929497" pb="2">
@@ -316,20 +312,17 @@ export default function HomeMx({ onRfMount, setMenuItem, dataCATAccount, loading
 
                     <Spacer />
 
-                    <Button 
-                      size="lg" 
-                      borderRadius="xl" 
-                      colorScheme="teal" 
-                      variant="solid" 
-                      onClick={() => onDataCATAccount(true)}>
+                    <Button size="lg" borderRadius="xl" colorScheme="teal" variant="solid" onClick={() => onDataCATAccount(true)}>
                       <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
                     </Button>
                   </>
-                ) || 
+                )) || (
                   <>
                     <Stack>
                       <Text fontSize="xl">Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}</Text>
-                      <Text fontSize="sm" mb="4 !important">You have data available to trade from the following programs</Text>
+                      <Text fontSize="sm" mb="4 !important">
+                        You have data available to trade from the following programs
+                      </Text>
                       {dataCATAccount.programsAllocation.map((item) => (
                         <Stack direction="row" key={item.program}>
                           <Badge borderRadius="full" px="2" colorScheme="teal">
@@ -350,10 +343,10 @@ export default function HomeMx({ onRfMount, setMenuItem, dataCATAccount, loading
                         setMenuItem(2);
                         navigate("/tradedata");
                       }}>
-                       <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
+                      <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
                     </Button>
                   </>
-                }
+                )}
             </Stack>
           </Box>
 

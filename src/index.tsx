@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === "production") {
     environment: getSentryProfile(),
 
     integrations: [new Sentry.BrowserTracing()],
-    
+
     // Performance Monitoring
     tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
   });

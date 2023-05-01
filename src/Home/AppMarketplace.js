@@ -69,12 +69,7 @@ export default function AppMarketplace() {
           Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data
         </Text>
         <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5} justify={{ base: "center", md: "start" }}>
-          <Box            
-            overflow="hidden"
-            border=".1rem solid transparent"
-            backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderCards }}>
+          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
             <Image src={imgProgGaPa} />
 
             <Box p="3">
@@ -99,13 +94,8 @@ export default function AppMarketplace() {
               </Button>
             </Box>
           </Box>
-          
-          <Box            
-            overflow="hidden"
-            border=".1rem solid transparent"
-            backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderCards }}>
+
+          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
             <Image src={imgProgGaPaES} />
 
             <Box p="3">
@@ -124,12 +114,7 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box
-            overflow="hidden"
-            border=".1rem solid transparent"
-            backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderCards }}>
+          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
             <Image src={imgProgRhc} />
 
             <Box p="3">
@@ -148,12 +133,7 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box
-            overflow="hidden"
-            border=".1rem solid transparent"
-            backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderCards }}>
+          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
             <Image src={imgProgWfh} />
 
             <Box p="3">

@@ -18,7 +18,6 @@ import {
   Tabs,
   Tab,
   useColorMode,
-  Box,
 } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -61,8 +60,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
-  const [amountOfTokens, setAmountOfTokens] = useState<any>({});
-  const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
@@ -224,16 +221,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       console.log("items", items);
 
       //
-      const amounts: any = {};
-      const _amountErrors: string[] = [];
-      for (let i = 0; i < _offers.length; i++) {
-        amounts[i] = 1;
-        _amountErrors.push("");
-      }
-      setAmountOfTokens(amounts);
-      setAmountErrors(_amountErrors);
-
-      //
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
       const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
@@ -341,9 +328,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
                         My Listed Data NFT(s)
                       </Text>
-                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                      {/* <Text fontSize="sm" px={1} color="whiteAlpha.800">
                         {offers && offers?.length}
-                      </Text>
+                      </Text> */}
                     </Flex>
                   </Button>
                 )}
