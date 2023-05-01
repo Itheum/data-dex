@@ -185,7 +185,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   return (
     <Box>
       {!isLoadingNftData() ? (
-        <Box>
+        <Box mb="5">
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <>
