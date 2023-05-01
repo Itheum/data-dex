@@ -6,14 +6,14 @@ import { convertWeiToEsdt, sleep } from "libs/util";
 import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
-import { OfferType } from "MultiversX/types";
+import { DataNftMetadataType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
   buyerFee: number;
-  nftData: any;
+  nftData: DataNftMetadataType;
   offer: OfferType;
   itheumPrice: number;
   marketContract: any;
