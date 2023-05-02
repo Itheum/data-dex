@@ -149,7 +149,7 @@ const AppHeader = ({
         justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
         paddingX={!isMxLoggedIn ? 32 : 0}
         alignItems="center"
-        backgroundColor={colorMode === "light" ? "white" : "black"}
+        backgroundColor={colorMode === "light" ? "white" : "bgDark"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">

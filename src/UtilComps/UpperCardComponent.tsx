@@ -72,23 +72,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     : "";
   const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
 
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-  }
-
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
-      <Box
-        w="275px"
-        h="760px"
-        mx="3 !important"
-        borderWidth="0.5px"
-        borderRadius="xl"
-        position="relative"
-        mb="1rem"
-        style={{ background: gradientBorderForTrade }}>
+      <Box w="275px" h="760px" mx="3 !important" borderWidth="0.5px" borderRadius="xl" borderColor="#00C79740" position="relative" mb="1rem">
         <Flex justifyContent="center">
           <Image
             src={imageUrl}
@@ -197,7 +183,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
               {feePrice && (
                 <>
-                  <Box fontSize="xs" mt="2">
+                  <Box fontSize="sm" mt="2">
                     <Text>
                       Unlock from: {` `}
                       {marketRequirements ? (

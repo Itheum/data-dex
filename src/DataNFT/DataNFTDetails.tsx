@@ -21,6 +21,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
@@ -49,6 +50,7 @@ type DataNFTDetailsProps = {
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
+  const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -215,8 +217,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
 
                 <VStack alignItems={"flex-start"} gap={"15px"}>
+                  <Box color="gray.100" fontSize="xl">
+                    <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
+                      {nftData.identifier}
+                      <ExternalLinkIcon ml="6px" mb="1" fontSize="xl" color="teal.200" />
+                    </Link>
+                  </Box>
+
                   <Flex direction="row" alignItems="center" gap="3">
-                    <Text fontSize="36px" noOfLines={2}>
+                    <Text fontSize="40px" noOfLines={2} fontWeight="semibold">
                       {nftData.attributes?.title}
                     </Text>
                     {!!offerId && (
@@ -230,19 +239,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             isClosable: true,
                           });
                         }}>
-                        <CopyIcon />
+                        <CopyIcon color="teal.200" fontSize="xl" />
                       </Button>
                     )}
                   </Flex>
 
-                  <Box color="gray.100" fontSize="xl">
-                    <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
-                      {nftData.identifier}
-                      <ExternalLinkIcon mx="6px" />
-                    </Link>
-                  </Box>
                   <Flex direction={{ base: "column", md: "row" }} gap="3">
-                    <Text fontSize={"32px"} color={"#89DFD4"} fontWeight={700} fontStyle={"normal"} lineHeight={"36px"}>
+                    <Text fontSize={"28px"} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
                       {!offer && getListingText(priceFromApi)}
                       {offer && getListingText(Number(offer.wanted_token_amount))}
                     </Text>
@@ -252,74 +255,90 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     )}
                   </Flex>
-                  <Text fontSize={"22px"}>{transformDescription(nftData.attributes?.description)}</Text>
-                  <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">
-                    Fully Transferable License
-                  </Badge>
-                  <Flex direction={"column"} gap="1">
-                    <Box color="gray.400" fontSize="lg">
-                      Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
-                      <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
-                        <ExternalLinkIcon mx="4px" />
-                      </Link>
+                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl">
+                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                      Description
+                    </Heading>
+                    <Text fontSize={"16px"} px="28px" py="14px">
+                      {transformDescription(nftData.attributes?.description)}
+                    </Text>
+                    <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
+                      <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                        Fully Transferable License
+                      </Text>
                     </Box>
-                    {offer && offer.owner && (
-                      <Box color="gray.400" fontSize="lg">
-                        Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
-                        <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
-                          <ExternalLinkIcon mx="4px" />
+                    <Flex direction={"column"} gap="1" px="28px" mt="2">
+                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">
+                        Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
+                        <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
+                          <ExternalLinkIcon mx="4px" fontSize="lg" />
                         </Link>
                       </Box>
-                    )}
-                  </Flex>
-                  <Box display="flex" justifyContent="flex-start">
-                    <Text fontSize="lg">{`Creation time: ${moment(nftData.attributes?.creationTime).format(uxConfig.dateStr)}`}</Text>
+                      {offer && offer.owner && (
+                        <Box color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">
+                          Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
+                          <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
+                            <ExternalLinkIcon mx="4px" fontSize="lg" />
+                          </Link>
+                        </Box>
+                      )}
+                      <Box display="flex" justifyContent="flex-start" pb="14px">
+                        <Text color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">{`Creation time: ${moment(
+                          nftData.attributes?.creationTime
+                        ).format(uxConfig.dateStr)}`}</Text>
+                      </Box>
+                    </Flex>
                   </Box>
-                  <Flex direction={"column"} gap="1" color="gray.400" fontSize="lg">
-                    {!!nftData && (
-                      <>
-                        <Text>{`Total supply: ${nftData.supply}`}</Text>
-                        <Text>
-                          {`Royalty: `}
-                          {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
-                        </Text>
-                      </>
-                    )}
-                    {!!offerId && (
-                      <>
-                        <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
-                        <Text>
-                          {`Unlock Fee per NFT: `}
-                          {marketRequirements && offer ? (
-                            <>
-                              {printPrice(
+                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
+                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                      Details
+                    </Heading>
+                    <Flex direction={"column"} gap="1" pl="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
+                      {!!nftData && (
+                        <>
+                          <Text>{`Total supply: ${nftData.supply}`}</Text>
+                          <Text>
+                            {`Royalty: `}
+                            {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
+                          </Text>
+                        </>
+                      )}
+                      {!!offerId && (
+                        <>
+                          <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
+                          <Text>
+                            {`Unlock Fee per NFT: `}
+                            {marketRequirements && offer ? (
+                              <>
+                                {printPrice(
+                                  convertWeiToEsdt(
+                                    new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                    tokenDecimals(offer.wanted_token_identifier)
+                                  ).toNumber(),
+                                  getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                                )}{" "}
+                                {itheumPrice &&
                                 convertWeiToEsdt(
                                   new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
                                   tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber(),
-                                getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                              )}{" "}
-                              {itheumPrice &&
-                              convertWeiToEsdt(
-                                new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                tokenDecimals(offer.wanted_token_identifier)
-                              ).toNumber() > 0
-                                ? `(${convertToLocalString(
-                                    convertWeiToEsdt(
-                                      new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                      tokenDecimals(offer.wanted_token_identifier)
-                                    ).toNumber() * itheumPrice,
-                                    2
-                                  )} USD)`
-                                : ""}
-                            </>
-                          ) : (
-                            "-"
-                          )}
-                        </Text>
-                      </>
-                    )}
-                  </Flex>
+                                ).toNumber() > 0
+                                  ? `(${convertToLocalString(
+                                      convertWeiToEsdt(
+                                        new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                                        tokenDecimals(offer.wanted_token_identifier)
+                                      ).toNumber() * itheumPrice,
+                                      2
+                                    )} USD)`
+                                  : ""}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </Text>
+                        </>
+                      )}
+                    </Flex>
+                  </Box>
 
                   <Button
                     mt="2"
