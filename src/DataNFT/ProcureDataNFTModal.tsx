@@ -32,6 +32,13 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
+  // set ReadTermChecked checkbox as false when modal opened
+  useEffect(() => {
+    if (props.isOpen) {
+      setReadTermsChecked(false);
+    }
+  }, [props.isOpen]);
+
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
       (async () => {
