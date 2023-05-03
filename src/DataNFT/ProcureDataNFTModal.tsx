@@ -256,6 +256,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               dataMarshal={props.nftData.dataMarshal}
               NFTId={props.nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
+              isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
             />
 
