@@ -262,7 +262,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
-        w="275px"
+        maxW="275px"
         h="810px"
         mx="3 !important"
         key={item.id}
@@ -466,7 +466,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             <Button
               size="sm"
               mt={4}
-              width="100%"
+              width="full"
               colorScheme="teal"
               variant="outline"
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}

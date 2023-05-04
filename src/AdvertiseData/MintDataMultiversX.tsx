@@ -19,6 +19,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
+  FormLabel,
   Heading,
   HStack,
   Image,
@@ -1071,11 +1072,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     Data Asset Detail
                   </Text>
 
-                  <FormControl isInvalid={!!errors.dataStreamUrlForm}>
+                  <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired>
                     <InputLabelWithPopover tkey="data-stream-url">
-                      <Text fontWeight="bold" fontSize="md">
-                        Data Stream URL *
-                      </Text>
+                      <FormLabel fontWeight="bold" fontSize="md">
+                        Data Stream URL
+                      </FormLabel>
                     </InputLabelWithPopover>
 
                     <Controller

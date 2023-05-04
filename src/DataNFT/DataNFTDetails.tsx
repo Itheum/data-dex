@@ -209,14 +209,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 </HStack>
               </>
             )}
-            <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"}>
+            <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack
                 flexDirection={{ base: "column", md: "row" }}
+                m={5}
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
                 <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
 
-                <VStack alignItems={"flex-start"} gap={"15px"}>
+                <VStack alignItems={"flex-start"} gap={"15px"} w="full">
                   <Box color="gray.100" fontSize="xl">
                     <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
                       {nftData.identifier}
