@@ -150,7 +150,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   <Box>
                     :{" "}
                     {`${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.nftData.royalties)
+                      .multipliedBy((1 - props.sellerFee / 10000) * props.nftData.royalties)
                       .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
                   </Box>
                 </Flex>
