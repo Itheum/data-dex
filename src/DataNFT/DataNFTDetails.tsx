@@ -27,7 +27,7 @@ import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig } from "libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
 import { getApi, getItheumPriceFromApi } from "MultiversX/api";
@@ -77,6 +77,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [sessionId, setSessionId] = useState<any>();
+  const marketplaceDrawer = "/datanfts/marketplace/market";
+  const { pathname } = useLocation();
 
   useTrackTransactionStatus({
     transactionId: sessionId,
@@ -185,7 +187,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }
 
   return (
-    <Box>
+    <Box mx={tokenIdParam ? "28 !important" : 0}>
       {!isLoadingNftData() ? (
         <Box>
           <Flex direction={"column"} alignItems={"flex-start"}>
@@ -215,7 +217,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 m={5}
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
-                <Image boxSize={{ base: "240px", md: "400px" }} p={10} objectFit={"contain"} src={nftData.url} alt={"Data NFT Image"} />
+                <Image
+                  boxSize={{ base: "240px", md: "400px" }}
+                  p={10}
+                  objectFit={"contain"}
+                  src={nftData.url}
+                  alt={"Data NFT Image"}
+                  mr={pathname === marketplaceDrawer ? 0 : 14}
+                />
 
                 <VStack alignItems={"flex-start"} gap={"15px"} w="full">
                   <Box color="gray.100" fontSize="xl">
@@ -226,7 +235,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   </Box>
 
                   <Flex direction="row" alignItems="center" gap="3">
-                    <Text fontSize="40px" noOfLines={2} fontWeight="semibold">
+                    <Text fontSize={pathname === marketplaceDrawer ? "38px" : "48px"} noOfLines={2} fontWeight="semibold">
                       {nftData.attributes?.title}
                     </Text>
                     {!!offerId && (
@@ -245,7 +254,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     )}
                   </Flex>
 
-                  <Flex direction={{ base: "column", md: "row" }} gap="3">
+                  <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                     <Text fontSize={"28px"} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
                       {!offer && getListingText(priceFromApi)}
                       {offer && getListingText(Number(offer.wanted_token_amount))}
@@ -256,7 +265,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     )}
                   </Flex>
-                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl">
+                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
                     <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
                       Description
                     </Heading>
@@ -268,7 +277,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         Fully Transferable License
                       </Text>
                     </Box>
-                    <Flex direction={"column"} gap="1" px="28px" mt="2">
+                    <Flex direction={"column"} gap="1" px="28px" mt="3">
                       <Box color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">
                         Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
                         <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
@@ -294,7 +303,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
                       Details
                     </Heading>
-                    <Flex direction={"column"} gap="1" pl="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
+                    <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
                       {!!nftData && (
                         <>
                           <Text>{`Total supply: ${nftData.supply}`}</Text>
@@ -340,24 +349,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       )}
                     </Flex>
                   </Box>
-
-                  <Button
-                    mt="2"
-                    size="md"
-                    colorScheme="teal"
-                    height="7"
-                    variant="outline"
-                    onClick={() => {
-                      window.open(nftData.attributes.dataPreview);
-                    }}>
-                    Preview Data
-                  </Button>
-                  {offer && address && address != offer.owner ? (
+                  {offer && address && address != offer.owner && (
                     <Box>
-                      <HStack>
-                        <Text fontSize="md">How many to procure </Text>
+                      <HStack gap={5}>
+                        <Text fontSize="xl">How many to procure </Text>
                         <NumberInput
-                          size="sm"
+                          size="md"
                           maxW={24}
                           step={1}
                           min={1}
@@ -382,23 +379,32 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             <NumberDecrementStepper />
                           </NumberInputStepper>
                         </NumberInput>
-                        <Button size="sm" colorScheme="teal" width="72px" isDisabled={hasPendingTransactions || !!amountError} onClick={onProcureModalOpen}>
-                          Procure
-                        </Button>
                       </HStack>
-                      <Text color="red.400" fontSize="sm" mt="1" ml="136px">
+                      <Text color="red.400" fontSize="sm" mt="2" ml="190px">
                         {amountError}
                       </Text>
                     </Box>
-                  ) : (
-                    <HStack h="2.4rem"></HStack>
                   )}
+                  <Flex flexDirection="row" gap={5}>
+                    <Button size="lg" colorScheme="teal" isDisabled={hasPendingTransactions || !!amountError} onClick={onProcureModalOpen}>
+                      <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
+                    </Button>
+                    <Button
+                      size="lg"
+                      colorScheme="teal"
+                      variant="outline"
+                      onClick={() => {
+                        window.open(nftData.attributes.dataPreview);
+                      }}>
+                      <Text px={tokenId ? 0 : 3}>Preview Data</Text>
+                    </Button>
+                  </Flex>
                 </VStack>
               </Stack>
             </Box>
           </Flex>
           <VStack alignItems={"flex-start"}>
-            <Heading size="lg" marginBottom={2}>
+            <Heading size="lg" fontWeight="500" marginBottom={2}>
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>

@@ -39,16 +39,16 @@ import { DataTableProps, fuzzyFilter } from "./tableUtils";
 
 const styles = {
   table: {
-    border: "2px solid var(--chakra-colors-teal-200)",
-    borderRadius: "1rem",
+    border: "1px solid #00C79740",
+    borderRadius: "10px",
     fontSize: "16px",
   },
   tbody: {
-    borderBottom: "1px solid var(--chakra-colors-teal-200)",
+    borderBottom: "1px solid #00C79740",
   },
   th: {
-    borderBottom: "1px solid var(--chakra-colors-teal-200)",
-    borderRight: "1px solid var(--chakra-colors-teal-200)",
+    borderBottom: "1px solid #00C79740",
+    borderRight: "1px solid #00C79740",
     padding: "2px 4px",
   },
 };

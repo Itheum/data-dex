@@ -31,7 +31,7 @@ export default function TokenTxTable(props: TokenTableProps) {
               href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
               isExternal
               style={linkIconStyle}>
-              <ExternalLinkIcon />
+              <ExternalLinkIcon fontSize="sm" />
             </Link>
           </HStack>
         ),

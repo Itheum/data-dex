@@ -244,7 +244,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         <>
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
-            <DrawerContent>
+            <DrawerContent bgColor="bgDark">
               <DrawerHeader>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
