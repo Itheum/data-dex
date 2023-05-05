@@ -71,6 +71,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
 
+  const [myListedDataNFT, setMyListedDataNFT] = useState<number>(0);
+
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
   const [items, setItems] = useState<ItemType[]>([
@@ -103,7 +105,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [pageSize, setPageSize] = useState<number>(8);
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
-  console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -179,6 +180,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         // offers of User
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
+
       console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       setPageCount(_pageCount);
@@ -236,6 +238,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setLoadingOffers(false);
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions, _chainMeta.networkId]);
+
+  // useEffect(() => {
+  //   items.map((item) => {
+  //     if (item.owner === address) {
+  //       setMyListedDataNFT(myListedDataNFT + 1);
+  //     }
+  //   });
+  //   console.log(myListedDataNFT);
+  // }, [myListedDataNFT, hasPendingTransactions]);
 
   useEffect(() => {
     (async () => {
@@ -328,9 +339,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
                         My Listed Data NFT(s)
                       </Text>
-                      {/* <Text fontSize="sm" px={1} color="whiteAlpha.800">
-                        {offers && offers?.length}
-                      </Text> */}
+                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                        {myListedDataNFT > 0 && myListedDataNFT}
+                      </Text>
                     </Flex>
                   </Button>
                 )}

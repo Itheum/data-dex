@@ -907,14 +907,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
       </Heading>
 
       <Wrap shouldWrapChildren={true} spacing={5}>
-        <Box
-          maxW="xs"
-          overflow="hidden"
-          mt={5}
-          border=".01rem solid transparent"
-          backgroundColor="none"
-          borderRadius="0.75rem"
-          style={{ "background": gradientBorderForTrade }}>
+        <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
           <Box p="6">

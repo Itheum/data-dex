@@ -8,6 +8,7 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftCondensedView } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import { hexZero } from "../MultiversX/tokenUtils.js";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -43,6 +44,7 @@ const RecentDataNFTs = ({
 }) => {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { colorMode } = useColorMode();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
@@ -138,7 +140,7 @@ const RecentDataNFTs = ({
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt="7">
+                  <Stack mt={isMxLoggedIn ? "12" : "4"}>
                     <Heading size="md" noOfLines={1}>
                       {item.title}
                     </Heading>

@@ -9,6 +9,11 @@
   height: 64px;
 }
 
+.filter::placeholder {
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .chakra-ui-light .auth_wrap {
   background-color: var(--chakra-colors-gray-200);
 }

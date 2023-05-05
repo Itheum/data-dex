@@ -39,16 +39,16 @@ import { DataTableProps, fuzzyFilter } from "./tableUtils";
 
 const styles = {
   table: {
-    border: "1px solid #00C79740",
-    borderRadius: "10px",
-    fontSize: "16px",
+    border: "1px solid ",
+    borderColor: "#00C79740",
+    borderRadius: "20px",
   },
   tbody: {
     borderBottom: "1px solid #00C79740",
   },
+
   th: {
-    borderBottom: "1px solid #00C79740",
-    borderRight: "1px solid #00C79740",
+    backgroundColor: "#00c7970d",
     padding: "2px 4px",
   },
 };
@@ -81,34 +81,34 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
   return (
     <Box className="hidden-overflow-x">
       <Flex justifyContent={"center"} gap={2}>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(0)} isDisabled={!table.getCanPreviousPage()}>
-          <ArrowLeftIcon />
+        <Button border={1} borderRadius={"lg"} padding={1} onClick={() => table.setPageIndex(0)} isDisabled={!table.getCanPreviousPage()}>
+          <ArrowLeftIcon mx={3} />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
-          <ArrowBackIcon />
+        <Button border={1} borderRadius={"lg"} padding={1} onClick={() => table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
+          <ArrowBackIcon mx={3} />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} marginBottom={2} onClick={() => setColumnFilters([])} isDisabled={columnFilters.length === 0}>
+        <Button border={1} borderRadius={"lg"} colorScheme="teal" marginBottom={2} onClick={() => setColumnFilters([])} isDisabled={columnFilters.length === 0}>
           <RepeatIcon marginRight={2} /> Reset filters
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} isDisabled={!table.getCanNextPage()}>
-          <ArrowForwardIcon />
+        <Button border={1} borderRadius={"lg"} padding={1} onClick={() => table.nextPage()} isDisabled={!table.getCanNextPage()}>
+          <ArrowForwardIcon mx={3} />
         </Button>
         <Button
           border={1}
-          borderRadius={"0.24rem"}
+          borderRadius={"lg"}
           padding={1}
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
           isDisabled={!table.getCanNextPage() || table.getState().pagination.pageIndex >= table.getPageCount() - 1}>
-          <ArrowRightIcon />
+          <ArrowRightIcon mx={3} />
         </Button>
       </Flex>
-      <Table style={styles.table} className="data-table">
+      <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5">
         <Thead style={styles.th}>
           {table.getHeaderGroups().map((headerGroup) => (
             <Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <Th key={header.id} colSpan={header.colSpan}>
+                  <Th key={header.id} colSpan={header.colSpan} fontSize="md" fontWeight="500" textColor="white">
                     {header.isPlaceholder ? null : (
                       <>
                         <Box
@@ -138,9 +138,13 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         <Tbody style={styles.tbody}>
           {table.getRowModel().rows.map((row) => {
             return (
-              <Tr key={row.id}>
+              <Tr key={row.id} borderColor="#00C79740">
                 {row.getVisibleCells().map((cell) => {
-                  return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>;
+                  return (
+                    <Td fontSize="lg !important" key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Td>
+                  );
                 })}
               </Tr>
             );
