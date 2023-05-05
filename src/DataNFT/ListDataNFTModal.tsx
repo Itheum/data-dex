@@ -144,6 +144,18 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   )}
                 </Box>
               </Flex>
+
+              <Flex fontSize="md" mt="2">
+                <Box w="140px">Seller Tax (per NFT)</Box>
+                <Box>
+                  :{" "}
+                  {`${props.sellerFee / 100}% (${new BigNumber(props.offer.wanted_token_amount)
+                    .multipliedBy(props.sellerFee)
+                    .div(10000)
+                    .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
+                </Box>
+              </Flex>
+              
               {address !== props.nftData.creator && (
                 <Flex fontSize="md" mt="2">
                   <Box w="140px">Royalties (per NFT)</Box>
@@ -155,16 +167,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   </Box>
                 </Flex>
               )}
-              <Flex fontSize="md" mt="2">
-                <Box w="140px">Seller Tax (per NFT)</Box>
-                <Box>
-                  :{" "}
-                  {`${props.sellerFee / 100}% (${new BigNumber(props.offer.wanted_token_amount)
-                    .multipliedBy(props.sellerFee)
-                    .div(10000)
-                    .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
-                </Box>
-              </Flex>
+              
               <Flex fontSize="md" mt="2">
                 <Box w="140px">You will receive</Box>
                 <Box>
