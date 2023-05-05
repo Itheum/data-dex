@@ -147,54 +147,58 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
           })}
         </Tbody>
       </Table>
-      <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
-        <VStack>
-          <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
-            Page
-            <strong>{table.getState().pagination.pageIndex + 1}</strong>
-            of
-            <strong>{table.getPageCount()}</strong>
-          </Text>
-        </VStack>
-        <HStack>
-          <Text as={"span"} minWidth={"5rem"}>
-            Go to page
-          </Text>
-          <NumberInput
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            maxWidth={"4.4rem"}
-            min={1}
-            max={table.getPageCount()}
-            isValidCharacter={isValidNumericCharacter}
-            onBlur={(e: any) => {
-              let page = e ? Number(e.target.value) - 1 : 0;
-              page = Math.max(0, page);
-              page = Math.min(table.getPageCount() - 1, page);
-              table.setPageIndex(page);
-            }}>
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
+      {
+        table && table.getPageCount() > 0 && (
+          <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
+            <VStack>
+              <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
+                Page
+                <strong>{table.getState().pagination.pageIndex + 1}</strong>
+                of
+                <strong>{table.getPageCount()}</strong>
+              </Text>
+            </VStack>
+            <HStack>
+              <Text as={"span"} minWidth={"5rem"}>
+                Go to page
+              </Text>
+              <NumberInput
+                defaultValue={table.getState().pagination.pageIndex + 1}
+                maxWidth={"4.4rem"}
+                min={1}
+                max={table.getPageCount()}
+                isValidCharacter={isValidNumericCharacter}
+                onBlur={(e: any) => {
+                  let page = e ? Number(e.target.value) - 1 : 0;
+                  page = Math.max(0, page);
+                  page = Math.min(table.getPageCount() - 1, page);
+                  table.setPageIndex(page);
+                }}>
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
 
-          <Show above="md">
-            <Select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-              maxWidth={200}>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </Select>
-          </Show>
-        </HStack>
-      </VStack>
+              <Show above="md">
+                <Select
+                  value={table.getState().pagination.pageSize}
+                  onChange={(e) => {
+                    table.setPageSize(Number(e.target.value));
+                  }}
+                  maxWidth={200}>
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <option key={pageSize} value={pageSize}>
+                      Show {pageSize}
+                    </option>
+                  ))}
+                </Select>
+              </Show>
+            </HStack>
+          </VStack>
+        )
+      }
     </Box>
   );
 }
