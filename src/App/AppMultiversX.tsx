@@ -35,6 +35,7 @@ import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
 import { useChainMeta } from "store/ChainMetaContext";
+import { GetWhitelist } from "../GetWhitelisted/getWhitelist";
 
 const mxLogout = logout;
 
@@ -218,6 +219,11 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
           {/* App Header */}
           <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
 
+          <Routes>
+            <Route path="getwhitelisted" element={<Outlet />}>
+              <Route path="" element={<GetWhitelist />} />
+            </Route>
+          </Routes>
           {/* App Body */}
           <Box backgroundColor="none" flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"} mt={menuItem !== MENU.LANDING ? "5" : "0"}>
             <Routes>
