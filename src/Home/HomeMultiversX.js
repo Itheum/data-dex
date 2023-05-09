@@ -278,10 +278,10 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
           <Box
             maxW="container.sm"
             w={{ base: "280px", "2xl": tileBoxMdW }}
-            border=".1rem solid transparent"
             backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderForTrade }}>
+            border="1px solid transparent"
+            borderColor="#00C79740"
+            borderRadius="16px">
             <Stack p="5" h={tileBoxH}>
               {!dataCATAccount && (
                 <Heading size="md" fontWeight="semibold" pb={2}>
@@ -354,10 +354,10 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             <Box
               maxW="container.sm"
               w={{ base: "280px", "2xl": tileBoxMdW }}
-              border=".1rem solid transparent"
               backgroundColor="none"
-              borderRadius="1.5rem"
-              style={{ "background": gradientBorderForTrade }}>
+              border="1px solid transparent"
+              borderColor="#00C79740"
+              borderRadius="16px">
               <Stack p="5" h={tileBoxH}>
                 <Heading size="md" fontWeight="semibold" pb={2}>
                   {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
@@ -378,10 +378,10 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
           <Box
             maxW="container.sm"
             w={{ base: "280px", "2xl": tileBoxMdW }}
-            border=".1rem solid transparent"
             backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderForTrade }}>
+            border="1px solid transparent"
+            borderColor="#00C79740"
+            borderRadius="16px">
             <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
               <Heading size="md" pb={2}>
                 NFMe ID Avatar
@@ -397,10 +397,10 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             <Box
               maxW="container.sm"
               w={[tileBoxMdW, "initial"]}
-              border=".1rem solid transparent"
               backgroundColor="none"
-              borderRadius="1.5rem"
-              style={{ "background": gradientBorderForTrade }}>
+              border="1px solid transparent"
+              borderColor="#00C79740"
+              borderRadius="16px">
               <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                 <Heading size="md" pb={2}>
                   My Claims

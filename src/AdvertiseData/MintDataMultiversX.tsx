@@ -933,21 +933,14 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5}>
             {dataCATAccount.programsAllocation.map((item: any) => (
-              <Box
-                key={item.program}
-                maxW="22.4rem"
-                borderWidth="1px"
-                overflow="hidden"
-                border=".1rem solid transparent"
-                backgroundColor="none"
-                borderRadius="1.5rem">
+              <Box key={item.program} maxW="22.4rem" borderWidth="1px" overflow="hidden" border=".1rem solid transparent" backgroundColor="none">
                 <Image
                   src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${dataCATAccount._lookups.programs[item.program].img}.png`}
                   alt=""
-                  border=".1rem solid transparent"
                   height="13.375rem"
-                  borderRadius="1.5rem"
-                  style={{ "background": gradientBorderCards }}
+                  border="1px solid transparent"
+                  borderColor="#00C797"
+                  borderRadius="16px"
                 />
 
                 <Box paddingTop="6" paddingBottom="2">

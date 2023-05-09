@@ -280,11 +280,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         h="810px"
         mx="3 !important"
         key={item.id}
-        borderWidth="0.5px"
-        borderRadius="xl"
+        border="1px solid transparent"
+        borderColor="#00C79740"
+        borderRadius="16px"
         mb="1rem"
-        position="relative"
-        style={{ background: gradientBorderForTrade }}>
+        position="relative">
         <Flex justifyContent="center">
           <Image
             src={item.nftImgUrl}
