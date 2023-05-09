@@ -22,7 +22,7 @@ export const GetWhitelist: React.FC = () => {
             flexDirection={["column", null, "row"]}
             mx={{ base: 0, "2xl": 20 }}
             alignItems="center">
-            <Box width={["100%", null, null, "500px", "690px"]} textAlign={["center", null, null, "left", "left"]} ml={10} pt={10}>
+            <Box width={["100%", null, null, "500px", "690px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
               <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]} fontWeight="500">
                 Fully{" "}
                 <Text as="span" color="teal.200">
@@ -55,17 +55,17 @@ export const GetWhitelist: React.FC = () => {
               <Image boxSize={{ base: "auto", lg: "40rem" }} w="100%" height="auto" src={illustration} alt="Data NFTs Illustration" />
             </Box>
           </Flex>
-          <Box position="absolute" bottom={4} right={4} display={{ base: "none", lg: "flex" }}>
-            <Flex direction="column" justifyContent="end" alignItems="end" gap={5} pb={20} pr={4}>
+          <Box position="absolute" bottom={2} right={4} display={{ base: "none", lg: "flex" }}>
+            <Flex direction="column" justifyContent="end" alignItems="end" gap={5} pb={16} pr={4}>
               <a href="https://twitter.com/itheum" target="_blank" rel="noreferrer">
-                <Box rounded="full" border="2px solid" w={20} h={20} alignContent={"center"} backgroundColor="bgDark">
+                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
                   <Image as={FaTwitter} m="auto" fontSize="3xl" h="full" />
                 </Box>
               </a>
-              <Box rounded="full" border="2px solid" w={20} h={20} alignContent={"center"} backgroundColor="bgDark">
+              <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
                 <Image as={FaDiscord} m="auto" fontSize="3xl" h="full" />
               </Box>
-              <Box rounded="full" border="2px solid" w={20} h={20} alignContent={"center"} backgroundColor="bgDark">
+              <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
                 <Image as={FaTelegramPlane} m="auto" fontSize="3xl" h="full" />
               </Box>
             </Flex>
