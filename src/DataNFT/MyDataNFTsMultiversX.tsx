@@ -215,7 +215,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           <TabPanels>
             <TabPanel mt={10}>
               {dataNfts.length > 0 ? (
-                <SimpleGrid columns={{ base: 1, md: 4 }} mx={"24 !important"}>
+                <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
                   {dataNfts.map((item, index) => (
                     <WalletDataNFTMX
                       key={index}

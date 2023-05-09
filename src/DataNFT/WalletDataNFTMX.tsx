@@ -253,6 +253,20 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
+  const formatButtonNumber = (num: number) => {
+    if (num >= 1000000) {
+      const millions = Math.floor(num / 1000000);
+      const thousands = Math.floor((num % 1000000) / 1000);
+      return millions + "kk " + thousands;
+    } else if (num >= 1000) {
+      const thousands = Math.floor(num / 1000);
+      const remaining = num % 1000;
+      return thousands + "k " + remaining;
+    } else {
+      return num.toString();
+    }
+  };
+
   let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
 
   if (colorMode === "light") {
@@ -262,7 +276,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
-        maxW="275px"
+        w="275px"
         h="810px"
         mx="3 !important"
         key={item.id}
@@ -445,12 +459,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   if (valueAsNumber < 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
-                    error = "Cannot exceed maximum listing fee";
+                    error = "Maximum listing fee is" + " " + item.maxPayment;
                   }
                   setPriceError(error);
                   setPrice(valueAsNumber);
                 }}
-                keepWithinRange={true}>
+                keepWithinRange={false}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -466,13 +480,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             <Button
               size="sm"
               mt={4}
-              width="full"
+              width="215px"
               colorScheme="teal"
               variant="outline"
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}
               onClick={() => onListButtonClick(item)}>
-              <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+              <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                List {amount} NFT{amount > 1 && "s"} for {price ? `${formatButtonNumber(price)} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
               </Text>
             </Button>
           </Box>
