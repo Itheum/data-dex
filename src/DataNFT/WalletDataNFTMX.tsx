@@ -253,17 +253,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
-  const formatButtonNumber = (num: number) => {
-    if (num >= 1000000) {
-      const millions = Math.floor(num / 1000000);
-      const thousands = Math.floor((num % 1000000) / 1000);
-      return millions + "kk " + thousands;
-    } else if (num >= 1000) {
-      const thousands = Math.floor(num / 1000);
-      const remaining = num % 1000;
-      return thousands + "k " + remaining;
+  const formatButtonNumber = (price: number, amount: number) => {
+    //price ? `${formatButtonNumber(price)} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"
+    if (price > 0) {
+      if (price >= item.maxPayment) {
+        return item.maxPayment.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
+      } else {
+        return price.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
+      }
     } else {
-      return num.toString();
+      return "Free";
     }
   };
 
@@ -486,7 +485,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}
               onClick={() => onListButtonClick(item)}>
               <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                List {amount} NFT{amount > 1 && "s"} for {price ? `${formatButtonNumber(price)} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+                List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
               </Text>
             </Button>
           </Box>
