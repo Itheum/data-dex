@@ -26,8 +26,8 @@ import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { useNavigate, useParams, Link as ReactRouterLink } from "react-router-dom";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, sleep, uxConfig } from "libs/util";
+import { useNavigate, useParams } from "react-router-dom";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig } from "libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
 import { getApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -68,7 +68,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
-  const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/dataNfts/marketplace/${tokenId}/offer-${offerId}`);
+  const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
@@ -176,16 +176,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   function getListingText(price: number) {
     const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
-      ? `Listing Price: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-      ? "Listing Price: FREE"
+      ? "Unlock for: FREE"
       : "Not Listed";
   }
 
   return (
     <Box>
       {!isLoadingNftData() ? (
-        <Box>
+        <Box mb="5">
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <>
@@ -279,14 +279,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     {!!nftData && (
                       <>
                         <Text>{`Total supply: ${nftData.supply}`}</Text>
-                        <Text>{`Royalty: ${Math.round(nftData.royalties * 100) / 100}%`}</Text>
+                        <Text>
+                          {`Royalty: `}
+                          {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
+                        </Text>
                       </>
                     )}
                     {!!offerId && (
                       <>
                         <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
                         <Text>
-                          {`Fee per NFT: `}
+                          {`Unlock Fee per NFT: `}
                           {marketRequirements && offer ? (
                             <>
                               {printPrice(
@@ -390,7 +393,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               itheumPrice={itheumPrice || 0}
               marketContract={marketContract}
               buyerFee={marketRequirements?.buyer_fee || 0}
-              nftData={nftData}
+              nftData={nftData.attributes}
               offer={offer}
               amount={amount}
               setSessionId={setSessionId}

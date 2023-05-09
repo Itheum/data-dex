@@ -103,7 +103,11 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
-                        <WebWalletLoginButton callbackRoute={"/home"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
+                        <WebWalletLoginButton
+                          callbackRoute={"/home"}
+                          loginButtonText={"Web Wallet (coming soon)"}
+                          buttonClassName="auth_button"
+                          disabled={true}></WebWalletLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
@@ -115,7 +119,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
 
                 <Text fontSize="sm">
                   By logging in, you are agreeing to the{" "}
-                  <Link href="https://itheum.com/termsofuse" isExternal>
+                  <Link href="https://itheum.com/legal/datadex/termsofuse" isExternal>
                     Terms of Use <ExternalLinkIcon mx="2px" />
                   </Link>{" "}
                   &{" "}

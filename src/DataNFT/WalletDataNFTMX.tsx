@@ -37,13 +37,15 @@ import {
   CloseButton,
   ModalCloseButton,
   Spinner,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
-import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep } from "libs/util";
+import { labels } from "libs/language";
+import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/util";
 import { convertToLocalString, transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
@@ -51,7 +53,7 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
-import ListDataNFTModal from "./ListaDataNFTModal";
+import ListDataNFTModal from "./ListDataNFTModal";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -63,6 +65,7 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
+  const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -74,7 +77,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     s3: 0,
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
-  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
@@ -100,7 +103,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const onBurn = () => {
     if (!address) {
       toast({
-        title: "Connect your wallet",
+        title: labels.ERR_BURN_NO_WALLET_CONN,
         status: "error",
         isClosable: true,
       });
@@ -108,7 +111,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
     if (!selectedDataNft) {
       toast({
-        title: "No NFT is selected",
+        title: labels.ERR_BURN_NO_NFT_SELECTED,
         status: "error",
         isClosable: true,
       });
@@ -117,8 +120,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
     mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
 
-    // close modal
-    onBurnNFTClose();
+    onBurnNFTClose(); // close modal
   };
 
   const fetchAccountSignature = async (message: string) => {
@@ -129,22 +131,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       exception: "",
     };
 
-    let customError = "Signature result not received from wallet";
+    let customError = labels.ERR_WALLET_SIG_GENERIC;
 
     if (walletUsedSession === "el_webwallet") {
       // web wallet not supported
-      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
+      customError = labels.ERR_WALLET_SIG_NOT_SUPPORTED;
     } else {
       try {
         const signatureObj = await signMessage({ message });
 
         if (signatureObj?.signature && signatureObj?.address) {
-          // Maiar App V2 / Ledger
+          // XPortal App V2 / Ledger
           signResult.signature = signatureObj.signature.hex();
           signResult.addrInHex = signatureObj.address.hex();
           signResult.success = true;
         } else {
-          signResult.exception = "Signature result from wallet was malformed";
+          signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
         }
       } catch (e: any) {
         signResult.success = false;
@@ -167,7 +169,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     })();
   };
 
-  const accessDataStream = async (dataMarshal: string, NFTId: string, myAddress: string) => {
+  const accessDataStream = async (dataMarshal: string, NFTId: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -203,15 +205,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
           link.dispatchEvent(new MouseEvent("click"));
 
-          await sleep(3);
-
-          cleanupAccessDataStreamProcess();
+          setUnlockAccessProgress((prevProgress) => ({
+            ...prevProgress,
+            s3: 1,
+          }));
         }
       } else {
         if (data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
         } else {
-          setErrUnlockAccessGeneric("Data Marshal responded with an unknown error trying to generate your access links");
+          setErrUnlockAccessGeneric(labels.ERR_DATA_MARSHAL_GEN_ACCESS_FAIL);
         }
       }
     } catch (e: any) {
@@ -227,7 +230,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   const onBurnButtonClick = (nft: DataNftType) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(Number(nft.balance)); // init
+    setDataNftBurnAmount(Number(nft.balance));
     setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
@@ -241,7 +244,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     let error = "";
     const valueAsNumber = Number(valueAsString);
     if (valueAsNumber < 1) {
-      error = "Burn Amount cannot be zero or negative";
+      error = "Burn amount cannot be zero or negative";
     } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
       error = "Data NFT balance exceeded";
     }
@@ -250,24 +253,41 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
+  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
+
+  if (colorMode === "light") {
+    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
+  }
+
   return (
-    <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
-      <Box key={item.id} maxW="xs" borderWidth="1px" borderRadius="lg" mb="1rem" position="relative" w="13.5rem">
-        <Flex justifyContent="center" pt={3}>
+    <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
+      <Box
+        w="275px"
+        h="810px"
+        mx="3 !important"
+        key={item.id}
+        borderWidth="0.5px"
+        borderRadius="xl"
+        mb="1rem"
+        position="relative"
+        style={{ background: gradientBorderForTrade }}>
+        <Flex justifyContent="center">
           <Image
             src={item.nftImgUrl}
             alt={item.dataPreview}
-            h={200}
-            w={200}
-            borderRadius="md"
+            h={236}
+            w={236}
+            mx={6}
+            mt={6}
+            borderRadius="32px"
             cursor="pointer"
             onLoad={() => item.setHasLoaded(true)}
             onClick={() => item.openNftDetailsDrawer(item.index)}
           />
         </Flex>
 
-        <Flex h="28rem" p="3" direction="column" justify="space-between">
-          <Text fontSize="xs">
+        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+          <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
@@ -275,55 +295,70 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <div>
-                <Text fontWeight="bold" fontSize="lg" mt="2" noOfLines={1}>
+                <Text fontWeight="semibold" fontSize="lg" mt="1.5" noOfLines={1}>
                   {item.title}
                 </Text>
 
                 <Flex flexGrow="1">
-                  <Text fontSize="sm" mt="2" color="gray.300" wordBreak="break-word" noOfLines={2}>
+                  <Text fontSize="md" color="#929497" noOfLines={2} w="100%" h="10">
                     {transformDescription(item.description)}
                   </Text>
                 </Flex>
               </div>
             </PopoverTrigger>
             <PopoverContent mx="2" width="220px" mt="-7">
-              <PopoverHeader fontWeight="semibold">{item.title}</PopoverHeader>
+              <PopoverHeader fontWeight="semibold" fontSize="lg">
+                {item.title}
+              </PopoverHeader>
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
-                <Text fontSize="sm" mt="2" color="#929497" noOfLines={2} w="100%" h="10">
+                <Text fontSize="md" mt="1" color="#929497">
                   {transformDescription(item.description)}
                 </Text>
               </PopoverBody>
             </PopoverContent>
           </Popover>
-          <Box>
+          <Box mt={1}>
             {
-              <Box color="gray.600" fontSize="sm">
-                Creator: <ShortAddress address={item.creator}></ShortAddress>
+              <Box color="#8c8f9282" fontSize="md">
+                Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
                 <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon mx="2px" />
+                  <ExternalLinkIcon ml="5px" fontSize="sm" />
                 </Link>
               </Box>
             }
 
-            <Box color="gray.600" fontSize="sm">
+            <Box color="#8c8f9282" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
             </Box>
 
-            <Badge borderRadius="full" px="2" colorScheme="teal">
-              <Text>You are the {item.creator !== address ? "Owner" : "Creator"}</Text>
-            </Badge>
+            <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
+              <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
+                <Text fontSize={"sm"} fontWeight="semibold">
+                  You are the {item.creator !== address ? "Owner" : "Creator"}
+                </Text>
+              </Badge>
 
-            <Badge borderRadius="full" px="2" colorScheme="blue">
-              Fully Transferable License
-            </Badge>
+              <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
+                  Fully Transferable License
+                </Text>
+              </Badge>
 
-            <Button mt="2" size="sm" colorScheme="red" height="5" isDisabled={hasPendingTransactions} onClick={() => onBurnButtonClick(item)}>
-              Burn
-            </Button>
-
-            <Box color="gray.600" fontSize="sm" my={2}>
+              <Button
+                mt="1"
+                size="md"
+                borderRadius="lg"
+                fontSize="sm"
+                bgColor="#FF439D"
+                _hover={{ backgroundColor: "#FF439D70" }}
+                isDisabled={hasPendingTransactions}
+                onClick={() => onBurnButtonClick(item)}>
+                Burn
+              </Button>
+            </Stack>
+            <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
@@ -333,31 +368,34 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Button
                 size="sm"
                 colorScheme="teal"
-                height="7"
+                w="full"
                 onClick={() => {
-                  accessDataStream(item.dataMarshal, item.id, address);
+                  accessDataStream(item.dataMarshal, item.id);
                 }}>
                 View Data
               </Button>
               <Button
                 size="sm"
                 colorScheme="teal"
-                height="7"
+                w="full"
                 variant="outline"
                 onClick={() => {
                   window.open(item.dataPreview);
                 }}>
-                Preview Data
+                <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                  Preview Data
+                </Text>
               </Button>
             </HStack>
 
-            <HStack mt="5">
-              <Text fontSize="xs" w="110px">
+            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+              <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
               <NumberInput
-                size="xs"
-                maxW={16}
+                size="sm"
+                borderRadius="4.65px !important"
+                maxW={20}
                 step={1}
                 defaultValue={1}
                 min={1}
@@ -381,33 +419,33 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
-            </HStack>
+            </Flex>
             {amountError && (
               <Text color="red.400" fontSize="xs">
                 {amountError}
               </Text>
             )}
 
-            <HStack mt="2">
-              <Text fontSize="xs" w="110px">
-                Listing price for each:{" "}
+            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+              <Text fontSize="md" color="#929497">
+                Unlock fee for each:{" "}
               </Text>
               <NumberInput
-                size="xs"
-                maxW={16}
+                size="sm"
+                maxW={20}
                 step={5}
                 defaultValue={10}
-                min={1}
+                min={0}
                 isValidCharacter={isValidNumericCharacter}
                 max={item.maxPayment ? item.maxPayment : 0}
                 value={price}
                 onChange={(valueString) => {
                   let error = "";
                   const valueAsNumber = Number(valueString);
-                  if (valueAsNumber <= 0) {
+                  if (valueAsNumber < 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
-                    error = "Cannot exceed maximum listing price";
+                    error = "Cannot exceed maximum listing fee";
                   }
                   setPriceError(error);
                   setPrice(valueAsNumber);
@@ -419,21 +457,23 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
-            </HStack>
+            </Flex>
             {priceError && (
               <Text color="red.400" fontSize="xs">
                 {priceError}
               </Text>
             )}
             <Button
-              size="xs"
-              mt={3}
+              size="sm"
+              mt={4}
               width="100%"
               colorScheme="teal"
               variant="outline"
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}
               onClick={() => onListButtonClick(item)}>
-              List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+              <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+              </Text>
             </Button>
           </Box>
         </Flex>
@@ -482,13 +522,15 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                           You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
                           {selectedDataNft.balance} Data NFTs and remove them from your wallet.
                           {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} are not under your ownership.`}
+                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} ${
+                              selectedDataNft.supply - selectedDataNft.balance > 1 ? "are" : "is"
+                            } not under your ownership.`}
                         </Text>
                       </Box>
                     </HStack>
 
                     <Text fontSize="md" mt="4">
-                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so on
+                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so no
                       one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not
                       be able to recover them again.
                     </Text>
@@ -581,6 +623,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             sellerFee={item.sellerFee || 0}
             offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
+            setAmount={setAmount}
           />
         )}
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
@@ -608,7 +651,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <Text>Verifying data access rights to unlock Data Stream</Text>
                 </HStack>
 
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && !unlockAccessProgress.s3 && (
+                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && (
                   <Stack border="solid .04rem" padding={3} borderRadius={5}>
                     <Text fontSize="sm" lineHeight={1.7}>
                       <InfoIcon boxSize={5} mr={1} />
@@ -630,6 +673,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
                     </Stack>
                   </Alert>
+                )}
+                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
+                  <Button colorScheme="teal" variant="outline" onClick={cleanupAccessDataStreamProcess}>
+                    Close & Return
+                  </Button>
                 )}
               </Stack>
             </ModalBody>

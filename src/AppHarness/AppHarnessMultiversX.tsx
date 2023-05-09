@@ -1,10 +1,25 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect, useState, useTransition } from "react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { Loader } from "@multiversx/sdk-dapp/UI";
 import AppMx from "App/AppMultiversX";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
+
+function CustomLoader() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        minHeight: '100vh'
+      }}
+    >
+      <Loader />
+    </div>
+  );
+}
 
 const baseUserContext = {
   isMxAuthenticated: false,
@@ -12,10 +27,12 @@ const baseUserContext = {
 
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
   const { user: _user, setUser } = useUser();
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { setChainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // console.log('********************* AppHarnessMultiversX launchEnvironment ', launchEnvironment);
@@ -29,6 +46,8 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
       contracts: contractsForChain(networkId),
       walletUsed: walletUsedSession,
     });
+
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -48,13 +67,15 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   };
 
   return (
-    <AppMx
-      onLaunchMode={handleLaunchMode}
-      resetAppContexts={resetAppContexts}
-      appConfig={{
-        mxEnvironment: launchEnvironment,
-      }}
-    />
+    isLoading ?
+      <CustomLoader />
+      : <AppMx
+          onLaunchMode={handleLaunchMode}
+          resetAppContexts={resetAppContexts}
+          appConfig={{
+            mxEnvironment: launchEnvironment,
+          }}
+        />
   );
 }
 

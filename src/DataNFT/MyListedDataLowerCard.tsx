@@ -15,6 +15,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
+  useColorMode,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -38,6 +39,7 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, nftMetadatas, itheumPrice, marketRequirements, maxPaymentFeeMap }) => {
+  const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const contract = new DataNftMarketContract(_chainMeta.networkId);
@@ -138,22 +140,23 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
   return (
     <>
       <Button
-        mt="2"
+        my="3"
         size="sm"
         colorScheme="teal"
-        height="7"
         variant="outline"
         onClick={() => {
           window.open(nftMetadatas[index].dataPreview);
         }}>
-        Preview Data
+        <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+          Preview Data
+        </Text>
       </Button>
 
       <Flex justifyContent="space-between" mt="2" gap="2">
         <Button
-          size="xs"
+          size="sm"
           colorScheme="teal"
-          width={"48%"}
+          w="full"
           isDisabled={hasPendingTransactions}
           onClick={() => {
             setSelectedOfferIndex(index);
@@ -165,9 +168,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
         </Button>
 
         <Button
-          size="xs"
+          size="sm"
           colorScheme="teal"
-          width={"48%"}
+          w="full"
           isDisabled={hasPendingTransactions}
           onClick={() => {
             setSelectedOfferIndex(index);
@@ -339,7 +342,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                       const value = Number(valueAsString);
                       let error = "";
                       if (value < 0) error = "Cannot be negative";
-                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing price";
+                      if (value > maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0) error = "Cannot exceed maximum listing fee";
                       setNewListingPriceError(error);
                       setNewListingPrice(value);
                     }}

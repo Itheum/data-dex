@@ -1,32 +1,40 @@
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
-import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
+import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 
 import { uxConfig } from "libs/util";
 
 export const getApi = (networkId: string) => {
-  if (networkId === "E1") {
-    return "api.multiversx.com";
-  } else {
-    //return "devnet-api.multiversx.com";
-    return "elrond-api-devnet.blastapi.io/0bc98858-cb7a-44c6-ad1b-8c8bfaec7128";
-  }
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_API_MAINNET_KEY" : "REACT_APP_ENV_API_DEVNET_KEY";
+  const defaultUrl = networkId === "E1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
+
+  return process.env[envKey] || defaultUrl;
 };
 
-export const getGateway = (networkId: string) => {
-  if (networkId === "E1") {
-    return new ProxyNetworkProvider("https://gateway.multiversx.com");
-  } else {
-    return new ProxyNetworkProvider("https://devnet-gateway.multiversx.com");
-  }
+export const getNetworkProvider = (networkId?: string, chainId?: string) => {
+  const environment = networkId === "E1" || chainId === "1" ? "mainnet" : "devnet";
+  const envKey = environment === "mainnet" ? "REACT_APP_ENV_GATEWAY_MAINNET_KEY" : "REACT_APP_ENV_GATEWAY_DEVNET_KEY";
+  const defaultUrl = environment === "mainnet" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
+
+  const envValue = process.env[envKey];
+  const isApi = envValue && envValue.includes("api");
+
+  return isApi ? new ApiNetworkProvider(envValue, { timeout: 10000 }) : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: 10000 });
+};
+
+export const getNetworkProviderCodification = (networkId?: string, chainId?: string) => {
+  const environment = networkId === "E1" || chainId === "1" ? "mainnet" : "devnet";
+  const envKey = environment === "mainnet" ? "REACT_APP_ENV_GATEWAY_MAINNET_KEY" : "REACT_APP_ENV_GATEWAY_DEVNET_KEY";
+  const defaultUrl = environment === "mainnet" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
+
+  const envValue = process.env[envKey];
+  const isApi = envValue && envValue.includes("api");
+
+  return isApi ? envValue : envValue || defaultUrl;
 };
 
 export const getExplorer = (networkId: string) => {
-  if (networkId === "E1") {
-    return "explorer.multiversx.com";
-  } else {
-    return "devnet-explorer.multiversx.com";
-  }
+  return networkId === "E1" ? "explorer.multiversx.com" : "devnet-explorer.multiversx.com";
 };
 
 export const getTransactionLink = (networkId: string, txHash: string) => {
@@ -65,6 +73,41 @@ export const checkBalance = async (token: string, address: string, networkId: st
         }
       });
   });
+};
+
+export const getInteractionTransactions = async (
+  address: string,
+  minterSmartContractAddress: string,
+  marketSmartContractAddress: string,
+  networkId: string
+) => {
+  const api = getApi(networkId);
+
+  try {
+    const minterTxs = `https://devnet-api.multiversx.com/accounts/${address}/transactions?size=10000&status=success&fields=&senderOrReceiver=${minterSmartContractAddress}`;
+    const marketTxs = `https://devnet-api.multiversx.com/accounts/${address}/transactions?size=10000&status=success&fields=&senderOrReceiver=${marketSmartContractAddress}`;
+
+    const transactions: any[] = [];
+    Promise.all([axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }), axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs })]).then(
+      ([minterResp, marketResp]) => {
+        const allTransactions = [...minterResp.data, ...marketResp.data];
+        allTransactions.forEach((tx: any) => {
+          const transaction: any = {};
+          transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
+          transaction["hash"] = tx["txHash"];
+          transaction["status"] = tx["status"];
+          transaction["type"] = tx["function"];
+          transactions.push(transaction);
+        });
+      }
+    );
+    console.log(transactions);
+    transactions.sort((a, b) => b.timestamp - a.timestamp);
+    return transactions;
+  } catch (error) {
+    console.error(error);
+    return { error };
+  }
 };
 
 export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: string) => {

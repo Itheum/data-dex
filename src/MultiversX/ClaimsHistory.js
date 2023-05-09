@@ -24,13 +24,13 @@ import {
 } from "@chakra-ui/react";
 import { formatNumberRoundFloor } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
-import { getClaimTransactions, getTransactionLink } from "./api";
+import { getClaimTransactions, getInteractionTransactions, getTransactionLink } from "./api";
 
 export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaimsHistory }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const [mxClaims, setMxClaims] = useState([]);
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
 
   useEffect(() => {
@@ -39,6 +39,8 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
 
   const fetchMxClaims = async () => {
     const transactions = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
+
+    // const interactions = await getInteractionTransactions(mxAddress, _chainMeta.contracts.dataNftMint, _chainMeta.contracts.market, networkId);
 
     if (transactions.error) {
       toast({

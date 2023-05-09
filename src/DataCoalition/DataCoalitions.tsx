@@ -6,7 +6,7 @@ import { CHAIN_TOKEN_SYMBOL, MENU } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function ({ setMenuItem }: { setMenuItem: any }) {
-  const { chainMeta: _chainMeta, setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const navigate = useNavigate();
 
   return (

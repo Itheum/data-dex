@@ -2,26 +2,25 @@ import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
-import { convertWeiToEsdt, sleep } from "libs/util";
+import { sleep } from "libs/util";
 import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
-import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
-import { DataNftMetadataType, OfferType } from "MultiversX/types";
+import { getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
-export type ProcureAccessModalProps = {
+export type ListModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  buyerFee: number;
-  nftData: DataNftMetadataType;
-  offer: OfferType;
+  sellerFee: number;
+  nftData: any;
+  offer: any;
   itheumPrice: number;
   marketContract: any;
   amount: number;
-  setSessionId?: (e: any) => void;
+  setAmount: (amount: number) => void;
 };
 
-export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
+export default function ListDataNFTModal(props: ListModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
@@ -31,13 +30,6 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
-
-  // set ReadTermChecked checkbox as false when modal opened
-  useEffect(() => {
-    if (props.isOpen) {
-      setReadTermsChecked(false);
-    }
-  }, [props.isOpen]);
 
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
@@ -56,14 +48,19 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   useEffect(() => {
     if (props.offer) {
       setFeePrice(
-        printPrice(
-          convertWeiToEsdt(Number(props.offer.wanted_token_amount) * props.amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber(),
-          getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
-        )
+        address !== props.nftData.creator
+          ? printPrice(
+              (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee - props.nftData.royalties * 10000)) / 10000,
+              getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
+            )
+          : printPrice(
+              (props.amount * props.offer.wanted_token_amount * (10000 - props.sellerFee)) / 10000,
+              getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
+            )
       );
-      setFee(convertWeiToEsdt(props.offer.wanted_token_amount, tokenDecimals(props.offer.wanted_token_identifier)).toNumber());
+      setFee(props.offer.wanted_token_amount);
     }
-  }, [props]);
+  }, [props.offer]);
 
   const onProcure = async () => {
     if (!address) {
@@ -74,7 +71,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
       });
       return;
     }
-    if (!props.buyerFee || !props.marketContract) {
+    if (!props.sellerFee || !props.marketContract) {
       toast({
         title: "Data is not loaded",
         status: "error",
@@ -99,40 +96,8 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
       return;
     }
 
-    const paymentAmount = new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount);
-    if (props.offer.wanted_token_identifier == "EGLD") {
-      props.marketContract.sendAcceptOfferEgldTransaction(props.offer.index, paymentAmount.toFixed(), props.amount, address);
-    } else {
-      if (props.offer.wanted_token_nonce === 0) {
-        const { sessionId } = await props.marketContract.sendAcceptOfferEsdtTransaction(
-          props.offer.index,
-          paymentAmount.toFixed(),
-          props.offer.wanted_token_identifier,
-          props.amount,
-          address
-        );
-
-        // if offer is sold out by this transaction, close Drawer if opened
-        if (props.setSessionId && props.amount == props.offer.quantity) {
-          props.setSessionId(sessionId);
-        }
-      } else {
-        const { sessionId } = await props.marketContract.sendAcceptOfferNftEsdtTransaction(
-          props.offer.index,
-          paymentAmount.toFixed(),
-          props.offer.wanted_token_identifier,
-          props.offer.wanted_token_nonce,
-          props.amount,
-          address
-        );
-
-        // if offer is sold out by this transaction, close Drawer if opened
-        if (props.setSessionId && props.amount == props.offer.quantity) {
-          props.setSessionId(sessionId);
-        }
-      }
-    }
-
+    props.marketContract.addToMarket(props.nftData.collection, props.nftData.nonce, props.amount, props.offer.wanted_token_amount, address);
+    props.setAmount(1);
     // a small delay for visual effect
     await sleep(0.5);
     props.onClose();
@@ -146,7 +111,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
-                <Text fontSize="lg">Procure Access to Data NFTs</Text>
+                <Text fontSize="lg">List Data NFTs on Marketplace</Text>
                 <Flex mt="1">
                   <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
                     {props.nftData.tokenName}
@@ -166,14 +131,11 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Unlock Fee (per NFT)</Box>
                 <Box>
-                  :{" "}
-                  {props.buyerFee ? (
+                  {props.sellerFee ? (
                     <>
+                      {": "}
                       {printPrice(
-                        convertWeiToEsdt(
-                          new BigNumber(props.offer.wanted_token_amount).multipliedBy(10000).div(10000 + props.buyerFee),
-                          tokenDecimals(props.offer.wanted_token_identifier)
-                        ).toNumber(),
+                        new BigNumber(props.offer.wanted_token_amount).toNumber(),
                         getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)
                       )}
                     </>
@@ -182,72 +144,66 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                   )}
                 </Box>
               </Flex>
-              <Flex>
-                {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
-                  <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
-                    Your wallet token balance is too low to proceed
-                  </Text>
-                )}
-              </Flex>
+
               <Flex fontSize="md" mt="2">
-                <Box w="140px">Buyer Tax (per NFT)</Box>
+                <Box w="140px">Seller Tax (per NFT)</Box>
                 <Box>
                   :{" "}
-                  {props.buyerFee
-                    ? `${props.buyerFee / 100}% (${convertWeiToEsdt(
-                        new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.buyerFee).div(10000 + props.buyerFee),
-                        tokenDecimals(props.offer.wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`
-                    : "-"}
+                  {`${props.sellerFee / 100}% (${new BigNumber(props.offer.wanted_token_amount)
+                    .multipliedBy(props.sellerFee)
+                    .div(10000)
+                    .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
                 </Box>
               </Flex>
+              
+              {address !== props.nftData.creator && (
+                <Flex fontSize="md" mt="2">
+                  <Box w="140px">Royalties (per NFT)</Box>
+                  <Box>
+                    :{" "}
+                    {`${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
+                      .multipliedBy((1 - props.sellerFee / 10000) * props.nftData.royalties)
+                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
+                  </Box>
+                </Flex>
+              )}
+              
               <Flex fontSize="md" mt="2">
-                <Box w="140px">Total Fee</Box>
+                <Box w="140px">You will receive</Box>
                 <Box>
                   {": "}
-                  {props.buyerFee ? (
+                  {
                     <>
-                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ""}
+                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
                     </>
-                  ) : (
-                    "-"
-                  )}
+                  }
                 </Box>
               </Flex>
               <Flex fontSize="xs" mt="0">
                 <Box w="146px"></Box>
                 <Box>
-                  {props.buyerFee ? (
+                  {
                     <>
                       {new BigNumber(props.offer.wanted_token_amount).comparedTo(0) <= 0 ? (
                         ""
                       ) : (
                         <>
-                          {" " +
-                            convertWeiToEsdt(
-                              new BigNumber(props.offer.wanted_token_amount)
-                                .multipliedBy(props.amount)
-                                .multipliedBy(10000)
-                                .div(10000 + props.buyerFee),
-                              tokenDecimals(props.offer.wanted_token_identifier)
-                            ).toNumber() +
-                            " "}
+                          {" " + new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).toNumber() + " "}
                           {getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
-                          {" + "}
-                          {convertWeiToEsdt(
-                            new BigNumber(props.offer.wanted_token_amount)
-                              .multipliedBy(props.amount)
-                              .multipliedBy(props.buyerFee)
-                              .div(10000 + props.buyerFee),
-                            tokenDecimals(props.offer.wanted_token_identifier)
-                          ).toNumber()}
+                          {address != props.nftData.creator && (
+                            <>
+                              {" - "}
+                              {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.nftData.royalties).toNumber()}
+                              {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
+                            </>
+                          )}
+                          {" - "}
+                          {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).multipliedBy(props.sellerFee).div(10000).toNumber()}
                           {" " + getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)}
                         </>
                       )}
                     </>
-                  ) : (
-                    "-"
-                  )}
+                  }
                 </Box>
               </Flex>
             </Box>

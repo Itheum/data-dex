@@ -1,11 +1,9 @@
 import {
   AbiRegistry,
-  SmartContractAbi,
   SmartContract,
   Address,
   ResultsParser,
   Transaction,
-  TransactionPayload,
   ContractFunction,
   BigUIntValue,
   StringValue,
@@ -13,13 +11,14 @@ import {
   U64Value,
   AddressValue,
   BinaryCodec,
+  ContractCallPayloadBuilder,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/util";
 import jsonData from "./ABIs/datanftmint.abi.json";
+import { getNetworkProvider } from "./api";
 import { DataNftMetadataType, UserDataType } from "./types";
 
 export class DataNftMintContract {
@@ -41,11 +40,10 @@ export class DataNftMintContract {
 
     const json = JSON.parse(JSON.stringify(jsonData));
     this.abiRegistry = AbiRegistry.create(json);
-    const abi = new SmartContractAbi(this.abiRegistry, ["DataNftMintContract"]);
 
     this.contract = new SmartContract({
       address: new Address(this.dataNftMintContractAddress),
-      abi: abi,
+      abi: this.abiRegistry,
     });
   }
 
@@ -80,7 +78,7 @@ export class DataNftMintContract {
   }) {
     let data;
     if (antiSpamTax > 0) {
-      data = TransactionPayload.contractCall()
+      data = new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("ESDTTransfer"))
         .addArg(new StringValue(itheumToken))
         .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
@@ -97,7 +95,7 @@ export class DataNftMintContract {
         .addArg(new StringValue(description))
         .build();
     } else {
-      data = TransactionPayload.contractCall()
+      data = new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("mint"))
         .addArg(new StringValue(name))
         .addArg(new StringValue(media))
@@ -130,14 +128,13 @@ export class DataNftMintContract {
       },
       redirectAfterSign: false,
     });
-
     return { sessionId, error };
   }
 
   async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number) {
     const tx = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall()
+      data: new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("ESDTNFTTransfer")) //method
         .addArg(new TokenIdentifierValue(collection)) //what token id to send
         .addArg(new U64Value(nonce)) //what token nonce to send
@@ -167,14 +164,7 @@ export class DataNftMintContract {
     const query = interaction.buildQuery();
 
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -240,14 +230,7 @@ export class DataNftMintContract {
 
   async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
     try {
-      let networkProvider;
-      if (this.chainID === "1") {
-        networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-      } else {
-        networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-          timeout: this.timeout,
-        });
-      }
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();

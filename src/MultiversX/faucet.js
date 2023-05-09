@@ -1,18 +1,9 @@
-import {
-  AbiRegistry,
-  SmartContractAbi,
-  SmartContract,
-  Address,
-  ResultsParser,
-  Transaction,
-  TransactionPayload,
-  ContractFunction,
-} from "@multiversx/sdk-core/out";
+import { AbiRegistry, SmartContract, Address, ResultsParser, Transaction, ContractFunction, ContractCallPayloadBuilder } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { contractsForChain } from "libs/util";
 import jsonData from "./ABIs/devnetfaucet.abi.json";
+import { getNetworkProvider } from "./api";
 
 export class FaucetContract {
   constructor(networkId) {
@@ -25,23 +16,15 @@ export class FaucetContract {
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
-    const abi = new SmartContractAbi(abiRegistry, ["DevNetFaucet"]);
 
     this.contract = new SmartContract({
       address: new Address(this.claimsContractAddress),
-      abi: abi,
+      abi: abiRegistry,
     });
   }
 
   async getFaucetTime(address) {
-    let networkProvider;
-    if (this.chainID === "1") {
-      networkProvider = new ProxyNetworkProvider("https://gateway.multiversx.com", { timeout: this.timeout });
-    } else {
-      networkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", {
-        timeout: this.timeout,
-      });
-    }
+    const networkProvider = getNetworkProvider(this.chainID);
 
     const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
     const query = interaction.buildQuery();
@@ -55,7 +38,7 @@ export class FaucetContract {
   async sendActivateFaucetTransaction(address) {
     const faucetTransaction = new Transaction({
       value: 0,
-      data: TransactionPayload.contractCall().setFunction(new ContractFunction("activateFaucet")).build(),
+      data: new ContractCallPayloadBuilder().setFunction(new ContractFunction("activateFaucet")).build(),
       receiver: new Address(this.claimsContractAddress),
       sender: new Address(address),
       gasLimit: 20000000,
@@ -73,7 +56,6 @@ export class FaucetContract {
       },
       redirectAfterSign: false,
     });
-
     return { sessionId, error };
   }
 }
