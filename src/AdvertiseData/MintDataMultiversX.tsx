@@ -931,7 +931,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
           <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="5 !important">
             Join a community built app and earn rewards if you trade your data
           </Heading>
-          <Wrap shouldWrapChildren={true} spacingX={5}>
+          <Wrap shouldWrapChildren={true} spacingX={5} marginBottom="8 !important">
             {dataCATAccount.programsAllocation.map((item: any) => (
               <Box key={item.program} maxW="22.4rem" borderWidth="1px" overflow="hidden" border=".1rem solid transparent" backgroundColor="none">
                 <Image

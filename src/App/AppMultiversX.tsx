@@ -212,17 +212,20 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
         <Flex
           bgColor={colorMode === "dark" ? "bgDark" : "white"}
           flexDirection="column"
-          justifyContent="space-between"
+          justifyContent="normal"
           minH="100vh"
           boxShadow={containerShadow}
           zIndex={2}>
           {/* App Header */}
           <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
-
           {/* App Body */}
-          <Box backgroundColor="none" flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"} mt={menuItem !== MENU.LANDING ? "5" : "0"}>
+          <Box backgroundColor="none">
             <Routes>
               <Route path="/" element={<LandingPage />} />
+
+              <Route path="getwhitelisted" element={<Outlet />}>
+                <Route path="" element={<GetWhitelist />} />
+              </Route>
 
               <Route
                 path="home"
@@ -266,11 +269,6 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
             </Routes>
           </Box>
 
-          <Routes>
-            <Route path="getwhitelisted" element={<Outlet />}>
-              <Route path="" element={<GetWhitelist />} />
-            </Route>
-          </Routes>
           {/* App Footer */}
           <AppFooter />
         </Flex>

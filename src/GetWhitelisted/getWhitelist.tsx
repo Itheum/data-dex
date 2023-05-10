@@ -30,10 +30,10 @@ export const GetWhitelist: React.FC = () => {
   }, [isWhitelistFormOpen]);
 
   return (
-    <Flex w="full">
+    <Flex w="full" h="full">
       <Flex
         w="100%"
-        h={{ base: "auto", lg: "81vh" }}
+        h={{ base: "auto", lg: "84vh" }}
         bgGradient="linear(to-r, bgDark, #6B46C160, #00C79730)"
         bgSize="contain"
         bgPosition="bottom"

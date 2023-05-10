@@ -160,7 +160,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
             <strong>{table.getPageCount()}</strong>
           </Text>
         </VStack>
-        <HStack>
+        <HStack marginBottom="7 !important">
           <Text as={"span"} minWidth={"5rem"}>
             Go to page
           </Text>
