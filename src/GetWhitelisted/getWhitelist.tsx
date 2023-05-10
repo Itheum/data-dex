@@ -102,7 +102,7 @@ export const GetWhitelist: React.FC = () => {
         <ModalContent>
           <ModalHeader></ModalHeader>
           <ModalBody>
-            <div id="hubspotForm" style={{ background: "var(--modal-bg)" }}></div>
+            <div id="hubspotForm"></div>
           </ModalBody>
         </ModalContent>
       </Modal>
