@@ -32,6 +32,7 @@ import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTMX from "./WalletDataNFTMX";
@@ -43,6 +44,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
+
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
     for (let index = 0; index < 5; index++) {
@@ -96,22 +100,21 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     (async () => {
       if (!_chainMeta.networkId) return;
 
-      const _marketRequirements = await marketContract.viewRequirements();
-      setSellerFee(_marketRequirements?.seller_fee);
+      setSellerFee(marketRequirements?.seller_fee);
       const _maxPaymentFeeMap: RecordStringNumberType = {};
 
-      if (_marketRequirements) {
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
+      if (marketRequirements) {
+        for (let i = 0; i < marketRequirements.accepted_payments.length; i++) {
+          _maxPaymentFeeMap[marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
+            marketRequirements.maximum_payment_fees[i],
+            tokenDecimals(marketRequirements.accepted_payments[i])
           ).toNumber();
         }
       }
 
       setMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
-  }, [_chainMeta.networkId]);
+  }, [marketRequirements]);
 
   const getOnChainNFTs = async () => {
     const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);

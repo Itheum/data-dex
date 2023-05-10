@@ -23,6 +23,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { convertToLocalString } from "libs/util2";
+import { useMarketStore } from "store";
 import { convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
@@ -34,15 +35,17 @@ type MyListedDataLowerCardProps = {
   nftMetadatas: DataNftMetadataType[];
   index: number;
   itheumPrice: number | undefined;
-  marketRequirements: MarketplaceRequirementsType | undefined;
   maxPaymentFeeMap: Record<string, number>;
 };
 
-const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, nftMetadatas, itheumPrice, marketRequirements, maxPaymentFeeMap }) => {
+const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, nftMetadatas, itheumPrice, maxPaymentFeeMap }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const contract = new DataNftMarketContract(_chainMeta.networkId);
+
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection

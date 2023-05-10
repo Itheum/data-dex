@@ -22,6 +22,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { convertToLocalString } from "libs/util2";
+import { useMarketStore } from "store";
 import ShortAddress from "UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { getApi } from "../MultiversX/api";
@@ -36,7 +37,6 @@ type MyListedDataNFTProps = {
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
   nftMetadata: DataNftMetadataType[];
-  marketRequirements: MarketplaceRequirementsType | undefined;
   printPrice: (price: number, token: string) => string;
   setDelistAmount: Dispatch<SetStateAction<number>>;
   setDelistModalState: Dispatch<SetStateAction<number>>;
@@ -58,7 +58,6 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
     nftMetadataLoading,
     setNftImageLoading,
     nftMetadata,
-    marketRequirements,
     printPrice,
     setDelistAmount,
     setDelistModalState,
@@ -76,6 +75,8 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   return (
     <Skeleton isLoaded={nftMetadataLoading}>
@@ -177,15 +178,9 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                 <Box fontSize="xs" mt="2">
                   <Text>
                     Unlock from: {` `}
-                    {marketRequirements ? (
-                      <>
-                        {printPrice(
-                          convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                        )}
-                      </>
-                    ) : (
-                      " -"
+                    {printPrice(
+                      convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
+                      getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                     )}
                   </Text>
                 </Box>

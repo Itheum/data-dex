@@ -41,6 +41,7 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
+import { useMarketStore } from "store";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -52,6 +53,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pageNumber } = useParams();
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
+
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta?.contracts?.itheumToken || null;
@@ -68,7 +71,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [userData, setUserData] = useState<any>({});
-  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
@@ -120,18 +122,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      if (!_chainMeta.networkId) return;
-
-      const _marketRequirements = await marketContract.viewRequirements();
-      console.log("_marketRequirements", _marketRequirements);
-      setMarketRequirements(_marketRequirements);
-
-      if (_marketRequirements) {
+      if (marketRequirements) {
         const _maxPaymentFeeMap: Record<string, number> = {};
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
+        for (let i = 0; i < marketRequirements.accepted_payments.length; i++) {
+          _maxPaymentFeeMap[marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
+            marketRequirements.maximum_payment_fees[i],
+            tokenDecimals(marketRequirements.accepted_payments[i])
           ).toNumber();
         }
         setMaxPaymentFeeMap(_maxPaymentFeeMap);
@@ -139,7 +135,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         setMaxPaymentFeeMap({});
       }
     })();
-  }, [_chainMeta.networkId]);
+  }, [marketRequirements]);
 
   useEffect(() => {
     (async () => {
@@ -402,7 +398,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
                   setNftImageLoaded={setOneNFTImgLoaded}
                   nftMetadatas={nftMetadatas}
-                  marketRequirements={marketRequirements}
                   item={item}
                   userData={userData}
                   index={index}
@@ -416,7 +411,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       item={item}
                       offers={offers}
                       itheumPrice={itheumPrice}
-                      marketRequirements={marketRequirements}
                     />
                   ) : (
                     <MyListedDataLowerCard
@@ -424,7 +418,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       offers={items}
                       nftMetadatas={nftMetadatas}
                       itheumPrice={itheumPrice}
-                      marketRequirements={marketRequirements}
                       maxPaymentFeeMap={maxPaymentFeeMap}
                     />
                   )}

@@ -67,6 +67,7 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
+import { useAccountStore } from "store";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
   let title = "",
@@ -171,6 +172,9 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
+
+  const itheumBalance = useAccountStore((state) => state.itheumBalance);
+
   const [saveProgress, setSaveProgress] = useState({
     s1: 0,
     s2: 0,
@@ -204,7 +208,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
   const [dataNFTStreamPreviewUrlStatus, setDataNFTStreamPreviewUrlStatus] = useState("");
   const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState(false);
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
-  const [itheumBalance, setItheumBalance] = useState(0);
   const [mintDataNFTDisabled, setMintDataNFTDisabled] = useState(true);
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [, setDataStreamUrlValidation] = useState(false);
@@ -362,18 +365,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
       }
     })();
   }, [_chainMeta.networkId]);
-
-  // query Itheum balance of User
-  useEffect(() => {
-    if (mxAddress && _chainMeta && _chainMeta.networkId) {
-      (async () => {
-        const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
-        if (typeof data.balance !== "undefined") {
-          setItheumBalance(convertWeiToEsdt(data.balance).toNumber());
-        }
-      })();
-    }
-  }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
 
   const getUserData = async () => {
     if (mxAddress && _chainMeta.networkId) {

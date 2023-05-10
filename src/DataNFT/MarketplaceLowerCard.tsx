@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useMarketStore } from "store";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import { isValidNumericCharacter } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
@@ -27,13 +28,15 @@ type MarketplaceLowerCardProps = {
   nftMetadatas: DataNftMetadataType[];
   index: number;
   itheumPrice: number | undefined;
-  marketRequirements: MarketplaceRequirementsType | undefined;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas, itheumPrice, marketRequirements }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas, itheumPrice }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
+
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
@@ -41,6 +44,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
   const contract = new DataNftMarketContract(_chainMeta.networkId);
   const [isMyNft, setIsMyNft] = useState<boolean>(false);
   const { address } = useGetAccountInfo();
+  
 
   useEffect(() => {
     (async () => {

@@ -34,7 +34,6 @@ type UpperCardComponentProps = {
   imageUrl: string;
   nftMetadatas: DataNftMetadataType[];
   userData: Record<any, any>;
-  marketRequirements: MarketplaceRequirementsType | undefined;
   item?: ItemType;
   index: number;
   marketFreezedNonces: number[];
@@ -54,7 +53,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     index,
     children,
     item,
-    marketRequirements,
     marketFreezedNonces,
     openNftDetailsDrawer,
     itheumPrice,
@@ -200,13 +198,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   <Box fontSize="xs" mt="2">
                     <Text>
                       Unlock from: {` `}
-                      {marketRequirements ? (
-                        <>
-                          {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
-                        </>
-                      ) : (
-                        " -"
-                      )}
+                      {<>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}</>}
                     </Text>
                   </Box>
                 </>

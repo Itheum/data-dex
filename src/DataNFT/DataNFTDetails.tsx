@@ -38,6 +38,7 @@ import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
+import { useMarketStore } from "store";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -53,6 +54,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
+
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
@@ -73,7 +76,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
-  const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [sessionId, setSessionId] = useState<any>();
 
   useTrackTransactionStatus({
@@ -93,11 +95,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _itheumPrice = await getItheumPriceFromApi();
         setItheumPrice(_itheumPrice || 0);
-      })();
-
-      (async () => {
-        const _marketRequirements = await marketContract.viewRequirements();
-        setMarketRequirements(_marketRequirements);
       })();
     }
   }, [_chainMeta, hasPendingTransactions]);
