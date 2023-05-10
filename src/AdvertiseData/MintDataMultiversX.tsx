@@ -898,7 +898,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
   }
 
   return (
-    <Stack mt={5} mx={{ base: 0, "2xl": "24 !important" }}>
+    <Stack mt={5} mx={{ base: 3, lg: 7, "2xl": "24 !important" }} h={{ base: "auto", md: "84vh" }}>
       <Heading size="lg" fontWeight="medium">
         Trade Data
       </Heading>

@@ -212,7 +212,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
         <Flex
           bgColor={colorMode === "dark" ? "bgDark" : "white"}
           flexDirection="column"
-          justifyContent="normal"
+          justifyContent="space-between"
           minH="100vh"
           boxShadow={containerShadow}
           zIndex={2}>

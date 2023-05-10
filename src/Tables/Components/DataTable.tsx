@@ -102,7 +102,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
           <ArrowRightIcon mx={3} />
         </Button>
       </Flex>
-      <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5">
+      <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate" }}>
         <Thead style={styles.th}>
           {table.getHeaderGroups().map((headerGroup) => (
             <Tr key={headerGroup.id}>

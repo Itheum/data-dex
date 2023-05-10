@@ -218,7 +218,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 justifyContent={{ base: "center", md: "flex-start" }}
                 alignItems={{ base: "center", md: "flex-start" }}>
                 <Image
-                  boxSize={{ base: "240px", md: "400px" }}
+                  boxSize={{ base: "240px", md: "330px" }}
                   p={10}
                   objectFit={"contain"}
                   src={nftData.url}
@@ -385,12 +385,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Text>
                     </Box>
                   )}
-                  <Flex flexDirection="row" gap={5}>
-                    <Button size="lg" colorScheme="teal" isDisabled={hasPendingTransactions || !!amountError} onClick={onProcureModalOpen}>
+                  <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
+                    <Button
+                      size={{ base: "md", lg: "lg" }}
+                      colorScheme="teal"
+                      isDisabled={hasPendingTransactions || !!amountError}
+                      onClick={onProcureModalOpen}>
                       <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                     </Button>
                     <Button
-                      size="lg"
+                      size={{ base: "md", lg: "lg" }}
                       colorScheme="teal"
                       variant="outline"
                       onClick={() => {

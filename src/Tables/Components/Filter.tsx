@@ -18,7 +18,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
       lineHeight: "1.25rem",
       border: "1px solid",
       borderRadius: "0.375rem",
-      padding: "2px",
+      padding: "8px",
       marginTop: "0.24rem",
       fontSize: "16px",
       width: "170px",
@@ -29,12 +29,12 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
       border: "1px solid",
       borderRadius: "12px",
       borderColor: "#FFFFFF40",
-      padding: "2px",
+      padding: "8px",
       marginTop: "0.4rem",
       fontSize: "16px",
       width: "170px",
       height: "45px",
-      textIndent: "0.6rem",
+      textIndent: "0.4rem",
     },
   };
 
