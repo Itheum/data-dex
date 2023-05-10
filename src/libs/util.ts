@@ -1,6 +1,9 @@
 import BigNumber from "bignumber.js";
 
 import {
+  tokenContractAddress_Astar,
+  ddexContractAddress_Astar,
+  dNFTContractAddress_Astar,
   tokenContractAddress_Matic,
   ddexContractAddress_Matic,
   dNFTContractAddress_Matic,
@@ -93,6 +96,11 @@ export const contractsForChain = (networkId: NetworkIdType) => {
       contracts.itheumToken = tokenContractAddress_Mx_Mainnet;
       contracts.claims = claimsContractAddress_Mx_Mainnet;
       contracts.faucet = faucetContractAddress_Mx_Mainnet;
+      break;
+    case "0x51":
+      contracts.itheumToken = tokenContractAddress_Astar;
+      contracts.ddex = ddexContractAddress_Astar;
+      contracts.dnft = dNFTContractAddress_Astar;
       break;
   }
 
@@ -234,7 +242,7 @@ export const PATHS = {
   offer: [17, [4]],
 };
 
-export const CHAINS = {
+export const CHAINS : any = {
   31337: "Localhost",
   1: "Eth - Mainnet",
   5: "Eth - Görli",
@@ -244,6 +252,8 @@ export const CHAINS = {
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
   43113: "Avalanche - Testnet",
+  0x250: "Astar Network",
+  0x51: "Astar - Shibuya",
   E1: "MultiversX - Mainnet",
   ED: "MultiversX - Devnet",
 };
@@ -268,7 +278,7 @@ export const OPENSEA_CHAIN_NAMES: Record<NetworkIdType, string> = {
   80001: "mumbai",
 };
 
-export const SUPPORTED_CHAINS = ["E1", "ED", 5, 80001, 97, 1666700000, 43113];
+export const SUPPORTED_CHAINS = ["E1", "ED", 5, 80001, 97, 1666700000, 43113, '0x51'];
 
 export const WALLETS = {
   METAMASK: "evm_metamask",
@@ -292,6 +302,8 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    '0x250': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    '0x51': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -309,6 +321,8 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   E1: "https://explorer.multiversx.com",
   ED: "https://devnet-explorer.multiversx.com",
+  0x250: "https://astar.subscan.io",
+  0x51: "https://shibuya.subscan.io",
 };
 
 export const CHAIN_TX_LIST = {
@@ -321,11 +335,12 @@ export const CHAIN_TX_LIST = {
 export const CHAIN_TOKEN_SYMBOL = (networkId: NetworkIdType) => {
   const mapping: Record<string, any[]> = {
     ITHEUM: ["E1", "ED"],
+    aITHEUM: ["0x250", "0x51"],
     eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
     hITHEUM: [1666700000],
-    aITHEUM: [43113],
+    xITHEUM: [43113],
   };
 
   let sym = null;

@@ -55,7 +55,10 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU } from "libs/u
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
+import LoginButtonEVM from "UtilComps/LoginButtonEVM";
 import ShortAddress from "UtilComps/ShortAddress";
+
+import { init, Web3OnboardProvider, useConnectWallet, useWallets, useSetChain, useNotifications } from '@web3-onboard/react';
 
 const exploreRouterMenu = [
   {
@@ -96,12 +99,14 @@ const AppHeader = ({
   menuItem,
   setMenuItem,
   handleLogout,
+  onEVMConnection
 }: {
   onLaunchMode?: any;
   tokenBalance?: number;
   menuItem: number;
   setMenuItem: any;
   handleLogout: any;
+  onEVMConnection: any;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -110,6 +115,8 @@ const AppHeader = ({
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+
+  const [{ wallet: evmWallet, connecting }, connect, disconnect] = useConnectWallet();
 
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
@@ -288,7 +295,7 @@ const AppHeader = ({
               </>
             )}
 
-            {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
+            {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} onEVMConnection={onEVMConnection} />}
 
             {/*Toggle Mode*/}
             {/*<Box display={{ base: "none", md: "block", xl: "block" }}>*/}
@@ -398,7 +405,7 @@ const AppHeader = ({
 
 export default AppHeader;
 
-const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
+const PopupChainSelectorForWallet = ({ onMxEnvPick, onEVMConnection }: { onMxEnvPick: any, onEVMConnection: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
 
   return (
@@ -415,6 +422,8 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
             Connect MultiversX Wallet
           </Button>
         </PopoverTrigger>
+
+        <LoginButtonEVM onEVMConnection={onEVMConnection} />
       </HStack>
 
       <PopoverContent>

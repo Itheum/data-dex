@@ -25,7 +25,7 @@ const baseUserContext = {
   isMxAuthenticated: false,
 }; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
 
-function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
+function AppHarnessMx({ launchEnvironment, handleLaunchMode, onEVMConnection }: { launchEnvironment: any; handleLaunchMode: any, onEVMConnection: any }) {
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
@@ -75,6 +75,7 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
           appConfig={{
             mxEnvironment: launchEnvironment,
           }}
+          onEVMConnection={onEVMConnection}
         />
   );
 }

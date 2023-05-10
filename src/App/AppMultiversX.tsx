@@ -17,7 +17,7 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
-import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import MintDataMX from "AdvertiseData/MintDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
@@ -36,9 +36,12 @@ import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
 import { useChainMeta } from "store/ChainMetaContext";
 
+import { ethers } from 'ethers';
+import { ABIS } from '../EVM/ABIs';
+
 const mxLogout = logout;
 
-function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; resetAppContexts: any; onLaunchMode: any }) {
+function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { appConfig: any; resetAppContexts: any; onLaunchMode: any, onEVMConnection: any }) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
@@ -69,6 +72,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (path) {
       // we can use - to tag path keys. e.g. offer-44 is path key offer. So remove anything after - if needed
@@ -78,6 +83,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
       } else if (path.includes("-")) {
         path = path.split("-")[0];
       }
+      
+      console.log('******************* ', PATHS[path as keyof typeof PATHS]?.[0] as number);
 
       setMenuItem(PATHS[path as keyof typeof PATHS]?.[0] as number);
     }
@@ -87,11 +94,16 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
-      const networkId = mxEnvironment === "mainnet" ? "E1" : "ED";
+      // const networkId = mxEnvironment === "mainnet" ? "E1" : "ED";
 
-      setChain(CHAINS[networkId] || "Unknown chain");
+      if (_chainMeta?.isEVMAuthenticated) {
+        setMenuItem(PATHS['home']?.[0] as number);
+        navigate('home');
+      }
 
-      if (!SUPPORTED_CHAINS.includes(networkId)) {
+      setChain(CHAINS[_chainMeta?.networkId] || "Unknown chain");
+
+      if (!SUPPORTED_CHAINS.includes(_chainMeta?.networkId)) {
         setAlertIsOpen(true);
       } else {
         itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
@@ -138,25 +150,36 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   // Mx transactions state changed so need new balances
   const itheumTokenBalanceUpdate = async () => {
-    if (mxAddress && isMxLoggedIn) {
-      setTokenBalance(-1); // -1 is loading
+    // debugger; //eslint-disable-line
+    if (_chainMeta?.isEVMAuthenticated) {
+      const contract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, _chainMeta.ethersProvider);
+      const balance = await contract.balanceOf(_chainMeta.loggedInAddress);
+      const decimals = await contract.decimals();
 
-      // get user token balance from mx
-      const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
+      console.log('astar ITHEUM bal = ', itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
+      setTokenBalance(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
+    }
+    else {
+      if (mxAddress && isMxLoggedIn) {
+        setTokenBalance(-1); // -1 is loading
 
-      if (typeof data.balance !== "undefined") {
-        setTokenBalance(data.balance / Math.pow(10, 18));
-      } else {
-        setTokenBalance(-2); // -2 is error getting it
+        // get user token balance from mx
+        const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
 
-        if (!toast.isActive("er1")) {
-          toast({
-            id: "er1",
-            title: "ER1: Could not get your token information from the MultiversX blockchain.",
-            status: "error",
-            isClosable: true,
-            duration: null,
-          });
+        if (typeof data.balance !== "undefined") {
+          setTokenBalance(data.balance / Math.pow(10, 18));
+        } else {
+          setTokenBalance(-2); // -2 is error getting it
+
+          if (!toast.isActive("er1")) {
+            toast({
+              id: "er1",
+              title: "ER1: Could not get your token information from the MultiversX blockchain.",
+              status: "error",
+              isClosable: true,
+              duration: null,
+            });
+          }
         }
       }
     }
@@ -205,6 +228,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
+  console.log('******************* menuItem = ', menuItem);
+
   return (
     <>
       <Container maxW="97.5rem">
@@ -216,7 +241,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
           boxShadow={containerShadow}
           zIndex={2}>
           {/* App Header */}
-          <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+          <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} onEVMConnection={onEVMConnection} />
 
           {/* App Body */}
           <Box backgroundColor="none" flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"} mt={menuItem !== MENU.LANDING ? "5" : "0"}>
@@ -302,3 +327,13 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 }
 
 export default App;
+
+const itheumTokenRoundUtil = (balance: any, decimals: any, BigNumber: any) => {
+  const balanceWeiString = balance.toString();
+  const balanceWeiBN = BigNumber.from(balanceWeiString);
+  const decimalsBN = BigNumber.from(decimals);
+  const divisor = BigNumber.from(10).pow(decimalsBN);
+  const beforeDecimal = balanceWeiBN.div(divisor);
+
+  return beforeDecimal.toString();
+};

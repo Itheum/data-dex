@@ -1,6 +1,14 @@
 const contractsMode = "dev"; // will support dev | staging | prod
 
 const contracts = {
+  astar: {
+    dev: {
+      itheumTokenContractAddress: "0x91ff16CDfeF176b1576E640422C5BA281A242400",
+      ddexContractAddress: "0x1982dba6de8D943f8b89D61f57aBA7BeDE3A6441",
+      dNFTContractAddress: "0xaC9e9eA0d85641Fa176583215447C81eBB5eD7b3",
+      claimsContractAddress: "",
+    },
+  },
   matic: {
     dev: {
       itheumTokenContractAddress: "0x91ff16CDfeF176b1576E640422C5BA281A242400",
@@ -43,6 +51,11 @@ const contracts = {
     },
   },
 };
+
+// Astar Contracts
+export const tokenContractAddress_Astar = contracts.astar[contractsMode].itheumTokenContractAddress;
+export const ddexContractAddress_Astar = contracts.astar[contractsMode].ddexContractAddress;
+export const dNFTContractAddress_Astar = contracts.astar[contractsMode].dNFTContractAddress;
 
 // Matic Polygon Contracts
 export const tokenContractAddress_Matic = contracts.matic[contractsMode].itheumTokenContractAddress;
