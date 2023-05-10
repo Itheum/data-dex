@@ -1,9 +1,34 @@
-import React from "react";
-import { Box, Flex, Heading, Button, Image, Text, Center } from "@chakra-ui/react";
-import illustration from "../img/illustration.png";
+import React, { useEffect } from "react";
+import { Box, Flex, Heading, Button, Image, Text, Center, useDisclosure, ModalBody, Modal, ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
 import { FaTwitter, FaDiscord, FaTelegramPlane } from "react-icons/fa";
+import illustration from "../img/illustration.png";
 
 export const GetWhitelist: React.FC = () => {
+  const { isOpen: isWhitelistFormOpen, onOpen: onWhitelistFormOpen, onClose: onWhitelistFormClose } = useDisclosure();
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://js.hsforms.net/forms/v2.js";
+    document.body.appendChild(script);
+
+    script.addEventListener("load", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      if (window.hbspt) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        window.hbspt.forms.create({
+          region: "eu1",
+          portalId: "25472280",
+          formId: "e6bcb619-d920-4568-9d4c-e6cdb826a110",
+          target: "#hubspotForm",
+        });
+      }
+    });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+  }, [isWhitelistFormOpen]);
+
   return (
     <Flex w="full">
       <Flex
@@ -46,7 +71,7 @@ export const GetWhitelist: React.FC = () => {
               <Text fontSize="lg" fontWeight="400" lineHeight="25px" mt={7}>
                 Join our <strong>Whitelist</strong> Now to be among the first data creators to mint their datasets as Data NFTs.
               </Text>
-              <Button variant="solid" colorScheme="teal" px={7} py={6} rounded="lg" mt={7}>
+              <Button variant="solid" colorScheme="teal" px={7} py={6} rounded="lg" mt={7} onClick={onWhitelistFormOpen}>
                 Get Whitelisted
               </Button>
             </Box>
@@ -72,6 +97,15 @@ export const GetWhitelist: React.FC = () => {
           </Box>
         </Center>
       </Flex>
+      <Modal isOpen={isWhitelistFormOpen} onClose={onWhitelistFormClose} closeOnEsc={true} closeOnOverlayClick={true}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader></ModalHeader>
+          <ModalBody>
+            <div id="hubspotForm" style={{ background: "var(--modal-bg)" }}></div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };
