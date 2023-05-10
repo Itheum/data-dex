@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
 import AppMx from "App/AppMultiversX";
@@ -6,6 +6,7 @@ import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
+import { StoreProvider } from "./StoreProvider";
 
 function CustomLoader() {
   return (
@@ -66,16 +67,20 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     setChainMeta({});
   };
 
+  if (isLoading) {
+    return <CustomLoader />;
+  }
+
   return (
-    isLoading ?
-      <CustomLoader />
-      : <AppMx
-          onLaunchMode={handleLaunchMode}
-          resetAppContexts={resetAppContexts}
-          appConfig={{
-            mxEnvironment: launchEnvironment,
-          }}
-        />
+    <StoreProvider>
+      <AppMx
+        onLaunchMode={handleLaunchMode}
+        resetAppContexts={resetAppContexts}
+        appConfig={{
+          mxEnvironment: launchEnvironment,
+        }}
+      />
+    </StoreProvider>
   );
 }
 

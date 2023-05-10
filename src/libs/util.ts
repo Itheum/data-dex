@@ -404,14 +404,30 @@ export const formatNumberRoundFloor = (num: number, decimals = 2) => {
   return (Math.floor(num * factor) / factor).toFixed(2);
 };
 
-export const convertWeiToEsdt = (amount: BigNumber.Value, decimals = 18, precision = 4) => {
-  return new BigNumber(amount).shiftedBy(-decimals).decimalPlaces(precision);
+//
+export const BIG_NUMBER_ROUNDING_MODE = BigNumber.ROUND_FLOOR;
+export const DEFAULT_DECIMALS = 18;
+
+export const convertWeiToEsdt = (amount: BigNumber.Value | null | undefined, decimals?: number, precision?: number): BigNumber => {
+    if (amount == null) {
+        return new BigNumber(0);
+    } else {
+        return new BigNumber(amount)
+            .decimalPlaces(0, BIG_NUMBER_ROUNDING_MODE)
+            .shiftedBy(typeof decimals !== 'undefined' ? -decimals : -DEFAULT_DECIMALS)
+            .decimalPlaces(typeof precision !== 'undefined' ? precision : 4, BIG_NUMBER_ROUNDING_MODE);
+    }
 };
 
-export const convertEsdtToWei = (amount: BigNumber.Value, decimals = 18) => {
-  return new BigNumber(amount).shiftedBy(decimals);
+export const convertEsdtToWei = (amount: BigNumber.Value | null | undefined, decimals?: number): BigNumber => {
+  if (amount == null) {
+    return new BigNumber(0);
+  } else {
+    return new BigNumber(amount).shiftedBy(typeof decimals !== 'undefined' ? decimals : DEFAULT_DECIMALS).decimalPlaces(0, BIG_NUMBER_ROUNDING_MODE);
+  }
 };
 
+//
 export const tryParseInt = (value: any, defaultValue = 0) => {
   if (defaultValue < 0) defaultValue = 0;
   const intValue = parseInt(value);
