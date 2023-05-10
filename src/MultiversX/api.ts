@@ -84,9 +84,9 @@ export const getInteractionTransactions = async (
   const api = getApi(networkId);
 
   try {
-    const minterTxs = `https://${api}/accounts/${address}/transactions?size=10000&status=success&senderOrReceiver=${minterSmartContractAddress}`;
-    const marketTxs = `https://${api}/accounts/${address}/transactions?size=10000&status=success&senderOrReceiver=${marketSmartContractAddress}`;
-    const selfTxs = `https://${api}/accounts/${address}/transactions?size=10000&status=success&senderOrReceiver=${address}`;
+    const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}`;
+    const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}`;
+    const selfTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${address}`;
 
     const [minterResp, marketResp, selfResp] = await Promise.all([
       axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
@@ -97,6 +97,15 @@ export const getInteractionTransactions = async (
     const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data];
     const transactions: any[] = [];
 
+    const transactionTypes: Record<string, string> = {
+      mint: "Minted Data NFT",
+      burn: "Burned Data NFT",
+      cancelOffer: "Removed offer",
+      addOffer: "Added offer",
+      changeOfferPrice: "Changed offer price",
+      acceptOffer: "Accepted offer",
+    };
+
     allTransactions.forEach((tx: any) => {
       console.log(tx["function"]);
       if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
@@ -104,7 +113,7 @@ export const getInteractionTransactions = async (
         transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
         transaction["hash"] = tx["txHash"];
         transaction["status"] = tx["status"];
-        transaction["type"] = tx["function"];
+        transaction["type"] = transactionTypes[tx["function"]];
         transactions.push(transaction);
       }
     });

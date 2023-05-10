@@ -85,7 +85,7 @@ export default function InteractionsHistory({ mxAddress, networkId, onAfterClose
                       <Tr>
                         <Th>When</Th>
                         <Th>Hash</Th>
-                        <Th>Type</Th>
+                        <Th>Interaction</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -111,7 +111,7 @@ export default function InteractionsHistory({ mxAddress, networkId, onAfterClose
                       <Tr>
                         <Th>When</Th>
                         <Th>Hash</Th>
-                        <Th>Type</Th>
+                        <Th>Interaction</Th>
                       </Tr>
                     </Tfoot>
                   </Table>
