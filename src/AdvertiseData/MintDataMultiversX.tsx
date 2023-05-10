@@ -1046,10 +1046,15 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
               )}
 
               <form onSubmit={handleSubmit(onSubmit)}>
-                <Text fontSize="sm" color="gray.400">
-                  * required fields
-                </Text>
-                <Text fontSize="sm" color="gray.400" mt="0 !important">
+                <Flex flexDirection="row">
+                  <Text fontSize="xl" color="red.400">
+                    *
+                  </Text>
+                  <Text color="gray.400" fontSize="xl">
+                    &nbsp;required fields
+                  </Text>
+                </Flex>
+                <Text fontSize="xl" color="gray.400" mt="0 !important">
                   + click on an item&apos;s title to learn more
                 </Text>
 
@@ -1086,11 +1091,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl isInvalid={!!errors.dataPreviewUrlForm}>
+                  <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired>
                     <InputLabelWithPopover tkey="data-preview-url">
-                      <Text fontWeight="bold" fontSize="md" mt={1}>
-                        Data Preview URL *
-                      </Text>
+                      <FormLabel fontWeight="bold" fontSize="md" mt={1}>
+                        Data Preview URL
+                      </FormLabel>
                     </InputLabelWithPopover>
 
                     <Controller
@@ -1140,11 +1145,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     NFT Token Metadata
                   </Text>
 
-                  <FormControl isInvalid={!!errors.tokenNameForm}>
+                  <FormControl isInvalid={!!errors.tokenNameForm} isRequired>
                     <InputLabelWithPopover tkey="token-name">
-                      <Text fontWeight="bold" fontSize="md">
-                        Token Name (Short Title) *
-                      </Text>
+                      <FormLabel fontWeight="bold" fontSize="md">
+                        Token Name (Short Title)
+                      </FormLabel>
                     </InputLabelWithPopover>
 
                     <Controller
@@ -1166,11 +1171,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl isInvalid={!!errors.datasetTitleForm}>
+                  <FormControl isInvalid={!!errors.datasetTitleForm} isRequired>
                     <InputLabelWithPopover tkey="dataset-title">
-                      <Text fontWeight="bold" fontSize="md" mt={1}>
-                        Dataset Title *
-                      </Text>
+                      <FormLabel fontWeight="bold" fontSize="md" mt={1}>
+                        Dataset Title
+                      </FormLabel>
                     </InputLabelWithPopover>
 
                     <Controller
@@ -1192,11 +1197,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl isInvalid={!!errors.datasetDescriptionForm}>
+                  <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired>
                     <InputLabelWithPopover tkey="dataset-description">
-                      <Text fontWeight="bold" fontSize="md" mt={1}>
-                        Dataset Description *
-                      </Text>
+                      <FormLabel fontWeight="bold" fontSize="md" mt={1}>
+                        Dataset Description
+                      </FormLabel>
                     </InputLabelWithPopover>
 
                     <Controller
