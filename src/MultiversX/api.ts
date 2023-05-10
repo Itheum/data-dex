@@ -84,25 +84,33 @@ export const getInteractionTransactions = async (
   const api = getApi(networkId);
 
   try {
-    const minterTxs = `https://devnet-api.multiversx.com/accounts/${address}/transactions?size=10000&status=success&fields=&senderOrReceiver=${minterSmartContractAddress}`;
-    const marketTxs = `https://devnet-api.multiversx.com/accounts/${address}/transactions?size=10000&status=success&fields=&senderOrReceiver=${marketSmartContractAddress}`;
+    const minterTxs = `https://${api}/accounts/${address}/transactions?size=10000&status=success&senderOrReceiver=${minterSmartContractAddress}`;
+    const marketTxs = `https://${api}/accounts/${address}/transactions?size=10000&status=success&senderOrReceiver=${marketSmartContractAddress}`;
+    const selfTxs = `https://${api}/accounts/${address}/transactions?size=10000&status=success&senderOrReceiver=${address}`;
 
+    const [minterResp, marketResp, selfResp] = await Promise.all([
+      axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
+      axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs }),
+      axios.get(selfTxs, { timeout: uxConfig.mxAPITimeoutMs }),
+    ]);
+
+    const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data];
     const transactions: any[] = [];
-    Promise.all([axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }), axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs })]).then(
-      ([minterResp, marketResp]) => {
-        const allTransactions = [...minterResp.data, ...marketResp.data];
-        allTransactions.forEach((tx: any) => {
-          const transaction: any = {};
-          transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
-          transaction["hash"] = tx["txHash"];
-          transaction["status"] = tx["status"];
-          transaction["type"] = tx["function"];
-          transactions.push(transaction);
-        });
+
+    allTransactions.forEach((tx: any) => {
+      console.log(tx["function"]);
+      if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
+        const transaction: any = {};
+        transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
+        transaction["hash"] = tx["txHash"];
+        transaction["status"] = tx["status"];
+        transaction["type"] = tx["function"];
+        transactions.push(transaction);
       }
-    );
-    console.log(transactions);
+    });
+
     transactions.sort((a, b) => b.timestamp - a.timestamp);
+    console.log(transactions);
     return transactions;
   } catch (error) {
     console.error(error);

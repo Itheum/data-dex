@@ -56,6 +56,7 @@ import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import ShortAddress from "UtilComps/ShortAddress";
+import InteractionsHistory from "MultiversX/InteractionHistory";
 
 const exploreRouterMenu = [
   {
@@ -108,6 +109,7 @@ const AppHeader = ({
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
+  const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
@@ -261,6 +263,9 @@ const AppHeader = ({
                               <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
                                 <Text fontSize="sm">View claims history</Text>
                               </MenuItem>
+                              <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxInteractionsHistory(true)}>
+                                <Text fontSize="sm">View Interactions history</Text>
+                              </MenuItem>
                             </ChainSupportedComponent>
                           )}
 
@@ -306,6 +311,9 @@ const AppHeader = ({
 
       {mxShowClaimsHistory && (
         <ClaimsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
+      )}
+      {mxShowInteractionsHistory && (
+        <InteractionsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />
       )}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
@@ -365,6 +373,17 @@ const AppHeader = ({
                           p={3}
                           onClick={() => setMxShowClaimsHistory(true)}>
                           View claims history
+                        </ListItem>
+                        <ListItem
+                          as={Button}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          display={"flex"}
+                          justifyContent={"start"}
+                          p={3}
+                          onClick={() => setMxInteractionsHistory(true)}>
+                          View interactions history
                         </ListItem>
 
                         <ListItem

@@ -22,14 +22,13 @@ import {
   useToast,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { formatNumberRoundFloor } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
-import { getClaimTransactions, getInteractionTransactions, getTransactionLink } from "./api";
+import { getInteractionTransactions, getTransactionLink } from "./api";
 
-export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaimsHistory }) {
-  const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
-  const [mxClaims, setMxClaims] = useState([]);
-  const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
+export default function InteractionsHistory({ mxAddress, networkId, onAfterCloseInteractionsHistory }) {
+  const [interactionTransactionsModalOpen, setInteractionTransactionsModalOpen] = useState(true);
+  const [mxInteractions, setMxInteractions] = useState([]);
+  const [loadingInteractions, setLoadingInteractions] = useState(-1); // 0 is done, -1 is loading, -2 is an error
   const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
 
@@ -38,9 +37,9 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
   }, []);
 
   const fetchMxClaims = async () => {
-    const transactions = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
+    const interactions = await getInteractionTransactions(mxAddress, _chainMeta.contracts.dataNftMint, _chainMeta.contracts.market, networkId);
 
-    if (transactions.error) {
+    if (interactions.error) {
       toast({
         title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",
         status: "error",
@@ -48,38 +47,38 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
         duration: null,
       });
 
-      setLoadingClaims(-2);
+      setLoadingInteractions(-2);
     } else {
-      setMxClaims(transactions);
-      setLoadingClaims(0);
+      setMxInteractions(interactions);
+      setLoadingInteractions(0);
     }
 
-    setClaimTransactionsModalOpen(true);
+    setInteractionTransactionsModalOpen(true);
   };
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   return (
     <Modal
-      isOpen={claimTransactionsModalOpen}
+      isOpen={interactionTransactionsModalOpen}
       onClose={() => {
-        onAfterCloseChaimsHistory();
-        setClaimTransactionsModalOpen(false);
+        onAfterCloseInteractionsHistory();
+        setInteractionTransactionsModalOpen(false);
       }}
       size={modelSize}
       scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Recent Claim Transactions</ModalHeader>
+        <ModalHeader>Recent Interactions Transactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {((loadingClaims === -1 || loadingClaims === -2) && (
+          {((loadingInteractions === -1 || loadingInteractions === -2) && (
             <Box minH="150" alignItems="center" display="flex" justifyContent="center">
-              {loadingClaims === -1 ? <Spinner size="lg" /> : <WarningTwoIcon />}
+              {loadingInteractions === -1 ? <Spinner size="lg" /> : <WarningTwoIcon />}
             </Box>
           )) || (
             <>
-              {(mxClaims.length > 0 && (
+              {(mxInteractions.length > 0 && (
                 <TableContainer>
                   <Table variant="striped" size="sm">
                     <Thead>
@@ -87,11 +86,10 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
                         <Th>When</Th>
                         <Th>Hash</Th>
                         <Th>Type</Th>
-                        <Th textAlign="center">Amount</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
-                      {mxClaims.map((item) => (
+                      {mxInteractions.map((item) => (
                         <Tr key={item.hash}>
                           <Td>
                             <Text fontSize="xs">{new Date(item.timestamp).toLocaleString()}</Text>
@@ -104,10 +102,7 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
                             {item.status === "success" ? "" : <CloseIcon ml="2" fontSize="xs" color="red" verticalAlign="baseline"></CloseIcon>}
                           </Td>
                           <Td>
-                            <Text fontSize="sm">{item.claimType}</Text>
-                          </Td>
-                          <Td textAlign="center">
-                            <Text fontSize="sm">{formatNumberRoundFloor(item.amount / Math.pow(10, 18))}</Text>
+                            <Text fontSize="sm">{item.type}</Text>
                           </Td>
                         </Tr>
                       ))}
@@ -117,14 +112,13 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
                         <Th>When</Th>
                         <Th>Hash</Th>
                         <Th>Type</Th>
-                        <Th textAlign="center">Amount</Th>
                       </Tr>
                     </Tfoot>
                   </Table>
                 </TableContainer>
               )) || (
                 <Box minH="150" alignItems="center" display="flex" justifyContent="center">
-                  No claims yet...
+                  No interactions yet...
                 </Box>
               )}
             </>
