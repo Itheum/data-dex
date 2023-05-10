@@ -26,15 +26,12 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
-  const marketFreezedNonces = useMarketStore((state) => state.marketFreezedNonces);
-  const updateMarketFreezedNonces = useMarketStore((state) => state.updateMarketFreezedNonces);
-  const userDataOut = useMintStore((state) => state.userData);
+  const userData = useMintStore((state) => state.userData);
   const updateUserData = useMintStore((state) => state.updateUserData);
 
   console.log('itheumBalance', itheumBalance);
   console.log('marketRequirements', marketRequirements);
-  console.log('marketFreezedNonces', marketFreezedNonces);
-  console.log('userDataOut', userDataOut);
+  console.log('userData', userData);
 
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
@@ -56,16 +53,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const _token = await getAccountTokenFromApi(address, chainMeta.contracts.itheumToken, chainMeta.networkId);
       const balance = _token ? convertWeiToEsdt(_token.balance, _token.decimals).toNumber() : 0;
       updateItheumBalance(balance);
-    })();
-
-    (async () => {
-      const _userDataOut = await mintContract.getUserDataOut(address, chainMeta.contracts.itheumToken);
-      updateUserData(_userDataOut);
-    })();
-
-    (async () => {
-      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(address);
-      updateMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, [chainMeta, address, hasPendingTransactions]);
 

@@ -67,7 +67,7 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "UtilComps/ChainSupportedInput";
-import { useAccountStore } from "store";
+import { useAccountStore, useMintStore } from "store";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
   let title = "",
@@ -174,6 +174,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
   const toast = useToast();
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
+  const userData = useMintStore((state) => state.userData);
 
   const [saveProgress, setSaveProgress] = useState({
     s1: 0,
@@ -212,7 +213,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
   const [userFocusedForm, setUserFocusedForm] = useState(false);
   const [, setDataStreamUrlValidation] = useState(false);
   const [, setDataPreviewUrlValidation] = useState(false);
-  const [userData, setUserData] = useState<UserDataType | undefined>();
   const [dataNFTStreamUrlError, setDataNFTStreamUrlError] = useState("");
   const [dataNFTStreamPreviewUrlError, setDataNFTStreamPreviewUrlError] = useState("");
   const [dataNFTTokenNameError, setDataNFTTokenNameError] = useState("");
@@ -365,17 +365,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
       }
     })();
   }, [_chainMeta.networkId]);
-
-  const getUserData = async () => {
-    if (mxAddress && _chainMeta.networkId) {
-      const _userData = await mxDataNftMintContract.getUserDataOut(mxAddress, _chainMeta.contracts.itheumToken);
-      setUserData(_userData);
-    }
-  };
-
-  useEffect(() => {
-    getUserData();
-  }, [mxAddress, hasPendingTransactions, _chainMeta.networkId]);
 
   // set initial states for validation
   useEffect(() => {

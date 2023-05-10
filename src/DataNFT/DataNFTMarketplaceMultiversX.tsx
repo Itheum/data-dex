@@ -33,6 +33,7 @@ import { createNftId } from "libs/util2";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNetworkProvider, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
+import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { CustomPagination } from "./CustomPagination";
 import MarketplaceLowerCard from "./MarketplaceLowerCard";
@@ -41,7 +42,6 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
-import { useMarketStore } from "store";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -70,7 +70,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [userData, setUserData] = useState<any>({});
   const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
@@ -252,20 +251,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [address, offers, selectedOfferIndex, hasPendingTransactions, _chainMeta.networkId]);
 
-  const getUserData = async () => {
-    if (address) {
-      const _userData = await mintContract.getUserDataOut(address, itheumToken);
-      setUserData(_userData);
-    }
-  };
-
-  useEffect(() => {
-    if (hasPendingTransactions) return;
-    if (!_chainMeta.networkId) return;
-
-    getUserData();
-  }, [address, hasPendingTransactions, _chainMeta.networkId]);
-
   function openNftDetailsDrawer(index: number) {
     setOfferForDrawer(offers[index]);
     onOpenDrawerTradeStream();
@@ -399,7 +384,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   setNftImageLoaded={setOneNFTImgLoaded}
                   nftMetadatas={nftMetadatas}
                   item={item}
-                  userData={userData}
                   index={index}
                   marketFreezedNonces={marketFreezedNonces}
                   openNftDetailsDrawer={openNftDetailsDrawer}

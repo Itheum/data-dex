@@ -54,11 +54,11 @@ import { DataNftType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import ListDataNFTModal from "./ListDataNFTModal";
+import { useMintStore } from "store";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
   maxPayment: number;
-  userData: any;
   setHasLoaded: (hasLoaded: boolean) => void;
   sellerFee: number;
   openNftDetailsDrawer: (e: number) => void;
@@ -70,6 +70,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
+
+  const userData = useMintStore((state) => state.userData);
+
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
@@ -489,7 +492,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           backgroundColor="blackAlpha.800"
           rounded="lg"
           visibility={
-            item.userData && (item.userData?.addressFrozen || (item.userData?.frozenNonces && item.userData?.frozenNonces.includes(item?.nonce)))
+            userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(item?.nonce)))
               ? "visible"
               : "collapse"
           }

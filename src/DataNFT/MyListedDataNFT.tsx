@@ -22,7 +22,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { convertToLocalString } from "libs/util2";
-import { useMarketStore } from "store";
+import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { getApi } from "../MultiversX/api";
@@ -45,7 +45,6 @@ type MyListedDataNFTProps = {
   setNewListingPrice: Dispatch<SetStateAction<number>>;
   amountOfTokens: Record<any, any>; //record<string, number> stands for empty object
   onUpdatePriceModalOpen: () => void;
-  userData: Record<any, any>;
   index: number;
   children?: React.ReactNode;
 };
@@ -66,7 +65,6 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
     setNewListingPrice,
     amountOfTokens,
     onUpdatePriceModalOpen,
-    userData,
     index,
     children,
   } = props;
@@ -77,6 +75,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const userData = useMintStore((state) => state.userData);
 
   return (
     <Skeleton isLoaded={nftMetadataLoading}>

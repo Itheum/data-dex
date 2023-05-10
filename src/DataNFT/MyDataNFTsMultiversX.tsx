@@ -32,7 +32,7 @@ import { getNftsOfACollectionForAnAddress } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
-import { useMarketStore } from "store";
+import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTMX from "./WalletDataNFTMX";
@@ -46,6 +46,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { address } = useGetAccountInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const userData = useMintStore((state) => state.userData);
 
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
@@ -59,7 +60,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const [userData, setUserData] = useState<UserDataType | undefined>(undefined);
   const [sellerFee, setSellerFee] = useState<number | undefined>();
 
   const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
@@ -166,16 +166,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     getOnChainNFTs();
   }, [hasPendingTransactions, _chainMeta.networkId]);
 
-  useEffect(() => {
-    (async () => {
-      if (!_chainMeta.networkId) return;
-      if (address && !hasPendingTransactions) {
-        const _userData = await mintContract.getUserDataOut(address, _chainMeta.contracts.itheumToken);
-        setUserData(_userData);
-      }
-    })();
-  }, [address, hasPendingTransactions, _chainMeta.networkId]);
-
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);
     onOpenDrawerTradeStream();
@@ -224,7 +214,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       key={index}
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
-                      userData={userData}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
                       sellerFee={sellerFee || 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}

@@ -27,13 +27,13 @@ import { convertToLocalString, printPrice, transformDescription } from "../libs/
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
+import { useMintStore } from "store";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
   imageUrl: string;
   nftMetadatas: DataNftMetadataType[];
-  userData: Record<any, any>;
   item?: ItemType;
   index: number;
   marketFreezedNonces: number[];
@@ -49,7 +49,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     setNftImageLoaded,
     imageUrl,
     nftMetadatas,
-    userData,
     index,
     children,
     item,
@@ -61,6 +60,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+
+  const userData = useMintStore((state) => state.userData);
 
   const feePrice = item
     ? printPrice(
