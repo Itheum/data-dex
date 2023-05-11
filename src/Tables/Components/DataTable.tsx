@@ -102,55 +102,57 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
           <ArrowRightIcon mx={3} />
         </Button>
       </Flex>
-      <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate" }}>
-        <Thead style={styles.th}>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <Th key={header.id} colSpan={header.colSpan} fontSize="md" fontWeight="500" textColor="white">
-                    {header.isPlaceholder ? null : (
-                      <>
-                        <Box
-                          {...{
-                            className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {{
-                            asc: <TriangleUpIcon />,
-                            desc: <TriangleDownIcon />,
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </Box>
-                        {header.column.getCanFilter() ? (
-                          <Box>
-                            <Filter column={header.column} table={table} />
-                          </Box>
-                        ) : null}
-                      </>
-                    )}
-                  </Th>
-                );
-              })}
-            </Tr>
-          ))}
-        </Thead>
-        <Tbody style={styles.tbody}>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <Tr key={row.id} borderColor="#00C79740">
-                {row.getVisibleCells().map((cell) => {
+      <div style={{ maxHeight: "100%", overflowX: "scroll" }}>
+        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
+          <Thead style={styles.th}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   return (
-                    <Td fontSize="lg !important" key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Td>
+                    <Th key={header.id} colSpan={header.colSpan} fontSize="md" fontWeight="500" textColor="white">
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <Box
+                            {...{
+                              className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {{
+                              asc: <TriangleUpIcon />,
+                              desc: <TriangleDownIcon />,
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </Box>
+                          {header.column.getCanFilter() ? (
+                            <Box>
+                              <Filter column={header.column} table={table} />
+                            </Box>
+                          ) : null}
+                        </>
+                      )}
+                    </Th>
                   );
                 })}
               </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
+            ))}
+          </Thead>
+          <Tbody style={styles.tbody}>
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <Tr key={row.id} borderColor="#00C79740">
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <Td fontSize="lg !important" key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </div>
       <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
         <VStack>
           <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
