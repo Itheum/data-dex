@@ -75,58 +75,6 @@ export const checkBalance = async (token: string, address: string, networkId: st
   });
 };
 
-export const getInteractionTransactions = async (
-  address: string,
-  minterSmartContractAddress: string,
-  marketSmartContractAddress: string,
-  networkId: string
-) => {
-  const api = getApi(networkId);
-
-  try {
-    const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}`;
-    const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}`;
-    const selfTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${address}`;
-
-    const [minterResp, marketResp, selfResp] = await Promise.all([
-      axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
-      axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs }),
-      axios.get(selfTxs, { timeout: uxConfig.mxAPITimeoutMs }),
-    ]);
-
-    const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data];
-    const transactions: any[] = [];
-
-    const transactionTypes: Record<string, string> = {
-      mint: "Minted Data NFT",
-      burn: "Burned Data NFT",
-      cancelOffer: "Removed offer",
-      addOffer: "Added offer",
-      changeOfferPrice: "Changed offer price",
-      acceptOffer: "Accepted offer",
-    };
-
-    allTransactions.forEach((tx: any) => {
-      console.log(tx["function"]);
-      if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
-        const transaction: any = {};
-        transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
-        transaction["hash"] = tx["txHash"];
-        transaction["status"] = tx["status"];
-        transaction["type"] = transactionTypes[tx["function"]];
-        transactions.push(transaction);
-      }
-    });
-
-    transactions.sort((a, b) => b.timestamp - a.timestamp);
-    console.log(transactions);
-    return transactions;
-  } catch (error) {
-    console.error(error);
-    return { error };
-  }
-};
-
 export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: string) => {
   const api = getApi(networkId);
 
@@ -139,7 +87,7 @@ export const getClaimTransactions = async (address: string, smartContractAddress
 
     for (const tx of resp) {
       const transaction: any = {};
-      transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
+      transaction["timestamp"] = parseInt(tx["timestamp"]);
       transaction["hash"] = tx["txHash"];
       transaction["status"] = tx["status"];
 
