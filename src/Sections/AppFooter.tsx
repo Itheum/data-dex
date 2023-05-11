@@ -17,7 +17,12 @@ export default function () {
   const isApiNetworkProvider = getNetworkProvider(_chainMeta?.networkId) instanceof ApiNetworkProvider;
 
   return (
-    <Box backgroundColor={colorMode === "light" ? "white" : "bgDark"} height="5rem" borderTop="solid .1rem" borderColor="teal.200" flexGrow={1}>
+    <Box
+      backgroundColor={colorMode === "light" ? "white" : "bgDark"}
+      height="5rem"
+      borderTop="solid .1rem"
+      borderColor="teal.200"
+      flexGrow={{ base: 0, lg: 1 }}>
       <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
         <Text fontSize="xx-small">
           {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}

@@ -889,20 +889,12 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
     }
   };
 
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-  let gradientBorderCards = styleStrings.gradientBorderMulticolor;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-    gradientBorderCards = styleStrings.gradientBorderMulticolorLight;
-  }
-
   return (
-    <Stack mt={5} mx={{ base: 3, lg: 7, "2xl": "24 !important" }} h={{ base: "auto", md: "84vh" }}>
-      <Heading size="lg" fontWeight="medium">
+    <Stack mx={{ base: 3, lg: 7, "2xl": "24 !important" }} h={{ base: "auto", md: "84vh" }}>
+      <Heading size="xl" fontWeight="medium" mt={10} textAlign={{ base: "center", lg: "start" }}>
         Trade Data
       </Heading>
-      <Heading size="sm" opacity=".7" fontWeight="normal">
+      <Heading size="1rem" opacity=".7" fontWeight="light">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
