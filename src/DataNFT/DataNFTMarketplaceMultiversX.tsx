@@ -18,16 +18,19 @@ import {
   Tabs,
   Tab,
   useColorMode,
+  useToast,
 } from "@chakra-ui/react";
+import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
 import { FaStore, FaBrush } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt, sleep } from "libs/util";
 import { createNftId } from "libs/util2";
-import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNftsByIds } from "MultiversX/api";
+import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNetworkProvider, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -53,7 +56,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
+  const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
 
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
@@ -287,6 +290,51 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     onCloseDrawerTradeStream();
     setOfferForDrawer(undefined);
   }
+
+  //
+  const toast = useToast();
+  useEffect(() => {
+    if (!pendingTransactions) return;
+
+    const networkProvider = getNetworkProvider(_chainMeta.networkId);
+    const watcher = new TransactionWatcher(networkProvider);
+    for (const [key, value] of Object.entries(pendingTransactions)) {
+      const stxs = (value as SignedTransactionsBodyType).transactions;
+      if (stxs && stxs.length > 0) {
+        (async () => {
+          const stx = stxs[0];
+          const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
+          console.log('transactionOnNetwork', transactionOnNetwork);
+          if (transactionOnNetwork.status.isFailed()) {
+            for (const event of transactionOnNetwork.logs.events) {
+              if (event.identifier == "internalVMErrors") {
+                const input = event.data.toString();
+                const matches = input.match(/(?<=\[)[^\][]*(?=])/g);
+
+                if (matches) {
+                  const title = matches[1] == 'acceptOffer' ? 'Purchase transaction failed'
+                    : matches[1] == 'cancelOffer' ? 'De-List transaction failed'
+                    : matches[1] == 'changeOfferPrice' ? 'Update price transaction failed'
+                    : 'Transaction failed';
+                  const description = matches[matches.length - 1];
+
+                  toast({
+                    title,
+                    description,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                  });
+
+                  return;
+                }
+              }
+            }
+          }
+        })();
+      }
+    }
+  }, [pendingTransactions]);
 
   return (
     <>

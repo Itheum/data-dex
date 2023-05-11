@@ -6,14 +6,14 @@ import { convertWeiToEsdt, sleep } from "libs/util";
 import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
-import { OfferType } from "MultiversX/types";
+import { DataNftMetadataType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
   buyerFee: number;
-  nftData: any;
+  nftData: DataNftMetadataType;
   offer: OfferType;
   itheumPrice: number;
   marketContract: any;
@@ -31,6 +31,13 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+
+  // set ReadTermChecked checkbox as false when modal opened
+  useEffect(() => {
+    if (props.isOpen) {
+      setReadTermsChecked(false);
+    }
+  }, [props.isOpen]);
 
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
@@ -249,6 +256,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               dataMarshal={props.nftData.dataMarshal}
               NFTId={props.nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
+              isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
             />
 

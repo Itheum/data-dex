@@ -8,6 +8,7 @@ export type DataNFTLiveUptimeProps = {
   dataMarshal: string;
   NFTId: string;
   handleFlagAsFailed: (hasFailed: boolean) => void;
+  isLiveUptimeSuccessful: boolean;
   setIsLiveUptimeSuccessful: (e: boolean) => void;
 };
 
@@ -104,7 +105,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
               setLiveUptimeCheckInProgress(true);
               checkLiveDataStreamUptime();
             }}>
-            Retry?
+            {props.isLiveUptimeSuccessful ? 'Check again' : 'Retry'} 
           </Button>
         </Box>
       )}

@@ -191,7 +191,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", lg: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
-        <Box>
+        <Box mb="5">
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <>
@@ -426,7 +426,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               itheumPrice={itheumPrice || 0}
               marketContract={marketContract}
               buyerFee={marketRequirements?.buyer_fee || 0}
-              nftData={nftData}
+              nftData={nftData.attributes}
               offer={offer}
               amount={amount}
               setSessionId={setSessionId}
