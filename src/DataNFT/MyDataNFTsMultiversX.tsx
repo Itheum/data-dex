@@ -47,6 +47,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
+  const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
 
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
@@ -56,11 +57,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     return _dataNfts;
   });
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<RecordStringNumberType>({});
-  const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const [sellerFee, setSellerFee] = useState<number | undefined>();
 
   const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
@@ -93,28 +90,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       isDisabled: true,
     },
   ];
-
-  useEffect(() => {
-    // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
-
-    (async () => {
-      if (!_chainMeta.networkId) return;
-
-      setSellerFee(marketRequirements?.seller_fee);
-      const _maxPaymentFeeMap: RecordStringNumberType = {};
-
-      if (marketRequirements) {
-        for (let i = 0; i < marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(marketRequirements.accepted_payments[i])
-          ).toNumber();
-        }
-      }
-
-      setMaxPaymentFeeMap(_maxPaymentFeeMap);
-    })();
-  }, [marketRequirements]);
 
   const getOnChainNFTs = async () => {
     const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
@@ -215,7 +190,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={sellerFee || 0}
+                      sellerFee={marketRequirements? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       {...item}
                     />

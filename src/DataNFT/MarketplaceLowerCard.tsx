@@ -27,10 +27,9 @@ type MarketplaceLowerCardProps = {
   offers: OfferType[];
   nftMetadatas: DataNftMetadataType[];
   index: number;
-  itheumPrice: number | undefined;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas, itheumPrice }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -151,7 +150,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
         <ProcureDataNFTModal
           isOpen={isProcureModalOpen}
           onClose={onProcureModalClose}
-          itheumPrice={itheumPrice || 0}
           marketContract={contract}
           buyerFee={marketRequirements?.buyer_fee || 0}
           nftData={nftMetadatas[selectedOfferIndex]}

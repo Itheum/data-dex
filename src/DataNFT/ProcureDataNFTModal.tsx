@@ -9,13 +9,13 @@ import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUti
 import { DataNftMetadataType, OfferType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
+import { useMarketStore } from "store";
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
   buyerFee: number;
   nftData: DataNftMetadataType;
   offer: OfferType;
-  itheumPrice: number;
   marketContract: any;
   amount: number;
   setSessionId?: (e: any) => void;
@@ -25,6 +25,9 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
+
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
@@ -207,7 +210,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                   {": "}
                   {props.buyerFee ? (
                     <>
-                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ""}
+                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                     </>
                   ) : (
                     "-"

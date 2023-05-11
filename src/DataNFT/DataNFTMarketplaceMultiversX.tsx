@@ -30,7 +30,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import { convertWeiToEsdt, sleep } from "libs/util";
 import { createNftId } from "libs/util2";
-import { getAccountTokenFromApi, getApi, getItheumPriceFromApi, getNetworkProvider, getNftsByIds } from "MultiversX/api";
+import { getAccountTokenFromApi, getApi, getNetworkProvider, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
 import { useMarketStore, useMintStore } from "store";
@@ -54,23 +54,18 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { pageNumber } = useParams();
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
 
-  const marketRequirements = useMarketStore((state) => state.marketRequirements);
-
   const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
 
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
-  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
-  const [maxPaymentFeeMap, setMaxPaymentFeeMap] = useState<Record<string, number>>({});
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
@@ -121,23 +116,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      if (marketRequirements) {
-        const _maxPaymentFeeMap: Record<string, number> = {};
-        for (let i = 0; i < marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(marketRequirements.accepted_payments[i])
-          ).toNumber();
-        }
-        setMaxPaymentFeeMap(_maxPaymentFeeMap);
-      } else {
-        setMaxPaymentFeeMap({});
-      }
-    })();
-  }, [marketRequirements]);
-
-  useEffect(() => {
-    (async () => {
       if (!_chainMeta.networkId) return;
 
       const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
@@ -145,21 +123,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, [_chainMeta.networkId]);
-
-  const getItheumPrice = () => {
-    (async () => {
-      const _itheumPrice = await getItheumPriceFromApi();
-      setItheumPrice(_itheumPrice);
-    })();
-  };
-
-  useEffect(() => {
-    getItheumPrice();
-    const interval = setInterval(() => {
-      getItheumPrice();
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -387,22 +350,19 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   index={index}
                   marketFreezedNonces={marketFreezedNonces}
                   openNftDetailsDrawer={openNftDetailsDrawer}
-                  itheumPrice={itheumPrice}>
+                >
                   {location.pathname.includes(marketplace) && nftMetadatas.length > 0 && !loadingOffers && !nftMetadatasLoading ? (
                     <MarketplaceLowerCard
                       nftMetadatas={nftMetadatas}
                       index={index}
                       item={item}
                       offers={offers}
-                      itheumPrice={itheumPrice}
                     />
                   ) : (
                     <MyListedDataLowerCard
                       index={index}
                       offers={items}
                       nftMetadatas={nftMetadatas}
-                      itheumPrice={itheumPrice}
-                      maxPaymentFeeMap={maxPaymentFeeMap}
                     />
                   )}
                 </UpperCardComponent>

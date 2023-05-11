@@ -34,17 +34,17 @@ type MyListedDataLowerCardProps = {
   offers: Record<any, any>;
   nftMetadatas: DataNftMetadataType[];
   index: number;
-  itheumPrice: number | undefined;
-  maxPaymentFeeMap: Record<string, number>;
 };
 
-const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, nftMetadatas, itheumPrice, maxPaymentFeeMap }) => {
+const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, nftMetadatas }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const contract = new DataNftMarketContract(_chainMeta.networkId);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();

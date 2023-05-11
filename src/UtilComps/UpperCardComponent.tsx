@@ -27,7 +27,7 @@ import { convertToLocalString, printPrice, transformDescription } from "../libs/
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
-import { useMintStore } from "store";
+import { useMarketStore, useMintStore } from "store";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -39,7 +39,6 @@ type UpperCardComponentProps = {
   marketFreezedNonces: number[];
   children?: React.ReactNode;
   openNftDetailsDrawer?: (e: number) => void;
-  itheumPrice: number | undefined;
 };
 
 const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
@@ -54,7 +53,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     item,
     marketFreezedNonces,
     openNftDetailsDrawer,
-    itheumPrice,
   } = props;
   // Multiversx API
   const { address } = useGetAccountInfo();
@@ -62,6 +60,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
   const userData = useMintStore((state) => state.userData);
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   const feePrice = item
     ? printPrice(

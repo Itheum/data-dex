@@ -29,7 +29,7 @@ import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig } from "libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
-import { getApi, getItheumPriceFromApi } from "MultiversX/api";
+import { getApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { getTokenWantedRepresentation, tokenDecimals } from "MultiversX/tokenUtils";
@@ -56,13 +56,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { address } = useGetAccountInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
-  const [itheumPrice, setItheumPrice] = useState<number>(0);
 
   const showConnectWallet = props.showConnectWallet || false;
   const toast = useToast();
@@ -91,11 +91,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     if (_chainMeta?.networkId) {
       getTokenDetails();
       getTokenHistory();
-
-      (async () => {
-        const _itheumPrice = await getItheumPriceFromApi();
-        setItheumPrice(_itheumPrice || 0);
-      })();
     }
   }, [_chainMeta, hasPendingTransactions]);
 
@@ -387,7 +382,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             <ProcureDataNFTModal
               isOpen={isProcureModalOpen}
               onClose={onProcureModalClose}
-              itheumPrice={itheumPrice || 0}
               marketContract={marketContract}
               buyerFee={marketRequirements?.buyer_fee || 0}
               nftData={nftData.attributes}

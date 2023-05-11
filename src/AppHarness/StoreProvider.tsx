@@ -6,12 +6,13 @@ import {
   useGetPendingTransactions,
 } from "@multiversx/sdk-dapp/hooks";
 import { contractsForChain, convertWeiToEsdt } from "libs/util";
-import { getAccountTokenFromApi } from "MultiversX/api";
+import { getAccountTokenFromApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
+import { tokenDecimals } from "MultiversX/tokenUtils";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { chainID } = useGetNetworkConfig();
@@ -28,10 +29,16 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
   const userData = useMintStore((state) => state.userData);
   const updateUserData = useMintStore((state) => state.updateUserData);
+  const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
+  const updateMaxPaymentFeeMap = useMarketStore((state) => state.updateMaxPaymentFeeMap);
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  const updateItheumPrice = useMarketStore((state) => state.updateItheumPrice);
 
   console.log('itheumBalance', itheumBalance);
   console.log('marketRequirements', marketRequirements);
   console.log('userData', userData);
+  console.log('maxPaymentFeeMap', maxPaymentFeeMap);
+  console.log('itheumPrice', itheumPrice);
 
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
@@ -42,6 +49,17 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     (async () => {
       const _marketRequirements = await marketContract.viewRequirements();
       updateMarketRequirements(_marketRequirements);
+
+      const _maxPaymentFeeMap: Record<string, number> = {};
+      if (_marketRequirements) {
+        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
+          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
+            _marketRequirements.maximum_payment_fees[i],
+            tokenDecimals(_marketRequirements.accepted_payments[i])
+          ).toNumber();
+        }
+      }
+      updateMaxPaymentFeeMap(_maxPaymentFeeMap);
     })();
   }, [chainMeta]);
 
@@ -55,6 +73,20 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       updateItheumBalance(balance);
     })();
   }, [chainMeta, address, hasPendingTransactions]);
+
+  const getItheumPrice = () => {
+    (async () => {
+      const _itheumPrice = (await getItheumPriceFromApi()) ?? 0;
+      updateItheumPrice(_itheumPrice);
+    })();
+  };
+  useEffect(() => {
+    getItheumPrice();
+    const interval = setInterval(() => {
+      getItheumPrice();
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, []);
 
   return <>{children}</>;
 };

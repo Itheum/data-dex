@@ -8,13 +8,13 @@ import { getAccountTokenFromApi } from "MultiversX/api";
 import { getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
+import { useMarketStore } from "store";
 export type ListModalProps = {
   isOpen: boolean;
   onClose: () => void;
   sellerFee: number;
   nftData: any;
   offer: any;
-  itheumPrice: number;
   marketContract: any;
   amount: number;
   setAmount: (amount: number) => void;
@@ -30,6 +30,8 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+
+  const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   useEffect(() => {
     if (_chainMeta.networkId && props.offer) {
@@ -174,7 +176,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   {": "}
                   {
                     <>
-                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
+                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice * props.amount, 2)} USD)` : ""}
                     </>
                   }
                 </Box>

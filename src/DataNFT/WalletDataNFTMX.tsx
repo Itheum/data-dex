@@ -47,7 +47,6 @@ import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/util";
 import { convertToLocalString, transformDescription } from "libs/util2";
-import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftType } from "MultiversX/types";
@@ -93,15 +92,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
-  const [itheumPrice, setItheumPrice] = useState<number | undefined>();
-
-  useEffect(() => {
-    getItheumPrice();
-    const interval = setInterval(() => {
-      getItheumPrice();
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
 
   const onBurn = () => {
     if (!address) {
@@ -163,13 +153,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
 
     return signResult;
-  };
-
-  const getItheumPrice = () => {
-    (async () => {
-      const _itheumPrice = await getItheumPriceFromApi();
-      setItheumPrice(_itheumPrice);
-    })();
   };
 
   const accessDataStream = async (dataMarshal: string, NFTId: string) => {
@@ -621,7 +604,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             isOpen={isListNFTOpen}
             onClose={onListNFTClose}
             nftData={selectedDataNft}
-            itheumPrice={itheumPrice || 0}
             marketContract={marketContract}
             sellerFee={item.sellerFee || 0}
             offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
