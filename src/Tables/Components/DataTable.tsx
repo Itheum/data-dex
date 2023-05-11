@@ -102,108 +102,106 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         </Button>
       </Flex>
       <div style={{ maxHeight: "100%", overflowX: "scroll" }}>
-      <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
-        <Thead style={styles.th}>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <Th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <>
-                        <Box
-                          {...{
-                            className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {{
-                            asc: <TriangleUpIcon />,
-                            desc: <TriangleDownIcon />,
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </Box>
-                        {header.column.getCanFilter() ? (
-                          <Box>
-                            <Filter column={header.column} table={table} />
-                          </Box>
-                        ) : null}
-                      </>
-                    )}
-                  </Th>
-                );
-              })}
-            </Tr>
-          ))}
-        </Thead>
-        <Tbody style={styles.tbody}>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <Tr key={row.id}  borderColor="#00C79740">
-                {row.getVisibleCells().map((cell) => {
+        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
+          <Thead style={styles.th}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   return (
-                    <Td fontSize="lg !important" key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Td>
+                    <Th key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <Box
+                            {...{
+                              className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {{
+                              asc: <TriangleUpIcon />,
+                              desc: <TriangleDownIcon />,
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </Box>
+                          {header.column.getCanFilter() ? (
+                            <Box>
+                              <Filter column={header.column} table={table} />
+                            </Box>
+                          ) : null}
+                        </>
+                      )}
+                    </Th>
                   );
                 })}
               </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
+            ))}
+          </Thead>
+          <Tbody style={styles.tbody}>
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <Tr key={row.id} borderColor="#00C79740">
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <Td fontSize="lg !important" key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
       </div>
-      {
-        table && table.getPageCount() > 0 && (
-      <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
-        <VStack>
-          <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
-            Page
-            <strong>{table.getState().pagination.pageIndex + 1}</strong>
-            of
-            <strong>{table.getPageCount()}</strong>
-          </Text>
-        </VStack>
-        <HStack marginBottom="7 !important">
-          <Text as={"span"} minWidth={"5rem"}>
-            Go to page
-          </Text>
-          <NumberInput
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            maxWidth={"4.4rem"}
-            min={1}
-            max={table.getPageCount()}
-            isValidCharacter={isValidNumericCharacter}
-            onBlur={(e: any) => {
-              let page = e ? Number(e.target.value) - 1 : 0;
-              page = Math.max(0, page);
-              page = Math.min(table.getPageCount() - 1, page);
-              table.setPageIndex(page);
-            }}>
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-
-              <Show above="md">
-                <Select
-                  value={table.getState().pagination.pageSize}
-                  onChange={(e) => {
-                    table.setPageSize(Number(e.target.value));
-                  }}
-                  maxWidth={200}>
-                  {[10, 20, 30, 40, 50].map((pageSize) => (
-                    <option key={pageSize} value={pageSize}>
-                      Show {pageSize}
-                    </option>
-                  ))}
-                </Select>
-              </Show>
-            </HStack>
+      {table && table.getPageCount() > 0 && (
+        <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
+          <VStack>
+            <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
+              Page
+              <strong>{table.getState().pagination.pageIndex + 1}</strong>
+              of
+              <strong>{table.getPageCount()}</strong>
+            </Text>
           </VStack>
-        )
-      }
+          <HStack marginBottom="7 !important">
+            <Text as={"span"} minWidth={"6rem"}>
+              Go to page
+            </Text>
+            <NumberInput
+              defaultValue={table.getState().pagination.pageIndex + 1}
+              maxWidth={"4.4rem"}
+              min={1}
+              max={table.getPageCount()}
+              isValidCharacter={isValidNumericCharacter}
+              onBlur={(e: any) => {
+                let page = e ? Number(e.target.value) - 1 : 0;
+                page = Math.max(0, page);
+                page = Math.min(table.getPageCount() - 1, page);
+                table.setPageIndex(page);
+              }}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+
+            <Show above="md">
+              <Select
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+                maxWidth={200}>
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    Show {pageSize}
+                  </option>
+                ))}
+              </Select>
+            </Show>
+          </HStack>
+        </VStack>
+      )}
     </Box>
   );
 }

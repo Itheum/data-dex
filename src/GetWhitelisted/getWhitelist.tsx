@@ -33,7 +33,7 @@ export const GetWhitelist: React.FC = () => {
     <Flex w="full" h="full">
       <Flex
         w="100%"
-        h={{ base: "auto", md: "84vh" }}
+        height={{ base: "auto", md: "87dvh" }}
         bgGradient="linear(to-r, bgDark, #6B46C160, #00C79730)"
         bgSize="contain"
         bgPosition="bottom"

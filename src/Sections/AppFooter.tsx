@@ -22,7 +22,7 @@ export default function () {
       height="5rem"
       borderTop="solid .1rem"
       borderColor="teal.200"
-      flexGrow={{ base: 0, lg: 1 }}>
+      flexGrow={{ base: 0, lg: 0 }}>
       <Flex flexDirection="column" alignItems="center" justifyContent="center" height="100%">
         <Text fontSize="xx-small">
           {dataDexVersion} {nonProdEnv && <>{nonProdEnv}</>}

@@ -219,7 +219,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
           {/* App Header */}
           <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
           {/* App Body */}
-          <Box backgroundColor="none">
+          <Box backgroundColor="none" flexGrow={1}>
             <Routes>
               <Route path="/" element={<LandingPage />} />
 
