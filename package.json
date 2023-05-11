@@ -33,7 +33,7 @@
     "react-scripts": "5.0.1",
     "web-vitals": "3.3.1",
     "yup": "1.1.1",
-    "zustand": "^4.3.8"
+    "zustand": "4.3.8"
   },
   "scripts": {
     "start": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts start",
