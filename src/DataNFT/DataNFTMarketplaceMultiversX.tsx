@@ -28,18 +28,18 @@ import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
 import { FaStore, FaBrush } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
-import { convertWeiToEsdt, sleep } from "libs/util";
+import { sleep } from "libs/util";
 import { createNftId } from "libs/util2";
-import { getAccountTokenFromApi, getApi, getNetworkProvider, getNftsByIds } from "MultiversX/api";
+import { getApi, getNetworkProvider, getNftsByIds } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "MultiversX/types";
-import { useMarketStore, useMintStore } from "store";
+import { DataNftMetadataType, OfferType } from "MultiversX/types";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { CustomPagination } from "./CustomPagination";
 import MarketplaceLowerCard from "./MarketplaceLowerCard";
 import MyListedDataLowerCard from "./MyListedDataLowerCard";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
+import { hexZero } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
 
@@ -61,8 +61,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
-  const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
-  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
+  const offers = useMarketStore((state) => state.offers);
+  const updateOffers = useMarketStore((state) => state.updateOffers);
+  const loadingOffers = useMarketStore((state) => state.loadingOffers);
+  const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
+  // pagination
+  const pageCount = useMarketStore((state) => state.pageCount);
+  const updatePageCount = useMarketStore((state) => state.updatePageCount);
+  const pageSize = 8;
+
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
@@ -70,36 +77,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
 
-  //
-  const [offers, setOffers] = useState<OfferType[]>([]);
-  const [items, setItems] = useState<ItemType[]>([
-    {
-      index: 0,
-      owner: "",
-      wanted_token_identifier: "",
-      wanted_token_amount: "",
-      wanted_token_nonce: 0,
-      offered_token_identifier: "",
-      offered_token_nonce: 0,
-      balance: 0,
-      supply: 0,
-      royalties: 0,
-      id: "",
-      dataPreview: "",
-      quantity: 0,
-      nonce: 0,
-      nftImgUrl: "",
-      title: "",
-      tokenName: "",
-    },
-  ]);
+  const {
+    isOpen: isDrawerOpenTradeStream,
+    onOpen: onOpenDrawerTradeStream,
+    onClose: onCloseDrawerTradeStream,
+  } = useDisclosure();
 
-  const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
-  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
-
-  // pagination
-  const [pageCount, setPageCount] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(8);
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
   console.log(location.pathname);
@@ -130,7 +113,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!_chainMeta.networkId) return;
 
       // start loading offers
-      setLoadingOffers(true);
+      updateLoadingOffers(true);
 
       let _numberOfOffers = 0;
       if (tabState === 1) {
@@ -142,7 +125,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       }
       console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
-      setPageCount(_pageCount);
+      updatePageCount(_pageCount);
 
       // if pageIndex is out of range
       if (pageIndex >= _pageCount) {
@@ -156,30 +139,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (hasPendingTransactions) return;
       if (!_chainMeta.networkId) return;
 
-      // init - no selection
-      setSelectedOfferIndex(-1);
-
       // start loading offers
-      setLoadingOffers(true);
+      updateLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
       console.log("_offers", _offers);
-      setOffers(_offers);
-      setItems((prev) => {
-        return _offers.map((offer: OfferType, i: number) => {
-          return {
-            ...(prev?.[i] ?? {}),
-            index: offer.index,
-            owner: offer.owner,
-            wanted_token_identifier: offer.wanted_token_identifier,
-            wanted_token_amount: offer.wanted_token_amount,
-            wanted_token_nonce: offer.wanted_token_nonce,
-            offered_token_identifier: offer.offered_token_identifier,
-            offered_token_nonce: offer.offered_token_nonce,
-            quantity: offer.quantity,
-          };
-        });
-      });
-      console.log("items", items);
+      updateOffers(_offers);
 
       //
       setNftMetadatasLoading(true);
@@ -194,25 +158,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // end loading offers
       await sleep(0.5);
-      setLoadingOffers(false);
+      updateLoadingOffers(false);
     })();
-  }, [pageIndex, pageSize, tabState, hasPendingTransactions, _chainMeta.networkId]);
-
-  useEffect(() => {
-    (async () => {
-      if (!(address && selectedOfferIndex >= 0 && selectedOfferIndex < offers.length)) return;
-      if (hasPendingTransactions) return;
-      if (!_chainMeta.networkId) return;
-
-      // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
-      const _token = await getAccountTokenFromApi(address, offers[selectedOfferIndex].wanted_token_identifier, _chainMeta.networkId);
-      if (_token) {
-        setWantedTokenBalance(_token.balance ? _token.balance : "0");
-      } else {
-        setWantedTokenBalance("0");
-      }
-    })();
-  }, [address, offers, selectedOfferIndex, hasPendingTransactions, _chainMeta.networkId]);
+  }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
   function openNftDetailsDrawer(index: number) {
     setOfferForDrawer(offers[index]);
@@ -339,30 +287,29 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         ) : (
           <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
             {offers.length > 0 &&
-              items?.map((item, index) => (
+              offers.map((offer, index) => (
                 <UpperCardComponent
                   key={index}
                   nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                  imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${item?.offered_token_identifier}-${hexZero(item?.offered_token_nonce)}/thumbnail`}
+                  imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
                   setNftImageLoaded={setOneNFTImgLoaded}
-                  nftMetadatas={nftMetadatas}
-                  item={item}
+                  nftMetadata={nftMetadatas[index]}
+                  offer={offer}
                   index={index}
                   marketFreezedNonces={marketFreezedNonces}
                   openNftDetailsDrawer={openNftDetailsDrawer}
                 >
                   {location.pathname.includes(marketplace) && nftMetadatas.length > 0 && !loadingOffers && !nftMetadatasLoading ? (
                     <MarketplaceLowerCard
-                      nftMetadatas={nftMetadatas}
+                      nftMetadata={nftMetadatas[index]}
                       index={index}
-                      item={item}
-                      offers={offers}
+                      offer={offer}
                     />
                   ) : (
                     <MyListedDataLowerCard
                       index={index}
-                      offers={items}
-                      nftMetadatas={nftMetadatas}
+                      offer={offer}
+                      nftMetadata={nftMetadatas[index]}
                     />
                   )}
                 </UpperCardComponent>

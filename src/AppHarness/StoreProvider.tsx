@@ -1,18 +1,15 @@
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import React, { PropsWithChildren, useEffect } from "react";
 import {
   useGetAccountInfo,
-  useGetLoginInfo,
   useGetNetworkConfig,
   useGetPendingTransactions,
 } from "@multiversx/sdk-dapp/hooks";
-import { contractsForChain, convertWeiToEsdt } from "libs/util";
+import { convertWeiToEsdt } from "libs/util";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
+import { tokenDecimals } from "MultiversX/tokenUtils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
-import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { tokenDecimals } from "MultiversX/tokenUtils";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { chainID } = useGetNetworkConfig();
@@ -28,7 +25,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
   const userData = useMintStore((state) => state.userData);
-  const updateUserData = useMintStore((state) => state.updateUserData);
+  // const updateUserData = useMintStore((state) => state.updateUserData);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const updateMaxPaymentFeeMap = useMarketStore((state) => state.updateMaxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
@@ -41,7 +38,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   console.log('itheumPrice', itheumPrice);
 
   const marketContract = new DataNftMarketContract(networkId);
-  const mintContract = new DataNftMintContract(networkId);
+  // const mintContract = new DataNftMintContract(networkId);
   
   useEffect(() => {
     if (!chainMeta) return;

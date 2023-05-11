@@ -7,9 +7,10 @@ import { printPrice, convertToLocalString } from "libs/util2";
 import { getAccountTokenFromApi } from "MultiversX/api";
 import { tokenDecimals, getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { DataNftMetadataType, OfferType } from "MultiversX/types";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
-import { useMarketStore } from "store";
+
 export type ProcureAccessModalProps = {
   isOpen: boolean;
   onClose: () => void;

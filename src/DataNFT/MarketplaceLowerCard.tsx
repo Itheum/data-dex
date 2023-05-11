@@ -19,17 +19,16 @@ import { useMarketStore } from "store";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import { isValidNumericCharacter } from "../libs/util";
 import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
-import { DataNftMetadataType, ItemType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
+import { DataNftMetadataType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type MarketplaceLowerCardProps = {
-  item: ItemType;
-  offers: OfferType[];
-  nftMetadatas: DataNftMetadataType[];
+  offer: OfferType;
+  nftMetadata: DataNftMetadataType;
   index: number;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nftMetadata }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -46,25 +45,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
   
 
   useEffect(() => {
-    (async () => {
-      // init - no selection
-      setSelectedOfferIndex(-1);
-
-      const amounts: any = {};
-      const _amountErrors: string[] = [];
-      for (let i = 0; i < offers.length; i++) {
-        amounts[i] = 1;
-        _amountErrors.push("");
-      }
-      setAmountOfTokens(amounts);
-      setAmountErrors(_amountErrors);
-      if (item.owner === address) {
-        setIsMyNft(true);
-      } else {
-        setIsMyNft(false);
-      }
-    })();
-  }, [hasPendingTransactions]);
+    setIsMyNft(offer.owner === address);
+  }, []);
 
   return (
     <>
@@ -74,7 +56,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
         colorScheme="teal"
         variant="outline"
         onClick={() => {
-          window.open(nftMetadatas[index].dataPreview);
+          window.open(nftMetadata.dataPreview);
         }}>
         <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
           Preview Data
@@ -92,7 +74,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
                 maxW="24"
                 step={1}
                 min={1}
-                max={item?.quantity}
+                max={offer.quantity}
                 isValidCharacter={isValidNumericCharacter}
                 value={amountOfTokens[index]}
                 defaultValue={1}
@@ -101,7 +83,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
                   let error = "";
                   if (value <= 0) {
                     error = "Cannot be zero or negative";
-                  } else if (value > item?.quantity) {
+                  } else if (value > offer.quantity) {
                     error = "Cannot exceed balance";
                   }
                   setAmountErrors((oldErrors: any) => {
@@ -146,14 +128,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
         </Text>
       )}
 
-      {selectedOfferIndex >= 0 && nftMetadatas.length > selectedOfferIndex && (
+      {nftMetadata && (
         <ProcureDataNFTModal
           isOpen={isProcureModalOpen}
           onClose={onProcureModalClose}
           marketContract={contract}
           buyerFee={marketRequirements?.buyer_fee || 0}
-          nftData={nftMetadatas[selectedOfferIndex]}
-          offer={offers[selectedOfferIndex]}
+          nftData={nftMetadata}
+          offer={offer}
           amount={amountOfTokens[selectedOfferIndex]}
         />
       )}
