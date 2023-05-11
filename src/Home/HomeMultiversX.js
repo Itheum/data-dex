@@ -274,10 +274,10 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
       </Heading>
 
       <Stack>
-        <SimpleGrid columns={[1, null, 4]} spacing={10} backgroundColor="none">
+        <SimpleGrid columns={[1, 2, 3, 4]} spacing={10} backgroundColor="none">
           <Box
             maxW="container.sm"
-            w={{ base: "280px", "2xl": tileBoxMdW }}
+            w={[tileBoxMdW, "initial"]}
             backgroundColor="none"
             border="1px solid transparent"
             borderColor="#00C79740"
@@ -296,9 +296,9 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
               )) ||
                 (!dataCATAccount && (
                   <>
-                    <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
+                    <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
                       <Flex direction="column">
-                        <AlertTitle fontSize="md">
+                        <AlertTitle fontSize="md" mt={{ xs: 24, lg: 0 }}>
                           <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
                           <Flex direction="row">
                             <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
@@ -353,7 +353,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
           <ChainSupportedComponent feature={MENU.FAUCET}>
             <Box
               maxW="container.sm"
-              w={{ base: "280px", "2xl": tileBoxMdW }}
+              w={[tileBoxMdW, "initial"]}
               backgroundColor="none"
               border="1px solid transparent"
               borderColor="#00C79740"
@@ -377,7 +377,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
 
           <Box
             maxW="container.sm"
-            w={{ base: "280px", "2xl": tileBoxMdW }}
+            w={[tileBoxMdW, "initial"]}
             backgroundColor="none"
             border="1px solid transparent"
             borderColor="#00C79740"

@@ -39,6 +39,7 @@ import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -55,6 +56,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
@@ -187,13 +189,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }
 
   return (
-    <Box mx={tokenIdParam ? "28 !important" : 0}>
+    <Box mx={tokenIdParam ? { base: "5 !important", lg: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
         <Box>
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <>
-                <Heading size="lg" marginBottom={4}>
+                <Heading size="lg" marginBottom={4} marginTop={10}>
                   Data NFT Marketplace
                 </Heading>
                 <HStack>
@@ -223,24 +225,24 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   objectFit={"contain"}
                   src={nftData.url}
                   alt={"Data NFT Image"}
-                  mr={pathname === marketplaceDrawer ? 0 : 14}
+                  mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 14 }}
                 />
 
                 <VStack alignItems={"flex-start"} gap={"15px"} w="full">
-                  <Box color="gray.100" fontSize="xl">
+                  <Box color="gray.100" fontSize={{ base: "lg", lg: "xl" }}>
                     <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
                       {nftData.identifier}
-                      <ExternalLinkIcon ml="6px" mb="1" fontSize="xl" color="teal.200" />
+                      <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                     </Link>
                   </Box>
 
                   <Flex direction="row" alignItems="center" gap="3">
-                    <Text fontSize={pathname === marketplaceDrawer ? "38px" : "48px"} noOfLines={2} fontWeight="semibold">
+                    <Text fontSize={pathname === marketplaceDrawer ? "38px" : { base: "25px", lg: "48px" }} noOfLines={2} fontWeight="semibold">
                       {nftData.attributes?.title}
                     </Text>
                     {!!offerId && (
                       <Button
-                        fontSize="xl"
+                        size={{ base: "md", lg: "xl" }}
                         onClick={() => {
                           onCopy();
                           toast({
@@ -249,13 +251,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             isClosable: true,
                           });
                         }}>
-                        <CopyIcon color="teal.200" fontSize="xl" />
+                        <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} />
                       </Button>
                     )}
                   </Flex>
 
                   <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
-                    <Text fontSize={"28px"} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
+                    <Text fontSize={{ base: "18px", lg: "28px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
                       {!offer && getListingText(priceFromApi)}
                       {offer && getListingText(Number(offer.wanted_token_amount))}
                     </Text>
@@ -390,6 +392,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       size={{ base: "md", lg: "lg" }}
                       colorScheme="teal"
                       isDisabled={hasPendingTransactions || !!amountError}
+                      hidden={!isMxLoggedIn}
                       onClick={onProcureModalOpen}>
                       <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                     </Button>

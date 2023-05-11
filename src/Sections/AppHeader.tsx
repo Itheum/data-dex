@@ -411,7 +411,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack marginLeft={3}>
         <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="lg">
+          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
             Connect MultiversX Wallet
           </Button>
         </PopoverTrigger>

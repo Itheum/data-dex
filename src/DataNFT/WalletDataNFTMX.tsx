@@ -276,7 +276,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="810px"
+        h="820px"
         mx="3 !important"
         key={item.id}
         border="1px solid transparent"
@@ -439,7 +439,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Text>
             )}
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 Unlock fee for each:{" "}
               </Text>
@@ -471,11 +471,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
-            {priceError && (
-              <Text color="red.400" fontSize="xs">
-                {priceError}
-              </Text>
-            )}
+            <Box h={3}>
+              {priceError && (
+                <Text color="red.400" fontSize="xs">
+                  {priceError}
+                </Text>
+              )}
+            </Box>
             <Button
               size="sm"
               mt={4}
@@ -508,9 +510,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           }
           backdropFilter="auto"
           backdropBlur="6px">
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
-            - FROZEN - <br />
-            Data NFT is under investigation by the DAO as there was a complaint received against it
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
+            - FROZEN -{" "}
+            <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
+              Data NFT is under investigation by the DAO as there was a complaint received against it
+            </Text>
           </Text>
         </Box>
         {selectedDataNft && (
