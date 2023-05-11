@@ -147,7 +147,7 @@ const AppHeader = ({
       <Flex
         h="6rem"
         justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
-        paddingX={!isMxLoggedIn ? 5 : 0}
+        paddingX={!isMxLoggedIn ? { base: 5, lg: 36 } : 0}
         alignItems="center"
         backgroundColor={colorMode === "light" ? "white" : "bgDark"}
         borderBottom="solid .1rem"
