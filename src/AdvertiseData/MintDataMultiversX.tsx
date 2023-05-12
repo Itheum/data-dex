@@ -1058,7 +1058,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Text>
 
                   <Flex flexDirection="row" gap="7">
-                    <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired>
+                    <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired h="8dvh">
                       <InputLabelWithPopover tkey="data-stream-url">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Data Stream URL
@@ -1086,7 +1086,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired>
+                    <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired h="8dvh">
                       <InputLabelWithPopover tkey="data-preview-url">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Data Preview URL
@@ -1142,7 +1142,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Text>
 
                   <Flex flexDirection="row" gap="7">
-                    <FormControl isInvalid={!!errors.tokenNameForm} isRequired>
+                    <FormControl isInvalid={!!errors.tokenNameForm} isRequired h="8dvh">
                       <InputLabelWithPopover tkey="token-name">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Token Name (Short Title)
@@ -1168,7 +1168,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid={!!errors.datasetTitleForm} isRequired>
+                    <FormControl isInvalid={!!errors.datasetTitleForm} isRequired h="8dvh">
                       <InputLabelWithPopover tkey="dataset-title">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Dataset Title
@@ -1196,7 +1196,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Flex>
 
                   <Grid templateColumns="repeat(2, 1fr)" gap={7}>
-                    <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH="12dvh">
+                    <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH="13.2dvh">
                       <InputLabelWithPopover tkey="dataset-description">
                         <FormLabel fontWeight="bold" fontSize="md" mt={1}>
                           Dataset Description
@@ -1209,7 +1209,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                           <Textarea
                             mt="1 !important"
                             placeholder="Between 10 and 400 characters only. URL allowed."
-                            h="11.5dvh"
+                            h="12.7dvh"
                             id={"datasetDescriptionForm"}
                             onChange={(event) => {
                               onChange(event.target.value);
@@ -1221,8 +1221,8 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       />
                       <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                     </FormControl>
-                    <Flex flexDirection="column" gap={4} maxH="auto">
-                      <FormControl isInvalid={!!errors.numberOfCopiesForm}>
+                    <Flex flexDirection="column" gap={4}>
+                      <FormControl isInvalid={!!errors.numberOfCopiesForm} h="6dvh">
                         <InputLabelWithPopover tkey="number-of-copies">
                           <Text fontWeight="bold" fontSize="md" mt={1}>
                             Number of copies
@@ -1233,7 +1233,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <NumberInput
-                              mt="1 !important"
+                              mt="3 !important"
                               size="md"
                               id="numberOfCopiesForm"
                               maxW={24}
@@ -1262,7 +1262,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
                       </Text>
 
-                      <FormControl isInvalid={!!errors.royaltiesForm}>
+                      <FormControl isInvalid={!!errors.royaltiesForm} h="6dvh">
                         <InputLabelWithPopover tkey="royalties">
                           <Text fontWeight="bold" fontSize="md">
                             Royalties
@@ -1273,7 +1273,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <NumberInput
-                              mt="1 !important"
+                              mt="3 !important"
                               size="md"
                               id="royaltiesForm"
                               maxW={24}
@@ -1303,11 +1303,11 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     </Flex>
                   </Grid>
                 </Stack>
-                <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
                   Terms and Fees
                 </Text>
 
-                <Text fontSize="md" mt="4 !important">
+                <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="4 !important">
                   Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
                   that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
                   is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But
@@ -1337,7 +1337,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Text>
                 )}
 
-                <Text fontSize="md" mt="8 !important">
+                <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="8 !important">
                   An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
                   dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
                 </Text>
