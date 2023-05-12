@@ -179,7 +179,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
     const networkProvider = getNetworkProvider(_chainMeta.networkId);
     const watcher = new TransactionWatcher(networkProvider);
-    for (const [key, value] of Object.entries(pendingTransactions)) {
+    for (const [, value] of Object.entries(pendingTransactions)) {
       const stxs = (value as SignedTransactionsBodyType).transactions;
       if (stxs && stxs.length > 0) {
         (async () => {
@@ -302,12 +302,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   {location.pathname.includes(marketplace) && nftMetadatas.length > 0 && !loadingOffers && !nftMetadatasLoading ? (
                     <MarketplaceLowerCard
                       nftMetadata={nftMetadatas[index]}
-                      index={index}
                       offer={offer}
                     />
                   ) : (
                     <MyListedDataLowerCard
-                      index={index}
                       offer={offer}
                       nftMetadata={nftMetadatas[index]}
                     />

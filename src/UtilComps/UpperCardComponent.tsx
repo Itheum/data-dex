@@ -21,13 +21,13 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
+import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
 import { CHAIN_TX_VIEWER, convertWeiToEsdt, styleStrings, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, MarketplaceRequirementsType, OfferType } from "../MultiversX/types";
+import { DataNftMetadataType, OfferType } from "../MultiversX/types";
 import { useChainMeta } from "../store/ChainMetaContext";
-import { useMarketStore, useMintStore } from "store";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -41,19 +41,19 @@ type UpperCardComponentProps = {
   openNftDetailsDrawer?: (e: number) => void;
 };
 
-const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
+const UpperCardComponent: FC<UpperCardComponentProps> = ({
+  nftImageLoading,
+  setNftImageLoaded,
+  imageUrl,
+  nftMetadata,
+  index,
+  children,
+  offer,
+  marketFreezedNonces,
+  openNftDetailsDrawer,
+}) => {
   const { colorMode } = useColorMode();
-  const {
-    nftImageLoading,
-    setNftImageLoaded,
-    imageUrl,
-    nftMetadata,
-    index,
-    children,
-    offer,
-    marketFreezedNonces,
-    openNftDetailsDrawer,
-  } = props;
+
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;

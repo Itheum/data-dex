@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
   Button,
   HStack,
@@ -18,21 +18,17 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { useMarketStore } from "store";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import { isValidNumericCharacter } from "../libs/util";
-import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "../MultiversX/types";
-import { useChainMeta } from "../store/ChainMetaContext";
 
 type MarketplaceLowerCardProps = {
   offer: OfferType;
   nftMetadata: DataNftMetadataType;
-  index: number;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nftMetadata }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 

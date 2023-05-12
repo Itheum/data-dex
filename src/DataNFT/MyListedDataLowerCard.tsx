@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
   Box,
   Button,
@@ -33,10 +33,9 @@ import { useChainMeta } from "../store/ChainMetaContext";
 type MyListedDataLowerCardProps = {
   offer: OfferType;
   nftMetadata: DataNftMetadataType;
-  index: number;
 };
 
-const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, index, nftMetadata }) => {
+const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -48,7 +47,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, index, n
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
-  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
   const [delistAmount, setDelistAmount] = useState<number>(1);
   const [delistModalState, setDelistModalState] = useState<number>(0); // 0, 1
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
@@ -58,19 +56,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, index, n
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
-  const [fee, setFee] = useState<number>(0);
-  useEffect(() => {
-    const _fee =
-      marketRequirements && offer
-        ? convertWeiToEsdt(
-            new BigNumber(offer.wanted_token_amount)
-              .multipliedBy(10000)
-              .div(10000 + (marketRequirements.buyer_fee as number)),
-            tokenDecimals(offer.wanted_token_identifier)
-          ).toNumber()
-        : 0;
-    setFee(_fee);
-  }, [marketRequirements, selectedOfferIndex, offer]);
+  const fee = marketRequirements && offer
+    ? convertWeiToEsdt(
+        new BigNumber(offer.wanted_token_amount)
+          .multipliedBy(10000)
+          .div(10000 + (marketRequirements.buyer_fee as number)),
+        tokenDecimals(offer.wanted_token_identifier)
+      ).toNumber()
+    : 0;
 
   const onDelist = async () => {
     if (!address) {
@@ -148,7 +141,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, index, n
           w="full"
           isDisabled={hasPendingTransactions}
           onClick={() => {
-            setSelectedOfferIndex(index);
             setDelistAmount(1);
             setDelistModalState(0);
             onDelistModalOpen();
@@ -162,7 +154,6 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, index, n
           w="full"
           isDisabled={hasPendingTransactions}
           onClick={() => {
-            setSelectedOfferIndex(index);
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(

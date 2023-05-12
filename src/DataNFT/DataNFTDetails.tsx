@@ -33,12 +33,12 @@ import { getApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { getTokenWantedRepresentation, tokenDecimals } from "MultiversX/tokenUtils";
-import { MarketplaceRequirementsType, OfferType } from "MultiversX/types";
+import { OfferType } from "MultiversX/types";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import TokenTxTable from "Tables/TokenTxTable";
 import ShortAddress from "UtilComps/ShortAddress";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
-import { useMarketStore } from "store";
 
 type DataNFTDetailsProps = {
   owner?: string;
