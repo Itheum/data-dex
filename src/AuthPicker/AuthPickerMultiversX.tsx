@@ -92,26 +92,26 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                     <Wrap spacing="20px" justify="space-between" padding="10px">
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
                         <WalletConnectLoginButton
-                          callbackRoute={"/home"}
+                          callbackRoute={"/dashboard"}
                           loginButtonText={"xPortal App"}
                           buttonClassName="auth_button"
                           {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
-                        <ExtensionLoginButton callbackRoute={"/home"} loginButtonText={"DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
+                        <ExtensionLoginButton callbackRoute={"/dashboard"} loginButtonText={"DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
                         <WebWalletLoginButton
-                          callbackRoute={"/home"}
+                          callbackRoute={"/dashboard"}
                           loginButtonText={"Web Wallet (coming soon)"}
                           buttonClassName="auth_button"
                           disabled={true}></WebWalletLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
-                        <LedgerLoginButton callbackRoute={"/home"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
+                        <LedgerLoginButton callbackRoute={"/dashboard"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
                       </WrapItem>
                     </Wrap>
                   </Stack>

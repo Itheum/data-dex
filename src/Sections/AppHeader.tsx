@@ -44,7 +44,7 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore } from "react-icons/fa";
-import { MdAccountBalanceWallet, MdMenu } from "react-icons/md";
+import { MdAccountBalanceWallet, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink } from "react-router-dom";
@@ -62,6 +62,14 @@ const exploreRouterMenu = [
     sectionId: "MainSections",
     sectionLabel: "Main Sections",
     sectionItems: [
+      {
+        menuEnum: MENU.HOME,
+        path: "dashboard",
+        label: "Dashboard",
+        shortLbl: "Dashboard",
+        Icon: MdSpaceDashboard,
+        needToBeLoggedIn: true,
+      },
       {
         menuEnum: MENU.SELL,
         path: "tradedata",
@@ -175,10 +183,10 @@ const AppHeader = ({
 
           <Link
             as={ReactRouterLink}
-            to={isMxLoggedIn ? "/home" : "/"}
+            to={"/"}
             style={{ textDecoration: "none", pointerEvents: hasPendingTransactions ? "none" : undefined }}
             onClick={() => {
-              navigateToDiscover(isMxLoggedIn ? MENU.HOME : MENU.LANDING);
+              navigateToDiscover(MENU.LANDING);
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
@@ -272,12 +280,12 @@ const AppHeader = ({
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"home"}>
+                <Link as={ReactRouterLink} to={"dashboard"}>
                   <IconButton
                     size={"lg"}
                     color="teal.200"
                     icon={<AiFillHome size={"1.4rem"} />}
-                    aria-label={"Back to Home"}
+                    aria-label={"Back to dashboard"}
                     isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
                     _disabled={menuButtonDisabledStyle(MENU.HOME)}
                     onClick={() => {
