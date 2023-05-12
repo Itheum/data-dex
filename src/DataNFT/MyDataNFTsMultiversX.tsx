@@ -37,6 +37,7 @@ import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTMX from "./WalletDataNFTMX";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
+import { NoDataHere } from "Sections/NoDataHere";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
@@ -214,7 +215,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
           <TabPanels>
             <TabPanel mt={10}>
-              {dataNfts.length > 0 ? (
+              {dataNfts.length >= 0 ? (
                 <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
                   {dataNfts.map((item, index) => (
                     <WalletDataNFTMX
@@ -230,7 +231,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                   ))}
                 </SimpleGrid>
               ) : (
-                <Text onClick={getOnChainNFTs}>No data yet...</Text>
+                <Flex onClick={getOnChainNFTs}>
+                  <NoDataHere />
+                </Flex>
               )}
             </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>

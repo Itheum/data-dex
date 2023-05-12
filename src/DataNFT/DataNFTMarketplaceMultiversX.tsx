@@ -41,6 +41,7 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
+import { NoDataHere } from "Sections/NoDataHere";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -304,7 +305,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          console.log('transactionOnNetwork', transactionOnNetwork);
+          console.log("transactionOnNetwork", transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
@@ -312,10 +313,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 const matches = input.match(/(?<=\[)[^\][]*(?=])/g);
 
                 if (matches) {
-                  const title = matches[1] == 'acceptOffer' ? 'Purchase transaction failed'
-                    : matches[1] == 'cancelOffer' ? 'De-List transaction failed'
-                    : matches[1] == 'changeOfferPrice' ? 'Update price transaction failed'
-                    : 'Transaction failed';
+                  const title =
+                    matches[1] == "acceptOffer"
+                      ? "Purchase transaction failed"
+                      : matches[1] == "cancelOffer"
+                      ? "De-List transaction failed"
+                      : matches[1] == "changeOfferPrice"
+                      ? "Update price transaction failed"
+                      : "Transaction failed";
                   const description = matches[matches.length - 1];
 
                   toast({
@@ -402,7 +407,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         </Flex>
 
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
-          <Text>No data yet...</Text>
+          <NoDataHere />
         ) : (
           <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
             {offers.length > 0 &&

@@ -228,7 +228,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
               </Route>
 
               <Route
-                path="home"
+                path="dashboard"
                 element={
                   <HomeMx
                     key={rfKeys.tools}

@@ -58,19 +58,19 @@ const RecentDataNFTs = ({
         const highestOfferIndex = await marketContract.getLastValidOfferId(); // 53
 
         // get latest 10 offers from the SC
-        const startIndex = Math.max(highestOfferIndex - 10, 0); // 42
+        const startIndex = Math.max(highestOfferIndex - 25, 0); // 42
         const stopIndex = highestOfferIndex; // 53
 
         const offers = await marketContract.viewOffers(startIndex, stopIndex);
-
+        const slicedOffers = offers.slice(0, 10);
         // get these offers metadata from the API
-        const nftIds = offers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
+        const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
         const dataNfts = await getNftsByIds(nftIds, networkId);
 
         // merge the offer data and meta data
         const _latestOffers: DataNftCondensedView[] = [];
 
-        offers.forEach((offer, idx) => {
+        slicedOffers.forEach((offer, idx) => {
           const _nft = dataNfts.find((nft) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
 
           if (_nft !== undefined) {
