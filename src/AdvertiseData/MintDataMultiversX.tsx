@@ -1058,7 +1058,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Text>
 
                   <Flex flexDirection="row" gap="7">
-                    <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired h="8dvh">
+                    <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
                       <InputLabelWithPopover tkey="data-stream-url">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Data Stream URL
@@ -1086,7 +1086,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired h="8dvh">
+                    <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
                       <InputLabelWithPopover tkey="data-preview-url">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Data Preview URL
@@ -1142,9 +1142,9 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Text>
 
                   <Flex flexDirection="row" gap="7">
-                    <FormControl isInvalid={!!errors.tokenNameForm} isRequired h="8dvh">
+                    <FormControl isInvalid={!!errors.tokenNameForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
                       <InputLabelWithPopover tkey="token-name">
-                        <FormLabel fontWeight="bold" fontSize="md">
+                        <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
                           Token Name (Short Title)
                         </FormLabel>
                       </InputLabelWithPopover>
@@ -1168,7 +1168,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid={!!errors.datasetTitleForm} isRequired h="8dvh">
+                    <FormControl isInvalid={!!errors.datasetTitleForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
                       <InputLabelWithPopover tkey="dataset-title">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Dataset Title
@@ -1196,7 +1196,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Flex>
 
                   <Grid templateColumns="repeat(2, 1fr)" gap={7}>
-                    <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH="13.2dvh">
+                    <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH={{ base: "23.5dvh", lg: "13.2dvh" }}>
                       <InputLabelWithPopover tkey="dataset-description">
                         <FormLabel fontWeight="bold" fontSize="md" mt={1}>
                           Dataset Description
@@ -1209,7 +1209,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                           <Textarea
                             mt="1 !important"
                             placeholder="Between 10 and 400 characters only. URL allowed."
-                            h="12.7dvh"
+                            h={{ base: "33.7dvh", lg: "12.7dvh" }}
                             id={"datasetDescriptionForm"}
                             onChange={(event) => {
                               onChange(event.target.value);
@@ -1222,7 +1222,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                     </FormControl>
                     <Flex flexDirection="column" gap={4}>
-                      <FormControl isInvalid={!!errors.numberOfCopiesForm} h="6dvh">
+                      <FormControl isInvalid={!!errors.numberOfCopiesForm} h={{ base: "12dvh", lg: "6dvh" }}>
                         <InputLabelWithPopover tkey="number-of-copies">
                           <Text fontWeight="bold" fontSize="md" mt={1}>
                             Number of copies
@@ -1262,7 +1262,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
                       </Text>
 
-                      <FormControl isInvalid={!!errors.royaltiesForm} h="6dvh">
+                      <FormControl isInvalid={!!errors.royaltiesForm} h={{ base: "11.5dvh", lg: "6dvh" }}>
                         <InputLabelWithPopover tkey="royalties">
                           <Text fontWeight="bold" fontSize="md">
                             Royalties
