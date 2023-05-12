@@ -276,7 +276,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="820px"
+        h="840px"
         mx="3 !important"
         key={item.id}
         border="1px solid transparent"
@@ -401,7 +401,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Button>
             </HStack>
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+            <Flex mt="7" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
@@ -433,11 +433,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
-            {amountError && (
-              <Text color="red.400" fontSize="xs">
-                {amountError}
-              </Text>
-            )}
+
+            <Box h={3}>
+              {amountError && (
+                <Text color="red.400" fontSize="xs">
+                  {amountError}
+                </Text>
+              )}
+            </Box>
 
             <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
