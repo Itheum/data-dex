@@ -19,6 +19,7 @@ import {
   Tab,
   useColorMode,
   useToast,
+  Box,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -225,14 +226,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         </Heading>
 
         <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} w="full" flexWrap={"wrap"}>
-          <Tabs w="full" alignItems="center">
+          <Tabs w="full" alignItems="center" index={tabState - 1}>
             <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }} isSelected={tabState === 1}>
-                <Button
-                  colorScheme="teal"
+              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+                <Box
+                  // colorScheme="teal"
                   flexDirection="row"
-                  isDisabled={tabState === 1}
-                  variant="unstyled"
+                  // isDisabled={tabState === 1}
+                  // variant="unstyled"
                   _disabled={{ opacity: 1 }}
                   opacity={0.4}
                   fontSize={{ base: "sm", md: "md" }}
@@ -247,14 +248,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       Public Marketplace
                     </Text>
                   </Flex>
-                </Button>
+                </Box>
               </Tab>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }} isSelected={tabState === 2}>
+              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
                 {isMxLoggedIn && (
-                  <Button
-                    colorScheme="teal"
-                    isDisabled={tabState === 2}
-                    variant="unstyled"
+                  <Box
+                    // colorScheme="teal"
+                    // isDisabled={tabState === 2}
+                    // variant="unstyled"
                     _disabled={{ opacity: 1 }}
                     opacity={0.4}
                     fontSize={{ base: "sm", md: "md" }}
@@ -272,7 +273,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         {offers && offers?.length}
                       </Text> */}
                     </Flex>
-                  </Button>
+                  </Box>
                 )}
               </Tab>
               <Flex py={3}>
