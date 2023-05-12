@@ -30,23 +30,16 @@ type MarketplaceLowerCardProps = {
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nftMetadata }) => {
   const { colorMode } = useColorMode();
+  const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
-  const [amountOfTokens, setAmountOfTokens] = useState<any>({});
-  const [amountErrors, setAmountErrors] = useState<string[]>([]);
-  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(-1); // no selection
+  const [amount, setAmount] = useState<number>(1);
+  const [amountError, setAmountError] = useState<string>('');
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
-  const contract = new DataNftMarketContract(_chainMeta.networkId);
-  const [isMyNft, setIsMyNft] = useState<boolean>(false);
-  const { address } = useGetAccountInfo();
-  
-
-  useEffect(() => {
-    setIsMyNft(offer.owner === address);
-  }, []);
+  const isMyNft = offer.owner === address;
 
   return (
     <>
@@ -76,7 +69,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nft
                 min={1}
                 max={offer.quantity}
                 isValidCharacter={isValidNumericCharacter}
-                value={amountOfTokens[index]}
+                value={amount}
                 defaultValue={1}
                 onChange={(valueAsString) => {
                   const value = Number(valueAsString);
@@ -86,16 +79,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nft
                   } else if (value > offer.quantity) {
                     error = "Cannot exceed balance";
                   }
-                  setAmountErrors((oldErrors: any) => {
-                    const newErrors = [...oldErrors];
-                    newErrors[index] = error;
-                    return newErrors;
-                  });
-                  setAmountOfTokens((oldAmounts: any) => {
-                    const newAmounts = { ...oldAmounts };
-                    newAmounts[index] = value;
-                    return newAmounts;
-                  });
+                  setAmountError(error);
+                  setAmount(value);
                 }}>
                 <NumberInputField />
                 <NumberInputStepper>
@@ -109,9 +94,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nft
               colorScheme="teal"
               mt="7"
               ml="4"
-              isDisabled={hasPendingTransactions || !!amountErrors[index]}
+              isDisabled={hasPendingTransactions || !!amountError}
               onClick={() => {
-                setSelectedOfferIndex(index);
                 onProcureModalOpen();
               }}>
               Purchase Data
@@ -122,9 +106,9 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nft
         <HStack h="3rem"></HStack>
       )}
 
-      {amountErrors[index] && (
+      {!!amountError && (
         <Text color="red.400" fontSize="xs" mt={1}>
-          {amountErrors[index]}
+          {amountError}
         </Text>
       )}
 
@@ -132,11 +116,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, index, nft
         <ProcureDataNFTModal
           isOpen={isProcureModalOpen}
           onClose={onProcureModalClose}
-          marketContract={contract}
           buyerFee={marketRequirements?.buyer_fee || 0}
           nftData={nftMetadata}
           offer={offer}
-          amount={amountOfTokens[selectedOfferIndex]}
+          amount={amount}
         />
       )}
     </>

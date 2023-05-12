@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
-import { sleep } from "libs/util";
+import { convertEsdtToWei, sleep } from "libs/util";
 import { printPrice, convertToLocalString } from "libs/util2";
-import { getAccountTokenFromApi } from "MultiversX/api";
 import { getTokenWantedRepresentation } from "MultiversX/tokenUtils";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
-import { useMarketStore } from "store";
+import { useAccountStore, useMarketStore } from "store";
 export type ListModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +23,6 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [feePrice, setFeePrice] = useState<string>("");
   const [fee, setFee] = useState<number>(0);
   const [readTermsChecked, setReadTermsChecked] = useState(false);
@@ -32,20 +30,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-
-  useEffect(() => {
-    if (_chainMeta.networkId && props.offer) {
-      (async () => {
-        // wanted_token must be ESDT (not NFT, SFT or Meta-ESDT)
-        const _token = await getAccountTokenFromApi(address, props.offer.wanted_token_identifier, _chainMeta.networkId);
-        if (_token) {
-          setWantedTokenBalance(_token.balance ? _token.balance : "0");
-        } else {
-          setWantedTokenBalance("0");
-        }
-      })();
-    }
-  }, [_chainMeta, props.offer]);
+  const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   useEffect(() => {
     if (props.offer) {
@@ -240,7 +225,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                 isDisabled={
                   !readTermsChecked ||
                   liveUptimeFAIL ||
-                  new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 ||
+                  new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0 ||
                   !isLiveUptimeSuccessful
                 }>
                 Proceed

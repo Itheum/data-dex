@@ -227,7 +227,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} w="full" flexWrap={"wrap"}>
           <Tabs w="full" alignItems="center">
             <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }} isSelected={tabState === 1}>
                 <Button
                   colorScheme="teal"
                   flexDirection="row"
@@ -238,7 +238,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   fontSize={{ base: "sm", md: "md" }}
                   onClick={() => {
                     if (hasPendingTransactions) return;
-                    setPageIndex(0);
+                    console.log('>>>>>>>>>>>>>>click Public Marketplace');
                     navigate("/datanfts/marketplace/market");
                   }}>
                   <Flex mx="5" alignItems="center" gap={1.5}>
@@ -249,7 +249,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   </Flex>
                 </Button>
               </Tab>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }} isSelected={tabState === 2}>
                 {isMxLoggedIn && (
                   <Button
                     colorScheme="teal"
@@ -260,7 +260,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     fontSize={{ base: "sm", md: "md" }}
                     onClick={() => {
                       if (hasPendingTransactions) return;
-                      setPageIndex(0);
+                      console.log('>>>>>>>>>>>>>>click My Listed Data NFT');
                       navigate("/datanfts/marketplace/my");
                     }}>
                     <Flex mx="5" alignItems="center" gap={1.5}>

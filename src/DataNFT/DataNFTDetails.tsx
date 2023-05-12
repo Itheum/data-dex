@@ -69,6 +69,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
@@ -382,7 +383,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             <ProcureDataNFTModal
               isOpen={isProcureModalOpen}
               onClose={onProcureModalClose}
-              marketContract={marketContract}
               buyerFee={marketRequirements?.buyer_fee || 0}
               nftData={nftData.attributes}
               offer={offer}
