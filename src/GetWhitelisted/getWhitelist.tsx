@@ -71,12 +71,18 @@ export const GetWhitelist: React.FC = () => {
                   <Image as={FaTwitter} m="auto" fontSize="3xl" h="full" />
                 </Box>
               </a>
-              <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
-                <Image as={FaDiscord} m="auto" fontSize="3xl" h="full" />
-              </Box>
-              <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
-                <Image as={FaTelegramPlane} m="auto" fontSize="3xl" h="full" />
-              </Box>
+
+              <a href="https://itheum.io/discord" target="_blank" rel="noreferrer">
+                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
+                  <Image as={FaDiscord} m="auto" fontSize="3xl" h="full" />
+                </Box>
+              </a>
+
+              <a href="https://t.me/itheum" target="_blank" rel="noreferrer">
+                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
+                  <Image as={FaTelegramPlane} m="auto" fontSize="3xl" h="full" />
+                </Box>
+              </a>
             </Flex>
           </Box>
         </Center>

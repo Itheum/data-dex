@@ -1122,7 +1122,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Flex>
 
                   <InputLabelWithPopover tkey="data-marshal-url">
-                    <Text fontWeight="bold" fontSize="md" mt={1}>
+                    <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
                       Data Marshal Url
                     </Text>
                   </InputLabelWithPopover>
@@ -1198,7 +1198,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   <Grid templateColumns="repeat(2, 1fr)" gap={7}>
                     <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH={{ base: "23.5dvh", lg: "13.2dvh" }}>
                       <InputLabelWithPopover tkey="dataset-description">
-                        <FormLabel fontWeight="bold" fontSize="md" mt={1}>
+                        <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
                           Dataset Description
                         </FormLabel>
                       </InputLabelWithPopover>
@@ -1221,10 +1221,10 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       />
                       <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                     </FormControl>
-                    <Flex flexDirection="column" gap={4}>
+                    <Box display="flex" flexDirection="column" gap={4}>
                       <FormControl isInvalid={!!errors.numberOfCopiesForm} h={{ base: "12dvh", lg: "6dvh" }}>
                         <InputLabelWithPopover tkey="number-of-copies">
-                          <Text fontWeight="bold" fontSize="md" mt={1}>
+                          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
                             Number of copies
                           </Text>
                         </InputLabelWithPopover>
@@ -1258,7 +1258,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         />
                         <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                       </FormControl>
-                      <Text color="gray.400" fontSize="sm" mt="1 !important">
+                      <Text color="gray.400" fontSize="sm" mt={1}>
                         Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
                       </Text>
 
@@ -1297,10 +1297,10 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         />
                         <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
                       </FormControl>
-                      <Text color="gray.400" fontSize="sm" mt="1 !important">
+                      <Text color="gray.400" fontSize="sm" mt={{ base: "1", md: "8" }}>
                         Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
                       </Text>
-                    </Flex>
+                    </Box>
                   </Grid>
                 </Stack>
                 <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
