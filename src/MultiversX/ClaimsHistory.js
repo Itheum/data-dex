@@ -16,10 +16,9 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
         onAfterCloseChaimsHistory();
         setClaimTransactionsModalOpen(false);
       }}
-      size={modelSize}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxH={"900px"} maxW={"1200px"}>
+      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }}>
         <ModalHeader>Recent Claim Transactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
