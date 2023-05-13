@@ -959,7 +959,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
       <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader bgColor="bgDark">
+          <DrawerHeader bgColor="#181818">
             <HStack spacing="5">
               <CloseButton size="lg" onClick={onRfMount} />
               {(currDataCATSellObj && (
@@ -980,7 +980,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
             </HStack>
           </DrawerHeader>
           <DrawerBody
-            bgColor="bgDark"
+            bgColor="#181818"
             onClick={() => {
               if (!userFocusedForm) {
                 setUserFocusedForm(true);
@@ -1052,7 +1052,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   + click on an item&apos;s title to learn more
                 </Text>
 
-                <Stack spacing="3">
+                <Flex flexDirection={"column"} gap="3">
                   <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
                     Data Asset Detail
                   </Text>
@@ -1134,175 +1134,173 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       {dataNFTMarshalServiceStatus}
                     </Text>
                   )}
-                </Stack>
+                </Flex>
 
-                <Stack spacing="3">
-                  <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
-                    NFT Token Metadata
-                  </Text>
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+                  NFT Token Metadata
+                </Text>
 
-                  <Flex flexDirection="row" gap="7">
-                    <FormControl isInvalid={!!errors.tokenNameForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
-                      <InputLabelWithPopover tkey="token-name">
-                        <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
-                          Token Name (Short Title)
-                        </FormLabel>
-                      </InputLabelWithPopover>
+                <Flex flexDirection="row" gap="7" mt={2}>
+                  <FormControl isInvalid={!!errors.tokenNameForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
+                    <InputLabelWithPopover tkey="token-name">
+                      <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                        Token Name (Short Title)
+                      </FormLabel>
+                    </InputLabelWithPopover>
 
-                      <Controller
-                        control={control}
-                        render={({ field: { value, onChange } }) => (
-                          <Input
-                            mt="1 !important"
-                            placeholder="Between 3 and 20 alphanumeric characters only"
-                            id="tokenNameForm"
-                            value={dataNFTTokenName}
-                            onChange={(event) => {
-                              onChange(event.target.value);
-                              onChangeDataNFTTokenName(event.currentTarget.value);
-                            }}
-                          />
-                        )}
-                        name={"tokenNameForm"}
-                      />
-                      <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
-                    </FormControl>
-
-                    <FormControl isInvalid={!!errors.datasetTitleForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
-                      <InputLabelWithPopover tkey="dataset-title">
-                        <FormLabel fontWeight="bold" fontSize="md">
-                          Dataset Title
-                        </FormLabel>
-                      </InputLabelWithPopover>
-
-                      <Controller
-                        control={control}
-                        render={({ field: { value, onChange } }) => (
-                          <Input
-                            mt="1 !important"
-                            placeholder="Between 10 and 60 alphanumeric characters only"
-                            id="datasetTitleForm"
-                            value={datasetTitle}
-                            onChange={(event) => {
-                              onChange(event.target.value);
-                              onChangeDatasetTitle(event.currentTarget.value);
-                            }}
-                          />
-                        )}
-                        name="datasetTitleForm"
-                      />
-                      <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
-                    </FormControl>
-                  </Flex>
-
-                  <Grid templateColumns="repeat(2, 1fr)" gap={7}>
-                    <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH={{ base: "23.5dvh", lg: "13.2dvh" }}>
-                      <InputLabelWithPopover tkey="dataset-description">
-                        <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                          Dataset Description
-                        </FormLabel>
-                      </InputLabelWithPopover>
-
-                      <Controller
-                        control={control}
-                        render={({ field: { value, onChange } }) => (
-                          <Textarea
-                            mt="1 !important"
-                            placeholder="Between 10 and 400 characters only. URL allowed."
-                            h={{ base: "33.7dvh", lg: "12.7dvh" }}
-                            id={"datasetDescriptionForm"}
-                            onChange={(event) => {
-                              onChange(event.target.value);
-                              onChangeDatasetDescription(event.currentTarget.value);
-                            }}
-                          />
-                        )}
-                        name="datasetDescriptionForm"
-                      />
-                      <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
-                    </FormControl>
-                    <Box display="flex" flexDirection="column" gap={4}>
-                      <FormControl isInvalid={!!errors.numberOfCopiesForm} h={{ base: "12dvh", lg: "6dvh" }}>
-                        <InputLabelWithPopover tkey="number-of-copies">
-                          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                            Number of copies
-                          </Text>
-                        </InputLabelWithPopover>
-
-                        <Controller
-                          control={control}
-                          render={({ field: { value, onChange } }) => (
-                            <NumberInput
-                              mt="3 !important"
-                              size="md"
-                              id="numberOfCopiesForm"
-                              maxW={24}
-                              step={1}
-                              defaultValue={1}
-                              min={1}
-                              value={dataNFTCopies}
-                              max={maxSupply > 0 ? maxSupply : 1}
-                              isValidCharacter={isValidNumericCharacter}
-                              onChange={(valueAsString: string) => {
-                                onChange(valueAsString);
-                                handleChangeDataNftCopies(Number(valueAsString));
-                              }}>
-                              <NumberInputField />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                          name="numberOfCopiesForm"
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="Between 3 and 20 alphanumeric characters only"
+                          id="tokenNameForm"
+                          value={dataNFTTokenName}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDataNFTTokenName(event.currentTarget.value);
+                          }}
                         />
-                        <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
-                      </FormControl>
-                      <Text color="gray.400" fontSize="sm" mt={1}>
-                        Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
-                      </Text>
+                      )}
+                      name={"tokenNameForm"}
+                    />
+                    <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
+                  </FormControl>
 
-                      <FormControl isInvalid={!!errors.royaltiesForm} h={{ base: "11.5dvh", lg: "6dvh" }}>
-                        <InputLabelWithPopover tkey="royalties">
-                          <Text fontWeight="bold" fontSize="md">
-                            Royalties
-                          </Text>
-                        </InputLabelWithPopover>
+                  <FormControl isInvalid={!!errors.datasetTitleForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
+                    <InputLabelWithPopover tkey="dataset-title">
+                      <FormLabel fontWeight="bold" fontSize="md">
+                        Dataset Title
+                      </FormLabel>
+                    </InputLabelWithPopover>
 
-                        <Controller
-                          control={control}
-                          render={({ field: { value, onChange } }) => (
-                            <NumberInput
-                              mt="3 !important"
-                              size="md"
-                              id="royaltiesForm"
-                              maxW={24}
-                              step={5}
-                              defaultValue={minRoyalties}
-                              min={minRoyalties > 0 ? minRoyalties : 0}
-                              max={maxRoyalties > 0 ? maxRoyalties : 0}
-                              isValidCharacter={isValidNumericCharacter}
-                              onChange={(valueAsString: string) => {
-                                onChange(valueAsString);
-                                handleChangeDataNftRoyalties(Number(valueAsString));
-                              }}>
-                              <NumberInputField />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                          name="royaltiesForm"
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Input
+                          mt="1 !important"
+                          placeholder="Between 10 and 60 alphanumeric characters only"
+                          id="datasetTitleForm"
+                          value={datasetTitle}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDatasetTitle(event.currentTarget.value);
+                          }}
                         />
-                        <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
-                      </FormControl>
-                      <Text color="gray.400" fontSize="sm" mt={{ base: "1", md: "8" }}>
-                        Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                      </Text>
-                    </Box>
-                  </Grid>
-                </Stack>
+                      )}
+                      name="datasetTitleForm"
+                    />
+                    <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
+                  </FormControl>
+                </Flex>
+
+                <Flex flexDirection="row" gap={7}>
+                  <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH={{ base: "23.5dvh", lg: "13.2dvh" }}>
+                    <InputLabelWithPopover tkey="dataset-description">
+                      <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }} noOfLines={1}>
+                        Dataset Description
+                      </FormLabel>
+                    </InputLabelWithPopover>
+
+                    <Controller
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <Textarea
+                          mt="1 !important"
+                          placeholder="Between 10 and 400 characters only. URL allowed."
+                          h={{ base: "25.7dvh", lg: "16dvh" }}
+                          id={"datasetDescriptionForm"}
+                          onChange={(event) => {
+                            onChange(event.target.value);
+                            onChangeDatasetDescription(event.currentTarget.value);
+                          }}
+                        />
+                      )}
+                      name="datasetDescriptionForm"
+                    />
+                    <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
+                  </FormControl>
+                  <Box display="flex" flexDirection="column" gap={4}>
+                    <FormControl isInvalid={!!errors.numberOfCopiesForm} h={{ base: "10.5dvh", lg: "6dvh" }}>
+                      <InputLabelWithPopover tkey="number-of-copies">
+                        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                          Number of copies
+                        </Text>
+                      </InputLabelWithPopover>
+
+                      <Controller
+                        control={control}
+                        render={({ field: { value, onChange } }) => (
+                          <NumberInput
+                            mt="3 !important"
+                            size="md"
+                            id="numberOfCopiesForm"
+                            maxW={24}
+                            step={1}
+                            defaultValue={1}
+                            min={1}
+                            value={dataNFTCopies}
+                            max={maxSupply > 0 ? maxSupply : 1}
+                            isValidCharacter={isValidNumericCharacter}
+                            onChange={(valueAsString: string) => {
+                              onChange(valueAsString);
+                              handleChangeDataNftCopies(Number(valueAsString));
+                            }}>
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                        name="numberOfCopiesForm"
+                      />
+                      <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+                    </FormControl>
+                    <Text color="gray.400" fontSize="sm" mt={{ base: "3", md: "4" }}>
+                      Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                    </Text>
+
+                    <FormControl isInvalid={!!errors.royaltiesForm} h={{ base: "10.5dvh", lg: "6dvh" }}>
+                      <InputLabelWithPopover tkey="royalties">
+                        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                          Royalties
+                        </Text>
+                      </InputLabelWithPopover>
+
+                      <Controller
+                        control={control}
+                        render={({ field: { value, onChange } }) => (
+                          <NumberInput
+                            mt="3 !important"
+                            size="md"
+                            id="royaltiesForm"
+                            maxW={24}
+                            step={5}
+                            defaultValue={minRoyalties}
+                            min={minRoyalties > 0 ? minRoyalties : 0}
+                            max={maxRoyalties > 0 ? maxRoyalties : 0}
+                            isValidCharacter={isValidNumericCharacter}
+                            onChange={(valueAsString: string) => {
+                              onChange(valueAsString);
+                              handleChangeDataNftRoyalties(Number(valueAsString));
+                            }}>
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                        name="royaltiesForm"
+                      />
+                      <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
+                    </FormControl>
+                    <Text color="gray.400" fontSize="sm" mt={{ base: "8", md: "4" }}>
+                      Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                    </Text>
+                  </Box>
+                </Flex>
                 <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
                   Terms and Fees
                 </Text>
