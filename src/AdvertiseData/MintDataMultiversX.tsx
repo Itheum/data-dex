@@ -956,8 +956,8 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
         </>
       )}
 
-      <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
-        <DrawerOverlay overflow={"clip"} />
+      <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={true} closeOnOverlayClick={true}>
+        <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader bgColor="#181818">
             <HStack spacing="5">
@@ -981,6 +981,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
           </DrawerHeader>
           <DrawerBody
             bgColor="#181818"
+            overflowX={"hidden"}
             onClick={() => {
               if (!userFocusedForm) {
                 setUserFocusedForm(true);
@@ -1447,6 +1448,28 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
               </ModalContent>
             </Modal>
           </DrawerBody>
+          <Box
+            position="absolute"
+            top="0"
+            bottom="0"
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            flexDirection={"column"}
+            left="0"
+            right="0"
+            height="100%"
+            width="100%"
+            backgroundColor="blackAlpha.800"
+            rounded="lg"
+            visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}>
+            <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
+              - You are not whitelisted -
+            </Text>
+            <Button as={Link} variant="solid" colorScheme="teal" px={7} py={6} rounded="lg" mt={7} href="/getwhitelisted">
+              Find out how you can get whitelisted
+            </Button>
+          </Box>
         </DrawerContent>
       </Drawer>
     </Stack>

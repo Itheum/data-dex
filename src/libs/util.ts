@@ -212,6 +212,7 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
+  GETWHITELISTED: 18,
 };
 
 export const PATHS = {

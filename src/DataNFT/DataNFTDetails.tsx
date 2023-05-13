@@ -393,7 +393,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       size={{ base: "md", lg: "lg" }}
                       colorScheme="teal"
                       isDisabled={hasPendingTransactions || !!amountError}
-                      hidden={!isMxLoggedIn || pathname === walletDrawer}
+                      hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                       onClick={onProcureModalOpen}>
                       <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                     </Button>
