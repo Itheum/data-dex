@@ -80,6 +80,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [marketRequirements, setMarketRequirements] = useState<MarketplaceRequirementsType | undefined>(undefined);
   const [sessionId, setSessionId] = useState<any>();
   const marketplaceDrawer = "/datanfts/marketplace/market";
+  const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
 
   useTrackTransactionStatus({
@@ -392,7 +393,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       size={{ base: "md", lg: "lg" }}
                       colorScheme="teal"
                       isDisabled={hasPendingTransactions || !!amountError}
-                      hidden={!isMxLoggedIn}
+                      hidden={!isMxLoggedIn || pathname === walletDrawer}
                       onClick={onProcureModalOpen}>
                       <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                     </Button>
