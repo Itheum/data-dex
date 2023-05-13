@@ -19,9 +19,9 @@ const RecentArticles = () => {
               <Image
                 src="https://miro.medium.com/v2/resize:fit:1400/0*mjQZiUqjYGdE1W-n"
                 alt="Empowering You to Take Ownership of Your Personal Data"
-                borderRadius="1.5rem"
-                border=".1rem solid transparent"
-                style={{ "background": gradientBorder }}
+                border="1px solid transparent"
+                borderColor="#00C797"
+                borderRadius="16px"
               />
             </Link>
           </Box>
@@ -51,9 +51,9 @@ const RecentArticles = () => {
               <Image
                 src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*ZyFc3wfmZZCK96j2YgK4Sw.jpeg"
                 alt="Navigating the Data Exchange Market: Centralized vs Decentralized Brokers"
-                borderRadius="1.5rem"
-                border=".1rem solid transparent"
-                style={{ "background": gradientBorder }}
+                border="1px solid transparent"
+                borderColor="#00C797"
+                borderRadius="16px"
               />
             </Link>
           </Box>
@@ -83,9 +83,9 @@ const RecentArticles = () => {
               <Image
                 src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*356yG4BEf67VFeADo3NMzw.jpeg"
                 alt="The Story Behind Your Data"
-                borderRadius="1.5rem"
-                border=".1rem solid transparent"
-                style={{ "background": gradientBorder }}
+                border="1px solid transparent"
+                borderColor="#00C797"
+                borderRadius="16px"
               />
             </Link>
           </Box>
@@ -112,9 +112,9 @@ const RecentArticles = () => {
               <Image
                 src="https://miro.medium.com/v2/resize:fit:1400/0*yfJztNyWCkOzOBKt"
                 alt="Problems with Data Privacy in the Web 2.0"
-                borderRadius="1.5rem"
-                border=".1rem solid transparent"
-                style={{ "background": gradientBorder }}
+                border="1px solid transparent"
+                borderColor="#00C797"
+                borderRadius="16px"
               />
             </Link>
           </Box>

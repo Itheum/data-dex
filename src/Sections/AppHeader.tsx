@@ -43,7 +43,7 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { FaStore } from "react-icons/fa";
+import { FaNewspaper, FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
@@ -93,6 +93,15 @@ const exploreRouterMenu = [
         shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
+      },
+      {
+        menuEnum: MENU.GETWHITELISTED,
+        path: "/getwhitelisted",
+        label: "Get whitelisted to mint Data NFTs",
+        shortLbl: "Get whitelisted to mint Data NFTs",
+        Icon: FaUserCheck,
+        needToBeLoggedIn: false,
+        needToBeLoggedOut: true,
       },
     ],
   },
@@ -155,9 +164,9 @@ const AppHeader = ({
       <Flex
         h="6rem"
         justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
-        paddingX={!isMxLoggedIn ? 32 : 0}
+        paddingX={!isMxLoggedIn ? { base: 5, lg: 36 } : 0}
         alignItems="center"
-        backgroundColor={colorMode === "light" ? "white" : "black"}
+        backgroundColor={colorMode === "light" ? "white" : "bgDark"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
@@ -419,7 +428,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack marginLeft={3}>
         <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="lg">
+          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
             Connect MultiversX Wallet
           </Button>
         </PopoverTrigger>
@@ -459,7 +468,11 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
 };
 
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
-  return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
+  if (quickMenuItem.needToBeLoggedOut === undefined) {
+    return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
+  } else {
+    return quickMenuItem.needToBeLoggedOut ? (isMxLoggedIn ? "none" : "inline") : "inline";
+  }
 }
 
 function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {

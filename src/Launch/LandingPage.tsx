@@ -19,13 +19,13 @@ const LandingPage = () => {
   return (
     <Box>
       <Flex
-        bgColor={colorMode === "dark" ? "black" : "white"}
+        bgColor={colorMode === "dark" ? "bgDark" : "white"}
         flexDirection="column"
         justifyContent="space-between"
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
-        <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
+        <Box backgroundColor={colorMode === "light" ? "white" : "bgDark"} flexGrow="1">
           <Flex
             w="100%"
             h={["45rem", "45rem"]}

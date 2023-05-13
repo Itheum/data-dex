@@ -18,6 +18,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   useColorMode,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import imgProgGaPa from "img/prog-gaming-passport.png";
 import imgProgGaPaES from "img/prog-gaming.jpg";
@@ -51,14 +52,6 @@ export default function AppMarketplace() {
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
-  let gradientBorder = styleStrings.gradientBorderPassive;
-  let gradientBorderCards = styleStrings.gradientBorderMulticolor;
-
-  if (colorMode === "light") {
-    gradientBorder = styleStrings.gradientBorderPassiveLight;
-    gradientBorderCards = styleStrings.gradientBorderMulticolorLight;
-  }
-
   return (
     <>
       <Stack pt="5">
@@ -68,10 +61,9 @@ export default function AppMarketplace() {
         <Text size="sm" opacity=".7" fontWeight="normal">
           Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data
         </Text>
-        <Wrap shouldWrapChildren={true} wrap="wrap" spacing={5} justify={{ base: "center", md: "start" }}>
-          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
-            <Image src={imgProgGaPa} />
-
+        <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={4}>
+          <Box overflow="hidden" backgroundColor="none">
+            <Image src={imgProgGaPa} w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
             <Box p="3">
               <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
@@ -95,9 +87,8 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
-            <Image src={imgProgGaPaES} />
-
+          <Box overflow="hidden" backgroundColor="none">
+            <Image src={imgProgGaPaES} w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
             <Box p="3">
               <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
@@ -114,8 +105,8 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
-            <Image src={imgProgRhc} />
+          <Box overflow="hidden" backgroundColor="none">
+            <Image src={imgProgRhc} w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
 
             <Box p="3">
               <Box display="flex" alignItems="baseline">
@@ -133,8 +124,8 @@ export default function AppMarketplace() {
             </Box>
           </Box>
 
-          <Box overflow="hidden" border=".1rem solid transparent" backgroundColor="none" borderRadius="1.5rem" style={{ "background": gradientBorderCards }}>
-            <Image src={imgProgWfh} />
+          <Box overflow="hidden" backgroundColor="none">
+            <Image src={imgProgWfh} w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
 
             <Box p="3">
               <Box display="flex" alignItems="baseline">
@@ -151,7 +142,7 @@ export default function AppMarketplace() {
               </Button>
             </Box>
           </Box>
-        </Wrap>
+        </SimpleGrid>
       </Stack>
 
       {learnMoreProd && (

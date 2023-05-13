@@ -212,6 +212,7 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
+  GETWHITELISTED: 18,
 };
 
 export const PATHS = {
@@ -532,9 +533,8 @@ export const dataCATDemoUserData = {
 export const styleStrings = {
   gradientBorderMulticolor: "linear-gradient(black, black) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
   gradientBorderMulticolorLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
-  gradientBorderPassive: "linear-gradient(black, black) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
+  gradientBorderPassive: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
   gradientBorderPassiveLight: "linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
-  gradientBorderMulticolorToBottomRight: "linear-gradient(black, black) padding-box, linear-gradient(to left top, #00C79750, #FF439D50) border-box",
-  gradientBorderMulticolorToBottomRightLight:
-    "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C79750, #686868, #FF439D50) border-box",
+  gradientBorderMulticolorToBottomRight: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
+  gradientBorderMulticolorToBottomRightLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
 };

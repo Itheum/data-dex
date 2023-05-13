@@ -8,6 +8,7 @@ import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftCondensedView } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import { hexZero } from "../MultiversX/tokenUtils.js";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -43,6 +44,7 @@ const RecentDataNFTs = ({
 }) => {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { colorMode } = useColorMode();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
@@ -123,14 +125,7 @@ const RecentDataNFTs = ({
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
         {latestOffers.map((item: DataNftCondensedView, idx: number) => {
           return (
-            <Card
-              key={idx}
-              maxW="sm"
-              variant="outline"
-              backgroundColor="none"
-              borderRadius="1.5rem"
-              border=".1rem solid transparent"
-              style={{ "background": gradientBorderForTrade }}>
+            <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
                 <Skeleton height={{ base: "300px", md: "200px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
@@ -138,7 +133,7 @@ const RecentDataNFTs = ({
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
-                  <Stack mt="7">
+                  <Stack mt={isMxLoggedIn ? "12" : "4"}>
                     <Heading size="md" noOfLines={1}>
                       {item.title}
                     </Heading>
