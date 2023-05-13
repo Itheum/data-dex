@@ -957,7 +957,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
       )}
 
       <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={false}>
-        <DrawerOverlay />
+        <DrawerOverlay overflow={"clip"} />
         <DrawerContent>
           <DrawerHeader bgColor="#181818">
             <HStack spacing="5">
@@ -1058,7 +1058,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   </Text>
 
                   <Flex flexDirection="row" gap="7">
-                    <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
+                    <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
                       <InputLabelWithPopover tkey="data-stream-url">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Data Stream URL
@@ -1086,7 +1086,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
+                    <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
                       <InputLabelWithPopover tkey="data-preview-url">
                         <FormLabel fontWeight="bold" fontSize="md">
                           Data Preview URL
@@ -1141,7 +1141,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                 </Text>
 
                 <Flex flexDirection="row" gap="7" mt={2}>
-                  <FormControl isInvalid={!!errors.tokenNameForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
+                  <FormControl isInvalid={!!errors.tokenNameForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
                     <InputLabelWithPopover tkey="token-name">
                       <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
                         Token Name (Short Title)
@@ -1167,7 +1167,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl isInvalid={!!errors.datasetTitleForm} isRequired h={{ base: "12dvh", lg: "8dvh" }}>
+                  <FormControl isInvalid={!!errors.datasetTitleForm} isRequired minH={"6.25rem"}>
                     <InputLabelWithPopover tkey="dataset-title">
                       <FormLabel fontWeight="bold" fontSize="md">
                         Dataset Title
@@ -1195,7 +1195,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                 </Flex>
 
                 <Flex flexDirection="row" gap={7}>
-                  <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxH={{ base: "23.5dvh", lg: "13.2dvh" }}>
+                  <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxW={"48%"}>
                     <InputLabelWithPopover tkey="dataset-description">
                       <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }} noOfLines={1}>
                         Dataset Description
@@ -1207,8 +1207,8 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                       render={({ field: { value, onChange } }) => (
                         <Textarea
                           mt="1 !important"
+                          h={"60%"}
                           placeholder="Between 10 and 400 characters only. URL allowed."
-                          h={{ base: "25.7dvh", lg: "16dvh" }}
                           id={"datasetDescriptionForm"}
                           onChange={(event) => {
                             onChange(event.target.value);
@@ -1221,7 +1221,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
                   </FormControl>
                   <Box display="flex" flexDirection="column" gap={4}>
-                    <FormControl isInvalid={!!errors.numberOfCopiesForm} h={{ base: "10.5dvh", lg: "6dvh" }}>
+                    <FormControl isInvalid={!!errors.numberOfCopiesForm} minH={{ base: "10.75rem", md: "9.25rem" }}>
                       <InputLabelWithPopover tkey="number-of-copies">
                         <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
                           Number of copies
@@ -1255,13 +1255,13 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         )}
                         name="numberOfCopiesForm"
                       />
+                      <Text color="gray.400" fontSize="sm" mt={"1"}>
+                        Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                      </Text>
                       <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                     </FormControl>
-                    <Text color="gray.400" fontSize="sm" mt={{ base: "3", md: "4" }}>
-                      Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
-                    </Text>
 
-                    <FormControl isInvalid={!!errors.royaltiesForm} h={{ base: "10.5dvh", lg: "6dvh" }}>
+                    <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
                       <InputLabelWithPopover tkey="royalties">
                         <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
                           Royalties
@@ -1294,14 +1294,14 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         )}
                         name="royaltiesForm"
                       />
+                      <Text color="gray.400" fontSize="sm" mt={"1"}>
+                        Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
+                      </Text>
                       <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
                     </FormControl>
-                    <Text color="gray.400" fontSize="sm" mt={{ base: "8", md: "4" }}>
-                      Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-                    </Text>
                   </Box>
                 </Flex>
-                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+                <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important">
                   Terms and Fees
                 </Text>
 
@@ -1312,7 +1312,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                   there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
                   of use before proceeding.
                 </Text>
-
                 <Flex mt="3 !important">
                   <Button
                     colorScheme="teal"
@@ -1325,15 +1324,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     </Text>
                   </Button>
                 </Flex>
-                <Checkbox size="md" mt="2 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
-                  I have read and I agree to the Terms of Use
-                </Checkbox>
+                <Box minH={"3.5rem"}>
+                  <Checkbox size="md" mt="2 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
+                    I have read and I agree to the Terms of Use
+                  </Checkbox>
 
-                {userFocusedForm && !readTermsChecked && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    Please read and agree to terms of use.
-                  </Text>
-                )}
+                  {userFocusedForm && !readTermsChecked && (
+                    <Text color="red.400" fontSize="sm" mt="1 !important" minH={"20px"}>
+                      Please read and agree to terms of use.
+                    </Text>
+                  )}
+                </Box>
 
                 <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="8 !important">
                   An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
@@ -1353,16 +1354,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                     You don&apos;t have enough ITHEUM for Anti-Spam Tax
                   </Text>
                 )}
+                <Box minH={{ base: "5rem", md: "3.5rem" }}>
+                  <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+                    I accept the deduction of the anti-spam minting fee from my wallet
+                  </Checkbox>
 
-                <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
-                  I accept the deduction of the anti-spam minting fee from my wallet
-                </Checkbox>
-
-                {userFocusedForm && !readAntiSpamFeeChecked && (
-                  <Text color="red.400" fontSize="sm" mt="1 !important">
-                    You need to agree to anti-spam deduction to mint
-                  </Text>
-                )}
+                  {userFocusedForm && !readAntiSpamFeeChecked && (
+                    <Text color="red.400" fontSize="sm" mt="1 !important">
+                      You need to agree to anti-spam deduction to mint
+                    </Text>
+                  )}
+                </Box>
 
                 <Flex>
                   <ChainSupportedInput feature={MENU.SELL}>
