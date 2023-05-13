@@ -891,7 +891,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
   };
 
   return (
-    <Stack mx={{ base: 3, lg: 7, "2xl": "24 !important" }} h={{ base: "auto", md: "84vh" }}>
+    <Stack mx={{ base: 3, lg: 7, "2xl": "24 !important" }} h={{ base: "auto" }} mb={"4"}>
       <Heading size="xl" fontWeight="medium" mt={10} textAlign={{ base: "center", lg: "start" }}>
         Trade Data
       </Heading>
@@ -899,7 +899,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
 
-      <Wrap shouldWrapChildren={true} spacing={5}>
+      <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
         <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
 
