@@ -280,16 +280,16 @@ const AppHeader = ({
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"dashboard"}>
+                <Link as={ReactRouterLink} to={"/"}>
                   <IconButton
                     size={"lg"}
                     color="teal.200"
                     icon={<AiFillHome size={"1.4rem"} />}
-                    aria-label={"Back to dashboard"}
-                    isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(MENU.HOME)}
+                    aria-label={"Back to home"}
+                    isDisabled={isMenuItemSelected(MENU.LANDING) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(MENU.LANDING)}
                     onClick={() => {
-                      navigateToDiscover(MENU.HOME);
+                      navigateToDiscover(MENU.LANDING);
                     }}
                   />
                 </Link>
