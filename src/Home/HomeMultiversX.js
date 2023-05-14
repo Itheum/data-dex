@@ -282,7 +282,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             border="1px solid transparent"
             borderColor="#00C79740"
             borderRadius="16px">
-            <Stack p="5" h={tileBoxH}>
+            <Stack p="5" h={tileBoxH} alignItems={"center"}>
               {!dataCATAccount && (
                 <Heading size="md" fontWeight="semibold" pb={2}>
                   Linked Data CAT Accounts

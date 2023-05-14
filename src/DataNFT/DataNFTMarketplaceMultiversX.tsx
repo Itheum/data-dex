@@ -409,7 +409,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <NoDataHere />
         ) : (
-          <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
+          <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important" justifyItems={"center"}>
             {offers.length > 0 &&
               items?.map((item, index) => (
                 <UpperCardComponent

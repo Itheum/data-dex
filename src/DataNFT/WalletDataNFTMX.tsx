@@ -131,27 +131,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       exception: "",
     };
 
-    let customError = labels.ERR_WALLET_SIG_GENERIC;
+    const customError = labels.ERR_WALLET_SIG_GENERIC;
 
-    if (walletUsedSession === "el_webwallet") {
-      // web wallet not supported
-      customError = labels.ERR_WALLET_SIG_NOT_SUPPORTED;
-    } else {
-      try {
-        const signatureObj = await signMessage({ message });
-
-        if (signatureObj?.signature && signatureObj?.address) {
-          // XPortal App V2 / Ledger
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
-        } else {
-          signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
-        }
-      } catch (e: any) {
-        signResult.success = false;
-        signResult.exception = e.toString();
+    try {
+      const signatureObj = await signMessage({ message });
+      console.log("signatureObj", signatureObj);
+      if (signatureObj?.signature && signatureObj?.address) {
+        // XPortal App V2 / Ledger
+        signResult.signature = signatureObj.signature.toString("hex");
+        signResult.addrInHex = signatureObj.address.hex();
+        signResult.success = true;
+      } else {
+        signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
       }
+    } catch (e: any) {
+      signResult.success = false;
+      signResult.exception = e.toString();
     }
 
     if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
