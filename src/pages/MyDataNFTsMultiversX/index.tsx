@@ -40,7 +40,7 @@ import { useChainMeta } from "store/ChainMetaContext";
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || null;
+  const itheumToken = _chainMeta?.contracts?.itheumToken || '';
   const { address } = useGetAccountInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -90,6 +90,8 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   ];
 
   const getOnChainNFTs = async () => {
+    if (!_chainMeta) return;
+
     const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
 
     if (onChainNfts.length > 0) {
@@ -134,10 +136,10 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
 
   useEffect(() => {
     if (hasPendingTransactions) return;
-    if (!_chainMeta.networkId) return;
+    if (!_chainMeta) return;
 
     getOnChainNFTs();
-  }, [hasPendingTransactions, _chainMeta.networkId]);
+  }, [hasPendingTransactions, _chainMeta]);
 
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);

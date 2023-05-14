@@ -31,15 +31,15 @@ export default function AppMarketplace() {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
-  const [learnMoreProd, setLearnMoreProg] = useState(null);
+  const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>('rhc');
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
-  const handleLearnMoreProg = (progCode) => {
+  const handleLearnMoreProg = (progCode: any) => {
     setLearnMoreProg(progCode);
     onProgressModalOpen();
   };
 
-  const appendUserAddressAndRedirect = (link) => {
+  const appendUserAddressAndRedirect = (link: string) => {
     let updatedLink = link;
 
     if (_user?.loggedInAddress) {

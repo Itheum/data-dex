@@ -16,9 +16,11 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/utils";
+import { NetworkIdType } from "libs/types";
+import { convertEsdtToWei, uxConfig } from "libs/utils";
 import jsonData from "./ABIs/datanftmint.abi.json";
 import { getNetworkProvider } from "./api";
+import { contractsForChain } from "./config";
 import { DataNftMetadataType, UserDataType } from "./types";
 
 export class DataNftMintContract {
@@ -29,7 +31,7 @@ export class DataNftMintContract {
   abiRegistry: AbiRegistry;
   dataNftMintContractAddress: string;
 
-  constructor(networkId: string) {
+  constructor(networkId: NetworkIdType) {
     this.timeout = uxConfig.mxAPITimeoutMs;
     this.dataNftMintContractAddress = contractsForChain(networkId).dataNftMint || "";
     this.chainID = "D";

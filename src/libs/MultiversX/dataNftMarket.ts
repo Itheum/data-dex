@@ -21,9 +21,11 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
 import { labels } from "libs/language";
-import { contractsForChain, uxConfig } from "libs/utils";
+import { NetworkIdType } from "libs/types";
+import { uxConfig } from "libs/utils";
 import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
+import { contractsForChain } from "./config";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 
 export class DataNftMarketContract {
@@ -35,7 +37,7 @@ export class DataNftMarketContract {
 
   toast = useToast();
 
-  constructor(networkId: string) {
+  constructor(networkId: NetworkIdType) {
     this.timeout = uxConfig.mxAPITimeoutMs;
     this.dataNftMarketContractAddress = contractsForChain(networkId).market;
     this.chainID = "D";

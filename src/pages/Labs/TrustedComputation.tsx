@@ -6,7 +6,7 @@ import TrustedComputationFrameworkIcon from "assets/img/trusted-computation-icon
 export default function () {
   return (
     <Stack spacing={5}>
-      <Flex align="top" spacing={10}>
+      <Flex align="top" gap={10}>
         <Box maxW="sm" borderWidth="1px" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
           <Center flexDirection="column">
             <Heading size="lg">
@@ -17,15 +17,15 @@ export default function () {
             </Heading>
             <Image src={TrustedComputationFrameworkIcon} boxSize="150px" m={5} borderRadius="md" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
-              <Box fontSize="sm" align="center" flex="1">
+              <Box fontSize="sm" textAlign="center" flex="1">
                 Large personal datasets managed on-chain by Data Coalitions will become too difficult to monitor over time - with the possibility of sensitive
                 data being accidently leaked during the exchange between multiple buyers
               </Box>
-              <Box fontSize="sm" align="center" flex="1">
+              <Box fontSize="sm" textAlign="center" flex="1">
                 There will also be cases where personal data cannot be put on-chain even when encrypted due to privacy regulations and data sovereignty
                 regulations
               </Box>
-              <Box fontSize="sm" align="center" flex="1">
+              <Box fontSize="sm" textAlign="center" flex="1">
                 The Trusted Computation Framework will allow for protected access to datasets within an environment that complies to various centralised
                 regulations but can be verified and audited on-chain
               </Box>

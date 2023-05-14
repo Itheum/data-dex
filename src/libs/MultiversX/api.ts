@@ -1,17 +1,18 @@
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
+import { NetworkIdType } from "libs/types";
 
 import { uxConfig } from "libs/utils";
 
-export const getApi = (networkId: string) => {
+export const getApi = (networkId: NetworkIdType) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_API_MAINNET_KEY" : "REACT_APP_ENV_API_DEVNET_KEY";
   const defaultUrl = networkId === "E1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
 
   return process.env[envKey] || defaultUrl;
 };
 
-export const getNetworkProvider = (networkId?: string, chainId?: string) => {
+export const getNetworkProvider = (networkId: NetworkIdType, chainId?: string) => {
   const environment = networkId === "E1" || chainId === "1" ? "mainnet" : "devnet";
   const envKey = environment === "mainnet" ? "REACT_APP_ENV_GATEWAY_MAINNET_KEY" : "REACT_APP_ENV_GATEWAY_DEVNET_KEY";
   const defaultUrl = environment === "mainnet" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
@@ -22,7 +23,7 @@ export const getNetworkProvider = (networkId?: string, chainId?: string) => {
   return isApi ? new ApiNetworkProvider(envValue, { timeout: 10000 }) : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: 10000 });
 };
 
-export const getNetworkProviderCodification = (networkId?: string, chainId?: string) => {
+export const getNetworkProviderCodification = (networkId: NetworkIdType, chainId?: string) => {
   const environment = networkId === "E1" || chainId === "1" ? "mainnet" : "devnet";
   const envKey = environment === "mainnet" ? "REACT_APP_ENV_GATEWAY_MAINNET_KEY" : "REACT_APP_ENV_GATEWAY_DEVNET_KEY";
   const defaultUrl = environment === "mainnet" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
@@ -33,20 +34,20 @@ export const getNetworkProviderCodification = (networkId?: string, chainId?: str
   return isApi ? envValue : envValue || defaultUrl;
 };
 
-export const getExplorer = (networkId: string) => {
+export const getExplorer = (networkId: NetworkIdType) => {
   return networkId === "E1" ? "explorer.multiversx.com" : "devnet-explorer.multiversx.com";
 };
 
-export const getTransactionLink = (networkId: string, txHash: string) => {
+export const getTransactionLink = (networkId: NetworkIdType, txHash: string) => {
   return `https://${getExplorer(networkId)}/transactions/${txHash}`;
 };
 
-export const getNftLink = (networkId: string, nftId: string) => {
+export const getNftLink = (networkId: NetworkIdType, nftId: string) => {
   return `https://${getExplorer(networkId)}/nfts/${nftId}`;
 };
 
 // check token balance on Mx
-export const checkBalance = async (token: string, address: string, networkId: string): Promise<{ balance: any }> => {
+export const checkBalance = async (token: string, address: string, networkId: NetworkIdType): Promise<{ balance: any }> => {
   const api = getApi(networkId);
 
   return new Promise((resolve, reject) => {
@@ -137,7 +138,7 @@ export const getClaimTransactions = async (address: string, smartContractAddress
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string, networkId: string): Promise<NftType[]> => {
+export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string | undefined, networkId: NetworkIdType): Promise<NftType[]> => {
   const api = getApi(networkId);
   try {
     const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
@@ -152,7 +153,7 @@ export const getNftsOfACollectionForAnAddress = async (address: string, collecti
   }
 };
 
-export const getNftsByIds = async (nftIds: string[], networkId: string): Promise<NftType[]> => {
+export const getNftsByIds = async (nftIds: string[], networkId: NetworkIdType): Promise<NftType[]> => {
   const api = getApi(networkId);
   try {
     const url = `https://${api}/nfts?withSupply=true&identifiers=${nftIds.join(",")}`;
@@ -184,7 +185,7 @@ export const getNftsByIds = async (nftIds: string[], networkId: string): Promise
   }
 };
 
-export const getAccountTokenFromApi = async (address: string, tokenId: string, networkId: string): Promise<TokenType | undefined> => {
+export const getAccountTokenFromApi = async (address: string, tokenId: string, networkId: NetworkIdType): Promise<TokenType | undefined> => {
   const api = getApi(networkId);
   try {
     const url = `https://${api}/accounts/${address}/tokens/${tokenId}`;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
 import { useLocalStorage } from "libs/hooks";
-import { contractsForChain } from "libs/utils";
+import { contractsForChain } from "libs/MultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
 import { StoreProvider } from "store/StoreProvider";
 import { useUser } from "store/UserContext";
@@ -64,7 +64,7 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   const resetAppContexts = () => {
     setUser({ ...baseUserContext });
-    setChainMeta({});
+    // setChainMeta({});
   };
 
   if (isLoading) {

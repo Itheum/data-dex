@@ -36,10 +36,19 @@ import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, formatNumberRoundFloor, MENU, SUPPORTE
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
 
-let mxFaucetContract = null;
-let mxClaimsContract = null;
-
-export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loadingDataCATAccount, onDataCATAccount }) {
+export default function HomeMultiversX({
+  setMenuItem,
+  dataCATAccount,
+  onRfMount,
+  loadingDataCATAccount,
+  onDataCATAccount,
+}: {
+  setMenuItem: any,
+  dataCATAccount: any,
+  onRfMount: any,
+  loadingDataCATAccount: boolean,
+  onDataCATAccount: any,
+}) {
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -57,19 +66,8 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (_chainMeta?.networkId && isMxLoggedIn) {
-      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        try {
-          mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-        } catch (e) {
-          console.log(e);
-        }
-
-        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
-      }
-    }
-  }, [_chainMeta]);
+  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
 
   // S: Faucet
   useEffect(() => {
@@ -112,20 +110,13 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
   const mxClaimsBalancesUpdate = async () => {
     if (mxAddress && isMxLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        let claims = [
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-          { amount: 0, date: 0 },
-        ];
-
         const claimBalanceValues = [];
-        const claimBalanceDates = [];
+        const claimBalanceDates: number[] = [];
 
-        claims = await mxClaimsContract.getClaims(mxAddress);
+        const claims = await mxClaimsContract.getClaims(mxAddress);
 
-        if (!claims.error) {
-          claims.forEach((claim) => {
+        if (!claims.error && claims.data) {
+          claims.data.forEach((claim) => {
             claimBalanceValues.push(claim.amount / Math.pow(10, 18));
             claimBalanceDates.push(claim.date);
           });
@@ -181,13 +172,13 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
     }
   }, [hasPendingTransactions]);
 
-  const shouldClaimButtonBeDisabled = (claimTypeIndex) => {
+  const shouldClaimButtonBeDisabled = (claimTypeIndex: number) => {
     return (
       claimContractPauseValue ||
       isOnChainInteractionDisabled ||
       claimsBalances.claimBalanceValues[claimTypeIndex] === "-1" ||
       claimsBalances.claimBalanceValues[claimTypeIndex] === "-2" ||
-      !claimsBalances.claimBalanceValues[claimTypeIndex] > 0
+      Number(claimsBalances.claimBalanceValues[claimTypeIndex]) <= 0
     );
   };
 
@@ -323,7 +314,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
                       <Text fontSize="sm" mb="4 !important">
                         You have data available to trade from the following programs
                       </Text>
-                      {dataCATAccount.programsAllocation.map((item) => (
+                      {dataCATAccount.programsAllocation.map((item: any) => (
                         <Stack direction="row" key={item.program}>
                           <Badge borderRadius="full" px="2" colorScheme="teal">
                             {dataCATAccount._lookups.programs[item.program].programName}
@@ -411,7 +402,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                       {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[0])}</Text>
+                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[0]))}</Text>
                       ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
                         <Spinner size="xs" />
                       ) : (
@@ -429,7 +420,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                       {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[1])}</Text>
+                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[1]))}</Text>
                       ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
                         <Spinner size="xs" />
                       ) : (
@@ -447,7 +438,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
                   <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                     <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
                       {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[3])}</Text>
+                        <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[3]))}</Text>
                       ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
                         <Spinner size="xs" />
                       ) : (
@@ -460,14 +451,14 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
                 </HStack>
                 <Spacer />
 
-                {(claimsBalances.claimBalanceValues[2] > 0 && (
+                {(Number(claimsBalances.claimBalanceValues[2]) > 0 && (
                   <Box h="40px">
                     <HStack justifyContent={"space-between"}>
                       <Text color="#929497">Allocations</Text>
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                           {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(claimsBalances.claimBalanceValues[2])}</Text>
+                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[2]))}</Text>
                           ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
                             <Spinner size="xs" />
                           ) : (

@@ -10,7 +10,7 @@ import {
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain } from "libs/utils";
+import { contractsForChain } from 'libs/MultiversX';
 import jsonData from "./ABIs/claims.abi.json";
 import { getNetworkProvider } from "./api";
 
@@ -54,17 +54,20 @@ export class ClaimsContract {
           });
         });
 
-        return result;
+        return {
+          data: result,
+          error: '',
+        };
       } else {
-        const nonOKErr = new Error("getClaims returnCode returned a non OK value");
-        console.error(nonOKErr);
-
-        return { error: nonOKErr };
+        throw Error("getClaims returnCode returned a non OK value");
       }
     } catch (error) {
       console.error(error);
 
-      return { error };
+      return {
+        data: undefined,
+        error: error.message,
+      };
     }
   }
 

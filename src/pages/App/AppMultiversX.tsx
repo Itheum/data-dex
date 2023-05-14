@@ -28,7 +28,7 @@ import DataCoalitions from "pages/DataCoalition";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
-import HomeMx from "pages/Home/HomeMultiversX";
+import HomeMultiversX from "pages/Home/HomeMultiversX";
 import DataStreams from "pages/Labs/DataStreams";
 import DataVault from "pages/Labs/DataVault";
 import TrustedComputation from "pages/Labs/TrustedComputation";
@@ -230,7 +230,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
               <Route
                 path="dashboard"
                 element={
-                  <HomeMx
+                  <HomeMultiversX
                     key={rfKeys.tools}
                     onRfMount={() => handleRfMount("tools")}
                     setMenuItem={setMenuItem}

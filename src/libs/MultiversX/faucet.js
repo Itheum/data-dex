@@ -1,7 +1,7 @@
 import { AbiRegistry, SmartContract, Address, ResultsParser, Transaction, ContractFunction, ContractCallPayloadBuilder } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain } from "libs/utils";
+import { contractsForChain } from 'libs/MultiversX';
 import jsonData from "./ABIs/devnetfaucet.abi.json";
 import { getNetworkProvider } from "./api";
 

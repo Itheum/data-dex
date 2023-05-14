@@ -7,6 +7,7 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { hexZero } from "libs/MultiversX/tokenUtils.js";
 import { DataNftCondensedView } from "libs/MultiversX/types";
+import { NetworkIdType } from "libs/types";
 import { sleep, convertWeiToEsdt, styleStrings } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -38,7 +39,7 @@ const RecentDataNFTs = ({
   borderMultiColorStyle,
 }: {
   headingText: string;
-  networkId: string;
+  networkId: NetworkIdType;
   headingSize?: string;
   borderMultiColorStyle?: boolean;
 }) => {
