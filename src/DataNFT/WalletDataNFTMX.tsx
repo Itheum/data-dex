@@ -494,12 +494,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           }
           backdropFilter="auto"
           backdropBlur="6px">
-          <Text fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
+          <Box fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
             - FROZEN -{" "}
             <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
               Data NFT is under investigation by the DAO as there was a complaint received against it
             </Text>
-          </Text>
+          </Box>
         </Box>
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>

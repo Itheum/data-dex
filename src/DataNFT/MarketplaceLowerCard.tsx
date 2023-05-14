@@ -29,6 +29,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
@@ -52,52 +53,54 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
         </Text>
       </Button>
       {!isMyNft ? (
-        <HStack>
-          <Flex flexDirection="row">
-            <Box>
-              <Text fontSize="md" mb="1">
-                Amount{" "}
-              </Text>
-              <NumberInput
-                size="md"
-                maxW="24"
-                step={1}
-                min={1}
-                max={offer.quantity}
-                isValidCharacter={isValidNumericCharacter}
-                value={amount}
-                defaultValue={1}
-                onChange={(valueAsString) => {
-                  const value = Number(valueAsString);
-                  let error = "";
-                  if (value <= 0) {
-                    error = "Cannot be zero or negative";
-                  } else if (value > offer.quantity) {
-                    error = "Cannot exceed balance";
-                  }
-                  setAmountError(error);
-                  setAmount(value);
+        isMxLoggedIn && (
+          <HStack>
+            <Flex flexDirection="row">
+              <Box>
+                <Text fontSize="md" mb="1">
+                  Amount{" "}
+                </Text>
+                <NumberInput
+                  size="md"
+                  maxW="24"
+                  step={1}
+                  min={1}
+                  max={offer.quantity}
+                  isValidCharacter={isValidNumericCharacter}
+                  value={amount}
+                  defaultValue={1}
+                  onChange={(valueAsString) => {
+                    const value = Number(valueAsString);
+                    let error = "";
+                    if (value <= 0) {
+                      error = "Cannot be zero or negative";
+                    } else if (value > offer.quantity) {
+                      error = "Cannot exceed balance";
+                    }
+                    setAmountError(error);
+                    setAmount(value);
+                  }}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Box>
+              <Button
+                size="sm"
+                colorScheme="teal"
+                mt="7"
+                ml="4"
+                isDisabled={hasPendingTransactions || !!amountError}
+                onClick={() => {
+                  onProcureModalOpen();
                 }}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Box>
-            <Button
-              size="sm"
-              colorScheme="teal"
-              mt="7"
-              ml="4"
-              isDisabled={hasPendingTransactions || !!amountError}
-              onClick={() => {
-                onProcureModalOpen();
-              }}>
-              Purchase Data
-            </Button>
-          </Flex>
-        </HStack>
+                Purchase Data
+              </Button>
+            </Flex>
+          </HStack>
+        )
       ) : (
         <HStack h="3rem"></HStack>
       )}

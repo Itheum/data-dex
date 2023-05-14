@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 
 // const PAGE_SIZES: number[] = [8, 16, 24];
 
@@ -74,16 +74,16 @@ export const CustomPagination: FC<PropsType> = ({
       </Flex>
 
       <Flex alignItems="center" mx={2} fontSize="sm">
-        <Text flexShrink="0">
+        <Box flexShrink="0">
           Page{" "}
-          <Text fontWeight="bold" as="span">
+          <Box fontWeight="bold" as="span">
             {pageIndex + 1}
-          </Text>{" "}
+          </Box>{" "}
           of{" "}
-          <Text fontWeight="bold" as="span">
+          <Box fontWeight="bold" as="span">
             {pageCount}
-          </Text>
-        </Text>{" "}
+          </Box>
+        </Box>{" "}
       </Flex>
 
       <Flex>
