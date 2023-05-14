@@ -26,7 +26,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import myNFMe from "assets/img/my-nfme.png";
-import ClaimModalMx from "components/ClaimModel/ClaimModalMultiversX";
+import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
