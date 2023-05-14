@@ -24,7 +24,7 @@ import imgProgGaPa from "assets/img/prog-gaming-passport.png";
 import imgProgGaPaES from "assets/img/prog-gaming.jpg";
 import imgProgRhc from "assets/img/prog-rhc.png";
 import imgProgWfh from "assets/img/prog-wfh.png";
-import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/utils";
+import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/config";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function AppMarketplace() {

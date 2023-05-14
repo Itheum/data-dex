@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid, Skeleton, useColorMode } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
+import { styleStrings } from "libs/config";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { hexZero } from "libs/MultiversX/tokenUtils.js";
 import { DataNftCondensedView } from "libs/MultiversX/types";
 import { NetworkIdType } from "libs/types";
-import { sleep, convertWeiToEsdt, styleStrings } from "libs/utils";
+import { sleep, convertWeiToEsdt, hexZero } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];

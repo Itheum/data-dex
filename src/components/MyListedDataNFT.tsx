@@ -22,10 +22,10 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import ShortAddress from "components/UtilComps/ShortAddress";
+import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/MultiversX/tokenUtils";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, convertToLocalString, uxConfig } from "libs/utils";
+import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 

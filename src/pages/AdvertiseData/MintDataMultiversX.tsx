@@ -63,10 +63,11 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
+import { MENU } from "libs/config";
 import { labels } from "libs/language";
 import { getNetworkProvider } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/utils";
+import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 

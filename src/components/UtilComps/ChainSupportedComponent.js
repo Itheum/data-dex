@@ -1,4 +1,4 @@
-import { notSupportedOnChain } from "libs/utils";
+import { notSupportedOnChain } from "libs/config";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function ChainSupportedComponent({ feature, children }) {

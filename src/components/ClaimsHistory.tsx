@@ -22,13 +22,22 @@ import {
   useToast,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { NetworkIdType } from "libs/types";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
-import { getClaimTransactions, getTransactionLink } from "./api";
+import { getClaimTransactions, getTransactionLink } from "../libs/MultiversX/api";
 
-export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaimsHistory }) {
+export default function ChaimsHistory({
+  mxAddress,
+  networkId,
+  onAfterCloseChaimsHistory,
+} : {
+  mxAddress: string,
+  networkId: NetworkIdType,
+  onAfterCloseChaimsHistory: () => void,
+}) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
-  const [mxClaims, setMxClaims] = useState([]);
+  const [mxClaims, setMxClaims] = useState<any[]>([]);
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
   const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
@@ -38,9 +47,9 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
   }, []);
 
   const fetchMxClaims = async () => {
-    const transactions = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
+    const res = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
 
-    if (transactions.error) {
+    if (res.error) {
       toast({
         title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",
         status: "error",
@@ -50,7 +59,7 @@ export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaims
 
       setLoadingClaims(-2);
     } else {
-      setMxClaims(transactions);
+      setMxClaims(res.transactions);
       setLoadingClaims(0);
     }
 

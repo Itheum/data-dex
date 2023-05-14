@@ -1,9 +1,8 @@
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
+import { uxConfig } from "libs/config";
 import { NetworkIdType } from "libs/types";
-
-import { uxConfig } from "libs/utils";
 
 export const getApi = (networkId: NetworkIdType) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_API_MAINNET_KEY" : "REACT_APP_ENV_API_DEVNET_KEY";
@@ -76,7 +75,7 @@ export const checkBalance = async (token: string, address: string, networkId: Ne
   });
 };
 
-export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: string) => {
+export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: NetworkIdType) => {
   const api = getApi(networkId);
 
   try {
@@ -131,10 +130,16 @@ export const getClaimTransactions = async (address: string, smartContractAddress
       transactions.push(transaction);
     }
 
-    return transactions;
-  } catch (error) {
-    console.error(error);
-    return { error };
+    return {
+      transactions,
+      error: '',
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      transactions: [],
+      error: (err as Error).message,
+    };
   }
 };
 

@@ -11,17 +11,25 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { contractsForChain } from 'libs/MultiversX';
+import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/claims.abi.json";
 import { getNetworkProvider } from "./api";
 
 export class ClaimsContract {
-  constructor(networkId) {
+  timeout: number;
+  claimsContractAddress: string;
+  chainID: string;
+  contract: SmartContract;
+
+  constructor(networkId: NetworkIdType) {
     this.timeout = 5000;
     this.claimsContractAddress = contractsForChain(networkId).claims;
     this.chainID = "D";
 
     if (networkId === "E1") {
       this.chainID = "1";
+    } else {
+      this.chainID = "D";
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -33,10 +41,10 @@ export class ClaimsContract {
     });
   }
 
-  async getClaims(address) {
+  async getClaims(address: string) {
     const interaction = this.contract.methods.viewClaimWithDate([new Address(address)]);
     const query = interaction.buildQuery();
-    const result = [];
+    const result: any[] = [];
 
     try {
       const networkProvider = getNetworkProvider(this.chainID);
@@ -46,8 +54,8 @@ export class ClaimsContract {
 
       const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
-      if (returnCode && returnCode.isSuccess()) {
-        firstValue.valueOf().forEach((item) => {
+      if (returnCode && returnCode.isSuccess() && firstValue) {
+        firstValue.valueOf().forEach((item: any) => {
           result.push({
             amount: item.amount.toNumber(),
             date: item.date.toNumber() * 1000,
@@ -61,12 +69,12 @@ export class ClaimsContract {
       } else {
         throw Error("getClaims returnCode returned a non OK value");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
 
       return {
         data: undefined,
-        error: error.message,
+        error: (err as Error).message,
       };
     }
   }
@@ -84,7 +92,7 @@ export class ClaimsContract {
 
       const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
-      if (returnCode && returnCode.isSuccess()) {
+      if (returnCode && returnCode.isSuccess() && firstValue) {
         result = firstValue.valueOf();
 
         return result;
@@ -101,7 +109,7 @@ export class ClaimsContract {
     }
   }
 
-  async sendClaimRewardsTransaction(sender, rewardType) {
+  async sendClaimRewardsTransaction(sender: string, rewardType: number) {
     const claimTransaction = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder().setFunction(new ContractFunction("claim")).addArg(new U64Value(rewardType)).build(),

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
-import { styleStrings } from "libs/utils";
+import { styleStrings } from "libs/config";
 
 const RecentArticles = () => {
   const { colorMode } = useColorMode();

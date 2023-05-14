@@ -4,9 +4,8 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { tokenDecimals, getTokenWantedRepresentation } from "libs/MultiversX/tokenUtils";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString } from "libs/utils";
+import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString, tokenDecimals, getTokenWantedRepresentation } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 

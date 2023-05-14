@@ -23,9 +23,8 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { getTokenWantedRepresentation, tokenDecimals } from "libs/MultiversX/tokenUtils";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertToLocalString, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/utils";
+import { convertToLocalString, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, getTokenWantedRepresentation, tokenDecimals } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 

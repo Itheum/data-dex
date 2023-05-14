@@ -20,10 +20,10 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
-import { getTokenWantedRepresentation, tokenDecimals } from "libs/MultiversX/tokenUtils";
+import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { convertToLocalString, printPrice, transformDescription, CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "libs/utils";
+import { convertToLocalString, printPrice, transformDescription, convertWeiToEsdt, getTokenWantedRepresentation, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";

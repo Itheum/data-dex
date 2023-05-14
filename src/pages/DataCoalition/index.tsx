@@ -2,7 +2,7 @@ import React from "react";
 import { Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import dataCoalitionsIcon from "assets/img/data-coalitions-icon.png";
-import { CHAIN_TOKEN_SYMBOL, MENU } from "libs/utils";
+import { CHAIN_TOKEN_SYMBOL, MENU } from "libs/config";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function ({ setMenuItem }: { setMenuItem: any }) {

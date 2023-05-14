@@ -4,7 +4,7 @@ import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
-import { styleStrings } from "libs/utils";
+import { styleStrings } from "libs/config";
 
 const LandingPage = () => {
   const { colorMode } = useColorMode();

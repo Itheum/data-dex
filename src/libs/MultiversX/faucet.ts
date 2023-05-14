@@ -2,16 +2,24 @@ import { AbiRegistry, SmartContract, Address, ResultsParser, Transaction, Contra
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { contractsForChain } from 'libs/MultiversX';
+import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/devnetfaucet.abi.json";
 import { getNetworkProvider } from "./api";
 
 export class FaucetContract {
-  constructor(networkId) {
+  timeout: number;
+  claimsContractAddress: string;
+  chainID: string;
+  contract: SmartContract;
+
+  constructor(networkId: NetworkIdType) {
     this.timeout = 5000;
     this.claimsContractAddress = contractsForChain(networkId).faucet;
 
     if (networkId === "E1") {
       this.chainID = "1";
+    } else {
+      this.chainID = "D";
     }
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -23,7 +31,7 @@ export class FaucetContract {
     });
   }
 
-  async getFaucetTime(address) {
+  async getFaucetTime(address: string) {
     const networkProvider = getNetworkProvider(this.chainID);
 
     const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
@@ -32,10 +40,10 @@ export class FaucetContract {
     const endpointDefinition = interaction.getEndpoint();
     const { firstValue } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
 
-    return firstValue.valueOf().toNumber() * 1000;
+    return firstValue?.valueOf().toNumber() * 1000;
   }
 
-  async sendActivateFaucetTransaction(address) {
+  async sendActivateFaucetTransaction(address: string) {
     const faucetTransaction = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder().setFunction(new ContractFunction("activateFaucet")).build(),

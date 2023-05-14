@@ -3,8 +3,7 @@ import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack,
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
-import { getTokenWantedRepresentation } from "libs/MultiversX/tokenUtils";
-import { convertEsdtToWei, sleep, printPrice, convertToLocalString } from "libs/utils";
+import { convertEsdtToWei, sleep, printPrice, convertToLocalString, getTokenWantedRepresentation } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 
 export type ListModalProps = {

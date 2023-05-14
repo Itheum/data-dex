@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
+import { uxConfig } from 'libs/config';
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
-import { uxConfig, clearAppSessionsLaunchMode } from "libs/utils";
+import { clearAppSessionsLaunchMode } from "libs/utils";
 import MxAppHarness from "./AppHarnessMultiversX";
 import AuthPickerMx from "./AuthPickerMultiversX";
 

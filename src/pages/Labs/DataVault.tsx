@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider } from "@chakra-ui/react";
 import dataVaultIcon from "assets/img/data-vault-icon.png";
-import { CHAIN_TOKEN_SYMBOL } from "libs/utils";
+import { CHAIN_TOKEN_SYMBOL } from "libs/config";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function () {

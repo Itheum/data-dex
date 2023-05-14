@@ -53,8 +53,9 @@ import logoSmlD from "assets/img/logo-sml-d.png";
 import logoSmlL from "assets/img/logo-sml-l.png";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import ClaimsHistory from "libs/MultiversX/ClaimsHistory";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU } from "libs/utils";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
+import ClaimsHistory from "components/ClaimsHistory";
+import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
 const exploreRouterMenu = [

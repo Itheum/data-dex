@@ -30,9 +30,10 @@ import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, formatNumberRoundFloor, MENU, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/utils";
+import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
 

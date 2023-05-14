@@ -20,13 +20,13 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
+import { uxConfig } from "libs/config";
 import { labels } from "libs/language";
 import { NetworkIdType } from "libs/types";
-import { uxConfig } from "libs/utils";
 import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
-import { contractsForChain } from "./config";
 import { MarketplaceRequirementsType, OfferType } from "./types";
+import { contractsForChain } from "../config";
 
 export class DataNftMarketContract {
   timeout: number;
