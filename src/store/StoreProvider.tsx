@@ -4,10 +4,10 @@ import {
   useGetNetworkConfig,
   useGetPendingTransactions,
 } from "@multiversx/sdk-dapp/hooks";
-import { convertWeiToEsdt } from "libs/util";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { tokenDecimals } from "libs/MultiversX/tokenUtils";
+import { convertWeiToEsdt } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 

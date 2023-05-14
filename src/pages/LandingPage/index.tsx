@@ -2,9 +2,9 @@ import React from "react";
 import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
-import { styleStrings } from "libs/util";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
+import { styleStrings } from "libs/utils";
 
 const LandingPage = () => {
   const { colorMode } = useColorMode();

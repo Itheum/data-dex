@@ -43,17 +43,16 @@ import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-da
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
+import ShortAddress from "components/UtilComps/ShortAddress";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/util";
-import { convertToLocalString, transformDescription } from "libs/util2";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { useChainMeta } from "store/ChainMetaContext";
-import ShortAddress from "components/UtilComps/ShortAddress";
-import ListDataNFTModal from "./ListDataNFTModal";
+import { convertToLocalString, transformDescription, CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/utils";
 import { useMintStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
+import ListDataNFTModal from "./ListDataNFTModal";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;

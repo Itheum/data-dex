@@ -25,16 +25,16 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import ClaimModalMx from "components/ClaimModel/ClaimModalMultiversX";
-import AppMarketplace from "pages/Home/AppMarketplace";
 import myNFMe from "assets/img/my-nfme.png";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, formatNumberRoundFloor, MENU, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/util";
-import { ClaimsContract } from "libs/MultiversX/claims";
-import { FaucetContract } from "libs/MultiversX/faucet";
+import ClaimModalMx from "components/ClaimModel/ClaimModalMultiversX";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
-import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
+import { ClaimsContract } from "libs/MultiversX/claims";
+import { FaucetContract } from "libs/MultiversX/faucet";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, formatNumberRoundFloor, MENU, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/utils";
+import AppMarketplace from "pages/Home/AppMarketplace";
+import { useChainMeta } from "store/ChainMetaContext";
 
 let mxFaucetContract = null;
 let mxClaimsContract = null;

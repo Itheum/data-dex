@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
 import {
-  Button,
   Flex,
   Heading,
   HStack,
@@ -28,22 +27,21 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
 import { FaStore, FaBrush } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
-import { sleep } from "libs/util";
-import { createNftId } from "libs/util2";
-import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { hexZero } from "libs/MultiversX/tokenUtils.js";
+import { NoDataHere } from "components/Sections/NoDataHere";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
-import { NoDataHere } from "components/Sections/NoDataHere";
+import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
+import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
+import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
+import { hexZero } from "libs/MultiversX/tokenUtils.js";
+import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { createNftId, sleep } from "libs/utils";
+import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
+import { useMarketStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"

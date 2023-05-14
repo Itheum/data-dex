@@ -62,14 +62,13 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { labels } from "libs/language";
-import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
-import { checkBalance, getNetworkProvider } from "libs/MultiversX/api";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { UserDataType } from "libs/MultiversX/types";
-import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
+import { labels } from "libs/language";
+import { getNetworkProvider } from "libs/MultiversX/api";
+import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
+import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
   let title = "",

@@ -33,7 +33,7 @@ import {
   getPaginationRowModel,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import { isValidNumericCharacter } from "libs/util";
+import { isValidNumericCharacter } from "libs/utils";
 import Filter from "./Filter";
 import { DataTableProps, fuzzyFilter } from "./tableUtils";
 

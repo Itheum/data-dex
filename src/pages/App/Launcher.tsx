@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
-import MxAppHarness from "./AppHarnessMultiversX";
-import AuthPickerMx from "./AuthPickerMultiversX";
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
-import { uxConfig, clearAppSessionsLaunchMode } from "libs/util";
+import { uxConfig, clearAppSessionsLaunchMode } from "libs/utils";
+import MxAppHarness from "./AppHarnessMultiversX";
+import AuthPickerMx from "./AuthPickerMultiversX";
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);

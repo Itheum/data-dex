@@ -15,9 +15,8 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import { useLocalStorage } from "libs/hooks";
-import { isValidNumericCharacter, sleep } from "libs/util";
-import { convertToLocalString } from "libs/util2";
 import { DataNftType } from "libs/MultiversX/types";
+import { convertToLocalString, isValidNumericCharacter, sleep } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
 type DataNftWalletLowerCardProps = {

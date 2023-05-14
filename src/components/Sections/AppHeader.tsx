@@ -43,7 +43,7 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { FaNewspaper, FaStore, FaUserCheck } from "react-icons/fa";
+import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
@@ -51,11 +51,11 @@ import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "assets/img/logo-sml-d.png";
 import logoSmlL from "assets/img/logo-sml-l.png";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU } from "libs/util";
-import ClaimsHistory from "libs/MultiversX/ClaimsHistory";
-import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
+import ClaimsHistory from "libs/MultiversX/ClaimsHistory";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU } from "libs/utils";
+import { useChainMeta } from "store/ChainMetaContext";
 
 const exploreRouterMenu = [
   {

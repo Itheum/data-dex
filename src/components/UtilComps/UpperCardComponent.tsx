@@ -20,14 +20,13 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
-import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { useMarketStore, useMintStore } from "store";
-import ShortAddress from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, styleStrings, uxConfig } from "libs/util";
-import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
 import { getTokenWantedRepresentation, tokenDecimals } from "libs/MultiversX/tokenUtils";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
+import { convertToLocalString, printPrice, transformDescription, CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "libs/utils";
+import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import ShortAddress from "./ShortAddress";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;

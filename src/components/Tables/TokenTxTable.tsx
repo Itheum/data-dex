@@ -4,11 +4,11 @@ import { HStack, Link } from "@chakra-ui/react";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
-import { CHAIN_TX_VIEWER } from "libs/util";
+import ShortAddress from "components/UtilComps/ShortAddress";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
+import { CHAIN_TX_VIEWER } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
-import ShortAddress from "components/UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
 import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 

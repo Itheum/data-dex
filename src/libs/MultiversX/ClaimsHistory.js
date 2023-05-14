@@ -22,7 +22,7 @@ import {
   useToast,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { formatNumberRoundFloor } from "libs/util";
+import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 import { getClaimTransactions, getTransactionLink } from "./api";
 

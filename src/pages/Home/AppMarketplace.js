@@ -14,7 +14,6 @@ import {
   ModalOverlay,
   Stack,
   Text,
-  Wrap,
   useBreakpointValue,
   useDisclosure,
   useColorMode,
@@ -24,7 +23,7 @@ import imgProgGaPa from "assets/img/prog-gaming-passport.png";
 import imgProgGaPaES from "assets/img/prog-gaming.jpg";
 import imgProgRhc from "assets/img/prog-rhc.png";
 import imgProgWfh from "assets/img/prog-wfh.png";
-import { CHAIN_TOKEN_SYMBOL, progInfoMeta, styleStrings } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 

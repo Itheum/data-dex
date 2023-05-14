@@ -27,18 +27,15 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "react-icons/md";
-import { convertWeiToEsdt } from "libs/util";
-import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "libs/MultiversX/types";
-import { useMarketStore, useMintStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
-import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
+import { NoDataHere } from "components/Sections/NoDataHere";
 import WalletDataNFTMX from "components/WalletDataNFTMX";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
-import { tokenDecimals } from "libs/MultiversX/tokenUtils.js";
-import { NoDataHere } from "components/Sections/NoDataHere";
+import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
+import { createDataNftType, DataNftType } from "libs/MultiversX/types";
+import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
+import { useMarketStore, useMintStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
+
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();

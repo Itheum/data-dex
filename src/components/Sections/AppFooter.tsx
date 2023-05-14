@@ -3,8 +3,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Text, Flex, HStack, Link, useColorMode } from "@chakra-ui/react";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
+import { getSentryProfile } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
-import { getSentryProfile } from "libs/util2";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `env:${getSentryProfile()}`;

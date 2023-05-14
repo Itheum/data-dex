@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
-import { convertEsdtToWei, convertWeiToEsdt, sleep } from "libs/util";
-import { printPrice, convertToLocalString } from "libs/util2";
+import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { tokenDecimals, getTokenWantedRepresentation } from "libs/MultiversX/tokenUtils";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Button, Center, Heading, HStack, Link, Stack, StackDivider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { MENU } from "libs/util";
+import { MENU } from "libs/utils";
 
 export default function ({ setMenuItem }: { setMenuItem: any }) {
   const navigate = useNavigate();

@@ -15,10 +15,10 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { useMarketStore } from "store";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
-import { isValidNumericCharacter } from "libs/util";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { isValidNumericCharacter } from "libs/utils";
+import { useMarketStore } from "store";
 
 type MarketplaceLowerCardProps = {
   offer: OfferType;

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
-import AppMx from "./AppMultiversX";
 import { useLocalStorage } from "libs/hooks";
-import { contractsForChain } from "libs/util";
+import { contractsForChain } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
+import { StoreProvider } from "store/StoreProvider";
 import { useUser } from "store/UserContext";
-import { StoreProvider } from "../../store/StoreProvider";
+import AppMx from "./AppMultiversX";
 
 function CustomLoader() {
   return (

@@ -15,7 +15,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }: any) => {

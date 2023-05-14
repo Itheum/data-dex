@@ -21,8 +21,8 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
-import { WALLETS } from "libs/util";
-import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/util";
+import { WALLETS } from "libs/utils";
+import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 
 function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();

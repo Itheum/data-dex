@@ -10,7 +10,7 @@ import {
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain } from "libs/util";
+import { contractsForChain } from "libs/utils";
 import jsonData from "./ABIs/claims.abi.json";
 import { getNetworkProvider } from "./api";
 

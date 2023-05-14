@@ -16,7 +16,7 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/util";
+import { contractsForChain, convertEsdtToWei, uxConfig } from "libs/utils";
 import jsonData from "./ABIs/datanftmint.abi.json";
 import { getNetworkProvider } from "./api";
 import { DataNftMetadataType, UserDataType } from "./types";

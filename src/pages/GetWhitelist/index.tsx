@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Flex, Heading, Button, Image, Text, Center, ModalBody, Modal, ModalOverlay, ModalContent, ModalHeader, Link } from "@chakra-ui/react";
+import { Box, Flex, Heading, Button, Image, Text, Center, Link } from "@chakra-ui/react";
 import { FaTwitter, FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import illustration from "assets/img/illustration.png";
 

@@ -3,11 +3,11 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import * as Sentry from "@sentry/react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
+import { getSentryProfile } from "libs/utils";
 import Launcher from "pages/App/Launcher";
-import { getSentryProfile } from "libs/util2";
-import reportWebVitals from "./reportWebVitals";
 import { ChainMetaContextProvider } from "store/ChainMetaContext";
 import { UserContextProvider } from "store/UserContext";
+import reportWebVitals from "./reportWebVitals";
 import "libs/MultiversX/custom.css";
 
 if (process.env.NODE_ENV === "production") {

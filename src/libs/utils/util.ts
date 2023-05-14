@@ -31,7 +31,7 @@ import {
   tokenContractAddress_Mx_Mainnet,
   claimsContractAddress_Mx_Mainnet,
   faucetContractAddress_Mx_Mainnet,
-} from "./contractAddresses";
+} from "../contractAddresses";
 
 type NetworkIdType = string | number;
 

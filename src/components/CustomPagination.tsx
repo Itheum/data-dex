@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Tooltip } from "@chakra-ui/react";
 
 // const PAGE_SIZES: number[] = [8, 16, 24];
 

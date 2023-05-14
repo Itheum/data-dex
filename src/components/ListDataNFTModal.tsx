@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
-import { convertEsdtToWei, sleep } from "libs/util";
-import { printPrice, convertToLocalString } from "libs/util2";
-import { getTokenWantedRepresentation } from "libs/MultiversX/tokenUtils";
-import { useAccountStore, useMarketStore } from "store";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
+import { getTokenWantedRepresentation } from "libs/MultiversX/tokenUtils";
+import { convertEsdtToWei, sleep, printPrice, convertToLocalString } from "libs/utils";
+import { useAccountStore, useMarketStore } from "store";
 
 export type ListModalProps = {
   isOpen: boolean;

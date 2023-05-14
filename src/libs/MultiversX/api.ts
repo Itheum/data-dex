@@ -2,7 +2,7 @@ import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 
-import { uxConfig } from "libs/util";
+import { uxConfig } from "libs/utils";
 
 export const getApi = (networkId: string) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_API_MAINNET_KEY" : "REACT_APP_ENV_API_DEVNET_KEY";

@@ -11,7 +11,6 @@ import {
   Image,
   Stack,
   Flex,
-  Badge,
   useToast,
   Spinner,
   useClipboard,
@@ -24,23 +23,22 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig } from "libs/util";
-import { convertToLocalString, printPrice, transformDescription } from "libs/util2";
+import ProcureDataNFTModal from "components/ProcureDataNFTModal";
+import TokenTxTable from "components/Tables/TokenTxTable";
+import ShortAddress from "components/UtilComps/ShortAddress";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { getTokenWantedRepresentation, tokenDecimals } from "libs/MultiversX/tokenUtils";
 import { OfferType } from "libs/MultiversX/types";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, isValidNumericCharacter, uxConfig, convertToLocalString, printPrice, transformDescription } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import TokenTxTable from "components/Tables/TokenTxTable";
-import ShortAddress from "components/UtilComps/ShortAddress";
-import ProcureDataNFTModal from "components/ProcureDataNFTModal";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 type DataNFTDetailsProps = {
   owner?: string;
