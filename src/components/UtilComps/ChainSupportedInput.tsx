@@ -3,7 +3,13 @@ import { IoConstructOutline } from "react-icons/io5";
 import { notSupportedOnChain } from "libs/config";
 import { useChainMeta } from "store/ChainMetaContext";
 
-export default function ChainSupportedInput({ feature, children }) {
+export default function ChainSupportedInput({
+  feature,
+  children
+} : {
+  feature: any,
+  children: any,
+}) {
   const { chainMeta: _chainMeta } = useChainMeta();
 
   if (notSupportedOnChain(feature, _chainMeta.networkId)) {
