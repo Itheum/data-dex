@@ -1293,9 +1293,9 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
                           View On-Chain TX <ExternalLinkIcon mx="2px" />
                         </Link>}
 
-                        <Box>
+                        {txNFTConfirmation && <Box>
                           <Progress colorScheme="teal" hasStripe value={txNFTConfirmation} />
-                        </Box>
+                        </Box>}
                       </Stack>
 
                       {mintingSuccessful && (
