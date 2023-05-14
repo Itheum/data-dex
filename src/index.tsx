@@ -3,12 +3,12 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import * as Sentry from "@sentry/react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
-import Launcher from "./Launch/Launcher";
-import { getSentryProfile } from "./libs/util2";
+import Launcher from "pages/App/Launcher";
+import { getSentryProfile } from "libs/util2";
 import reportWebVitals from "./reportWebVitals";
-import { ChainMetaContextProvider } from "./store/ChainMetaContext";
-import { UserContextProvider } from "./store/UserContext";
-import "../src/MultiversX/custom.css";
+import { ChainMetaContextProvider } from "store/ChainMetaContext";
+import { UserContextProvider } from "store/UserContext";
+import "libs/MultiversX/custom.css";
 
 if (process.env.NODE_ENV === "production") {
   Sentry.init({

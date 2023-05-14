@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MarketplaceRequirementsType, OfferType } from 'MultiversX/types';
+import { MarketplaceRequirementsType, OfferType } from 'libs/MultiversX/types';
 
 type State = {
   itheumPrice: number,

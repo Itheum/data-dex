@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { UserDataType } from 'MultiversX/types';
+import { UserDataType } from 'libs/MultiversX/types';
 
 type State = {
   userData: UserDataType | undefined,
