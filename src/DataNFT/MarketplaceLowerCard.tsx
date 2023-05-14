@@ -13,7 +13,7 @@ import {
   Flex,
   Box,
 } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useMarketStore } from "store";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";

@@ -17,7 +17,7 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
@@ -58,6 +58,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const userData = useMintStore((state) => state.userData);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
@@ -70,23 +71,17 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wanted_token_amount as BigNumber.Value, tokenDecimals(offer.wanted_token_identifier)).toNumber() : 0;
 
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-  }
-
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h="760px"
+        h={isMxLoggedIn ? "760px" : "685px"}
         mx="3 !important"
         borderWidth="0.5px"
         borderRadius="xl"
+        borderColor="#00C79740"
         position="relative"
-        mb="1rem"
-        style={{ background: gradientBorderForTrade }}>
+        mb="1rem">
         <Flex justifyContent="center">
           <Image
             src={imageUrl}
@@ -195,7 +190,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
 
               {feePrice && (
                 <>
-                  <Box fontSize="xs" mt="2">
+                  <Box fontSize="sm" mt="2">
                     <Text>
                       Unlock from: {` `}
                       {<>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}</>}
@@ -203,8 +198,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   </Box>
                 </>
               )}
-
-              {address && <>{children}</>}
+              {children}
             </>
           )}
         </Flex>
@@ -232,9 +226,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               ? "visible"
               : "collapse"
           }>
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2" color="white">
-            - FROZEN - <br />
-            Data NFT is under investigation by the DAO as there was a complaint received against it
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
+            - FROZEN -{" "}
+            <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
+              Data NFT is under investigation by the DAO as there was a complaint received against it
+            </Text>
           </Text>
         </Box>
       </Box>

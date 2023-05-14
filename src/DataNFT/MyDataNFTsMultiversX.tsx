@@ -38,6 +38,7 @@ import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTMX from "./WalletDataNFTMX";
 import dataNftMintJson from "../MultiversX/ABIs/datanftmint.abi.json";
 import { tokenDecimals } from "../MultiversX/tokenUtils.js";
+import { NoDataHere } from "Sections/NoDataHere";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
@@ -181,9 +182,14 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           </TabList>
 
           <TabPanels>
-            <TabPanel mt={10}>
-              {dataNfts.length > 0 ? (
-                <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={"24 !important"}>
+            <TabPanel mt={10} width={"full"}>
+              {dataNfts.length >= 0 ? (
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
                   {dataNfts.map((item, index) => (
                     <WalletDataNFTMX
                       key={index}
@@ -197,7 +203,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                   ))}
                 </SimpleGrid>
               ) : (
-                <Text onClick={getOnChainNFTs}>No data yet...</Text>
+                <Flex onClick={getOnChainNFTs}>
+                  <NoDataHere />
+                </Flex>
               )}
             </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
@@ -211,7 +219,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
         <>
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
-            <DrawerContent>
+            <DrawerContent bgColor="bgDark">
               <DrawerHeader>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />

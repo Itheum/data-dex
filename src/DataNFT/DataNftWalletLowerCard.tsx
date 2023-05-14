@@ -57,34 +57,28 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
       exception: "",
     };
 
-    let customError = "Signature result not received from wallet";
+    const customError = "Signature result not received from wallet";
+    try {
+      const signatureObj = await signMessage({ message });
+      console.log("signatureObj");
+      console.log(signatureObj);
 
-    if (walletUsedSession === "el_webwallet") {
-      // web wallet not supported
-      customError = "Currently, Signature verifications do not work on Web Wallet. Please use the XPortal App or the DeFi Wallet Browser Plugin.";
-    } else {
-      try {
-        const signatureObj = await signMessage({ message });
-        console.log("signatureObj");
-        console.log(signatureObj);
-
-        if (signatureObj?.signature && signatureObj?.address) {
-          // Maiar App V2 / Ledger
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
-        } else {
-          signResult.exception = "Signature result from wallet was malformed";
-        }
-      } catch (e: any) {
-        signResult.success = false;
-        signResult.exception = e.toString();
+      if (signatureObj?.signature && signatureObj?.address) {
+        // Maiar App V2 / Ledger
+        signResult.addrInHex = signatureObj.address.hex();
+        signResult.signature = signatureObj.signature.toString("hex");
+        signResult.addrInHex = signatureObj.address.hex();
+        signResult.success = true;
+      } else {
+        signResult.exception = "Signature result from wallet was malformed";
       }
-
-      console.log("signResult");
-      console.log(signResult);
+    } catch (e: any) {
+      signResult.success = false;
+      signResult.exception = e.toString();
     }
+
+    console.log("signResult");
+    console.log(signResult);
 
     if (signResult.signature === null || signResult.addrInHex === null) {
       signResult.success = false;
