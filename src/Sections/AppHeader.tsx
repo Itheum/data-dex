@@ -264,7 +264,7 @@ const AppHeader = ({
                                 <Text fontSize="sm">View claims history</Text>
                               </MenuItem>
                               <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxInteractionsHistory(true)}>
-                                <Text fontSize="sm">View Interactions history</Text>
+                                <Text fontSize="sm">View Data NFT interactions history</Text>
                               </MenuItem>
                             </ChainSupportedComponent>
                           )}

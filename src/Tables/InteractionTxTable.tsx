@@ -55,6 +55,21 @@ export default function InteractionTxTable(props: { address: string }) {
         header: "Method",
         footer: (footerProps) => footerProps.column.id,
       },
+      {
+        id: "data",
+        accessorFn: (row) => row.data,
+        header: "Data",
+        cell: (cellProps) => (
+          <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`}>{cellProps.getValue()}</Link>
+        ),
+        footer: (footerProps) => footerProps.column.id,
+      },
+      {
+        id: "value",
+        accessorFn: (row) => row.value,
+        header: "Value",
+        footer: (footerProps) => footerProps.column.id,
+      },
     ],
     []
   );
@@ -102,9 +117,9 @@ export const getInteractionTransactions = async (
   const api = getApi(networkId);
 
   try {
-    const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}`;
-    const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}`;
-    const selfTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer%2Cburn&senderOrReceiver=${address}`;
+    const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
+    const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;
+    const selfTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer%2Cburn&senderOrReceiver=${address}&withOperations=true`;
 
     const [minterResp, marketResp, selfResp] = await Promise.all([
       axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
@@ -127,11 +142,26 @@ export const getInteractionTransactions = async (
 
     allTransactions.forEach((tx: any) => {
       if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
+        let value = "";
+        let data = "";
+        for (const operation of tx.operations) {
+          if (["acceptOffer", "addOffer", "cancelOffer"].includes(tx["function"]) && operation.action === "transfer") {
+            value = `${operation.value}`;
+            data = operation.identifier;
+          }
+          if (operation.action === "create" || operation.action === "burn") {
+            value = `${operation.value}`;
+            data = operation.identifier;
+            break;
+          }
+        }
         const transaction: InteractionsInTable = {
           timestamp: parseInt(tx["timestamp"]),
           hash: tx["txHash"],
           status: tx["status"],
           method: transactionTypes[tx["function"]],
+          value,
+          data,
         };
         transactions.push(transaction);
       }

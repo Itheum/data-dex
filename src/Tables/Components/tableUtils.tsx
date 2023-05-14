@@ -39,6 +39,8 @@ export type InteractionsInTable = {
   timestamp: number;
   method: string;
   status: string;
+  value: string;
+  data: string;
 };
 
 export type ClaimsInTable = {
