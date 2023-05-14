@@ -39,7 +39,6 @@ import {
 } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
-
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();

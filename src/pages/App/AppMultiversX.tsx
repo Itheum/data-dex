@@ -243,7 +243,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route
                 path="tradedata"
-                element={<MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
+                element={<MintDataMX key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
               />
 
               <Route path="datanfts" element={<Outlet />}>

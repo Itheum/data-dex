@@ -23,28 +23,15 @@ export const GetWhitelist: React.FC = () => {
             mx={{ base: 0, "2xl": 20 }}
             alignItems="center">
             <Box width={["100%", null, null, "500px", "690px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
-              <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]} fontWeight="500">
-                Fully{" "}
-                <Text as="span" color="teal.200">
-                  Unlock
-                </Text>{" "}
-                your <br /> Data&apos;s Value and&nbsp;
-                <br />
-                <Text as="span" color="teal.200">
-                  Mint
-                </Text>{" "}
-                as an&nbsp;
-                <Text as="span" color="teal.200">
-                  NFT
-                </Text>{" "}
+              <Heading as="h1" size={["1xl", null, null, "1xl", "2xl"]} fontWeight="500">
+                Your data is now a <Text as="span" color="teal.200">new asset class!</Text> Mint supercharged Data NFTs with <Text as="span" color="teal.200">real-world value</Text>
               </Heading>
 
               <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="7">
-                Lorem ipsum dolor sit amet consectetur. Leo posuere ultrices elementum mattis nulla purus integer diam. Integer maus sed rhoncus tortor et
-                augue.
+                Are you a Data Creator? Do you generate valuable data insights for the Blockchain, DeFi, Gaming, Entertainment, or any other industry? If so, we want to work with you!
               </Text>
               <Text fontSize="lg" fontWeight="400" lineHeight="25px" mt={7}>
-                Join our <strong>Whitelist</strong> Now to be among the first data creators to mint their datasets as Data NFTs.
+                Get <strong>Whitelisted</strong> to be part of the first batch of Data Creators mint Data NFTs. Make history!
               </Text>
               <Button
                 as={Link}

@@ -30,10 +30,6 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // console.log('********************* AppHarnessMultiversX launchEnvironment ', launchEnvironment);
-    // console.log('********************* AppHarnessMultiversX _chainMeta ', _chainMeta);
-    // console.log('********************* AppHarnessMultiversX _user ', _user);
-
     const networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
 
     setChainMeta({

@@ -86,7 +86,7 @@ export const CustomPagination: FC<PropsType> = ({
         </Box>{" "}
       </Flex>
 
-      <Flex>
+      <Flex paddingLeft={{ base: "50px", md: "0px" }} paddingRight={{ base: "10px", md: "0px" }}>
         <Tooltip label="Next Page">
           <IconButton
             colorScheme="teal"

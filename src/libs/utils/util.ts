@@ -68,6 +68,7 @@ export const tmpProgIdMapping = {
   "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
   "custom-gamer-activity": "Gamer Passport Activity",
+  "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
 };
 
 export const qsParams = () => {
@@ -356,6 +357,16 @@ export const dataCATDemoUserData = {
       "toTs": 1535951753305,
     },
     {
+      "program": "playstation-gamer-passport",
+      "group": "custom",
+      "userId": "custom-x",
+      "status": "stop",
+      "shortId": "1",
+      "type": "1",
+      "fromTs": 1528448026784,
+      "toTs": 1535951753305,
+    },
+    {
       "program": "70dc6bd0-59b0-11e8-8d54-2d562f6cba54", // red heart challenge
       "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
       "status": "complete",
@@ -410,6 +421,14 @@ export const dataCATDemoUserData = {
         "img": "gamer-passport-data",
         "description":
           "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
+      },
+      "playstation-gamer-passport": {
+        "programName": "Sony Playstation Data Passport",
+        "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
+        "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
+        "img": "sony-playstation-data-passport",
+        "description":
+          "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },
       "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
         "programName": "Hypertension Insights Intense",

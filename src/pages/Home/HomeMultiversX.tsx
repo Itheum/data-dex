@@ -260,11 +260,7 @@ export default function HomeMultiversX({
 
   return (
     <Stack mx={{ base: 5, "2xl": 24 }} my={5}>
-      <Heading size="xl" fontWeight="medium" my={7}>
-        Home
-      </Heading>
-
-      <Stack>
+      <Box my={20}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={10} backgroundColor="none">
           <Box
             maxW="container.sm"
@@ -476,7 +472,7 @@ export default function HomeMultiversX({
             </Box>
           </ChainSupportedComponent>
         </SimpleGrid>
-      </Stack>
+      </Box>
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
         <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
