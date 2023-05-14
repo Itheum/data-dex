@@ -28,12 +28,12 @@ import DataCoalitions from "pages/DataCoalition";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
+import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import DataStreams from "pages/Labs/DataStreams";
 import DataVault from "pages/Labs/DataVault";
 import TrustedComputation from "pages/Labs/TrustedComputation";
 import LandingPage from "pages/LandingPage";
-import MyDataNFTsMx from "pages/MyDataNFTsMultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
 import { GetWhitelist } from "../GetWhitelist";
 

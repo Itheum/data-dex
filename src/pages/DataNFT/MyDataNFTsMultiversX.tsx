@@ -33,7 +33,10 @@ import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
-import { useMarketStore, useMintStore } from "store";
+import {
+  useMarketStore,
+  // useMintStore,
+} from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
 
@@ -44,7 +47,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { address } = useGetAccountInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-  const userData = useMintStore((state) => state.userData);
+  // const userData = useMintStore((state) => state.userData);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
 
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {

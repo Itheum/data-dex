@@ -5,7 +5,6 @@ import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
 import { StoreProvider } from "store/StoreProvider";
-import { useUser } from "store/UserContext";
 import AppMx from "./AppMultiversX";
 
 function CustomLoader() {
@@ -22,12 +21,7 @@ function CustomLoader() {
   );
 }
 
-const baseUserContext = {
-  isMxAuthenticated: false,
-}; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
-
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
-  const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
@@ -51,19 +45,8 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     setIsLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (mxAddress && isMxLoggedIn) {
-      setUser({
-        ...baseUserContext,
-        ..._user,
-        isMxAuthenticated: true,
-        loggedInAddress: mxAddress,
-      });
-    }
-  }, [mxAddress, isMxLoggedIn]);
-
   const resetAppContexts = () => {
-    setUser({ ...baseUserContext });
+    // setUser({ ...baseUserContext });
     // setChainMeta({});
   };
 

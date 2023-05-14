@@ -6,7 +6,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { getSentryProfile } from "libs/utils";
 import Launcher from "pages/App/Launcher";
 import { ChainMetaContextProvider } from "store/ChainMetaContext";
-import { UserContextProvider } from "store/UserContext";
 import reportWebVitals from "./reportWebVitals";
 import "libs/MultiversX/custom.css";
 
@@ -71,11 +70,9 @@ root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <ChainMetaContextProvider>
-        <UserContextProvider>
-          <Router>
-            <Launcher />
-          </Router>
-        </UserContextProvider>
+        <Router>
+          <Launcher />
+        </Router>
       </ChainMetaContextProvider>
     </ChakraProvider>
   </React.StrictMode>

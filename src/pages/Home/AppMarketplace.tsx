@@ -16,21 +16,21 @@ import {
   Text,
   useBreakpointValue,
   useDisclosure,
-  useColorMode,
+  // useColorMode,
   SimpleGrid,
 } from "@chakra-ui/react";
+import { useGetAccount } from "@multiversx/sdk-dapp/hooks";
 import imgProgGaPa from "assets/img/prog-gaming-passport.png";
 import imgProgGaPaES from "assets/img/prog-gaming.jpg";
 import imgProgRhc from "assets/img/prog-rhc.png";
 import imgProgWfh from "assets/img/prog-wfh.png";
 import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
-import { useUser } from "store/UserContext";
 
 export default function AppMarketplace() {
-  const { colorMode } = useColorMode();
+  // const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { user: _user } = useUser();
+  const { address } = useGetAccount();
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>('rhc');
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
@@ -42,8 +42,9 @@ export default function AppMarketplace() {
   const appendUserAddressAndRedirect = (link: string) => {
     let updatedLink = link;
 
-    if (_user?.loggedInAddress) {
-      updatedLink = `${updatedLink}?ddexref=${window.btoa(`addr=${_user.loggedInAddress}`)}`;
+    // if user logged in
+    if (address) {
+      updatedLink = `${updatedLink}?ddexref=${window.btoa(`addr=${address}`)}`;
     }
 
     window.open(updatedLink);
