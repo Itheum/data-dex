@@ -92,8 +92,6 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   ];
 
   useEffect(() => {
-    // console.log('********** MyDataNFTsMultiversX LOAD _chainMeta ', _chainMeta);
-
     (async () => {
       if (!_chainMeta.networkId) return;
 

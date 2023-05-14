@@ -125,7 +125,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!_chainMeta.networkId) return;
 
       const _marketRequirements = await marketContract.viewRequirements();
-      console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
       if (_marketRequirements) {
@@ -148,7 +147,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!_chainMeta.networkId) return;
 
       const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
-      console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, [_chainMeta.networkId]);
@@ -185,7 +183,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
 
-      console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       setPageCount(_pageCount);
 
@@ -207,7 +204,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       // start loading offers
       setLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
-      console.log("_offers", _offers);
       setOffers(_offers);
       setItems((prev) => {
         return _offers.map((offer: OfferType, i: number) => {
@@ -224,7 +220,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           };
         });
       });
-      console.log("items", items);
 
       //
       setNftMetadatasLoading(true);
@@ -242,15 +237,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setLoadingOffers(false);
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions, _chainMeta.networkId]);
-
-  // useEffect(() => {
-  //   items.map((item) => {
-  //     if (item.owner === address) {
-  //       setMyListedDataNFT(myListedDataNFT + 1);
-  //     }
-  //   });
-  //   console.log(myListedDataNFT);
-  // }, [myListedDataNFT, hasPendingTransactions]);
 
   useEffect(() => {
     (async () => {
@@ -305,7 +291,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          console.log("transactionOnNetwork", transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
