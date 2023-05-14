@@ -90,7 +90,7 @@ export default function HomeMultiversX({
         }
       });
     }
-  }, [mxAddress, hasPendingTransactions, mxFaucetContract]);
+  }, [mxAddress, hasPendingTransactions]);
 
   const handleOnChainFaucet = async () => {
     if (mxAddress && mxFaucetContract) {
@@ -105,7 +105,7 @@ export default function HomeMultiversX({
     if (mxClaimsContract && !hasPendingTransactions) {
       mxClaimsBalancesUpdate();
     }
-  }, [mxAddress, hasPendingTransactions, mxClaimsContract]);
+  }, [mxAddress, hasPendingTransactions]);
 
   // utility func to get claims balances from chain
   const mxClaimsBalancesUpdate = async () => {
