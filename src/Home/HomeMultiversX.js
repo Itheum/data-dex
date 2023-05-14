@@ -487,9 +487,9 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
         </SimpleGrid>
       </Stack>
 
-      <Box m="auto" pt="10" pb="10" backgroundColor="none">
+      {/* <Box m="auto" pt="10" pb="10" backgroundColor="none">
         <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
-      </Box>
+      </Box> */}
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
         <Heading as="h2" size="lg" textAlign={["center", "initial"]}>

@@ -4,6 +4,7 @@ import {
   tokenContractAddress_Astar,
   ddexContractAddress_Astar,
   dNFTContractAddress_Astar,
+  dataNFTFTTicker_Astar,
   tokenContractAddress_Matic,
   ddexContractAddress_Matic,
   dNFTContractAddress_Matic,
@@ -101,6 +102,7 @@ export const contractsForChain = (networkId: NetworkIdType) => {
       contracts.itheumToken = tokenContractAddress_Astar;
       contracts.ddex = ddexContractAddress_Astar;
       contracts.dnft = dNFTContractAddress_Astar;
+      contracts.dnftTicker = dataNFTFTTicker_Astar;
       break;
   }
 
@@ -174,6 +176,7 @@ export const tmpProgIdMapping = {
   "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
   "custom-gamer-activity": "Gamer Passport Activity",
+  "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
 };
 
 export const qsParams = () => {
@@ -252,8 +255,8 @@ export const CHAINS : any = {
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
   43113: "Avalanche - Testnet",
-  0x250: "Astar Network",
-  0x51: "Astar - Shibuya",
+  '0x250': "Astar Network",
+  '0x51': "Astar - Shibuya",
   E1: "MultiversX - Mainnet",
   ED: "MultiversX - Devnet",
 };
@@ -303,7 +306,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
     '0x250': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
-    '0x51': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    '0x51': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -321,8 +324,8 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   E1: "https://explorer.multiversx.com",
   ED: "https://devnet-explorer.multiversx.com",
-  0x250: "https://astar.subscan.io",
-  0x51: "https://shibuya.subscan.io",
+  '0x250': "https://astar.subscan.io",
+  '0x51': "https://shibuya.subscan.io",
 };
 
 export const CHAIN_TX_LIST = {
@@ -334,8 +337,8 @@ export const CHAIN_TX_LIST = {
 
 export const CHAIN_TOKEN_SYMBOL = (networkId: NetworkIdType) => {
   const mapping: Record<string, any[]> = {
-    ITHEUM: ["E1", "ED"],
-    aITHEUM: ["0x250", "0x51"],
+    ITHEUM: ["E1", "ED", "0x250", "0x51"],
+    // aITHEUM: ["0x250", "0x51"],
     eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
@@ -452,6 +455,16 @@ export const dataCATDemoUserData = {
       "toTs": 1535951753305,
     },
     {
+      "program": "playstation-gamer-passport",
+      "group": "custom",
+      "userId": "custom-x",
+      "status": "stop",
+      "shortId": "1",
+      "type": "1",
+      "fromTs": 1528448026784,
+      "toTs": 1535951753305,
+    },
+    {
       "program": "70dc6bd0-59b0-11e8-8d54-2d562f6cba54", // red heart challenge
       "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
       "status": "complete",
@@ -506,6 +519,14 @@ export const dataCATDemoUserData = {
         "img": "gamer-passport-data",
         "description":
           "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
+      },
+      "playstation-gamer-passport": {
+        "programName": "Sony Playstation Data Passport",
+        "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
+        "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
+        "img": "sony-playstation-data-passport",
+        "description":
+          "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },
       "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
         "programName": "Hypertension Insights Intense",

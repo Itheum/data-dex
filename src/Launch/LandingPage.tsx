@@ -5,6 +5,7 @@ import imgHeroMetaverseMask from "img/landing/hero-metaverse-mask.png";
 import { styleStrings } from "libs/util";
 import RecentArticles from "Sections/RecentArticles";
 import RecentDataNFTs from "Sections/RecentDataNFTs";
+import AstarIcon from "img/landing/astar-icon.png";
 
 const LandingPage = () => {
   const { colorMode } = useColorMode();
@@ -34,9 +35,13 @@ const LandingPage = () => {
             bgPosition="bottom"
             bgRepeat="no-repeat"
             justifyContent="center">
-            <Center w="95%" pt="5rem">
+                            
+            <Center w="95%">
               <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "2xl": 20 }}>
-                <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
+                <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={0}>
+                  <Box>
+                    <Image src={AstarIcon} boxSize="150px" m={5} borderRadius="md" />
+                  </Box>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
                     Own and trade{" "}
                     <Text as="span" color="teal.200">
@@ -52,7 +57,7 @@ const LandingPage = () => {
                   </Text>
                 </Box>
 
-                <Box mt={["2rem", "initial"]}>
+                <Box mt={'4rem'}>
                   <Image boxSize="480px" height="auto" src={imgHeroDataNFTs} alt="Data NFTs Preview" />
                 </Box>
               </Flex>

@@ -149,19 +149,23 @@ const AppHeader = ({
 
   const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
 
+  console.log('_chainMeta', _chainMeta);
+
+  const { isEVMAuthenticated, loggedInAddress } = _chainMeta;
+
   return (
     <>
       <Flex
         h="6rem"
-        justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
-        paddingX={!isMxLoggedIn ? 32 : 0}
+        justifyContent={(isMxLoggedIn || isEVMAuthenticated) ? "space-evenly" : "inherit"}
+        paddingX={!(isMxLoggedIn || isEVMAuthenticated) ? 32 : 0}
         alignItems="center"
         backgroundColor={colorMode === "light" ? "white" : "black"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
         <HStack alignItems={"center"} backgroundColor="none" width="15rem">
-          {isMxLoggedIn && (
+          {(isMxLoggedIn || isEVMAuthenticated) && (
             <IconButton
               size={"sm"}
               variant={"ghost"}
@@ -182,10 +186,10 @@ const AppHeader = ({
 
           <Link
             as={ReactRouterLink}
-            to={isMxLoggedIn ? "/home" : "/"}
+            to={(isMxLoggedIn || isEVMAuthenticated) ? "/home" : "/"}
             style={{ textDecoration: "none", pointerEvents: hasPendingTransactions ? "none" : undefined }}
             onClick={() => {
-              navigateToDiscover(isMxLoggedIn ? MENU.HOME : MENU.LANDING);
+              navigateToDiscover((isMxLoggedIn || isEVMAuthenticated) ? MENU.HOME : MENU.LANDING);
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
@@ -206,7 +210,7 @@ const AppHeader = ({
                     to={path}
                     style={{ textDecoration: "none" }}
                     key={path}
-                    display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
+                    display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn, isEVMAuthenticated)}>
                     <Button
                       borderColor="teal.200"
                       fontSize="md"
@@ -215,7 +219,7 @@ const AppHeader = ({
                       isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(menuEnum)}
                       key={shortLbl}
-                      size={isMxLoggedIn ? "sm" : "md"}
+                      size={(isMxLoggedIn || isEVMAuthenticated) ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
                       <Flex justifyContent="center" alignItems="center" px={1.5} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
@@ -229,10 +233,12 @@ const AppHeader = ({
               })}
             </HStack>
 
-            {isMxLoggedIn && (
+            {(isMxLoggedIn || isEVMAuthenticated) && (
               <>
                 <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
+                
+                {isMxLoggedIn && <>
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId}>
@@ -263,7 +269,7 @@ const AppHeader = ({
                         </MenuGroup>
 
                         <MenuGroup>
-                          {isMxLoggedIn && (
+                          {(isMxLoggedIn || isEVMAuthenticated) && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
                               <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
                                 <Text fontSize="sm">View claims history</Text>
@@ -279,6 +285,7 @@ const AppHeader = ({
                     </Menu>
                   ))}
                 </Box>
+
                 <Link as={ReactRouterLink} to={"home"}>
                   <IconButton
                     size={"lg"}
@@ -292,10 +299,14 @@ const AppHeader = ({
                     }}
                   />
                 </Link>
+                </>
+                }
               </>
             )}
 
-            {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} onEVMConnection={onEVMConnection} />}
+            {(onLaunchMode && !isMxLoggedIn && !isEVMAuthenticated) && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} onEVMConnection={onEVMConnection} />}
+
+            {isEVMAuthenticated && <Box backgroundColor="pink" width={'220px'}></Box>}
 
             {/*Toggle Mode*/}
             {/*<Box display={{ base: "none", md: "block", xl: "block" }}>*/}
@@ -417,11 +428,11 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick, onEVMConnection }: { onMxEnv
       isLazy
       lazyBehavior="keepMounted">
       <HStack marginLeft={3}>
-        <PopoverTrigger>
+        {/* <PopoverTrigger>
           <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="lg">
             Connect MultiversX Wallet
           </Button>
-        </PopoverTrigger>
+        </PopoverTrigger> */}
 
         <LoginButtonEVM onEVMConnection={onEVMConnection} />
       </HStack>
@@ -459,8 +470,8 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick, onEVMConnection }: { onMxEnv
   );
 };
 
-function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
-  return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
+function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean, isEVMAuthenticated: boolean) {
+  return quickMenuItem.needToBeLoggedIn ? ((isMxLoggedIn || isEVMAuthenticated) ? "inline" : "none") : "inline";
 }
 
 function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {

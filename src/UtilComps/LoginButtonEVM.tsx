@@ -244,7 +244,7 @@ const LoginButtonEVM = ({
   return (
     <>
       <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="lg" onClick={() => (wallet ? disconnect(wallet) : connect())}>
-        {connecting ? 'Connecting...' : wallet ? 'Disconnect' : 'Connect Astar Wallet'}
+        {connecting ? 'Connecting...' : wallet ? 'Disconnect' : 'Connect Astar Network Wallet'}
       </Button>
     </>
   );

@@ -246,11 +246,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       {!offer && getListingText(priceFromApi)}
                       {offer && getListingText(Number(offer.wanted_token_amount))}
                     </Text>
-                    {showConnectWallet && (
+                    {/* {showConnectWallet && (
                       <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
                         Connect MultiversX Wallet
                       </Button>
-                    )}
+                    )} */}
                   </Flex>
                   <Text fontSize={"22px"}>{transformDescription(nftData.attributes?.description)}</Text>
                   <Badge fontSize={"lg"} borderRadius="full" colorScheme="blue">

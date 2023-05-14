@@ -18,11 +18,13 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { Navigate, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import MintDataEVM from "AdvertiseData/MintDataEVM";
 import MintDataMX from "AdvertiseData/MintDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "DataNFT/DataNFTs";
+import MyDataNFTsEVM from "DataNFT/MyDataNFTsEVM";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
 import HomeMx from "Home/HomeMultiversX";
 import LandingPage from "Launch/LandingPage";
@@ -230,6 +232,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
 
   console.log('******************* menuItem = ', menuItem);
 
+  const { isEVMAuthenticated, loggedInAddress } = _chainMeta;
+
   return (
     <>
       <Container maxW="97.5rem">
@@ -244,7 +248,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
           <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} onEVMConnection={onEVMConnection} />
 
           {/* App Body */}
-          <Box backgroundColor="none" flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"} mt={menuItem !== MENU.LANDING ? "5" : "0"}>
+          <Box flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"}>
             <Routes>
               <Route path="/" element={<LandingPage />} />
 
@@ -264,12 +268,21 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
 
               <Route
                 path="tradedata"
-                element={<MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
+                element=
+                  {isEVMAuthenticated && 
+                    <MintDataEVM key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
+                    || 
+                    <MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
+                  }
               />
 
               <Route path="datanfts" element={<Outlet />}>
                 <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
+                {isEVMAuthenticated && 
+                  <Route path="wallet" element={<MyDataNFTsEVM key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
+                  || 
+                  <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
+                }
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
