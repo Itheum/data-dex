@@ -60,9 +60,16 @@ export default function InteractionTxTable(props: { address: string }) {
         id: "data",
         accessorFn: (row) => row.data,
         header: "Data",
-        cell: (cellProps) => (
-          <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`}>{cellProps.getValue()}</Link>
-        ),
+        cell: (cellProps) => {
+          const { row } = cellProps;
+          const isChangeOfferPrice = row.original.method === "Changed offer price";
+
+          const linkHref = isChangeOfferPrice
+            ? `${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/tokens/${cellProps.getValue()}`
+            : `${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`;
+
+          return <Link href={linkHref}>{cellProps.getValue()}</Link>;
+        },
         footer: (footerProps) => footerProps.column.id,
       },
       {
