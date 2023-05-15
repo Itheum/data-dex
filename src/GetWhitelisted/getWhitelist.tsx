@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Flex, Heading, Button, Image, Text, Center, ModalBody, Modal, ModalOverlay, ModalContent, ModalHeader, Link } from "@chakra-ui/react";
 import { FaTwitter, FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import illustration from "../img/illustration.png";
+import animatedIlustration from "../img/Animated.gif";
 
 export const GetWhitelist: React.FC = () => {
   return (

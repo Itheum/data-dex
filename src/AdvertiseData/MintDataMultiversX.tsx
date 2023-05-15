@@ -1257,7 +1257,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
                         name="numberOfCopiesForm"
                       />
                       <Text color="gray.400" fontSize="sm" mt={"1"}>
-                        Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                        Limit the quantity to increase value (rarity) - Suggested: less than {maxSupply}
                       </Text>
                       <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                     </FormControl>
