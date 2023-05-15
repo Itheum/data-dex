@@ -36,7 +36,7 @@ export const CustomPagination: FC<PropsType> = ({
   };
 
   return (
-    <Flex justifyContent="center" alignItems="center" mt="5">
+    <Flex justifyContent="center" alignItems="center" mt={{ base: 0, lg: "5" }}>
       <Flex>
         <Tooltip label="First Page">
           <IconButton
@@ -86,7 +86,7 @@ export const CustomPagination: FC<PropsType> = ({
         </Text>{" "}
       </Flex>
 
-      <Flex>
+      <Flex paddingLeft={{ base: "50px", md: "0px" }} paddingRight={{ base: "10px", md: "0px" }}>
         <Tooltip label="Next Page">
           <IconButton
             colorScheme="teal"

@@ -41,6 +41,7 @@ import { DataNftMarketContract } from "../MultiversX/dataNftMarket";
 import { hexZero, tokenDecimals } from "../MultiversX/tokenUtils.js";
 import UpperCardComponent from "../UtilComps/UpperCardComponent";
 import useThrottle from "../UtilComps/UseThrottle";
+import { NoDataHere } from "Sections/NoDataHere";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -74,6 +75,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
 
+  const [myListedDataNFT, setMyListedDataNFT] = useState<number>(0);
+
   //
   const [offers, setOffers] = useState<OfferType[]>([]);
   const [items, setItems] = useState<ItemType[]>([
@@ -106,7 +109,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [pageSize, setPageSize] = useState<number>(8);
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
-  console.log(location.pathname);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -123,7 +125,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!_chainMeta.networkId) return;
 
       const _marketRequirements = await marketContract.viewRequirements();
-      console.log("_marketRequirements", _marketRequirements);
       setMarketRequirements(_marketRequirements);
 
       if (_marketRequirements) {
@@ -146,7 +147,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!_chainMeta.networkId) return;
 
       const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
-      console.log("_marketFreezedNonces", _marketFreezedNonces);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, [_chainMeta.networkId]);
@@ -182,7 +182,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         // offers of User
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
-      console.log("_numberOfOffers", _numberOfOffers);
+
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       setPageCount(_pageCount);
 
@@ -204,7 +204,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       // start loading offers
       setLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
-      console.log("_offers", _offers);
       setOffers(_offers);
       setItems((prev) => {
         return _offers.map((offer: OfferType, i: number) => {
@@ -221,7 +220,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           };
         });
       });
-      console.log("items", items);
 
       //
       setNftMetadatasLoading(true);
@@ -293,7 +291,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          console.log('transactionOnNetwork', transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
@@ -301,10 +298,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 const matches = input.match(/(?<=\[)[^\][]*(?=])/g);
 
                 if (matches) {
-                  const title = matches[1] == 'acceptOffer' ? 'Purchase transaction failed'
-                    : matches[1] == 'cancelOffer' ? 'De-List transaction failed'
-                    : matches[1] == 'changeOfferPrice' ? 'Update price transaction failed'
-                    : 'Transaction failed';
+                  const title =
+                    matches[1] == "acceptOffer"
+                      ? "Purchase transaction failed"
+                      : matches[1] == "cancelOffer"
+                      ? "De-List transaction failed"
+                      : matches[1] == "changeOfferPrice"
+                      ? "Update price transaction failed"
+                      : "Transaction failed";
                   const description = matches[matches.length - 1];
 
                   toast({
@@ -376,9 +377,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
                         My Listed Data NFT(s)
                       </Text>
-                      {/* <Text fontSize="sm" px={1} color="whiteAlpha.800">
-                        {offers && offers?.length}
-                      </Text> */}
+                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                        {myListedDataNFT > 0 && myListedDataNFT}
+                      </Text>
                     </Flex>
                   </Button>
                 )}
@@ -391,9 +392,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         </Flex>
 
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
-          <Text>No data yet...</Text>
+          <NoDataHere />
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important">
+          <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacingY={4} mx={{ base: 0, "2xl": "24 !important" }} mt="5 !important" justifyItems={"center"}>
             {offers.length > 0 &&
               items?.map((item, index) => (
                 <UpperCardComponent
@@ -448,7 +449,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
             <DrawerContent>
-              <DrawerHeader>
+              <DrawerHeader bgColor="bgDark">
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                   <Heading as="h4" size="lg">
@@ -456,7 +457,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   </Heading>
                 </HStack>
               </DrawerHeader>
-              <DrawerBody>
+              <DrawerBody bgColor="bgDark">
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}

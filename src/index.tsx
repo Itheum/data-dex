@@ -61,11 +61,7 @@ const theme = extendTheme({
       800: "#234E52",
       900: "#1D4044",
     },
-  },
-  components: {
-    Icon: {
-      colorScheme: "teal",
-    },
+    bgDark: "#0F0F0F",
   },
 });
 

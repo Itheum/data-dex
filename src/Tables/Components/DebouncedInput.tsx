@@ -1,4 +1,4 @@
-import React, { useState, useEffect, InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, useEffect, useState } from "react";
 
 export default function DebouncedInput({
   value: initialValue,

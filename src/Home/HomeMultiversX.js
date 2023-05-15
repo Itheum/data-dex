@@ -269,20 +269,16 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
 
   return (
     <Stack mx={{ base: 5, "2xl": 24 }} my={5}>
-      <Heading size="xl" fontWeight="medium" my={7}>
-        Home
-      </Heading>
-
-      <Stack>
-        <SimpleGrid columns={[1, null, 4]} spacing={10} backgroundColor="none">
+      <Box my={20}>
+        <SimpleGrid columns={[1, 2, 3, 4]} spacing={10} backgroundColor="none">
           <Box
             maxW="container.sm"
-            w={{ base: "280px", "2xl": tileBoxMdW }}
-            border=".1rem solid transparent"
+            w={[tileBoxMdW, "initial"]}
             backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderForTrade }}>
-            <Stack p="5" h={tileBoxH}>
+            border="1px solid transparent"
+            borderColor="#00C79740"
+            borderRadius="16px">
+            <Stack p="5" h={tileBoxH} alignItems={"center"}>
               {!dataCATAccount && (
                 <Heading size="md" fontWeight="semibold" pb={2}>
                   Linked Data CAT Accounts
@@ -296,9 +292,9 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
               )) ||
                 (!dataCATAccount && (
                   <>
-                    <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850">
+                    <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
                       <Flex direction="column">
-                        <AlertTitle fontSize="md">
+                        <AlertTitle fontSize="md" mt={{ xs: 24, lg: 0 }}>
                           <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
                           <Flex direction="row">
                             <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
@@ -353,11 +349,11 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
           <ChainSupportedComponent feature={MENU.FAUCET}>
             <Box
               maxW="container.sm"
-              w={{ base: "280px", "2xl": tileBoxMdW }}
-              border=".1rem solid transparent"
+              w={[tileBoxMdW, "initial"]}
               backgroundColor="none"
-              borderRadius="1.5rem"
-              style={{ "background": gradientBorderForTrade }}>
+              border="1px solid transparent"
+              borderColor="#00C79740"
+              borderRadius="16px">
               <Stack p="5" h={tileBoxH}>
                 <Heading size="md" fontWeight="semibold" pb={2}>
                   {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
@@ -377,11 +373,11 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
 
           <Box
             maxW="container.sm"
-            w={{ base: "280px", "2xl": tileBoxMdW }}
-            border=".1rem solid transparent"
+            w={[tileBoxMdW, "initial"]}
             backgroundColor="none"
-            borderRadius="1.5rem"
-            style={{ "background": gradientBorderForTrade }}>
+            border="1px solid transparent"
+            borderColor="#00C79740"
+            borderRadius="16px">
             <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
               <Heading size="md" pb={2}>
                 NFMe ID Avatar
@@ -397,10 +393,10 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             <Box
               maxW="container.sm"
               w={[tileBoxMdW, "initial"]}
-              border=".1rem solid transparent"
               backgroundColor="none"
-              borderRadius="1.5rem"
-              style={{ "background": gradientBorderForTrade }}>
+              border="1px solid transparent"
+              borderColor="#00C79740"
+              borderRadius="16px">
               <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                 <Heading size="md" pb={2}>
                   My Claims
@@ -485,7 +481,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             </Box>
           </ChainSupportedComponent>
         </SimpleGrid>
-      </Stack>
+      </Box>
 
       <Box m="auto" pt="10" pb="10" backgroundColor="none">
         <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />

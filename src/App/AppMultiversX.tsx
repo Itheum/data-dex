@@ -35,6 +35,7 @@ import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
 import { useChainMeta } from "store/ChainMetaContext";
+import { GetWhitelist } from "../GetWhitelisted/getWhitelist";
 
 const mxLogout = logout;
 
@@ -209,7 +210,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     <>
       <Container maxW="97.5rem">
         <Flex
-          bgColor={colorMode === "dark" ? "black" : "white"}
+          bgColor={colorMode === "dark" ? "bgDark" : "white"}
           flexDirection="column"
           justifyContent="space-between"
           minH="100vh"
@@ -217,14 +218,17 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
           zIndex={2}>
           {/* App Header */}
           <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
-
           {/* App Body */}
-          <Box backgroundColor="none" flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"} mt={menuItem !== MENU.LANDING ? "5" : "0"}>
+          <Box backgroundColor="none" flexGrow={1}>
             <Routes>
               <Route path="/" element={<LandingPage />} />
 
+              <Route path="getwhitelisted" element={<Outlet />}>
+                <Route path="" element={<GetWhitelist />} />
+              </Route>
+
               <Route
-                path="home"
+                path="dashboard"
                 element={
                   <HomeMx
                     key={rfKeys.tools}
@@ -239,7 +243,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route
                 path="tradedata"
-                element={<MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
+                element={<MintDataMX key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
               />
 
               <Route path="datanfts" element={<Outlet />}>
