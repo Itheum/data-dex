@@ -4,12 +4,13 @@ import { Box, HStack, Link, Spinner, useToast } from "@chakra-ui/react";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
-import { CHAIN_TX_VIEWER, uxConfig } from "libs/util";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "libs/util";
 import { getApi } from "MultiversX/api";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
+import { TransactionDecoder } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 
 export default function InteractionTxTable(props: { address: string }) {
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -76,7 +77,13 @@ export default function InteractionTxTable(props: { address: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const interactions = await getInteractionTransactions(props.address, _chainMeta.contracts.dataNftMint, _chainMeta.contracts.market, _chainMeta.networkId);
+      const interactions = await getInteractionTransactions(
+        props.address,
+        _chainMeta.contracts.dataNftMint,
+        _chainMeta.contracts.market,
+        _chainMeta.networkId,
+        _chainMeta
+      );
       if ("error" in interactions) {
         toast({
           title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",
@@ -112,7 +119,8 @@ export const getInteractionTransactions = async (
   address: string,
   minterSmartContractAddress: string,
   marketSmartContractAddress: string,
-  networkId: string
+  networkId: string,
+  chainMeta: any
 ) => {
   const api = getApi(networkId);
 
@@ -141,18 +149,29 @@ export const getInteractionTransactions = async (
     };
 
     allTransactions.forEach((tx: any) => {
+      let data = "";
+      let value = "";
+      const metadata = new TransactionDecoder().getTransactionMetadata({
+        sender: tx.sender.bech32,
+        receiver: tx.receiver.bech32,
+        data: tx.data.toString("base64"),
+        value: tx.value,
+      });
+
+      value = convertWeiToEsdt(parseInt(metadata.functionArgs![1], 16)).toString();
+      data = chainMeta.contracts.itheumToken;
       if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
-        let value = "";
-        let data = "";
-        for (const operation of tx.operations) {
-          if (["acceptOffer", "addOffer", "cancelOffer"].includes(tx["function"]) && operation.action === "transfer") {
-            value = `${operation.value}`;
-            data = operation.identifier;
-          }
-          if (operation.action === "create" || operation.action === "burn") {
-            value = `${operation.value}`;
-            data = operation.identifier;
-            break;
+        if (Array.isArray(tx.operations)) {
+          for (const operation of tx.operations) {
+            if (["acceptOffer", "addOffer", "cancelOffer"].includes(tx["function"]) && operation.action === "transfer") {
+              value = `${operation.value}`;
+              data = operation.identifier;
+            }
+            if (operation.action === "create" || operation.action === "burn") {
+              value = `${operation.value}`;
+              data = operation.identifier;
+              break;
+            }
           }
         }
         const transaction: InteractionsInTable = {

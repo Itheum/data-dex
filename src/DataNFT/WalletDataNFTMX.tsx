@@ -138,7 +138,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       console.log("signatureObj", signatureObj);
       if (signatureObj?.signature && signatureObj?.address) {
         // XPortal App V2 / Ledger
-        signResult.signature = signatureObj.signature.toString("hex");
+        signResult.signature = signatureObj.signature.hex();
         signResult.addrInHex = signatureObj.address.hex();
         signResult.success = true;
       } else {

@@ -18,7 +18,7 @@ export default function InteractionsHistory({ mxAddress, networkId, onAfterClose
       }}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }}>
+      <ModalContent maxWidth={{ md: "80vw" }}>
         <ModalHeader>Recent Data NFT Interactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
