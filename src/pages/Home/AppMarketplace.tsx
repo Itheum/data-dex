@@ -31,7 +31,7 @@ export default function AppMarketplace() {
   // const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccount();
-  const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>('rhc');
+  const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const handleLearnMoreProg = (progCode: any) => {
@@ -184,13 +184,11 @@ export default function AppMarketplace() {
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              <Button
-                disabled={!progInfoMeta[learnMoreProd].canJoin}
-                size="sm"
-                colorScheme="teal"
-                onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
-                Join Now
-              </Button>
+              {progInfoMeta[learnMoreProd].canJoin === 1 && (
+                <Button size="sm" colorScheme="teal" onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
+                  Join Now
+                </Button>
+              )}
             </ModalFooter>
           </ModalContent>
         </Modal>
