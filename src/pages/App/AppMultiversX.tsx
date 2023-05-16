@@ -37,6 +37,7 @@ import TrustedComputation from "pages/Labs/TrustedComputation";
 import LandingPage from "pages/LandingPage";
 import { useChainMeta } from "store/ChainMetaContext";
 import { GetWhitelist } from "../GetWhitelist";
+import { GuardRails } from "../GuardRails/GuardRails";
 
 const mxLogout = logout;
 
@@ -228,6 +229,10 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                 <Route path="" element={<GetWhitelist />} />
               </Route>
 
+              <Route path="guardRails" element={<Outlet />}>
+                <Route path="" element={<GuardRails />} />
+              </Route>
+
               <Route
                 path="dashboard"
                 element={
@@ -244,7 +249,9 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route
                 path="tradedata"
-                element={<MintDataMX key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />}
+                element={
+                  <MintDataMX key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
+                }
               />
 
               <Route path="datanfts" element={<Outlet />}>

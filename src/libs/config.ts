@@ -1,4 +1,3 @@
-
 import { ContractsType, NetworkIdType } from "libs/types";
 import {
   // tokenContractAddress_Matic,
@@ -37,25 +36,25 @@ export function contractsForChain(networkId: NetworkIdType): ContractsType {
   switch (networkId) {
     case "ED": {
       return {
-        itheumToken : tokenContractAddress_Mx_Devnet,
-        dataNFTFTTicker : dataNFTFTTicker_Mx_Devnet,
-        claims : claimsContractAddress_Mx_Devnet,
-        faucet : faucetContractAddress_Mx_Devnet,
-        dataNftMint : dataNftMintContractAddress_Mx_Devnet,
-        market : dataNftMarketContractAddress_Mx_Devnet,
+        itheumToken: tokenContractAddress_Mx_Devnet,
+        dataNFTFTTicker: dataNFTFTTicker_Mx_Devnet,
+        claims: claimsContractAddress_Mx_Devnet,
+        faucet: faucetContractAddress_Mx_Devnet,
+        dataNftMint: dataNftMintContractAddress_Mx_Devnet,
+        market: dataNftMarketContractAddress_Mx_Devnet,
       };
     }
     case "E1": {
       return {
-        itheumToken : tokenContractAddress_Mx_Mainnet,
-        claims : claimsContractAddress_Mx_Mainnet,
-        faucet : faucetContractAddress_Mx_Mainnet,
+        itheumToken: tokenContractAddress_Mx_Mainnet,
+        claims: claimsContractAddress_Mx_Mainnet,
+        faucet: faucetContractAddress_Mx_Mainnet,
       };
     }
   }
 
   throw Error("Undefined Network ID");
-};
+}
 
 export const uxConfig = {
   txConfirmationsNeededSml: 1,
@@ -64,7 +63,6 @@ export const uxConfig = {
   dateStrTm: "MMM Do YYYY LT",
   mxAPITimeoutMs: 10000,
 };
-
 
 export const CLAIM_TYPES = {
   REWARDS: 1,
@@ -291,7 +289,6 @@ export const tmpProgIdMapping = {
   "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
 };
 
-
 export const dataCATDemoUserData = {
   "lastName": "User",
   "firstName": "DexDemo",
@@ -424,4 +421,52 @@ export const styleStrings = {
   gradientBorderPassiveLight: "linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
   gradientBorderMulticolorToBottomRight: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
   gradientBorderMulticolorToBottomRightLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
+};
+
+export interface GuardRailsInfo {
+  accepted_tokens: string;
+  accepted_payments: string;
+  maximum_payment_fees: number;
+  discount_fee_percentage_buyer: number;
+  discount_fee_percentage_seller: number;
+  percentage_cut_from_buyer: number;
+  percentage_cut_from_seller: number;
+  buyer_fee: Array<number>;
+  seller_fee: number;
+}
+
+export const guardRailsInfo: Record<string, GuardRailsInfo> = {
+  activeGuardrails: {
+    buyer_fee: [100],
+    seller_fee: 100,
+    percentage_cut_from_seller: 2,
+    percentage_cut_from_buyer: 4,
+    discount_fee_percentage_seller: 4,
+    discount_fee_percentage_buyer: 4,
+    maximum_payment_fees: 1000,
+    accepted_payments: "ITHEUM",
+    accepted_tokens: "ITHEUM",
+  },
+  historicGuardrails: {
+    buyer_fee: [80, 60, 40],
+    seller_fee: 80,
+    percentage_cut_from_seller: 3,
+    percentage_cut_from_buyer: 3,
+    discount_fee_percentage_seller: 4,
+    discount_fee_percentage_buyer: 4,
+    maximum_payment_fees: 800,
+    accepted_payments: "ITHEUM",
+    accepted_tokens: "ITHEUM",
+  },
+  upcomingGuardrails: {
+    buyer_fee: [150],
+    seller_fee: 150,
+    percentage_cut_from_seller: 5,
+    percentage_cut_from_buyer: 5,
+    discount_fee_percentage_seller: 4,
+    discount_fee_percentage_buyer: 4,
+    maximum_payment_fees: 1250,
+    accepted_payments: "ITHEUM",
+    accepted_tokens: "ITHEUM",
+  },
 };
