@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useBreakpointValue } from "@chakra-ui/react";
 import { useChainMeta } from "store/ChainMetaContext";
-import ClaimsTxTable from "Tables/ClaimsTxTable";
+import InteractionTxTable from "Tables/InteractionTxTable";
 
-export default function ChaimsHistory({ mxAddress, networkId, onAfterCloseChaimsHistory }) {
-  const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
+export default function InteractionsHistory({ mxAddress, networkId, onAfterCloseInteractionsHistory }) {
+  const [interactionTransactionsModalOpen, setInteractionTransactionsModalOpen] = useState(true);
   const { chainMeta: _chainMeta } = useChainMeta();
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   return (
     <Modal
-      isOpen={claimTransactionsModalOpen}
+      isOpen={interactionTransactionsModalOpen}
       onClose={() => {
-        onAfterCloseChaimsHistory();
-        setClaimTransactionsModalOpen(false);
+        onAfterCloseInteractionsHistory();
+        setInteractionTransactionsModalOpen(false);
       }}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }}>
-        <ModalHeader>Recent Claim Transactions</ModalHeader>
+      <ModalContent maxWidth={{ md: "80vw" }}>
+        <ModalHeader>Recent Data NFT Interactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <ClaimsTxTable address={mxAddress} />
+          <InteractionTxTable address={mxAddress} />
         </ModalBody>
       </ModalContent>
     </Modal>

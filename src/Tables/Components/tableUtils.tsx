@@ -3,6 +3,7 @@ import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
 import { convertWeiToEsdt } from "libs/util";
+import { type } from "os";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -31,6 +32,22 @@ export type TransactionInTable = {
   to: string;
   method: string;
   value: string;
+};
+
+export type InteractionsInTable = {
+  hash: string;
+  timestamp: number;
+  method: string;
+  status: string;
+  value: string;
+  data: string;
+};
+
+export type ClaimsInTable = {
+  hash: string;
+  timestamp: number;
+  claimType: string;
+  amount: number;
 };
 
 export class DataNftOnNetwork {

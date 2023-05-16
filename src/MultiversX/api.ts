@@ -87,7 +87,7 @@ export const getClaimTransactions = async (address: string, smartContractAddress
 
     for (const tx of resp) {
       const transaction: any = {};
-      transaction["timestamp"] = parseInt(tx["timestamp"]) * 1000;
+      transaction["timestamp"] = parseInt(tx["timestamp"]);
       transaction["hash"] = tx["txHash"];
       transaction["status"] = tx["status"];
 
