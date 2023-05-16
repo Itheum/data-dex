@@ -168,7 +168,7 @@ type TradeDataFormType = {
   royaltiesForm: number;
 };
 
-export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: { onRfMount: any; dataCATAccount: any, setMenuItem: any }) {
+export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: { onRfMount: any; dataCATAccount: any; setMenuItem: any }) {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
@@ -911,6 +911,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                     src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${dataCATAccount._lookups.programs[item.program].img}.png`}
                     alt=""
                     height="13.375rem"
+                    width={{ base: "auto", md: "355px" }}
                     border="1px solid transparent"
                     borderColor="#00C797"
                     borderRadius="16px"
@@ -1069,7 +1070,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
                         <InputLabelWithPopover tkey="data-preview-url">
-                          <FormLabel fontWeight="bold" fontSize="md">
+                          <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
                             Data Preview URL
                           </FormLabel>
                         </InputLabelWithPopover>
@@ -1210,38 +1211,38 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                           </Text>
                         </InputLabelWithPopover>
 
-                      <Controller
-                        control={control}
-                        render={({ field: { value, onChange } }) => (
-                          <NumberInput
-                            mt="3 !important"
-                            size="md"
-                            id="numberOfCopiesForm"
-                            maxW={24}
-                            step={1}
-                            defaultValue={1}
-                            min={1}
-                            value={dataNFTCopies}
-                            max={maxSupply > 0 ? maxSupply : 1}
-                            isValidCharacter={isValidNumericCharacter}
-                            onChange={(valueAsString: string) => {
-                              onChange(valueAsString);
-                              handleChangeDataNftCopies(Number(valueAsString));
-                            }}>
-                            <NumberInputField />
-                            <NumberInputStepper>
-                              <NumberIncrementStepper />
-                              <NumberDecrementStepper />
-                            </NumberInputStepper>
-                          </NumberInput>
-                        )}
-                        name="numberOfCopiesForm"
-                      />
-                      <Text color="gray.400" fontSize="sm" mt={"1"}>
-                        Limit the quantity to increase value (rarity) - Suggested: less than {maxSupply}
-                      </Text>
-                      <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
-                    </FormControl>
+                        <Controller
+                          control={control}
+                          render={({ field: { value, onChange } }) => (
+                            <NumberInput
+                              mt="3 !important"
+                              size="md"
+                              id="numberOfCopiesForm"
+                              maxW={24}
+                              step={1}
+                              defaultValue={1}
+                              min={1}
+                              value={dataNFTCopies}
+                              max={maxSupply > 0 ? maxSupply : 1}
+                              isValidCharacter={isValidNumericCharacter}
+                              onChange={(valueAsString: string) => {
+                                onChange(valueAsString);
+                                handleChangeDataNftCopies(Number(valueAsString));
+                              }}>
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          )}
+                          name="numberOfCopiesForm"
+                        />
+                        <Text color="gray.400" fontSize="sm" mt={"1"}>
+                          Limit the quantity to increase value (rarity) - Suggested: less than {maxSupply}
+                        </Text>
+                        <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+                      </FormControl>
 
                       <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
                         <InputLabelWithPopover tkey="royalties">
@@ -1290,10 +1291,10 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                   <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="4 !important">
                     Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
-                    that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
-                    is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But
-                    there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
-                    of use before proceeding.
+                    that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream
+                    URL is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc.
+                    But there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the
+                    terms of use before proceeding.
                   </Text>
                   <Flex mt="3 !important">
                     <Button
@@ -1403,10 +1404,14 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             <Text colorScheme="teal">Success! Your Data NFT has been minted on the MultiversX Blockchain</Text>
                           </Alert>
                           <HStack mt="4">
-                            <Button colorScheme="teal" onClick={() => {
+                            <Button
+                              colorScheme="teal"
+                              onClick={() => {
                                 setMenuItem(MENU.NFTMINE);
-                                navigate('/datanfts/wallet');
-                              }}>Visit your Data NFT Wallet to see it!</Button>
+                                navigate("/datanfts/wallet");
+                              }}>
+                              Visit your Data NFT Wallet to see it!
+                            </Button>
                             <Button colorScheme="teal" variant="outline" onClick={closeProgressModal}>
                               Close & Return
                             </Button>
