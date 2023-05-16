@@ -38,11 +38,12 @@ import {
   // useMintStore,
 } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import InteractionTxTable from "components/Tables/InteractionTxTable";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || '';
+  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
   const { address } = useGetAccountInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -82,7 +83,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     {
       tabName: "Activity",
       icon: BsClockHistory,
-      isDisabled: true,
+      isDisabled: false,
     },
     {
       tabName: "Offers",
@@ -197,7 +198,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       {...item}
                     />
@@ -211,7 +212,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
             </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel>
+              <InteractionTxTable address={address} />
+            </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
           </TabPanels>
         </Tabs>
