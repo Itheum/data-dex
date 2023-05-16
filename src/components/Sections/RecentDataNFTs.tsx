@@ -10,8 +10,6 @@ import { DataNftCondensedView } from "libs/MultiversX/types";
 import { NetworkIdType } from "libs/types";
 import { sleep, convertWeiToEsdt, hexZero } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
-import { hexZero } from "../MultiversX/tokenUtils.js";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
