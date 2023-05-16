@@ -51,10 +51,11 @@ import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "assets/img/logo-sml-d.png";
 import logoSmlL from "assets/img/logo-sml-l.png";
+import ClaimsHistory from "components/ClaimsHistory";
+import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import ClaimsHistory from "components/ClaimsHistory";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -126,6 +127,7 @@ const AppHeader = ({
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
+  const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
@@ -279,6 +281,9 @@ const AppHeader = ({
                               <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
                                 <Text fontSize="sm">View claims history</Text>
                               </MenuItem>
+                              <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxInteractionsHistory(true)}>
+                                <Text fontSize="sm">View Data NFT interactions history</Text>
+                              </MenuItem>
                             </ChainSupportedComponent>
                           )}
 
@@ -324,6 +329,9 @@ const AppHeader = ({
 
       {mxShowClaimsHistory && (
         <ClaimsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
+      )}
+      {mxShowInteractionsHistory && (
+        <InteractionsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />
       )}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
@@ -383,6 +391,17 @@ const AppHeader = ({
                           p={3}
                           onClick={() => setMxShowClaimsHistory(true)}>
                           View claims history
+                        </ListItem>
+                        <ListItem
+                          as={Button}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          display={"flex"}
+                          justifyContent={"start"}
+                          p={3}
+                          onClick={() => setMxInteractionsHistory(true)}>
+                          View interactions history
                         </ListItem>
 
                         <ListItem

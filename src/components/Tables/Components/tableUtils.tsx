@@ -33,6 +33,22 @@ export type TransactionInTable = {
   value: string;
 };
 
+export type InteractionsInTable = {
+  hash: string;
+  timestamp: number;
+  method: string;
+  status: string;
+  value: string;
+  data: string;
+};
+
+export type ClaimsInTable = {
+  hash: string;
+  timestamp: number;
+  claimType: string;
+  amount: number;
+};
+
 export class DataNftOnNetwork {
   static addOfferIndex = 0;
   static ids: number[] = [];
