@@ -60,7 +60,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -286,7 +286,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -333,7 +333,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -379,7 +379,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -421,7 +421,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -463,7 +463,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -527,7 +527,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

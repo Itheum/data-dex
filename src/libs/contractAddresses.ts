@@ -73,8 +73,11 @@ export const faucetContractAddress_Mx_Devnet = contracts.mx["devnet"].faucetCont
 export const dataNftMintContractAddress_Mx_Devnet = contracts.mx["devnet"].dataNftMintContractAddress;
 export const dataNftMarketContractAddress_Mx_Devnet = contracts.mx["devnet"].dataNftMarketContractAddress;
 export const tokenContractAddress_Mx_Mainnet = contracts.mx["mainnet"].itheumTokenContractAddress;
+export const dataNFTFTTicker_Mx_Mainnet = contracts.mx["mainnet"].dataNFTFTTicker;
 export const claimsContractAddress_Mx_Mainnet = contracts.mx["mainnet"].claimsContractAddress;
 export const faucetContractAddress_Mx_Mainnet = contracts.mx["mainnet"].faucetContractAddress;
+export const dataNftMintContractAddress_Mx_Mainnet = contracts.mx["mainnet"].dataNftMintContractAddress;
+export const dataNftMarketContractAddress_Mx_Mainnet = contracts.mx["mainnet"].dataNftMarketContractAddress;
 
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";

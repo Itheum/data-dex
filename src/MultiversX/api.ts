@@ -18,7 +18,6 @@ export const getNetworkProvider = (networkId?: string, chainId?: string) => {
 
   const envValue = process.env[envKey];
   const isApi = envValue && envValue.includes("api");
-
   return isApi ? new ApiNetworkProvider(envValue, { timeout: 10000 }) : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: 10000 });
 };
 
