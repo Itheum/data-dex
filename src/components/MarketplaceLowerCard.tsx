@@ -77,11 +77,12 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                     let error = "";
                     if (value <= 0) {
                       error = "Cannot be zero or negative";
+                    } else if (value > offer.quantity) {
+                      error = "Cannot exceed listed amount";
                     } else if (value > maxBuyLimit) {
                       error = "Cannot exceed Max Buy Limit";
-                    } else if (value > offer.quantity) {
-                      error = "Cannot exceed balance";
                     }
+                    
                     setAmountError(error);
                     setAmount(value);
                   }}>

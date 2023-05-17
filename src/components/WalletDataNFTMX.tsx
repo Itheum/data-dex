@@ -93,6 +93,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
 
+  const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT
+    ? Math.min(item.balance, Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT))
+    : item.balance;
+
   const onBurn = () => {
     if (!address) {
       toast({
@@ -393,7 +397,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 step={1}
                 defaultValue={1}
                 min={1}
-                max={item.balance}
+                max={maxListLimit}
                 isValidCharacter={isValidNumericCharacter}
                 value={amount}
                 onChange={(value) => {
@@ -402,8 +406,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   if (valueAsNumber <= 0) {
                     error = "Cannot be zero or negative";
                   } else if (valueAsNumber > item.balance) {
-                    error = "Cannot exceed balance";
+                    error = "Not enough balance";
+                  } else if (valueAsNumber > maxListLimit) {
+                    error = "Cannot exceed Max List Limit";
                   }
+                  
                   setAmountError(error);
                   setAmount(valueAsNumber);
                 }}>
