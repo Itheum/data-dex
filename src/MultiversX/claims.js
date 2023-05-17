@@ -23,7 +23,7 @@ export class ClaimsContract {
     if (networkId === "E1") {
       this.chainID = "1";
     }
-
+    console.log(this.chainID);
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
 
@@ -37,10 +37,8 @@ export class ClaimsContract {
     const interaction = this.contract.methods.viewClaimWithDate([new Address(address)]);
     const query = interaction.buildQuery();
     const result = [];
-
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
-
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
@@ -74,7 +72,7 @@ export class ClaimsContract {
     let result = false;
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider(undefined, this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

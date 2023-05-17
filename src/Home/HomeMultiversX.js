@@ -271,80 +271,82 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
     <Stack mx={{ base: 5, "2xl": 24 }} my={5}>
       <Box my={20}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={10} backgroundColor="none">
-          <Box
-            maxW="container.sm"
-            w={[tileBoxMdW, "initial"]}
-            backgroundColor="none"
-            border="1px solid transparent"
-            borderColor="#00C79740"
-            borderRadius="16px">
-            <Stack p="5" h={tileBoxH} alignItems={"center"}>
-              {!dataCATAccount && (
-                <Heading size="md" fontWeight="semibold" pb={2}>
-                  Linked Data CAT Accounts
-                </Heading>
-              )}
-
-              {(loadingDataCATAccount && (
-                <Box textAlign="center" mt="40% !important">
-                  <Spinner speed="0.64s" color="teal.200" label="Fetching Data" />
-                </Box>
-              )) ||
-                (!dataCATAccount && (
-                  <>
-                    <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
-                      <Flex direction="column">
-                        <AlertTitle fontSize="md" mt={{ xs: 24, lg: 0 }}>
-                          <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
-                          <Flex direction="row">
-                            <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
-                          </Flex>
-                        </AlertTitle>
-                        <AlertDescription fontSize="md" color="#929497" pb="2">
-                          But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
-                        </AlertDescription>
-                      </Flex>
-                    </Alert>
-
-                    <Spacer />
-
-                    <Button size="lg" borderRadius="xl" colorScheme="teal" variant="solid" onClick={() => onDataCATAccount(true)}>
-                      <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
-                    </Button>
-                  </>
-                )) || (
-                  <>
-                    <Stack>
-                      <Text fontSize="xl">Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}</Text>
-                      <Text fontSize="sm" mb="4 !important">
-                        You have data available to trade from the following programs
-                      </Text>
-                      {dataCATAccount.programsAllocation.map((item) => (
-                        <Stack direction="row" key={item.program}>
-                          <Badge borderRadius="full" px="2" colorScheme="teal">
-                            {dataCATAccount._lookups.programs[item.program].programName}
-                          </Badge>
-                        </Stack>
-                      ))}
-                    </Stack>
-
-                    <Spacer />
-
-                    <Button
-                      size="lg"
-                      borderRadius="xl"
-                      colorScheme="teal"
-                      variant="outline"
-                      onClick={() => {
-                        setMenuItem(2);
-                        navigate("/tradedata");
-                      }}>
-                      <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
-                    </Button>
-                  </>
+          <ChainSupportedComponent feature={MENU.DATACAT}>
+            <Box
+              maxW="container.sm"
+              w={[tileBoxMdW, "initial"]}
+              backgroundColor="none"
+              border="1px solid transparent"
+              borderColor="#00C79740"
+              borderRadius="16px">
+              <Stack p="5" h={tileBoxH} alignItems={"center"}>
+                {!dataCATAccount && (
+                  <Heading size="md" fontWeight="semibold" pb={2}>
+                    Linked Data CAT Accounts
+                  </Heading>
                 )}
-            </Stack>
-          </Box>
+
+                {(loadingDataCATAccount && (
+                  <Box textAlign="center" mt="40% !important">
+                    <Spinner speed="0.64s" color="teal.200" label="Fetching Data" />
+                  </Box>
+                )) ||
+                  (!dataCATAccount && (
+                    <>
+                      <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
+                        <Flex direction="column">
+                          <AlertTitle fontSize="md" mt={{ xs: 24, lg: 0 }}>
+                            <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
+                            <Flex direction="row">
+                              <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
+                            </Flex>
+                          </AlertTitle>
+                          <AlertDescription fontSize="md" color="#929497" pb="2">
+                            But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test data account below.
+                          </AlertDescription>
+                        </Flex>
+                      </Alert>
+
+                      <Spacer />
+
+                      <Button size="lg" borderRadius="xl" colorScheme="teal" variant="solid" onClick={() => onDataCATAccount(true)}>
+                        <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
+                      </Button>
+                    </>
+                  )) || (
+                    <>
+                      <Stack>
+                        <Text fontSize="xl">Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}</Text>
+                        <Text fontSize="sm" mb="4 !important">
+                          You have data available to trade from the following programs
+                        </Text>
+                        {dataCATAccount.programsAllocation.map((item) => (
+                          <Stack direction="row" key={item.program}>
+                            <Badge borderRadius="full" px="2" colorScheme="teal">
+                              {dataCATAccount._lookups.programs[item.program].programName}
+                            </Badge>
+                          </Stack>
+                        ))}
+                      </Stack>
+
+                      <Spacer />
+
+                      <Button
+                        size="lg"
+                        borderRadius="xl"
+                        colorScheme="teal"
+                        variant="outline"
+                        onClick={() => {
+                          setMenuItem(2);
+                          navigate("/tradedata");
+                        }}>
+                        <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
+                      </Button>
+                    </>
+                  )}
+              </Stack>
+            </Box>
+          </ChainSupportedComponent>
 
           <ChainSupportedComponent feature={MENU.FAUCET}>
             <Box

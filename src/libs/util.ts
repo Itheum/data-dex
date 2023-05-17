@@ -31,6 +31,9 @@ import {
   tokenContractAddress_Mx_Mainnet,
   claimsContractAddress_Mx_Mainnet,
   faucetContractAddress_Mx_Mainnet,
+  dataNFTFTTicker_Mx_Mainnet,
+  dataNftMarketContractAddress_Mx_Mainnet,
+  dataNftMintContractAddress_Mx_Mainnet,
 } from "./contractAddresses";
 
 type NetworkIdType = string | number;
@@ -91,8 +94,11 @@ export const contractsForChain = (networkId: NetworkIdType) => {
       break;
     case "E1":
       contracts.itheumToken = tokenContractAddress_Mx_Mainnet;
+      contracts.dataNFTFTTicker = dataNFTFTTicker_Mx_Mainnet;
       contracts.claims = claimsContractAddress_Mx_Mainnet;
       contracts.faucet = faucetContractAddress_Mx_Mainnet;
+      contracts.dataNftMint = dataNftMintContractAddress_Mx_Mainnet;
+      contracts.market = dataNftMarketContractAddress_Mx_Mainnet;
       break;
   }
 
@@ -214,6 +220,7 @@ export const MENU = {
   LANDING: 16,
   NFTDETAILS: 17,
   GETWHITELISTED: 18,
+  DATACAT: 19,
 };
 
 export const PATHS = {
@@ -293,7 +300,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL, MENU.DATACAT],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
