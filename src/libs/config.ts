@@ -435,7 +435,7 @@ export interface GuardRailsInfo {
   seller_fee: number;
 }
 
-export const guardRailsInfo: Record<string, GuardRailsInfo> = {
+export const guardRailsInfo = {
   activeGuardrails: {
     buyer_fee: [100],
     seller_fee: 100,
@@ -448,7 +448,7 @@ export const guardRailsInfo: Record<string, GuardRailsInfo> = {
     accepted_tokens: "ITHEUM",
   },
   historicGuardrails: {
-    buyer_fee: [80, 60, 40],
+    buyer_fee: [80, 60, 40, 40, 40, 40, 40, 40, 40, 40],
     seller_fee: 80,
     percentage_cut_from_seller: 3,
     percentage_cut_from_buyer: 3,
