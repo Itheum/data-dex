@@ -89,6 +89,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     onSuccess: () => {
       if (props.closeDetailsView) {
         props.closeDetailsView();
+      } else {  // it means current URL is NFT detail page; go to wallet after the offer is sold out
+        navigate('/datanfts/wallet');
       }
     },
   });
@@ -101,7 +103,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }, [_chainMeta, hasPendingTransactions]);
 
   useEffect(() => {
-    if (_chainMeta.networkId && offerId != null) {
+    if (_chainMeta.networkId && offerId != null && !sessionId) {  // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
