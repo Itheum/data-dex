@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -51,7 +51,7 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
 import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
-import { useMintStore } from "store";
+import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
 
@@ -71,6 +71,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const toast = useToast();
 
   const userData = useMintStore((state) => state.userData);
+  const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
 
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
@@ -221,6 +222,17 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   };
 
   const onListButtonClick = (nft: DataNftType) => {
+    if (isMarketPaused) {
+      toast({
+        title: "Marketplace is paused",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
     setSelectedDataNft(nft);
     onListNFTOpen();
   };

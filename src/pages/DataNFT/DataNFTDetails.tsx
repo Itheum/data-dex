@@ -56,9 +56,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const toast = useToast();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
 
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
@@ -67,7 +69,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
 
   const showConnectWallet = props.showConnectWallet || false;
-  const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
@@ -387,7 +388,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       colorScheme="teal"
                       isDisabled={hasPendingTransactions || !!amountError}
                       hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                      onClick={onProcureModalOpen}>
+                      onClick={() => {
+                        if (isMarketPaused) {
+                          toast({
+                            title: "Marketplace is paused",
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                          });
+                    
+                          return;
+                        }
+
+                        onProcureModalOpen();
+                      }}>
                       <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                     </Button>
                     <Button
