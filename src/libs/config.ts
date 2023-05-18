@@ -37,7 +37,7 @@ export function contractsForChain(networkId: NetworkIdType): ContractsType {
   }
 
   throw Error("Undefined Network ID");
-};
+}
 
 export const uxConfig = {
   txConfirmationsNeededSml: 1,
@@ -420,19 +420,10 @@ export interface GuardRailsInfo {
 }
 
 export const guardRailsInfo = {
-  activeGuardrails: {
-    buyer_fee: [100],
-    seller_fee: 100,
-    percentage_cut_from_seller: 2,
-    percentage_cut_from_buyer: 4,
-    discount_fee_percentage_seller: 4,
-    discount_fee_percentage_buyer: 4,
-    maximum_payment_fees: 1000,
-    accepted_payments: "ITHEUM",
-    accepted_tokens: "ITHEUM",
-  },
   historicGuardrails: {
-    buyer_fee: [80, 60, 40, 40, 40, 40, 40, 40, 40, 40],
+    buyer_fee_oldPrice: ["60", "80"],
+    buyer_fee_newPrice: ["80", "100"],
+    date: ["25/10/2024 14:39:50"],
     seller_fee: 80,
     percentage_cut_from_seller: 3,
     percentage_cut_from_buyer: 3,
@@ -443,7 +434,8 @@ export const guardRailsInfo = {
     accepted_tokens: "ITHEUM",
   },
   upcomingGuardrails: {
-    buyer_fee: [150],
+    buyer_fee_oldPrice: ["60", "80"],
+    buyer_fee_newPrice: ["80", "100"],
     seller_fee: 150,
     percentage_cut_from_seller: 5,
     percentage_cut_from_buyer: 5,

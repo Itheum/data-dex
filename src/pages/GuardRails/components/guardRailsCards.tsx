@@ -1,15 +1,18 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Badge, Box, Stack, Text } from "@chakra-ui/react";
 import { guardRailsInfo } from "../../../libs/config";
 
 type Props = {
-  item: typeof guardRailsInfo.historicGuardrails | typeof guardRailsInfo.activeGuardrails | typeof guardRailsInfo.upcomingGuardrails;
+  item: typeof guardRailsInfo.historicGuardrails | typeof guardRailsInfo.upcomingGuardrails;
   title?: string;
   badgeColor?: string;
 };
 
 export const GuardRailsCards: React.FC<Props> = (props) => {
   const { item, title, badgeColor } = props;
+  const arrowUp = "↑";
+  const arrowDown = "↓";
+  const equal = "~";
 
   return (
     <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} maxWidth="22rem">
@@ -19,12 +22,30 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
       <Stack mt={5}>
         <Text as="div" pl={3} fontSize="lg">
           Buyer fee:&nbsp;
-          {item?.buyer_fee
-            ? item?.buyer_fee.map((bf, index) => {
+          {item?.buyer_fee_oldPrice
+            ? item.buyer_fee_oldPrice.map((bfo, index1: number) => {
                 return (
-                  <Badge color={badgeColor} fontSize="0.8em" key={index} mx={1}>
-                    {bf ?? "-"}
-                  </Badge>
+                  <Fragment key={index1}>
+                    {item.buyer_fee_newPrice.map((bfn, index2: number) => {
+                      return (
+                        <Fragment key={index2}>
+                          {bfo[index1] < bfn[index2] ? (
+                            <Badge color={badgeColor} fontSize="0.8em" mx={1} w="25px">
+                              <Text as="s">{bfo[index1]}</Text>
+                              {arrowUp}
+                              <Text>{bfn[index2]}</Text>
+                            </Badge>
+                          ) : (
+                            <Badge color={badgeColor} fontSize="0.8em" mx={1}>
+                              <Text as="s">{bfo[index1]}</Text>
+                              {arrowDown}
+                              <Text>{bfn[index2]}</Text>
+                            </Badge>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </Fragment>
                 );
               })
             : "-"}
