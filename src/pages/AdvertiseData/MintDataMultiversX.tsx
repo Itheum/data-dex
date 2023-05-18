@@ -168,7 +168,7 @@ type TradeDataFormType = {
   royaltiesForm: number;
 };
 
-export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: { onRfMount: any; dataCATAccount: any, setMenuItem: any }) {
+export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: { onRfMount: any; dataCATAccount: any; setMenuItem: any }) {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
@@ -317,7 +317,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     if (!_chainMeta.networkId) return;
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -330,7 +330,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -343,7 +343,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -356,7 +356,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -1283,17 +1283,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                       </FormControl>
                     </Box>
                   </Flex>
-                  
+
                   <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important">
                     Terms and Fees
                   </Text>
 
                   <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="4 !important">
                     Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree
-                    that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL
-                    is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But
-                    there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms
-                    of use before proceeding.
+                    that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream
+                    URL is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc.
+                    But there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the
+                    terms of use before proceeding.
                   </Text>
                   <Flex mt="3 !important">
                     <Button
@@ -1403,10 +1403,14 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             <Text colorScheme="teal">Success! Your Data NFT has been minted on the MultiversX Blockchain</Text>
                           </Alert>
                           <HStack mt="4">
-                            <Button colorScheme="teal" onClick={() => {
+                            <Button
+                              colorScheme="teal"
+                              onClick={() => {
                                 setMenuItem(MENU.NFTMINE);
-                                navigate('/datanfts/wallet');
-                              }}>Visit your Data NFT Wallet to see it!</Button>
+                                navigate("/datanfts/wallet");
+                              }}>
+                              Visit your Data NFT Wallet to see it!
+                            </Button>
                             <Button colorScheme="teal" variant="outline" onClick={closeProgressModal}>
                               Close & Return
                             </Button>
