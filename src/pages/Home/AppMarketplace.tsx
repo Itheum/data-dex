@@ -28,10 +28,9 @@ import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/config";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function AppMarketplace() {
-  // const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccount();
-  const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>('rhc');
+  const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
   const handleLearnMoreProg = (progCode: any) => {

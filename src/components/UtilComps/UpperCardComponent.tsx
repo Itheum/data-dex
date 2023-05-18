@@ -174,9 +174,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               </Flex>
 
               <Box display="flex" justifyContent="flex-start" mt="2">
-                <Text fontSize="md" fontWeight="medium" color="#929497">{`Creation time:   ${moment(nftMetadata.creationTime).format(
-                  uxConfig.dateStr
-                )}`}</Text>
+                <Text fontSize="md" fontWeight="medium" color="#929497">{`Creation time:   ${moment(nftMetadata.creationTime).format(uxConfig.dateStr)}`}</Text>
               </Box>
 
               {nftMetadata && (
@@ -192,7 +190,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   <Box fontSize="sm" mt="2">
                     <Text>
                       Unlock from: {` `}
-                      {<>{feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}</>}
+                      {
+                        <>
+                          {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                        </>
+                      }
                     </Text>
                   </Box>
                 </>
