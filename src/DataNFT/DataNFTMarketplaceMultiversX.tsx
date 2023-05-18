@@ -328,19 +328,43 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   return (
     <>
-      <Stack spacing={5}>
-        <Heading size="xl" fontWeight="medium" my={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+      <Stack>
+        <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Data NFT Marketplace
         </Heading>
+        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
+        </Heading>
 
-        <Flex mt="5" justifyContent={{ base: "space-around", md: "space-between" }} flexDirection={{ base: "column", md: "row" }} w="full" flexWrap={"wrap"}>
-          <Tabs w="full" alignItems="center">
-            <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+        <Tabs pt={10}>
+          <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+            <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+              <Button
+                colorScheme="teal"
+                flexDirection="row"
+                isDisabled={tabState === 1}
+                variant="unstyled"
+                _disabled={{ opacity: 1 }}
+                opacity={0.4}
+                fontSize={{ base: "sm", md: "md" }}
+                onClick={() => {
+                  if (hasPendingTransactions) return;
+                  setPageIndex(0);
+                  navigate("/datanfts/marketplace/market");
+                }}>
+                <Flex mx="5" alignItems="center" gap={1.5}>
+                  <FaStore size="0.95rem" />
+                  <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                    Public Marketplace
+                  </Text>
+                </Flex>
+              </Button>
+            </Tab>
+            <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+              {isMxLoggedIn && (
                 <Button
                   colorScheme="teal"
-                  flexDirection="row"
-                  isDisabled={tabState === 1}
+                  isDisabled={tabState === 2}
                   variant="unstyled"
                   _disabled={{ opacity: 1 }}
                   opacity={0.4}
@@ -348,48 +372,25 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   onClick={() => {
                     if (hasPendingTransactions) return;
                     setPageIndex(0);
-                    navigate("/datanfts/marketplace/market");
+                    navigate("/datanfts/marketplace/my");
                   }}>
                   <Flex mx="5" alignItems="center" gap={1.5}>
-                    <FaStore size="0.95rem" />
+                    <FaBrush size="0.95rem" />
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
-                      Public Marketplace
+                      My Listed Data NFT(s)
+                    </Text>
+                    <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                      {myListedDataNFT > 0 && myListedDataNFT}
                     </Text>
                   </Flex>
                 </Button>
-              </Tab>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
-                {isMxLoggedIn && (
-                  <Button
-                    colorScheme="teal"
-                    isDisabled={tabState === 2}
-                    variant="unstyled"
-                    _disabled={{ opacity: 1 }}
-                    opacity={0.4}
-                    fontSize={{ base: "sm", md: "md" }}
-                    onClick={() => {
-                      if (hasPendingTransactions) return;
-                      setPageIndex(0);
-                      navigate("/datanfts/marketplace/my");
-                    }}>
-                    <Flex mx="5" alignItems="center" gap={1.5}>
-                      <FaBrush size="0.95rem" />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
-                        My Listed Data NFT(s)
-                      </Text>
-                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
-                        {myListedDataNFT > 0 && myListedDataNFT}
-                      </Text>
-                    </Flex>
-                  </Button>
-                )}
-              </Tab>
-              <Flex py={3}>
-                <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-              </Flex>
-            </TabList>
-          </Tabs>
-        </Flex>
+              )}
+            </Tab>
+            <Flex py={3}>
+              <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+            </Flex>
+          </TabList>
+        </Tabs>
 
         {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
           <NoDataHere />

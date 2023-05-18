@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid, Skeleton, useColorMode } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid, Skeleton } from "@chakra-ui/react";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
-import { sleep, convertWeiToEsdt, styleStrings } from "libs/util";
+import { sleep, convertWeiToEsdt } from "libs/util";
 import { getNftsByIds } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { DataNftCondensedView } from "MultiversX/types";
+import { NoDataHere } from "Sections/NoDataHere";
 import { useChainMeta } from "store/ChainMetaContext";
 import { hexZero } from "../MultiversX/tokenUtils.js";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -34,23 +35,19 @@ for (let i = 0; i < 10; i++) {
 const RecentDataNFTs = ({
   headingText,
   networkId,
-  headingSize,
-  borderMultiColorStyle,
+  headingSize
 }: {
   headingText: string;
   networkId: string;
   headingSize?: string;
-  borderMultiColorStyle?: boolean;
 }) => {
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { colorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
   const marketContract = new DataNftMarketContract(networkId);
-  console.log(marketContract);
   const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
@@ -105,12 +102,6 @@ const RecentDataNFTs = ({
     }
   }, [_chainMeta]);
 
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-  }
-
   return (
     <>
       <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
@@ -118,9 +109,7 @@ const RecentDataNFTs = ({
       </Heading>
 
       {loadedOffers && latestOffers.length === 0 && (
-        <Box minHeight={200}>
-          <Text>No recent offers available for display...</Text>
-        </Box>
+        <NoDataHere imgFromTop="5rem" />
       )}
 
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
@@ -128,7 +117,7 @@ const RecentDataNFTs = ({
           return (
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
-                <Skeleton height={{ base: "300px", md: "200px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
+                <Skeleton height={{ base: "280px", md: "180px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
                   </Link>

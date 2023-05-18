@@ -22,7 +22,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, styleStrings, uxConfig } from "../libs/util";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
@@ -43,8 +43,7 @@ type UpperCardComponentProps = {
   itheumPrice: number | undefined;
 };
 
-const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const { colorMode } = useColorMode();
+const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {  
   const {
     nftImageLoading,
     setNftImageLoaded,

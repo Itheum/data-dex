@@ -63,7 +63,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { labels } from "libs/language";
-import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep, styleStrings } from "libs/util";
+import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/util";
 import { checkBalance, getNetworkProvider } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
@@ -1473,7 +1473,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
               <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
                 - You are not whitelisted -
               </Text>
-              <Button as={Link} variant="solid" colorScheme="teal" px={7} py={6} rounded="lg" mt={7} href="/getwhitelisted">
+              <Button 
+                variant="solid" 
+                colorScheme="teal" 
+                px={7} 
+                py={6} 
+                rounded="lg" 
+                mt={7} 
+                onClick={() => {
+                  setMenuItem(MENU.GETWHITELISTED);
+                  navigate("/getwhitelisted");
+                }}>
                 Find out how you can get whitelisted
               </Button>
             </Box>
