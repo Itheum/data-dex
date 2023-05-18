@@ -42,7 +42,7 @@ import { useChainMeta } from "store/ChainMetaContext";
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || '';
+  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
   const { address } = useGetAccountInfo();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -84,11 +84,11 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       icon: BsClockHistory,
       isDisabled: true,
     },
-    {
-      tabName: "Offers",
-      icon: MdOutlineLocalOffer,
-      isDisabled: true,
-    },
+    // {
+    //   tabName: "Offers",
+    //   icon: MdOutlineLocalOffer,
+    //   isDisabled: true,
+    // },
   ];
 
   const getOnChainNFTs = async () => {
@@ -160,7 +160,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           Data NFT Wallet
         </Heading>
         <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Below are the Data NFTs you created and/or purchased on the current chain
+          Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
         <Tabs pt={10}>
@@ -183,7 +183,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           </TabList>
 
           <TabPanels>
-            <TabPanel mt={10} width={"full"}>
+            <TabPanel mt={2} width={"full"}>
               {dataNfts.length > 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
@@ -197,7 +197,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       {...item}
                     />
