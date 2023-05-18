@@ -10,7 +10,7 @@ import {
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain } from 'libs/MultiversX';
+import { contractsForChain } from "libs/MultiversX";
 import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/claims.abi.json";
 import { getNetworkProvider } from "./api";
@@ -31,7 +31,7 @@ export class ClaimsContract {
     } else {
       this.chainID = "D";
     }
-
+    console.log(this.chainID);
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
 
@@ -47,8 +47,7 @@ export class ClaimsContract {
     const result: any[] = [];
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
-
+      const networkProvider = getNetworkProvider("", this.chainID);
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
@@ -64,7 +63,7 @@ export class ClaimsContract {
 
         return {
           data: result,
-          error: '',
+          error: "",
         };
       } else {
         throw Error("getClaims returnCode returned a non OK value");
@@ -85,7 +84,7 @@ export class ClaimsContract {
     let result = false;
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

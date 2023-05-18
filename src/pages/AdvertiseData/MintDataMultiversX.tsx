@@ -317,7 +317,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     if (!_chainMeta.networkId) return;
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -330,7 +330,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -343,7 +343,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -356,7 +356,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId);
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
       const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
