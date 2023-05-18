@@ -1,27 +1,5 @@
-
 import { ContractsType, NetworkIdType } from "libs/types";
 import {
-  // tokenContractAddress_Matic,
-  // ddexContractAddress_Matic,
-  // dNFTContractAddress_Matic,
-  // tokenContractAddress_Goerli,
-  // ddexContractAddress_Goerli,
-  // dNFTContractAddress_Goerli,
-  // claimsContractAddress_Goerli,
-  // tokenContractAddress_testnetBSC,
-  // ddexContractAddress_testnetBSC,
-  // dNFTContractAddress_testnetBSC,
-  // tokenContractAddress_testnetHarmony,
-  // ddexContractAddress_testnetHarmony,
-  // dNFTContractAddress_testnetHarmony,
-  // tokenContractAddress_testnetAvalanche,
-  // ddexContractAddress_testnetAvalanche,
-  // dNFTContractAddress_testnetAvalanche,
-  // tokenContractAddress_Local,
-  // ddexContractAddress_Local,
-  // dNFTContractAddress_Local,
-  // claimsContractAddress_Matic,
-  // claimsContractAddress_testnetBSC,
   tokenContractAddress_Mx_Devnet,
   dataNFTFTTicker_Mx_Devnet,
   claimsContractAddress_Mx_Devnet,
@@ -31,31 +9,35 @@ import {
   tokenContractAddress_Mx_Mainnet,
   claimsContractAddress_Mx_Mainnet,
   faucetContractAddress_Mx_Mainnet,
+  dataNftMarketContractAddress_Mx_Mainnet,
+  dataNftMintContractAddress_Mx_Mainnet,
 } from "./contractAddresses";
 
 export function contractsForChain(networkId: NetworkIdType): ContractsType {
   switch (networkId) {
     case "ED": {
       return {
-        itheumToken : tokenContractAddress_Mx_Devnet,
-        dataNFTFTTicker : dataNFTFTTicker_Mx_Devnet,
-        claims : claimsContractAddress_Mx_Devnet,
-        faucet : faucetContractAddress_Mx_Devnet,
-        dataNftMint : dataNftMintContractAddress_Mx_Devnet,
-        market : dataNftMarketContractAddress_Mx_Devnet,
+        itheumToken: tokenContractAddress_Mx_Devnet,
+        dataNFTFTTicker: dataNFTFTTicker_Mx_Devnet,
+        claims: claimsContractAddress_Mx_Devnet,
+        faucet: faucetContractAddress_Mx_Devnet,
+        dataNftMint: dataNftMintContractAddress_Mx_Devnet,
+        market: dataNftMarketContractAddress_Mx_Devnet,
       };
     }
     case "E1": {
       return {
-        itheumToken : tokenContractAddress_Mx_Mainnet,
-        claims : claimsContractAddress_Mx_Mainnet,
-        faucet : faucetContractAddress_Mx_Mainnet,
+        itheumToken: tokenContractAddress_Mx_Mainnet,
+        claims: claimsContractAddress_Mx_Mainnet,
+        faucet: faucetContractAddress_Mx_Mainnet,
+        dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
+        market: dataNftMarketContractAddress_Mx_Mainnet,
       };
     }
   }
 
   throw Error("Undefined Network ID");
-};
+}
 
 export const uxConfig = {
   txConfirmationsNeededSml: 1,
@@ -64,7 +46,6 @@ export const uxConfig = {
   dateStrTm: "MMM Do YYYY LT",
   mxAPITimeoutMs: 10000,
 };
-
 
 export const CLAIM_TYPES = {
   REWARDS: 1,
@@ -94,6 +75,7 @@ export const MENU = {
   LANDING: 16,
   NFTDETAILS: 17,
   GETWHITELISTED: 18,
+  DATACAT: 19,
 };
 
 export const PATHS = {
@@ -173,7 +155,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL, MENU.DATACAT],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -290,7 +272,6 @@ export const tmpProgIdMapping = {
   "custom-gamer-activity": "Gamer Passport Activity",
   "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
 };
-
 
 export const dataCATDemoUserData = {
   "lastName": "User",
