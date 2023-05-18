@@ -14,22 +14,19 @@ import {
   ModalOverlay,
   Stack,
   Text,
-  Wrap,
   useBreakpointValue,
   useDisclosure,
-  useColorMode,
   SimpleGrid,
 } from "@chakra-ui/react";
 import imgProgGaPa from "img/prog-gaming-passport.png";
 import imgProgGaPaES from "img/prog-gaming.jpg";
 import imgProgRhc from "img/prog-rhc.png";
 import imgProgWfh from "img/prog-wfh.png";
-import { CHAIN_TOKEN_SYMBOL, progInfoMeta, styleStrings } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
 
 export default function AppMarketplace() {
-  const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { user: _user } = useUser();
   const [learnMoreProd, setLearnMoreProg] = useState(null);

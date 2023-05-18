@@ -84,11 +84,11 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
       icon: BsClockHistory,
       isDisabled: true,
     },
-    {
-      tabName: "Offers",
-      icon: MdOutlineLocalOffer,
-      isDisabled: true,
-    },
+    // {
+    //   tabName: "Offers",
+    //   icon: MdOutlineLocalOffer,
+    //   isDisabled: true,
+    // },
   ];
 
   useEffect(() => {
@@ -189,7 +189,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           Data NFT Wallet
         </Heading>
         <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Below are the Data NFTs you created and/or purchased on the current chain
+          Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
         <Tabs pt={10}>
@@ -212,7 +212,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           </TabList>
 
           <TabPanels>
-            <TabPanel mt={10} width={"full"}>
+            <TabPanel mt={2} width={"full"}>
               {dataNfts.length > 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}

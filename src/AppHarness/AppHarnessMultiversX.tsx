@@ -1,6 +1,6 @@
-import React, { Suspense, useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState } from "react";
+import { Box, Spinner, Text } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { Loader } from "@multiversx/sdk-dapp/UI";
 import AppMx from "App/AppMultiversX";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/util";
@@ -16,7 +16,10 @@ function CustomLoader() {
         minHeight: '100vh'
       }}
     >
-      <Loader />
+      <Box margin="auto !important">
+        <Spinner size="xl" color="teal.200" margin="auto !important" />
+        <Text mt="5">Loading</Text>
+      </Box>
     </div>
   );
 }
