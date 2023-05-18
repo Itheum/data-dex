@@ -1,7 +1,7 @@
 import { AbiRegistry, SmartContract, Address, ResultsParser, Transaction, ContractFunction, ContractCallPayloadBuilder } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { contractsForChain } from 'libs/MultiversX';
+import { contractsForChain } from "libs/MultiversX";
 import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/devnetfaucet.abi.json";
 import { getNetworkProvider } from "./api";
@@ -32,7 +32,7 @@ export class FaucetContract {
   }
 
   async getFaucetTime(address: string) {
-    const networkProvider = getNetworkProvider(this.chainID);
+    const networkProvider = getNetworkProvider("", this.chainID);
 
     const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
     const query = interaction.buildQuery();

@@ -203,7 +203,7 @@ export default function MyDataNFTsMx({
 
           <TabPanels>
             <TabPanel mt={10} width={"full"}>
-              {dataNfts.length >= 0 ? (
+              {dataNfts.length > 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
