@@ -38,6 +38,7 @@ import {
   // useMintStore,
 } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import InteractionTxTable from "components/Tables/InteractionTxTable";
 
 export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
@@ -82,7 +83,7 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     {
       tabName: "Activity",
       icon: BsClockHistory,
-      isDisabled: true,
+      isDisabled: false,
     },
     // {
     //   tabName: "Offers",
@@ -211,7 +212,9 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
             </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel>
+              <InteractionTxTable address={address} />
+            </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
           </TabPanels>
         </Tabs>

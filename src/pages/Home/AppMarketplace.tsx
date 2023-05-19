@@ -183,13 +183,11 @@ export default function AppMarketplace() {
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              <Button
-                disabled={!progInfoMeta[learnMoreProd].canJoin}
-                size="sm"
-                colorScheme="teal"
-                onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
-                Join Now
-              </Button>
+              {progInfoMeta[learnMoreProd].canJoin === 1 && (
+                <Button size="sm" colorScheme="teal" onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
+                  Join Now
+                </Button>
+              )}
             </ModalFooter>
           </ModalContent>
         </Modal>
