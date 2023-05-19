@@ -248,7 +248,7 @@ const AppHeader = ({
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
-                    <Menu key={menu.sectionId}>
+                    <Menu key={menu.sectionId} isLazy>
                       <MenuButton as={Button} size={"lg"} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
