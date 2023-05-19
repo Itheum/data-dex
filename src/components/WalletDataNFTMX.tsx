@@ -38,6 +38,7 @@ import {
   ModalCloseButton,
   Spinner,
   useColorMode,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
@@ -481,18 +482,28 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
               )}
             </Box>
-            <Button
-              size="sm"
-              mt={4}
-              width="215px"
+
+            <Tooltip
               colorScheme="teal"
-              variant="outline"
-              isDisabled={hasPendingTransactions || !!amountError || !!priceError}
-              onClick={() => onListButtonClick(item)}>
-              <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
-              </Text>
-            </Button>
+              hasArrow
+              placement='top'
+              label="Market is paused"
+              isDisabled={!isMarketPaused}
+            >
+              <Button
+                size="sm"
+                mt={4}
+                width="215px"
+                colorScheme="teal"
+                variant="outline"
+                isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
+                onClick={() => onListButtonClick(item)}
+              >
+                <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
+                </Text>
+              </Button>
+            </Tooltip>
           </Box>
         </Flex>
 

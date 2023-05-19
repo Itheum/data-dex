@@ -21,6 +21,7 @@ import {
   NumberDecrementStepper,
   useDisclosure,
   useColorMode,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -383,27 +384,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     </Box>
                   )}
                   <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
-                    <Button
-                      size={{ base: "md", lg: "lg" }}
+                    <Tooltip
                       colorScheme="teal"
-                      isDisabled={hasPendingTransactions || !!amountError}
-                      hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                      onClick={() => {
-                        if (isMarketPaused) {
-                          toast({
-                            title: "Marketplace is paused",
-                            status: "error",
-                            duration: 9000,
-                            isClosable: true,
-                          });
-                    
-                          return;
-                        }
-
-                        onProcureModalOpen();
-                      }}>
-                      <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
-                    </Button>
+                      hasArrow
+                      placement='top'
+                      label="Market is paused"
+                      isDisabled={!isMarketPaused}
+                    >
+                      <Button
+                        size={{ base: "md", lg: "lg" }}
+                        colorScheme="teal"
+                        isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
+                        hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
+                        onClick={onProcureModalOpen}
+                      >
+                        <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
+                      </Button>
+                    </Tooltip>
                     <Button
                       size={{ base: "md", lg: "lg" }}
                       colorScheme="teal"
