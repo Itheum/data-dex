@@ -26,8 +26,11 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
-import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "react-icons/md";
+import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import InteractionTxTable from "components/Tables/InteractionTxTable";
+import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
@@ -38,8 +41,6 @@ import {
   // useMintStore,
 } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { useNavigate } from "react-router-dom";
-import useThrottle from "components/UtilComps/UseThrottle";
 
 export default function MyDataNFTsMx({
   tabState
@@ -48,7 +49,7 @@ export default function MyDataNFTsMx({
 }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || '';
+  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
 
@@ -96,13 +97,13 @@ export default function MyDataNFTsMx({
     {
       tabName: "Activity",
       icon: BsClockHistory,
-      isDisabled: true,
+      isDisabled: false,
     },
-    {
-      tabName: "Offers",
-      icon: MdOutlineLocalOffer,
-      isDisabled: true,
-    },
+    // {
+    //   tabName: "Offers",
+    //   icon: MdOutlineLocalOffer,
+    //   isDisabled: true,
+    // },
   ];
 
   const getOnChainNFTs = async () => {
@@ -174,7 +175,7 @@ export default function MyDataNFTsMx({
           Data NFT Wallet
         </Heading>
         <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Below are the Data NFTs you created and/or purchased on the current chain
+          Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
         <Tabs pt={10} index={tabState - 1}>
@@ -202,7 +203,7 @@ export default function MyDataNFTsMx({
           </TabList>
 
           <TabPanels>
-            <TabPanel mt={10} width={"full"}>
+            <TabPanel mt={2} width={"full"}>
               {dataNfts.length > 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
@@ -216,7 +217,7 @@ export default function MyDataNFTsMx({
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       {...item}
                     />
@@ -255,7 +256,9 @@ export default function MyDataNFTsMx({
               )}
             </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel>
+              <InteractionTxTable address={address} />
+            </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
           </TabPanels>
         </Tabs>

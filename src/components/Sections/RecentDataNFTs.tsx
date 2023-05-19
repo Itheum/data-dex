@@ -10,6 +10,7 @@ import { DataNftCondensedView } from "libs/MultiversX/types";
 import { NetworkIdType } from "libs/types";
 import { sleep, convertWeiToEsdt, hexZero } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
+import { NoDataHere } from "./NoDataHere";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -32,19 +33,8 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-const RecentDataNFTs = ({
-  headingText,
-  networkId,
-  headingSize,
-  borderMultiColorStyle,
-}: {
-  headingText: string;
-  networkId: NetworkIdType;
-  headingSize?: string;
-  borderMultiColorStyle?: boolean;
-}) => {
+const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: string; networkId: NetworkIdType; headingSize?: string }) => {
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { colorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
@@ -106,30 +96,20 @@ const RecentDataNFTs = ({
     }
   }, [_chainMeta]);
 
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-  }
-
   return (
     <>
       <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
-      {loadedOffers && latestOffers.length === 0 && (
-        <Box minHeight={200}>
-          <Text>No recent offers available for display...</Text>
-        </Box>
-      )}
+      {loadedOffers && latestOffers.length === 0 && <NoDataHere imgFromTop="5rem" />}
 
       <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
         {latestOffers.map((item: DataNftCondensedView, idx: number) => {
           return (
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
-                <Skeleton height={{ base: "300px", md: "200px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
+                <Skeleton height={{ base: "280px", md: "180px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
                   </Link>
