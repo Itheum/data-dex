@@ -42,17 +42,17 @@ export const GuardRails: React.FC = () => {
       <Heading size="xl" fontWeight="medium">
         Guard Rails
       </Heading>
-      <Flex gap={4} w="full" justifyContent="space-between" mt={5} flexWrap="wrap">
+      <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} mt={5} flexWrap="wrap">
         <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} maxWidth="22rem">
-          <Text as="h2" px={10} fontWeight="500" fontSize="xl">
+          <Text as="h2" textAlign="center" fontWeight="500" fontSize="xl">
             Active Guardrails
           </Text>
           <Stack mt={5}>
             <Text as="div" pl={3} fontSize="lg">
               Buyer fee:&nbsp;
               {marketRequirements?.buyer_fee ? (
-                <Badge color="teal.200" fontSize="0.8em" mx={1}>
-                  {marketRequirements?.buyer_fee ?? "-"}
+                <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                  {(marketRequirements?.buyer_fee / 100).toFixed(2) ?? "-"}
                 </Badge>
               ) : (
                 "-"
@@ -60,43 +60,49 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Seller fee:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
-                {marketRequirements?.seller_fee ?? "-"}
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {marketRequirements?.seller_fee ? (marketRequirements.seller_fee / 100).toFixed(2) : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               % cut from seller:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.percentage_cut_from_seller ?? "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               % cut from buyer:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.percentage_cut_from_buyer ?? "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Discount fee % seller:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.discount_fee_percentage_seller ?? "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Discount fee % buyer:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.discount_fee_percentage_buyer ?? "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
+              Maximum payment fees:&nbsp;
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {marketRequirements?.maximum_payment_fees ? (marketRequirements.maximum_payment_fees as unknown as number) / Math.pow(10, 18) : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
               Accepted payments:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.accepted_payments ?? "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Accepted tokens:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em">
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.accepted_tokens ?? "-"}
               </Badge>
             </Text>
@@ -105,11 +111,11 @@ export const GuardRails: React.FC = () => {
         <GuardRailsCards item={historicGuardrails} title="History Guardrails" badgeColor="red.200" />
         <GuardRailsCards item={upcomingGuardrails} title="Upcoming Guardrails" badgeColor="gray.400" />
       </Flex>
-      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" my={5} w="full">
-        <Heading size="lg" fontWeight="medium" py={3} pl={3}>
-          Whitelisted addresses
-        </Heading>
-        <Flex flexWrap="wrap" mx="7" mb="5">
+      <Heading size="xl" fontWeight="medium" my={6}>
+        Whitelisted addresses
+      </Heading>
+      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={5} w="full">
+        <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 0, lg: 10 }} my="5">
           {whitelistedAddress}
         </Flex>
       </Box>
