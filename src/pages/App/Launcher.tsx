@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
-import { uxConfig } from 'libs/config';
+import { uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
 import { clearAppSessionsLaunchMode } from "libs/utils";
-import MxAppHarness from "./AppHarnessMultiversX";
 import AuthPickerMx from "./AuthPickerMultiversX";
+
+const Loading = lazy(() => import("../../components/Loading"));
+const MxAppHarness = lazy(() => import("./AppHarnessMultiversX"));
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
@@ -47,7 +49,11 @@ function Launcher() {
 
         {launchMode == "mx" && <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("no-auth", "devnet")} />}
 
+        {/*<Loading />*/}
+
+        {/*<Suspense fallback={<Loading />}>*/}
         <MxAppHarness launchEnvironment={launchEnvironment} handleLaunchMode={handleLaunchMode} />
+        {/*</Suspense>*/}
       </DappProvider>
     </>
   );

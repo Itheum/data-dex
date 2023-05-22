@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/spinner";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
@@ -6,9 +6,10 @@ import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
 import { StoreProvider } from "store/StoreProvider";
-import AppMx from "./AppMultiversX";
+// import AppMx from "./AppMultiversX";
 import { Box, Text } from "@chakra-ui/layout";
 
+const AppMx = lazy(() => import("./AppMultiversX"));
 function CustomLoader() {
   return (
     <div
@@ -56,13 +57,15 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   return (
     <StoreProvider>
-      <AppMx
-        onLaunchMode={handleLaunchMode}
-        resetAppContexts={resetAppContexts}
-        appConfig={{
-          mxEnvironment: launchEnvironment,
-        }}
-      />
+      <Suspense fallback={<Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />}>
+        <AppMx
+          onLaunchMode={handleLaunchMode}
+          resetAppContexts={resetAppContexts}
+          appConfig={{
+            mxEnvironment: launchEnvironment,
+          }}
+        />
+      </Suspense>
     </StoreProvider>
   );
 }

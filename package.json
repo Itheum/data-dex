@@ -31,6 +31,7 @@
     "react-icons": "4.8.0",
     "react-router-dom": "6.11.1",
     "react-scripts": "5.0.1",
+    "source-map-explorer": "^2.5.3",
     "web-vitals": "3.3.1",
     "yup": "1.1.1",
     "zustand": "4.3.8"
@@ -45,7 +46,8 @@
     "start-flat": "npx http-server -o /flat",
     "predeploy": "npm run build",
     "lint": "eslint src --ext .js,.ts,.tsx",
-    "format": "prettier --write . && npm run lint -- --fix"
+    "format": "prettier --write . && npm run lint -- --fix",
+    "profile": "npm run build -- --stats && npx webpack-bundle-analyzer ./build/bundle-stats.json"
   },
   "repository": {
     "type": "git",
@@ -83,7 +85,9 @@
     "prettier": "2.8.7",
     "react-error-overlay": "6.0.11",
     "react-scripts": "5.0.1",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "webpack-bundle-analyzer": "^4.8.0",
+    "webpack-cli": "^5.1.1"
   },
   "engines": {
     "node": "18.15.0"
