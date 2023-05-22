@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowBackIcon, ArrowForwardIcon, ArrowLeftIcon, ArrowRightIcon, RepeatIcon, SearchIcon, TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, ArrowLeftIcon, ArrowRightIcon, RepeatIcon, TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import {
   Table,
   Thead,
