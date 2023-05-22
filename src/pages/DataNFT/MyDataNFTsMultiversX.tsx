@@ -26,8 +26,11 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
-import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "react-icons/md";
+import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import InteractionTxTable from "components/Tables/InteractionTxTable";
+import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
@@ -38,13 +41,17 @@ import {
   // useMintStore,
 } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import InteractionTxTable from "components/Tables/InteractionTxTable";
 
-export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
+export default function MyDataNFTsMx({
+  tabState
+} : {
+  tabState: number,
+}) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const itheumToken = _chainMeta?.contracts?.itheumToken || "";
   const { address } = useGetAccountInfo();
+  const navigate = useNavigate();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   // const userData = useMintStore((state) => state.userData);
@@ -57,23 +64,30 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
     }
     return _dataNfts;
   });
+  const purchasedDataNfts: DataNftType[] = dataNfts.filter((item) => item.creator != address);
+
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
 
+  const onChangeTab = useThrottle((newTabState: number) => {
+    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : ""}`);
+  }, /* delay: */ 500);
+
   const walletTabs = [
     {
       tabName: "Your Data NFT(s)",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNfts ? dataNfts.length : 0,
+      pieces: dataNfts.length,
     },
     {
       tabName: "Purchased",
       icon: MdOutlineShoppingBag,
-      isDisabled: true,
+      isDisabled: false,
+      pieces: purchasedDataNfts.length,
     },
     {
       tabName: "Favorite",
@@ -164,11 +178,16 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
           Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
-        <Tabs pt={10}>
+        <Tabs pt={10} index={tabState - 1}>
           <TabList overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
             {walletTabs.map((tab, index) => {
               return (
-                <Tab key={index} isDisabled={tab.isDisabled} _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+                <Tab
+                  key={index}
+                  isDisabled={tab.isDisabled}
+                  _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
+                  onClick={() => onChangeTab(index + 1)}
+                >
                   <Flex ml="4.7rem" alignItems="center">
                     <Icon as={tab.icon} mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" color={colorMode === "dark" ? "white" : "black"}>
@@ -210,7 +229,32 @@ export default function MyDataNFTsMx({ onRfMount }: { onRfMount: any }) {
                 </Flex>
               )}
             </TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel mt={10} width={"full"}>
+              {purchasedDataNfts.length >= 0 ? (
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
+                  {purchasedDataNfts.map((item, index) => (
+                    <WalletDataNFTMX
+                      key={index}
+                      hasLoaded={oneNFTImgLoaded}
+                      setHasLoaded={setOneNFTImgLoaded}
+                      maxPayment={maxPaymentFeeMap[itheumToken]}
+                      sellerFee={marketRequirements? marketRequirements.seller_fee : 0}
+                      openNftDetailsDrawer={openNftDetailsDrawer}
+                      {...item}
+                    />
+                  ))}
+                </SimpleGrid>
+              ) : (
+                <Flex onClick={getOnChainNFTs}>
+                  <NoDataHere />
+                </Flex>
+              )}
+            </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>
             <TabPanel>
               <InteractionTxTable address={address} />

@@ -61,6 +61,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
+  const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const offers = useMarketStore((state) => state.offers);
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
@@ -68,6 +69,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   // pagination
   const pageCount = useMarketStore((state) => state.pageCount);
   const updatePageCount = useMarketStore((state) => state.updatePageCount);
+
   const pageSize = 8;
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
@@ -77,7 +79,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [myListedDataNFT, setMyListedDataNFT] = useState<number>(0);
-  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
+  const {
+    isOpen: isDrawerOpenTradeStream,
+    onOpen: onOpenDrawerTradeStream,
+    onClose: onCloseDrawerTradeStream,
+  } = useDisclosure();
 
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
@@ -226,20 +232,20 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
         </Heading>
 
+        <Box position="relative">
         <Tabs pt={10}>
           <TabList justifyContent={{ base: "start", lg: "space-evenly" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
             <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
-              <Button
-                colorScheme="teal"
+              <Box
+                // colorScheme="teal"
                 flexDirection="row"
-                isDisabled={tabState === 1}
-                variant="unstyled"
+                // isDisabled={tabState === 1}
+                // variant="unstyled"
                 _disabled={{ opacity: 1 }}
                 opacity={0.4}
                 fontSize={{ base: "sm", md: "md" }}
                 onClick={() => {
                   if (hasPendingTransactions) return;
-                  setPageIndex(0);
                   navigate("/datanfts/marketplace/market");
                 }}>
                 <Flex mx="5" alignItems="center" gap={1.5}>
@@ -248,20 +254,19 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     Public Marketplace
                   </Text>
                 </Flex>
-              </Button>
+              </Box>
             </Tab>
             <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
               {isMxLoggedIn && (
-                <Button
-                  colorScheme="teal"
-                  isDisabled={tabState === 2}
-                  variant="unstyled"
+                <Box
+                  // colorScheme="teal"
+                  // isDisabled={tabState === 2}
+                  // variant="unstyled"
                   _disabled={{ opacity: 1 }}
                   opacity={0.4}
                   fontSize={{ base: "sm", md: "md" }}
                   onClick={() => {
                     if (hasPendingTransactions) return;
-                    setPageIndex(0);
                     navigate("/datanfts/marketplace/my");
                   }}>
                   <Flex mx="5" alignItems="center" gap={1.5}>
@@ -273,7 +278,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       {myListedDataNFT > 0 && myListedDataNFT}
                     </Text>
                   </Flex>
-                </Button>
+                </Box>
               )}
             </Tab>
             <Flex py={3}>
@@ -316,6 +321,39 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             </Flex>
           )
         }
+
+          <Box
+            position="absolute"
+            top="0"
+            bottom="0"
+            left="0"
+            right="0"
+            height="100%"
+            width="100%"
+            backgroundColor="blackAlpha.700"
+            backdropFilter="auto"
+            backdropBlur="4px"
+            rounded="lg"
+            visibility={isMarketPaused ? "visible" : "collapse"}
+            verticalAlign="middle"
+            borderTop="solid .1rem"
+            borderColor="teal.200"
+          >
+            <Box
+              top="20vh"
+              position="relative"
+              textAlign="center"
+              fontSize="24px"
+              fontWeight="500"
+              lineHeight="38px"
+              textColor="teal.200">
+              - Marketplace is PAUSED -
+              <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
+                Data NFT Marketplace is currently paused. Please check back later.
+              </Text>
+            </Box>
+          </Box>
+        </Box>
       </Stack>
 
       {offerForDrawer && (
