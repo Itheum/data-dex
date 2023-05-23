@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -38,6 +38,7 @@ import {
   ModalCloseButton,
   Spinner,
   useColorMode,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
@@ -51,7 +52,7 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
 import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
-import { useMintStore } from "store";
+import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
 
@@ -71,6 +72,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const toast = useToast();
 
   const userData = useMintStore((state) => state.userData);
+  const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
 
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
@@ -92,6 +94,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
+
+  const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT
+    ? Math.min(item.balance, Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT))
+    : item.balance;
 
   const onBurn = () => {
     if (!address) {
@@ -217,6 +223,17 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   };
 
   const onListButtonClick = (nft: DataNftType) => {
+    if (isMarketPaused) {
+      toast({
+        title: "Marketplace is paused",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
     setSelectedDataNft(nft);
     onListNFTOpen();
   };
@@ -393,7 +410,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 step={1}
                 defaultValue={1}
                 min={1}
-                max={item.balance}
+                max={maxListLimit}
                 isValidCharacter={isValidNumericCharacter}
                 value={amount}
                 onChange={(value) => {
@@ -402,8 +419,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   if (valueAsNumber <= 0) {
                     error = "Cannot be zero or negative";
                   } else if (valueAsNumber > item.balance) {
-                    error = "Cannot exceed balance";
+                    error = "Not enough balance";
+                  } else if (valueAsNumber > maxListLimit) {
+                    error = "Cannot exceed Max List Limit";
                   }
+                  
                   setAmountError(error);
                   setAmount(valueAsNumber);
                 }}>
@@ -462,18 +482,28 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
               )}
             </Box>
-            <Button
-              size="sm"
-              mt={4}
-              width="215px"
+
+            <Tooltip
               colorScheme="teal"
-              variant="outline"
-              isDisabled={hasPendingTransactions || !!amountError || !!priceError}
-              onClick={() => onListButtonClick(item)}>
-              <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
-              </Text>
-            </Button>
+              hasArrow
+              placement='top'
+              label="Market is paused"
+              isDisabled={!isMarketPaused}
+            >
+              <Button
+                size="sm"
+                mt={4}
+                width="215px"
+                colorScheme="teal"
+                variant="outline"
+                isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
+                onClick={() => onListButtonClick(item)}
+              >
+                <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
+                </Text>
+              </Button>
+            </Tooltip>
           </Box>
         </Flex>
 

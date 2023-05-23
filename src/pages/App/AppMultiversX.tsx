@@ -208,6 +208,15 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
+  console.log("menuItem", menuItem);
+
+  let bodyMinHeightLg = "1000px";
+
+  if (menuItem === MENU.GETWHITELISTED) {
+    // whitelist page we need to reset this of bg looks bad
+    bodyMinHeightLg = "lg";
+  }
+
   return (
     <>
       <Container maxW="97.5rem">
@@ -221,7 +230,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
           {/* App Header */}
           <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
           {/* App Body */}
-          <Box backgroundColor="none" flexGrow={1}>
+          <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
             <Routes>
               <Route path="/" element={<LandingPage />} />
 
@@ -256,7 +265,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route path="datanfts" element={<Outlet />}>
                 <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
+                <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
+                <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
@@ -267,12 +277,6 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route path="datacoalitions" element={<Outlet />}>
                 <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
-              </Route>
-
-              <Route path="labs" element={<Outlet />}>
-                <Route path="datastreams" element={<DataStreams />} />
-                <Route path="datavault" element={<DataVault />} />
-                <Route path="trustedcomputation" element={<TrustedComputation />} />
               </Route>
             </Routes>
           </Box>
