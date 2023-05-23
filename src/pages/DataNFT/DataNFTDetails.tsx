@@ -21,6 +21,7 @@ import {
   NumberDecrementStepper,
   useDisclosure,
   useColorMode,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -56,9 +57,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const toast = useToast();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
 
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
@@ -67,7 +70,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
 
   const showConnectWallet = props.showConnectWallet || false;
-  const toast = useToast();
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
@@ -89,6 +91,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     onSuccess: () => {
       if (props.closeDetailsView) {
         props.closeDetailsView();
+      } else {  // it means current URL is NFT detail page; go to wallet after the offer is sold out
+        navigate('/datanfts/wallet');
       }
     },
   });
@@ -101,7 +105,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }, [_chainMeta, hasPendingTransactions]);
 
   useEffect(() => {
-    if (_chainMeta.networkId && offerId != null) {
+    if (_chainMeta.networkId && offerId != null && !sessionId) {  // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
@@ -380,14 +384,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     </Box>
                   )}
                   <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
-                    <Button
-                      size={{ base: "md", lg: "lg" }}
+                    <Tooltip
                       colorScheme="teal"
-                      isDisabled={hasPendingTransactions || !!amountError}
-                      hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                      onClick={onProcureModalOpen}>
-                      <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
-                    </Button>
+                      hasArrow
+                      placement='top'
+                      label="Market is paused"
+                      isDisabled={!isMarketPaused}
+                    >
+                      <Button
+                        size={{ base: "md", lg: "lg" }}
+                        colorScheme="teal"
+                        isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
+                        hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
+                        onClick={onProcureModalOpen}
+                      >
+                        <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
+                      </Button>
+                    </Tooltip>
                     <Button
                       size={{ base: "md", lg: "lg" }}
                       colorScheme="teal"

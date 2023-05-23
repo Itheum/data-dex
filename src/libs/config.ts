@@ -84,18 +84,16 @@ export const PATHS = {
   tradedata: [2, [-1]],
   purchaseddata: [3, [0]],
   chaintransactions: [4, [3]],
-  datavault: [5, [4]],
   datanfts: [6, [1]],
   viewcoalitions: [7, [2]],
-  datastreams: [8, [4]],
   advertiseddata: [9, [0]],
   wallet: [10, [1]],
   marketplace: [11, [1]],
   datacoalitions: [12, [2]],
   personaldataproof: [13, [0]],
-  trustedcomputation: [14, [4]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
+  getwhitelisted: [18, [-1]],
 };
 
 export const CHAINS = {

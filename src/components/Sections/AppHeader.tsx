@@ -68,7 +68,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.HOME,
         path: "dashboard",
         label: "Dashboard",
-        shortLbl: "Dashboard",
+        shortLbl: "Dash",
         Icon: MdSpaceDashboard,
         needToBeLoggedIn: true,
       },
@@ -203,7 +203,7 @@ const AppHeader = ({
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
               <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>
-                Itheum Data DEX
+                Data DEX
               </Heading>
             </HStack>
           </Link>
@@ -269,7 +269,7 @@ const AppHeader = ({
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false}>
-                            <ShortAddress address={mxAddress} fontSize="sm" />
+                            <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
                           </MenuItemOption>
 
                           <MenuDivider />

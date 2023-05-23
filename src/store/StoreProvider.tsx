@@ -29,12 +29,15 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateMaxPaymentFeeMap = useMarketStore((state) => state.updateMaxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const updateItheumPrice = useMarketStore((state) => state.updateItheumPrice);
+  const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
+  const updateIsMarketPaused = useMarketStore((state) => state.updateIsMarketPaused);
 
   console.log('itheumBalance', itheumBalance);
   console.log('marketRequirements', marketRequirements);
   console.log('userData', userData);
   console.log('maxPaymentFeeMap', maxPaymentFeeMap);
   console.log('itheumPrice', itheumPrice);
+  console.log('isMarketPaused', isMarketPaused);
 
   const marketContract = new DataNftMarketContract(networkId);
   // const mintContract = new DataNftMintContract(networkId);
@@ -56,6 +59,11 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
         }
       }
       updateMaxPaymentFeeMap(_maxPaymentFeeMap);
+    })();
+
+    (async () => {
+      const _isMarketPaused = await marketContract.getIsPaused();
+      updateIsMarketPaused(_isMarketPaused);
     })();
   }, [chainMeta]);
 
