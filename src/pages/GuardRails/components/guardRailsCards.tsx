@@ -48,37 +48,17 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
       </Text>
       <Stack mt={5}>
         <Text as="div" pl={3} fontSize="lg">
-          Buyer fee:&nbsp;
-          {buyer ? buyer : "-"}
+          <Flex flexDirection="column">
+            Buyer fee:&nbsp;
+            <Box overflowY="scroll" height="40px">
+              {buyer ? buyer : "-"}
+            </Box>
+          </Flex>
         </Text>
         <Text as="div" pl={3} fontSize="lg">
           Seller fee:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
             {item?.seller_fee ?? "-"}
-          </Badge>
-        </Text>
-        <Text as="div" pl={3} fontSize="lg">
-          % cut from seller:&nbsp;
-          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {item?.percentage_cut_from_seller ?? "-"}
-          </Badge>
-        </Text>
-        <Text as="div" pl={3} fontSize="lg">
-          % cut from buyer:&nbsp;
-          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {item?.percentage_cut_from_buyer ?? "-"}
-          </Badge>
-        </Text>
-        <Text as="div" pl={3} fontSize="lg">
-          Discount fee % seller:&nbsp;
-          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {item?.discount_fee_percentage_seller ?? "-"}
-          </Badge>
-        </Text>
-        <Text as="div" pl={3} fontSize="lg">
-          Discount fee % buyer:&nbsp;
-          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {item?.discount_fee_percentage_buyer ?? "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">

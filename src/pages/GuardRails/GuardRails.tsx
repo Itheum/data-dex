@@ -65,30 +65,6 @@ export const GuardRails: React.FC = () => {
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
-              % cut from seller:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {marketRequirements?.percentage_cut_from_seller ?? "-"}
-              </Badge>
-            </Text>
-            <Text as="div" pl={3} fontSize="lg">
-              % cut from buyer:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {marketRequirements?.percentage_cut_from_buyer ?? "-"}
-              </Badge>
-            </Text>
-            <Text as="div" pl={3} fontSize="lg">
-              Discount fee % seller:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {marketRequirements?.discount_fee_percentage_seller ?? "-"}
-              </Badge>
-            </Text>
-            <Text as="div" pl={3} fontSize="lg">
-              Discount fee % buyer:&nbsp;
-              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {marketRequirements?.discount_fee_percentage_buyer ?? "-"}
-              </Badge>
-            </Text>
-            <Text as="div" pl={3} fontSize="lg">
               Maximum payment fees:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.maximum_payment_fees ? (marketRequirements.maximum_payment_fees as unknown as number) / Math.pow(10, 18) : "-"}
