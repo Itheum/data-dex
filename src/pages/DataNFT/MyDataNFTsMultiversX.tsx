@@ -42,11 +42,7 @@ import {
 } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
-export default function MyDataNFTsMx({
-  tabState
-} : {
-  tabState: number,
-}) {
+export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const itheumToken = _chainMeta?.contracts?.itheumToken || "";
@@ -186,11 +182,10 @@ export default function MyDataNFTsMx({
                   key={index}
                   isDisabled={tab.isDisabled}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
-                  onClick={() => onChangeTab(index + 1)}
-                >
-                  <Flex ml="4.7rem" alignItems="center">
-                    <Icon as={tab.icon} mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" color={colorMode === "dark" ? "white" : "black"}>
+                  onClick={() => onChangeTab(index + 1)}>
+                  <Flex ml="4.7rem" alignItems="center" py={3}>
+                    <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
+                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
                       {tab.tabName}
                     </Text>
                     <Text fontSize="sm" px={2} color="whiteAlpha.800">
@@ -243,7 +238,7 @@ export default function MyDataNFTsMx({
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       {...item}
                     />
