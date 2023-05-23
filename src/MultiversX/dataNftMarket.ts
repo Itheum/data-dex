@@ -513,8 +513,8 @@ export class DataNftMarketContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "Updating price",
-        errorMessage: "Error occured during updating price",
-        successMessage: "Price updated successfuly",
+        errorMessage: "Error occurred during updating price",
+        successMessage: "Fee updated successfully",
       },
       redirectAfterSign: false,
     });

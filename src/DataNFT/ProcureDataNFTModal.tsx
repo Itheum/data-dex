@@ -148,7 +148,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">Procure Access to Data NFTs</Text>
                 <Flex mt="1">
-                  <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                     {props.nftData.tokenName}
                   </Text>
                 </Flex>
@@ -207,7 +207,7 @@ export default function ProcureDataNFTModal(props: ProcureAccessModalProps) {
                   {": "}
                   {props.buyerFee ? (
                     <>
-                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ""}
+                      {feePrice} {fee && props.itheumPrice ? `(~${convertToLocalString(fee * props.itheumPrice, 2)} USD)` : ""}
                     </>
                   ) : (
                     "-"
