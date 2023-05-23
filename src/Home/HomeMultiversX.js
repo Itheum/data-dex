@@ -61,7 +61,9 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
     if (_chainMeta?.networkId && isMxLoggedIn) {
       if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
         try {
-          mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+          if (_chainMeta?.networkId === "ED") {
+            mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+          }
         } catch (e) {
           console.log(e);
         }
@@ -75,7 +77,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (mxAddress && mxFaucetContract && !hasPendingTransactions) {
+    if (_chainMeta?.networkId === "ED" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 

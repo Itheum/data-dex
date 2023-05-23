@@ -32,6 +32,7 @@ import { checkBalance } from "MultiversX/api";
 import AppFooter from "Sections/AppFooter";
 import AppHeader from "Sections/AppHeader";
 import { useChainMeta } from "store/ChainMetaContext";
+import AppSettings from "UtilComps/AppSettings";
 import { GetWhitelist } from "../GetWhitelisted/getWhitelist";
 
 const mxLogout = logout;
@@ -265,6 +266,11 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
               <Route path="datacoalitions" element={<Outlet />}>
                 <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
               </Route>
+
+              <Route
+                path="settings"
+                element={<AppSettings />}
+              />
             </Routes>
           </Box>
 

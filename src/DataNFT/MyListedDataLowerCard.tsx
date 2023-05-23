@@ -189,7 +189,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
             }
             onUpdatePriceModalOpen();
           }}>
-          Update Price
+          Update Fee
         </Button>
       </Flex>
 
@@ -204,7 +204,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
                           {nftMetadatas[selectedOfferIndex].tokenName}
                           <br />
                           Listed supply: {offers[selectedOfferIndex].quantity}
@@ -215,14 +215,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                       <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
-                  <Flex mt="8" justifyContent="flex-start" alignItems="center">
-                    <Text width="160px" fontSize="md">
-                      How many would you like to delist?
-                    </Text>
+                  <Flex mt="40px" justifyContent="flex-start" alignItems="center">
+                    <Box width="210px" fontSize="md">
+                      How many should be de-listed?
+                    </Box>
                     <NumberInput
-                      size="xs"
-                      ml="30px"
-                      maxW={16}
+                      size="sm"
+                      ml="20px"
+                      maxW="20"
                       step={1}
                       min={1}
                       max={offers[selectedOfferIndex].quantity}
@@ -243,16 +243,16 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
-                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
+                    <Button colorScheme="teal" size="sm" variant="outline" ml="2" onClick={() => setDelistAmount(offers[selectedOfferIndex].quantity)}>
                       De-List All
                     </Button>
                   </Flex>
                   {delistAmountError && (
-                    <Text color="red.400" fontSize="xs" ml="190px" mt="1">
+                    <Text color="red.400" fontSize="xs" ml="228px" mt="1">
                       {delistAmountError}
                     </Text>
                   )}
-                  <Flex justifyContent="end" mt="6 !important">
+                  <Flex justifyContent="end" mt="40px !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
                       Proceed
                     </Button>
@@ -269,7 +269,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
                           {nftMetadatas[selectedOfferIndex].tokenName}
                           <br />
                           Listed supply: {offers[selectedOfferIndex].quantity}
@@ -280,10 +280,10 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                       <Image src={nftMetadatas[selectedOfferIndex].nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
-                  <Text fontSize="md" mt="8" width={205}>
-                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
+                  <Text fontSize="md" mt="28px">
+                    You are about to de-list <Text as="span" backgroundColor="blackAlpha.300">{delistAmount} Data NFT{delistAmount > 1 ? "s" : ""}</Text> from the Public Marketplace. Are you sure you want to proceed?
                   </Text>
-                  <Flex justifyContent="end" mt="6 !important">
+                  <Flex justifyContent="end" mt="35px !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
                       Proceed
                     </Button>
@@ -305,9 +305,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">
                 <Box flex="4" alignContent="center">
-                  <Text fontSize="lg">Update Listing Price for Each</Text>
+                  <Text fontSize="lg">Update Listing Fee for Each</Text>
                   <Flex mt="1">
-                    <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                    <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                       {nftMetadatas[selectedOfferIndex].tokenName}
                     </Text>
                   </Flex>
@@ -317,22 +317,26 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                 </Box>
               </HStack>
               <Box mt="8">
+                
                 <Flex justifyContent="flex-start" alignItems="center">
-                  <Text width="160px" fontSize="md">
-                    Current Price per Data NFT
-                  </Text>
-                  <Box>
+                  <Box width="180px" fontSize="md">
+                    Current Fee per Data NFT
+                  </Box>
+                  <Box fontSize="md">
                     : {fee} {getTokenWantedRepresentation(offers[selectedOfferIndex].wanted_token_identifier, offers[selectedOfferIndex].wanted_token_nonce)}{" "}
-                    {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                    {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                   </Box>
                 </Flex>
-                <Flex justifyContent="flex-start" alignItems="center">
-                  <Text width="160px" fontSize="md">
-                    New Price
-                  </Text>
+                
+                <Flex justifyContent="flex-start" alignItems="center" mt="2">
+                  <Box width="180px" fontSize="md">
+                    New Fee
+                  </Box>
+                  :
                   <NumberInput
-                    size="xs"
-                    maxW={16}
+                    ml="3px"
+                    size="sm"
+                    maxW="24"
                     step={5}
                     min={0}
                     max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
@@ -355,12 +359,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offers, index, 
                   </NumberInput>
                 </Flex>
                 {newListingPriceError && (
-                  <Text color="red.400" fontSize="xs" ml="164px" mt="1">
+                  <Text color="red.400" fontSize="xs" ml="185px" mt="1">
                     {newListingPriceError}
                   </Text>
                 )}
               </Box>
-              <Flex justifyContent="end" mt="6 !important">
+              <Flex justifyContent="end" mt="30px !important">
                 <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>
                   Proceed
                 </Button>

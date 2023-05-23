@@ -63,7 +63,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { labels } from "libs/language";
-import { convertWeiToEsdt, isValidNumericCharacter, MENU, sleep } from "libs/util";
+import { convertWeiToEsdt, isValidNumericCharacter, isValidNumericDecimalCharacter, MENU, sleep } from "libs/util";
 import { checkBalance, getNetworkProvider } from "MultiversX/api";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
 import { UserDataType } from "MultiversX/types";
@@ -695,7 +695,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     onProgressModalOpen();
 
     const myHeaders = new Headers();
-    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY || "");
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
 
@@ -1270,6 +1269,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                           </Text>
                         </InputLabelWithPopover>
 
+                        {/* This Royalties input control allows for fractional royalties. e.g. 3.22% */}
                         <Controller
                           control={control}
                           render={({ field: { value, onChange } }) => (
@@ -1278,7 +1278,36 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                               size="md"
                               id="royaltiesForm"
                               maxW={24}
-                              step={5}
+                              step={0.01}
+                              precision={2}
+                              defaultValue={minRoyalties}
+                              min={minRoyalties > 0 ? minRoyalties : 0}
+                              max={maxRoyalties > 0 ? maxRoyalties : 0}
+                              isValidCharacter={isValidNumericDecimalCharacter}
+                              onChange={(valueAsString: string) => {
+                                onChange(valueAsString);
+                                handleChangeDataNftRoyalties(Number(valueAsString));
+                              }}>
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          )}
+                          name="royaltiesForm"
+                        />
+
+                        {/* This Royalties input control DOES NOT allow for fractional royalties, only round number that increment by 5. e.g. 3% */}
+                        {/* <Controller
+                          control={control}
+                          render={({ field: { value, onChange } }) => (
+                            <NumberInput
+                              mt="3 !important"
+                              size="md"
+                              id="royaltiesForm"
+                              maxW={24}
+                              step={1}
                               defaultValue={minRoyalties}
                               min={minRoyalties > 0 ? minRoyalties : 0}
                               max={maxRoyalties > 0 ? maxRoyalties : 0}
@@ -1295,7 +1324,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             </NumberInput>
                           )}
                           name="royaltiesForm"
-                        />
+                        /> */}
                         <Text color="gray.400" fontSize="sm" mt={"1"}>
                           Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
                         </Text>

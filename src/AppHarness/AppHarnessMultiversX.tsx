@@ -31,6 +31,7 @@ const baseUserContext = {
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
@@ -45,9 +46,13 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
       contracts: contractsForChain(networkId),
       walletUsed: walletUsedSession,
     });
-
-    setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (_chainMeta?.networkId) {
+      setIsLoading(false);
+    }
+  }, [_chainMeta]);
 
   useEffect(() => {
     if (mxAddress && isMxLoggedIn) {
