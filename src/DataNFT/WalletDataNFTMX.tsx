@@ -131,27 +131,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       exception: "",
     };
 
-    let customError = labels.ERR_WALLET_SIG_GENERIC;
+    const customError = labels.ERR_WALLET_SIG_GENERIC;
 
-    if (walletUsedSession === "el_webwallet") {
-      // web wallet not supported
-      customError = labels.ERR_WALLET_SIG_NOT_SUPPORTED;
-    } else {
-      try {
-        const signatureObj = await signMessage({ message });
-
-        if (signatureObj?.signature && signatureObj?.address) {
-          // XPortal App V2 / Ledger
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
-        } else {
-          signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
-        }
-      } catch (e: any) {
-        signResult.success = false;
-        signResult.exception = e.toString();
+    try {
+      const signatureObj = await signMessage({ message });
+      console.log("signatureObj", signatureObj);
+      if (signatureObj?.signature && signatureObj?.address) {
+        // XPortal App V2 / Ledger
+        signResult.signature = signatureObj.signature.toString("hex");
+        signResult.addrInHex = signatureObj.address.hex();
+        signResult.success = true;
+      } else {
+        signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
       }
+    } catch (e: any) {
+      signResult.success = false;
+      signResult.exception = e.toString();
     }
 
     if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
@@ -253,6 +248,19 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
+  const formatButtonNumber = (price: number, amount: number) => {
+    //price ? `${formatButtonNumber(price)} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"
+    if (price > 0) {
+      if (price >= item.maxPayment) {
+        return item.maxPayment.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
+      } else {
+        return price.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
+      }
+    } else {
+      return "Free";
+    }
+  };
+
   let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
 
   if (colorMode === "light") {
@@ -263,14 +271,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="810px"
+        h="840px"
         mx="3 !important"
         key={item.id}
-        borderWidth="0.5px"
-        borderRadius="xl"
+        border="1px solid transparent"
+        borderColor="#00C79740"
+        borderRadius="16px"
         mb="1rem"
-        position="relative"
-        style={{ background: gradientBorderForTrade }}>
+        position="relative">
         <Flex justifyContent="center">
           <Image
             src={item.nftImgUrl}
@@ -388,7 +396,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Button>
             </HStack>
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+            <Flex mt="7" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
@@ -420,13 +428,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
-            {amountError && (
-              <Text color="red.400" fontSize="xs">
-                {amountError}
-              </Text>
-            )}
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+            <Box h={3}>
+              {amountError && (
+                <Text color="red.400" fontSize="xs">
+                  {amountError}
+                </Text>
+              )}
+            </Box>
+
+            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 Unlock fee for each:{" "}
               </Text>
@@ -445,12 +456,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   if (valueAsNumber < 0) {
                     error = "Cannot be negative";
                   } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
-                    error = "Cannot exceed maximum listing fee";
+                    error = "Maximum listing fee is" + " " + item.maxPayment;
                   }
                   setPriceError(error);
                   setPrice(valueAsNumber);
                 }}
-                keepWithinRange={true}>
+                keepWithinRange={false}>
                 <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
@@ -458,21 +469,23 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </NumberInputStepper>
               </NumberInput>
             </Flex>
-            {priceError && (
-              <Text color="red.400" fontSize="xs">
-                {priceError}
-              </Text>
-            )}
+            <Box h={3}>
+              {priceError && (
+                <Text color="red.400" fontSize="xs">
+                  {priceError}
+                </Text>
+              )}
+            </Box>
             <Button
               size="sm"
               mt={4}
-              width="100%"
+              width="215px"
               colorScheme="teal"
               variant="outline"
               isDisabled={hasPendingTransactions || !!amountError || !!priceError}
               onClick={() => onListButtonClick(item)}>
-              <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+              <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
               </Text>
             </Button>
           </Box>
@@ -495,9 +508,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           }
           backdropFilter="auto"
           backdropBlur="6px">
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2">
-            - FROZEN - <br />
-            Data NFT is under investigation by the DAO as there was a complaint received against it
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
+            - FROZEN -{" "}
+            <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
+              Data NFT is under investigation by the DAO as there was a complaint received against it
+            </Text>
           </Text>
         </Box>
         {selectedDataNft && (
@@ -512,7 +527,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       <Box flex="1.1">
                         <Stack>
                           <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
-                          <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                          <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                             {selectedDataNft.tokenName}
                           </Text>
                         </Stack>
@@ -538,8 +553,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     <HStack mt="8">
                       <Text fontSize="md">How many do you want to burn?</Text>
                       <NumberInput
-                        size="xs"
-                        maxW={16}
+                        ml="3px"
+                        size="sm"
+                        maxW="24"
                         step={1}
                         defaultValue={selectedDataNft.balance}
                         min={1}
@@ -556,7 +572,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       </NumberInput>
                     </HStack>
                     {dataNftBurnAmountError && (
-                      <Text ml="208px" color="red.400" fontSize="sm" mt="1 !important">
+                      <Text ml="215px" color="red.400" fontSize="xs" mt="1 !important">
                         {dataNftBurnAmountError}
                       </Text>
                     )}

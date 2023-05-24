@@ -31,6 +31,9 @@ import {
   tokenContractAddress_Mx_Mainnet,
   claimsContractAddress_Mx_Mainnet,
   faucetContractAddress_Mx_Mainnet,
+  dataNFTFTTicker_Mx_Mainnet,
+  dataNftMarketContractAddress_Mx_Mainnet,
+  dataNftMintContractAddress_Mx_Mainnet,
 } from "./contractAddresses";
 
 type NetworkIdType = string | number;
@@ -91,8 +94,11 @@ export const contractsForChain = (networkId: NetworkIdType) => {
       break;
     case "E1":
       contracts.itheumToken = tokenContractAddress_Mx_Mainnet;
+      contracts.dataNFTFTTicker = dataNFTFTTicker_Mx_Mainnet;
       contracts.claims = claimsContractAddress_Mx_Mainnet;
       contracts.faucet = faucetContractAddress_Mx_Mainnet;
+      contracts.dataNftMint = dataNftMintContractAddress_Mx_Mainnet;
+      contracts.market = dataNftMarketContractAddress_Mx_Mainnet;
       break;
   }
 
@@ -166,6 +172,7 @@ export const tmpProgIdMapping = {
   "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
   "custom-gamer-activity": "Gamer Passport Activity",
+  "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
 };
 
 export const qsParams = () => {
@@ -212,6 +219,8 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
+  GETWHITELISTED: 18,
+  DATACAT: 19,
 };
 
 export const PATHS = {
@@ -220,18 +229,16 @@ export const PATHS = {
   tradedata: [2, [-1]],
   purchaseddata: [3, [0]],
   chaintransactions: [4, [3]],
-  datavault: [5, [4]],
   datanfts: [6, [1]],
   viewcoalitions: [7, [2]],
-  datastreams: [8, [4]],
   advertiseddata: [9, [0]],
   wallet: [10, [1]],
   marketplace: [11, [1]],
   datacoalitions: [12, [2]],
   personaldataproof: [13, [0]],
-  trustedcomputation: [14, [4]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
+  getwhitelisted: [18, [-1]],
 };
 
 export const CHAINS = {
@@ -291,7 +298,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
+    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -422,12 +429,26 @@ export const isValidNumericCharacter = (char: any) => {
   return char.match(/[0-9]/);
 };
 
+export const isValidNumericDecimalCharacter = (char: any) => {
+  return char.match(/[0-9.]/);
+};
+
 export const dataCATDemoUserData = {
   "lastName": "User",
   "firstName": "DexDemo",
   "programsAllocation": [
     {
       "program": "custom-gamer-activity",
+      "group": "custom",
+      "userId": "custom-x",
+      "status": "stop",
+      "shortId": "1",
+      "type": "1",
+      "fromTs": 1528448026784,
+      "toTs": 1535951753305,
+    },
+    {
+      "program": "playstation-gamer-passport",
       "group": "custom",
       "userId": "custom-x",
       "status": "stop",
@@ -492,6 +513,14 @@ export const dataCATDemoUserData = {
         "description":
           "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
       },
+      "playstation-gamer-passport": {
+        "programName": "Sony Playstation Data Passport",
+        "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
+        "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
+        "img": "sony-playstation-data-passport",
+        "description":
+          "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
+      },
       "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
         "programName": "Hypertension Insights Intense",
         "img": "hii",
@@ -532,9 +561,8 @@ export const dataCATDemoUserData = {
 export const styleStrings = {
   gradientBorderMulticolor: "linear-gradient(black, black) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
   gradientBorderMulticolorLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
-  gradientBorderPassive: "linear-gradient(black, black) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
+  gradientBorderPassive: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
   gradientBorderPassiveLight: "linear-gradient(white, white) padding-box, linear-gradient(to right, rgb(79 209 197 / 20%), rgb(79 209 197 / 60%)) border-box",
-  gradientBorderMulticolorToBottomRight: "linear-gradient(black, black) padding-box, linear-gradient(to left top, #00C79750, #FF439D50) border-box",
-  gradientBorderMulticolorToBottomRightLight:
-    "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C79750, #686868, #FF439D50) border-box",
+  gradientBorderMulticolorToBottomRight: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
+  gradientBorderMulticolorToBottomRightLight: "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C797, #FF439D) border-box",
 };

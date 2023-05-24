@@ -39,16 +39,15 @@ import { DataTableProps, fuzzyFilter } from "./tableUtils";
 
 const styles = {
   table: {
-    border: "2px solid var(--chakra-colors-teal-200)",
-    borderRadius: "1rem",
-    fontSize: "16px",
+    border: "1px solid ",
+    borderColor: "#00C79740",
+    borderRadius: "20px",
   },
   tbody: {
-    borderBottom: "1px solid var(--chakra-colors-teal-200)",
+    borderBottom: "1px solid #00C79740",
   },
   th: {
-    borderBottom: "1px solid var(--chakra-colors-teal-200)",
-    borderRight: "1px solid var(--chakra-colors-teal-200)",
+    backgroundColor: "#00c7970d",
     padding: "2px 4px",
   },
 };
@@ -81,120 +80,128 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
   return (
     <Box className="hidden-overflow-x">
       <Flex justifyContent={"center"} gap={2}>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.setPageIndex(0)} isDisabled={!table.getCanPreviousPage()}>
-          <ArrowLeftIcon />
+        <Button border={1} borderRadius={"lg"} padding={1} onClick={() => table.setPageIndex(0)} isDisabled={!table.getCanPreviousPage()}>
+          <ArrowLeftIcon mx={3} />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
-          <ArrowBackIcon />
+        <Button border={1} borderRadius={"lg"} padding={1} onClick={() => table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
+          <ArrowBackIcon mx={3} />
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} marginBottom={2} onClick={() => setColumnFilters([])} isDisabled={columnFilters.length === 0}>
+        <Button border={1} borderRadius={"lg"} colorScheme="teal" marginBottom={2} onClick={() => setColumnFilters([])} isDisabled={columnFilters.length === 0}>
           <RepeatIcon marginRight={2} /> Reset filters
         </Button>
-        <Button border={1} borderRadius={"0.24rem"} padding={1} onClick={() => table.nextPage()} isDisabled={!table.getCanNextPage()}>
-          <ArrowForwardIcon />
+        <Button border={1} borderRadius={"lg"} padding={1} onClick={() => table.nextPage()} isDisabled={!table.getCanNextPage()}>
+          <ArrowForwardIcon mx={3} />
         </Button>
         <Button
           border={1}
-          borderRadius={"0.24rem"}
+          borderRadius={"lg"}
           padding={1}
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
           isDisabled={!table.getCanNextPage() || table.getState().pagination.pageIndex >= table.getPageCount() - 1}>
-          <ArrowRightIcon />
+          <ArrowRightIcon mx={3} />
         </Button>
       </Flex>
-      <Table style={styles.table} className="data-table">
-        <Thead style={styles.th}>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <Th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <>
-                        <Box
-                          {...{
-                            className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {{
-                            asc: <TriangleUpIcon />,
-                            desc: <TriangleDownIcon />,
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </Box>
-                        {header.column.getCanFilter() ? (
-                          <Box>
-                            <Filter column={header.column} table={table} />
+      <div style={{ maxHeight: "100%", overflowX: "scroll" }}>
+        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
+          <Thead style={styles.th}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <Th key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <Box
+                            {...{
+                              className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {{
+                              asc: <TriangleUpIcon />,
+                              desc: <TriangleDownIcon />,
+                            }[header.column.getIsSorted() as string] ?? null}
                           </Box>
-                        ) : null}
-                      </>
-                    )}
-                  </Th>
-                );
-              })}
-            </Tr>
-          ))}
-        </Thead>
-        <Tbody style={styles.tbody}>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <Tr key={row.id}>
-                {row.getVisibleCells().map((cell) => {
-                  return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>;
+                          {header.column.getCanFilter() ? (
+                            <Box>
+                              <Filter column={header.column} table={table} />
+                            </Box>
+                          ) : null}
+                        </>
+                      )}
+                    </Th>
+                  );
                 })}
               </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-      <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
-        <VStack>
-          <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
-            Page
-            <strong>{table.getState().pagination.pageIndex + 1}</strong>
-            of
-            <strong>{table.getPageCount()}</strong>
-          </Text>
-        </VStack>
-        <HStack>
-          <Text as={"span"} minWidth={"5rem"}>
-            Go to page
-          </Text>
-          <NumberInput
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            maxWidth={"4.4rem"}
-            min={1}
-            max={table.getPageCount()}
-            isValidCharacter={isValidNumericCharacter}
-            onBlur={(e: any) => {
-              let page = e ? Number(e.target.value) - 1 : 0;
-              page = Math.max(0, page);
-              page = Math.min(table.getPageCount() - 1, page);
-              table.setPageIndex(page);
-            }}>
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
+            ))}
+          </Thead>
+          <Tbody style={styles.tbody}>
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <Tr key={row.id} borderColor="#00C79740">
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <Td fontSize="lg !important" key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </div>
+      {table && table.getPageCount() > 0 && (
+        <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
+          <VStack>
+            <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
+              Page
+              <strong>{table.getState().pagination.pageIndex + 1}</strong>
+              of
+              <strong>{table.getPageCount()}</strong>
+            </Text>
+          </VStack>
+          <HStack marginBottom="7 !important">
+            <Text as={"span"} minWidth={"6rem"}>
+              Go to page
+            </Text>
+            <NumberInput
+              defaultValue={table.getState().pagination.pageIndex + 1}
+              maxWidth={"4.4rem"}
+              min={1}
+              max={table.getPageCount()}
+              isValidCharacter={isValidNumericCharacter}
+              onBlur={(e: any) => {
+                let page = e ? Number(e.target.value) - 1 : 0;
+                page = Math.max(0, page);
+                page = Math.min(table.getPageCount() - 1, page);
+                table.setPageIndex(page);
+              }}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
 
-          <Show above="md">
-            <Select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-              maxWidth={200}>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </Select>
-          </Show>
-        </HStack>
-      </VStack>
+            <Show above="md">
+              <Select
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+                maxWidth={200}>
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    Show {pageSize}
+                  </option>
+                ))}
+              </Select>
+            </Show>
+          </HStack>
+        </VStack>
+      )}
     </Box>
   );
 }

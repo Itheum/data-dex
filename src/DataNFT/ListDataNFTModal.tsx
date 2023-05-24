@@ -113,7 +113,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">List Data NFTs on Marketplace</Text>
                 <Flex mt="1">
-                  <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                     {props.nftData.tokenName}
                   </Text>
                 </Flex>
@@ -144,17 +144,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
                   )}
                 </Box>
               </Flex>
-              {address !== props.nftData.creator && (
-                <Flex fontSize="md" mt="2">
-                  <Box w="140px">Royalties (per NFT)</Box>
-                  <Box>
-                    :{" "}
-                    {`${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
-                      .multipliedBy(props.nftData.royalties)
-                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
-                  </Box>
-                </Flex>
-              )}
+
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Seller Tax (per NFT)</Box>
                 <Box>
@@ -165,13 +155,26 @@ export default function ListDataNFTModal(props: ListModalProps) {
                     .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
                 </Box>
               </Flex>
+              
+              {address !== props.nftData.creator && (
+                <Flex fontSize="md" mt="2">
+                  <Box w="140px">Royalties (per NFT)</Box>
+                  <Box>
+                    :{" "}
+                    {`${convertToLocalString(props.nftData.royalties * 100)}% (${new BigNumber(props.offer.wanted_token_amount)
+                      .multipliedBy((1 - props.sellerFee / 10000) * props.nftData.royalties)
+                      .toNumber()} ${getTokenWantedRepresentation(props.offer.wanted_token_identifier, props.offer.wanted_token_nonce)})`}
+                  </Box>
+                </Flex>
+              )}
+              
               <Flex fontSize="md" mt="2">
                 <Box w="140px">You will receive</Box>
                 <Box>
                   {": "}
                   {
                     <>
-                      {feePrice} {fee && props.itheumPrice ? `(${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
+                      {feePrice} {fee && props.itheumPrice ? `(~${convertToLocalString(fee * props.itheumPrice * props.amount, 2)} USD)` : ""}
                     </>
                   }
                 </Box>
@@ -209,6 +212,7 @@ export default function ListDataNFTModal(props: ListModalProps) {
               dataMarshal={props.nftData.dataMarshal}
               NFTId={props.nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
+              isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
             />
 

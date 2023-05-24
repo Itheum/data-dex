@@ -24,7 +24,7 @@ export class FaucetContract {
   }
 
   async getFaucetTime(address) {
-    const networkProvider = getNetworkProvider(this.chainID);
+    const networkProvider = getNetworkProvider(undefined, this.chainID);
 
     const interaction = this.contract.methods.getLastFaucet([new Address(address)]);
     const query = interaction.buildQuery();

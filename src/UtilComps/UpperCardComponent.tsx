@@ -17,12 +17,12 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, styleStrings, uxConfig } from "../libs/util";
+import { CHAIN_TX_VIEWER, convertWeiToEsdt, uxConfig } from "../libs/util";
 import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
 import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
@@ -43,8 +43,7 @@ type UpperCardComponentProps = {
   itheumPrice: number | undefined;
 };
 
-const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
-  const { colorMode } = useColorMode();
+const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {  
   const {
     nftImageLoading,
     setNftImageLoaded,
@@ -63,6 +62,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const feePrice = item
     ? printPrice(
@@ -72,23 +72,17 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
     : "";
   const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
 
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-  }
-
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h="760px"
+        h={isMxLoggedIn ? "760px" : "685px"}
         mx="3 !important"
         borderWidth="0.5px"
         borderRadius="xl"
+        borderColor="#00C79740"
         position="relative"
-        mb="1rem"
-        style={{ background: gradientBorderForTrade }}>
+        mb="1rem">
         <Flex justifyContent="center">
           <Image
             src={imageUrl}
@@ -197,12 +191,12 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
 
               {feePrice && (
                 <>
-                  <Box fontSize="xs" mt="2">
+                  <Box fontSize="sm" mt="2">
                     <Text>
                       Unlock from: {` `}
                       {marketRequirements ? (
                         <>
-                          {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                          {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                         </>
                       ) : (
                         " -"
@@ -211,8 +205,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
                   </Box>
                 </>
               )}
-
-              {address && <>{children}</>}
+              {children}
             </>
           )}
         </Flex>
@@ -240,9 +233,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = (props) => {
               ? "visible"
               : "collapse"
           }>
-          <Text fontSize="md" position="absolute" top="45%" textAlign="center" px="2" color="white">
-            - FROZEN - <br />
-            Data NFT is under investigation by the DAO as there was a complaint received against it
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
+            - FROZEN -{" "}
+            <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
+              Data NFT is under investigation by the DAO as there was a complaint received against it
+            </Text>
           </Text>
         </Box>
       </Box>

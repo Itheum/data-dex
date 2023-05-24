@@ -15,22 +15,26 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
 
   const styles = {
     numberInput: {
-      width: "4.8rem",
       lineHeight: "1.25rem",
       border: "1px solid",
       borderRadius: "0.375rem",
-      padding: "2px",
+      padding: "8px",
       marginTop: "0.24rem",
       fontSize: "16px",
+      width: "170px",
+      height: "45px",
     },
     textInput: {
       lineHeight: "1.25rem",
       border: "1px solid",
-      borderRadius: "0.375rem",
-      padding: "2px",
-      marginTop: "0.24rem",
+      borderRadius: "12px",
+      borderColor: "#FFFFFF40",
+      padding: "8px",
+      marginTop: "0.4rem",
       fontSize: "16px",
-      maxWidth: "120px",
+      width: "170px",
+      height: "45px",
+      textIndent: "0.4rem",
     },
   };
 
@@ -68,8 +72,9 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
         type="text"
         value={(columnFilterValue ?? "") as string}
         onChange={(value) => column.setFilterValue(value)}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
+        placeholder={`Search (${column.getFacetedUniqueValues().size})`}
         style={styles.textInput}
+        className="filter"
         list={column.id + "list"}
       />
     </Box>

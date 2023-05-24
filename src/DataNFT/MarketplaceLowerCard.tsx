@@ -13,7 +13,7 @@ import {
   Flex,
   Box,
 } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "./ProcureDataNFTModal";
 import { isValidNumericCharacter } from "../libs/util";
@@ -33,6 +33,7 @@ type MarketplaceLowerCardProps = {
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offers, nftMetadatas, itheumPrice, marketRequirements }) => {
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const [amountOfTokens, setAmountOfTokens] = useState<any>({});
   const [amountErrors, setAmountErrors] = useState<string[]>([]);
@@ -78,61 +79,63 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ item, index, offe
         </Text>
       </Button>
       {!isMyNft ? (
-        <HStack>
-          <Flex flexDirection="row">
-            <Box>
-              <Text fontSize="md" mb="1">
-                Amount{" "}
-              </Text>
-              <NumberInput
-                size="md"
-                maxW="24"
-                step={1}
-                min={1}
-                max={item?.quantity}
-                isValidCharacter={isValidNumericCharacter}
-                value={amountOfTokens[index]}
-                defaultValue={1}
-                onChange={(valueAsString) => {
-                  const value = Number(valueAsString);
-                  let error = "";
-                  if (value <= 0) {
-                    error = "Cannot be zero or negative";
-                  } else if (value > item?.quantity) {
-                    error = "Cannot exceed balance";
-                  }
-                  setAmountErrors((oldErrors: any) => {
-                    const newErrors = [...oldErrors];
-                    newErrors[index] = error;
-                    return newErrors;
-                  });
-                  setAmountOfTokens((oldAmounts: any) => {
-                    const newAmounts = { ...oldAmounts };
-                    newAmounts[index] = value;
-                    return newAmounts;
-                  });
+        isMxLoggedIn && (
+          <HStack>
+            <Flex flexDirection="row">
+              <Box>
+                <Text fontSize="md" mb="1">
+                  Amount{" "}
+                </Text>
+                <NumberInput
+                  size="md"
+                  maxW="24"
+                  step={1}
+                  min={1}
+                  max={item?.quantity}
+                  isValidCharacter={isValidNumericCharacter}
+                  value={amountOfTokens[index]}
+                  defaultValue={1}
+                  onChange={(valueAsString) => {
+                    const value = Number(valueAsString);
+                    let error = "";
+                    if (value <= 0) {
+                      error = "Cannot be zero or negative";
+                    } else if (value > item?.quantity) {
+                      error = "Cannot exceed balance";
+                    }
+                    setAmountErrors((oldErrors: any) => {
+                      const newErrors = [...oldErrors];
+                      newErrors[index] = error;
+                      return newErrors;
+                    });
+                    setAmountOfTokens((oldAmounts: any) => {
+                      const newAmounts = { ...oldAmounts };
+                      newAmounts[index] = value;
+                      return newAmounts;
+                    });
+                  }}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Box>
+              <Button
+                size="sm"
+                colorScheme="teal"
+                mt="7"
+                ml="4"
+                isDisabled={hasPendingTransactions || !!amountErrors[index]}
+                onClick={() => {
+                  setSelectedOfferIndex(index);
+                  onProcureModalOpen();
                 }}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Box>
-            <Button
-              size="sm"
-              colorScheme="teal"
-              mt="7"
-              ml="4"
-              isDisabled={hasPendingTransactions || !!amountErrors[index]}
-              onClick={() => {
-                setSelectedOfferIndex(index);
-                onProcureModalOpen();
-              }}>
-              Purchase Data
-            </Button>
-          </Flex>
-        </HStack>
+                Purchase Data
+              </Button>
+            </Flex>
+          </HStack>
+        )
       ) : (
         <HStack h="3rem"></HStack>
       )}

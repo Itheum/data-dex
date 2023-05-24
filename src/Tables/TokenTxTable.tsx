@@ -26,12 +26,12 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.hash,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} />
+            <ShortAddress address={cellProps.getValue()} fontSize="lg" />
             <Link
               href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
               isExternal
               style={linkIconStyle}>
-              <ExternalLinkIcon />
+              <ExternalLinkIcon fontSize="lg" />
             </Link>
           </HStack>
         ),
@@ -49,7 +49,7 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.from,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} />
+            <ShortAddress address={cellProps.getValue()} fontSize="lg" />
             <Link
               href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`}
               isExternal
@@ -66,12 +66,12 @@ export default function TokenTxTable(props: TokenTableProps) {
         accessorFn: (row) => row.to,
         cell: (cellProps) => (
           <HStack>
-            <ShortAddress address={cellProps.getValue()} />
+            <ShortAddress address={cellProps.getValue()} fontSize="lg" />
             <Link
               href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`}
               isExternal
               style={linkIconStyle}>
-              <ExternalLinkIcon />
+              <ExternalLinkIcon fontSize="lg" />
             </Link>
           </HStack>
         ),

@@ -43,8 +43,8 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { FaStore } from "react-icons/fa";
-import { MdAccountBalanceWallet, MdMenu } from "react-icons/md";
+import { FaNewspaper, FaStore, FaUserCheck } from "react-icons/fa";
+import { MdAccountBalanceWallet, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink } from "react-router-dom";
@@ -62,6 +62,14 @@ const exploreRouterMenu = [
     sectionId: "MainSections",
     sectionLabel: "Main Sections",
     sectionItems: [
+      {
+        menuEnum: MENU.HOME,
+        path: "dashboard",
+        label: "Dashboard",
+        shortLbl: "Dash",
+        Icon: MdSpaceDashboard,
+        needToBeLoggedIn: true,
+      },
       {
         menuEnum: MENU.SELL,
         path: "tradedata",
@@ -85,6 +93,15 @@ const exploreRouterMenu = [
         shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
+      },
+      {
+        menuEnum: MENU.GETWHITELISTED,
+        path: "/getwhitelisted",
+        label: "Get whitelisted to mint Data NFTs",
+        shortLbl: "Get whitelisted to mint Data NFTs",
+        Icon: FaUserCheck,
+        needToBeLoggedIn: false,
+        needToBeLoggedOut: true,
       },
     ],
   },
@@ -147,9 +164,9 @@ const AppHeader = ({
       <Flex
         h="6rem"
         justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
-        paddingX={!isMxLoggedIn ? 32 : 0}
+        paddingX={!isMxLoggedIn ? { base: 5, lg: 36 } : 0}
         alignItems="center"
-        backgroundColor={colorMode === "light" ? "white" : "black"}
+        backgroundColor={colorMode === "light" ? "white" : "bgDark"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
@@ -175,15 +192,15 @@ const AppHeader = ({
 
           <Link
             as={ReactRouterLink}
-            to={isMxLoggedIn ? "/home" : "/"}
+            to={"/"}
             style={{ textDecoration: "none", pointerEvents: hasPendingTransactions ? "none" : undefined }}
             onClick={() => {
-              navigateToDiscover(isMxLoggedIn ? MENU.HOME : MENU.LANDING);
+              navigateToDiscover(MENU.LANDING);
             }}>
             <HStack>
               <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
               <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>
-                Itheum Data DEX
+                Data DEX
               </Heading>
             </HStack>
           </Link>
@@ -249,7 +266,7 @@ const AppHeader = ({
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false}>
-                            <ShortAddress address={mxAddress} fontSize="sm" />
+                            <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
                           </MenuItemOption>
 
                           <MenuDivider />
@@ -272,16 +289,16 @@ const AppHeader = ({
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"home"}>
+                <Link as={ReactRouterLink} to={"/"}>
                   <IconButton
                     size={"lg"}
                     color="teal.200"
                     icon={<AiFillHome size={"1.4rem"} />}
-                    aria-label={"Back to Home"}
-                    isDisabled={isMenuItemSelected(MENU.HOME) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(MENU.HOME)}
+                    aria-label={"Back to home"}
+                    isDisabled={isMenuItemSelected(MENU.LANDING) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(MENU.LANDING)}
                     onClick={() => {
-                      navigateToDiscover(MENU.HOME);
+                      navigateToDiscover(MENU.LANDING);
                     }}
                   />
                 </Link>
@@ -411,7 +428,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       lazyBehavior="keepMounted">
       <HStack marginLeft={3}>
         <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size="lg">
+          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
             Connect MultiversX Wallet
           </Button>
         </PopoverTrigger>
@@ -451,7 +468,11 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
 };
 
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
-  return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
+  if (quickMenuItem.needToBeLoggedOut === undefined) {
+    return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
+  } else {
+    return quickMenuItem.needToBeLoggedOut ? (isMxLoggedIn ? "none" : "inline") : "inline";
+  }
 }
 
 function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {

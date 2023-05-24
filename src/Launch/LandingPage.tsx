@@ -16,16 +16,23 @@ const LandingPage = () => {
     gradientBorder = styleStrings.gradientBorderMulticolorLight;
   }
 
+  // we need to show recent data nfts, if not main domain then default to devnet
+  let recentDataNFTsChain = "ED";
+
+  if (window.location.hostname === "datadex.itheum.io") {
+    recentDataNFTsChain = "E1";
+  }
+
   return (
     <Box>
       <Flex
-        bgColor={colorMode === "dark" ? "black" : "white"}
+        bgColor={colorMode === "dark" ? "bgDark" : "white"}
         flexDirection="column"
         justifyContent="space-between"
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
-        <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
+        <Box backgroundColor={colorMode === "light" ? "white" : "bgDark"} flexGrow="1">
           <Flex
             w="100%"
             h={["45rem", "45rem"]}
@@ -35,7 +42,7 @@ const LandingPage = () => {
             bgRepeat="no-repeat"
             justifyContent="center">
             <Center w="95%" pt="5rem">
-              <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "2xl": 20 }}>
+              <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "lg": 12 }}>
                 <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
                     Own and trade{" "}
@@ -59,8 +66,8 @@ const LandingPage = () => {
             </Center>
           </Flex>
 
-          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "2xl": 24 }}>
-            <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
+          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+            <RecentDataNFTs headingText="Recent Data NFTs" networkId={recentDataNFTsChain} />
           </Box>
 
           <Box mx={{ base: 8, "2xl": 24 }} py="10" display="none">
@@ -99,7 +106,7 @@ const LandingPage = () => {
             </SimpleGrid>
           </Box>
 
-          <Box mx={{ base: 8, "2xl": 24 }} py="10">
+          <Box mx={{ base: 8, "lg": 20 }} py="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
               Featured Articles
             </Heading>
