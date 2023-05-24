@@ -429,9 +429,9 @@ export const guardRailsInfo = {
     accepted_tokens: "ITHEUM",
   },
   upcomingGuardrails: {
-    buyer_fee_oldPrice: ["60"],
-    buyer_fee_newPrice: ["80"],
-    date: ["25/10/2024 14:39:50"],
+    buyer_fee_oldPrice: ["60", "80"],
+    buyer_fee_newPrice: ["80", "60"],
+    date: ["25/10/2024 14:39:50", "13/04/2024 10:40:32"],
     seller_fee: 150,
     maximum_payment_fees: 1250,
     accepted_payments: "ITHEUM",

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
 import { guardRailsInfo, whitelistWallets } from "../../libs/config";
 import { GuardRailsCards } from "./components/guardRailsCards";
-import { useMarketStore } from "../../store";
+import { useMarketStore, useMintStore } from "../../store";
 import { FaWallet } from "react-icons/fa";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
 
@@ -13,6 +13,7 @@ export const GuardRails: React.FC = () => {
   const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const userData = useMintStore((state) => state.userData);
 
   useEffect(() => {
     setHistoricGuardrails(historic);
@@ -35,6 +36,7 @@ export const GuardRails: React.FC = () => {
       </>
     );
     setWhitelistedAddress(whitelistMap);
+    console.log("ceVAVAVAVAVAV", userData);
   }, []);
 
   return (
@@ -43,7 +45,7 @@ export const GuardRails: React.FC = () => {
         Guard Rails
       </Heading>
       <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} mt={5} flexWrap="wrap">
-        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} maxWidth="22rem">
+        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} width="25rem">
           <Text as="h2" textAlign="center" fontWeight="500" fontSize="xl">
             Active Guardrails
           </Text>
@@ -68,6 +70,36 @@ export const GuardRails: React.FC = () => {
               Maximum payment fees:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                 {marketRequirements?.maximum_payment_fees ? (marketRequirements.maximum_payment_fees as unknown as number) / Math.pow(10, 18) : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Minimum royalties:&nbsp;
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {userData?.minRoyalties ? userData?.minRoyalties : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Maximum royalties:&nbsp;
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {userData?.maxRoyalties ? userData?.maxRoyalties : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Time between mints:&nbsp;
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {userData?.mintTimeLimit ? userData?.mintTimeLimit : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Max Data NFT supply:&nbsp;
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {userData?.maxSupply ? userData?.maxSupply : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Anti-Spam fee:&nbsp;
+              <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {userData?.antiSpamTaxValue ? userData?.antiSpamTaxValue : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">

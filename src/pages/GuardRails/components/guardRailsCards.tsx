@@ -4,6 +4,8 @@ import { guardRailsInfo } from "../../../libs/config";
 import { jsx } from "@emotion/react";
 import JSX = jsx.JSX;
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import { UserDataType } from "../../../libs/MultiversX/types";
+import { useMintStore } from "../../../store";
 
 type Props = {
   item: typeof guardRailsInfo.historicGuardrails | typeof guardRailsInfo.upcomingGuardrails;
@@ -18,6 +20,8 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   const arrowDown = "↓";
   const equal = "~";
 
+  const userData = useMintStore((state) => state.userData);
+
   useEffect(() => {
     const sellerLabel = (
       <>
@@ -26,8 +30,8 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           const isLower = bfo < buyerNewPrice;
 
           return (
-            <Badge key={index} color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              <Flex flexDirection="row">
+            <Badge key={index} color={badgeColor} fontSize="0.8em" my={3} mr="-5" p={1.5} borderRadius="lg">
+              <Flex flexDirection="row" flexWrap="wrap">
                 <Text as="s">{bfo}</Text>
                 {isLower ? arrowUp : arrowDown}
                 <Text>{item.buyer_fee_newPrice[index]}</Text>
@@ -42,15 +46,15 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   }, []);
 
   return (
-    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} maxWidth="22rem">
+    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} width="25rem">
       <Text as="h2" textAlign="center" fontWeight="500" fontSize="xl">
         {title}
       </Text>
       <Stack mt={5}>
         <Text as="div" pl={3} fontSize="lg">
-          <Flex flexDirection="column">
-            Buyer fee:&nbsp;
-            <Box overflowY="scroll" height="40px">
+          <Flex flexDirection="row" alignItems="center">
+            <Text w="10rem">Buyer fee:&nbsp;</Text>
+            <Box overflowY="scroll" height="50px">
               {buyer ? buyer : "-"}
             </Box>
           </Flex>
@@ -65,6 +69,36 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           Maximum payment fees:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
             {item?.maximum_payment_fees ?? "-"}
+          </Badge>
+        </Text>
+        <Text as="div" pl={3} fontSize="lg">
+          Minimum royalties:&nbsp;
+          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+            {userData?.minRoyalties ? userData?.minRoyalties : "-"}
+          </Badge>
+        </Text>
+        <Text as="div" pl={3} fontSize="lg">
+          Maximum royalties:&nbsp;
+          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+            {userData?.maxRoyalties ? userData?.maxRoyalties : "-"}
+          </Badge>
+        </Text>
+        <Text as="div" pl={3} fontSize="lg">
+          Time between mints:&nbsp;
+          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+            {userData?.mintTimeLimit ? userData?.mintTimeLimit : "-"}
+          </Badge>
+        </Text>
+        <Text as="div" pl={3} fontSize="lg">
+          Max Data NFT supply:&nbsp;
+          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+            {userData?.maxSupply ? userData?.maxSupply : "-"}
+          </Badge>
+        </Text>
+        <Text as="div" pl={3} fontSize="lg">
+          Anti-Spam fee:&nbsp;
+          <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+            {userData?.antiSpamTaxValue ? userData?.antiSpamTaxValue : "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">
