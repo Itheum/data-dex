@@ -17,27 +17,21 @@ export type ListModalProps = {
   setAmount: (amount: number) => void;
 };
 
-export default function ListDataNFTModal({
-  isOpen,
-  onClose,
-  sellerFee,
-  nftData,
-  offer,
-  marketContract,
-  amount,
-  setAmount,
-}: ListModalProps) {
+export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const feePrice = address !== nftData.creator
-    ? printPrice(
-        (amount * offer.wanted_token_amount * (10000 - sellerFee - nftData.royalties * 10000)) / 10000,
-        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-      )
-    : printPrice(
-        (amount * offer.wanted_token_amount * (10000 - sellerFee)) / 10000,
-        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-      );
+  const feePrice =
+    address !== nftData.creator
+      ? printPrice(
+          (amount * offer.wanted_token_amount * (10000 - sellerFee)) / 10000,
+          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+        )
+      : printPrice(
+          (amount * offer.wanted_token_amount * (10000 - sellerFee)) / 10000,
+          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+        );
+
+  // new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties).toNumber()
   const fee = offer.wanted_token_amount;
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
@@ -139,7 +133,7 @@ export default function ListDataNFTModal({
                     .toNumber()} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
                 </Box>
               </Flex>
-              
+
               {address !== nftData.creator && (
                 <Flex fontSize="md" mt="2">
                   <Box w="140px">Royalties (per NFT)</Box>
@@ -151,7 +145,7 @@ export default function ListDataNFTModal({
                   </Box>
                 </Flex>
               )}
-              
+
               <Flex fontSize="md" mt="2">
                 <Box w="140px">You will receive</Box>
                 <Box>
@@ -174,16 +168,16 @@ export default function ListDataNFTModal({
                         <>
                           {" " + new BigNumber(offer.wanted_token_amount).multipliedBy(amount).toNumber() + " "}
                           {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
-                          {address != nftData.creator && (
-                            <>
-                              {" - "}
-                              {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(nftData.royalties).toNumber()}
-                              {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
-                            </>
-                          )}
                           {" - "}
                           {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000).toNumber()}
                           {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          {address != nftData.creator && (
+                            <>
+                              {" - "}
+                              {new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties).toNumber()}
+                              {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                            </>
+                          )}
                         </>
                       )}
                     </>
