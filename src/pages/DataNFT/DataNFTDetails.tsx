@@ -178,7 +178,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   function getListingText(price: number) {
     const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
-      ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
       ? "Unlock for: FREE"
       : "Not Listed";
@@ -276,14 +276,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Text>
                     </Box>
                     <Flex direction={"column"} gap="1" px="28px" mt="3">
-                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">
+                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
                         Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
                         <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
                           <ExternalLinkIcon mx="4px" fontSize="lg" />
                         </Link>
                       </Box>
                       {offer && offer.owner && (
-                        <Box color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">
+                        <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
                           Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
                           <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
                             <ExternalLinkIcon mx="4px" fontSize="lg" />
@@ -291,7 +291,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Box>
                       )}
                       <Box display="flex" justifyContent="flex-start" pb="14px">
-                        <Text color={colorMode === "dark" ? "white" : "black"} fontSize="xl" fontWeight="light">{`Creation time: ${moment(
+                        <Text color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">{`Creation time: ${moment(
                           nftData.attributes?.creationTime
                         ).format(uxConfig.dateStr)}`}</Text>
                       </Box>
@@ -330,7 +330,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
                                   tokenDecimals(offer.wanted_token_identifier)
                                 ).toNumber() > 0
-                                  ? `(${convertToLocalString(
+                                  ? `(~${convertToLocalString(
                                       convertWeiToEsdt(
                                         new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
                                         tokenDecimals(offer.wanted_token_identifier)
@@ -438,7 +438,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         </Box>
       ) : (
         <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
-          <Spinner size={"xl"} thickness="4px" speed="0.64s" emptyColor="gray.200" color="teal" label="Fetching Data NFT-FT details..." />
+          <Spinner size={"xl"} thickness="4px" speed="0.64s" emptyColor="gray.200" color="teal.200" label="Fetching Data NFT-FT details..." />
         </Flex>
       )}
     </Box>

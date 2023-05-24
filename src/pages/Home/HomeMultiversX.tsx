@@ -20,7 +20,7 @@ import {
   SimpleGrid,
   Flex,
   useColorMode,
-  useBreakpointValue
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -37,6 +37,9 @@ import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
+
+let mxFaucetContract: FaucetContract;
+let mxClaimsContract: ClaimsContract;
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -68,14 +71,27 @@ export default function HomeMultiversX({
 
   const navigate = useNavigate();
 
-  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+  useEffect(() => {
+    if (_chainMeta?.networkId && isMxLoggedIn) {
+      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
+        try {
+          if (_chainMeta?.networkId === "ED") {
+            mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+
+        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+      }
+    }
+  }, [_chainMeta]);
 
   // S: Faucet
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (mxAddress && mxFaucetContract && !hasPendingTransactions) {
+    if (_chainMeta?.networkId === "ED" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
@@ -261,12 +277,7 @@ export default function HomeMultiversX({
         <Box m={heroGridMargin} pt="20" pb="10">
           <SimpleGrid columns={[1, 2, 3, 4]} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
-              <Box
-                w={[tileBoxMdW, "initial"]}
-                backgroundColor="none"
-                border="1px solid transparent"
-                borderColor="#00C79740"
-                borderRadius="16px">
+              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH} alignItems={"center"}>
                   {!dataCATAccount && (
                     <Heading size="md" fontWeight="semibold" pb={2}>
@@ -297,13 +308,7 @@ export default function HomeMultiversX({
 
                         <Spacer />
 
-                        <Button 
-                          size="lg" 
-                          borderRadius="xl" 
-                          colorScheme="teal" 
-                          variant="outline" 
-                          onClick={() => onDataCATAccount(true)}
-                        >
+                        <Button size="lg" borderRadius="xl" colorScheme="teal" variant="outline" onClick={() => onDataCATAccount(true)}>
                           <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
                         </Button>
                       </>
@@ -343,12 +348,7 @@ export default function HomeMultiversX({
             </ChainSupportedComponent>
 
             <ChainSupportedComponent feature={MENU.FAUCET}>
-              <Box
-                w={[tileBoxMdW, "initial"]}
-                backgroundColor="none"
-                border="1px solid transparent"
-                borderColor="#00C79740"
-                borderRadius="16px">
+              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH}>
                   <Heading size="md" fontWeight="semibold" pb={2}>
                     {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
@@ -366,12 +366,7 @@ export default function HomeMultiversX({
               </Box>
             </ChainSupportedComponent>
 
-            <Box
-              w={[tileBoxMdW, "initial"]}
-              backgroundColor="none"
-              border="1px solid transparent"
-              borderColor="#00C79740"
-              borderRadius="16px">
+            <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
                 <Heading size="md" pb={2}>
                   NFMe ID Avatar
@@ -384,12 +379,7 @@ export default function HomeMultiversX({
             </Box>
 
             <ChainSupportedComponent feature={MENU.CLAIMS}>
-              <Box
-                w={[tileBoxMdW, "initial"]}
-                backgroundColor="none"
-                border="1px solid transparent"
-                borderColor="#00C79740"
-                borderRadius="16px">
+              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                   <Heading size="md" pb={2}>
                     My Claims
@@ -456,7 +446,9 @@ export default function HomeMultiversX({
                         <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                           <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                             {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
-                              <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[2]))}</Text>
+                              <Text color={colorMode === "dark" ? "white" : "black"}>
+                                {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[2]))}
+                              </Text>
                             ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
                               <Spinner size="xs" />
                             ) : (
