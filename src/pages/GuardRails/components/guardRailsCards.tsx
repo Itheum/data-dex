@@ -74,31 +74,31 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         <Text as="div" pl={3} fontSize="lg">
           Minimum royalties:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {userData?.minRoyalties ? userData?.minRoyalties : "-"}
+            {item?.minimum_royalties !== null ? item?.minimum_royalties : "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">
           Maximum royalties:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {userData?.maxRoyalties ? userData?.maxRoyalties : "-"}
+            {item?.maximum_royalties ? item?.maximum_royalties : "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">
           Time between mints:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {userData?.mintTimeLimit ? userData?.mintTimeLimit : "-"}
+            {item?.time_between_mints ? item?.time_between_mints : "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">
           Max Data NFT supply:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {userData?.maxSupply ? userData?.maxSupply : "-"}
+            {item?.max_data_nft_supply ? item?.max_data_nft_supply : "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">
           Anti-Spam fee:&nbsp;
           <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-            {userData?.antiSpamTaxValue ? userData?.antiSpamTaxValue : "-"}
+            {item?.antiSpam_tax ? item?.antiSpam_tax : "-"}
           </Badge>
         </Text>
         <Text as="div" pl={3} fontSize="lg">

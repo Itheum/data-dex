@@ -5,20 +5,88 @@ import { GuardRailsCards } from "./components/guardRailsCards";
 import { useMarketStore, useMintStore } from "../../store";
 import { FaWallet } from "react-icons/fa";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
+import { getNetworkProvider } from "../../libs/MultiversX/api";
+import { convertWeiToEsdt } from "../../libs/utils";
+import { useChainMeta } from "../../store/ChainMetaContext";
+import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
+import { ResultsParser } from "@multiversx/sdk-core/out";
 
 export const GuardRails: React.FC = () => {
   const { historicGuardrails: historic, upcomingGuardrails: upcoming } = guardRailsInfo;
   const [historicGuardrails, setHistoricGuardrails] = useState<typeof guardRailsInfo.historicGuardrails>(guardRailsInfo.historicGuardrails);
   const [upcomingGuardrails, setUpcomingGuardrails] = useState<typeof guardRailsInfo.upcomingGuardrails>(guardRailsInfo.upcomingGuardrails);
   const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();
+  const [minRoyalties, setMinRoyalties] = useState(-1);
+  const [maxRoyalties, setMaxRoyalties] = useState(-1);
+  const [maxSupply, setMaxSupply] = useState(-1);
+  const [antiSpamTax, setAntiSpamTax] = useState(-1);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
+
+  const { chainMeta: _chainMeta } = useChainMeta();
+  const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   useEffect(() => {
     setHistoricGuardrails(historic);
     setUpcomingGuardrails(upcoming);
   }, [historicGuardrails, upcomingGuardrails]);
+
+  useEffect(() => {
+    if (!_chainMeta.networkId) return;
+
+    (async () => {
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
+      const query = interaction.check().buildQuery();
+      const queryResponse = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMinRoyalties(value.toNumber() / 100);
+      }
+    })();
+
+    (async () => {
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
+      const query = interaction.check().buildQuery();
+      const queryResponse = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMaxRoyalties(value.toNumber() / 100);
+      }
+    })();
+
+    (async () => {
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
+      const query = interaction.check().buildQuery();
+      const queryResponse = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setMaxSupply(value.toNumber());
+      }
+    })();
+
+    (async () => {
+      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
+      const query = interaction.check().buildQuery();
+      const queryResponse = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+      if (firstValue) {
+        const value = firstValue.valueOf();
+        setAntiSpamTax(convertWeiToEsdt(value).toNumber());
+      }
+    })();
+  }, [_chainMeta.networkId]);
 
   useEffect(() => {
     const whitelistMap = (
@@ -36,8 +104,11 @@ export const GuardRails: React.FC = () => {
       </>
     );
     setWhitelistedAddress(whitelistMap);
-    console.log("ceVAVAVAVAVAV", userData);
   }, []);
+
+  useEffect(() => {
+    console.log("SALUUUTTTTTTT", minRoyalties);
+  }, [minRoyalties]);
 
   return (
     <Flex as="div" flexDirection="column" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
@@ -54,7 +125,7 @@ export const GuardRails: React.FC = () => {
               Buyer fee:&nbsp;
               {marketRequirements?.buyer_fee ? (
                 <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                  {(marketRequirements?.buyer_fee / 100).toFixed(2) ?? "-"}
+                  {`${(marketRequirements?.buyer_fee / 100).toFixed(2)} %` ?? "-"}
                 </Badge>
               ) : (
                 "-"
@@ -63,7 +134,7 @@ export const GuardRails: React.FC = () => {
             <Text as="div" pl={3} fontSize="lg">
               Seller fee:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {marketRequirements?.seller_fee ? (marketRequirements.seller_fee / 100).toFixed(2) : "-"}
+                {marketRequirements?.seller_fee ? `${(marketRequirements.seller_fee / 100).toFixed(2)} %` : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
@@ -75,31 +146,31 @@ export const GuardRails: React.FC = () => {
             <Text as="div" pl={3} fontSize="lg">
               Minimum royalties:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {userData?.minRoyalties ? userData?.minRoyalties : "-"}
+                {minRoyalties !== null ? minRoyalties : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Maximum royalties:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {userData?.maxRoyalties ? userData?.maxRoyalties : "-"}
+                {maxRoyalties ? maxRoyalties : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Time between mints:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {userData?.mintTimeLimit ? userData?.mintTimeLimit : "-"}
+                {userData?.mintTimeLimit ? new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString() : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Max Data NFT supply:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {userData?.maxSupply ? userData?.maxSupply : "-"}
+                {maxSupply ? maxSupply : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
               Anti-Spam fee:&nbsp;
               <Badge color="teal.200" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {userData?.antiSpamTaxValue ? userData?.antiSpamTaxValue : "-"}
+                {antiSpamTax ? antiSpamTax : "-"}
               </Badge>
             </Text>
             <Text as="div" pl={3} fontSize="lg">
