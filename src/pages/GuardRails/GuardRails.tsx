@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
-import { guardRailsInfo, whitelistWallets } from "../../libs/config";
+import { historicGuardrails, whitelistWallets } from "../../libs/config";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { useMarketStore, useMintStore } from "../../store";
 import { FaWallet } from "react-icons/fa";
@@ -12,9 +12,6 @@ import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
 import { ResultsParser } from "@multiversx/sdk-core/out";
 
 export const GuardRails: React.FC = () => {
-  const { historicGuardrails: historic, upcomingGuardrails: upcoming } = guardRailsInfo;
-  const [historicGuardrails, setHistoricGuardrails] = useState<typeof guardRailsInfo.historicGuardrails>(guardRailsInfo.historicGuardrails);
-  const [upcomingGuardrails, setUpcomingGuardrails] = useState<typeof guardRailsInfo.upcomingGuardrails>(guardRailsInfo.upcomingGuardrails);
   const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
@@ -27,10 +24,7 @@ export const GuardRails: React.FC = () => {
   const { chainMeta: _chainMeta } = useChainMeta();
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
-  useEffect(() => {
-    setHistoricGuardrails(historic);
-    setUpcomingGuardrails(upcoming);
-  }, [historicGuardrails, upcomingGuardrails]);
+  const historyGuardrails = historicGuardrails;
 
   useEffect(() => {
     if (!_chainMeta.networkId) return;
@@ -187,8 +181,7 @@ export const GuardRails: React.FC = () => {
             </Text>
           </Stack>
         </Box>
-        <GuardRailsCards item={historicGuardrails} title="History Guardrails" badgeColor="red.200" />
-        <GuardRailsCards item={upcomingGuardrails} title="Upcoming Guardrails" badgeColor="gray.400" />
+        <GuardRailsCards items={historyGuardrails} title="History Guardrails" badgeColor="red.200" />
       </Flex>
       <Heading size="xl" fontWeight="medium" my={6}>
         Whitelisted addresses
