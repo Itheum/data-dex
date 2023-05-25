@@ -18,6 +18,7 @@ import { logout } from "@multiversx/sdk-dapp/utils";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
+import AppSettings from "components/UtilComps/AppSettings";
 import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
@@ -27,10 +28,10 @@ import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
 import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
+import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { useChainMeta } from "store/ChainMetaContext";
-import { GetWhitelist } from "../GetWhitelist";
 
 const mxLogout = logout;
 
@@ -227,6 +228,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
               <Route path="datacoalitions" element={<Outlet />}>
                 <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
               </Route>
+
+              <Route path="settings" element={<AppSettings />} />
             </Routes>
           </Box>
 
