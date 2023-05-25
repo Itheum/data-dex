@@ -100,9 +100,9 @@ export const GuardRails: React.FC = () => {
     setWhitelistedAddress(whitelistMap);
   }, []);
 
-  useEffect(() => {
-    console.log("SALUUUTTTTTTT", minRoyalties);
-  }, [minRoyalties]);
+  // useEffect(() => {
+  //   console.log("SALUUUTTTTTTT", minRoyalties);
+  // }, [minRoyalties]);
 
   return (
     <Flex as="div" flexDirection="column" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>

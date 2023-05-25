@@ -10,8 +10,8 @@ type Props = {
   badgeColor?: string;
 };
 
-export const GuardRailsCards: React.FC<Props> = (props) => {
-  const { items, title, badgeColor } = props;
+export const GuardRailsCards: React.FC<Props> = ({ items, title, badgeColor }) => {
+  // const { items, title, badgeColor } = props;
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const arrowUp = "↑";
@@ -25,7 +25,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   };
 
   const handleNextClick = () => {
-    if (currentIndex > items.length - 1) {
+    if (currentIndex < 2) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
     }
   };
@@ -62,7 +62,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           <Text as="div" pl={3} fontSize="lg">
             Seller fee:&nbsp;
             <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              {currentItem ? currentItem?.seller_fee_oldPrice : "-"}
+              {currentItem?.seller_fee_oldPrice ?? "-"}
             </Badge>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
