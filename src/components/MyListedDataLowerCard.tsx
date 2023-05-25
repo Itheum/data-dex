@@ -24,7 +24,15 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertToLocalString, convertEsdtToWei, convertWeiToEsdt, isValidNumericCharacter, sleep, getTokenWantedRepresentation, tokenDecimals } from "libs/utils";
+import {
+  convertToLocalString,
+  convertEsdtToWei,
+  convertWeiToEsdt,
+  isValidNumericCharacter,
+  sleep,
+  getTokenWantedRepresentation,
+  tokenDecimals,
+} from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -54,14 +62,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
-  const fee = marketRequirements && offer
-    ? convertWeiToEsdt(
-        new BigNumber(offer.wanted_token_amount)
-          .multipliedBy(10000)
-          .div(10000 + (marketRequirements.buyer_fee as number)),
-        tokenDecimals(offer.wanted_token_identifier)
-      ).toNumber()
-    : 0;
+  const fee =
+    marketRequirements && offer
+      ? convertWeiToEsdt(
+          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyer_fee as number)),
+          tokenDecimals(offer.wanted_token_identifier)
+        ).toNumber()
+      : 0;
 
   const onDelist = async () => {
     if (!address) {
@@ -106,11 +113,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       return;
     }
 
-    contract.updateOfferPrice(
-      offer.index,
-      convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
-      address
-    );
+    contract.updateOfferPrice(offer.index, convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(), address);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -155,9 +158,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  new BigNumber(offer.wanted_token_amount)
-                    .multipliedBy(10000)
-                    .div(10000 + marketRequirements.buyer_fee),
+                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
                   tokenDecimals(offer.wanted_token_identifier)
                 ).toNumber()
               );
@@ -166,7 +167,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             }
             onUpdatePriceModalOpen();
           }}>
-          Update Price
+          Update Fee
         </Button>
       </Flex>
 
@@ -181,7 +182,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
+                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
                           {nftMetadata.tokenName}
                           <br />
                           Listed supply: {offer.quantity}
@@ -192,14 +193,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                       <Image src={nftMetadata.nftImgUrl} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
-                  <Flex mt="8" justifyContent="flex-start" alignItems="center">
-                    <Text width="160px" fontSize="md">
-                      How many would you like to delist?
-                    </Text>
+                  <Flex mt="40px" justifyContent="flex-start" alignItems="center">
+                    <Box width="210px" fontSize="md">
+                      How many should be de-listed?
+                    </Box>
                     <NumberInput
-                      size="xs"
-                      ml="30px"
-                      maxW={16}
+                      size="sm"
+                      ml="20px"
+                      maxW="20"
                       step={1}
                       min={1}
                       max={offer.quantity}
@@ -220,16 +221,16 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                         <NumberDecrementStepper />
                       </NumberInputStepper>
                     </NumberInput>
-                    <Button colorScheme="teal" size="xs" variant="outline" ml="2" onClick={() => setDelistAmount(offer.quantity)}>
+                    <Button colorScheme="teal" size="sm" variant="outline" ml="2" onClick={() => setDelistAmount(offer.quantity)}>
                       De-List All
                     </Button>
                   </Flex>
                   {delistAmountError && (
-                    <Text color="red.400" fontSize="xs" ml="190px" mt="1">
+                    <Text color="red.400" fontSize="xs" ml="228px" mt="1">
                       {delistAmountError}
                     </Text>
                   )}
-                  <Flex justifyContent="end" mt="6 !important">
+                  <Flex justifyContent="end" mt="40px !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={() => setDelistModalState(1)}>
                       Proceed
                     </Button>
@@ -246,21 +247,25 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
-                          {nftMetadata ? nftMetadata.tokenName : ''}
+                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                          {nftMetadata ? nftMetadata.tokenName : ""}
                           <br />
                           Listed supply: {offer.quantity}
                         </Text>
                       </Flex>
                     </Box>
                     <Box flex="1">
-                      <Image src={nftMetadata ? nftMetadata.nftImgUrl : ''} h="auto" w="100%" borderRadius="md" m="auto" />
+                      <Image src={nftMetadata ? nftMetadata.nftImgUrl : ""} h="auto" w="100%" borderRadius="md" m="auto" />
                     </Box>
                   </HStack>
-                  <Text fontSize="md" mt="8" width={205}>
-                    You are about to de-list {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""} from the Public Marketplace.
+                  <Text fontSize="md" mt="28px">
+                    You are about to de-list{" "}
+                    <Text as="span" backgroundColor="blackAlpha.300">
+                      {delistAmount} Data NFT{delistAmount > 1 ? "s" : ""}
+                    </Text>{" "}
+                    from the Public Marketplace. Are you sure you want to proceed?
                   </Text>
-                  <Flex justifyContent="end" mt="6 !important">
+                  <Flex justifyContent="end" mt="35px !important">
                     <Button colorScheme="teal" size="sm" mx="3" onClick={onDelist}>
                       Proceed
                     </Button>
@@ -282,9 +287,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">
                 <Box flex="4" alignContent="center">
-                  <Text fontSize="lg">Update Listing Price for Each</Text>
+                  <Text fontSize="lg">Update Listing Fee for Each</Text>
                   <Flex mt="1">
-                    <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                    <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                       {nftMetadata.tokenName}
                     </Text>
                   </Flex>
@@ -295,21 +300,24 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
               </HStack>
               <Box mt="8">
                 <Flex justifyContent="flex-start" alignItems="center">
-                  <Text width="160px" fontSize="md">
-                    Current Price per Data NFT
-                  </Text>
-                  <Box>
+                  <Box width="180px" fontSize="md">
+                    Current Fee per Data NFT
+                  </Box>
+                  <Box fontSize="md">
                     : {fee} {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}{" "}
-                    {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                    {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                   </Box>
                 </Flex>
-                <Flex justifyContent="flex-start" alignItems="center">
-                  <Text width="160px" fontSize="md">
-                    New Price
-                  </Text>
+
+                <Flex justifyContent="flex-start" alignItems="center" mt="2">
+                  <Box width="180px" fontSize="md">
+                    New Fee
+                  </Box>
+                  :
                   <NumberInput
-                    size="xs"
-                    maxW={16}
+                    ml="3px"
+                    size="sm"
+                    maxW="24"
                     step={5}
                     min={0}
                     max={maxPaymentFeeMap[itheumToken] ? maxPaymentFeeMap[itheumToken] : 0} // need to update hardcoded tokenId
@@ -332,12 +340,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                   </NumberInput>
                 </Flex>
                 {newListingPriceError && (
-                  <Text color="red.400" fontSize="xs" ml="164px" mt="1">
+                  <Text color="red.400" fontSize="xs" ml="185px" mt="1">
                     {newListingPriceError}
                   </Text>
                 )}
               </Box>
-              <Flex justifyContent="end" mt="6 !important">
+              <Flex justifyContent="end" mt="30px !important">
                 <Button colorScheme="teal" size="sm" mx="3" onClick={onUpdatePrice}>
                   Proceed
                 </Button>
