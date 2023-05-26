@@ -67,7 +67,7 @@ import { MENU, isValidNumericDecimalCharacter } from "libs/config";
 import { labels } from "libs/language";
 import { getNetworkProvider } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, isValidNumericCharacter, sleep } from "libs/utils";
+import { convertWeiToEsdt, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -373,7 +373,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   useEffect(() => {
     onChangeDataNFTStreamUrl("");
     onChangeDataNFTStreamPreviewUrl("");
-    onChangeDataNFTMarshalService(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}`);
+    onChangeDataNFTMarshalService(getApiDataMarshal(_chainMeta.networkId));
     onChangeDataNFTImageGenService();
     onChangeDataNFTTokenName("");
     onChangeDatasetTitle("");
@@ -440,7 +440,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataMarshal(_chainMeta.networkId)}/health-check`).then(({ isSuccess, message }) => {
       setDataNFTMarshalServiceStatus(!isSuccess);
     });
 
@@ -449,7 +449,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${process.env.REACT_APP_ENV_DATADEX_API}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataDex(_chainMeta.networkId)}/health-check`).then(({ isSuccess, message }) => {
       setDataNFTImgGenService(isSuccess);
     });
   };
@@ -685,7 +685,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     };
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_ENV_DATAMARSHAL_API}/generate`, requestOptions);
+      const res = await fetch(`${getApiDataMarshal(_chainMeta.networkId)}/generate`, requestOptions);
       const data = await res.json();
 
       if (data && data.encryptedMessage && data.messageHash) {
@@ -741,7 +741,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
-    const newNFTImg = `${process.env.REACT_APP_ENV_DATADEX_API}/v1/generateNFTArt?hash=${dataNFTHash}`;
+    const newNFTImg = `${getApiDataDex(_chainMeta.networkId)}/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
@@ -989,7 +989,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         {maxSupply < 0 && <Text fontSize="md">Unable to read default value of Max Supply.</Text>}
                         {antiSpamTax < 0 && <Text fontSize="md">Unable to read default value of Anti-Spam Tax.</Text>}
                         {!!dataNFTMarshalServiceStatus && <Text fontSize="md">{labels.ERR_DATA_MARSHAL_DOWN}</Text>}
-                        {!dataNFTImgGenServiceValid && <Text fontSize="md">Generative image generation service is not responding.</Text>}
+                        {!dataNFTImgGenServiceValid && <Text fontSize="md">{labels.ERR_MINT_FORM_GEN_IMG_API_DOWN}</Text>}
                         {!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint && (
                           <AlertDescription fontSize="md">You are not currently whitelisted to mint Data NFTs</AlertDescription>
                         )}
@@ -1363,7 +1363,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                   {itheumBalance < antiSpamTax && (
                     <Text color="red.400" fontSize="sm" mt="1 !important">
-                      You don&apos;t have enough ITHEUM for Anti-Spam Tax
+                      {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
                     </Text>
                   )}
                   <Box minH={{ base: "5rem", md: "3.5rem" }}>

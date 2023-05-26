@@ -272,7 +272,10 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                 <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
               </Route>
 
-              <Route path="settings" element={<AppSettings />} />
+              <Route
+                path="settings"
+                element={<AppSettings />}
+              />
             </Routes>
           </Box>
 
