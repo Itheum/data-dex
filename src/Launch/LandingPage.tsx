@@ -60,7 +60,7 @@ const LandingPage = () => {
                 </Box>
 
                 <Box mt={["2rem", "initial"]}>
-                  <Image boxSize="480px" height="auto" src={imgHeroDataNFTs} alt="Data NFTs Preview" />
+                  <Image className="bounce-hero-img" boxSize="480px" height="auto" src={imgHeroDataNFTs} alt="Data NFTs Preview" />
                 </Box>
               </Flex>
             </Center>

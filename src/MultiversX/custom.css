@@ -202,3 +202,19 @@ body {
   scrollbar-width: none;
   overflow-x: scroll;
 }
+
+.bounce-hero-img {
+  animation: MoveUpDown 10s ease-in-out infinite;
+  position: relative;
+  left: 0;
+  bottom: 0;
+}
+
+@keyframes MoveUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
