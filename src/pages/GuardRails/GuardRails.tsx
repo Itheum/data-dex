@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
-import { historicGuardrails, whitelistWallets } from "../../libs/config";
+import { historicGuardrails, upcomingGuardRails, whitelistWallets } from "../../libs/config";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { useMarketStore, useMintStore } from "../../store";
 import { FaWallet } from "react-icons/fa";
@@ -100,21 +100,17 @@ export const GuardRails: React.FC = () => {
     setWhitelistedAddress(whitelistMap);
   }, []);
 
-  // useEffect(() => {
-  //   console.log("SALUUUTTTTTTT", minRoyalties);
-  // }, [minRoyalties]);
-
   return (
     <Flex as="div" flexDirection="column" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading size="xl" fontWeight="medium">
         Guard Rails
       </Heading>
       <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} mt={5} flexWrap="wrap">
-        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} width="25rem">
+        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} width="27rem">
           <Text as="h2" textAlign="center" fontWeight="500" fontSize="xl">
             Active Guardrails
           </Text>
-          <Stack mt={5}>
+          <Stack mt={5} spacing={3}>
             <Text as="div" pl={3} fontSize="lg">
               Buyer fee:&nbsp;
               {marketRequirements?.buyer_fee ? (
@@ -182,6 +178,74 @@ export const GuardRails: React.FC = () => {
           </Stack>
         </Box>
         <GuardRailsCards items={historyGuardrails} title="History Guardrails" badgeColor="red.200" />
+
+        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} width="27rem">
+          <Text as="h2" textAlign="center" fontWeight="500" fontSize="xl">
+            Upcoming Guardrails
+          </Text>
+          <Stack mt={5} spacing={3}>
+            <Text as="div" pl={3} fontSize="lg">
+              Buyer fee:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails.buyer_fee ? upcomingGuardRails.buyer_fee : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Seller fee:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.seller_fee ? upcomingGuardRails.seller_fee : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Maximum payment fees:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.maximum_payment_fees ? upcomingGuardRails?.maximum_payment_fees : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Minimum royalties:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.minimum_royalties ? upcomingGuardRails.minimum_royalties : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Maximum royalties:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.maximum_royalties ? upcomingGuardRails?.maximum_royalties : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Time between mints:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Max Data NFT supply:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.max_data_nft_supply ? upcomingGuardRails?.max_data_nft_supply : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Anti-Spam fee:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.antiSpam_tax ? upcomingGuardRails?.antiSpam_tax : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Accepted payments:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.accepted_payments ? upcomingGuardRails?.accepted_payments : "-"}
+              </Badge>
+            </Text>
+            <Text as="div" pl={3} fontSize="lg">
+              Accepted tokens:&nbsp;
+              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {upcomingGuardRails?.accepted_tokens ? upcomingGuardRails?.accepted_tokens : "-"}
+              </Badge>
+            </Text>
+          </Stack>
+        </Box>
       </Flex>
       <Heading size="xl" fontWeight="medium" my={6}>
         Whitelisted addresses

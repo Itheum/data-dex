@@ -10,9 +10,9 @@ type Props = {
   badgeColor?: string;
 };
 
-export const GuardRailsCards: React.FC<Props> = ({ items, title, badgeColor }) => {
-  // const { items, title, badgeColor } = props;
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+export const GuardRailsCards: React.FC<Props> = (props) => {
+  const { items, title, badgeColor } = props;
+  const [currentIndex, setCurrentIndex] = useState<number>(2);
 
   const arrowUp = "↑";
   const arrowDown = "↓";
@@ -32,38 +32,75 @@ export const GuardRailsCards: React.FC<Props> = ({ items, title, badgeColor }) =
 
   const currentItem = items[currentIndex];
 
-  const isLower = currentItem.buyer_fee_oldPrice < currentItem.buyer_fee_newPrice;
+  const isLowerBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) < parseInt(currentItem.buyer_fee_newPrice);
+  const isHigherBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) > parseInt(currentItem.buyer_fee_newPrice);
+  const isEqualBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) === parseInt(currentItem.buyer_fee_newPrice);
+
+  const isLowerSellerFee = parseInt(currentItem.seller_fee_oldPrice) < parseInt(currentItem.seller_fee_newPrice);
+  const isHigherSellerFee = parseInt(currentItem.seller_fee_oldPrice) > parseInt(currentItem.seller_fee_newPrice);
+  const isEqualSellerFee = parseInt(currentItem.seller_fee_oldPrice) === parseInt(currentItem.seller_fee_newPrice);
+
+  const isLowerMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) < parseInt(currentItem.minimum_royalties_newPrice);
+  const isHigherMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) > parseInt(currentItem.minimum_royalties_newPrice);
+  const isEqualMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) === parseInt(currentItem.minimum_royalties_newPrice);
+
+  const isLowerMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) < parseInt(currentItem.maximum_royalties_newPrice);
+  const isHigherMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) > parseInt(currentItem.maximum_royalties_newPrice);
+  const isEqualMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) === parseInt(currentItem.maximum_royalties_newPrice);
+
+  const isLowerTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) < parseInt(currentItem.time_between_mints_newPrice);
+  const isHigherTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) > parseInt(currentItem.time_between_mints_newPrice);
+  const isEqualTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) === parseInt(currentItem.time_between_mints_newPrice);
+
+  const isLowerAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) < parseInt(currentItem.antiSpam_tax_newPrice);
+  const isHigherAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) > parseInt(currentItem.antiSpam_tax_newPrice);
+  const isEqualAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) === parseInt(currentItem.antiSpam_tax_newPrice);
 
   return (
-    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} width="26rem">
+    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" p={5} w="27rem">
       <Text as="h2" textAlign="center" fontWeight="500" fontSize="xl">
         {title}
       </Text>
       <Flex flexDirection="row" alignItems="center">
-        <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === 0} onClick={handlePrevClick}></Button>
-        <Stack mt={5}>
+        <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handleNextClick} mr="auto"></Button>
+        <Stack mt={5} w="20rem">
           <Text as="div" pl={3} fontSize="lg">
             <Flex flexDirection="row" alignItems="center">
               <Text>Buyer fee:&nbsp;</Text>
               {currentItem.buyer_fee_newPrice ? (
                 <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
                   <Flex flexDirection="row" flexWrap="wrap">
-                    <Text as="s">{currentItem.buyer_fee_oldPrice}</Text>
-                    {isLower ? arrowUp : arrowDown}
+                    {!isEqualBuyerFee ? <Text as="s">{currentItem.buyer_fee_oldPrice}</Text> : <Text>{currentItem.buyer_fee_oldPrice}</Text>}
+                    {isLowerBuyerFee && arrowUp}
+                    {isHigherBuyerFee && arrowDown}
+                    {isEqualBuyerFee && equal}
                     <Text>{currentItem.buyer_fee_newPrice}</Text>
                     <Text>&nbsp;({currentItem.date})</Text>
                   </Flex>
                 </Badge>
               ) : (
-                "-"
+                <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                  {"-"}
+                </Badge>
               )}
             </Flex>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
-            Seller fee:&nbsp;
-            <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              {currentItem?.seller_fee_oldPrice ?? "-"}
-            </Badge>
+            <Flex flexDirection="row" alignItems="center">
+              <Text>Seller fee:&nbsp;</Text>
+              <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {(
+                  <Flex flexDirection="row" flexWrap="wrap">
+                    {!isEqualSellerFee ? <Text as="s">{currentItem.seller_fee_oldPrice}</Text> : <Text>{currentItem.seller_fee_oldPrice}</Text>}
+                    {isLowerSellerFee && arrowUp}
+                    {isHigherSellerFee && arrowDown}
+                    {isEqualSellerFee && equal}
+                    <Text>{currentItem.seller_fee_newPrice}</Text>
+                    <Text>&nbsp;({currentItem.date})</Text>
+                  </Flex>
+                ) ?? "-"}
+              </Badge>
+            </Flex>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
             Maximum payment fees:&nbsp;
@@ -72,22 +109,59 @@ export const GuardRailsCards: React.FC<Props> = ({ items, title, badgeColor }) =
             </Badge>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
-            Minimum royalties:&nbsp;
-            <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              {currentItem?.minimum_royalties !== null ? currentItem?.minimum_royalties : "-"}
-            </Badge>
+            <Flex flexDirection="row" alignItems="center">
+              <Text>Min royalties:&nbsp;</Text>
+              <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {(
+                  <Flex flexDirection="row" flexWrap="wrap">
+                    {!isEqualMinRoyalty ? <Text as="s">{currentItem.minimum_royalties_oldPrice}</Text> : <Text>{currentItem.minimum_royalties_oldPrice}</Text>}
+                    {isLowerMinRoyalty && arrowUp}
+                    {isHigherMinRoyalty && arrowDown}
+                    {isEqualMinRoyalty && equal}
+                    <Text>{currentItem.minimum_royalties_newPrice}</Text>
+                    <Text>&nbsp;({currentItem.date})</Text>
+                  </Flex>
+                ) ?? "-"}
+              </Badge>
+            </Flex>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
-            Maximum royalties:&nbsp;
-            <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              {currentItem?.maximum_royalties ? currentItem?.maximum_royalties : "-"}
-            </Badge>
+            <Flex flexDirection="row" alignItems="center">
+              <Text>Max royalties:&nbsp;</Text>
+              <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {(
+                  <Flex flexDirection="row" flexWrap="wrap">
+                    {!isEqualMaxRoyalty ? <Text as="s">{currentItem.maximum_royalties_oldPrice}</Text> : <Text>{currentItem.maximum_royalties_oldPrice}</Text>}
+                    {isLowerMaxRoyalty && arrowUp}
+                    {isHigherMaxRoyalty && arrowDown}
+                    {isEqualMaxRoyalty && equal}
+                    <Text>{currentItem.maximum_royalties_newPrice}</Text>
+                    <Text>&nbsp;({currentItem.date})</Text>
+                  </Flex>
+                ) ?? "-"}
+              </Badge>
+            </Flex>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
-            Time between mints:&nbsp;
-            <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              {currentItem?.time_between_mints ? currentItem?.time_between_mints : "-"}
-            </Badge>
+            <Flex flexDirection="row" alignItems="center">
+              <Text w={20}>Time between mints:&nbsp;</Text>
+              <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {(
+                  <Flex flexDirection="row" flexWrap="wrap">
+                    {!isEqualTimeBetweenMints ? (
+                      <Text as="s">{currentItem.time_between_mints_oldPrice}</Text>
+                    ) : (
+                      <Text>{currentItem.time_between_mints_oldPrice}</Text>
+                    )}
+                    {isLowerTimeBetweenMints && arrowUp}
+                    {isHigherTimeBetweenMints && arrowDown}
+                    {isEqualTimeBetweenMints && equal}
+                    <Text>{currentItem.time_between_mints_newPrice}</Text>
+                    <Text>&nbsp;({currentItem.date})</Text>
+                  </Flex>
+                ) ?? "-"}
+              </Badge>
+            </Flex>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
             Max Data NFT supply:&nbsp;
@@ -96,10 +170,21 @@ export const GuardRailsCards: React.FC<Props> = ({ items, title, badgeColor }) =
             </Badge>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
-            Anti-Spam fee:&nbsp;
-            <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-              {currentItem?.antiSpam_tax ? currentItem?.antiSpam_tax : "-"}
-            </Badge>
+            <Flex flexDirection="row" alignItems="center">
+              <Text w={20}>Anti-Spam fee:&nbsp;</Text>
+              <Badge color={badgeColor} fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
+                {(
+                  <Flex flexDirection="row" flexWrap="wrap">
+                    {!isEqualAntiSpamFee ? <Text as="s">{currentItem.antiSpam_tax_oldPrice}</Text> : <Text>{currentItem.antiSpam_tax_oldPrice}</Text>}
+                    {isLowerAntiSpamFee && arrowUp}
+                    {isHigherAntiSpamFee && arrowDown}
+                    {isEqualAntiSpamFee && equal}
+                    <Text>{currentItem.antiSpam_tax_newPrice}</Text>
+                    <Text>&nbsp;({currentItem.date})</Text>
+                  </Flex>
+                ) ?? "-"}
+              </Badge>
+            </Flex>
           </Text>
           <Text as="div" pl={3} fontSize="lg">
             Accepted payments:&nbsp;
@@ -114,7 +199,7 @@ export const GuardRailsCards: React.FC<Props> = ({ items, title, badgeColor }) =
             </Badge>
           </Text>
         </Stack>
-        <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handleNextClick}></Button>
+        <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handlePrevClick} ml="auto"></Button>
       </Flex>
     </Box>
   );
