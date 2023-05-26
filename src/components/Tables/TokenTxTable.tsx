@@ -40,8 +40,9 @@ export default function TokenTxTable(props: TokenTableProps) {
       },
       {
         id: "age",
-        accessorFn: (row) => timeSince(row.timestamp),
+        accessorFn: (row) => row.timestamp,
         header: "Age",
+        cell: (cellProps) => timeSince(cellProps.getValue()),
         footer: (footerProps) => footerProps.column.id,
       },
       {

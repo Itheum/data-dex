@@ -38,8 +38,9 @@ export default function ClaimsTxTable(props: { address: string }) {
       },
       {
         id: "age",
-        accessorFn: (row) => timeSince(row.timestamp),
+        accessorFn: (row) => row.timestamp,
         header: "Age",
+        cell: (cellProps) => timeSince(cellProps.getValue()),
         footer: (footerProps) => footerProps.column.id,
       },
       {
