@@ -99,9 +99,7 @@ export default function TokenTxTable(props: TokenTableProps) {
 
     Promise.all([
       axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
-      axios.get(
-        `https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&function=cancelOffer%2CaddOffer%2CacceptOffer%2CchangeOfferPrice&size=10000&order=asc`
-      ),
+      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&size=10000&order=asc`),
     ]).then((responses) => {
       const mergedTransactions = getHistory(responses, props.tokenId);
       const history = buildHistory(mergedTransactions);
@@ -121,8 +119,10 @@ function getHistory(responses: any[], tokenId?: string) {
   responses.forEach((response: any) => {
     const txs = response.data;
     const transactions = txs.map((tx: any) => {
-      const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
-      return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
+      if (["burn", "addOffer", "acceptOffer", "cancelOffer", "changeOfferPrice"].includes(tx.function)) {
+        const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
+        return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
+      }
     });
     const filteredTransactions = transactions.filter((data: DataNftOnNetwork) => {
       return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
