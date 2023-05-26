@@ -50,3 +50,17 @@ export const getSentryProfile = () => {
 
   return profile;
 };
+
+export const getApiDataDex = (networkId: string) => {
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
+  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
+
+  return process.env[envKey] || defaultUrl;
+};
+
+export const getApiDataMarshal = (networkId: string) => {
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
+  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
+
+  return process.env[envKey] || defaultUrl;
+};
