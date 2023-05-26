@@ -59,6 +59,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
           style={styles.textInput}
           value={(columnFilterValue as [number, number])?.[0] ? new Date((columnFilterValue as [number, number])?.[0] * 1000).toISOString().split("T")[0] : ""}
           onChange={(event) => handleDateChange(event, true)}
+          max={new Date().toISOString().split("T")[0]}
         />
         <input
           type="date"
