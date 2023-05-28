@@ -694,7 +694,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount }: { onRfMount: a
     onProgressModalOpen();
 
     const myHeaders = new Headers();
-    myHeaders.append("authorization", process.env.REACT_APP_ENV_ITHEUMAPI_M2M_KEY || "");
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
 

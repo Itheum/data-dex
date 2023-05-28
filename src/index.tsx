@@ -11,17 +11,17 @@ import { UserContextProvider } from "./store/UserContext";
 import "../src/MultiversX/custom.css";
 
 if (process.env.NODE_ENV === "production") {
-  Sentry.init({
-    dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
+  // Sentry.init({
+  //   dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
 
-    // this is so we can use the environments filter in sentry to filter staging production vs actual production
-    environment: getSentryProfile(),
+  //   // this is so we can use the environments filter in sentry to filter staging production vs actual production
+  //   environment: getSentryProfile(),
 
-    integrations: [new Sentry.BrowserTracing()],
+  //   integrations: [new Sentry.BrowserTracing()],
 
-    // Performance Monitoring
-    tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-  });
+  //   // Performance Monitoring
+  //   tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
+  // });
 }
 
 const breakpoints = {
