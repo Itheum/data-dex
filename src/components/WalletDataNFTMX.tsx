@@ -543,7 +543,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       <Box flex="1.1">
                         <Stack>
                           <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
-                          <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                          <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                             {selectedDataNft.tokenName}
                           </Text>
                         </Stack>
@@ -569,8 +569,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     <HStack mt="8">
                       <Text fontSize="md">How many do you want to burn?</Text>
                       <NumberInput
-                        size="xs"
-                        maxW={16}
+                        ml="3px"
+                        size="sm"
+                        maxW="24"
                         step={1}
                         defaultValue={selectedDataNft.balance}
                         min={1}
@@ -587,7 +588,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                       </NumberInput>
                     </HStack>
                     {dataNftBurnAmountError && (
-                      <Text ml="208px" color="red.400" fontSize="sm" mt="1 !important">
+                      <Text ml="215px" color="red.400" fontSize="xs" mt="1 !important">
                         {dataNftBurnAmountError}
                       </Text>
                     )}
@@ -686,7 +687,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     <Text fontSize="sm" lineHeight={1.7}>
                       <InfoIcon boxSize={5} mr={1} />
                       Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select{" "}
-                      <b>Always allow pop-ups</b>
+                      <b>Always allow pop-ups</b> and then close this and click on <b>View Data</b> again.
                     </Text>
                     <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
                   </Stack>

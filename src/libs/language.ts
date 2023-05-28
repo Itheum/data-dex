@@ -17,8 +17,10 @@ export const labels = {
   "ERR_MINT_NO_TX": "Cannot send transaction to the blockchain. (ER-15)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-16)",
-  "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace reuirements. (ER-17)",
+  "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace requirements. (ER-17)",
   "ERR_MARKET_OFFERS_FAIL": "Could not fetch marketplace offers. (ER-18)",
+  "ERR_MINT_FORM_NOT_ENOUGH_TAX": "You have insufficient ITHEUM tokens for the Anti-Spam Tax. (ER-19)",
+  "ERR_MINT_FORM_GEN_IMG_API_DOWN": "Generative image generation service is not responding. (ER-20)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":
     "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",
@@ -29,5 +31,5 @@ export const labels = {
   "MINT_FORM_POPUP_INFO_TITLE": "A longer title to describe your data asset",
   "MINT_FORM_POPUP_INFO_DESC": "A description of your data asset",
   "MINT_FORM_POPUP_INFO_SUPPLY": 'The total "supply" you would like to mint (i.e. individual copies of your data access license)',
-  "MINT_FORM_POPUP_INFO_ROYALTY": 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace',
+  "MINT_FORM_POPUP_INFO_ROYALTY": 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace',  
 };

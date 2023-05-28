@@ -47,8 +47,8 @@ export const GetWhitelist: React.FC = () => {
               </Button>
             </Box>
 
-            <Box mt={{ base: 10, lg: 0 }}>
-              <Image boxSize={{ base: "auto", lg: "40rem" }} w="100%" height="auto" src={illustration} alt="Data NFTs Illustration" />
+            <Box>
+              <Image className="bounce-hero-img" boxSize={{ base: "auto", lg: "40rem" }} w="100%" height="auto" src={illustration} alt="Data NFTs Illustration" />
             </Box>
           </Flex>
           <Box position="absolute" bottom={2} right={4} display={{ base: "none", lg: "flex" }}>

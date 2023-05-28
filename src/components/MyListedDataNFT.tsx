@@ -247,7 +247,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                           }
                           onUpdatePriceModalOpen();
                         }}>
-                        Update Price
+                        Update Fee
                       </Button>
                     </Flex>
                   </>

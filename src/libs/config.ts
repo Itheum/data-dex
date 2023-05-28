@@ -153,7 +153,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL, MENU.DATACAT],
+    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -269,6 +269,10 @@ export const tmpProgIdMapping = {
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
   "custom-gamer-activity": "Gamer Passport Activity",
   "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
+};
+
+export const isValidNumericDecimalCharacter = (char: any) => {
+  return char.match(/[0-9.]/);
 };
 
 export const dataCATDemoUserData = {

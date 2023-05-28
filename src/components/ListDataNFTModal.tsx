@@ -20,18 +20,13 @@ export type ListModalProps = {
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
   const { address } = useGetAccountInfo();
   const toast = useToast();
+  const fullPrice = amount * offer.wanted_token_amount;
+  const priceWithSellerFee = fullPrice - (fullPrice * sellerFee) / 10000;
+  const priceWithSellerFeeAndRoyalties = priceWithSellerFee - priceWithSellerFee * nftData.royalties;
   const feePrice =
     address !== nftData.creator
-      ? printPrice(
-          (amount * offer.wanted_token_amount * (10000 - sellerFee)) / 10000,
-          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-        )
-      : printPrice(
-          (amount * offer.wanted_token_amount * (10000 - sellerFee)) / 10000,
-          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-        );
-
-  // new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties).toNumber()
+      ? printPrice(priceWithSellerFeeAndRoyalties, getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce))
+      : printPrice(priceWithSellerFee, getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce));
   const fee = offer.wanted_token_amount;
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
@@ -91,7 +86,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">List Data NFTs on Marketplace</Text>
                 <Flex mt="1">
-                  <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                     {nftData.tokenName}
                   </Text>
                 </Flex>
@@ -152,7 +147,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                   {": "}
                   {
                     <>
-                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice * amount, 2)} USD)` : ""}
+                      {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice * amount, 2)} USD)` : ""}
                     </>
                   }
                 </Box>
