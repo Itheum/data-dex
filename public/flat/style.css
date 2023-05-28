@@ -1,7 +1,7 @@
 body {
   padding: 2rem;
   background-color: #222;
-  color: #FFF;
+  color: #fff;
 }
 
 #full-menu {
@@ -12,6 +12,8 @@ body {
   display: none;
 }
 
-#sell-panel, #buy-panel, #buy-panel-reason {
+#sell-panel,
+#buy-panel,
+#buy-panel-reason {
   display: none;
 }

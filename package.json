@@ -1,33 +1,43 @@
 {
   "name": "data-dex",
-  "version": "0.8.0",
+  "version": "0.11.1-alpha",
   "description": "The Itheum Data DEX enables you to trade your personal data using web3 tech",
   "dependencies": {
-    "@chakra-ui/icons": "2.0.17",
-    "@chakra-ui/react": "2.5.1",
+    "@chakra-ui/icons": "2.0.18",
+    "@chakra-ui/react": "2.5.5",
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
-    "@multiversx/sdk-core": "11.3.0",
-    "@multiversx/sdk-dapp": "2.8.7",
-    "@multiversx/sdk-network-providers": "1.3.0",
-    "@sentry/react": "7.38.0",
-    "@sentry/tracing": "7.38.0",
+    "@hookform/resolvers": "3.1.0",
+    "@multiversx/sdk-core": "12.1.1",
+    "@multiversx/sdk-dapp": "2.11.2",
+    "@multiversx/sdk-network-providers": "1.4.0",
+    "@multiversx/sdk-transaction-decoder": "1.0.2",
+    "@sentry/react": "7.48.0",
+    "@tanstack/match-sorter-utils": "8.8.4",
+    "@tanstack/react-table": "8.8.5",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.4.3",
-    "axios": "1.3.3",
+    "@web3-onboard/core": "^2.17.0",
+    "@web3-onboard/injected-wallets": "^2.8.5",
+    "@web3-onboard/react": "^2.8.1",
+    "@web3-onboard/transaction-preview": "^2.0.6",
+    "axios": "1.3.5",
     "dotenv": "16.0.3",
-    "framer-motion": "9.0.4",
+    "ethers": "^5.7.2",
+    "framer-motion": "10.12.2",
     "mime": "3.0.0",
     "moment": "2.29.4",
-    "nft.storage": "7.0.0",
+    "nft.storage": "7.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
-    "react-icons": "4.7.1",
-    "react-router-dom": "6.8.0",
+    "react-hook-form": "7.43.9",
+    "react-icons": "4.8.0",
+    "react-router-dom": "6.9.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "3.1.1"
+    "web-vitals": "3.3.1",
+    "yup": "1.1.1"
   },
   "scripts": {
     "start": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts start",
@@ -37,30 +47,13 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-flat": "npx http-server -o /flat",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "lint": "eslint src --ext .js,.ts,.tsx",
+    "format": "prettier --write . && npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Itheum/data-dex.git"
-  },
-  "eslintConfig": {
-    "rules": {
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "no-debugger": [
-        "warn"
-      ],
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ]
-    },
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -75,26 +68,28 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "18.14.0",
-    "@types/react": "18.0.28",
+    "@types/node": "18.15.11",
+    "@types/react": "18.0.37",
     "@types/react-dom": "18.0.11",
     "@types/react-router-dom": "5.3.3",
-    "@typescript-eslint/eslint-plugin": "5.53.0",
-    "@typescript-eslint/parser": "5.53.0",
-    "eslint": "8.34.0",
-    "eslint-config-prettier": "8.6.0",
+    "@typescript-eslint/eslint-plugin": "5.59.0",
+    "@typescript-eslint/parser": "5.59.0",
+    "eslint": "8.38.0",
+    "eslint-config-prettier": "8.8.0",
     "eslint-config-react-app": "7.0.1",
     "eslint-config-standard": "17.0.0",
-    "eslint-import-resolver-typescript": "3.5.3",
+    "eslint-import-resolver-typescript": "3.5.5",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "prettier": "2.8.4",
+    "prettier": "2.8.7",
     "react-error-overlay": "6.0.11",
     "react-scripts": "5.0.1",
-    "sass": "1.58.3",
     "typescript": "4.9.5"
+  },
+  "engines": {
+    "node": "18.15.0"
   }
 }
