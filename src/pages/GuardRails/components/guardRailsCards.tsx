@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Badge, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { historicGuardrails } from "../../../libs/config";
@@ -12,20 +13,23 @@ type Props = {
 export const GuardRailsCards: React.FC<Props> = (props) => {
   const { items, title, badgeColor } = props;
   const [currentIndex, setCurrentIndex] = useState<number>(2);
+  const [xPosition, setXPosition] = useState<number>(0);
 
   const arrowUp = "↑";
   const arrowDown = "↓";
   const equal = "~";
 
-  const handlePrevClick = () => {
+  const handleNextClick = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
+      setXPosition(xPosition + 400);
     }
   };
 
-  const handleNextClick = () => {
+  const handlePrevClick = () => {
     if (currentIndex < 2) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
+      setXPosition(xPosition - 400);
     }
   };
 
@@ -61,9 +65,10 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         {title}
       </Text>
       <Flex flexDirection="row" alignItems="center">
-        <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handleNextClick} mr="auto"></Button>
+        <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handlePrevClick} mr="auto"></Button>
+        {/*<motion.div animate={{ x: xPosition }} transition={{ type: "tween", duration: 1 }}>*/}
         <Stack mt={5} w="20rem">
-          <Text as="div" pl={3} fontSize="lg">
+          <Text as="div" pl={3} fontSize="lg" overflow="hidden">
             <Flex flexDirection="row" alignItems="center">
               <Text>Buyer fee:&nbsp;</Text>
               {currentItem.buyer_fee_newPrice ? (
@@ -198,7 +203,8 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
             </Badge>
           </Text>
         </Stack>
-        <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handlePrevClick} ml="auto"></Button>
+        {/*</motion.div>*/}
+        <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} ml="auto"></Button>
       </Flex>
     </Box>
   );
