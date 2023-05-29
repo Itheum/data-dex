@@ -295,8 +295,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
                 const input = event.data.toString();
-                const matches = input.match(/(?<=\[)[^\][]*(?=])/g);
-
+                let matches = null;
+                try {
+                  matches = input.match(/\[([^\][]*)]/g);
+                  if (matches) {
+                    matches = matches.map((match) => match.slice(1, -1));
+                  }
+                } catch (e) {
+                  console.log(e);
+                }
                 if (matches) {
                   const title =
                     matches[1] == "acceptOffer"
