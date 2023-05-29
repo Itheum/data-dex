@@ -224,7 +224,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Flex>
               )}
             </TabPanel>
-            <TabPanel mt={10} width={"full"}>
+            <TabPanel mt={2} width={"full"}>
               {purchasedDataNfts.length >= 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}

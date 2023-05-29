@@ -44,6 +44,7 @@ import { createNftId, sleep, hexZero } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import { Icon } from "@chakra-ui/icons";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -230,52 +231,47 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
         </Heading>
 
-        {/*<Box position="relative">*/}
         <Tabs pt={10}>
           <TabList justifyContent={{ base: "start", lg: "space-between" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
             <Flex>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
-                <Box
-                  flexDirection="row"
-                  _disabled={{ opacity: 1 }}
-                  opacity={0.4}
-                  fontSize={{ base: "sm", md: "md" }}
-                  onClick={() => {
-                    if (hasPendingTransactions) return;
-                    navigate("/datanfts/marketplace/market");
-                  }}>
-                  <Flex ml="5.2rem" alignItems="center" gap={1.5}>
-                    <FaStore size="0.95rem" />
+              <Tab
+                _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
+                flexDirection="row"
+                _disabled={{ opacity: 1 }}
+                fontSize={{ base: "sm", md: "md" }}
+                onClick={() => {
+                  if (hasPendingTransactions) return;
+                  navigate("/datanfts/marketplace/market");
+                }}>
+                <Flex ml="4.7rem" alignItems="center" py={3}>
+                  <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
+                  <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                    Public Marketplace
+                  </Text>
+                </Flex>
+              </Tab>
+              <Tab
+                _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
+                _disabled={{ opacity: 1 }}
+                fontSize={{ base: "sm", md: "md" }}
+                onClick={() => {
+                  if (hasPendingTransactions) return;
+                  navigate("/datanfts/marketplace/my");
+                }}>
+                {isMxLoggedIn && (
+                  <Flex ml="4.7rem" alignItems="center" py={3}>
+                    <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
-                      Public Marketplace
+                      My Listed Data NFT(s)
+                    </Text>
+                    <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                      {myListedDataNFT > 0 && myListedDataNFT}
                     </Text>
                   </Flex>
-                </Box>
-              </Tab>
-              <Tab _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
-                {isMxLoggedIn && (
-                  <Box
-                    _disabled={{ opacity: 1 }}
-                    opacity={0.4}
-                    fontSize={{ base: "sm", md: "md" }}
-                    onClick={() => {
-                      if (hasPendingTransactions) return;
-                      navigate("/datanfts/marketplace/my");
-                    }}>
-                    <Flex mx="5" alignItems="center" gap={1.5}>
-                      <FaBrush size="0.95rem" />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
-                        My Listed Data NFT(s)
-                      </Text>
-                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
-                        {myListedDataNFT > 0 && myListedDataNFT}
-                      </Text>
-                    </Flex>
-                  </Box>
                 )}
               </Tab>
             </Flex>
-            <Flex py={3} mr="4.7rem">
+            <Flex mr="4.7rem">
               <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
             </Flex>
           </TabList>
@@ -375,7 +371,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             </Text>
           </Box>
         </Box>
-        {/*</Box>*/}
       </Stack>
 
       {offerForDrawer && (
