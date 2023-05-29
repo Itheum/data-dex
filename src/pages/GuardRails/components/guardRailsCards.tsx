@@ -1,6 +1,5 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Badge, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
-import { useMintStore } from "../../../store";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { historicGuardrails } from "../../../libs/config";
 
