@@ -192,7 +192,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                       Unlock from: {` `}
                       {
                         <>
-                          {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                          {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                         </>
                       }
                     </Text>

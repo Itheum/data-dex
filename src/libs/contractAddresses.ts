@@ -39,10 +39,10 @@ const contracts = {
     mainnet: {
       itheumTokenContractAddress: "ITHEUM-df6f26",
       claimsContractAddress: "erd1qqqqqqqqqqqqqpgqnsmrn5q08eqth3fy8el87sgdj0mkhwdwl2jqnf59cg",
-      dataNFTFTTicker: "DATANFTFT-e6fb09",
+      dataNFTFTTicker: "DATANFTFT-e936d4",
       faucetContractAddress: "",
-      dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgq44muq3nqezx0ma9vu82rs6x3sycwjzrcc77qze5uju",
-      dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqxytuyt0p2c67nucvahk5y5s2ry3mjdrmc77q6ew3xc",
+      dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgqmuzgkurn657afd3r2aldqy2snsknwvrhc77q3lj8l6",
+      dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqay2r64l9nhhvmaqw4qanywfd0954w2m3c77qm7drxc",
     },
   },
 };

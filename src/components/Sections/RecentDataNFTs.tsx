@@ -96,6 +96,12 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
     }
   }, [_chainMeta]);
 
+  let skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
+
+  if (isMxLoggedIn) {
+    skeletonHeight = { base: "240px", md: "170px", "2xl": "190px" };
+  }
+
   return (
     <>
       <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
@@ -109,7 +115,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
           return (
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
-                <Skeleton height={{ base: "280px", md: "180px" }} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
+                <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
                   </Link>

@@ -2,6 +2,7 @@ import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { NetworkIdType } from "libs/types";
+import { convertToLocalString } from "./number";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -73,7 +74,7 @@ export const clearAppSessionsLaunchMode = () => {
 };
 
 export const printPrice = (price: number, token: string): string => {
-  return price <= 0 ? "FREE" : `${price} ${token}`;
+  return price <= 0 ? "FREE" : `${convertToLocalString(price)} ${token}`;
 };
 
 export const createNftId = (collection_id: string, nft_nonce: number) => {
@@ -162,4 +163,19 @@ export const tokenDecimals = (token_identifier: string) => {
   } else if (token_identifier === "OFE-29eb54") {
     return 4;
   } else return 0;
+};
+
+export const getApiDataDex = (networkId: NetworkIdType) => {
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
+  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
+
+  return process.env[envKey] || defaultUrl;
+};
+
+export const getApiDataMarshal = (networkId: NetworkIdType) => {
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
+  const defaultUrl =
+    networkId === "E1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
+
+  return process.env[envKey] || defaultUrl;
 };

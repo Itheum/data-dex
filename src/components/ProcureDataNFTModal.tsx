@@ -17,17 +17,9 @@ export interface ProcureAccessModalProps {
   offer: OfferType;
   amount: number;
   setSessionId?: (e: any) => void;
-};
+}
 
-export default function ProcureDataNFTModal({
-  isOpen,
-  onClose,
-  buyerFee,
-  nftData,
-  offer,
-  amount,
-  setSessionId,
-}: ProcureAccessModalProps) {
+export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId }: ProcureAccessModalProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
@@ -35,7 +27,7 @@ export default function ProcureDataNFTModal({
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
-  
+
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
     getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
@@ -135,7 +127,7 @@ export default function ProcureDataNFTModal({
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">Procure Access to Data NFTs</Text>
                 <Flex mt="1">
-                  <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1" textAlign="center">
+                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
                     {nftData.tokenName}
                   </Text>
                 </Flex>
@@ -194,7 +186,7 @@ export default function ProcureDataNFTModal({
                   {": "}
                   {buyerFee ? (
                     <>
-                      {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
+                      {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                     </>
                   ) : (
                     "-"

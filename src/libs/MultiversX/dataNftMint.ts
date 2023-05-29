@@ -233,7 +233,7 @@ export class DataNftMintContract {
 
   async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();
