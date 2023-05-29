@@ -9,7 +9,6 @@ import {
   tokenContractAddress_Mx_Mainnet,
   claimsContractAddress_Mx_Mainnet,
   faucetContractAddress_Mx_Mainnet,
-  dataNFTFTTicker_Mx_Mainnet,
   dataNftMarketContractAddress_Mx_Mainnet,
   dataNftMintContractAddress_Mx_Mainnet,
 } from "./contractAddresses";

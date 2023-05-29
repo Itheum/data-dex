@@ -20,16 +20,13 @@ export type ListModalProps = {
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
   const { address } = useGetAccountInfo();
   const toast = useToast();
+  const fullPrice = amount * offer.wanted_token_amount;
+  const priceWithSellerFee = fullPrice - (fullPrice * sellerFee) / 10000;
+  const priceWithSellerFeeAndRoyalties = priceWithSellerFee - priceWithSellerFee * nftData.royalties;
   const feePrice =
     address !== nftData.creator
-      ? printPrice(
-          (amount * offer.wanted_token_amount * (10000 - sellerFee - nftData.royalties * 10000)) / 10000,
-          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-        )
-      : printPrice(
-          (amount * offer.wanted_token_amount * (10000 - sellerFee)) / 10000,
-          getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-        );
+      ? printPrice(priceWithSellerFeeAndRoyalties, getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce))
+      : printPrice(priceWithSellerFee, getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce));
   const fee = offer.wanted_token_amount;
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
@@ -166,16 +163,16 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                         <>
                           {" " + new BigNumber(offer.wanted_token_amount).multipliedBy(amount).toNumber() + " "}
                           {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
-                          {address != nftData.creator && (
-                            <>
-                              {" - "}
-                              {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(nftData.royalties).toNumber()}
-                              {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
-                            </>
-                          )}
                           {" - "}
                           {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000).toNumber()}
                           {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          {address != nftData.creator && (
+                            <>
+                              {" - "}
+                              {new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties).toNumber()}
+                              {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                            </>
+                          )}
                         </>
                       )}
                     </>
