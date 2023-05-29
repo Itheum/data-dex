@@ -6,16 +6,16 @@ import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/util";
 import { useChainMeta } from "store/ChainMetaContext";
 import { useUser } from "store/UserContext";
+import { useSearchParams } from "react-router-dom";
 
 function CustomLoader() {
   return (
     <div
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        minHeight: '100vh'
-      }}
-    >
+        display: "flex",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}>
       <Box margin="auto !important">
         <Spinner size="xl" color="teal.200" margin="auto !important" />
         <Text mt="5">Loading</Text>
@@ -29,6 +29,7 @@ const baseUserContext = {
 }; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
 
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
+  const [searchParams] = useSearchParams();
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -39,8 +40,10 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
-
+    let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
+    if (searchParams.get("accessToken")) {
+      networkId = "E1";
+    }
     setChainMeta({
       networkId,
       contracts: contractsForChain(networkId),
@@ -70,16 +73,16 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     setChainMeta({});
   };
 
-  return (
-    isLoading ?
-      <CustomLoader />
-      : <AppMx
-          onLaunchMode={handleLaunchMode}
-          resetAppContexts={resetAppContexts}
-          appConfig={{
-            mxEnvironment: launchEnvironment,
-          }}
-        />
+  return isLoading ? (
+    <CustomLoader />
+  ) : (
+    <AppMx
+      onLaunchMode={handleLaunchMode}
+      resetAppContexts={resetAppContexts}
+      appConfig={{
+        mxEnvironment: launchEnvironment,
+      }}
+    />
   );
 }
 
