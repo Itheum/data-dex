@@ -20,7 +20,7 @@ import {
   SimpleGrid,
   Flex,
   useColorMode,
-  useBreakpointValue
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -87,7 +87,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
           // after 2 min wait we reenable the button on the UI automatically
           setTimeout(() => {
             setIsMxFaucetDisabled(false);
-          }, lastUsedTime + 120000 + 1000 - timeNow);
+          }, lastUsedTime + 120 * 60 * 1000 + 1000 - timeNow);
         } else {
           setIsMxFaucetDisabled(false);
         }
@@ -270,12 +270,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
         <Box m={heroGridMargin} pt="20" pb="10">
           <SimpleGrid columns={[1, 2, 3, 4]} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
-              <Box
-                w={[tileBoxMdW, "initial"]}
-                backgroundColor="none"
-                border="1px solid transparent"
-                borderColor="#00C79740"
-                borderRadius="16px">
+              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH} alignItems={"center"}>
                   {!dataCATAccount && (
                     <Heading size="md" fontWeight="semibold" pb={2}>
@@ -306,13 +301,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
 
                         <Spacer />
 
-                        <Button 
-                          size="lg" 
-                          borderRadius="xl" 
-                          colorScheme="teal" 
-                          variant="outline" 
-                          onClick={() => onDataCATAccount(true)}
-                        >
+                        <Button size="lg" borderRadius="xl" colorScheme="teal" variant="outline" onClick={() => onDataCATAccount(true)}>
                           <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
                         </Button>
                       </>
@@ -352,12 +341,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             </ChainSupportedComponent>
 
             <ChainSupportedComponent feature={MENU.FAUCET}>
-              <Box
-                w={[tileBoxMdW, "initial"]}
-                backgroundColor="none"
-                border="1px solid transparent"
-                borderColor="#00C79740"
-                borderRadius="16px">
+              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH}>
                   <Heading size="md" fontWeight="semibold" pb={2}>
                     {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
@@ -369,18 +353,13 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
                   <Spacer />
 
                   <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 1000 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
                   </Button>
                 </Stack>
               </Box>
             </ChainSupportedComponent>
 
-            <Box
-              w={[tileBoxMdW, "initial"]}
-              backgroundColor="none"
-              border="1px solid transparent"
-              borderColor="#00C79740"
-              borderRadius="16px">
+            <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
                 <Heading size="md" pb={2}>
                   NFMe ID Avatar
@@ -393,12 +372,7 @@ export default function HomeMx({ setMenuItem, dataCATAccount, onRfMount, loading
             </Box>
 
             <ChainSupportedComponent feature={MENU.CLAIMS}>
-              <Box
-                w={[tileBoxMdW, "initial"]}
-                backgroundColor="none"
-                border="1px solid transparent"
-                borderColor="#00C79740"
-                borderRadius="16px">
+              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
                   <Heading size="md" pb={2}>
                     My Claims
