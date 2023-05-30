@@ -74,7 +74,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "760px" : "685px"}
+        h={isMxLoggedIn ? "780px" : "685px"}
         mx="3 !important"
         borderWidth="0.5px"
         borderRadius="xl"
@@ -188,7 +188,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               {feePrice && (
                 <>
                   <Box fontSize="sm" mt="2">
-                    <Text>
+                    <Text h="10 !important" noOfLines={2}>
                       Unlock from: {` `}
                       {
                         <>

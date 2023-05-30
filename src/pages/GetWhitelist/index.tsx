@@ -24,14 +24,22 @@ export const GetWhitelist: React.FC = () => {
             alignItems="center">
             <Box width={["100%", null, null, "500px", "690px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
               <Heading as="h1" size={["1xl", null, null, "1xl", "2xl"]} fontWeight="500">
-                Your data is now a <Text as="span" color="teal.200">new asset class!</Text> Mint supercharged Data NFTs with <Text as="span" color="teal.200">real-world value</Text>
+                Your data is now a{" "}
+                <Text as="span" color="teal.200">
+                  new asset class!
+                </Text>{" "}
+                Mint supercharged Data NFTs with{" "}
+                <Text as="span" color="teal.200">
+                  real-world value
+                </Text>
               </Heading>
 
               <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="7">
-                Are you a Data Creator? Do you generate valuable data insights for the Blockchain, DeFi, Gaming, Entertainment, or any other industry? If so, we want to work with you!
+                Are you a Data Creator? Do you generate valuable data insights for the Blockchain, DeFi, Gaming, Entertainment, or any other industry? If so, we
+                want to work with you!
               </Text>
               <Text fontSize="lg" fontWeight="400" lineHeight="25px" mt={7}>
-                Get <strong>Whitelisted</strong> to be part of the first batch of Data Creators mint Data NFTs. Make history!
+                Get <strong>Whitelisted</strong> to be part of the first batch of Data Creators to mint Data NFTs. Make history!
               </Text>
               <Button
                 as={Link}

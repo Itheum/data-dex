@@ -35,6 +35,7 @@ import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { useChainMeta } from "store/ChainMetaContext";
+import { GuardRails } from "../GuardRails/GuardRails";
 
 const mxLogout = logout;
 
@@ -233,6 +234,10 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
               <Route path="getwhitelisted" element={<Outlet />}>
                 <Route path="" element={<GetWhitelist />} />
+              </Route>
+
+              <Route path="guardRails" element={<Outlet />}>
+                <Route path="" element={<GuardRails />} />
               </Route>
 
               <Route
