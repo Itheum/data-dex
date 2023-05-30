@@ -1,4 +1,5 @@
 import React, { InputHTMLAttributes, useEffect, useState } from "react";
+import { SearchIcon } from "@chakra-ui/icons";
 
 export default function DebouncedInput({
   value: initialValue,
@@ -24,5 +25,14 @@ export default function DebouncedInput({
     return () => clearTimeout(timeout);
   }, [value]);
 
-  return <input {...props} value={value} onChange={(e) => setValue(e.target.value)} />;
+  return (
+    <>
+      <div style={{ position: "relative" }}>
+        <input {...props} value={value} onChange={(e) => setValue(e.target.value)} />
+        <div style={{ position: "absolute", top: "55%", left: "8px", transform: "translateY(-50%)" }}>
+          <SearchIcon /> {/* Icon prefix */}
+        </div>
+      </div>
+    </>
+  );
 }

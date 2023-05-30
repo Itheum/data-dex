@@ -910,6 +910,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                     src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${dataCATAccount._lookups.programs[item.program].img}.png`}
                     alt=""
                     height="13.375rem"
+                    width={{ base: "auto", md: "355px" }}
                     border="1px solid transparent"
                     borderColor="#00C797"
                     borderRadius="16px"
@@ -1068,7 +1069,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
                         <InputLabelWithPopover tkey="data-preview-url">
-                          <FormLabel fontWeight="bold" fontSize="md">
+                          <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
                             Data Preview URL
                           </FormLabel>
                         </InputLabelWithPopover>
@@ -1237,7 +1238,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                           name="numberOfCopiesForm"
                         />
                         <Text color="gray.400" fontSize="sm" mt={"1"}>
-                          Limit the quality to increase value (rarity) - Suggested: less than {maxSupply}
+                          Limit the quantity to increase value (rarity) - Suggested: less than {maxSupply}
                         </Text>
                         <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
                       </FormControl>
