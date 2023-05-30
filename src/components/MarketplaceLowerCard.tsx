@@ -12,7 +12,9 @@ import {
   useColorMode,
   Flex,
   Box,
+  Tooltip,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
@@ -26,6 +28,7 @@ type MarketplaceLowerCardProps = {
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
+  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -43,18 +46,23 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
 
   return (
     <>
-      <Button
-        my="3"
-        size="sm"
-        colorScheme="teal"
-        variant="outline"
-        onClick={() => {
-          window.open(nftMetadata.dataPreview);
-        }}>
-        <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-          Preview Data
-        </Text>
-      </Button>
+      <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+        <Button
+          my="3"
+          size="sm"
+          colorScheme="teal"
+          variant="outline"
+          isDisabled={network.id == "devnet"}
+          onClick={() => {
+            window.open(nftMetadata.dataPreview);
+          }}
+        >
+          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+            Preview Data
+          </Text>
+        </Button>
+      </Tooltip>
+      
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack>
