@@ -41,7 +41,6 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
   const marketContract = new DataNftMarketContract(networkId);
-  console.log(marketContract);
   const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
