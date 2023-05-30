@@ -252,12 +252,17 @@ const AppHeader = ({
                       <MenuButton as={Button} size={"lg"} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
-                      <MenuList maxW={"fit-content"}>
+                      <MenuList maxW={"fit-content"} backgroundColor="#181818">
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
-                              <MenuItem key={label} isDisabled={hasPendingTransactions} onClick={() => navigateToDiscover(menuEnum)} color="teal.200">
+                              <MenuItem
+                                key={label}
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => navigateToDiscover(menuEnum)}
+                                color="teal.200"
+                                backgroundColor="#181818">
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
                                 <Text color={colorMode === "dark" ? "white" : "black"}>{label}</Text>
                               </MenuItem>
@@ -268,7 +273,7 @@ const AppHeader = ({
                         <MenuDivider />
 
                         <MenuGroup title="My Address Quick Copy">
-                          <MenuItemOption closeOnSelect={false}>
+                          <MenuItemOption closeOnSelect={false} backgroundColor="#181818">
                             <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
                           </MenuItemOption>
 
@@ -278,16 +283,28 @@ const AppHeader = ({
                         <MenuGroup>
                           {isMxLoggedIn && (
                             <ChainSupportedComponent feature={MENU.CLAIMS}>
-                              <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxShowClaimsHistory(true)}>
-                                <Text fontSize="sm">View claims history</Text>
+                              <MenuItem
+                                closeOnSelect={false}
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => setMxShowClaimsHistory(true)}
+                                backgroundColor="#181818">
+                                <Text fontSize="lg" fontWeight="500">
+                                  View claims history
+                                </Text>
                               </MenuItem>
-                              <MenuItem closeOnSelect={false} isDisabled={hasPendingTransactions} onClick={() => setMxInteractionsHistory(true)}>
-                                <Text fontSize="sm">View Data NFT interactions history</Text>
+                              <MenuItem
+                                closeOnSelect={false}
+                                isDisabled={hasPendingTransactions}
+                                onClick={() => setMxInteractionsHistory(true)}
+                                backgroundColor="#181818">
+                                <Text fontSize="lg" fontWeight="500">
+                                  View Data NFT interactions history
+                                </Text>
                               </MenuItem>
                             </ChainSupportedComponent>
                           )}
 
-                          <MenuItem onClick={handleLogout} fontSize="sm" isDisabled={hasPendingTransactions}>
+                          <MenuItem onClick={handleLogout} fontSize="lg" fontWeight="500" isDisabled={hasPendingTransactions} backgroundColor="#181818">
                             Logout
                           </MenuItem>
                         </MenuGroup>

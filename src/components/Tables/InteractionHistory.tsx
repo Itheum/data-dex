@@ -7,11 +7,11 @@ import { useChainMeta } from "store/ChainMetaContext";
 export default function InteractionsHistory({
   mxAddress,
   networkId,
-  onAfterCloseInteractionsHistory
-} : {
-  mxAddress: string,
-  networkId: NetworkIdType,
-  onAfterCloseInteractionsHistory: () => void,
+  onAfterCloseInteractionsHistory,
+}: {
+  mxAddress: string;
+  networkId: NetworkIdType;
+  onAfterCloseInteractionsHistory: () => void;
 }) {
   const [interactionTransactionsModalOpen, setInteractionTransactionsModalOpen] = useState(true);
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -27,7 +27,7 @@ export default function InteractionsHistory({
       }}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxWidth={{ md: "80vw" }}>
+      <ModalContent maxWidth={{ md: "80vw" }} backgroundColor="#181818">
         <ModalHeader>Recent Data NFT Interactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
