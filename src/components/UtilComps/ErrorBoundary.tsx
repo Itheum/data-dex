@@ -1,7 +1,7 @@
 import React from "react";
 
 interface PropsType {
-  children: any,
+  children: any;
 }
 
 export default class ErrorBoundary extends React.Component<PropsType> {

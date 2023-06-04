@@ -148,7 +148,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
               View Data
             </Button>
           </Tooltip>
-          
+
           <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
             <Button
               size="sm"

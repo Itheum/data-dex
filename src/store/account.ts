@@ -1,12 +1,12 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type State = {
-  itheumBalance: number
-}
+  itheumBalance: number;
+};
 
 type Action = {
-  updateItheumBalance: (itheumBalance: State['itheumBalance']) => void
-}
+  updateItheumBalance: (itheumBalance: State["itheumBalance"]) => void;
+};
 
 export const useAccountStore = create<State & Action>((set) => ({
   itheumBalance: 0,

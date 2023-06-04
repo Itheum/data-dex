@@ -131,7 +131,7 @@ export const getClaimTransactions = async (address: string, smartContractAddress
 
     return {
       transactions,
-      error: '',
+      error: "",
     };
   } catch (err) {
     console.error(err);

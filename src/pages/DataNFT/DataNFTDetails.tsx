@@ -32,12 +32,20 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig }  from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { OfferType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, isValidNumericCharacter, convertToLocalString, printPrice, transformDescription, getTokenWantedRepresentation, tokenDecimals } from "libs/utils";
+import {
+  convertWeiToEsdt,
+  isValidNumericCharacter,
+  convertToLocalString,
+  printPrice,
+  transformDescription,
+  getTokenWantedRepresentation,
+  tokenDecimals,
+} from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -74,7 +82,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  
+
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
@@ -92,8 +100,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     onSuccess: () => {
       if (props.closeDetailsView) {
         props.closeDetailsView();
-      } else {  // it means current URL is NFT detail page; go to wallet after the offer is sold out
-        navigate('/datanfts/wallet');
+      } else {
+        // it means current URL is NFT detail page; go to wallet after the offer is sold out
+        navigate("/datanfts/wallet");
       }
     },
   });
@@ -106,7 +115,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }, [_chainMeta, hasPendingTransactions]);
 
   useEffect(() => {
-    if (_chainMeta.networkId && offerId != null && !sessionId) {  // if sessionId exists, it means the offer is going to be sold out by user
+    if (_chainMeta.networkId && offerId != null && !sessionId) {
+      // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
@@ -385,20 +395,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     </Box>
                   )}
                   <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
-                    <Tooltip
-                      colorScheme="teal"
-                      hasArrow
-                      placement='top'
-                      label="Market is paused"
-                      isDisabled={!isMarketPaused}
-                    >
+                    <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
                       <Button
                         size={{ base: "md", lg: "lg" }}
                         colorScheme="teal"
                         isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
                         hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                        onClick={onProcureModalOpen}
-                      >
+                        onClick={onProcureModalOpen}>
                         <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                       </Button>
                     </Tooltip>

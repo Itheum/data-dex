@@ -31,12 +31,15 @@ import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
+
+let mxFaucetContract: FaucetContract;
+let mxClaimsContract: ClaimsContract;
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -68,14 +71,27 @@ export default function HomeMultiversX({
 
   const navigate = useNavigate();
 
-  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+  useEffect(() => {
+    if (_chainMeta?.networkId && isMxLoggedIn) {
+      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
+        try {
+          if (_chainMeta?.networkId === "ED") {
+            mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+
+        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+      }
+    }
+  }, [_chainMeta]);
 
   // S: Faucet
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (_chainMeta?.networkId === "ED" && mxAddress && !hasPendingTransactions) {
+    if (_chainMeta?.networkId === "ED" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
@@ -85,7 +101,7 @@ export default function HomeMultiversX({
           // after 2 min wait we reenable the button on the UI automatically
           setTimeout(() => {
             setIsMxFaucetDisabled(false);
-          }, lastUsedTime + 120000 + 1000 - timeNow);
+          }, lastUsedTime + 120 * 60 * 1000 + 1000 - timeNow);
         } else {
           setIsMxFaucetDisabled(false);
         }
@@ -342,7 +358,7 @@ export default function HomeMultiversX({
                   <Spacer />
 
                   <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 1000 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
                   </Button>
                 </Stack>
               </Box>

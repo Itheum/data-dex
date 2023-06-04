@@ -1,12 +1,16 @@
 import React from "react";
 import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import { styleStrings } from "libs/config";
+import { useChainMeta } from "store/ChainMetaContext";
 
 const LandingPage = () => {
+  const { chainMeta: _chainMeta } = useChainMeta();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
   let gradientBorder = styleStrings.gradientBorderMulticolor;
@@ -16,11 +20,15 @@ const LandingPage = () => {
     gradientBorder = styleStrings.gradientBorderMulticolorLight;
   }
 
-  // we need to show recent data nfts, if not main domain then default to devnet
   let recentDataNFTsChain = "ED";
-
-  if (window.location.hostname === "datadex.itheum.io") {
-    recentDataNFTsChain = "E1";
+  if (!isMxLoggedIn) {
+    if (window.location.hostname === "datadex.itheum.io") {
+      recentDataNFTsChain = "E1";
+    } else {
+      recentDataNFTsChain = "ED";
+    }
+  } else {
+    recentDataNFTsChain = _chainMeta.networkId.toString();
   }
 
   return (
