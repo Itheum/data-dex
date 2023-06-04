@@ -275,10 +275,6 @@ export const isValidNumericDecimalCharacter = (char: any) => {
   return char.match(/[0-9.]/);
 };
 
-export const isValidNumericDecimalCharacter = (char: any) => {
-  return char.match(/[0-9.]/);
-};
-
 export const dataCATDemoUserData = {
   "lastName": "User",
   "firstName": "DexDemo",

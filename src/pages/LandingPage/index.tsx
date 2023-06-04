@@ -28,7 +28,7 @@ const LandingPage = () => {
       recentDataNFTsChain = "ED";
     }
   } else {
-    recentDataNFTsChain = _chainMeta.networkId;
+    recentDataNFTsChain = _chainMeta.networkId.toString();
   }
 
   return (

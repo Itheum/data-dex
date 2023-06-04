@@ -31,12 +31,15 @@ import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
+
+let mxFaucetContract: FaucetContract;
+let mxClaimsContract: ClaimsContract;
 
 export default function HomeMultiversX({
   setMenuItem,
