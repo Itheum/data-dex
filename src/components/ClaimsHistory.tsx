@@ -32,10 +32,10 @@ export default function ChaimsHistory({
   mxAddress,
   networkId,
   onAfterCloseChaimsHistory,
-} : {
-  mxAddress: string,
-  networkId: NetworkIdType,
-  onAfterCloseChaimsHistory: () => void,
+}: {
+  mxAddress: string;
+  networkId: NetworkIdType;
+  onAfterCloseChaimsHistory: () => void;
 }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
   const [mxClaims, setMxClaims] = useState<any[]>([]);
@@ -78,7 +78,7 @@ export default function ChaimsHistory({
       }}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }}>
+      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor="#181818">
         <ModalHeader>Recent Claim Transactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
