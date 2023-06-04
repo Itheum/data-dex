@@ -15,10 +15,12 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
+  Tooltip,
   useColorMode,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
@@ -42,6 +44,7 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
+  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -122,18 +125,21 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Button
-        my="3"
-        size="sm"
-        colorScheme="teal"
-        variant="outline"
-        onClick={() => {
-          window.open(nftMetadata.dataPreview);
-        }}>
-        <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-          Preview Data
-        </Text>
-      </Button>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+        <Button
+          my="3"
+          size="sm"
+          colorScheme="teal"
+          variant="outline"
+          isDisabled={network.id == "devnet"}
+          onClick={() => {
+            window.open(nftMetadata.dataPreview);
+          }}>
+          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+            Preview Data
+          </Text>
+        </Button>
+      </Tooltip>
 
       <Flex justifyContent="space-between" mt="2" gap="2">
         <Button

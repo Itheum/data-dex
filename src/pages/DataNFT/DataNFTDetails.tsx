@@ -23,7 +23,7 @@ import {
   useColorMode,
   Tooltip,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
 import BigNumber from "bignumber.js";
@@ -51,6 +51,7 @@ type DataNFTDetailsProps = {
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
+  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
@@ -401,15 +402,19 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
                       </Button>
                     </Tooltip>
-                    <Button
-                      size={{ base: "md", lg: "lg" }}
-                      colorScheme="teal"
-                      variant="outline"
-                      onClick={() => {
-                        window.open(nftData.attributes.dataPreview);
-                      }}>
-                      <Text px={tokenId ? 0 : 3}>Preview Data</Text>
-                    </Button>
+
+                    <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                      <Button
+                        size={{ base: "md", lg: "lg" }}
+                        colorScheme="teal"
+                        variant="outline"
+                        isDisabled={network.id == "devnet"}
+                        onClick={() => {
+                          window.open(nftData.attributes.dataPreview);
+                        }}>
+                        <Text px={tokenId ? 0 : 3}>Preview Data</Text>
+                      </Button>
+                    </Tooltip>
                   </Flex>
                 </VStack>
               </Stack>

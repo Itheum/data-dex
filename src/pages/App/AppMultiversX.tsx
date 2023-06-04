@@ -12,10 +12,8 @@ import {
   Container,
   Flex,
   useColorMode,
-  useToast,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
@@ -23,7 +21,6 @@ import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { checkBalance } from "libs/MultiversX/api";
 import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataCoalitions from "pages/DataCoalition";
@@ -43,12 +40,9 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { mxEnvironment } = appConfig;
-  const toast = useToast();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
-  const [tokenBalance, setTokenBalance] = useState(-1); // -1 is loading, -2 is error
   const [chain, setChain] = useState("");
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
@@ -94,8 +88,6 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
       if (!SUPPORTED_CHAINS.includes(networkId)) {
         setAlertIsOpen(true);
-      } else {
-        itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
 
       linkOrRefreshDataDATAccount();
@@ -127,41 +119,6 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
       mxSessionInit();
     }
   }, [mxAddress]);
-
-  useEffect(() => {
-    // hasPendingTransactions will fire with false during init and then move from true to false each time a transaction is done... so if it's 'false' we need to get balances
-    if (!hasPendingTransactions) {
-      if (SUPPORTED_CHAINS.includes(_chainMeta?.networkId)) {
-        itheumTokenBalanceUpdate();
-      }
-    }
-  }, [hasPendingTransactions]);
-
-  // Mx transactions state changed so need new balances
-  const itheumTokenBalanceUpdate = async () => {
-    if (mxAddress && isMxLoggedIn) {
-      setTokenBalance(-1); // -1 is loading
-
-      // get user token balance from mx
-      const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
-
-      if (typeof data.balance !== "undefined") {
-        setTokenBalance(data.balance / Math.pow(10, 18));
-      } else {
-        setTokenBalance(-2); // -2 is error getting it
-
-        if (!toast.isActive("er1")) {
-          toast({
-            id: "er1",
-            title: "ER1: Could not get your token information from the MultiversX blockchain.",
-            status: "error",
-            isClosable: true,
-            duration: null,
-          });
-        }
-      }
-    }
-  };
 
   // utility that will reload a component and reset it's state
   const handleRfMount = (key: string) => {
@@ -226,7 +183,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
           boxShadow={containerShadow}
           zIndex={2}>
           {/* App Header */}
-          <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+          <AppHeader onLaunchMode={onLaunchMode} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
           {/* App Body */}
           <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
             <Routes>

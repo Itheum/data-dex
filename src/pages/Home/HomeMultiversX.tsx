@@ -31,15 +31,12 @@ import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS, uxConfig, styleStrings } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
-
-let mxFaucetContract: FaucetContract;
-let mxClaimsContract: ClaimsContract;
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -71,27 +68,14 @@ export default function HomeMultiversX({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (_chainMeta?.networkId && isMxLoggedIn) {
-      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        try {
-          if (_chainMeta?.networkId === "ED") {
-            mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-
-        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
-      }
-    }
-  }, [_chainMeta]);
+  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
 
   // S: Faucet
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (_chainMeta?.networkId === "ED" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
+    if (_chainMeta?.networkId === "ED" && mxAddress && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
@@ -110,7 +94,7 @@ export default function HomeMultiversX({
   }, [mxAddress, hasPendingTransactions]);
 
   const handleOnChainFaucet = async () => {
-    if (mxAddress && mxFaucetContract) {
+    if (mxAddress) {
       mxFaucetContract.sendActivateFaucetTransaction(mxAddress);
     }
   };
@@ -119,50 +103,48 @@ export default function HomeMultiversX({
   // S: Claims
   useEffect(() => {
     // this will trigger during component load/page load, so let's get the latest claims balances
-    if (mxClaimsContract && !hasPendingTransactions) {
+    if (!hasPendingTransactions) {
       mxClaimsBalancesUpdate();
     }
   }, [mxAddress, hasPendingTransactions]);
 
   // utility func to get claims balances from chain
   const mxClaimsBalancesUpdate = async () => {
-    if (mxAddress && isMxLoggedIn) {
-      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        const claimBalanceValues = [];
-        const claimBalanceDates: number[] = [];
+    if (mxAddress) {
+      const claimBalanceValues = [];
+      const claimBalanceDates: number[] = [];
 
-        const claims = await mxClaimsContract.getClaims(mxAddress);
+      const claims = await mxClaimsContract.getClaims(mxAddress);
 
-        if (!claims.error && claims.data) {
-          claims.data.forEach((claim) => {
-            claimBalanceValues.push(claim.amount / Math.pow(10, 18));
-            claimBalanceDates.push(claim.date);
-          });
-        } else if (claims.error) {
-          claimBalanceValues.push("-2", "-2", "-2", "-2"); // errors
-
-          if (!toast.isActive("er2")) {
-            toast({
-              id: "er2",
-              title: "ER2: Could not get your claims information from the MultiversX blockchain.",
-              status: "error",
-              isClosable: true,
-              duration: null,
-            });
-          }
-        }
-
-        setClaimsBalances({
-          claimBalanceValues,
-          claimBalanceDates,
+      if (!claims.error && claims.data) {
+        claims.data.forEach((claim) => {
+          claimBalanceValues.push(claim.amount / Math.pow(10, 18));
+          claimBalanceDates.push(claim.date);
         });
+      } else if (claims.error) {
+        claimBalanceValues.push("-2", "-2", "-2", "-2"); // errors
+
+        if (!toast.isActive("er2")) {
+          toast({
+            id: "er2",
+            title: "ER2: Could not get your claims information from the MultiversX blockchain.",
+            status: "error",
+            isClosable: true,
+            duration: null,
+          });
+        }
       }
+
+      setClaimsBalances({
+        claimBalanceValues,
+        claimBalanceDates,
+      });
     }
   };
 
   useEffect(() => {
     // check if claims contract is paused, freeze ui so user does not waste gas
-    if (mxClaimsContract && !hasPendingTransactions) {
+    if (!hasPendingTransactions) {
       getAndSetMxClaimsIsPaused();
     }
   }, [mxAddress]);
@@ -184,7 +166,7 @@ export default function HomeMultiversX({
       // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
       setIsMxFaucetDisabled(true);
     } else {
-      mxClaimsBalancesUpdate(); // get latest claims balances from on-chain as well
+      // mxClaimsBalancesUpdate(); // get latest claims balances from on-chain as well
 
       setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }

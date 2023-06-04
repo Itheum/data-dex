@@ -40,7 +40,7 @@ import {
   useColorMode,
   Tooltip,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
@@ -65,6 +65,7 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
+  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
@@ -376,27 +377,34 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Button
-                size="sm"
-                colorScheme="teal"
-                w="full"
-                onClick={() => {
-                  accessDataStream(item.dataMarshal, item.id);
-                }}>
-                View Data
-              </Button>
-              <Button
-                size="sm"
-                colorScheme="teal"
-                w="full"
-                variant="outline"
-                onClick={() => {
-                  window.open(item.dataPreview);
-                }}>
-                <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                  Preview Data
-                </Text>
-              </Button>
+              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  w="full"
+                  isDisabled={network.id == "devnet"}
+                  onClick={() => {
+                    accessDataStream(item.dataMarshal, item.id);
+                  }}>
+                  View Data
+                </Button>
+              </Tooltip>
+              
+              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  w="full"
+                  variant="outline"
+                  isDisabled={network.id == "devnet"}
+                  onClick={() => {
+                    window.open(item.dataPreview);
+                  }}>
+                  <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                    Preview Data
+                  </Text>
+                </Button>
+              </Tooltip>
             </HStack>
 
             <Flex mt="7" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

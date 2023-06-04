@@ -16,7 +16,9 @@ import {
   PopoverTrigger,
   Skeleton,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
@@ -67,7 +69,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
     index,
     children,
   } = props;
-  // Multiversx API
+  const { network } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
@@ -182,17 +184,21 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                     )}
                   </Text>
                 </Box>
-                <Button
-                  mt="2"
-                  size="sm"
-                  colorScheme="teal"
-                  height="7"
-                  variant="outline"
-                  onClick={() => {
-                    window.open(nftMetadata[index].dataPreview);
-                  }}>
-                  Preview Data
-                </Button>
+
+                <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                  <Button
+                    mt="2"
+                    size="sm"
+                    colorScheme="teal"
+                    height="7"
+                    variant="outline"
+                    isDisabled={network.id == "devnet"}
+                    onClick={() => {
+                      window.open(nftMetadata[index].dataPreview);
+                    }}>
+                    Preview Data
+                  </Button>
+                </Tooltip>
 
                 {address && (
                   <>
