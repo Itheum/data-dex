@@ -98,7 +98,7 @@ export default function HomeMultiversX({
           // after 2 min wait we reenable the button on the UI automatically
           setTimeout(() => {
             setIsMxFaucetDisabled(false);
-          }, lastUsedTime + 120000 + 1000 - timeNow);
+          }, lastUsedTime + 120 * 60 * 1000 + 1000 - timeNow);
         } else {
           setIsMxFaucetDisabled(false);
         }
@@ -355,7 +355,7 @@ export default function HomeMultiversX({
                   <Spacer />
 
                   <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 1000 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
                   </Button>
                 </Stack>
               </Box>
