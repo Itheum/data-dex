@@ -389,7 +389,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   View Data
                 </Button>
               </Tooltip>
-              
+
               <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
                 <Button
                   size="sm"
@@ -431,7 +431,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   } else if (valueAsNumber > maxListLimit) {
                     error = "Cannot exceed Max List Limit";
                   }
-                  
+
                   setAmountError(error);
                   setAmount(valueAsNumber);
                 }}>
@@ -491,13 +491,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               )}
             </Box>
 
-            <Tooltip
-              colorScheme="teal"
-              hasArrow
-              placement='top'
-              label="Market is paused"
-              isDisabled={!isMarketPaused}
-            >
+            <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
               <Button
                 size="sm"
                 mt={4}
@@ -505,8 +499,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 variant="outline"
                 isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
-                onClick={() => onListButtonClick(item)}
-              >
+                onClick={() => onListButtonClick(item)}>
                 <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
                 </Text>
@@ -526,9 +519,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           backgroundColor="blackAlpha.800"
           rounded="lg"
           visibility={
-            userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(item?.nonce)))
-              ? "visible"
-              : "collapse"
+            userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(item?.nonce))) ? "visible" : "collapse"
           }
           backdropFilter="auto"
           backdropBlur="6px">

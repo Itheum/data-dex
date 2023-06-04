@@ -109,17 +109,7 @@ const exploreRouterMenu = [
   },
 ];
 
-const AppHeader = ({
-  onLaunchMode,
-  menuItem,
-  setMenuItem,
-  handleLogout,
-}: {
-  onLaunchMode?: any;
-  menuItem: number;
-  setMenuItem: any;
-  handleLogout: any;
-}) => {
+const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { hasPendingTransactions } = useGetPendingTransactions();

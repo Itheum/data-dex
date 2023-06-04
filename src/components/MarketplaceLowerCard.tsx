@@ -37,7 +37,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [amount, setAmount] = useState<number>(1);
-  const [amountError, setAmountError] = useState<string>('');
+  const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
   const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT
@@ -55,14 +55,13 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
           isDisabled={network.id == "devnet"}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
-          }}
-        >
+          }}>
           <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
             Preview Data
           </Text>
         </Button>
       </Tooltip>
-      
+
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack>
@@ -90,7 +89,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                     } else if (value > maxBuyLimit) {
                       error = "Cannot exceed Max Buy Limit";
                     }
-                    
+
                     setAmountError(error);
                     setAmount(value);
                   }}>

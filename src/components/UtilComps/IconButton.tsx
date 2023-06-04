@@ -7,14 +7,14 @@ export default function IconButton({
   l1,
   l2,
   selected,
-  onclickFunc
-} : {
-  disabled: any,
-  icon: any,
-  l1: any,
-  l2: any,
-  selected: any,
-  onclickFunc: () => void,
+  onclickFunc,
+}: {
+  disabled: any;
+  icon: any;
+  l1: any;
+  l2: any;
+  selected: any;
+  onclickFunc: () => void;
 }) {
   return (
     <HStack

@@ -25,8 +25,8 @@ import {
 import { NetworkIdType } from "libs/types";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
-import { getClaimTransactions, getTransactionLink } from "../libs/MultiversX/api";
 import ClaimsTxTable from "./Tables/ClaimsTxTable";
+import { getClaimTransactions, getTransactionLink } from "../libs/MultiversX/api";
 
 export default function ChaimsHistory({
   mxAddress,

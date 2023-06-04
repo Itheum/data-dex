@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
+import { Icon } from "@chakra-ui/icons";
 import {
   Flex,
   Heading,
@@ -44,7 +45,6 @@ import { createNftId, sleep, hexZero } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { Icon } from "@chakra-ui/icons";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
