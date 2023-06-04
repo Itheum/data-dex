@@ -68,14 +68,27 @@ export default function HomeMultiversX({
 
   const navigate = useNavigate();
 
-  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+  useEffect(() => {
+    if (_chainMeta?.networkId && isMxLoggedIn) {
+      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
+        try {
+          if (_chainMeta?.networkId === "ED") {
+            mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+
+        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+      }
+    }
+  }, [_chainMeta]);
 
   // S: Faucet
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (_chainMeta?.networkId === "ED" && mxAddress && !hasPendingTransactions) {
+    if (_chainMeta?.networkId === "ED" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
