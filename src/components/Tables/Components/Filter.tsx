@@ -38,8 +38,40 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
       textIndent: "0.9rem",
     },
   };
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>, isStartDate: boolean) => {
+    const value = event.target.value;
+    const startDate = isStartDate ? (value ? new Date(value).getTime() / 1000 : null) : (columnFilterValue as [number, number])?.[0] ?? null;
+    let endDate = isStartDate ? (columnFilterValue as [number, number])?.[1] ?? null : value ? new Date(value).getTime() / 1000 : null;
 
-  return typeof firstValue === "number" ? (
+    if (endDate !== null) {
+      const dateObj = new Date(endDate * 1000);
+      dateObj.setHours(23, 59, 0, 0);
+      endDate = dateObj.getTime() / 1000;
+    }
+
+    column.setFilterValue([startDate, endDate]);
+  };
+
+  return column.id === "age" ? (
+    <Box>
+      <Box display="flex" gap={2}>
+        <input
+          type="date"
+          style={styles.textInput}
+          value={(columnFilterValue as [number, number])?.[0] ? new Date((columnFilterValue as [number, number])?.[0] * 1000).toISOString().split("T")[0] : ""}
+          onChange={(event) => handleDateChange(event, true)}
+          max={new Date().toISOString().split("T")[0]}
+        />
+        <input
+          type="date"
+          style={styles.textInput}
+          value={(columnFilterValue as [number, number])?.[1] ? new Date((columnFilterValue as [number, number])?.[1] * 1000).toISOString().split("T")[0] : ""}
+          onChange={(event) => handleDateChange(event, false)}
+          max={new Date().toISOString().split("T")[0]}
+        />
+      </Box>
+    </Box>
+  ) : typeof firstValue === "number" ? (
     <Box>
       <Box display={"flex"} gap={2}>
         <DebouncedInput
