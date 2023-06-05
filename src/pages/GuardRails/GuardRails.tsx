@@ -100,14 +100,6 @@ export const GuardRails: React.FC = () => {
     setWhitelistedAddress(whitelistMap);
   }, []);
 
-  useEffect(() => {
-    if (userData) {
-      console.log("aici sunt", userData.mintTimeLimit * 1000 + userData.mintTimeLimit);
-    } else {
-      console.log("nus aici");
-    }
-  }, [userData]);
-
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading fontSize="36px" fontWeight="medium" mt={14} mb="32px">
@@ -129,15 +121,11 @@ export const GuardRails: React.FC = () => {
           <Stack>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
-              {marketRequirements?.buyer_fee ? (
-                <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
-                  <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                    {`${(marketRequirements?.buyer_fee / 100).toFixed(2)} %` ?? "-"}
-                  </Text>
-                </Badge>
-              ) : (
-                "-"
-              )}
+              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
+                  {marketRequirements?.buyer_fee ? `${(marketRequirements?.buyer_fee / 100).toFixed(2)} %` : "-"}
+                </Text>
+              </Badge>
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Seller fee:&nbsp;
