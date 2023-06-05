@@ -70,16 +70,20 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     // setChainMeta({});
   };
 
-  return isLoading ? (
-    <CustomLoader />
-  ) : (
-    <AppMx
-      onLaunchMode={handleLaunchMode}
-      resetAppContexts={resetAppContexts}
-      appConfig={{
-        mxEnvironment: launchEnvironment,
-      }}
-    />
+  if (isLoading) {
+    return <CustomLoader />;
+  }
+
+  return (
+    <StoreProvider>
+      <AppMx
+        onLaunchMode={handleLaunchMode}
+        resetAppContexts={resetAppContexts}
+        appConfig={{
+          mxEnvironment: launchEnvironment,
+        }}
+      />
+    </StoreProvider>
   );
 }
 

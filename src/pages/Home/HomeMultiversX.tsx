@@ -38,9 +38,6 @@ import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
 
-let mxFaucetContract: FaucetContract;
-let mxClaimsContract: ClaimsContract;
-
 export default function HomeMultiversX({
   setMenuItem,
   dataCATAccount,
@@ -71,21 +68,8 @@ export default function HomeMultiversX({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (_chainMeta?.networkId && isMxLoggedIn) {
-      if (SUPPORTED_CHAINS.includes(_chainMeta.networkId)) {
-        try {
-          if (_chainMeta?.networkId === "ED") {
-            mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-
-        mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
-      }
-    }
-  }, [_chainMeta]);
+  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
+  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
 
   // S: Faucet
   useEffect(() => {
