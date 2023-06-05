@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Badge, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { historicGuardrails } from "../../../libs/config";
 

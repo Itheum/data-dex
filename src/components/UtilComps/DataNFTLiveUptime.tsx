@@ -105,7 +105,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
               setLiveUptimeCheckInProgress(true);
               checkLiveDataStreamUptime();
             }}>
-            {props.isLiveUptimeSuccessful ? 'Check again' : 'Retry'} 
+            {props.isLiveUptimeSuccessful ? "Check again" : "Retry"}
           </Button>
         </Box>
       )}

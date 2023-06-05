@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
-import { historicGuardrails, upcomingGuardRails, whitelistWallets } from "../../libs/config";
-import { GuardRailsCards } from "./components/guardRailsCards";
-import { useMarketStore, useMintStore } from "../../store";
-import { FaWallet } from "react-icons/fa";
-import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { getNetworkProvider } from "../../libs/MultiversX/api";
-import { convertWeiToEsdt } from "../../libs/utils";
-import { useChainMeta } from "../../store/ChainMetaContext";
-import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
 import { ResultsParser } from "@multiversx/sdk-core/out";
+import { FaWallet } from "react-icons/fa";
+import { GuardRailsCards } from "./components/guardRailsCards";
+import ShortAddress from "../../components/UtilComps/ShortAddress";
+import { historicGuardrails, upcomingGuardRails, whitelistWallets } from "../../libs/config";
+import { getNetworkProvider } from "../../libs/MultiversX/api";
+import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
+import { convertWeiToEsdt } from "../../libs/utils";
+import { useMarketStore, useMintStore } from "../../store";
+import { useChainMeta } from "../../store/ChainMetaContext";
 
 export const GuardRails: React.FC = () => {
   const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();

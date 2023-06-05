@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { Box, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
+import { useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
 import { StoreProvider } from "store/StoreProvider";
 import AppMx from "./AppMultiversX";
-import { Box, Text } from "@chakra-ui/layout";
 
 function CustomLoader() {
   return (
@@ -26,6 +27,7 @@ function CustomLoader() {
 }
 
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
+  const [searchParams] = useSearchParams();
   const { setChainMeta } = useChainMeta();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
@@ -35,8 +37,10 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
-
+    let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
+    if (searchParams.get("accessToken")) {
+      networkId = "E1";
+    }
     setChainMeta({
       networkId,
       contracts: contractsForChain(networkId),
@@ -66,20 +70,16 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     // setChainMeta({});
   };
 
-  if (isLoading) {
-    return <CustomLoader />;
-  }
-
-  return (
-    <StoreProvider>
-      <AppMx
-        onLaunchMode={handleLaunchMode}
-        resetAppContexts={resetAppContexts}
-        appConfig={{
-          mxEnvironment: launchEnvironment,
-        }}
-      />
-    </StoreProvider>
+  return isLoading ? (
+    <CustomLoader />
+  ) : (
+    <AppMx
+      onLaunchMode={handleLaunchMode}
+      resetAppContexts={resetAppContexts}
+      appConfig={{
+        mxEnvironment: launchEnvironment,
+      }}
+    />
   );
 }
 

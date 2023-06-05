@@ -49,14 +49,21 @@ export const GetWhitelist: React.FC = () => {
                 py={6}
                 rounded="lg"
                 mt={7}
-                href="https://share-eu1.hsforms.com/15ry2GdkgRWidTObNuCahEAf5yjc"
+                href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
                 isExternal>
                 Get Whitelisted
               </Button>
             </Box>
 
             <Box>
-              <Image className="bounce-hero-img" boxSize={{ base: "auto", lg: "40rem" }} w="100%" height="auto" src={illustration} alt="Data NFTs Illustration" />
+              <Image
+                className="bounce-hero-img"
+                boxSize={{ base: "auto", lg: "40rem" }}
+                w="100%"
+                height="auto"
+                src={illustration}
+                alt="Data NFTs Illustration"
+              />
             </Box>
           </Flex>
           <Box position="absolute" bottom={2} right={4} display={{ base: "none", lg: "flex" }}>

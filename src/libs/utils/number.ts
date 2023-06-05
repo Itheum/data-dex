@@ -14,9 +14,9 @@ export const convertWeiToEsdt = (amount: BigNumber.Value | null | undefined, dec
     return new BigNumber(0);
   } else {
     return new BigNumber(amount)
-    .decimalPlaces(0, BIG_NUMBER_ROUNDING_MODE)
-    .shiftedBy(typeof decimals !== 'undefined' ? -decimals : -DEFAULT_DECIMALS)
-    .decimalPlaces(typeof precision !== 'undefined' ? precision : 4, BIG_NUMBER_ROUNDING_MODE);
+      .decimalPlaces(0, BIG_NUMBER_ROUNDING_MODE)
+      .shiftedBy(typeof decimals !== "undefined" ? -decimals : -DEFAULT_DECIMALS)
+      .decimalPlaces(typeof precision !== "undefined" ? precision : 4, BIG_NUMBER_ROUNDING_MODE);
   }
 };
 
@@ -24,7 +24,7 @@ export const convertEsdtToWei = (amount: BigNumber.Value | null | undefined, dec
   if (amount == null) {
     return new BigNumber(0);
   } else {
-    return new BigNumber(amount).shiftedBy(typeof decimals !== 'undefined' ? decimals : DEFAULT_DECIMALS).decimalPlaces(0, BIG_NUMBER_ROUNDING_MODE);
+    return new BigNumber(amount).shiftedBy(typeof decimals !== "undefined" ? decimals : DEFAULT_DECIMALS).decimalPlaces(0, BIG_NUMBER_ROUNDING_MODE);
   }
 };
 
@@ -41,7 +41,7 @@ export const isValidNumericCharacter = (char: any) => {
 
 export const convertToLocalString = (value: BigNumber.Value, precision?: number): string => {
   return new BigNumber(value)
-  .decimalPlaces(precision ? precision : 4, BigNumber.ROUND_FLOOR)
-  .toNumber()
-  .toLocaleString();
+    .decimalPlaces(precision ? precision : 4, BigNumber.ROUND_FLOOR)
+    .toNumber()
+    .toLocaleString();
 };

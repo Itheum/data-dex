@@ -31,5 +31,5 @@ export const labels = {
   "MINT_FORM_POPUP_INFO_TITLE": "A longer title to describe your data asset",
   "MINT_FORM_POPUP_INFO_DESC": "A description of your data asset",
   "MINT_FORM_POPUP_INFO_SUPPLY": 'The total "supply" you would like to mint (i.e. individual copies of your data access license)',
-  "MINT_FORM_POPUP_INFO_ROYALTY": 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace',  
+  "MINT_FORM_POPUP_INFO_ROYALTY": 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace',
 };

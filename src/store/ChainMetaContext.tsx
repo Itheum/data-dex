@@ -1,4 +1,3 @@
-
 import React, { ReactElement, createContext, useState, useContext } from "react";
 import { ChainMetaType } from "libs/types";
 
@@ -9,16 +8,16 @@ export interface ChainMetaContextType {
 
 const defaultContext: ChainMetaContextType = {
   chainMeta: {
-    networkId: 'ED',
+    networkId: "ED",
     contracts: {
-      itheumToken: '',
-      claims: '',
-      faucet: '',
+      itheumToken: "",
+      claims: "",
+      faucet: "",
     },
-    walletUsed: '',
+    walletUsed: "",
   },
   setChainMeta: (e: ChainMetaType) => {
-    console.log('Empty setChainMeta', e);
+    console.log("Empty setChainMeta", e);
   },
 };
 

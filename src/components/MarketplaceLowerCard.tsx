@@ -12,7 +12,9 @@ import {
   useColorMode,
   Flex,
   Box,
+  Tooltip,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
@@ -26,6 +28,7 @@ type MarketplaceLowerCardProps = {
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
+  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -34,7 +37,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [amount, setAmount] = useState<number>(1);
-  const [amountError, setAmountError] = useState<string>('');
+  const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
   const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT
@@ -43,18 +46,22 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
 
   return (
     <>
-      <Button
-        my="3"
-        size="sm"
-        colorScheme="teal"
-        variant="outline"
-        onClick={() => {
-          window.open(nftMetadata.dataPreview);
-        }}>
-        <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-          Preview Data
-        </Text>
-      </Button>
+      <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+        <Button
+          my="3"
+          size="sm"
+          colorScheme="teal"
+          variant="outline"
+          isDisabled={network.id == "devnet"}
+          onClick={() => {
+            window.open(nftMetadata.dataPreview);
+          }}>
+          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+            Preview Data
+          </Text>
+        </Button>
+      </Tooltip>
+
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack>
@@ -82,7 +89,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                     } else if (value > maxBuyLimit) {
                       error = "Cannot exceed Max Buy Limit";
                     }
-                    
+
                     setAmountError(error);
                     setAmount(value);
                   }}>

@@ -42,8 +42,8 @@ export function contractsForChain(networkId: NetworkIdType): ContractsType {
 export const uxConfig = {
   txConfirmationsNeededSml: 1,
   txConfirmationsNeededLrg: 2,
-  dateStr: "MMM Do YYYY",
-  dateStrTm: "MMM Do YYYY LT",
+  dateStr: "DD/MM/YYYY",
+  dateStrTm: "DD/MM/YYYY LT",
   mxAPITimeoutMs: 10000,
 };
 

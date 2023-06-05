@@ -48,7 +48,6 @@ import { MdAccountBalanceWallet, MdMenu, MdSpaceDashboard } from "react-icons/md
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink } from "react-router-dom";
-
 import logoSmlD from "assets/img/logo-sml-d.png";
 import logoSmlL from "assets/img/logo-sml-l.png";
 import ClaimsHistory from "components/ClaimsHistory";
@@ -57,6 +56,7 @@ import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponen
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
+import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
 const exploreRouterMenu = [
@@ -109,19 +109,7 @@ const exploreRouterMenu = [
   },
 ];
 
-const AppHeader = ({
-  onLaunchMode,
-  tokenBalance,
-  menuItem,
-  setMenuItem,
-  handleLogout,
-}: {
-  onLaunchMode?: any;
-  tokenBalance?: number;
-  menuItem: number;
-  setMenuItem: any;
-  handleLogout: any;
-}) => {
+const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -244,7 +232,7 @@ const AppHeader = ({
 
             {isMxLoggedIn && (
               <>
-                <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["none", null, "block"]} />
+                <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
@@ -441,7 +429,7 @@ const AppHeader = ({
 
             <Stack width="60%" spacing="3" m="1rem auto">
               <LoggedInChainBadge chain={chainFriendlyName} displayParams={["block", null, "none"]} />
-              <ItheumTokenBalanceBadge tokenBalance={tokenBalance} displayParams={["block", null, "none"]} />
+              <ItheumTokenBalanceBadge displayParams={["block", null, "none"]} />
             </Stack>
           </DrawerBody>
         </DrawerContent>
@@ -512,8 +500,9 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   }
 }
 
-function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance: any; displayParams: any }) {
+function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
+  const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
     <Box
@@ -527,13 +516,13 @@ function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance
       h={"12"}
       paddingX="5"
       paddingY="14px">
-      {tokenBalance === -1 ? (
+      {itheumBalance === -1 ? (
         <Spinner size="xs" />
-      ) : tokenBalance === -2 ? (
+      ) : itheumBalance === -2 ? (
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(tokenBalance)}
+          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

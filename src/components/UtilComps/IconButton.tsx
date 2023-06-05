@@ -1,7 +1,21 @@
 import React from "react";
 import { HStack, Box, Text, Tooltip } from "@chakra-ui/react";
 
-export default function IconButton({ disabled, icon, l1, l2, selected, onclickFunc }) {
+export default function IconButton({
+  disabled,
+  icon,
+  l1,
+  l2,
+  selected,
+  onclickFunc,
+}: {
+  disabled: any;
+  icon: any;
+  l1: any;
+  l2: any;
+  selected: any;
+  onclickFunc: () => void;
+}) {
   return (
     <HStack
       opacity={disabled && ".4"}

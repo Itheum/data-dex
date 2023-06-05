@@ -9,8 +9,10 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
@@ -26,7 +28,7 @@ type DataNftWalletLowerCardProps = {
 
 const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
   const { dataNftItem, index } = props;
-
+  const { network } = useGetNetworkConfig();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const [amounts, setAmounts] = useState<number[]>([]);
@@ -134,25 +136,32 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
         </Box>
 
         <HStack mt="2">
-          <Button
-            size="sm"
-            colorScheme="teal"
-            height="7"
-            onClick={() => {
-              accessDataStream(dataNftItem.dataMarshal, dataNftItem.id, address);
-            }}>
-            View Data
-          </Button>
-          <Button
-            size="sm"
-            colorScheme="teal"
-            height="7"
-            variant="outline"
-            onClick={() => {
-              window.open(dataNftItem.dataPreview);
-            }}>
-            Preview Data
-          </Button>
+          <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+            <Button
+              size="sm"
+              colorScheme="teal"
+              height="7"
+              isDisabled={network.id == "devnet"}
+              onClick={() => {
+                accessDataStream(dataNftItem.dataMarshal, dataNftItem.id, address);
+              }}>
+              View Data
+            </Button>
+          </Tooltip>
+
+          <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+            <Button
+              size="sm"
+              colorScheme="teal"
+              height="7"
+              variant="outline"
+              isDisabled={network.id == "devnet"}
+              onClick={() => {
+                window.open(dataNftItem.dataPreview);
+              }}>
+              Preview Data
+            </Button>
+          </Tooltip>
         </HStack>
 
         <HStack mt="5">

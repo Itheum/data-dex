@@ -13,12 +13,13 @@ import {
   Alert,
 } from "@chakra-ui/react";
 
-const AlertOverlay = ({ errorData: { errContextMsg, rawError }, onClose }) => {
+function AlertOverlay({ errorData: { errContextMsg, rawError }, onClose }: { errorData: { errContextMsg: string; rawError: any }; onClose: () => void }) {
   const [isAlertOpen, setAlertIsOpen] = useState(true);
   const errorToShow = rawError.message ? rawError.message : rawError;
+  const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
 
   return (
-    <AlertDialog isOpen={isAlertOpen} onClose={onClose}>
+    <AlertDialog isOpen={isAlertOpen} onClose={onClose} leastDestructiveRef={cancelRef}>
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogBody>
@@ -32,6 +33,7 @@ const AlertOverlay = ({ errorData: { errContextMsg, rawError }, onClose }) => {
               </AlertDescription>
               <Button
                 mt="5"
+                ref={cancelRef}
                 onClick={() => {
                   setAlertIsOpen(false);
                 }}>
@@ -43,6 +45,6 @@ const AlertOverlay = ({ errorData: { errContextMsg, rawError }, onClose }) => {
       </AlertDialogOverlay>
     </AlertDialog>
   );
-};
+}
 
 export default AlertOverlay;

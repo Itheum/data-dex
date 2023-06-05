@@ -1467,7 +1467,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
             </DrawerBody>
             <Box
               position="absolute"
-              top="0"
+              top="5rem"
               bottom="0"
               display={"flex"}
               justifyContent={"center"}
@@ -1479,7 +1479,9 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
               width="100%"
               backgroundColor="blackAlpha.800"
               rounded="lg"
-              visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}>
+              visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
+              borderTop="solid .1rem"
+              borderColor="teal.200">
               <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
                 - You are not whitelisted -
               </Text>

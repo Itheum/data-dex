@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { UserDataType } from 'libs/MultiversX/types';
+import { create } from "zustand";
+import { UserDataType } from "libs/MultiversX/types";
 
 type State = {
-  userData: UserDataType | undefined,
-}
+  userData: UserDataType | undefined;
+};
 
 type Action = {
-  updateUserData: (userData: State['userData']) => void,
-}
+  updateUserData: (userData: State["userData"]) => void;
+};
 
 export const useMintStore = create<State & Action>((set) => ({
   userData: undefined,
