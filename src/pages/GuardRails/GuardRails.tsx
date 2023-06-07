@@ -25,6 +25,7 @@ export const GuardRails: React.FC = () => {
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   const historyGuardrails = historicGuardrails;
+  const milisecondsInHours = 3600000;
 
   useEffect(() => {
     if (!_chainMeta.networkId) return;
@@ -163,7 +164,7 @@ export const GuardRails: React.FC = () => {
               Time between mints:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {!!userData && userData.mintTimeLimit ? new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString() : "-"}
+                  {!!userData && userData.mintTimeLimit ? Math.floor(userData.mintTimeLimit / milisecondsInHours) + " hours" : "-"}
                 </Text>
               </Badge>
             </Text>
