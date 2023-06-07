@@ -155,7 +155,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
       <Flex
         h="6rem"
         justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
-        paddingX={!isMxLoggedIn ? { base: 5, lg: 36 } : 0}
+        paddingX={!isMxLoggedIn ? { base: 5, md: 20, xl: 36 } : 0}
         alignItems="center"
         backgroundColor={colorMode === "light" ? "white" : "bgDark"}
         borderBottom="solid .1rem"

@@ -273,10 +273,10 @@ export default function HomeMultiversX({
     <>
       <Stack mx={{ base: 5, lg: 24 }}>
         <Box m={heroGridMargin} pt="20" pb="10">
-          <SimpleGrid columns={[1, 2, 3, 4]} spacing={10}>
+          <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" h={tileBoxH} alignItems={"center"}>
+                <Stack p="5" h={tileBoxH} alignItems={{ base: "center", xl: "start" }}>
                   {!dataCATAccount && (
                     <Heading size="md" fontWeight="semibold" pb={2}>
                       Linked Data CAT Accounts
@@ -289,27 +289,29 @@ export default function HomeMultiversX({
                     </Box>
                   )) ||
                     (!dataCATAccount && (
-                      <>
-                        <Alert borderRadius="lg" mt="2 !important" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
+                      <Stack h={tileBoxH}>
+                        <Alert borderRadius="lg" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
                           <Flex direction="column">
-                            <AlertTitle fontSize="md" mt={{ xs: 24, lg: 0 }}>
-                              <AlertIcon mb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
-                              <Flex direction="row">
-                                <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
-                              </Flex>
-                            </AlertTitle>
-                            <AlertDescription fontSize="md" color="#929497" pb="2">
-                              But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test account below.
-                            </AlertDescription>
+                            <Box>
+                              <AlertTitle fontSize="md" mt={{ base: 0, md: 0, xl: 0, "2xl": 0 }}>
+                                <AlertIcon pb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
+                                <Flex direction="row">
+                                  <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
+                                </Flex>
+                              </AlertTitle>
+                              <AlertDescription fontSize="md" color="#929497" pb="2">
+                                But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test account below.
+                              </AlertDescription>
+                            </Box>
                           </Flex>
                         </Alert>
 
                         <Spacer />
 
-                        <Button size="lg" borderRadius="xl" colorScheme="teal" variant="outline" onClick={() => onDataCATAccount(true)}>
+                        <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={() => onDataCATAccount(true)}>
                           <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
                         </Button>
-                      </>
+                      </Stack>
                     )) || (
                       <>
                         <Stack>
@@ -347,25 +349,27 @@ export default function HomeMultiversX({
 
             <ChainSupportedComponent feature={MENU.FAUCET}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" h={tileBoxH}>
+                <Stack p="5" h={tileBoxH} alignItems={{ base: "center", xl: "start" }}>
                   <Heading size="md" fontWeight="semibold" pb={2}>
                     {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
                   </Heading>
-                  <Text fontSize="md" color="#929497" pb={5}>
-                    Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
-                  </Text>
+                  <Stack h={tileBoxH}>
+                    <Text fontSize="md" color="#929497" pb={5}>
+                      Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
+                    </Text>
 
-                  <Spacer />
+                    <Spacer />
 
-                  <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                    <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
-                  </Button>
+                    <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
+                      <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
+                    </Button>
+                  </Stack>
                 </Stack>
               </Box>
             </ChainSupportedComponent>
 
             <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-              <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg">
+              <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
                 <Heading size="md" pb={2}>
                   NFMe ID Avatar
                 </Heading>
@@ -379,7 +383,7 @@ export default function HomeMultiversX({
             <ChainSupportedComponent feature={MENU.CLAIMS}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
-                  <Heading size="md" pb={2}>
+                  <Heading size="md" pb={2} textAlign={{ base: "center", xl: "start" }}>
                     My Claims
                   </Heading>
 
