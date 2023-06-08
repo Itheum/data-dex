@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
+  Box,
   CloseButton,
   Drawer,
   DrawerBody,
@@ -175,7 +176,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         </Heading>
 
         <Tabs pt={10} index={tabState - 1}>
-          <TabList overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+          <TabList overflow={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%">
             {walletTabs.map((tab, index) => {
               return (
                 <Tab
@@ -183,9 +184,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   isDisabled={tab.isDisabled}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   onClick={() => onChangeTab(index + 1)}>
-                  <Flex ml="4.7rem" alignItems="center" py={3}>
+                  <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w={{ base: "5rem", lg: "auto" }}>
                       {tab.tabName}
                     </Text>
                     <Text fontSize="sm" px={2} color="whiteAlpha.800">
@@ -196,12 +197,11 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               );
             })}
           </TabList>
-
           <TabPanels>
             <TabPanel mt={2} width={"full"}>
               {dataNfts.length > 0 ? (
                 <SimpleGrid
-                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 3, "2xl": 4 }}
                   spacingY={4}
                   mx={{ base: 0, "2xl": "24 !important" }}
                   mt="5 !important"

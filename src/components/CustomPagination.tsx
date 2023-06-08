@@ -73,7 +73,7 @@ export const CustomPagination: FC<PropsType> = ({
         </Tooltip>
       </Flex>
 
-      <Flex alignItems="center" mx={2} fontSize="sm">
+      <Flex alignItems="center" mx={2} fontSize="sm" w={{ base: "5rem", lg: "auto" }}>
         <Box flexShrink="0">
           Page{" "}
           <Box fontWeight="bold" as="span">
@@ -86,7 +86,7 @@ export const CustomPagination: FC<PropsType> = ({
         </Box>{" "}
       </Flex>
 
-      <Flex paddingLeft={{ base: "50px", md: "0px" }} paddingRight={{ base: "10px", md: "0px" }}>
+      <Flex>
         <Tooltip label="Next Page">
           <IconButton
             colorScheme="teal"

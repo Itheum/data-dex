@@ -240,7 +240,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
         <Box position="relative">
           <Tabs pt={10}>
-            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflow={{ base: "scroll", md: "scroll", lg: "unset" }}>
               <Flex>
                 <Tab
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
@@ -269,7 +269,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   {isMxLoggedIn && (
                     <Flex ml="4.7rem" alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w={{ base: "6rem", lg: "auto" }}>
                         My Listed Data NFT(s)
                       </Text>
                       <Text fontSize="sm" px={1} color="whiteAlpha.800">
@@ -279,7 +279,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   )}
                 </Tab>
               </Flex>
-              <Flex mr="4.7rem">
+              <Flex pr={{ lg: "10" }} ml={{ base: "4.7rem", xl: 0 }}>
                 <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
               </Flex>
             </TabList>
