@@ -25,6 +25,7 @@ export const GuardRails: React.FC = () => {
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   const historyGuardrails = historicGuardrails;
+  const milisecondsInHours = 3600000;
 
   useEffect(() => {
     if (!_chainMeta.networkId) return;
@@ -102,11 +103,11 @@ export const GuardRails: React.FC = () => {
 
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-      <Heading size="xl" fontWeight="medium" mt={14} mb={1}>
+      <Heading fontSize="36px" fontWeight="medium" mt={14} mb="32px">
         Guard Rails
       </Heading>
-      <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} mt={5} flexWrap="wrap">
-        <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width="26rem">
+      <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} flexWrap="wrap">
+        <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "26rem" }}>
           <Text
             textAlign="center"
             fontWeight="600"
@@ -121,15 +122,11 @@ export const GuardRails: React.FC = () => {
           <Stack>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
-              {marketRequirements?.buyer_fee ? (
-                <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
-                  <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                    {`${(marketRequirements?.buyer_fee / 100).toFixed(2)} %` ?? "-"}
-                  </Text>
-                </Badge>
-              ) : (
-                "-"
-              )}
+              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
+                  {marketRequirements?.buyer_fee ? `${(marketRequirements?.buyer_fee / 100).toFixed(2)} %` : "-"}
+                </Text>
+              </Badge>
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Seller fee:&nbsp;
@@ -167,7 +164,7 @@ export const GuardRails: React.FC = () => {
               Time between mints:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {userData?.mintTimeLimit ? new Date(userData.lastUserMintTime + userData.mintTimeLimit).toLocaleString() : "-"}
+                  {!!userData && userData.mintTimeLimit ? Math.floor(userData.mintTimeLimit / milisecondsInHours) + " hours" : "-"}
                 </Text>
               </Badge>
             </Text>
@@ -207,7 +204,7 @@ export const GuardRails: React.FC = () => {
         </Box>
         <GuardRailsCards items={historyGuardrails} title="History Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />
 
-        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width="20.5rem">
+        <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width={{ base: "31.25rem", xl: "20.5rem" }}>
           <Text
             textAlign="center"
             fontWeight="600"
@@ -220,73 +217,93 @@ export const GuardRails: React.FC = () => {
             Upcoming Guardrails
           </Text>
           <Stack>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails.buyer_fee ? upcomingGuardRails.buyer_fee : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails.buyer_fee ? upcomingGuardRails.buyer_fee : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Seller fee:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.seller_fee ? upcomingGuardRails.seller_fee : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.seller_fee ? upcomingGuardRails.seller_fee : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Maximum payment fees:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.maximum_payment_fees ? upcomingGuardRails?.maximum_payment_fees : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.maximum_payment_fees ? upcomingGuardRails?.maximum_payment_fees : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Minimum royalties:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.minimum_royalties ? upcomingGuardRails.minimum_royalties : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.minimum_royalties ? upcomingGuardRails.minimum_royalties : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Maximum royalties:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.maximum_royalties ? upcomingGuardRails?.maximum_royalties : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.maximum_royalties ? upcomingGuardRails?.maximum_royalties : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Time between mints:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Max Data NFT supply:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.max_data_nft_supply ? upcomingGuardRails?.max_data_nft_supply : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.max_data_nft_supply ? upcomingGuardRails?.max_data_nft_supply : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Anti-Spam fee:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.antiSpam_tax ? upcomingGuardRails?.antiSpam_tax : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.antiSpam_tax ? upcomingGuardRails?.antiSpam_tax : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Accepted payments:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.accepted_payments ? upcomingGuardRails?.accepted_payments : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.accepted_payments ? upcomingGuardRails?.accepted_payments : "-"}
+                </Text>
               </Badge>
             </Text>
-            <Text as="div" pl={3} fontSize="lg">
+            <Text as="div" py={2} pl={7} fontSize="lg">
               Accepted tokens:&nbsp;
-              <Badge color="gray.400" fontSize="0.8em" m={1} p={1.5} borderRadius="lg">
-                {upcomingGuardRails?.accepted_tokens ? upcomingGuardRails?.accepted_tokens : "-"}
+              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.accepted_tokens ? upcomingGuardRails?.accepted_tokens : "-"}
+                </Text>
               </Badge>
             </Text>
           </Stack>
         </Box>
       </Flex>
-      <Heading size="xl" fontWeight="medium" my={6}>
-        Whitelisted addresses
+      <Heading fontSize="36px" fontWeight="medium" mt={32} mb="32px">
+        Whitelisted Addresses
       </Heading>
-      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={5} w="full">
+      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
         <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 0, lg: 10 }} my="5">
           {whitelistedAddress}
         </Flex>

@@ -62,241 +62,276 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
 
   return (
     <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" w="31.25rem">
-      <Text
-        textAlign="center"
-        fontWeight="600"
-        borderTopRadius="22px"
-        py={3}
+      <Flex
+        flexDirection="row"
+        justifyContent="center"
+        alignItems="center"
         borderBottom="1px solid"
         borderColor="#00C79740"
         backgroundColor="#00C7970D"
-        fontSize="22px">
-        {title}
-      </Text>
-      <Flex flexDirection="row" alignItems="center" h="auto">
-        <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handlePrevClick} mx="1"></Button>
-        {/*<motion.div animate={{ x: xPosition }} transition={{ type: "tween", duration: 1 }}>*/}
-        <Stack w="26rem">
-          <Text as="div" py={2.5} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            <Flex flexDirection="row" alignItems="center">
-              <Text>Buyer fee:&nbsp;</Text>
-              {currentItem.buyer_fee_newPrice ? (
-                <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-                  <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5}>
-                    {!isEqualBuyerFee ? (
-                      <Text as="s" textColor={textColor}>
-                        {currentItem.buyer_fee_oldPrice}
-                      </Text>
-                    ) : (
-                      <Text textColor={textColor}>{currentItem.buyer_fee_oldPrice}</Text>
-                    )}
-                    {isLowerBuyerFee && (
-                      <Text as="span" textColor={textColor}>
-                        {arrowUp}
-                      </Text>
-                    )}
-                    {isHigherBuyerFee && (
-                      <Text as="span" textColor={textColor}>
-                        {arrowDown}
-                      </Text>
-                    )}
-                    {isEqualBuyerFee && (
-                      <Text as="span" textColor={textColor}>
-                        {equal}
-                      </Text>
-                    )}
-                    <Text textColor={textColor}>{currentItem.buyer_fee_newPrice}</Text>
-                    <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
-                  </Flex>
-                </Badge>
-              ) : (
-                <Badge backgroundColor={badgeColor} textColor={textColor} fontSize="0.8em" m={1} borderRadius="md">
-                  {"-"}
-                </Badge>
-              )}
-            </Flex>
-          </Text>
-          <Text as="div" py={2.5} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            <Flex flexDirection="row" alignItems="center">
-              <Text>Seller fee:&nbsp;</Text>
-              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-                {(
-                  <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5}>
-                    {!isEqualSellerFee ? (
-                      <Text as="s" textColor={textColor}>
-                        {currentItem.seller_fee_oldPrice}
-                      </Text>
-                    ) : (
-                      <Text textColor={textColor}>{currentItem.seller_fee_oldPrice}</Text>
-                    )}
-                    {isLowerSellerFee && (
-                      <Text as="span" textColor={textColor}>
-                        {arrowUp}
-                      </Text>
-                    )}
-                    {isHigherSellerFee && (
-                      <Text as="span" textColor={textColor}>
-                        {arrowDown}
-                      </Text>
-                    )}
-                    {isEqualSellerFee && (
-                      <Text as="span" textColor={textColor}>
-                        {equal}
-                      </Text>
-                    )}
-                    <Text textColor={textColor}>{currentItem.seller_fee_newPrice}</Text>
-                    <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
-                  </Flex>
-                ) ?? "-"}
-              </Badge>
-            </Flex>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            Maximum payment fees:&nbsp;
-            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
-                {currentItem?.maximum_payment_fees ?? "-"}
-              </Text>
-            </Badge>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            <Flex flexDirection="row" alignItems="center">
-              <Text>Minimum royalties:&nbsp;</Text>
-              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-                {(
-                  <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5}>
-                    {!isEqualMinRoyalty ? (
-                      <Text as="s" textColor={textColor}>
-                        {currentItem.minimum_royalties_oldPrice}
-                      </Text>
-                    ) : (
-                      <Text textColor={textColor}>{currentItem.minimum_royalties_oldPrice}</Text>
-                    )}
-                    {isLowerMinRoyalty && (
-                      <Text as="span" textColor={textColor}>
-                        {arrowUp}
-                      </Text>
-                    )}
-                    {isHigherMinRoyalty && (
-                      <Text as="span" textColor={textColor}>
-                        {arrowDown}
-                      </Text>
-                    )}
-                    {isEqualMinRoyalty && (
-                      <Text as="span" textColor={textColor}>
-                        {equal}
-                      </Text>
-                    )}
-                    <Text textColor={textColor}>{currentItem.minimum_royalties_newPrice}</Text>
-                    <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
-                  </Flex>
-                ) ?? "-"}
-              </Badge>
-            </Flex>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            <Flex flexDirection="row" alignItems="center">
-              <Text>Max royalties:&nbsp;</Text>
-              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-                {(
-                  <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5}>
-                    {!isEqualMaxRoyalty ? (
-                      <Text as="s" textColor={textColor}>
-                        {currentItem.maximum_royalties_oldPrice}
-                      </Text>
-                    ) : (
-                      <Text textColor={textColor}>{currentItem.maximum_royalties_oldPrice}</Text>
-                    )}
-                    {isLowerMaxRoyalty && arrowUp}
-                    {isHigherMaxRoyalty && arrowDown}
-                    {isEqualMaxRoyalty && equal}
-                    <Text textColor={textColor}>{currentItem.maximum_royalties_newPrice}</Text>
-                    <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
-                  </Flex>
-                ) ?? "-"}
-              </Badge>
-            </Flex>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            <Flex flexDirection="row" alignItems="center">
-              <Text>Time between mints:&nbsp;</Text>
-              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-                {(
-                  <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5}>
-                    {!isEqualTimeBetweenMints ? (
-                      <Text as="s" textColor={textColor} fontWeight="500">
-                        {currentItem.time_between_mints_oldPrice}
-                      </Text>
-                    ) : (
-                      <Text textColor={textColor} fontWeight="500">
-                        {currentItem.time_between_mints_oldPrice}
-                      </Text>
-                    )}
-                    {isLowerTimeBetweenMints && arrowUp}
-                    {isHigherTimeBetweenMints && arrowDown}
-                    {isEqualTimeBetweenMints && equal}
-                    <Text textColor={textColor} fontWeight="500">
-                      {currentItem.time_between_mints_newPrice}
-                    </Text>
-                    <Text textColor={textColor} fontWeight="500">
-                      &nbsp;({currentItem.date})
-                    </Text>
-                  </Flex>
-                ) ?? "-"}
-              </Badge>
-            </Flex>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            Max Data NFT supply:&nbsp;
-            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
-                {currentItem?.max_data_nft_supply ? currentItem?.max_data_nft_supply : "-"}
-              </Text>
-            </Badge>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            <Flex flexDirection="row" alignItems="center">
-              <Text>Anti-Spam fee:&nbsp;</Text>
-              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-                {(
-                  <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5}>
-                    {!isEqualAntiSpamFee ? (
-                      <Text as="s" textColor={textColor}>
-                        {currentItem.antiSpam_tax_oldPrice}
-                      </Text>
-                    ) : (
-                      <Text textColor={textColor}>{currentItem.antiSpam_tax_oldPrice}</Text>
-                    )}
-                    {isLowerAntiSpamFee && arrowUp}
-                    {isHigherAntiSpamFee && arrowDown}
-                    {isEqualAntiSpamFee && equal}
-                    <Text textColor={textColor}>{currentItem.antiSpam_tax_newPrice}</Text>
-                    <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
-                  </Flex>
-                ) ?? "-"}
-              </Badge>
-            </Flex>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
-            Accepted payments:&nbsp;
-            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
-                {currentItem?.accepted_payments ?? "-"}
-              </Text>
-            </Badge>
-          </Text>
-          <Text as="div" py={2} pl={7} fontSize="lg">
-            Accepted tokens:&nbsp;
-            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
-                {currentItem?.accepted_tokens ?? "-"}
-              </Text>
-            </Badge>
-          </Text>
-        </Stack>
-        {/*</motion.div>*/}
-        <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="1"></Button>
+        w="full">
+        <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handlePrevClick} mx="2"></Button>
+        <Text textAlign="center" fontWeight="600" borderTopRadius="22px" py={3} fontSize="22px">
+          {title}
+        </Text>
+        <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>
       </Flex>
+      {/*<motion.div animate={{ x: xPosition }} transition={{ type: "tween", duration: 1 }}>*/}
+      <Stack>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Buyer fee:&nbsp;</Text>
+            {currentItem.buyer_fee_newPrice ? (
+              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
+                  {!isEqualBuyerFee ? (
+                    <Text as="s" textColor={textColor}>
+                      {currentItem.buyer_fee_oldPrice}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor}>{currentItem.buyer_fee_oldPrice}</Text>
+                  )}
+                  {isLowerBuyerFee && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherBuyerFee && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualBuyerFee && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor}>{currentItem.buyer_fee_newPrice}</Text>
+                  <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
+                </Flex>
+              </Badge>
+            ) : (
+              <Badge backgroundColor={badgeColor} textColor={textColor} fontSize="0.8em" m={1} borderRadius="md">
+                {"-"}
+              </Badge>
+            )}
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Seller fee:&nbsp;</Text>
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {(
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
+                  {!isEqualSellerFee ? (
+                    <Text as="s" textColor={textColor}>
+                      {currentItem.seller_fee_oldPrice}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor}>{currentItem.seller_fee_oldPrice}</Text>
+                  )}
+                  {isLowerSellerFee && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherSellerFee && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualSellerFee && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor}>{currentItem.seller_fee_newPrice}</Text>
+                  <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
+                </Flex>
+              ) ?? "-"}
+            </Badge>
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          Maximum payment fees:&nbsp;
+          <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+            <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
+              {currentItem?.maximum_payment_fees ?? "-"}
+            </Text>
+          </Badge>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Minimum royalties:&nbsp;</Text>
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {(
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
+                  {!isEqualMinRoyalty ? (
+                    <Text as="s" textColor={textColor}>
+                      {currentItem.minimum_royalties_oldPrice}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor}>{currentItem.minimum_royalties_oldPrice}</Text>
+                  )}
+                  {isLowerMinRoyalty && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherMinRoyalty && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualMinRoyalty && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor}>{currentItem.minimum_royalties_newPrice}</Text>
+                  <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
+                </Flex>
+              ) ?? "-"}
+            </Badge>
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Max royalties:&nbsp;</Text>
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {(
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
+                  {!isEqualMaxRoyalty ? (
+                    <Text as="s" textColor={textColor}>
+                      {currentItem.maximum_royalties_oldPrice}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor}>{currentItem.maximum_royalties_oldPrice}</Text>
+                  )}
+                  {isLowerMaxRoyalty && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherMaxRoyalty && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualMaxRoyalty && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor}>{currentItem.maximum_royalties_newPrice}</Text>
+                  <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
+                </Flex>
+              ) ?? "-"}
+            </Badge>
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Time between mints:&nbsp;</Text>
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {(
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="0.8rem" fontWeight="500">
+                  {!isEqualTimeBetweenMints ? (
+                    <Text as="s" textColor={textColor} fontWeight="500">
+                      {currentItem.time_between_mints_oldPrice}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor} fontWeight="500">
+                      {currentItem.time_between_mints_oldPrice}
+                    </Text>
+                  )}
+                  {isLowerTimeBetweenMints && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherTimeBetweenMints && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualTimeBetweenMints && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor} fontWeight="500">
+                    {currentItem.time_between_mints_newPrice}
+                  </Text>
+                  <Text textColor={textColor} fontWeight="500">
+                    &nbsp;({currentItem.date})
+                  </Text>
+                </Flex>
+              ) ?? "-"}
+            </Badge>
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          Max Data NFT supply:&nbsp;
+          <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+            <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
+              {currentItem?.max_data_nft_supply ? currentItem?.max_data_nft_supply : "-"}
+            </Text>
+          </Badge>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Anti-Spam fee:&nbsp;</Text>
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {(
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
+                  {!isEqualAntiSpamFee ? (
+                    <Text as="s" textColor={textColor}>
+                      {currentItem.antiSpam_tax_oldPrice}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor}>{currentItem.antiSpam_tax_oldPrice}</Text>
+                  )}
+                  {isLowerAntiSpamFee && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherAntiSpamFee && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualAntiSpamFee && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor}>{currentItem.antiSpam_tax_newPrice}</Text>
+                  <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
+                </Flex>
+              ) ?? "-"}
+            </Badge>
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          Accepted payments:&nbsp;
+          <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+            <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
+              {currentItem?.accepted_payments ?? "-"}
+            </Text>
+          </Badge>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg">
+          Accepted tokens:&nbsp;
+          <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+            <Text as="p" px={3} py={1.5} textColor={textColor} fontSize="md" fontWeight="500">
+              {currentItem?.accepted_tokens ?? "-"}
+            </Text>
+          </Badge>
+        </Text>
+      </Stack>
+      {/*</motion.div>*/}
     </Box>
   );
 };
