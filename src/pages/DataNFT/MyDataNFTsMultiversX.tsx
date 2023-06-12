@@ -69,7 +69,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
 
   const onChangeTab = useThrottle((newTabState: number) => {
-    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : ""}`);
+    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : ""}`);
   }, /* delay: */ 500);
 
   const walletTabs = [
