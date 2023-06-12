@@ -77,7 +77,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>
       </Flex>
       {/*<motion.div animate={{ x: xPosition }} transition={{ type: "tween", duration: 1 }}>*/}
-      <Stack>
+      <Stack textAlign="start">
         <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
           <Flex flexDirection="row" alignItems="center">
             <Text>Buyer fee:&nbsp;</Text>

@@ -119,7 +119,7 @@ export const GuardRails: React.FC = () => {
             fontSize="22px">
             Active Guardrails
           </Text>
-          <Stack>
+          <Stack textAlign="start">
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
@@ -216,7 +216,7 @@ export const GuardRails: React.FC = () => {
             fontSize="22px">
             Upcoming Guardrails
           </Text>
-          <Stack>
+          <Stack textAlign="start">
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
               <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
