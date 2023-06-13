@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.0.0-beta-2",
+  "version": "1.1.0-beta-1",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.0.19",
@@ -32,7 +32,8 @@
     "react-router-dom": "6.11.1",
     "react-scripts": "5.0.1",
     "web-vitals": "3.3.1",
-    "yup": "1.1.1"
+    "yup": "1.1.1",
+    "zustand": "4.3.8"
   },
   "scripts": {
     "start": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts start",
