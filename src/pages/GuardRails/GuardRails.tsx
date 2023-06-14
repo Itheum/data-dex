@@ -107,7 +107,7 @@ export const GuardRails: React.FC = () => {
         Guard Rails
       </Heading>
       <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} flexWrap="wrap">
-        <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "26rem" }}>
+        <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "24rem", "2xl": "26rem" }}>
           <Text
             textAlign="center"
             fontWeight="600"

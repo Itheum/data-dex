@@ -44,7 +44,7 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
-import { MdAccountBalanceWallet, MdMenu, MdSpaceDashboard } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink } from "react-router-dom";
@@ -58,6 +58,7 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import { TbSunset2 } from "react-icons/tb";
 
 const exploreRouterMenu = [
   {
@@ -229,7 +230,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 );
               })}
             </HStack>
-
             {isMxLoggedIn && (
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
@@ -315,19 +315,17 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 </Link>
               </>
             )}
-
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
-
-            {/*Toggle Mode*/}
-            {/*<Box display={{ base: "none", md: "block", xl: "block" }}>*/}
-            {/*  <IconButton*/}
-            {/*    size={"lg"}*/}
-            {/*    icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} />}*/}
-            {/*    aria-label="Change Color Theme"*/}
-            {/*    color="teal.200"*/}
-            {/*    onClick={toggleColorMode}*/}
-            {/*  />*/}
-            {/*</Box>*/}
+            Toggle Mode
+            <Box display={{ base: "none", md: "block", xl: "block" }}>
+              <IconButton
+                size={"lg"}
+                icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
           </HStack>
         </Flex>
       </Flex>

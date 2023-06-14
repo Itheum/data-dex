@@ -61,7 +61,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   const isEqualAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) === parseInt(currentItem.antiSpam_tax_newPrice);
 
   return (
-    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" w="31.25rem">
+    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" w={{ base: "31.25rem", xl: "27.3rem", "2xl": "31.25rem" }}>
       <Flex
         flexDirection="row"
         justifyContent="center"
