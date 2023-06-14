@@ -293,7 +293,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          console.log('transactionOnNetwork', transactionOnNetwork);
+          console.log("transactionOnNetwork", transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
@@ -301,10 +301,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 const matches = input.match(/(?<=\[)[^\][]*(?=])/g);
 
                 if (matches) {
-                  const title = matches[1] == 'acceptOffer' ? 'Purchase transaction failed'
-                    : matches[1] == 'cancelOffer' ? 'De-List transaction failed'
-                    : matches[1] == 'changeOfferPrice' ? 'Update price transaction failed'
-                    : 'Transaction failed';
+                  const title =
+                    matches[1] == "acceptOffer"
+                      ? "Purchase transaction failed"
+                      : matches[1] == "cancelOffer"
+                      ? "De-List transaction failed"
+                      : matches[1] == "changeOfferPrice"
+                      ? "Update price transaction failed"
+                      : "Transaction failed";
                   const description = matches[matches.length - 1];
 
                   toast({

@@ -23,6 +23,7 @@ import MintDataMX from "AdvertiseData/MintDataMultiversX";
 import DataCoalitions from "DataCoalition/DataCoalitions";
 import DataNFTDetails from "DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "DataNFT/DataNFTMarketplaceMultiversX";
+import DataNFTMarketplaceEVM from "DataNFT/DataNFTMarketplaceEVM";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsEVM from "DataNFT/MyDataNFTsEVM";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
@@ -38,12 +39,22 @@ import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
 import { useChainMeta } from "store/ChainMetaContext";
 
-import { ethers } from 'ethers';
-import { ABIS } from '../EVM/ABIs';
+import { ethers } from "ethers";
+import { ABIS } from "../EVM/ABIs";
 
 const mxLogout = logout;
 
-function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { appConfig: any; resetAppContexts: any; onLaunchMode: any, onEVMConnection: any }) {
+function App({
+  appConfig,
+  resetAppContexts,
+  onLaunchMode,
+  onEVMConnection,
+}: {
+  appConfig: any;
+  resetAppContexts: any;
+  onLaunchMode: any;
+  onEVMConnection: any;
+}) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
@@ -85,8 +96,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
       } else if (path.includes("-")) {
         path = path.split("-")[0];
       }
-      
-      console.log('******************* ', PATHS[path as keyof typeof PATHS]?.[0] as number);
+
+      console.log("******************* ", PATHS[path as keyof typeof PATHS]?.[0] as number);
 
       setMenuItem(PATHS[path as keyof typeof PATHS]?.[0] as number);
     }
@@ -99,8 +110,8 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
       // const networkId = mxEnvironment === "mainnet" ? "E1" : "ED";
 
       if (_chainMeta?.isEVMAuthenticated) {
-        setMenuItem(PATHS['home']?.[0] as number);
-        navigate('home');
+        setMenuItem(PATHS["home"]?.[0] as number);
+        navigate("home");
       }
 
       setChain(CHAINS[_chainMeta?.networkId] || "Unknown chain");
@@ -158,10 +169,9 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
       const balance = await contract.balanceOf(_chainMeta.loggedInAddress);
       const decimals = await contract.decimals();
 
-      console.log('astar ITHEUM bal = ', itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
+      console.log("astar ITHEUM bal = ", itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
       setTokenBalance(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
-    }
-    else {
+    } else {
       if (mxAddress && isMxLoggedIn) {
         setTokenBalance(-1); // -1 is loading
 
@@ -230,25 +240,39 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
-  console.log('******************* menuItem = ', menuItem);
+  console.log("******************* menuItem = ", menuItem);
 
   const { isEVMAuthenticated, loggedInAddress } = _chainMeta;
+
+  let bodyMinHeightLg = "1000px";
+
+  if (menuItem === MENU.GETWHITELISTED) {
+    // whitelist page we need to reset this of bg looks bad
+    bodyMinHeightLg = "lg";
+  }
 
   return (
     <>
       <Container maxW="97.5rem">
         <Flex
-          bgColor={colorMode === "dark" ? "black" : "white"}
+          bgColor={colorMode === "dark" ? "bgDark" : "white"}
           flexDirection="column"
           justifyContent="space-between"
           minH="100vh"
           boxShadow={containerShadow}
           zIndex={2}>
           {/* App Header */}
-          <AppHeader onLaunchMode={onLaunchMode} tokenBalance={tokenBalance} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} onEVMConnection={onEVMConnection} />
+          <AppHeader
+            onLaunchMode={onLaunchMode}
+            tokenBalance={tokenBalance}
+            menuItem={menuItem}
+            setMenuItem={setMenuItem}
+            handleLogout={handleLogout}
+            onEVMConnection={onEVMConnection}
+          />
 
           {/* App Body */}
-          <Box flexGrow="1" p={menuItem !== MENU.LANDING ? "5" : "0"}>
+          <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
             <Routes>
               <Route path="/" element={<LandingPage />} />
 
@@ -268,24 +292,25 @@ function App({ appConfig, resetAppContexts, onLaunchMode, onEVMConnection }: { a
 
               <Route
                 path="tradedata"
-                element=
-                  {isEVMAuthenticated && 
+                element={
+                  (isEVMAuthenticated && (
                     <MintDataEVM key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
-                    || 
-                    <MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
-                  }
+                  )) || <MintDataMX key={rfKeys.sellData} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
+                }
               />
 
               <Route path="datanfts" element={<Outlet />}>
                 <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                {isEVMAuthenticated && 
+                {(isEVMAuthenticated && (
                   <Route path="wallet" element={<MyDataNFTsEVM key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
-                  || 
-                  <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />
-                }
+                )) || <Route path="wallet" element={<MyDataNFTsMx key={rfKeys.dataNFTWallet} onRfMount={() => handleRfMount("dataNFTWallet")} />} />}
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
-                <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+
+                {(isEVMAuthenticated && <Route path="marketplace/market" element={<DataNFTMarketplaceEVM tabState={1} />} />) || (
+                  <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                )}
+
                 <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                 <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />

@@ -17,7 +17,7 @@ export const labels = {
   "ERR_MINT_NO_TX": "Cannot send transaction to the blockchain. (ER-15)",
   "ERR_PROCURE_UPTIME_CHECK_DOWN":
     "The Data Marshal is unavailable to provide a status check on this Data Stream URL. This may mean that the Data Stream is unavailable. Do not proceed with the transaction. (ER-16)",
-  "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace reuirements. (ER-17)",
+  "ERR_MARKET_REQ_FAIL": "Could not fetch marketplace requirements. (ER-17)",
   "ERR_MARKET_OFFERS_FAIL": "Could not fetch marketplace offers. (ER-18)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":

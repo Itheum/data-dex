@@ -223,6 +223,8 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
+  GETWHITELISTED: 18,
+  DATACAT: 19,
 };
 
 export const PATHS = {
@@ -245,7 +247,7 @@ export const PATHS = {
   offer: [17, [4]],
 };
 
-export const CHAINS : any = {
+export const CHAINS: any = {
   31337: "Localhost",
   1: "Eth - Mainnet",
   5: "Eth - Görli",
@@ -255,8 +257,8 @@ export const CHAINS : any = {
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
   43113: "Avalanche - Testnet",
-  '0x250': "Astar Network",
-  '0x51': "Astar - Shibuya",
+  "0x250": "Astar Network",
+  "0x51": "Astar - Shibuya",
   E1: "MultiversX - Mainnet",
   ED: "MultiversX - Devnet",
 };
@@ -281,7 +283,7 @@ export const OPENSEA_CHAIN_NAMES: Record<NetworkIdType, string> = {
   80001: "mumbai",
 };
 
-export const SUPPORTED_CHAINS = ["E1", "ED", 5, 80001, 97, 1666700000, 43113, '0x51'];
+export const SUPPORTED_CHAINS = ["E1", "ED", 5, 80001, 97, 1666700000, 43113, "0x51"];
 
 export const WALLETS = {
   METAMASK: "evm_metamask",
@@ -305,8 +307,20 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
     E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
-    '0x250': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.SELL],
-    '0x51': [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
+    "0x250": [
+      MENU.FAUCET,
+      MENU.CLAIMS,
+      MENU.TX,
+      MENU.COALITION,
+      MENU.NFTALL,
+      MENU.NFTMINE,
+      MENU.BUY,
+      MENU.PURCHASED,
+      MENU.ADVERTISED,
+      MENU.DATAPROOFS,
+      MENU.SELL,
+    ],
+    "0x51": [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -324,8 +338,8 @@ export const CHAIN_TX_VIEWER = {
   43113: "https://testnet.snowtrace.io/tx/",
   E1: "https://explorer.multiversx.com",
   ED: "https://devnet-explorer.multiversx.com",
-  '0x250': "https://astar.subscan.io",
-  '0x51': "https://shibuya.subscan.io",
+  "0x250": "https://astar.subscan.io",
+  "0x51": "https://shibuya.subscan.io",
 };
 
 export const CHAIN_TX_LIST = {
@@ -521,10 +535,11 @@ export const dataCATDemoUserData = {
           "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
       },
       "playstation-gamer-passport": {
-        "programName": "Sony Playstation Data Passport",
+        "programName": "Sony Playstation Web3 Gamer Passport",
         "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
         "img": "sony-playstation-data-passport",
+        "title": "My Sony PlayStation data passport",
         "description":
           "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },

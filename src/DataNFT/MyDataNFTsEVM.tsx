@@ -27,7 +27,7 @@ import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "rea
 import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTDetails from "./DataNFTDetails";
-import WalletDataNFTMX from "./WalletDataNFTMX";
+import WalletDataNFTEVM from "./WalletDataNFTEVM";
 
 export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
@@ -83,28 +83,27 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
     })();
   }, [_chainMeta.networkId]);
 
-  const getOnChainNFTsEVM = async (myAddress : string) => {
+  const getOnChainNFTsEVM = async (myAddress: string) => {
     const headers = new Headers();
-    headers.set('Authorization', 'Bearer cqt_rQQXcKFYDdrFjMdcbpkFW9jMCGfd');
+    headers.set("Authorization", "Bearer cqt_rQQXcKFYDdrFjMdcbpkFW9jMCGfd");
 
     const endpointMyDataNFTs = `https://api.covalenthq.com/v1/astar-shibuya/address/${myAddress}/balances_v2/?nft=true`;
 
-    fetch(endpointMyDataNFTs, { method: 'GET', headers: headers })
+    fetch(endpointMyDataNFTs, { method: "GET", headers: headers })
       .then((resp) => resp.json())
       .then((res) => {
         console.log(res);
 
         if (res?.data?.items) {
-          const dataNFTsRaw = res?.data?.items
-            .filter((val : any) => {
-              return (
-                val.type === 'nft' &&
-                val.contract_ticker_symbol === 'DATANFTFT1' &&
-                val.contract_address.toLowerCase() === '0xaC9e9eA0d85641Fa176583215447C81eBB5eD7b3'.toLowerCase()
-              );
-            });
+          const dataNFTsRaw = res?.data?.items.filter((val: any) => {
+            return (
+              val.type === "nft" &&
+              val.contract_ticker_symbol === "DATANFTFT1" &&
+              val.contract_address.toLowerCase() === "0xaC9e9eA0d85641Fa176583215447C81eBB5eD7b3".toLowerCase()
+            );
+          });
 
-          console.log('dataNFTsRaw');
+          console.log("dataNFTsRaw");
           console.log(dataNFTsRaw);
 
           // some logic to loop through the raw onChainNFTs and build the dataNfts
@@ -117,9 +116,9 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
               index,
               id: nft.token_id,
               nftImgUrl: nft.external_data.image,
-              dataPreview: nft.external_data.attributes.find((i : any) => i.trait_type === 'Data Preview URL').value || '',
-              dataStream: nft.external_data.attributes.find((i : any) => i.trait_type === 'Data Stream URL')?.value || '',
-              dataMarshal: nft.external_data.attributes.find((i : any) => i.trait_type === 'Data Marshal URL')?.value || '',
+              dataPreview: nft.external_data.attributes.find((i: any) => i.trait_type === "Data Preview URL").value || "",
+              dataStream: nft.external_data.attributes.find((i: any) => i.trait_type === "Data Stream URL")?.value || "",
+              dataMarshal: nft.external_data.attributes.find((i: any) => i.trait_type === "Data Marshal URL")?.value || "",
               tokenName: nft.external_data.name,
               feeInTokens: 100,
               creator: nft.original_owner,
@@ -130,7 +129,7 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
               title: nft.external_data.name,
               royalties: 0,
               nonce: nft.token_id,
-              collection: 'DATANFTFT1',
+              collection: "DATANFTFT1",
             });
           }
 
@@ -141,8 +140,7 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
 
   useEffect(() => {
     getOnChainNFTsEVM(_chainMeta.loggedInAddress);
-  }, [ _chainMeta.loggedInAddress]);
-
+  }, [_chainMeta.loggedInAddress]);
 
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);
@@ -158,10 +156,10 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
     <>
       <Stack>
         <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Data NFT Wallet (Astar Network)
+          Data NFT Wallet
         </Heading>
         <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Below are the Data NFTs you created and/or purchased on the current chain
+          Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
         <Tabs pt={10}>
@@ -169,7 +167,7 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
             {walletTabs.map((tab, index) => {
               return (
                 <Tab key={index} isDisabled={tab.isDisabled} _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
-                  <Flex ml="4.7rem" alignItems="center">
+                  <Flex ml="4.7rem" alignItems="center" py={3}>
                     <Icon as={tab.icon} mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" color={colorMode === "dark" ? "white" : "black"}>
                       {tab.tabName}
@@ -184,16 +182,21 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
           </TabList>
 
           <TabPanels>
-            <TabPanel mt={10}>
+            <TabPanel mt={2} width={"full"}>
               {dataNfts.length > 0 ? (
-                <SimpleGrid columns={{ base: 1, md: 4 }} spacingY={4} mx={"24 !important"}>
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
                   {dataNfts.map((item, index) => (
-                    <WalletDataNFTMX
+                    <WalletDataNFTEVM
                       key={index}
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       userData={userData}
-                      maxPayment={maxPaymentFeeMap[itheumToken]}
+                      maxPayment={100}
                       sellerFee={sellerFee || 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       {...item}

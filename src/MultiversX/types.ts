@@ -60,6 +60,18 @@ export interface OfferType {
   quantity: number;
 }
 
+export interface OfferTypeEVM {
+  tokenId: number;
+  ownerAddress: string;
+  offered_token_identifier: string;
+  offered_token_nonce: number;
+  offered_token_amount: string;
+  wanted_token_identifier: string;
+  wanted_token_nonce: number;
+  wanted_token_amount: string;
+  quantity: number;
+}
+
 export interface ItemType {
   index: number;
   owner: string;
