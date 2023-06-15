@@ -155,17 +155,22 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     <>
       <Flex
         h="6rem"
-        justifyContent={isMxLoggedIn ? "space-evenly" : "inherit"}
+        justifyContent={isMxLoggedIn ? "space-around" : "inherit"}
         paddingX={!isMxLoggedIn ? { base: 5, md: 20, xl: 36 } : 0}
         alignItems="center"
         backgroundColor={colorMode === "light" ? "white" : "bgDark"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack alignItems={"center"} backgroundColor="none" width="15rem">
+        <HStack
+          alignItems={"center"}
+          backgroundColor="none"
+          width={{ base: "full", md: "15rem" }}
+          justifyContent={{ base: "space-around", md: "space-around" }}>
           {isMxLoggedIn && (
             <IconButton
-              size={"sm"}
+              size={{ base: "sm" }}
+              fontSize="2rem"
               variant={"ghost"}
               icon={
                 <MdMenu
@@ -175,8 +180,9 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 />
               }
               display={{
-                md: "none",
+                xl: "none",
               }}
+              textColor="teal.200"
               aria-label={"Open Menu"}
               onClick={isOpen ? onClose : onOpen}
             />
@@ -190,16 +196,23 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               navigateToDiscover(MENU.LANDING);
             }}>
             <HStack>
-              <Image boxSize="48px" height="auto" src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading display={{ base: "none", md: "block", xl: "block" }} size={"md"}>
-                Data DEX
+              <Image boxSize={{ base: "48px", md: "32px" }} height="auto" ml={5} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Heading
+                display={{ base: "flex", md: "flex", xl: "flex" }}
+                fontSize={{ base: "md", xl: "xl" }}
+                fontWeight="400"
+                lineHeight="16.29px"
+                fontFamily="">
+                Data&nbsp;
+                <Text fontWeight="700">DEX</Text>
               </Heading>
             </HStack>
           </Link>
+          <Box></Box>
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
-            <HStack display={{ base: "none", md: "block", xl: "block" }}>
+            <HStack display={{ base: "none", md: "none", xl: "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
                 const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
                 return (
@@ -237,7 +250,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
-                      <MenuButton as={Button} size={"lg"} rightIcon={<TiArrowSortedDown size="18px" />}>
+                      <MenuButton as={Button} size={{ md: "md", xl: "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor="#181818">
@@ -302,9 +315,11 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 </Box>
                 <Link as={ReactRouterLink} to={"/"}>
                   <IconButton
-                    size={"lg"}
+                    display={{ base: "none", md: "inline-flex" }}
+                    size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                    px="2 !important"
                     color="teal.200"
-                    icon={<AiFillHome size={"1.4rem"} />}
+                    icon={<AiFillHome fontSize={"1.4rem"} />}
                     aria-label={"Back to home"}
                     isDisabled={isMenuItemSelected(MENU.LANDING) || hasPendingTransactions}
                     _disabled={menuButtonDisabledStyle(MENU.LANDING)}
@@ -319,8 +334,10 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
             Toggle Mode
             <Box display={{ base: "none", md: "block", xl: "block" }}>
               <IconButton
-                size={"lg"}
-                icon={colorMode === "light" ? <MdDarkMode size={"1.4rem"} /> : <TbSunset2 size={"1.4rem"} />}
+                size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                px="2 !important"
+                mr={{ md: "1", xl: "0" }}
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
                 aria-label="Change Color Theme"
                 color="teal.200"
                 onClick={toggleColorMode}
@@ -340,13 +357,13 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"}>
+          <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"} bgColor="#181818">
             <Heading size={"sm"} onClick={onClose}>
               Itheum Data DEX
             </Heading>
             <DrawerCloseButton />
           </DrawerHeader>
-          <DrawerBody p={0}>
+          <DrawerBody p={0} bgColor="#181818">
             <Accordion allowMultiple>
               {exploreRouterMenu.map((menu) => (
                 <AccordionItem key={menu.sectionId}>
@@ -505,15 +522,14 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   return (
     <Box
       display={displayParams}
-      fontSize={["xs", "md"]}
+      fontSize={{ md: "xs", xl: "md" }}
       minWidth="5.5rem"
       textAlign="center"
       color="black"
       bgColor="teal.200"
       borderRadius="md"
-      h={"12"}
-      paddingX="5"
-      paddingY="14px">
+      paddingX={{ md: "3", xl: "5" }}
+      paddingY={{ md: "10px", xl: "14px" }}>
       {itheumBalance === -1 ? (
         <Spinner size="xs" />
       ) : itheumBalance === -2 ? (
@@ -531,13 +547,13 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
   return (
     <Box
       display={displayParams}
-      fontSize={["xs", "md"]}
+      fontSize={{ md: "xs", xl: "md" }}
       textAlign="center"
       color="teal.200"
       fontWeight="semibold"
       borderRadius="md"
       height="2rem"
-      padding="6px 11px">
+      padding={{ md: "6px 5px", xl: "6px 11px" }}>
       {chain || "..."}
     </Box>
   );
