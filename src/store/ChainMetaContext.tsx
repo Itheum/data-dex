@@ -1,27 +1,36 @@
-import React, { ReactElement } from "react";
-import { createContext, useState, useContext } from "react";
+import React, { ReactElement, createContext, useState, useContext } from "react";
+import { ChainMetaType } from "libs/types";
 
-export interface ChainMetaType {
-  chainMeta: any;
-  setChainMeta: any;
+export interface ChainMetaContextType {
+  chainMeta: ChainMetaType;
+  setChainMeta: (e: ChainMetaType) => void;
 }
 
-const chainMetaContext = createContext<ChainMetaType>({
-  chainMeta: undefined,
-  setChainMeta: undefined,
-});
-
-export const ChainMetaContextProvider = ({ children }: { children: ReactElement }) => {
-  const [chainMeta, setChainMeta] = useState({
-    chainMeta: undefined,
-    setChainMeta: undefined,
-  });
-
-  return <chainMetaContext.Provider value={{ chainMeta, setChainMeta }}>{children}</chainMetaContext.Provider>;
+const defaultContext: ChainMetaContextType = {
+  chainMeta: {
+    networkId: "ED",
+    contracts: {
+      itheumToken: "",
+      claims: "",
+      faucet: "",
+    },
+    walletUsed: "",
+  },
+  setChainMeta: (e: ChainMetaType) => {
+    console.log("Empty setChainMeta", e);
+  },
 };
 
-export const useChainMeta = (): ChainMetaType => {
-  const context: ChainMetaType = useContext(chainMetaContext);
+const ChainMetaContext = createContext<ChainMetaContextType>(defaultContext);
+
+export const ChainMetaContextProvider = ({ children }: { children: ReactElement }) => {
+  const [chainMeta, setChainMeta] = useState<ChainMetaType>(defaultContext.chainMeta);
+
+  return <ChainMetaContext.Provider value={{ chainMeta, setChainMeta }}>{children}</ChainMetaContext.Provider>;
+};
+
+export const useChainMeta = (): ChainMetaContextType => {
+  const context: ChainMetaContextType = useContext(ChainMetaContext);
   if (context === undefined) throw Error("useChainMeta must be wrapped inside chainMetaContextProvider");
   return context;
 };
