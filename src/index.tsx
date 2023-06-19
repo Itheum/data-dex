@@ -61,6 +61,7 @@ const theme = extendTheme({
       900: "#1D4044",
     },
     bgDark: "#0F0F0F",
+    bgWhite: "#F5F5F5",
   },
 });
 

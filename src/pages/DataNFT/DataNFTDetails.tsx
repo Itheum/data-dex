@@ -236,7 +236,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 />
 
                 <VStack alignItems={"flex-start"} gap={"15px"} w="full">
-                  <Box color="gray.100" fontSize={{ base: "lg", lg: "xl" }}>
+                  <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "lg", lg: "xl" }}>
                     <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
                       {nftData.identifier}
                       <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />

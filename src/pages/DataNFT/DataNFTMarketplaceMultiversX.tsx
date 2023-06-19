@@ -387,7 +387,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
             <DrawerContent>
-              <DrawerHeader bgColor="#181818">
+              <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                   <Heading as="h4" size="lg">
@@ -395,7 +395,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   </Heading>
                 </HStack>
               </DrawerHeader>
-              <DrawerBody bgColor="#181818">
+              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}

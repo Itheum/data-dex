@@ -939,7 +939,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
         <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={true} closeOnOverlayClick={true}>
           <DrawerOverlay />
           <DrawerContent>
-            <DrawerHeader bgColor="#181818">
+            <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <HStack spacing="5">
                 <CloseButton size="lg" onClick={onRfMount} />
                 {(currDataCATSellObj && (
@@ -960,7 +960,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
               </HStack>
             </DrawerHeader>
             <DrawerBody
-              bgColor="#181818"
+              bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}
               overflowX={"hidden"}
               onClick={() => {
                 if (!userFocusedForm) {
@@ -1332,7 +1332,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                       variant="outline"
                       size="md"
                       onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
-                      <Text color="white" px={2}>
+                      <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
                         Read Terms of Use
                       </Text>
                     </Button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useBreakpointValue } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useBreakpointValue, useColorMode } from "@chakra-ui/react";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import { NetworkIdType } from "libs/types";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -15,6 +15,7 @@ export default function InteractionsHistory({
 }) {
   const [interactionTransactionsModalOpen, setInteractionTransactionsModalOpen] = useState(true);
   const { chainMeta: _chainMeta } = useChainMeta();
+  const { colorMode } = useColorMode();
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
@@ -27,7 +28,7 @@ export default function InteractionsHistory({
       }}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxWidth={{ md: "80vw" }} backgroundColor="#181818">
+      <ModalContent maxWidth={{ md: "80vw" }} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
         <ModalHeader>Recent Data NFT Interactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

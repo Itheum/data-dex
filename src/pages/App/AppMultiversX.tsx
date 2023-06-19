@@ -176,7 +176,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     <>
       <Container maxW="97.5rem">
         <Flex
-          bgColor={colorMode === "dark" ? "bgDark" : "white"}
+          bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
           flexDirection="column"
           justifyContent="space-between"
           minH="100vh"

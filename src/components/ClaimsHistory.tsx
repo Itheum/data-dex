@@ -21,6 +21,7 @@ import {
   Tfoot,
   useToast,
   useBreakpointValue,
+  useColorMode,
 } from "@chakra-ui/react";
 import { NetworkIdType } from "libs/types";
 import { formatNumberRoundFloor } from "libs/utils";
@@ -42,6 +43,7 @@ export default function ChaimsHistory({
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
   const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     fetchMxClaims();
@@ -78,7 +80,7 @@ export default function ChaimsHistory({
       }}
       scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor="#181818">
+      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
         <ModalHeader>Recent Claim Transactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

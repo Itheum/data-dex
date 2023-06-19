@@ -158,7 +158,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         justifyContent={isMxLoggedIn ? "space-around" : "inherit"}
         paddingX={!isMxLoggedIn ? { base: 5, md: 20, xl: 36 } : 0}
         alignItems="center"
-        backgroundColor={colorMode === "light" ? "white" : "bgDark"}
+        backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
@@ -253,7 +253,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       <MenuButton as={Button} size={{ md: "md", xl: "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
-                      <MenuList maxW={"fit-content"} backgroundColor="#181818">
+                      <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, Icon } = menuItem;
                           return (
@@ -263,9 +263,9 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 isDisabled={hasPendingTransactions}
                                 onClick={() => navigateToDiscover(menuEnum)}
                                 color="teal.200"
-                                backgroundColor="#181818">
+                                backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
-                                <Text color={colorMode === "dark" ? "white" : "black"}>{label}</Text>
+                                <Text color={colorMode === "dark" ? "bgWhite" : "black"}>{label}</Text>
                               </MenuItem>
                             </Link>
                           );
@@ -274,7 +274,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <MenuDivider />
 
                         <MenuGroup title="My Address Quick Copy">
-                          <MenuItemOption closeOnSelect={false} backgroundColor="#181818">
+                          <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                             <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
                           </MenuItemOption>
 
@@ -288,7 +288,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 closeOnSelect={false}
                                 isDisabled={hasPendingTransactions}
                                 onClick={() => setMxShowClaimsHistory(true)}
-                                backgroundColor="#181818">
+                                backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Text fontSize="lg" fontWeight="500">
                                   View claims history
                                 </Text>
@@ -297,7 +297,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 closeOnSelect={false}
                                 isDisabled={hasPendingTransactions}
                                 onClick={() => setMxInteractionsHistory(true)}
-                                backgroundColor="#181818">
+                                backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Text fontSize="lg" fontWeight="500">
                                   View Data NFT interactions history
                                 </Text>
@@ -305,7 +305,12 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                             </ChainSupportedComponent>
                           )}
 
-                          <MenuItem onClick={handleLogout} fontSize="lg" fontWeight="500" isDisabled={hasPendingTransactions} backgroundColor="#181818">
+                          <MenuItem
+                            onClick={handleLogout}
+                            fontSize="lg"
+                            fontWeight="500"
+                            isDisabled={hasPendingTransactions}
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                             Logout
                           </MenuItem>
                         </MenuGroup>
@@ -357,13 +362,13 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"} bgColor="#181818">
+          <DrawerHeader borderBottomWidth={"1px"} display={"flex"} alignItems={"center"} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <Heading size={"sm"} onClick={onClose}>
               Itheum Data DEX
             </Heading>
             <DrawerCloseButton />
           </DrawerHeader>
-          <DrawerBody p={0} bgColor="#181818">
+          <DrawerBody p={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <Accordion allowMultiple>
               {exploreRouterMenu.map((menu) => (
                 <AccordionItem key={menu.sectionId}>

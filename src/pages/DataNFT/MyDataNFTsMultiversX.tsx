@@ -262,7 +262,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
-            <DrawerContent bgColor="#181818">
+            <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <DrawerHeader>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
@@ -271,7 +271,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   </Heading>
                 </HStack>
               </DrawerHeader>
-              <DrawerBody bgColor="#181818">
+              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
               </DrawerBody>
             </DrawerContent>
