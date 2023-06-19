@@ -46,7 +46,7 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
       contracts: contractsForChain(networkId),
       walletUsed: walletUsedSession,
     });
-  }, []);
+  }, [mxAddress]);
 
   useEffect(() => {
     if (_chainMeta?.networkId) {

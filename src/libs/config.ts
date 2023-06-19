@@ -11,6 +11,7 @@ import {
   faucetContractAddress_Mx_Mainnet,
   dataNftMarketContractAddress_Mx_Mainnet,
   dataNftMintContractAddress_Mx_Mainnet,
+  dataNFTFTTicker_Mx_Mainnet,
 } from "./contractAddresses";
 
 export function contractsForChain(networkId: NetworkIdType): ContractsType {
@@ -32,6 +33,7 @@ export function contractsForChain(networkId: NetworkIdType): ContractsType {
         faucet: faucetContractAddress_Mx_Mainnet,
         dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
         market: dataNftMarketContractAddress_Mx_Mainnet,
+        dataNFTFTTicker: dataNFTFTTicker_Mx_Mainnet,
       };
     }
   }
@@ -497,48 +499,4 @@ export const upcomingGuardRails = {
   accepted_tokens: "ITHEUM",
 };
 
-export const whitelistWallets: Array<string> = [
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-  "erd17eg43r3xvenuc0yayauhqf066lum52phnytvw0tnvy677up7caese7gv3g",
-];
+export const whitelistWallets: Array<string> = [];
