@@ -40,9 +40,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
-  const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT
-    ? Math.min(offer.quantity, Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT))
-    : offer.quantity;
+  const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT) : 0;
+  const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
 
   return (
     <>
@@ -75,7 +74,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                   maxW="24"
                   step={1}
                   min={1}
-                  max={maxBuyLimit}
+                  max={maxBuyNumber}
                   isValidCharacter={isValidNumericCharacter}
                   value={amount}
                   defaultValue={1}
@@ -86,8 +85,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                       error = "Cannot be zero or negative";
                     } else if (value > offer.quantity) {
                       error = "Cannot exceed listed amount";
-                    } else if (value > maxBuyLimit) {
-                      error = "Cannot exceed Max Buy Limit";
+                    } else if (maxBuyLimit > 0 && value > maxBuyLimit) {
+                      error = "Cannot exceed max buy limit";
                     }
 
                     setAmountError(error);
