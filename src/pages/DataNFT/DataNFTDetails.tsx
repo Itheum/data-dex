@@ -318,7 +318,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <Text>{`Total supply: ${nftData.supply}`}</Text>
                           <Text>
                             {`Royalty: `}
-                            {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
+                            {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
                           </Text>
                         </>
                       )}

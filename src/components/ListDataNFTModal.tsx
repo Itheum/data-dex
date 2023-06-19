@@ -134,9 +134,8 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                   <Box w="140px">Royalties (per NFT)</Box>
                   <Box>
                     :{" "}
-                    {`${convertToLocalString(nftData.royalties * 100)}% (${new BigNumber(offer.wanted_token_amount)
-                      .multipliedBy((1 - sellerFee / 10000) * nftData.royalties)
-                      .toNumber()} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
+                    {`${convertToLocalString(nftData.royalties * 100)}% (${convertToLocalString(new BigNumber(offer.wanted_token_amount)
+                      .multipliedBy((1 - sellerFee / 10000) * nftData.royalties))} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
                   </Box>
                 </Flex>
               )}
@@ -161,15 +160,15 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                         ""
                       ) : (
                         <>
-                          {" " + new BigNumber(offer.wanted_token_amount).multipliedBy(amount).toNumber() + " "}
+                          {" " + convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy(amount)) + " "}
                           {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
                           {" - "}
-                          {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000).toNumber()}
+                          {convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000))}
                           {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
                           {address != nftData.creator && (
                             <>
                               {" - "}
-                              {new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties).toNumber()}
+                              {convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties))}
                               {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
                             </>
                           )}
