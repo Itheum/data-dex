@@ -47,7 +47,7 @@ import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, Navigate, useNavigate } from "react-router-dom";
 import logoSmlD from "assets/img/logo-sml-d.png";
 import logoSmlL from "assets/img/logo-sml-l.png";
 import ClaimsHistory from "components/ClaimsHistory";
@@ -120,6 +120,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
   const { colorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
+  const navigate = useNavigate();
+
   const navigateToDiscover = (menuEnum: number) => {
     setMenuItem(menuEnum);
 
@@ -150,6 +152,10 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
   };
 
   const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
+
+  const handleGuardrails = () => {
+    navigate("/guardRails");
+  };
 
   return (
     <>
@@ -290,7 +296,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 onClick={() => setMxShowClaimsHistory(true)}
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Text fontSize="lg" fontWeight="500">
-                                  View claims history
+                                  View Claims History
                                 </Text>
                               </MenuItem>
                               <MenuItem
@@ -304,6 +310,15 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                               </MenuItem>
                             </ChainSupportedComponent>
                           )}
+
+                          <MenuItem
+                            onClick={handleGuardrails}
+                            fontSize="lg"
+                            fontWeight="500"
+                            isDisabled={hasPendingTransactions}
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            CanaryNet Dashboard
+                          </MenuItem>
 
                           <MenuItem
                             onClick={handleLogout}

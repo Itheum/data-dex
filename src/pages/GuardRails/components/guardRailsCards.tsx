@@ -13,7 +13,7 @@ type Props = {
 
 export const GuardRailsCards: React.FC<Props> = (props) => {
   const { items, title, badgeColor, textColor } = props;
-  const [currentIndex, setCurrentIndex] = useState<number>(2);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [xPosition, setXPosition] = useState<number>(0);
 
   const arrowUp = "↑";
@@ -36,29 +36,29 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
 
   const currentItem = items[currentIndex];
 
-  const isLowerBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) < parseInt(currentItem.buyer_fee_newPrice);
-  const isHigherBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) > parseInt(currentItem.buyer_fee_newPrice);
-  const isEqualBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) === parseInt(currentItem.buyer_fee_newPrice);
+  const isLowerBuyerFee = parseInt(currentItem?.buyer_fee_oldPrice) < parseInt(currentItem?.buyer_fee_newPrice);
+  const isHigherBuyerFee = parseInt(currentItem?.buyer_fee_oldPrice) > parseInt(currentItem?.buyer_fee_newPrice);
+  const isEqualBuyerFee = parseInt(currentItem?.buyer_fee_oldPrice) === parseInt(currentItem?.buyer_fee_newPrice);
 
-  const isLowerSellerFee = parseInt(currentItem.seller_fee_oldPrice) < parseInt(currentItem.seller_fee_newPrice);
-  const isHigherSellerFee = parseInt(currentItem.seller_fee_oldPrice) > parseInt(currentItem.seller_fee_newPrice);
-  const isEqualSellerFee = parseInt(currentItem.seller_fee_oldPrice) === parseInt(currentItem.seller_fee_newPrice);
+  const isLowerSellerFee = parseInt(currentItem?.seller_fee_oldPrice) < parseInt(currentItem?.seller_fee_newPrice);
+  const isHigherSellerFee = parseInt(currentItem?.seller_fee_oldPrice) > parseInt(currentItem?.seller_fee_newPrice);
+  const isEqualSellerFee = parseInt(currentItem?.seller_fee_oldPrice) === parseInt(currentItem?.seller_fee_newPrice);
 
-  const isLowerMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) < parseInt(currentItem.minimum_royalties_newPrice);
-  const isHigherMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) > parseInt(currentItem.minimum_royalties_newPrice);
-  const isEqualMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) === parseInt(currentItem.minimum_royalties_newPrice);
+  const isLowerMinRoyalty = parseInt(currentItem?.minimum_royalties_oldPrice) < parseInt(currentItem?.minimum_royalties_newPrice);
+  const isHigherMinRoyalty = parseInt(currentItem?.minimum_royalties_oldPrice) > parseInt(currentItem?.minimum_royalties_newPrice);
+  const isEqualMinRoyalty = parseInt(currentItem?.minimum_royalties_oldPrice) === parseInt(currentItem?.minimum_royalties_newPrice);
 
-  const isLowerMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) < parseInt(currentItem.maximum_royalties_newPrice);
-  const isHigherMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) > parseInt(currentItem.maximum_royalties_newPrice);
-  const isEqualMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) === parseInt(currentItem.maximum_royalties_newPrice);
+  const isLowerMaxRoyalty = parseInt(currentItem?.maximum_royalties_oldPrice) < parseInt(currentItem?.maximum_royalties_newPrice);
+  const isHigherMaxRoyalty = parseInt(currentItem?.maximum_royalties_oldPrice) > parseInt(currentItem?.maximum_royalties_newPrice);
+  const isEqualMaxRoyalty = parseInt(currentItem?.maximum_royalties_oldPrice) === parseInt(currentItem?.maximum_royalties_newPrice);
 
-  const isLowerTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) < parseInt(currentItem.time_between_mints_newPrice);
-  const isHigherTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) > parseInt(currentItem.time_between_mints_newPrice);
-  const isEqualTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) === parseInt(currentItem.time_between_mints_newPrice);
+  const isLowerTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice) < parseInt(currentItem?.time_between_mints_newPrice);
+  const isHigherTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice) > parseInt(currentItem?.time_between_mints_newPrice);
+  const isEqualTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice) === parseInt(currentItem?.time_between_mints_newPrice);
 
-  const isLowerAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) < parseInt(currentItem.antiSpam_tax_newPrice);
-  const isHigherAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) > parseInt(currentItem.antiSpam_tax_newPrice);
-  const isEqualAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) === parseInt(currentItem.antiSpam_tax_newPrice);
+  const isLowerAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice) < parseInt(currentItem?.antiSpam_tax_newPrice);
+  const isHigherAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice) > parseInt(currentItem?.antiSpam_tax_newPrice);
+  const isEqualAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice) === parseInt(currentItem?.antiSpam_tax_newPrice);
 
   return (
     <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" w={{ base: "31.25rem", xl: "27.3rem", "2xl": "31.25rem" }}>
@@ -106,7 +106,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                       {equal}
                     </Text>
                   )}
-                  <Text textColor={textColor}>{currentItem.buyer_fee_newPrice}</Text>
+                  <Text textColor={textColor}>{currentItem?.buyer_fee_newPrice}</Text>
                   <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
                 </Flex>
               </Badge>
