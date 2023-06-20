@@ -21,6 +21,7 @@ import {
   Flex,
   useColorMode,
   useBreakpointValue,
+  Image,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -260,7 +261,7 @@ export default function HomeMultiversX({
           <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" h={tileBoxH} alignItems={{ base: "center", xl: "start" }}>
+                <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
                   {!dataCATAccount && (
                     <Heading size="md" fontWeight="semibold" pb={2}>
                       Linked Data CAT Accounts
@@ -291,6 +292,7 @@ export default function HomeMultiversX({
                         </Alert>
 
                         <Spacer />
+                        {/*<Box h={{ base: 32, md: 12, xl: 12 }}></Box>*/}
 
                         <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={() => onDataCATAccount(true)}>
                           <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
@@ -333,16 +335,17 @@ export default function HomeMultiversX({
 
             <ChainSupportedComponent feature={MENU.FAUCET}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" h={tileBoxH} alignItems={{ base: "center", xl: "start" }}>
+                <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
                   <Heading size="md" fontWeight="semibold" pb={2}>
                     {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
                   </Heading>
-                  <Stack h={tileBoxH}>
-                    <Text fontSize="md" color="#929497" pb={5}>
+                  <Stack h={tileBoxH} w={"full"}>
+                    <Text textAlign={{ base: "center", xl: "left" }} fontSize="md" color="#929497" pb={5}>
                       Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
                     </Text>
 
                     <Spacer />
+                    {/*<Box h={{ base: 40, md: 40, xl: 40 }}></Box>*/}
 
                     <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
                       <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
@@ -353,7 +356,7 @@ export default function HomeMultiversX({
             </ChainSupportedComponent>
 
             <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-              <Stack p="5" h={tileBoxH} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
+              <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
                 <Heading size="md" pb={2}>
                   NFMe ID Avatar
                 </Heading>

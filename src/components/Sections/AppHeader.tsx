@@ -218,7 +218,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
-            <HStack display={{ base: "none", md: "none", xl: "block" }}>
+            <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
                 const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
                 return (
@@ -232,15 +232,15 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       borderColor="teal.200"
                       fontSize="md"
                       variant="outline"
-                      h={"12"}
+                      h={12}
                       isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(menuEnum)}
                       key={shortLbl}
                       size={isMxLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
-                      <Flex justifyContent="center" alignItems="center" px={1.5} color="teal.200" pointerEvents="none">
+                      <Flex justifyContent="center" alignItems="center" px={{ base: 0, "2xl": 1.5 }} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
-                        <Text pl={2} color={colorMode === "dark" ? "white" : "black"}>
+                        <Text pl={2} fontSize={{ base: "sm", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                           {shortLbl}
                         </Text>
                       </Flex>
@@ -256,7 +256,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 <Box display={{ base: "none", md: "block" }}>
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
-                      <MenuButton as={Button} size={{ md: "md", xl: "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
+                      <MenuButton as={Button} size={{ md: "md", "2xl": "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
@@ -542,7 +542,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   return (
     <Box
       display={displayParams}
-      fontSize={{ md: "xs", xl: "md" }}
+      fontSize={{ md: "xs", "2xl": "md" }}
       minWidth="5.5rem"
       textAlign="center"
       color="black"
@@ -567,7 +567,7 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
   return (
     <Box
       display={displayParams}
-      fontSize={{ md: "xs", xl: "md" }}
+      fontSize={{ md: "xs", "2xl": "md" }}
       textAlign="center"
       color="teal.200"
       fontWeight="semibold"
