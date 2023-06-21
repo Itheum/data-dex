@@ -300,7 +300,7 @@ export default function HomeMultiversX({
                       </Stack>
                     )) || (
                       <>
-                        <Stack>
+                        <Stack h={tileBoxH}>
                           <Text fontSize="xl">Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}</Text>
                           <Text fontSize="sm" mb="4 !important">
                             You have data available to trade from the following programs
@@ -312,21 +312,21 @@ export default function HomeMultiversX({
                               </Badge>
                             </Stack>
                           ))}
+
+                          <Spacer />
+
+                          <Button
+                            size="lg"
+                            borderRadius="xl"
+                            colorScheme="teal"
+                            variant="outline"
+                            onClick={() => {
+                              setMenuItem(2);
+                              navigate("/tradedata");
+                            }}>
+                            <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
+                          </Button>
                         </Stack>
-
-                        <Spacer />
-
-                        <Button
-                          size="lg"
-                          borderRadius="xl"
-                          colorScheme="teal"
-                          variant="outline"
-                          onClick={() => {
-                            setMenuItem(2);
-                            navigate("/tradedata");
-                          }}>
-                          <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
-                        </Button>
                       </>
                     )}
                 </Stack>

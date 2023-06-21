@@ -201,7 +201,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel mt={2} width={"full"}>
               {dataNfts.length > 0 ? (
                 <SimpleGrid
-                  columns={{ sm: 1, md: 2, lg: 3, xl: 3, "2xl": 4 }}
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
                   mx={{ base: 0, "2xl": "24 !important" }}
                   mt="5 !important"

@@ -305,7 +305,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 onClick={() => setMxInteractionsHistory(true)}
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Text fontSize="lg" fontWeight="500">
-                                  View Data NFT interactions history
+                                  View Data NFT Interactions History
                                 </Text>
                               </MenuItem>
                             </ChainSupportedComponent>
@@ -389,9 +389,13 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 <AccordionItem key={menu.sectionId}>
                   {({ isExpanded }) => (
                     <>
-                      <Text m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" />
+                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
+                        My Address Quick Copy
                       </Text>
+                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                      </Text>
+                      <hr />
                       <List>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, menuEnum, path, Icon } = menuItem;
@@ -430,7 +434,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                           justifyContent={"start"}
                           p={3}
                           onClick={() => setMxShowClaimsHistory(true)}>
-                          View claims history
+                          View Claims History
                         </ListItem>
                         <ListItem
                           as={Button}
@@ -441,7 +445,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                           justifyContent={"start"}
                           p={3}
                           onClick={() => setMxInteractionsHistory(true)}>
-                          View interactions history
+                          View Interactions History
                         </ListItem>
 
                         <ListItem
