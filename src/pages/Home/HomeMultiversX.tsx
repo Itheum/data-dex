@@ -363,9 +363,12 @@ export default function HomeMultiversX({
                   NFMe ID Avatar
                 </Heading>
                 <Spacer />
-                <Text fontSize="sm" align="center">
-                  Coming Soon
-                </Text>
+
+                <Badge borderRadius="full" px="2" bgColor="teal.200">
+                  <Text fontSize="md" fontWeight="600" color={colorMode === "light" ? "bgWhite" : "black"}>
+                    Coming Soon
+                  </Text>
+                </Badge>
               </Stack>
             </Box>
 
