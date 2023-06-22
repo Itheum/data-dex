@@ -300,9 +300,11 @@ export default function HomeMultiversX({
                       </Stack>
                     )) || (
                       <>
-                        <Stack h={tileBoxH}>
-                          <Text fontSize="xl">Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}</Text>
-                          <Text fontSize="sm" mb="4 !important">
+                        <Stack h="395px" w="full">
+                          <Heading size="md" fontWeight="semibold" pb={2} textAlign={{ base: "center", xl: "left" }}>
+                            Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}
+                          </Heading>
+                          <Text fontSize="md" mb="4 !important" textAlign={{ base: "center", xl: "left" }} color="#929497">
                             You have data available to trade from the following programs
                           </Text>
                           {dataCATAccount.programsAllocation.map((item: any) => (
@@ -316,10 +318,10 @@ export default function HomeMultiversX({
                           <Spacer />
 
                           <Button
-                            size="lg"
-                            borderRadius="xl"
                             colorScheme="teal"
+                            size="lg"
                             variant="outline"
+                            borderRadius="xl"
                             onClick={() => {
                               setMenuItem(2);
                               navigate("/tradedata");
