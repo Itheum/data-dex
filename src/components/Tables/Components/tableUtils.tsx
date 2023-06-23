@@ -106,7 +106,6 @@ export const buildHistory = (payload: DataNftOnNetwork[], buyer_fee?: number): T
   const result: TransactionInTable[] = [];
 
   payload.forEach((item) => {
-    console.log(item);
     let value = "";
     const { identifier } = item.transfers[0].properties || {};
     const identifierSplited = (identifier || "").split("-")[0];
