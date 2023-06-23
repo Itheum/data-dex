@@ -10,6 +10,7 @@ import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
 import { useChainMeta } from "../../store/ChainMetaContext";
+import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 export const GuardRails: React.FC = () => {
   const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();
@@ -25,7 +26,20 @@ export const GuardRails: React.FC = () => {
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
   const historyGuardrails = historicGuardrails;
-  const milisecondsInHours = 3600000;
+
+  function formatTimeBetweenMints(milliseconds: number) {
+    const minutes = Math.floor(milliseconds / 60000);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours === 0 && remainingMinutes < 60) {
+      return `${remainingMinutes} minutes`;
+    } else if (remainingMinutes === 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
+    } else {
+      return `${hours} hour${hours > 1 ? "s" : ""} ${remainingMinutes} minutes`;
+    }
+  }
 
   useEffect(() => {
     if (!_chainMeta.networkId) return;
@@ -86,16 +100,20 @@ export const GuardRails: React.FC = () => {
   useEffect(() => {
     const whitelistMap = (
       <>
-        {whitelistWallets.map((wl, index) => {
-          return (
-            <Tag key={index} size="lg" variant="subtle" colorScheme="cyan" m={1.5} maxW="200px">
-              <TagLeftIcon boxSize="12px" as={FaWallet} />
-              <TagLabel>
-                <ShortAddress address={wl} />
-              </TagLabel>
-            </Tag>
-          );
-        })}
+        {whitelistWallets && whitelistWallets.length > 0 ? (
+          whitelistWallets.map((wl, index) => {
+            return (
+              <Tag key={index} size="lg" variant="subtle" colorScheme="cyan" m={1.5} maxW="200px">
+                <TagLeftIcon boxSize="12px" as={FaWallet} />
+                <TagLabel>
+                  <ShortAddress address={wl} />
+                </TagLabel>
+              </Tag>
+            );
+          })
+        ) : (
+          <NoDataHere imgFromTop="0rem" />
+        )}
       </>
     );
     setWhitelistedAddress(whitelistMap);
@@ -164,7 +182,7 @@ export const GuardRails: React.FC = () => {
               Time between mints:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {!!userData && userData.mintTimeLimit ? Math.floor(userData.mintTimeLimit / milisecondsInHours) + " hours" : "-"}
+                  {!!userData && userData.mintTimeLimit ? formatTimeBetweenMints(userData.mintTimeLimit) : "-"}
                 </Text>
               </Badge>
             </Text>

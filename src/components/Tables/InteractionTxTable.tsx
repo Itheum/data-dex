@@ -130,7 +130,8 @@ export const getInteractionTransactions = async (
   minterSmartContractAddress: string,
   marketSmartContractAddress: string,
   networkId: NetworkIdType,
-  chainMeta: ChainMetaType
+  chainMeta: ChainMetaType,
+  tokenId?: string
 ) => {
   const api = getApi(networkId);
 
@@ -171,11 +172,17 @@ export const getInteractionTransactions = async (
       value = convertWeiToEsdt(parseInt(metadata.functionArgs![1], 16)).toString();
       data = chainMeta.contracts.itheumToken;
       if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
+        data = chainMeta.contracts.itheumToken;
         if (Array.isArray(tx.operations)) {
           for (const operation of tx.operations) {
-            if (["acceptOffer", "addOffer", "cancelOffer"].includes(tx["function"]) && operation.action === "transfer") {
-              value = `${operation.value}`;
-              data = operation.identifier;
+            if (operation.action === "transfer") {
+              if (
+                ["acceptOffer", "addOffer", "cancelOffer"].includes(tx["function"]) &&
+                ["DATANFTFT4-3ba099", "DATANFTFT-e936d4"].includes(operation.collection) //hardcoded mainnet and devnet collection
+              ) {
+                value = `${operation.value}`;
+                data = operation.identifier;
+              }
             }
             if (operation.action === "create" || operation.action === "burn") {
               value = `${operation.value}`;
@@ -184,15 +191,18 @@ export const getInteractionTransactions = async (
             }
           }
         }
-        const transaction: InteractionsInTable = {
-          timestamp: parseInt(tx["timestamp"]),
-          hash: tx["txHash"],
-          status: tx["status"],
-          method: transactionTypes[tx["function"]],
-          value,
-          data,
-        };
-        transactions.push(transaction);
+
+        if (value != "NaN") {
+          const transaction: InteractionsInTable = {
+            timestamp: parseInt(tx["timestamp"]),
+            hash: tx["txHash"],
+            status: tx["status"],
+            method: transactionTypes[tx["function"]],
+            value,
+            data,
+          };
+          transactions.push(transaction);
+        }
       }
     });
 
