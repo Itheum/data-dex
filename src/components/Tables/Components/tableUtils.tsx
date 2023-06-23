@@ -119,7 +119,7 @@ export const buildHistory = (payload: DataNftOnNetwork[], buyer_fee?: number): T
         value = convertWeiToEsdt(Number(item.transfers[0].value)).toString() + " " + identifierSplited;
         break;
       case "changeOfferPrice":
-        value = convertWeiToEsdt(parseInt(item.methodArgs[1], 16)).toString();
+        value = `${convertWeiToEsdt(parseInt(item.methodArgs[1], 16)).toString()}`;
         break;
       case "cancelOffer":
         value = parseInt(item.methodArgs[1], 16).toString();
