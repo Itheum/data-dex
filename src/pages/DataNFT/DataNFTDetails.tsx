@@ -428,7 +428,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements?.buyer_fee} />
             </Box>
           </VStack>
 
