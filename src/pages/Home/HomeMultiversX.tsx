@@ -275,7 +275,7 @@ export default function HomeMultiversX({
                   )) ||
                     (!dataCATAccount && (
                       <Stack h={tileBoxH}>
-                        <Alert borderRadius="lg" bgColor="#68686850" overflowY={{ base: "scroll", lg: "hidden" }}>
+                        <Alert borderRadius="lg" bgColor={colorMode === "dark" ? "#68686850" : "#68686815"} overflowY={{ base: "scroll", lg: "hidden" }}>
                           <Flex direction="column">
                             <Box>
                               <AlertTitle fontSize="md" mt={{ base: 0, md: 0, xl: 0, "2xl": 0 }}>
@@ -284,7 +284,7 @@ export default function HomeMultiversX({
                                   <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
                                 </Flex>
                               </AlertTitle>
-                              <AlertDescription fontSize="md" color="#929497" pb="2">
+                              <AlertDescription fontSize="1rem" color={colorMode === "dark" ? "#FFFFFFBF" : "#868686bf"} pb="2" fontWeight="300">
                                 But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test account below.
                               </AlertDescription>
                             </Box>
@@ -379,83 +379,85 @@ export default function HomeMultiversX({
                     My Claims
                   </Heading>
 
-                  <HStack justifyContent={"space-between"}>
-                    <Text color="#929497">Rewards</Text>
-                    <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                      <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
-                        {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                          <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[0]))}</Text>
-                        ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                          <Spinner size="xs" />
-                        ) : (
-                          <WarningTwoIcon />
-                        )}
-                      </Button>
-                    </Tooltip>
+                  <Flex flexDirection="column" gap={6}>
+                    <HStack justifyContent={"space-between"}>
+                      <Text color="#929497">Rewards</Text>
+                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                        <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
+                          {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
+                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[0]))}</Text>
+                          ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
+                            <Spinner size="xs" />
+                          ) : (
+                            <WarningTwoIcon />
+                          )}
+                        </Button>
+                      </Tooltip>
 
-                    <ClaimModalMx {...rewardsModalData} />
-                  </HStack>
+                      <ClaimModalMx {...rewardsModalData} />
+                    </HStack>
 
-                  <Spacer />
-                  <HStack justifyContent={"space-between"}>
-                    <Text color="#929497">Airdrops</Text>
-                    <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                      <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
-                        {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                          <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[1]))}</Text>
-                        ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                          <Spinner size="xs" />
-                        ) : (
-                          <WarningTwoIcon />
-                        )}
-                      </Button>
-                    </Tooltip>
+                    <Spacer />
+                    <HStack justifyContent={"space-between"}>
+                      <Text color="#929497">Airdrops</Text>
+                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                        <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
+                          {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[1]))}</Text>
+                          ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
+                            <Spinner size="xs" />
+                          ) : (
+                            <WarningTwoIcon />
+                          )}
+                        </Button>
+                      </Tooltip>
 
-                    <ClaimModalMx {...airdropsModalData} />
-                  </HStack>
-                  <Spacer />
+                      <ClaimModalMx {...airdropsModalData} />
+                    </HStack>
+                    <Spacer />
 
-                  <HStack justifyContent={"space-between"}>
-                    <Text color="#929497">Royalties</Text>
-                    <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                      <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
-                        {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                          <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[3]))}</Text>
-                        ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                          <Spinner size="xs" />
-                        ) : (
-                          <WarningTwoIcon />
-                        )}
-                      </Button>
-                    </Tooltip>
+                    <HStack justifyContent={"space-between"}>
+                      <Text color="#929497">Royalties</Text>
+                      <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                        <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
+                          {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[3]))}</Text>
+                          ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
+                            <Spinner size="xs" />
+                          ) : (
+                            <WarningTwoIcon />
+                          )}
+                        </Button>
+                      </Tooltip>
 
-                    <ClaimModalMx {...royaltiesModalData} />
-                  </HStack>
-                  <Spacer />
+                      <ClaimModalMx {...royaltiesModalData} />
+                    </HStack>
+                    <Spacer />
 
-                  {(Number(claimsBalances.claimBalanceValues[2]) > 0 && (
-                    <Box h="40px">
-                      <HStack justifyContent={"space-between"}>
-                        <Text color="#929497">Allocations</Text>
-                        <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
-                          <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
-                            {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
-                              <Text color={colorMode === "dark" ? "white" : "black"}>
-                                {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[2]))}
-                              </Text>
-                            ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
-                              <Spinner size="xs" />
-                            ) : (
-                              <WarningTwoIcon />
-                            )}
-                          </Button>
-                        </Tooltip>
-                        <ClaimModalMx {...allocationsModalData} />
-                      </HStack>
-                    </Box>
-                  )) || <Box h="40px" />}
+                    {(Number(claimsBalances.claimBalanceValues[2]) > 0 && (
+                      <Box h="40px">
+                        <HStack justifyContent={"space-between"}>
+                          <Text color="#929497">Allocations</Text>
+                          <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
+                            <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
+                              {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                                <Text color={colorMode === "dark" ? "white" : "black"}>
+                                  {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[2]))}
+                                </Text>
+                              ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (
+                                <Spinner size="xs" />
+                              ) : (
+                                <WarningTwoIcon />
+                              )}
+                            </Button>
+                          </Tooltip>
+                          <ClaimModalMx {...allocationsModalData} />
+                        </HStack>
+                      </Box>
+                    )) || <Box h="40px" />}
 
-                  <Spacer />
+                    <Spacer />
+                  </Flex>
                 </Stack>
               </Box>
             </ChainSupportedComponent>

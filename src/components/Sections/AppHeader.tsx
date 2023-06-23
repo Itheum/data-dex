@@ -47,7 +47,7 @@ import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
-import { Link as ReactRouterLink, Navigate, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import logoSmlD from "assets/img/logo-sml-d.png";
 import logoSmlL from "assets/img/logo-sml-l.png";
 import ClaimsHistory from "components/ClaimsHistory";
