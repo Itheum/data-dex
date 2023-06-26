@@ -23,7 +23,14 @@
     -->
     <title>Itheum Data DEX : Trade your Data as Data NFTs</title>
 
-    <!-- <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="4a49c2f1-03fe-4446-b95b-9a6a03bc894d" data-blockingmode="auto" type="text/javascript"></script> -->
+    <script>
+      if (window?.location?.hostname === "datadex.itheum.io") {
+        document.write(
+          '<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="4a49c2f1-03fe-4446-b95b-9a6a03bc894d" data-blockingmode="auto" type="text/javascript"></' +
+            "script>"
+        );
+      }
+    </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SGCGN7X0E5"></script>
@@ -36,7 +43,7 @@
 
       gtag("config", "G-SGCGN7X0E5");
     </script>
-    <!-- Hotjar Tracking Code for https://stg.datadex.itheum.io/ -->
+    <!-- Hotjar Tracking Code for https://datadex.itheum.io -->
     <script>
       (function (h, o, t, j, a, r) {
         h.hj =
@@ -56,9 +63,6 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!-- <div id="cookie_disclaimer" style="display: none;">
-      <script id="CookieDeclaration" src="https://consent.cookiebot.com/4a49c2f1-03fe-4446-b95b-9a6a03bc894d/cd.js" type="text/javascript" async></script>
-    </div> -->
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
