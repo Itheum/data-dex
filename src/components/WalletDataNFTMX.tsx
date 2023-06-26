@@ -45,7 +45,7 @@ import { signMessage } from "@multiversx/sdk-dapp/utils/account";
 import moment from "moment";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, styleStrings } from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -95,6 +95,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
+  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
@@ -376,12 +377,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={network.id == "devnet"}
+                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
@@ -389,13 +390,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={network.id == "devnet"}
+                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>

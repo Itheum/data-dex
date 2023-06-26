@@ -16,6 +16,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { signMessage } from "@multiversx/sdk-dapp/utils/account";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftType } from "libs/MultiversX/types";
 import { convertToLocalString, isValidNumericCharacter, sleep } from "libs/utils";
@@ -41,6 +42,7 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const cleanupAccessDataStreamProcess = () => {
     onAccessProgressModalClose();
@@ -136,12 +138,12 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
         </Box>
 
         <HStack mt="2">
-          <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+          <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
             <Button
               size="sm"
               colorScheme="teal"
               height="7"
-              isDisabled={network.id == "devnet"}
+              isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
               onClick={() => {
                 accessDataStream(dataNftItem.dataMarshal, dataNftItem.id, address);
               }}>
@@ -149,13 +151,13 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
             </Button>
           </Tooltip>
 
-          <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+          <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
             <Button
               size="sm"
               colorScheme="teal"
               height="7"
               variant="outline"
-              isDisabled={network.id == "devnet"}
+              isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
               onClick={() => {
                 window.open(dataNftItem.dataPreview);
               }}>

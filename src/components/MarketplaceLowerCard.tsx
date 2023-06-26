@@ -18,6 +18,8 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
@@ -42,16 +44,17 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const isMyNft = offer.owner === address;
   const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
+  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+      <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
-          isDisabled={network.id == "devnet"}
+          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
