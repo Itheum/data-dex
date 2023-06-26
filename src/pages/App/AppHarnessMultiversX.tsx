@@ -3,7 +3,7 @@ import { Box, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -29,6 +29,7 @@ function CustomLoader() {
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
   const [searchParams] = useSearchParams();
   const { setChainMeta } = useChainMeta();
+  const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
@@ -38,8 +39,12 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   useEffect(() => {
     let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
+
     if (searchParams.get("accessToken")) {
       networkId = "E1";
+      if (window.location.pathname === "/") {
+        navigate("/dashboard" + window.location.search);
+      }
     }
     setChainMeta({
       networkId,
