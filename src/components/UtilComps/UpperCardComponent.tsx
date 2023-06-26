@@ -166,7 +166,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   )}
 
                   <Box borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
                       Fully Transferable License
                     </Text>
                   </Box>

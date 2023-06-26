@@ -109,7 +109,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
 
       {loadedOffers && latestOffers.length === 0 && <NoDataHere imgFromTop="5rem" />}
 
-      <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
+      <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {latestOffers.map((item: DataNftCondensedView, idx: number) => {
           return (
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">

@@ -353,7 +353,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Badge>
 
               <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
+                <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
                   Fully Transferable License
                 </Text>
               </Badge>

@@ -374,12 +374,12 @@ export default function HomeMultiversX({
 
             <ChainSupportedComponent feature={MENU.CLAIMS}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" h={tileBoxH} minW={claimsStackMinW}>
+                <Stack p="5" h={"430px"} minW={claimsStackMinW}>
                   <Heading size="md" pb={2} textAlign={{ base: "center", xl: "start" }}>
                     My Claims
                   </Heading>
 
-                  <Flex flexDirection="column" gap={6}>
+                  <Flex flexDirection="column" gap={7}>
                     <HStack justifyContent={"space-between"}>
                       <Text color="#929497">Rewards</Text>
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>

@@ -49,7 +49,7 @@ import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import logoSmlD from "assets/img/logo-sml-d.png";
-import logoSmlL from "assets/img/logo-sml-l.png";
+import logoSmlL from "assets/img/logo-sml-g.png";
 import ClaimsHistory from "components/ClaimsHistory";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -240,7 +240,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       onClick={() => navigateToDiscover(menuEnum)}>
                       <Flex justifyContent="center" alignItems="center" px={{ base: 0, "2xl": 1.5 }} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
-                        <Text pl={2} fontSize={{ base: "sm", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                        <Text pl={2} fontSize={{ base: "xs", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                           {shortLbl}
                         </Text>
                       </Flex>
