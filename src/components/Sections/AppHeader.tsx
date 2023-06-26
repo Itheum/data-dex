@@ -175,13 +175,12 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
           justifyContent={{ base: "space-around", md: "space-around" }}>
           {isMxLoggedIn && (
             <IconButton
-              size={{ base: "sm" }}
               fontSize="2rem"
               variant={"ghost"}
               icon={
                 <MdMenu
                   style={{
-                    transform: "translateX(65%)",
+                    transform: "translateX(15%)",
                   }}
                 />
               }

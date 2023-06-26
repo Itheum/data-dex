@@ -176,7 +176,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         </Heading>
 
         <Tabs pt={10} index={tabState - 1}>
-          <TabList overflow={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%">
+          <TabList overflowX={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%" overflowY="hidden">
             {walletTabs.map((tab, index) => {
               return (
                 <Tab
@@ -186,7 +186,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   onClick={() => onChangeTab(index + 1)}>
                   <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w={{ base: "5rem", lg: "auto" }}>
+                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
                     </Text>
                     <Text fontSize="sm" px={2} color="whiteAlpha.800">

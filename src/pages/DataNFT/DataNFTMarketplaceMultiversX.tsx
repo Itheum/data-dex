@@ -240,7 +240,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
         <Box position="relative">
           <Tabs pt={10}>
-            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflow={{ base: "scroll", md: "scroll", lg: "unset" }}>
+            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflowX={{ base: "scroll", md: "scroll", lg: "unset" }} overflowY="hidden">
               <Flex>
                 <Tab
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
@@ -253,7 +253,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   }}>
                   <Flex ml="4.7rem" alignItems="center" py={3}>
                     <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                    <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
                       Public Marketplace
                     </Text>
                   </Flex>
@@ -269,7 +269,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   {isMxLoggedIn && (
                     <Flex ml="4.7rem" alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w={{ base: "6rem", lg: "auto" }}>
+                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                         My Listed Data NFT(s)
                       </Text>
                       <Text fontSize="sm" px={1} color="whiteAlpha.800">
