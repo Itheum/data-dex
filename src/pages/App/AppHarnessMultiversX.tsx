@@ -39,9 +39,7 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   useEffect(() => {
     let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
-    const referrer = document.referrer;
-    console.log("referrer url", referrer);
-    console.log("location", window.location.pathname);
+
     if (searchParams.get("accessToken")) {
       networkId = "E1";
       if (window.location.pathname === "/") {
