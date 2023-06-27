@@ -362,11 +362,13 @@ export default function HomeMultiversX({
                 </Heading>
                 <Spacer />
 
-                <Badge borderRadius="full" px="2" bgColor="teal.200">
-                  <Text fontSize="md" fontWeight="600" color={colorMode === "light" ? "bgWhite" : "black"}>
-                    Coming Soon
-                  </Text>
-                </Badge>
+                <Flex w="full" justifyContent="center">
+                  <Badge borderRadius="full" px="2" bgColor="teal.200">
+                    <Text fontSize="md" fontWeight="600" color={colorMode === "light" ? "bgWhite" : "black"}>
+                      Coming Soon
+                    </Text>
+                  </Badge>
+                </Flex>
               </Stack>
             </Box>
 
