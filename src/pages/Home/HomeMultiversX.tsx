@@ -267,9 +267,9 @@ export default function HomeMultiversX({
                   )}
 
                   {(loadingDataCATAccount && (
-                    <Box textAlign="center" mt="40% !important">
+                    <Flex justifyContent="center" alignItems="center" textAlign="center" h="350px" w="full">
                       <Spinner speed="0.64s" color="teal.200" label="Fetching Data" />
-                    </Box>
+                    </Flex>
                   )) ||
                     (!dataCATAccount && (
                       <Stack h={tileBoxH}>
