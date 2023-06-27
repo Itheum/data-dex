@@ -37,6 +37,7 @@ import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -65,6 +66,7 @@ export default function HomeMultiversX({
     claimBalanceDates: [0, 0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
+  const [initToken, setInitToken] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -252,6 +254,32 @@ export default function HomeMultiversX({
   const tileBoxH = "360px";
   const claimsStackMinW = "220px";
   const heroGridMargin = useBreakpointValue({ base: "auto", md: "initial" });
+
+  const client = new NativeAuthClient({ origin: "test" });
+
+  useEffect(() => {
+    (async () => {
+      setInitToken(await client.initialize());
+    })();
+  }, []);
+
+  const parts = initToken.split(".");
+  const signature = mxAddress + parts.slice(1).join(".");
+
+  const accessToken = client.getToken(mxAddress, initToken, signature);
+
+  const handleOnClick = () => {
+    console.group();
+    console.log(initToken);
+    console.log(accessToken);
+    console.groupEnd();
+  };
+
+  // obtain signature by signing the following message: `${address}${init}`
+  // Example:
+  // - if the address is `erd1qnk2vmuqywfqtdnkmauvpm8ls0xh00k8xeupuaf6cm6cd4rx89qqz0ppgl`
+  // - and the init string is `YXBpLmVscm9uZC5jb20.066de4ba7df143f2383c3e0cd7ef8eeaf13375d1123ec8bafcef9f7908344b0f.86400.e30`
+  // - then the signable message should be `erd1qnk2vmuqywfqtdnkmauvpm8ls0xh00k8xeupuaf6cm6cd4rx89qqz0ppgl066de4ba7df143f2383c3e0cd7ef8eeaf13375d1123ec8bafcef9f7908344b0f.86400.e30`
 
   return (
     <>
@@ -449,6 +477,8 @@ export default function HomeMultiversX({
             </ChainSupportedComponent>
           </SimpleGrid>
         </Box>
+
+        <Button onClick={handleOnClick}>Click me</Button>
 
         <Box m="auto" pt="10" pb="10">
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
