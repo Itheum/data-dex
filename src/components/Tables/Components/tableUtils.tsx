@@ -1,8 +1,11 @@
+import { StringValue } from "@multiversx/sdk-core/out";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
+import { MarketplaceRequirementsType } from "libs/MultiversX/types";
 import { convertWeiToEsdt } from "libs/utils";
+import BigNumber from "bignumber.js";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -21,6 +24,7 @@ export type DataTableProps<Data extends object> = {
 export type TokenTableProps = {
   tokenId?: string;
   offerId?: string | number;
+  buyer_fee?: number;
   page: number;
 };
 
@@ -98,7 +102,7 @@ export class DataNftOnNetwork {
   }
 }
 
-export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] => {
+export const buildHistory = (payload: DataNftOnNetwork[], buyer_fee?: number): TransactionInTable[] => {
   const result: TransactionInTable[] = [];
 
   payload.forEach((item) => {
@@ -107,13 +111,15 @@ export const buildHistory = (payload: DataNftOnNetwork[]): TransactionInTable[] 
     const identifierSplited = (identifier || "").split("-")[0];
     switch (item.method) {
       case "addOffer":
-        value = item.transfers[0].value.toString();
+        value = `${item.transfers[0].value.toString()} x ${convertWeiToEsdt(
+          new BigNumber(parseInt(item.methodArgs[2], 16)).multipliedBy((buyer_fee ?? 0) / 10000).plus(parseInt(item.methodArgs[2], 16))
+        ).toString()} ${StringValue.fromHex(item.methodArgs[0]).valueOf().split("-")[0]}`;
         break;
       case "acceptOffer":
         value = convertWeiToEsdt(Number(item.transfers[0].value)).toString() + " " + identifierSplited;
         break;
       case "changeOfferPrice":
-        value = convertWeiToEsdt(parseInt(item.methodArgs[1], 16)).toString();
+        value = `${convertWeiToEsdt(parseInt(item.methodArgs[1], 16)).toString()}`;
         break;
       case "cancelOffer":
         value = parseInt(item.methodArgs[1], 16).toString();
