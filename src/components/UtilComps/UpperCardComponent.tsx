@@ -136,13 +136,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 </PopoverContent>
               </Popover>
               <Flex display="flex" flexDirection="column" mt={1}>
-                <Box color="#8c8f9282" fontSize="md">
+                <Box color="#8c8f92d0" fontSize="md">
                   Creator: <ShortAddress address={nftMetadata.creator} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadata.creator}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Box color="#8c8f9282" fontSize="md">
+                <Box color="#8c8f92d0" fontSize="md">
                   Owner: <ShortAddress address={offer?.owner} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${offer?.owner}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
@@ -178,7 +178,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               </Box>
 
               {nftMetadata && (
-                <Box color="#8c8f9282" fontSize="md" fontWeight="normal">
+                <Box color="#8c8f92d0" fontSize="md" fontWeight="normal">
                   {`Listed: ${offer?.quantity}`} <br />
                   {`Total supply: ${nftMetadata?.supply}`} <br />
                   {`Royalty: ${convertToLocalString(nftMetadata?.royalties * 100)}%`}

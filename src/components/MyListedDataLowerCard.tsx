@@ -135,7 +135,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
-          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+          <Text py={3} color={colorMode === "dark" ? "bgWhite" : "bgDark"}>
             Preview Data
           </Text>
         </Button>

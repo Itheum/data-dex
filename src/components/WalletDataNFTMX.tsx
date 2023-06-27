@@ -333,7 +333,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           </Popover>
           <Box mt={1}>
             {
-              <Box color="#8c8f9282" fontSize="md">
+              <Box color="#8c8f92d0" fontSize="md">
                 Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
                 <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                   <ExternalLinkIcon ml="5px" fontSize="sm" />
@@ -341,7 +341,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Box>
             }
 
-            <Box color="#8c8f9282" fontSize="md">
+            <Box color="#8c8f92d0" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
             </Box>
 
@@ -370,7 +370,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 Burn
               </Button>
             </Stack>
-            <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
+            <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
