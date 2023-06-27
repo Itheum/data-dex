@@ -103,7 +103,7 @@ export default function TokenTxTable(props: TokenTableProps) {
       axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&size=10000&order=asc`),
     ]).then((responses) => {
       const mergedTransactions = getHistory(responses, props.tokenId);
-      const history = buildHistory(mergedTransactions);
+      const history = buildHistory(mergedTransactions, props.buyer_fee);
       setData(history);
     });
   }, []);
