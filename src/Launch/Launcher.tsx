@@ -32,32 +32,29 @@ function Launcher() {
     clearAppSessionsLaunchMode();
   };
 
-  const onEVMConnection = (
-    ethersProvider: any,
-    wallet: any,
-    connectedChain: any
-  ) => {
-    console.log('onEVMConnection address --->', wallet.accounts[0].address);
-    console.log('onEVMConnection connectedChain--->', connectedChain.id);
-    console.log('onEVMConnection ethersProvider--->', ethersProvider);
+  const onEVMConnection = (ethersProvider: any, wallet: any, connectedChain: any) => {
+    console.log("onEVMConnection address --->", wallet.accounts[0].address);
+    console.log("onEVMConnection connectedChain--->", connectedChain.id);
+    console.log("onEVMConnection ethersProvider--->", ethersProvider);
 
     setIsMX(false);
-    
+
     setEVMContext({
       ethersProvider,
       wallet,
-      connectedChain
+      connectedChain,
     });
   };
 
   const onEVMConnectionClose = () => {
     setIsMX(true);
-    
+
     setEVMContext(null);
 
     clearAppSessionsLaunchMode();
 
-    setTimeout(() => { // hard reload of browser
+    setTimeout(() => {
+      // hard reload of browser
       if (window !== undefined) {
         window.location.replace("/");
       }
@@ -66,37 +63,40 @@ function Launcher() {
 
   return (
     <>
-      {!isMX && <>
-        <EVMAppHarness 
-          launchEnvironment={launchEnvironment} 
-          handleLaunchMode={handleLaunchMode} 
-          onEVMConnection={onEVMConnection}
-          ethersProvider={EVMContext?.ethersProvider} 
-          evmWallet={EVMContext?.wallet} 
-          connectedChain={EVMContext?.connectedChain} 
-          onEVMConnectionClose={onEVMConnectionClose} />
-      </>}
+      {!isMX && (
+        <>
+          <EVMAppHarness
+            launchEnvironment={launchEnvironment}
+            handleLaunchMode={handleLaunchMode}
+            onEVMConnection={onEVMConnection}
+            ethersProvider={EVMContext?.ethersProvider}
+            evmWallet={EVMContext?.wallet}
+            connectedChain={EVMContext?.connectedChain}
+            onEVMConnectionClose={onEVMConnectionClose}
+          />
+        </>
+      )}
 
-      {isMX &&
-      <DappProvider
-        environment={launchEnvironment}
-        customNetworkConfig={{
-          name: "customConfig",
-          apiTimeout: uxConfig.mxAPITimeoutMs,
-          walletConnectV2ProjectId,
-        }}
-        dappConfig={{
-          shouldUseWebViewProvider: true,
-        }}>
-        <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
-        <NotificationModal />
-        <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
+      {isMX && (
+        <DappProvider
+          environment={launchEnvironment}
+          customNetworkConfig={{
+            name: "customConfig",
+            apiTimeout: uxConfig.mxAPITimeoutMs,
+            walletConnectV2ProjectId,
+          }}
+          dappConfig={{
+            shouldUseWebViewProvider: true,
+          }}>
+          <TransactionsToastList successfulToastLifetime={MX_TOAST_LIFETIME_IN_MS} />
+          <NotificationModal />
+          <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-        {launchMode == "mx" && <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("no-auth", "devnet")} />}
+          {launchMode == "mx" && <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("no-auth", "devnet")} />}
 
-        <MxAppHarness launchEnvironment={launchEnvironment} handleLaunchMode={handleLaunchMode} onEVMConnection={onEVMConnection} />
-      </DappProvider>      
-      }
+          <MxAppHarness launchEnvironment={launchEnvironment} handleLaunchMode={handleLaunchMode} onEVMConnection={onEVMConnection} />
+        </DappProvider>
+      )}
     </>
   );
 }

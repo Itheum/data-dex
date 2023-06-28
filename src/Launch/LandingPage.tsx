@@ -47,7 +47,7 @@ const LandingPage = () => {
                     <Text as="span" color="teal.200">
                       your data
                     </Text>{" "}
-                    in the Web3 Multiverse
+                    in the Astar Multiverse
                   </Heading>
 
                   <Text mt="1rem">
@@ -64,9 +64,9 @@ const LandingPage = () => {
             </Center>
           </Flex>
 
-          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
+          {/* <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
-          </Box>
+          </Box> */}
 
           <Box mx={{ base: 8, "2xl": 24 }} py="10" display="none">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
