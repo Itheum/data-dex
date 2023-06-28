@@ -52,6 +52,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
           size="sm"
           colorScheme="teal"
           variant="outline"
+          _disabled={{ opacity: 0.2 }}
           isDisabled={network.id == "devnet"}
           onClick={() => {
             window.open(nftMetadata.dataPreview);

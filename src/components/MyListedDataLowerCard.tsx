@@ -131,6 +131,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
           size="sm"
           colorScheme="teal"
           variant="outline"
+          _disabled={{ opacity: 0.2 }}
           isDisabled={network.id == "devnet"}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
