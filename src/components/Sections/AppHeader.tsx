@@ -49,7 +49,7 @@ import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import logoSmlD from "assets/img/logo-sml-d.png";
-import logoSmlL from "assets/img/logo-sml-g.png";
+import logoSmlL from "assets/img/logo-icon-b.png";
 import ClaimsHistory from "components/ClaimsHistory";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -201,7 +201,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               navigateToDiscover(MENU.LANDING);
             }}>
             <HStack>
-              <Image boxSize={{ base: "48px", md: "32px" }} height="auto" ml={5} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Image w="45px" ml={5} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
               <Heading
                 display={{ base: "flex", md: "flex", xl: "flex" }}
                 fontSize={{ base: "md", xl: "xl" }}
