@@ -87,7 +87,7 @@ const exploreRouterMenu = [
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: FaStore,
-        needToBeLoggedIn: false,
+        needToBeLoggedIn: true,
       },
     ],
   },
