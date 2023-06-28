@@ -40,13 +40,11 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { signMessage } from "@multiversx/sdk-dapp/utils/account";
-import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/util";
-import { convertToLocalString, transformDescription } from "libs/util2";
+import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings, itheumTokenRoundUtilExtended } from "libs/util";
+import { transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
@@ -54,6 +52,8 @@ import { DataNftType } from "MultiversX/typesEVM";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import ListDataNFTModal from "./ListDataNFTModal";
+
+import { ethers } from "ethers";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -92,13 +92,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
-  useEffect(() => {
-    getItheumPrice();
-    const interval = setInterval(() => {
-      getItheumPrice();
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   getItheumPrice();
+  //   const interval = setInterval(() => {
+  //     getItheumPrice();
+  //   }, 60_000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const onBurn = () => {
     if (!address) {
@@ -123,51 +123,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onBurnNFTClose(); // close modal
   };
 
-  const fetchAccountSignature = async (message: string) => {
-    const signResult = {
-      signature: "",
-      addrInHex: "",
-      success: false,
-      exception: "",
-    };
-
-    let customError = labels.ERR_WALLET_SIG_GENERIC;
-
-    if (walletUsedSession === "el_webwallet") {
-      // web wallet not supported
-      customError = labels.ERR_WALLET_SIG_NOT_SUPPORTED;
-    } else {
-      try {
-        const signatureObj = await signMessage({ message });
-
-        if (signatureObj?.signature && signatureObj?.address) {
-          // XPortal App V2 / Ledger
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
-        } else {
-          signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
-        }
-      } catch (e: any) {
-        signResult.success = false;
-        signResult.exception = e.toString();
-      }
-    }
-
-    if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
-      signResult.success = false;
-      signResult.exception = customError;
-    }
-
-    return signResult;
-  };
-
-  const getItheumPrice = () => {
-    (async () => {
-      const _itheumPrice = await getItheumPriceFromApi();
-      setItheumPrice(_itheumPrice);
-    })();
-  };
+  // const getItheumPrice = () => {
+  //   (async () => {
+  //     const _itheumPrice = await getItheumPriceFromApi();
+  //     setItheumPrice(_itheumPrice);
+  //   })();
+  // };
 
   const accessDataStream = async (dataMarshal: string, NFTId: string, dataStream: string) => {
     /*
@@ -200,49 +161,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       ...prevProgress,
       s3: 1,
     }));
-
-    // try {
-    //   const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
-    //   const data = await res.json();
-
-    //   if (data && data.nonce) {
-    //     setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
-
-    //     await sleep(3);
-
-    //     const signResult = await fetchAccountSignature(data.nonce);
-
-    //     if (signResult.success === false) {
-    //       setErrUnlockAccessGeneric(signResult.exception);
-    //     } else {
-    //       setUnlockAccessProgress((prevProgress) => ({
-    //         ...prevProgress,
-    //         s2: 1,
-    //       }));
-    //       await sleep(3);
-
-    //       // auto download the file without ever exposing the url
-    //       const link = document.createElement("a");
-    //       link.target = "_blank";
-    //       link.setAttribute("target", "_blank");
-    //       link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
-    //       link.dispatchEvent(new MouseEvent("click"));
-
-    //       setUnlockAccessProgress((prevProgress) => ({
-    //         ...prevProgress,
-    //         s3: 1,
-    //       }));
-    //     }
-    //   } else {
-    //     if (data.success === false) {
-    //       setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
-    //     } else {
-    //       setErrUnlockAccessGeneric(labels.ERR_DATA_MARSHAL_GEN_ACCESS_FAIL);
-    //     }
-    //   }
-    // } catch (e: any) {
-    //   setErrUnlockAccessGeneric(e.toString());
-    // }
   };
 
   const cleanupAccessDataStreamProcess = () => {
@@ -286,7 +204,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="810px"
+        h="720px"
         mx="3 !important"
         key={item.id}
         borderWidth="0.5px"
@@ -309,7 +227,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           />
         </Flex>
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+        <Flex mx={6} my={3} direction="column" justify="space-between">
           <Text fontSize="md" color="#929497">
             <Link
               href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/erc721_inventory?tokenID=${item.id}&contract=${
@@ -356,9 +274,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Box>
             }
 
-            <Box color="#8c8f9282" fontSize="md">
+            {/* <Box color="#8c8f9282" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
-            </Box>
+            </Box> */}
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
@@ -386,17 +304,46 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Button> */}
             </Stack>
             <Box fontSize="md" fontWeight="normal" my={2}>
-              {`Fee In Token: ${item.feeInTokens === -2 ? "Loading..." : item.feeInTokens} ITHEUM`}
-              <br />
               {`Royalty: ${item.royalties === -2 ? "Loading..." : item.royalties}%`}
-              <br />
-              {`Tradable: ${item.secondaryTradeable === -2 ? "Loading..." : (item.secondaryTradeable === 1 && "Yes") || "No"}`}
-              <br />
-              {`Transferable: ${item.transferable === -2 ? "Loading..." : (item.transferable === 1 && "Yes") || "No"}`}
-              <br />
-              {`Balance: ${item.balance}`} <br />
-              {`Total supply: ${item.supply}`} <br />
+
+              <HStack>
+                <Text>Tradable: </Text>
+                `Tradable: $
+                {item.secondaryTradeable === -2
+                  ? "Loading..."
+                  : (item.secondaryTradeable === 1 && (
+                      <Badge borderRadius="sm" colorScheme="teal">
+                        Yes
+                      </Badge>
+                    )) || (
+                      <Badge borderRadius="sm" colorScheme="red">
+                        No
+                      </Badge>
+                    )}
+              </HStack>
+              <HStack>
+                <Text>Transferable: </Text>
+                {item.transferable === -2
+                  ? "Loading..."
+                  : (item.transferable === 1 && (
+                      <Badge borderRadius="sm" colorScheme="teal">
+                        Yes
+                      </Badge>
+                    )) || (
+                      <Badge borderRadius="sm" colorScheme="red">
+                        No
+                      </Badge>
+                    )}
+              </HStack>
+
+              {`Balance: ${item.balance} (Max supply: ${item.supply})`}
             </Box>
+
+            <HStack borderTop="solid 1px" pt="5px">
+              <Box>{`Fee In Tokens: ${
+                item.feeInTokens === -2 ? "Loading..." : itheumTokenRoundUtilExtended(item.feeInTokens, 18, ethers.BigNumber, true)
+              } ITHEUM`}</Box>
+            </HStack>
 
             <HStack mt="30px">
               <Button
@@ -536,6 +483,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             Data NFT is under investigation by the DAO as there was a complaint received against it
           </Text>
         </Box>
+
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
@@ -649,6 +597,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </ModalContent>
           </Modal>
         )}
+
         {selectedDataNft && (
           <ListDataNFTModal
             isOpen={isListNFTOpen}
@@ -662,6 +611,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             setAmount={setAmount}
           />
         )}
+
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay bg="#181818e0">
             <ModalContent bg="#181818">

@@ -20,15 +20,12 @@ import {
   AlertTitle,
   AlertIcon,
   AlertDescription,
-  useToast,
 } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
-import { sleep, MENU } from "libs/util";
+import { sleep, MENU, itheumTokenRoundUtilExtended } from "libs/util";
 import { DataNftMetadataType, OfferType } from "MultiversX/typesEVM";
 import { useChainMeta } from "store/ChainMetaContext";
-import DataNFTLiveUptime from "UtilComps/DataNFTLiveUptime";
 import { useNavigate } from "react-router-dom";
-
 import { ethers } from "ethers";
 import { ABIS } from "../EVM/ABIs";
 
@@ -44,16 +41,14 @@ export type ProcureAccessModalProps = {
   setSessionId?: (e: any) => void;
   item: any;
   setMenuItem: any;
+  onRefreshTokenBalance: any;
 };
 
 export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const toast = useToast();
   const [wantedTokenBalance, setWantedTokenBalance] = useState<string>("0");
   const [readTermsChecked, setReadTermsChecked] = useState(false);
-  const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
-  const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
   const [txAllowanceConfirmation, setTxAllowanceConfirmation] = useState(0);
   const [txAllowanceHash, setTxAllowanceHash] = useState<any>("");
@@ -64,7 +59,9 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>();
 
   const [purchaseSuccessful, setPurchaseSuccessful] = useState(false);
-  const [totalPriceForAllowance, setTotalPriceForAllowance] = useState(-1);
+  const [totalPriceForAllowance, setTotalPriceForAllowance] = useState<number>(-1);
+
+  const [procureInProgress, setProcureInProgress] = useState(false);
 
   // set ReadTermChecked checkbox as false when modal opened
   useEffect(() => {
@@ -74,20 +71,27 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
   }, [props.isOpen]);
 
   useEffect(() => {
-    const priceInInt = parseInt(props.nftData.feeInTokens.toString(), 10);
-    const _totalPriceForAllowance = priceInInt + (props.nftData.feeInTokens / 100) * 2;
+    const priceInInt: number = parseInt(props.nftData.feeInTokens.toString(), 10);
+    const _totalPriceForAllowance: number = priceInInt + (priceInInt / 100) * 2;
 
     setTotalPriceForAllowance(_totalPriceForAllowance);
   }, [props]);
 
   const web3_approve = async () => {
     try {
+      setProcureInProgress(true);
+
+      debugger; //eslint-disable-line
       const web3Signer = _chainMeta.ethersProvider.getSigner();
       const erc20 = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
       const allowance = await erc20.allowance(_chainMeta.loggedInAddress, _chainMeta.contracts.ddex);
-      const decimals = await erc20.decimals();
+      // const decimals = await erc20.decimals();
 
-      const approveTx = await erc20.increaseAllowance(_chainMeta.contracts.ddex, totalPriceForAllowance);
+      const decimals = 18;
+      const formattedVal = itheumTokenRoundUtilExtended(totalPriceForAllowance, 18, ethers.BigNumber, true); // makes it like 10.2 or 10.0
+      const tokenInPrecision = ethers.utils.parseUnits(formattedVal.toString(), decimals).toHexString();
+
+      const approveTx = await erc20.increaseAllowance(_chainMeta.contracts.ddex, tokenInPrecision);
 
       // show a nice loading animation to user
       setTxAllowanceHash(`https://shibuya.subscan.io/tx/${approveTx.hash}`);
@@ -107,7 +111,7 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
         setTxAllowanceConfirmation(100);
 
         await sleep(2);
-        // web3_procure();
+        web3_procure();
       }
     } catch (e) {
       console.error(e);
@@ -122,13 +126,13 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
       setTxAllowanceConfirmation(0);
 
       const web3Signer = _chainMeta.ethersProvider.getSigner();
-      const dnftContract = new ethers.Contract(_chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
+      const ddexContract = new ethers.Contract(_chainMeta.contracts.ddex, ABIS.ddex, web3Signer);
 
       const _from = props.item.owner;
       const _to = _chainMeta.loggedInAddress;
       const _tokenId = parseInt(props.item.index, 10);
 
-      const txResponse = await dnftContract.buyDataNFT(_from, _to, _tokenId, 0);
+      const txResponse = await ddexContract.buyDataNFT(_from, _to, _tokenId, 0);
 
       // show a nice loading animation to user
       setTxNFTHash(`https://shibuya.subscan.io/tx/${txResponse.hash}`);
@@ -147,11 +151,10 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
       if (txReceipt.status) {
         setTxNFTConfirmation(100);
 
+        setProcureInProgress(false);
         setPurchaseSuccessful(true);
 
-        // // get tokenId
-        // const event = txReceipt.events.find((event: any) => event.event === "Transfer");
-        // const [, , tokenId] = event.args;
+        props.onRefreshTokenBalance();
       } else {
         const txErr = new Error("NFT Contract Error on method buyDataNFT");
         console.error(txErr);
@@ -161,82 +164,6 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
       console.error(e);
       setErrDataNFTStreamGeneric(e);
     }
-  };
-
-  const onProcure = async () => {
-    /*
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!props.buyerFee || !props.marketContract) {
-      toast({
-        title: "Data is not loaded",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!(props.offer && props.nftData)) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!readTermsChecked) {
-      toast({
-        title: "You must READ and Agree on Terms of Use",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-
-    const paymentAmount = new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount);
-    if (props.offer.wanted_token_identifier == "EGLD") {
-      props.marketContract.sendAcceptOfferEgldTransaction(props.offer.index, paymentAmount.toFixed(), props.amount, address);
-    } else {
-      if (props.offer.wanted_token_nonce === 0) {
-        const { sessionId } = await props.marketContract.sendAcceptOfferEsdtTransaction(
-          props.offer.index,
-          paymentAmount.toFixed(),
-          props.offer.wanted_token_identifier,
-          props.amount,
-          address
-        );
-
-        // if offer is sold out by this transaction, close Drawer if opened
-        if (props.setSessionId && props.amount == props.offer.quantity) {
-          props.setSessionId(sessionId);
-        }
-      } else {
-        const { sessionId } = await props.marketContract.sendAcceptOfferNftEsdtTransaction(
-          props.offer.index,
-          paymentAmount.toFixed(),
-          props.offer.wanted_token_identifier,
-          props.offer.wanted_token_nonce,
-          props.amount,
-          address
-        );
-
-        // if offer is sold out by this transaction, close Drawer if opened
-        if (props.setSessionId && props.amount == props.offer.quantity) {
-          props.setSessionId(sessionId);
-        }
-      }
-    }
-
-    // a small delay for visual effect
-    await sleep(0.5);
-    props.onClose();
-
-    */
   };
 
   function cleanupAndClose() {
@@ -278,7 +205,7 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Unlock Fee (per NFT)</Box>
-                <Box>: {props.nftData.feeInTokens} ITHEUM</Box>
+                <Box>: {itheumTokenRoundUtilExtended(props.nftData.feeInTokens, 18, ethers.BigNumber, true)} ITHEUM</Box>
               </Flex>
               <Flex>
                 {new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0 && (
@@ -293,20 +220,13 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
               </Flex>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">Total Fee</Box>
-                <Box>
-                  {": "} {totalPriceForAllowance} ITHEUM
-                </Box>
+                {totalPriceForAllowance !== -1 && (
+                  <Box>
+                    {": "} {`${itheumTokenRoundUtilExtended(totalPriceForAllowance, 18, ethers.BigNumber, true)}`} ITHEUM
+                  </Box>
+                )}
               </Flex>
             </Box>
-
-            {/* 
-            <DataNFTLiveUptime
-              dataMarshal={props.nftData.dataMarshal}
-              NFTId={props.nftData.id}
-              handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
-              isLiveUptimeSuccessful={isLiveUptimeSuccessful}
-              setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
-            /> */}
 
             <Box>
               <Flex mt="4 !important">
@@ -375,20 +295,10 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
 
             {!purchaseSuccessful && (
               <Flex justifyContent="end" mt="4 !important">
-                <Button
-                  colorScheme="teal"
-                  size="sm"
-                  mx="3"
-                  onClick={web3_approve}
-                  isDisabled={
-                    !readTermsChecked
-                    // liveUptimeFAIL ||
-                    // new BigNumber(props.offer.wanted_token_amount).multipliedBy(props.amount).comparedTo(wantedTokenBalance) > 0
-                    // || !isLiveUptimeSuccessful
-                  }>
+                <Button colorScheme="teal" size="sm" mx="3" onClick={web3_approve} isDisabled={!readTermsChecked || procureInProgress}>
                   Proceed
                 </Button>
-                <Button colorScheme="teal" size="sm" variant="outline" onClick={cleanupAndClose}>
+                <Button colorScheme="teal" size="sm" variant="outline" onClick={cleanupAndClose} isDisabled={procureInProgress}>
                   Cancel
                 </Button>
               </Flex>
@@ -420,13 +330,3 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
     </>
   );
 }
-
-const itheumTokenRoundUtil = (balance: any, decimals: any, BigNumber: any) => {
-  const balanceWeiString = balance.toString();
-  const balanceWeiBN = BigNumber.from(balanceWeiString);
-  const decimalsBN = BigNumber.from(decimals);
-  const divisor = BigNumber.from(10).pow(decimalsBN);
-  const beforeDecimal = balanceWeiBN.div(divisor);
-
-  return beforeDecimal.toString();
-};

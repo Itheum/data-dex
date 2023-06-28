@@ -320,7 +320,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
       MENU.DATAPROOFS,
       MENU.SELL,
     ],
-    "0x51": [MENU.FAUCET, MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
+    "0x51": [MENU.CLAIMS, MENU.TX, MENU.COALITION, MENU.NFTALL, MENU.NFTMINE, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -588,4 +588,26 @@ export const styleStrings = {
   gradientBorderMulticolorToBottomRight: "linear-gradient(#0F0F0F, #0F0F0F) padding-box, linear-gradient(to left top, #00C79750, #FF439D50) border-box",
   gradientBorderMulticolorToBottomRightLight:
     "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C79750, #686868, #FF439D50) border-box",
+};
+
+export const itheumTokenRoundUtilExtended = (balance: any, decimals: any, BigNumber: any, returnAsOurStandardFormat: boolean | undefined) => {
+  const _balanceWeiString = balance.toString(); // 10200000000000000000
+  const _balanceWeiBN = BigNumber.from(_balanceWeiString);
+
+  const _decimals = 18;
+  const _decimalsBN = BigNumber.from(_decimals);
+  const _divisor = BigNumber.from(10).pow(_decimalsBN);
+
+  const _beforeDecimal = _balanceWeiBN.div(_divisor);
+  const _afterDecimal = _balanceWeiBN.mod(_divisor);
+
+  // console.log(_beforeDecimal.toString()); // >> 10
+  // console.log(_afterDecimal.toString()); // >> 200000000000000000
+
+  // returnAsOurStandardFormat will format it as 10.2
+  if (returnAsOurStandardFormat) {
+    return `${_beforeDecimal.toString()}.${_afterDecimal.toString().substring(0, 1)}`;
+  } else {
+    return [_beforeDecimal.toString(), _afterDecimal.toString()];
+  }
 };

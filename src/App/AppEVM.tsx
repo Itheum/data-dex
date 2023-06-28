@@ -27,13 +27,13 @@ import DataNFTMarketplaceEVM from "DataNFT/DataNFTMarketplaceEVM";
 import DataNFTs from "DataNFT/DataNFTs";
 import MyDataNFTsEVM from "DataNFT/MyDataNFTsEVM";
 import MyDataNFTsMx from "DataNFT/MyDataNFTsMultiversX";
-import HomeMx from "Home/HomeMultiversX";
+import HomeEVM from "Home/HomeEVM";
 import LandingPage from "Launch/LandingPage";
 import { useLocalStorage } from "libs/hooks";
 import { CHAINS, clearAppSessionsLaunchMode, consoleNotice, gtagGo, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS, sleep } from "libs/util";
 import { checkBalance } from "MultiversX/api";
 import AppFooter from "Sections/AppFooter";
-import AppHeader from "Sections/AppHeader";
+import AppHeader from "Sections/AppHeaderEVM";
 import DataStreams from "Sections/DataStreams";
 import DataVault from "Sections/DataVault";
 import TrustedComputation from "Sections/TrustedComputation";
@@ -166,30 +166,8 @@ function App({
       const balance = await contract.balanceOf(_chainMeta.loggedInAddress);
       const decimals = await contract.decimals();
 
-      setTokenBalance(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
-    } else {
-      if (mxAddress && isMxLoggedIn) {
-        setTokenBalance(-1); // -1 is loading
-
-        // get user token balance from mx
-        const data = await checkBalance(_chainMeta.contracts.itheumToken, mxAddress, _chainMeta.networkId);
-
-        if (typeof data.balance !== "undefined") {
-          setTokenBalance(data.balance / Math.pow(10, 18));
-        } else {
-          setTokenBalance(-2); // -2 is error getting it
-
-          if (!toast.isActive("er1")) {
-            toast({
-              id: "er1",
-              title: "ER1: Could not get your token information from the MultiversX blockchain.",
-              status: "error",
-              isClosable: true,
-              duration: null,
-            });
-          }
-        }
-      }
+      // setTokenBalance(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
+      setTokenBalance(balance);
     }
   };
 
@@ -273,13 +251,14 @@ function App({
               <Route
                 path="home"
                 element={
-                  <HomeMx
+                  <HomeEVM
                     key={rfKeys.tools}
                     onRfMount={() => handleRfMount("tools")}
                     setMenuItem={setMenuItem}
                     dataCATAccount={dataCATAccount}
                     loadingDataCATAccount={loadingDataCATAccount}
                     onDataCATAccount={linkOrRefreshDataDATAccount}
+                    onRefreshTokenBalance={itheumTokenBalanceUpdate}
                   />
                 }
               />
@@ -301,7 +280,12 @@ function App({
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
 
-                <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                {(isEVMAuthenticated && (
+                  <Route
+                    path="marketplace/market"
+                    element={<DataNFTMarketplaceEVM tabState={1} setMenuItem={setMenuItem} onRefreshTokenBalance={itheumTokenBalanceUpdate} />}
+                  />
+                )) || <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />}
 
                 <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />

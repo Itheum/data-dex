@@ -15,6 +15,8 @@ import {
   Skeleton,
   Stack,
   Text,
+  HStack,
+  Badge,
   useColorMode,
 } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
@@ -74,15 +76,16 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
+        backgroundColor="green"
         w="275px"
-        h="760px"
+        h="670px"
         mx="3 !important"
         borderWidth="0.5px"
         borderRadius="xl"
         position="relative"
         mb="1rem"
         style={{ background: gradientBorderForTrade }}>
-        <Flex justifyContent="center">
+        <Flex justifyContent="center" backgroundColor="none">
           <Image
             src={imageUrl}
             alt={"item.dataPreview"}
@@ -101,7 +104,7 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
           />
         </Flex>
 
-        <Flex h={_chainMeta.loggedInAddress ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
+        <Flex backgroundColor="none" h={_chainMeta.loggedInAddress ? "380px" : "10rem"} mx={6} my={3} direction="column" justify="space-between">
           {nftMetadatas[index] && (
             <>
               <Text fontSize="md" color="#929497">
@@ -140,20 +143,22 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
-              <Flex display="flex" flexDirection="column" mt={1}>
-                <Box color="#8c8f9282" fontSize="md">
-                  Creator: <ShortAddress address={nftMetadatas[index].creator} fontSize="md" />
-                  <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                    <ExternalLinkIcon ml="5px" fontSize="sm" />
-                  </Link>
-                </Box>
+              <Flex backgroundColor="none" display="flex" flexDirection="column" mt={1}>
+                {nftMetadatas[index].creator !== "" && (
+                  <Box color="#8c8f9282" fontSize="md">
+                    Creator: <ShortAddress address={nftMetadatas[index].creator} fontSize="md" />
+                    <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                      <ExternalLinkIcon ml="5px" fontSize="sm" />
+                    </Link>
+                  </Box>
+                )}
                 <Box color="#8c8f9282" fontSize="md">
                   Owner: <ShortAddress address={item?.owner} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="5rem">
+                <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2">
                   {_chainMeta.loggedInAddress && _chainMeta.loggedInAddress == nftMetadatas[index].creator && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
@@ -178,44 +183,48 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
                 </Stack>
               </Flex>
 
-              <Box display="flex" justifyContent="flex-start" mt="2">
+              {/* <Box display="flex" justifyContent="flex-start" mt="2">
                 <Text fontSize="md" fontWeight="medium" color="#929497">{`Creation time:   ${moment(nftMetadatas[index].creationTime).format(
                   uxConfig.dateStr
                 )}`}</Text>
-              </Box>
+              </Box> */}
 
               {nftMetadatas[index] && (
-                <Box fontSize="md" fontWeight="normal" my={2}>
-                  {`Fee In Token: ${nftMetadatas[index]?.feeInTokens === -2 ? "Loading..." : nftMetadatas[index]?.feeInTokens} ITHEUM`}
-                  <br />
+                <Box backgroundColor="none" fontSize="md" fontWeight="normal" my={2}>
                   {`Royalty: ${nftMetadatas[index]?.royalties === -2 ? "Loading..." : nftMetadatas[index]?.royalties}%`}
-                  <br />
-                  {`Tradable: ${
-                    nftMetadatas[index]?.secondaryTradeable === -2 ? "Loading..." : (nftMetadatas[index]?.secondaryTradeable === 1 && "Yes") || "No"
-                  }`}
-                  <br />
-                  {`Transferable: ${nftMetadatas[index]?.transferable === -2 ? "Loading..." : (nftMetadatas[index]?.transferable === 1 && "Yes") || "No"}`}
-                  <br />
-                  {`Listed: ${item?.quantity}`} <br />
-                  {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
-                </Box>
-              )}
 
-              {feePrice && (
-                <>
-                  <Box fontSize="xs" mt="2">
-                    <Text>
-                      Unlock from: {` `}
-                      {marketRequirements ? (
-                        <>
-                          {feePrice} {fee && itheumPrice ? `(${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
-                        </>
-                      ) : (
-                        " -"
-                      )}
-                    </Text>
-                  </Box>
-                </>
+                  <HStack>
+                    <Text>Tradable: </Text>
+                    `Tradable: $
+                    {nftMetadatas[index]?.secondaryTradeable === -2
+                      ? "Loading..."
+                      : (nftMetadatas[index]?.secondaryTradeable === 1 && (
+                          <Badge borderRadius="sm" colorScheme="teal">
+                            Yes
+                          </Badge>
+                        )) || (
+                          <Badge borderRadius="sm" colorScheme="red">
+                            No
+                          </Badge>
+                        )}
+                  </HStack>
+                  <HStack>
+                    <Text>Transferable: </Text>
+                    {nftMetadatas[index]?.transferable === -2
+                      ? "Loading..."
+                      : (nftMetadatas[index]?.transferable === 1 && (
+                          <Badge borderRadius="sm" colorScheme="teal">
+                            Yes
+                          </Badge>
+                        )) || (
+                          <Badge borderRadius="sm" colorScheme="red">
+                            No
+                          </Badge>
+                        )}
+                  </HStack>
+
+                  {`Listed: ${item?.quantity} (max supply: ${nftMetadatas[index]?.supply})`}
+                </Box>
               )}
 
               {_chainMeta.loggedInAddress && <>{children}</>}

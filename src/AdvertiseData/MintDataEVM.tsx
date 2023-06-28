@@ -676,7 +676,9 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
       const _royaltyInPercent = dataNFTRoyalty || 0;
       const _secondaryTradeable = makeTradable;
 
-      const txResponse = await dnftContract.createDataNFT(_uri, _priceInItheum, _royaltyInPercent, _secondaryTradeable);
+      const decimals = 18;
+      const priceInPrecision = ethers.utils.parseUnits(`${_priceInItheum}.0`, decimals).toHexString();
+      const txResponse = await dnftContract.createDataNFT(_uri, priceInPrecision, _royaltyInPercent, _secondaryTradeable);
 
       // show a nice loading animation to user
       setTxNFTHash(`https://shibuya.subscan.io/tx/${txResponse.hash}`);
@@ -1250,12 +1252,12 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
                             step={5}
                             min={10}
                             isValidCharacter={isValidNumericCharacter}
-                            max={1000}
+                            max={100}
                             value={prices[0]}
                             onChange={(valueString, valueAsNumber) => {
                               let error = "";
-                              if (valueAsNumber < 0) error = "Cannot be negative";
-                              if (valueAsNumber > 1000) error = "Cannot exceed maximum listing fee";
+                              if (valueAsNumber < 10) error = "Cannot be less than minimum listing fee";
+                              if (valueAsNumber > 100) error = "Cannot exceed maximum listing fee";
                               setPriceErrors((oldErrors) => {
                                 const newErrors = [...oldErrors];
                                 newErrors[0] = error;

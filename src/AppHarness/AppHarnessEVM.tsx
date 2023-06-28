@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState, useTransition } from "react";
 import { Loader } from "@multiversx/sdk-dapp/UI";
-import AppMx from "App/AppMultiversX";
+import AppEVM from "App/AppEVM";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/util";
 import { WALLETS } from "libs/util";
@@ -91,7 +91,7 @@ function AppHarnessEVM({
     <CustomLoader />
   ) : (
     <>
-      <AppMx
+      <AppEVM
         onLaunchMode={handleLaunchMode}
         resetAppContexts={resetAppContexts}
         appConfig={{

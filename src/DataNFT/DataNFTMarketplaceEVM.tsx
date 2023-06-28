@@ -46,9 +46,10 @@ import { ABIS } from "../EVM/ABIs";
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs",
   setMenuItem: any;
+  onRefreshTokenBalance: any;
 }
 
-export const Marketplace: FC<PropsType> = ({ tabState, setMenuItem }) => {
+export const Marketplace: FC<PropsType> = ({ tabState, setMenuItem, onRefreshTokenBalance }) => {
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
@@ -191,8 +192,8 @@ export const Marketplace: FC<PropsType> = ({ tabState, setMenuItem }) => {
           dataStream: "",
           dataMarshal: "",
           tokenName: "",
-          creator: _allItems[i].ownerAddress, // TODO : Fix, ownerAddress is not creator
-          creationTime: new Date(),
+          creator: "", // we don't know who the creator is -- this info only comes via Covalent API for now
+          creationTime: new Date(), // we don't know who the creator is -- this info only comes via Covalent API for now
           supply: 1,
           balance: 1,
           description: _allItems[i].description,
@@ -329,6 +330,7 @@ export const Marketplace: FC<PropsType> = ({ tabState, setMenuItem }) => {
                               itheumPrice={itheumPrice}
                               marketRequirements={marketRequirements}
                               setMenuItem={setMenuItem}
+                              onRefreshTokenBalance={onRefreshTokenBalance}
                             />
                           ) : (
                             <MyListedDataLowerCard
