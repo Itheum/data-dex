@@ -41,7 +41,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { signMessage } from "@multiversx/sdk-dapp/utils/account";
+import { useSignMessage } from '@multiversx/sdk-dapp/hooks/signMessage/useSignMessage';
 import moment from "moment";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -71,6 +71,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
+  const { signMessage } = useSignMessage();
 
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
