@@ -97,8 +97,6 @@ function App({
         path = path.split("-")[0];
       }
 
-      console.log("******************* ", PATHS[path as keyof typeof PATHS]?.[0] as number);
-
       setMenuItem(PATHS[path as keyof typeof PATHS]?.[0] as number);
     }
 
@@ -163,13 +161,11 @@ function App({
 
   // Mx transactions state changed so need new balances
   const itheumTokenBalanceUpdate = async () => {
-    // debugger; //eslint-disable-line
     if (_chainMeta?.isEVMAuthenticated) {
       const contract = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, _chainMeta.ethersProvider);
       const balance = await contract.balanceOf(_chainMeta.loggedInAddress);
       const decimals = await contract.decimals();
 
-      console.log("astar ITHEUM bal = ", itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
       setTokenBalance(itheumTokenRoundUtil(balance, decimals, ethers.BigNumber));
     } else {
       if (mxAddress && isMxLoggedIn) {
@@ -240,8 +236,6 @@ function App({
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
-  console.log("******************* menuItem = ", menuItem);
-
   const { isEVMAuthenticated, loggedInAddress } = _chainMeta;
 
   let bodyMinHeightLg = "1000px";
@@ -307,7 +301,7 @@ function App({
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
 
-                {(isEVMAuthenticated && <Route path="marketplace/market" element={<DataNFTMarketplaceEVM tabState={1} />} />) || (
+                {(isEVMAuthenticated && <Route path="marketplace/market" element={<DataNFTMarketplaceEVM tabState={1} setMenuItem={setMenuItem} />} />) || (
                   <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 )}
 

@@ -24,10 +24,13 @@ import {
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineLocalOffer, MdOutlineShoppingBag } from "react-icons/md";
-import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/types";
+import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } from "MultiversX/typesEVM";
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTEVM from "./WalletDataNFTEVM";
+
+import { ethers } from "ethers";
+import { ABIS } from "../EVM/ABIs";
 
 export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
@@ -92,22 +95,18 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
     fetch(endpointMyDataNFTs, { method: "GET", headers: headers })
       .then((resp) => resp.json())
       .then((res) => {
-        console.log(res);
-
         if (res?.data?.items) {
           const dataNFTsRaw = res?.data?.items.filter((val: any) => {
             return (
               val.type === "nft" &&
               val.contract_ticker_symbol === "DATANFTFT1" &&
-              val.contract_address.toLowerCase() === "0xaC9e9eA0d85641Fa176583215447C81eBB5eD7b3".toLowerCase()
+              val.contract_address.toLowerCase() === _chainMeta.contracts.dnft.toLowerCase()
             );
           });
 
-          console.log("dataNFTsRaw");
-          console.log(dataNFTsRaw);
-
           // some logic to loop through the raw onChainNFTs and build the dataNfts
           const _dataNfts: DataNftType[] = [];
+          const _tokenIdAry: string[] = [];
 
           for (let index = 0; index < dataNFTsRaw[0]?.nft_data.length; index++) {
             const nft = dataNFTsRaw[0]?.nft_data[index];
@@ -120,23 +119,68 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
               dataStream: nft.external_data.attributes.find((i: any) => i.trait_type === "Data Stream URL")?.value || "",
               dataMarshal: nft.external_data.attributes.find((i: any) => i.trait_type === "Data Marshal URL")?.value || "",
               tokenName: nft.external_data.name,
-              feeInTokens: 100,
+              feeInTokens: -2,
               creator: nft.original_owner,
               creationTime: new Date(),
               supply: 1,
               balance: 1,
               description: nft.external_data.description,
               title: nft.external_data.name,
-              royalties: 0,
+              royalties: -2,
               nonce: nft.token_id,
               collection: "DATANFTFT1",
+              transferable: -2,
+              secondaryTradeable: -2,
             });
+
+            _tokenIdAry.push(nft.token_id);
           }
 
-          setDataNfts(_dataNfts);
+          mergeSmartContractMetaData(_tokenIdAry, _dataNfts);
         }
       });
   };
+
+  function mergeSmartContractMetaData(_tokenIdAry: any, _dataNfts: any) {
+    // use the list of token IDs to get all the other needed details (price, royalty etc) from the smart contract
+    Promise.all(_tokenIdAry.map((i: string) => getTokenDetailsFromContract(i))).then((responses) => {
+      const scMetaMap = responses.reduce((sum, i) => {
+        sum[i.tokenId] = {
+          royaltyInPercent: i.royaltyInPercent,
+          secondaryTradeable: i.secondaryTradeable,
+          transferable: i.transferable,
+          priceInItheum: i.priceInItheum,
+        };
+
+        return sum;
+      }, {});
+
+      // append the sc meta data like price, royalty etc to the master list
+      _dataNfts.forEach((item: any) => {
+        item.royalties = scMetaMap[item.id].royaltyInPercent;
+        item.feeInTokens = scMetaMap[item.id].priceInItheum;
+        item.transferable = scMetaMap[item.id].transferable;
+        item.secondaryTradeable = scMetaMap[item.id].secondaryTradeable;
+      });
+
+      setDataNfts(_dataNfts);
+    });
+  }
+
+  async function getTokenDetailsFromContract(tokenId: string) {
+    const contract = new ethers.Contract(_chainMeta.contracts.dnft, ABIS.dNFT, _chainMeta.ethersProvider);
+    const tokenDetails = await contract.dataNFTs(parseInt(tokenId));
+
+    const pickDetails = {
+      tokenId,
+      royaltyInPercent: tokenDetails.royaltyInPercent,
+      secondaryTradeable: tokenDetails.secondaryTradeable === true ? 1 : 0, // 1 means true, 0 means false
+      transferable: tokenDetails.transferable === true ? 1 : 0, // 1 means true, 0 means false
+      priceInItheum: tokenDetails.priceInItheum.toString(),
+    };
+
+    return pickDetails;
+  }
 
   useEffect(() => {
     getOnChainNFTsEVM(_chainMeta.loggedInAddress);

@@ -346,7 +346,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
               </Badge>
 
-              <Button
+              {/* <Button
                 mt="1"
                 size="md"
                 borderRadius="lg"
@@ -356,7 +356,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 isDisabled={hasPendingTransactions}
                 onClick={() => onBurnButtonClick(item)}>
                 Burn
-              </Button>
+              </Button> */}
             </Stack>
             <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />

@@ -51,10 +51,6 @@ function AppHarnessEVM({
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("AppHearnessEVM Loaded");
-  }, []);
-
-  useEffect(() => {
     if (wallet) {
       console.log("wallet YES");
     } else {

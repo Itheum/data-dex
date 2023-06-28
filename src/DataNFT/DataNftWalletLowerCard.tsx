@@ -65,8 +65,6 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
     } else {
       try {
         const signatureObj = await signMessage({ message });
-        console.log("signatureObj");
-        console.log(signatureObj);
 
         if (signatureObj?.signature && signatureObj?.address) {
           // Maiar App V2 / Ledger
@@ -81,9 +79,6 @@ const DataNftWalletLowerCard: FC<DataNftWalletLowerCardProps> = (props) => {
         signResult.success = false;
         signResult.exception = e.toString();
       }
-
-      console.log("signResult");
-      console.log(signResult);
     }
 
     if (signResult.signature === null || signResult.addrInHex === null) {

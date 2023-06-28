@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
+  Switch,
   Progress,
   Alert,
   AlertDescription,
@@ -16,7 +17,6 @@ import {
   DrawerBody,
   DrawerContent,
   DrawerHeader,
-  DrawerOverlay,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -217,9 +217,12 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
   const [newNFTId, setNewNFTId] = useState(null);
   const [txNFTConfirmation, setTxNFTConfirmation] = useState(0);
   const [txNFTHash, setTxNFTHash] = useState<any>(null);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [deepLinkMode, setDeepLinkMode] = useState(false);
+
+  const [priceErrors, setPriceErrors] = useState<string[]>([]);
+  const [prices, setPrices] = useState<number[]>([10]);
+  const [makeTradable, setMakeTradable] = useState<boolean>(true);
 
   // React hook form + yup integration
   // Declaring a validation schema for the form with the validation needed
@@ -448,7 +451,22 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
   }, [maxSupply]);
 
   useEffect(() => {
-    // debugger; // eslint-disable-line
+    // console.log("dataNFTStreamUrlError ", dataNFTStreamUrlError.toString());
+    // console.log("dataNFTStreamPreviewUrlError ", dataNFTStreamPreviewUrlError.toString());
+    // console.log("datasetTitleError ", datasetTitleError.toString());
+    // console.log("datasetDescriptionError ", datasetDescriptionError.toString());
+    // console.log("dataNFTCopiesError ", dataNFTCopiesError.toString());
+    // console.log("dataNFTRoyaltyError ", dataNFTRoyaltyError.toString());
+    // console.log("dataNFTStreamUrlStatus ", dataNFTStreamUrlStatus.toString());
+    // console.log("dataNFTStreamPreviewUrlStatus ", dataNFTStreamPreviewUrlStatus.toString());
+    // console.log("dataNFTImgGenServiceValid ", dataNFTImgGenServiceValid.toString());
+    // console.log("readTermsChecked ", readTermsChecked.toString());
+    // console.log("readAntiSpamFeeChecked ", readAntiSpamFeeChecked.toString());
+    // console.log("minRoyalties ", minRoyalties.toString());
+    // console.log("maxRoyalties ", maxRoyalties.toString());
+    // console.log("maxSupply ", maxSupply.toString());
+    // console.log("antiSpamTax ", antiSpamTax.toString());
+
     setMintDataNFTDisabled(
       !!dataNFTStreamUrlError ||
         !!dataNFTStreamPreviewUrlError ||
@@ -506,9 +524,9 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
       console.log(searchParams.get("dm"));
       console.log(searchParams.get("ds"));
 
-      if (searchParams.get("loadDrawer")) {
+      if (searchParams.get("loadDrawer") && searchParams.get("ds")) {
         getDataForSale(dataCATAccount?.programsAllocation.find((i: any) => i.program === "playstation-gamer-passport"));
-        setDeepLinkMode(true);
+        // setDeepLinkMode(true);
       }
     }
   }, [searchParams]);
@@ -537,7 +555,12 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
         dataCATStreamPreviewUrl = `https://itheumapi.com/programReadingPreview/${selObj.program}`;
       }
 
-      setDataNFTStreamUrl(dataCATStreamUrl);
+      if (searchParams.get("ds")) {
+        setDataNFTStreamUrl(decodeURIComponent(searchParams.get("ds") || ""));
+      } else {
+        setDataNFTStreamUrl(dataCATStreamUrl);
+      }
+
       setDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
       onChangeDatasetDescription(selObj.description);
       if (selObj.title) {
@@ -552,9 +575,13 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
     if (dataCATProgram?.program) {
       await sleep(3);
 
-      onChangeDataNFTStreamUrl(dataCATStreamUrl);
-      onChangeDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
+      if (searchParams.get("ds")) {
+        onChangeDataNFTStreamUrl(decodeURIComponent(searchParams.get("ds") || ""));
+      } else {
+        onChangeDataNFTStreamUrl(dataCATStreamPreviewUrl);
+      }
 
+      onChangeDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
       setUserFocusedForm(true);
     }
   };
@@ -645,13 +672,11 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
       const dnftContract = new ethers.Contract(_chainMeta.contracts.dnft, ABIS.dNFT, web3Signer);
 
       const _uri = params.metadataOnIpfsUrl;
-      const _priceInItheum = 100;
+      const _priceInItheum = prices[0];
       const _royaltyInPercent = dataNFTRoyalty || 0;
-      const _secondaryTradeable = true;
+      const _secondaryTradeable = makeTradable;
 
       const txResponse = await dnftContract.createDataNFT(_uri, _priceInItheum, _royaltyInPercent, _secondaryTradeable);
-
-      console.log(txResponse.hash);
 
       // show a nice loading animation to user
       setTxNFTHash(`https://shibuya.subscan.io/tx/${txResponse.hash}`);
@@ -662,7 +687,6 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
 
       // wait for 1 confirmation from ethers
       const txReceipt = await txResponse.wait();
-      console.log(txReceipt.events);
 
       setTxNFTConfirmation(60);
 
@@ -1213,60 +1237,120 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
                       <Text color="gray.400" fontSize="sm" mt="1 !important">
                         Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
                       </Text>
+
+                      <Box>
+                        <Text mt="10px" fontWeight="bold" fontSize="md">
+                          Unlock fee for each
+                        </Text>
+                        <HStack>
+                          <NumberInput
+                            mt="1 !important"
+                            size="md"
+                            maxW={24}
+                            step={5}
+                            min={10}
+                            isValidCharacter={isValidNumericCharacter}
+                            max={1000}
+                            value={prices[0]}
+                            onChange={(valueString, valueAsNumber) => {
+                              let error = "";
+                              if (valueAsNumber < 0) error = "Cannot be negative";
+                              if (valueAsNumber > 1000) error = "Cannot exceed maximum listing fee";
+                              setPriceErrors((oldErrors) => {
+                                const newErrors = [...oldErrors];
+                                newErrors[0] = error;
+                                return newErrors;
+                              });
+                              setPrices((oldPrices) => {
+                                const newPrices = [...oldPrices];
+                                newPrices[0] = !valueAsNumber ? 0 : valueAsNumber;
+                                return newPrices;
+                              });
+                            }}
+                            keepWithinRange={true}>
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                          <Text> $ITHEUM</Text>
+                        </HStack>
+                        {priceErrors[0] && (
+                          <Text color="red.400" fontSize="xs">
+                            {priceErrors[0]}
+                          </Text>
+                        )}
+                      </Box>
+
+                      <Box>
+                        <Text mt="10px" fontWeight="bold" fontSize="md">
+                          Make tradable
+                        </Text>
+                        <Switch mt="10px" colorScheme="teal" size="lg" isChecked={makeTradable} onChange={(e) => setMakeTradable(e.target.checked)} />
+                      </Box>
                     </Stack>
-                    <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
-                      Terms and Fees
-                    </Text>
 
-                    <Text fontSize="md" mt="4 !important">
-                      Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you
-                      agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data
-                      Stream URL is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description,
-                      royalty, etc. But there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical
-                      you understand the terms of use before proceeding.
-                    </Text>
-
-                    <Flex mt="3 !important">
-                      <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
-                        Read Terms of Use
-                      </Button>
-                    </Flex>
-                    <Checkbox size="md" mt="3 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
-                      I have read and I agree to the Terms of Use
-                    </Checkbox>
-
-                    {userFocusedForm && !readTermsChecked && (
-                      <Text color="red.400" fontSize="sm" mt="1 !important">
-                        Please read and agree to terms of use.
+                    <Box>
+                      <Text fontWeight="bold" color="teal.200" fontSize="xl" mt="8 !important">
+                        Terms and Fees
                       </Text>
-                    )}
 
-                    <Text fontSize="md" mt="8 !important">
-                      An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be
-                      dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
-                    </Text>
+                      <Text fontSize="md" mt="4 !important">
+                        Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you
+                        agree that the data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data
+                        Stream URL is always online. Given it&apos;s an NFT, you also have limitations like not being able to update the title, description,
+                        royalty, etc. But there are other conditions too. Take some time to read these “terms of use” before you proceed and it&apos;s critical
+                        you understand the terms of use before proceeding.
+                      </Text>
 
-                    <Box mt="3 !important">
-                      <Tag variant="solid" colorScheme="teal">
-                        Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens
-                      </Tag>
+                      <Flex mt="3 !important">
+                        <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
+                          Read Terms of Use
+                        </Button>
+                      </Flex>
+
+                      <Checkbox size="md" mt="3 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
+                        I have read and I agree to the Terms of Use
+                      </Checkbox>
+
+                      {userFocusedForm && !readTermsChecked && (
+                        <Text color="red.400" fontSize="sm" mt="1 !important">
+                          Please read and agree to terms of use.
+                        </Text>
+                      )}
+
+                      <Text fontSize="md" mt="8 !important">
+                        An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will
+                        be dynamically adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
+                      </Text>
+
+                      <Box mt="3 !important">
+                        <Tag variant="solid" colorScheme="teal">
+                          Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens
+                        </Tag>
+                      </Box>
+
+                      {itheumBalance < antiSpamTax && (
+                        <Text color="red.400" fontSize="sm" mt="1 !important">
+                          You don&apos;t have enough ITHEUM for Anti-Spam Tax
+                        </Text>
+                      )}
+
+                      <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+                        I accept the deduction of the anti-spam minting fee from my wallet
+                      </Checkbox>
+
+                      {userFocusedForm && !readAntiSpamFeeChecked && (
+                        <Text color="red.400" fontSize="sm" mt="1 !important">
+                          You need to agree to anti-spam deduction to mint
+                        </Text>
+                      )}
                     </Box>
 
-                    {itheumBalance < antiSpamTax && (
-                      <Text color="red.400" fontSize="sm" mt="1 !important">
-                        You don&apos;t have enough ITHEUM for Anti-Spam Tax
-                      </Text>
-                    )}
-
-                    <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
-                      I accept the deduction of the anti-spam minting fee from my wallet
-                    </Checkbox>
-
-                    {userFocusedForm && !readAntiSpamFeeChecked && (
-                      <Text color="red.400" fontSize="sm" mt="1 !important">
-                        You need to agree to anti-spam deduction to mint
-                      </Text>
-                    )}
+                    <Box>
+                      makeTradable = {makeTradable.toString()} prices = {prices[0]} dataNFTRoyalty = {dataNFTRoyalty}
+                    </Box>
 
                     <Flex>
                       <ChainSupportedInput feature={MENU.SELL}>

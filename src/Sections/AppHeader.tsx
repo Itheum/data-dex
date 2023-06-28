@@ -149,8 +149,6 @@ const AppHeader = ({
 
   const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
 
-  console.log("_chainMeta", _chainMeta);
-
   const { isEVMAuthenticated, loggedInAddress } = _chainMeta;
 
   return (

@@ -50,7 +50,7 @@ import { convertToLocalString, transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType } from "MultiversX/types";
+import { DataNftType } from "MultiversX/typesEVM";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -282,9 +282,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
   }
 
-  console.log("item");
-  console.log(item);
-
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -314,8 +311,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
-              {item.tokenName} <ExternalLinkIcon mx="2px" />
+            <Link
+              href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/erc721_inventory?tokenID=${item.id}&contract=${
+                _chainMeta.contracts.dnft
+              }`}
+              isExternal>
+              NFT ID {item.id} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
           <Popover trigger="hover" placement="auto">
@@ -372,7 +373,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
               </Badge>
 
-              <Button
+              {/* <Button
                 mt="1"
                 size="md"
                 borderRadius="lg"
@@ -382,15 +383,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 isDisabled={hasPendingTransactions}
                 onClick={() => onBurnButtonClick(item)}>
                 Burn
-              </Button>
+              </Button> */}
             </Stack>
-            <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
+            <Box fontSize="md" fontWeight="normal" my={2}>
+              {`Fee In Token: ${item.feeInTokens === -2 ? "Loading..." : item.feeInTokens} ITHEUM`}
+              <br />
+              {`Royalty: ${item.royalties === -2 ? "Loading..." : item.royalties}%`}
+              <br />
+              {`Tradable: ${item.secondaryTradeable === -2 ? "Loading..." : (item.secondaryTradeable === 1 && "Yes") || "No"}`}
+              <br />
+              {`Transferable: ${item.transferable === -2 ? "Loading..." : (item.transferable === 1 && "Yes") || "No"}`}
+              <br />
               {`Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
-              {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
             </Box>
 
-            <HStack mt="2">
+            <HStack mt="30px">
               <Button
                 size="sm"
                 colorScheme="teal"
@@ -414,93 +422,95 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Button>
             </HStack>
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
-              <Text fontSize="md" color="#929497">
-                How many to list:{" "}
-              </Text>
-              <NumberInput
-                size="sm"
-                borderRadius="4.65px !important"
-                maxW={20}
-                step={1}
-                defaultValue={1}
-                min={1}
-                max={item.balance}
-                isValidCharacter={isValidNumericCharacter}
-                value={amount}
-                onChange={(value) => {
-                  let error = "";
-                  const valueAsNumber = Number(value);
-                  if (valueAsNumber <= 0) {
-                    error = "Cannot be zero or negative";
-                  } else if (valueAsNumber > item.balance) {
-                    error = "Cannot exceed balance";
-                  }
-                  setAmountError(error);
-                  setAmount(valueAsNumber);
-                }}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Flex>
-            {amountError && (
-              <Text color="red.400" fontSize="xs">
-                {amountError}
-              </Text>
-            )}
+            <Box style={{ "visibility": "hidden" }}>
+              <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text fontSize="md" color="#929497">
+                  How many to list:{" "}
+                </Text>
+                <NumberInput
+                  size="sm"
+                  borderRadius="4.65px !important"
+                  maxW={20}
+                  step={1}
+                  defaultValue={1}
+                  min={1}
+                  max={item.balance}
+                  isValidCharacter={isValidNumericCharacter}
+                  value={amount}
+                  onChange={(value) => {
+                    let error = "";
+                    const valueAsNumber = Number(value);
+                    if (valueAsNumber <= 0) {
+                      error = "Cannot be zero or negative";
+                    } else if (valueAsNumber > item.balance) {
+                      error = "Cannot exceed balance";
+                    }
+                    setAmountError(error);
+                    setAmount(valueAsNumber);
+                  }}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Flex>
+              {amountError && (
+                <Text color="red.400" fontSize="xs">
+                  {amountError}
+                </Text>
+              )}
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
-              <Text fontSize="md" color="#929497">
-                Unlock fee for each:{" "}
-              </Text>
-              <NumberInput
+              <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text fontSize="md" color="#929497">
+                  Unlock fee for each:{" "}
+                </Text>
+                <NumberInput
+                  size="sm"
+                  maxW={20}
+                  step={5}
+                  defaultValue={10}
+                  min={0}
+                  isValidCharacter={isValidNumericCharacter}
+                  max={item.maxPayment ? item.maxPayment : 0}
+                  value={price}
+                  onChange={(valueString) => {
+                    let error = "";
+                    const valueAsNumber = Number(valueString);
+                    if (valueAsNumber < 0) {
+                      error = "Cannot be negative";
+                    } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
+                      error = "Cannot exceed maximum listing fee";
+                    }
+                    setPriceError(error);
+                    setPrice(valueAsNumber);
+                  }}
+                  keepWithinRange={true}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Flex>
+              {priceError && (
+                <Text color="red.400" fontSize="xs">
+                  {priceError}
+                </Text>
+              )}
+              <Button
                 size="sm"
-                maxW={20}
-                step={5}
-                defaultValue={10}
-                min={0}
-                isValidCharacter={isValidNumericCharacter}
-                max={item.maxPayment ? item.maxPayment : 0}
-                value={price}
-                onChange={(valueString) => {
-                  let error = "";
-                  const valueAsNumber = Number(valueString);
-                  if (valueAsNumber < 0) {
-                    error = "Cannot be negative";
-                  } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
-                    error = "Cannot exceed maximum listing fee";
-                  }
-                  setPriceError(error);
-                  setPrice(valueAsNumber);
-                }}
-                keepWithinRange={true}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Flex>
-            {priceError && (
-              <Text color="red.400" fontSize="xs">
-                {priceError}
-              </Text>
-            )}
-            <Button
-              size="sm"
-              mt={4}
-              width="100%"
-              colorScheme="teal"
-              variant="outline"
-              isDisabled={hasPendingTransactions || !!amountError || !!priceError}
-              onClick={() => onListButtonClick(item)}>
-              <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
-              </Text>
-            </Button>
+                mt={4}
+                width="100%"
+                colorScheme="teal"
+                variant="outline"
+                isDisabled={hasPendingTransactions || !!amountError || !!priceError}
+                onClick={() => onListButtonClick(item)}>
+                <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                  List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+                </Text>
+              </Button>
+            </Box>
           </Box>
         </Flex>
 

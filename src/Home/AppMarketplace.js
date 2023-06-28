@@ -85,16 +85,22 @@ export default function AppMarketplace({ setMenuItem }) {
   // PSN app onboarding
   const [joinProgress, setJoinProgress] = useState({ ...cleanSaveProgress });
   const [PSNCheckInProgress, setPSNCheckInProgress] = useState(false);
-  const [PSNValid, setPSNValid] = useState(false);
+  const [psnUserDataStream, setPsnUserDataStream] = useState(null);
   const [datastoreLocation, setDatastoreLocation] = useState("Germany");
   const [dataMarshalService, setDataMarshalService] = useState("Itheum Achilles");
   const [dataStreamSetupProgress, setDataStreamSetupProgress] = useState(true);
+
+  const [npsso, setNpsso] = useState("");
+  const [PSNUsername, setPSNUsername] = useState("");
+  const [PSNValid, setPSNValid] = useState(null);
+  const [PSNUsernameValid, setPSNUsernameValid] = useState(null);
   const [dataStreamGenProgress, setDataStreamGenProgress] = useState({ ...cleanDataStreamGenProgress });
+  const [PSNFullCheckError, setPSNFullCheckError] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // setJoinProgress(() => ({ ...cleanSaveProgress, s4: 1 }));
+    // setJoinProgress(() => ({ ...cleanSaveProgress, s1: 0 }));
     // onPS4ModalOpen();
     // dataStreamGeneration();
   }, []);
@@ -131,6 +137,39 @@ export default function AppMarketplace({ setMenuItem }) {
     await sleep(2);
 
     setDataStreamSetupProgress(false);
+  };
+
+  const verifyAndGeneratePSNDataStream = async () => {
+    setPSNFullCheckError(null);
+
+    if (npsso.trim().length <= 5) {
+      setPSNValid("Your NPSSO length needs to be more than 5 characters");
+      return;
+    }
+
+    if (PSNUsername.trim().length <= 5) {
+      setPSNUsernameValid("Your PlayStation Username length needs to be more than 5 characters");
+      return;
+    }
+
+    setPSNCheckInProgress(true);
+
+    const psnDataStream = `https://psn-api-pers-production.up.railway.app/initSession?npsso=${npsso.trim()}`;
+
+    fetch(psnDataStream, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((res) => {
+        if (typeof res.id !== "undefined") {
+          setPSNCheckInProgress(false);
+          setPsnUserDataStream(`https://psn-api-pers-production.up.railway.app/getData?id=${res.id}&user=${PSNUsername}`);
+          setPSNValid(null);
+          setPSNUsernameValid(null);
+        } else {
+          console.log("ERROR ********");
+          setPSNFullCheckError("NPSSO and PSN Username check has failed. Please enter a valid details.");
+          setPSNCheckInProgress(false);
+        }
+      });
   };
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
@@ -388,22 +427,51 @@ export default function AppMarketplace({ setMenuItem }) {
                   </Heading>
 
                   <HStack mt="40px">
-                    <Text>Your NPSSO</Text>
-                    <Input type="password" w="340px" placeholder="Your Playstation Network (PSN) NPSSO" />
-                    <Button
-                      onClick={() => {
-                        setPSNCheckInProgress(true);
-
-                        setTimeout(() => {
-                          setPSNCheckInProgress(false);
-                          setPSNValid(true);
-                        }, 3000);
-                      }}>
-                      Verify
-                    </Button>
+                    <Text w="150px">Your NPSSO</Text>
+                    <Input
+                      isInvalid={PSNValid !== null}
+                      errorBorderColor="red.300"
+                      value={npsso}
+                      onChange={(event) => setNpsso(event.target.value)}
+                      w="300px"
+                      placeholder="Your Playstation Network (PSN) NPSSO"
+                    />
                   </HStack>
+                  {PSNValid && (
+                    <Text ml="100px" mt="5px" color="red.300" fontSize="sm">
+                      {PSNValid}
+                    </Text>
+                  )}
 
-                  <Box mt="20px" height="30px">
+                  <HStack mt="10px">
+                    <Text w="150px">Your PSN Username</Text>
+                    <Input
+                      isInvalid={PSNUsernameValid !== null}
+                      errorBorderColor="red.300"
+                      value={PSNUsername}
+                      onChange={(event) => setPSNUsername(event.target.value)}
+                      w="300px"
+                      placeholder="Your Playstation Network (PSN) Username"
+                    />
+                  </HStack>
+                  {PSNUsernameValid && (
+                    <Text ml="100px" mt="5px" color="red.300" fontSize="sm">
+                      {PSNUsernameValid}
+                    </Text>
+                  )}
+
+                  <Box mt="20px">
+                    <Button isDisabled={PSNUsername.length <= 5 || npsso.length <= 5} onClick={verifyAndGeneratePSNDataStream}>
+                      Verify NPSSO and PSN Username
+                    </Button>
+                    {PSNFullCheckError && (
+                      <Text mt="10px" color="red.300" fontSize="sm">
+                        {PSNFullCheckError}
+                      </Text>
+                    )}
+                  </Box>
+
+                  <Box height="30px" mt="20px">
                     {PSNCheckInProgress && (
                       <Box>
                         <Text fontSize="lg" mb="2">
@@ -421,7 +489,7 @@ export default function AppMarketplace({ setMenuItem }) {
                     <Button
                       colorScheme="teal"
                       size="sm"
-                      isDisabled={PSNCheckInProgress || !PSNValid}
+                      isDisabled={psnUserDataStream === null}
                       onClick={() => {
                         setJoinProgress(() => ({ ...cleanSaveProgress, s2: 1 }));
                       }}>
@@ -697,7 +765,7 @@ export default function AppMarketplace({ setMenuItem }) {
                         isDisabled={dataStreamSetupProgress}
                         mr="10px"
                         onClick={() => {
-                          window.open("https://api.itheumcloud-stg.com/hosteddataassets/jp/sjdhasdh223khdsksdljfhhsdjjfds");
+                          window.open(psnUserDataStream);
                         }}>
                         Preview Data Stream
                       </Button>
@@ -709,11 +777,7 @@ export default function AppMarketplace({ setMenuItem }) {
                           setJoinProgress(() => ({ ...cleanSaveProgress }));
                           setDataStreamGenProgress(() => ({ ...cleanDataStreamGenProgress }));
                           setMenuItem(2);
-                          navigate(
-                            `/tradedata?loadDrawer=1&skipPreview=1&dm=${dataMarshalService}&ds=${encodeURIComponent(
-                              "https://api.itheumcloud-stg.com/hosteddataassets/jp/sjdhasdh223khdsksdljfhhsdjjfds"
-                            )}`
-                          );
+                          navigate(`/tradedata?loadDrawer=1&skipPreview=1&dm=${dataMarshalService}&ds=${encodeURIComponent(psnUserDataStream)}`);
                         }}>
                         Mint my Data NFT
                       </Button>

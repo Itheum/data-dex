@@ -17,15 +17,13 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import ShortAddress from "./ShortAddress";
-import { CHAIN_TX_VIEWER, convertWeiToEsdt, styleStrings, uxConfig } from "../libs/util";
-import { convertToLocalString, printPrice, transformDescription } from "../libs/util2";
-import { getTokenWantedRepresentation, tokenDecimals } from "../MultiversX/tokenUtils";
-import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/types";
+import { CHAIN_TX_VIEWER, styleStrings, uxConfig } from "../libs/util";
+import { convertToLocalString, transformDescription } from "../libs/util2";
+import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/typesEVM";
 import { useChainMeta } from "../store/ChainMetaContext";
 
 type UpperCardComponentProps = {
@@ -65,13 +63,6 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
   const feePrice = "";
-  // const feePrice = item
-  //   ? printPrice(
-  //       convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber(),
-  //       getTokenWantedRepresentation(item?.wanted_token_identifier, item.wanted_token_nonce)
-  //     )
-  //   : "";
-  // const fee = item ? convertWeiToEsdt(item.wanted_token_amount as BigNumber.Value, tokenDecimals(item.wanted_token_identifier)).toNumber() : 0;
   const fee = 0;
 
   let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
@@ -114,8 +105,12 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
           {nftMetadatas[index] && (
             <>
               <Text fontSize="md" color="#929497">
-                <Link href={`${ChainExplorer}/nfts/${nftMetadatas[index].id}`} isExternal>
-                  {nftMetadatas[index].tokenName} <ExternalLinkIcon mx="2px" />
+                <Link
+                  href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/erc721_inventory?tokenID=${nftMetadatas[index].id}&contract=${
+                    _chainMeta.contracts.dnft
+                  }`}
+                  isExternal>
+                  NFT ID {nftMetadatas[index].id} <ExternalLinkIcon mx="2px" />
                 </Link>
               </Text>
               <Popover trigger="hover" placement="auto">
@@ -190,10 +185,19 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
               </Box>
 
               {nftMetadatas[index] && (
-                <Box color="#8c8f9282" fontSize="md" fontWeight="normal">
+                <Box fontSize="md" fontWeight="normal" my={2}>
+                  {`Fee In Token: ${nftMetadatas[index]?.feeInTokens === -2 ? "Loading..." : nftMetadatas[index]?.feeInTokens} ITHEUM`}
+                  <br />
+                  {`Royalty: ${nftMetadatas[index]?.royalties === -2 ? "Loading..." : nftMetadatas[index]?.royalties}%`}
+                  <br />
+                  {`Tradable: ${
+                    nftMetadatas[index]?.secondaryTradeable === -2 ? "Loading..." : (nftMetadatas[index]?.secondaryTradeable === 1 && "Yes") || "No"
+                  }`}
+                  <br />
+                  {`Transferable: ${nftMetadatas[index]?.transferable === -2 ? "Loading..." : (nftMetadatas[index]?.transferable === 1 && "Yes") || "No"}`}
+                  <br />
                   {`Listed: ${item?.quantity}`} <br />
                   {`Total supply: ${nftMetadatas[index]?.supply}`} <br />
-                  {`Royalty: ${convertToLocalString(nftMetadatas[index]?.royalties * 100)}%`}
                 </Box>
               )}
 

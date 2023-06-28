@@ -196,8 +196,6 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   height="7"
                   variant="outline"
                   onClick={() => {
-                    console.log("NftLoading", nftMetadataLoading);
-                    console.log("nftMetaIndex", !!nftMetadata[index]);
                     window.open(nftMetadata[index].dataPreview);
                   }}>
                   Preview Data
