@@ -48,6 +48,7 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import { TokenIdentifierValue } from "@multiversx/sdk-core/out";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -95,6 +96,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
 
+  // console.log(tokenId);
+
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
@@ -110,7 +113,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   useEffect(() => {
     if (_chainMeta?.networkId) {
       getTokenDetails();
-      getTokenHistory();
+      getTokenHistory(tokenId ?? "");
     }
   }, [_chainMeta, hasPendingTransactions]);
 
@@ -148,23 +151,31 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  function getTokenHistory() {
-    const apiUrl = getApi(_chainMeta.networkId);
+  function getTokenHistory(tokenId: string) {
+    const inputString = tokenId;
+
+    // Extracting identifier
+    const identifier = inputString?.split("-").slice(0, 2).join("-");
+
+    // Extracting nonce
+    const nonceHex = inputString?.split("-")[2];
+    const nonceDec = parseInt(nonceHex, 16);
+
+    console.log("Identifier:", identifier);
+    console.log("Nonce (Decimal):", nonceDec);
+
     axios
-      .get(`https://${apiUrl}/nfts/${tokenId}/transactions?status=success&function=addOffer&size=1&receiver=${_chainMeta?.contracts?.market}`)
+      .get(`https://develop-itheum-api.up.railway.app/offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
-        const txs = res.data;
-        if (txs.length > 0) {
-          const tx = txs[0];
-          const hexPrice = Buffer.from(tx.data, "base64").toString().split("@")[8];
-          let _price = 0;
-          if (hexPrice.trim() !== "") {
-            _price = parseInt("0x" + hexPrice, 16);
-            if (marketRequirements) {
-              _price += (_price * marketRequirements.buyer_fee) / 10000;
-            }
+        console.log(res.data);
+        let price = Math.min(...res.data.map((offer: any) => offer.price));
+        console.log("PRETUL CEL MAI MIC ", price);
+
+        if (price !== Infinity) {
+          if (marketRequirements) {
+            price += (price * marketRequirements.buyer_fee) / 10000;
           }
-          setPriceFromApi(_price);
+          setPriceFromApi(price);
         } else {
           setPriceFromApi(-1);
         }
@@ -186,8 +197,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return isLoadingDetails || isLoadingPrice;
   }
 
-  function getListingText(price: number) {
-    const esdtPrice = convertWeiToEsdt(price).toNumber();
+  function getListingText(price: number, isApi: boolean) {
+    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
       ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
@@ -265,8 +276,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                   <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                     <Text fontSize={{ base: "18px", lg: "28px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
-                      {!offer && getListingText(priceFromApi)}
-                      {offer && getListingText(Number(offer.wanted_token_amount))}
+                      {!offer && getListingText(priceFromApi, true)}
+                      {offer && getListingText(Number(offer.wanted_token_amount), false)}
                     </Text>
                     {showConnectWallet && (
                       <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>

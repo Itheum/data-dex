@@ -8,19 +8,19 @@ import {
   Badge,
   Box,
   Button,
+  Flex,
   Heading,
   HStack,
+  SimpleGrid,
   Spacer,
   Spinner,
   Stack,
   Text,
   Tooltip,
+  useBreakpointValue,
+  useColorMode,
   useDisclosure,
   useToast,
-  SimpleGrid,
-  Flex,
-  useColorMode,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -28,16 +28,16 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import myNFMe from "assets/img/my-nfme.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
-import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, SUPPORTED_CHAINS, uxConfig } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
+import { useAccountStore } from "../../store";
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -66,7 +66,8 @@ export default function HomeMultiversX({
     claimBalanceDates: [0, 0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
-  const [initToken, setInitToken] = useState<string>("");
+
+  const accessToken = useAccountStore((state) => state.accessToken);
 
   const navigate = useNavigate();
 
@@ -255,25 +256,25 @@ export default function HomeMultiversX({
   const claimsStackMinW = "220px";
   const heroGridMargin = useBreakpointValue({ base: "auto", md: "initial" });
 
-  const client = new NativeAuthClient({ origin: "test" });
-
-  useEffect(() => {
-    (async () => {
-      setInitToken(await client.initialize());
-    })();
-  }, []);
-
-  const parts = initToken.split(".");
-  const signature = mxAddress + parts.slice(1).join(".");
-
-  const accessToken = client.getToken(mxAddress, initToken, signature);
-
-  const handleOnClick = () => {
-    console.group();
-    console.log(initToken);
-    console.log(accessToken);
-    console.groupEnd();
-  };
+  // const client = new NativeAuthClient({ origin: "test" });
+  //
+  // useEffect(() => {
+  //   (async () => {
+  //     setInitToken(await client.initialize());
+  //   })();
+  // }, []);
+  //
+  // const parts = initToken.split(".");
+  // const signature = mxAddress + parts.slice(1).join(".");
+  //
+  // const accessToken = client.getToken(mxAddress, initToken, signature);
+  //
+  // const handleOnClick = () => {
+  //   console.group();
+  //   console.log(initToken);
+  //   console.log(accessToken);
+  //   console.groupEnd();
+  // };
 
   // obtain signature by signing the following message: `${address}${init}`
   // Example:
@@ -478,7 +479,7 @@ export default function HomeMultiversX({
           </SimpleGrid>
         </Box>
 
-        <Button onClick={handleOnClick}>Click me</Button>
+        <Button onClick={() => console.log(accessToken)}>Click me</Button>
 
         <Box m="auto" pt="10" pb="10">
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
