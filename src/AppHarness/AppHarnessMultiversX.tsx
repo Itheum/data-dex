@@ -11,11 +11,10 @@ function CustomLoader() {
   return (
     <div
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        minHeight: '100vh'
-      }}
-    >
+        display: "flex",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}>
       <Loader />
     </div>
   );
@@ -25,7 +24,7 @@ const baseUserContext = {
   isMxAuthenticated: false,
 }; // this is needed as context is updating async in this comp using _user is out of sync - @TODO improve pattern
 
-function AppHarnessMx({ launchEnvironment, handleLaunchMode, onEVMConnection }: { launchEnvironment: any; handleLaunchMode: any, onEVMConnection: any }) {
+function AppHarnessMx({ launchEnvironment, handleLaunchMode, onEVMConnection }: { launchEnvironment: any; handleLaunchMode: any; onEVMConnection: any }) {
   const { user: _user, setUser } = useUser();
   const { setChainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
@@ -35,10 +34,6 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode, onEVMConnection }: 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // console.log('********************* AppHarnessMultiversX launchEnvironment ', launchEnvironment);
-    // console.log('********************* AppHarnessMultiversX _chainMeta ', _chainMeta);
-    // console.log('********************* AppHarnessMultiversX _user ', _user);
-
     const networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
 
     setChainMeta({
@@ -66,17 +61,17 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode, onEVMConnection }: 
     setChainMeta({});
   };
 
-  return (
-    isLoading ?
-      <CustomLoader />
-      : <AppMx
-          onLaunchMode={handleLaunchMode}
-          resetAppContexts={resetAppContexts}
-          appConfig={{
-            mxEnvironment: launchEnvironment,
-          }}
-          onEVMConnection={onEVMConnection}
-        />
+  return isLoading ? (
+    <CustomLoader />
+  ) : (
+    <AppMx
+      onLaunchMode={handleLaunchMode}
+      resetAppContexts={resetAppContexts}
+      appConfig={{
+        mxEnvironment: launchEnvironment,
+      }}
+      onEVMConnection={onEVMConnection}
+    />
   );
 }
 

@@ -20,13 +20,13 @@ const LandingPage = () => {
   return (
     <Box>
       <Flex
-        bgColor={colorMode === "dark" ? "black" : "white"}
+        bgColor={colorMode === "dark" ? "bgDark" : "white"}
         flexDirection="column"
         justifyContent="space-between"
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
-        <Box backgroundColor={colorMode === "light" ? "white" : "black"} flexGrow="1">
+        <Box backgroundColor={colorMode === "light" ? "white" : "bgDark"} flexGrow="1">
           <Flex
             w="100%"
             h={["45rem", "45rem"]}
@@ -34,13 +34,13 @@ const LandingPage = () => {
             bgSize="contain"
             bgPosition="bottom"
             bgRepeat="no-repeat"
-            justifyContent="center">
-                            
-            <Center w="95%">
-              <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "2xl": 20 }}>
-                <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={0}>
-                  <Box>
-                    <Image src={AstarIcon} boxSize="150px" m={5} borderRadius="md" />
+            justifyContent="center"
+            mt="-50px">
+            <Center w="95%" pt="5rem">
+              <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "lg": 12 }}>
+                <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
+                  <Box ml="-35px">
+                    <Image src={AstarIcon} boxSize="100px" m={5} borderRadius="md" />
                   </Box>
                   <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
                     Own and trade{" "}
@@ -57,14 +57,14 @@ const LandingPage = () => {
                   </Text>
                 </Box>
 
-                <Box mt={'4rem'}>
-                  <Image boxSize="480px" height="auto" src={imgHeroDataNFTs} alt="Data NFTs Preview" />
+                <Box>
+                  <Image mt="100px" className="bounce-hero-img" boxSize="480px" height="auto" src={imgHeroDataNFTs} alt="Data NFTs Preview" />
                 </Box>
               </Flex>
             </Center>
           </Flex>
 
-          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "2xl": 24 }}>
+          <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={"ED"} borderMultiColorStyle={true} />
           </Box>
 
@@ -105,7 +105,7 @@ const LandingPage = () => {
           </Box>
 
           <Box mx={{ base: 8, "2xl": 24 }} py="10">
-            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+            <Heading size="lg" fontWeight="semibold" textAlign={["center", "initial"]}>
               Featured Articles
             </Heading>
 

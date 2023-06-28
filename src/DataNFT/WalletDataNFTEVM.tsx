@@ -40,20 +40,20 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { signMessage } from "@multiversx/sdk-dapp/utils/account";
-import moment from "moment";
 import imgGuidePopup from "img/guide-unblock-popups.png";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings } from "libs/util";
-import { convertToLocalString, transformDescription } from "libs/util2";
+import { CHAIN_TX_VIEWER, uxConfig, isValidNumericCharacter, sleep, styleStrings, itheumTokenRoundUtilExtended } from "libs/util";
+import { transformDescription } from "libs/util2";
 import { getItheumPriceFromApi } from "MultiversX/api";
 import { DataNftMarketContract } from "MultiversX/dataNftMarket";
 import { DataNftMintContract } from "MultiversX/dataNftMint";
-import { DataNftType } from "MultiversX/types";
+import { DataNftType } from "MultiversX/typesEVM";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import ListDataNFTModal from "./ListDataNFTModal";
+
+import { ethers } from "ethers";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -92,13 +92,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [itheumPrice, setItheumPrice] = useState<number | undefined>();
 
-  useEffect(() => {
-    getItheumPrice();
-    const interval = setInterval(() => {
-      getItheumPrice();
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   getItheumPrice();
+  //   const interval = setInterval(() => {
+  //     getItheumPrice();
+  //   }, 60_000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const onBurn = () => {
     if (!address) {
@@ -123,53 +123,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onBurnNFTClose(); // close modal
   };
 
-  const fetchAccountSignature = async (message: string) => {
-    const signResult = {
-      signature: "",
-      addrInHex: "",
-      success: false,
-      exception: "",
-    };
+  // const getItheumPrice = () => {
+  //   (async () => {
+  //     const _itheumPrice = await getItheumPriceFromApi();
+  //     setItheumPrice(_itheumPrice);
+  //   })();
+  // };
 
-    let customError = labels.ERR_WALLET_SIG_GENERIC;
-
-    if (walletUsedSession === "el_webwallet") {
-      // web wallet not supported
-      customError = labels.ERR_WALLET_SIG_NOT_SUPPORTED;
-    } else {
-      try {
-        const signatureObj = await signMessage({ message });
-
-        if (signatureObj?.signature && signatureObj?.address) {
-          // XPortal App V2 / Ledger
-          signResult.signature = signatureObj.signature.hex();
-          signResult.addrInHex = signatureObj.address.hex();
-          signResult.success = true;
-        } else {
-          signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
-        }
-      } catch (e: any) {
-        signResult.success = false;
-        signResult.exception = e.toString();
-      }
-    }
-
-    if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
-      signResult.success = false;
-      signResult.exception = customError;
-    }
-
-    return signResult;
-  };
-
-  const getItheumPrice = () => {
-    (async () => {
-      const _itheumPrice = await getItheumPriceFromApi();
-      setItheumPrice(_itheumPrice);
-    })();
-  };
-
-  const accessDataStream = async (dataMarshal: string, NFTId: string) => {
+  const accessDataStream = async (dataMarshal: string, NFTId: string, dataStream: string) => {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -178,48 +139,28 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
     onAccessProgressModalOpen();
 
-    try {
-      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
-      const data = await res.json();
+    setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
 
-      if (data && data.nonce) {
-        setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
+    await sleep(3);
 
-        await sleep(3);
+    setUnlockAccessProgress((prevProgress) => ({
+      ...prevProgress,
+      s2: 1,
+    }));
 
-        const signResult = await fetchAccountSignature(data.nonce);
+    await sleep(3);
 
-        if (signResult.success === false) {
-          setErrUnlockAccessGeneric(signResult.exception);
-        } else {
-          setUnlockAccessProgress((prevProgress) => ({
-            ...prevProgress,
-            s2: 1,
-          }));
-          await sleep(3);
+    // auto download the file without ever exposing the url
+    const link = document.createElement("a");
+    link.target = "_blank";
+    link.setAttribute("target", "_blank");
+    link.href = dataStream;
+    link.dispatchEvent(new MouseEvent("click"));
 
-          // auto download the file without ever exposing the url
-          const link = document.createElement("a");
-          link.target = "_blank";
-          link.setAttribute("target", "_blank");
-          link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
-          link.dispatchEvent(new MouseEvent("click"));
-
-          setUnlockAccessProgress((prevProgress) => ({
-            ...prevProgress,
-            s3: 1,
-          }));
-        }
-      } else {
-        if (data.success === false) {
-          setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
-        } else {
-          setErrUnlockAccessGeneric(labels.ERR_DATA_MARSHAL_GEN_ACCESS_FAIL);
-        }
-      }
-    } catch (e: any) {
-      setErrUnlockAccessGeneric(e.toString());
-    }
+    setUnlockAccessProgress((prevProgress) => ({
+      ...prevProgress,
+      s3: 1,
+    }));
   };
 
   const cleanupAccessDataStreamProcess = () => {
@@ -263,7 +204,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="810px"
+        h="720px"
         mx="3 !important"
         key={item.id}
         borderWidth="0.5px"
@@ -286,10 +227,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           />
         </Flex>
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+        <Flex mx={6} my={3} direction="column" justify="space-between">
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
-              {item.tokenName} <ExternalLinkIcon mx="2px" />
+            <Link
+              href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/erc721_inventory?tokenID=${item.id}&contract=${
+                _chainMeta.contracts.dnft
+              }`}
+              isExternal>
+              NFT ID {item.id} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
           <Popover trigger="hover" placement="auto">
@@ -329,9 +274,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Box>
             }
 
-            <Box color="#8c8f9282" fontSize="md">
+            {/* <Box color="#8c8f9282" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
-            </Box>
+            </Box> */}
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
@@ -358,19 +303,55 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 Burn
               </Button> */}
             </Stack>
-            <Box color="#8c8f9282" fontSize="md" fontWeight="normal" my={2}>
-              {`Balance: ${item.balance}`} <br />
-              {`Total supply: ${item.supply}`} <br />
-              {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
+            <Box fontSize="md" fontWeight="normal" my={2}>
+              {`Royalty: ${item.royalties === -2 ? "Loading..." : item.royalties}%`}
+
+              <HStack>
+                <Text>Tradable: </Text>
+                `Tradable: $
+                {item.secondaryTradeable === -2
+                  ? "Loading..."
+                  : (item.secondaryTradeable === 1 && (
+                      <Badge borderRadius="sm" colorScheme="teal">
+                        Yes
+                      </Badge>
+                    )) || (
+                      <Badge borderRadius="sm" colorScheme="red">
+                        No
+                      </Badge>
+                    )}
+              </HStack>
+              <HStack>
+                <Text>Transferable: </Text>
+                {item.transferable === -2
+                  ? "Loading..."
+                  : (item.transferable === 1 && (
+                      <Badge borderRadius="sm" colorScheme="teal">
+                        Yes
+                      </Badge>
+                    )) || (
+                      <Badge borderRadius="sm" colorScheme="red">
+                        No
+                      </Badge>
+                    )}
+              </HStack>
+
+              {`Balance: ${item.balance} (Max supply: ${item.supply})`}
             </Box>
 
-            <HStack mt="2">
+            <HStack borderTop="solid 1px" pt="5px">
+              <Box>{`Fee In Tokens: ${
+                item.feeInTokens === -2 ? "Loading..." : itheumTokenRoundUtilExtended(item.feeInTokens, 18, ethers.BigNumber, true)
+              } ITHEUM`}</Box>
+            </HStack>
+
+            <HStack mt="30px">
               <Button
                 size="sm"
                 colorScheme="teal"
                 w="full"
                 onClick={() => {
-                  accessDataStream(item.dataMarshal, item.id);
+                  accessDataStream(item.dataMarshal, item.id, item.dataStream);
                 }}>
                 View Data
               </Button>
@@ -388,93 +369,95 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Button>
             </HStack>
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
-              <Text fontSize="md" color="#929497">
-                How many to list:{" "}
-              </Text>
-              <NumberInput
-                size="sm"
-                borderRadius="4.65px !important"
-                maxW={20}
-                step={1}
-                defaultValue={1}
-                min={1}
-                max={item.balance}
-                isValidCharacter={isValidNumericCharacter}
-                value={amount}
-                onChange={(value) => {
-                  let error = "";
-                  const valueAsNumber = Number(value);
-                  if (valueAsNumber <= 0) {
-                    error = "Cannot be zero or negative";
-                  } else if (valueAsNumber > item.balance) {
-                    error = "Cannot exceed balance";
-                  }
-                  setAmountError(error);
-                  setAmount(valueAsNumber);
-                }}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Flex>
-            {amountError && (
-              <Text color="red.400" fontSize="xs">
-                {amountError}
-              </Text>
-            )}
+            <Box style={{ "visibility": "hidden" }}>
+              <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text fontSize="md" color="#929497">
+                  How many to list:{" "}
+                </Text>
+                <NumberInput
+                  size="sm"
+                  borderRadius="4.65px !important"
+                  maxW={20}
+                  step={1}
+                  defaultValue={1}
+                  min={1}
+                  max={item.balance}
+                  isValidCharacter={isValidNumericCharacter}
+                  value={amount}
+                  onChange={(value) => {
+                    let error = "";
+                    const valueAsNumber = Number(value);
+                    if (valueAsNumber <= 0) {
+                      error = "Cannot be zero or negative";
+                    } else if (valueAsNumber > item.balance) {
+                      error = "Cannot exceed balance";
+                    }
+                    setAmountError(error);
+                    setAmount(valueAsNumber);
+                  }}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Flex>
+              {amountError && (
+                <Text color="red.400" fontSize="xs">
+                  {amountError}
+                </Text>
+              )}
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
-              <Text fontSize="md" color="#929497">
-                Unlock fee for each:{" "}
-              </Text>
-              <NumberInput
+              <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text fontSize="md" color="#929497">
+                  Unlock fee for each:{" "}
+                </Text>
+                <NumberInput
+                  size="sm"
+                  maxW={20}
+                  step={5}
+                  defaultValue={10}
+                  min={0}
+                  isValidCharacter={isValidNumericCharacter}
+                  max={item.maxPayment ? item.maxPayment : 0}
+                  value={price}
+                  onChange={(valueString) => {
+                    let error = "";
+                    const valueAsNumber = Number(valueString);
+                    if (valueAsNumber < 0) {
+                      error = "Cannot be negative";
+                    } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
+                      error = "Cannot exceed maximum listing fee";
+                    }
+                    setPriceError(error);
+                    setPrice(valueAsNumber);
+                  }}
+                  keepWithinRange={true}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Flex>
+              {priceError && (
+                <Text color="red.400" fontSize="xs">
+                  {priceError}
+                </Text>
+              )}
+              <Button
                 size="sm"
-                maxW={20}
-                step={5}
-                defaultValue={10}
-                min={0}
-                isValidCharacter={isValidNumericCharacter}
-                max={item.maxPayment ? item.maxPayment : 0}
-                value={price}
-                onChange={(valueString) => {
-                  let error = "";
-                  const valueAsNumber = Number(valueString);
-                  if (valueAsNumber < 0) {
-                    error = "Cannot be negative";
-                  } else if (valueAsNumber > item.maxPayment ? item.maxPayment : 0) {
-                    error = "Cannot exceed maximum listing fee";
-                  }
-                  setPriceError(error);
-                  setPrice(valueAsNumber);
-                }}
-                keepWithinRange={true}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </Flex>
-            {priceError && (
-              <Text color="red.400" fontSize="xs">
-                {priceError}
-              </Text>
-            )}
-            <Button
-              size="sm"
-              mt={4}
-              width="100%"
-              colorScheme="teal"
-              variant="outline"
-              isDisabled={hasPendingTransactions || !!amountError || !!priceError}
-              onClick={() => onListButtonClick(item)}>
-              <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
-              </Text>
-            </Button>
+                mt={4}
+                width="100%"
+                colorScheme="teal"
+                variant="outline"
+                isDisabled={hasPendingTransactions || !!amountError || !!priceError}
+                onClick={() => onListButtonClick(item)}>
+                <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                  List {amount} NFT{amount > 1 && "s"} for {price ? `${price} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"}
+                </Text>
+              </Button>
+            </Box>
           </Box>
         </Flex>
 
@@ -500,6 +483,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             Data NFT is under investigation by the DAO as there was a complaint received against it
           </Text>
         </Box>
+
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
@@ -613,6 +597,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </ModalContent>
           </Modal>
         )}
+
         {selectedDataNft && (
           <ListDataNFTModal
             isOpen={isListNFTOpen}
@@ -626,62 +611,64 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             setAmount={setAmount}
           />
         )}
+
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Data Access Unlock Progress</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <Stack spacing={5}>
-                <HStack>
-                  {(!unlockAccessProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                  <Text>Initiating handshake with Data Marshal</Text>
-                </HStack>
+          <ModalOverlay bg="#181818e0">
+            <ModalContent bg="#181818">
+              <ModalHeader>Data Access Unlock Progress</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <Stack spacing={5}>
+                  <HStack>
+                    {(!unlockAccessProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
+                    <Text>Initiating handshake with Data Marshal</Text>
+                  </HStack>
 
-                <HStack>
-                  {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                  <Stack>
-                    <Text>Please sign transaction to complete handshake</Text>
-                    <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
-                  </Stack>
-                </HStack>
-
-                <HStack>
-                  {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                  <Text>Verifying data access rights to unlock Data Stream</Text>
-                </HStack>
-
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && (
-                  <Stack border="solid .04rem" padding={3} borderRadius={5}>
-                    <Text fontSize="sm" lineHeight={1.7}>
-                      <InfoIcon boxSize={5} mr={1} />
-                      Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select{" "}
-                      <b>Always allow pop-ups</b>
-                    </Text>
-                    <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
-                  </Stack>
-                )}
-
-                {errUnlockAccessGeneric && (
-                  <Alert status="error">
+                  <HStack>
+                    {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
                     <Stack>
-                      <AlertTitle fontSize="md">
-                        <AlertIcon mb={2} />
-                        Process Error
-                      </AlertTitle>
-                      {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
-                      <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
+                      <Text>Please sign transaction to complete handshake</Text>
+                      <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
                     </Stack>
-                  </Alert>
-                )}
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
-                  <Button colorScheme="teal" variant="outline" onClick={cleanupAccessDataStreamProcess}>
-                    Close & Return
-                  </Button>
-                )}
-              </Stack>
-            </ModalBody>
-          </ModalContent>
+                  </HStack>
+
+                  <HStack>
+                    {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
+                    <Text>Verifying data access rights to unlock Data Stream</Text>
+                  </HStack>
+
+                  {unlockAccessProgress.s1 && unlockAccessProgress.s2 && (
+                    <Stack border="solid .04rem" padding={3} borderRadius={5}>
+                      <Text fontSize="sm" lineHeight={1.7}>
+                        <InfoIcon boxSize={5} mr={1} />
+                        Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please
+                        select <b>Always allow pop-ups</b>
+                      </Text>
+                      <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
+                    </Stack>
+                  )}
+
+                  {errUnlockAccessGeneric && (
+                    <Alert status="error">
+                      <Stack>
+                        <AlertTitle fontSize="md">
+                          <AlertIcon mb={2} />
+                          Process Error
+                        </AlertTitle>
+                        {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
+                        <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
+                      </Stack>
+                    </Alert>
+                  )}
+                  {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
+                    <Button colorScheme="teal" variant="outline" onClick={cleanupAccessDataStreamProcess}>
+                      Close & Return
+                    </Button>
+                  )}
+                </Stack>
+              </ModalBody>
+            </ModalContent>
+          </ModalOverlay>
         </Modal>
       </Box>
     </Skeleton>

@@ -13,12 +13,9 @@ import "../src/MultiversX/custom.css";
 if (process.env.NODE_ENV === "production") {
   // Sentry.init({
   //   dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
-
   //   // this is so we can use the environments filter in sentry to filter staging production vs actual production
   //   environment: getSentryProfile(),
-
   //   integrations: [new Sentry.BrowserTracing()],
-
   //   // Performance Monitoring
   //   tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
   // });
@@ -61,11 +58,7 @@ const theme = extendTheme({
       800: "#234E52",
       900: "#1D4044",
     },
-  },
-  components: {
-    Icon: {
-      colorScheme: "teal",
-    },
+    bgDark: "#0F0F0F",
   },
 });
 

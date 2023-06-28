@@ -51,12 +51,14 @@ import { Link as ReactRouterLink } from "react-router-dom";
 
 import logoSmlD from "img/logo-sml-d.png";
 import logoSmlL from "img/logo-sml-l.png";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU } from "libs/util";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, formatNumberRoundFloor, MENU, itheumTokenRoundUtilExtended } from "libs/util";
 import ClaimsHistory from "MultiversX/ClaimsHistory";
 import { useChainMeta } from "store/ChainMetaContext";
 import ChainSupportedComponent from "UtilComps/ChainSupportedComponent";
 import LoginButtonEVM from "UtilComps/LoginButtonEVM";
 import ShortAddress from "UtilComps/ShortAddress";
+
+import { ethers } from "ethers";
 
 import { init, Web3OnboardProvider, useConnectWallet, useWallets, useSetChain, useNotifications } from "@web3-onboard/react";
 
@@ -496,7 +498,8 @@ function ItheumTokenBalanceBadge({ tokenBalance, displayParams }: { tokenBalance
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(tokenBalance)}
+          {/* {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(tokenBalance)} */}
+          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {itheumTokenRoundUtilExtended(tokenBalance, 18, ethers.BigNumber, true)}
         </>
       )}
     </Box>

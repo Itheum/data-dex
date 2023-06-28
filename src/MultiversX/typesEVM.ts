@@ -18,6 +18,9 @@ export interface DataNftMetadataType {
   royalties: number;
   nonce: number;
   collection: string;
+  feeInTokens: number;
+  transferable: number;
+  secondaryTradeable: number;
 }
 
 export interface DataNftCondensedView {
@@ -90,6 +93,8 @@ export interface ItemType {
   title: string;
   tokenName: string;
   quantity: number;
+  transferable: number;
+  secondaryTradeable: number;
 }
 
 export interface DataNftType {
@@ -110,6 +115,8 @@ export interface DataNftType {
   royalties: number;
   nonce: number;
   collection: string;
+  transferable: number;
+  secondaryTradeable: number;
 }
 
 export function createDataNftType() {
@@ -131,6 +138,8 @@ export function createDataNftType() {
     royalties: 0,
     nonce: 0,
     collection: "",
+    transferable: 0,
+    secondaryTradeable: 0,
   };
 }
 

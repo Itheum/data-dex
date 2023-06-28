@@ -1,8 +1,6 @@
 import React from "react";
 import { Badge, Box, Button, Center, Flex, Heading, HStack, Image, Link, Stack, StackDivider } from "@chakra-ui/react";
 
-import TrustedComputationFrameworkIcon from "img/trusted-computation-icon.png";
-
 export default function () {
   return (
     <Stack spacing={5}>
@@ -15,7 +13,6 @@ export default function () {
                 Coming Soon
               </Badge>
             </Heading>
-            <Image src={TrustedComputationFrameworkIcon} boxSize="150px" m={5} borderRadius="md" />
             <HStack divider={<StackDivider borderColor="gray.200" />} spacing={4} alignItems="baseline" flexDirection={["column", "initial"]}>
               <Box fontSize="sm" align="center" flex="1">
                 Large personal datasets managed on-chain by Data Coalitions will become too difficult to monitor over time - with the possibility of sensitive
