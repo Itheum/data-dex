@@ -500,3 +500,5 @@ export const upcomingGuardRails = {
 };
 
 export const whitelistWallets: Array<string> = [];
+
+export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";

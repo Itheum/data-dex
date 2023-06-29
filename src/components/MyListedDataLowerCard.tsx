@@ -24,6 +24,8 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import {
@@ -64,6 +66,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const itheumToken = _chainMeta.contracts.itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
+
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const fee =
     marketRequirements && offer
@@ -125,14 +129,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={network.id == "devnet"}
+          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

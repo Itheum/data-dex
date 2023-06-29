@@ -223,6 +223,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                 <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
                 <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                 <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
+                <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
+import { Badge, Box, Flex, FormControl, FormLabel, Heading, SimpleGrid, Stack, Switch, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
 import { FaWallet } from "react-icons/fa";
+import { useLocalStorage } from "libs/hooks";
 import { GuardRailsCards } from "./components/guardRailsCards";
+import { NoDataHere } from "../../components/Sections/NoDataHere";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { historicGuardrails, upcomingGuardRails, whitelistWallets } from "../../libs/config";
+import { historicGuardrails, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, upcomingGuardRails, whitelistWallets } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
 import { useChainMeta } from "../../store/ChainMetaContext";
-import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 export const GuardRails: React.FC = () => {
   const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();
@@ -19,6 +20,8 @@ export const GuardRails: React.FC = () => {
   const [maxSupply, setMaxSupply] = useState(-1);
   const [antiSpamTax, setAntiSpamTax] = useState(-1);
   const { colorMode } = useColorMode();
+  const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [previewDataFlag, setPreviewDataFlag] = useState<boolean>(previewDataOnDevnetSession == "true");
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
@@ -41,6 +44,12 @@ export const GuardRails: React.FC = () => {
       return `${hours} hour${hours > 1 ? "s" : ""} ${remainingMinutes} minutes`;
     }
   }
+
+  useEffect(() => {
+    if ((previewDataFlag && !previewDataOnDevnetSession) || (!previewDataFlag && !!previewDataOnDevnetSession)) {
+      setPreviewDataOnDevnetSession(previewDataFlag ? "true" : null);
+    }
+  }, [previewDataFlag]);
 
   useEffect(() => {
     if (!_chainMeta.networkId) return;
@@ -325,6 +334,20 @@ export const GuardRails: React.FC = () => {
       <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
         <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 0, lg: 10 }} my="5">
           {whitelistedAddress}
+        </Flex>
+      </Box>
+
+      <Heading fontSize="36px" fontWeight="medium" mt={32} mb="32px">
+        Settings
+      </Heading>
+      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
+        <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 5, lg: 10 }} my="5">
+          <FormControl as={SimpleGrid} columns={{ base: 2, lg: 4 }}>
+            <FormLabel htmlFor="isChecked" fontSize="lg">
+              Preview Data on devnet:
+            </FormLabel>
+            <Switch id="isChecked" colorScheme="teal" size="lg" isChecked={previewDataFlag} onChange={(e) => setPreviewDataFlag(e.target.checked)} />
+          </FormControl>
         </Flex>
       </Box>
     </Flex>

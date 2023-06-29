@@ -164,7 +164,7 @@ export const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
 export function timeSince(unixTimestamp: number): string {
   const seconds = Math.floor((new Date().getTime() - unixTimestamp * 1000) / 1000);
 
-  const interval = [
+  const intervals = [
     { seconds: 3153600000, unit: "century" },
     { seconds: 31536000, unit: "year" },
     { seconds: 2592000, unit: "month" },
@@ -172,7 +172,8 @@ export function timeSince(unixTimestamp: number): string {
     { seconds: 3600, unit: "hour" },
     { seconds: 60, unit: "minute" },
     { seconds: 1, unit: "second" },
-  ].find((i) => i.seconds <= seconds);
+  ];
+  const interval = intervals.find((i) => i.seconds <= seconds) ?? intervals[0];
 
   const count = Math.floor(seconds / interval!.seconds);
   const unit = count === 1 ? interval!.unit : interval!.unit + "s";

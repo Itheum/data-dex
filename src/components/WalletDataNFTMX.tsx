@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -40,18 +40,35 @@ import {
   useColorMode,
   Tooltip,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { signMessage } from "@multiversx/sdk-dapp/utils/account";
+import {
+  useGetAccountInfo,
+  useGetLoginInfo,
+  useGetNetworkConfig,
+  useGetPendingTransactions,
+} from "@multiversx/sdk-dapp/hooks";
+import { useSignMessage } from '@multiversx/sdk-dapp/hooks/signMessage/useSignMessage';
 import moment from "moment";
+import qs from "qs";
+import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, styleStrings } from "libs/config";
+import {
+  CHAIN_TX_VIEWER,
+  uxConfig,
+  styleStrings,
+  PREVIEW_DATA_ON_DEVNET_SESSION_KEY,
+} from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
+import {
+  convertToLocalString,
+  transformDescription,
+  isValidNumericCharacter,
+  sleep,
+} from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -71,6 +88,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
+  const { signMessage } = useSignMessage();
+  const loginInfo = useGetLoginInfo();
+
+  const navigate = useNavigate();
+  const { nftId, dataNonce } = useParams();
+  const isWebWallet = loginInfo.loginMethod == "wallet";
 
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
@@ -82,7 +105,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     s3: 0,
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
-  const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
   const mintContract = new DataNftMintContract(_chainMeta.networkId);
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
@@ -95,10 +117,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
+  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
-  const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT
-    ? Math.min(item.balance, Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT))
-    : item.balance;
+  const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
+  const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
 
   const onBurn = () => {
     if (!address) {
@@ -123,7 +145,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onBurnNFTClose(); // close modal
   };
 
-  const fetchAccountSignature = async (message: string) => {
+  const fetchAccountSignature = async (_nftId: string, _dataNonce: string) => {
+    // console.log('fetchAccountSignature', _nftId, _dataNonce);
     const signResult = {
       signature: "",
       addrInHex: "",
@@ -134,8 +157,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     const customError = labels.ERR_WALLET_SIG_GENERIC;
 
     try {
-      const signatureObj = await signMessage({ message });
-      console.log("signatureObj", signatureObj);
+      const callbackRoute = `${window.location.href}/${_nftId}/${_dataNonce}`;
+      const signatureObj = await signMessage({
+        message: _dataNonce,
+        callbackRoute: isWebWallet ? callbackRoute : undefined,
+      });
+
+      // console.log("signatureObj", signatureObj);
       if (signatureObj?.signature && signatureObj?.address) {
         // XPortal App V2 / Ledger
         signResult.signature = signatureObj.signature.toString("hex");
@@ -145,6 +173,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
       }
     } catch (e: any) {
+      console.error(e);
       signResult.success = false;
       signResult.exception = e.toString();
     }
@@ -157,7 +186,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     return signResult;
   };
 
-  const accessDataStream = async (dataMarshal: string, NFTId: string) => {
+  async function accessDataStream(dataMarshal: string, NFTId: string) {
     /*
       1) get a nonce from the data marshal (s1)
       2) get user to sign the nonce and obtain signature (s2)
@@ -173,31 +202,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       if (data && data.nonce) {
         setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
 
-        await sleep(3);
+        await sleep(1);
 
-        const signResult = await fetchAccountSignature(data.nonce);
+        const signResult = await fetchAccountSignature(NFTId, data.nonce);
+        // console.log('signResult', signResult);
+        if (isWebWallet) return;
 
-        if (signResult.success === false) {
-          setErrUnlockAccessGeneric(signResult.exception);
-        } else {
-          setUnlockAccessProgress((prevProgress) => ({
-            ...prevProgress,
-            s2: 1,
-          }));
-          await sleep(3);
-
-          // auto download the file without ever exposing the url
-          const link = document.createElement("a");
-          link.target = "_blank";
-          link.setAttribute("target", "_blank");
-          link.href = `${dataMarshal}/access?nonce=${data.nonce}&NFTId=${NFTId}&signature=${signResult.signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${signResult.addrInHex}`;
-          link.dispatchEvent(new MouseEvent("click"));
-
-          setUnlockAccessProgress((prevProgress) => ({
-            ...prevProgress,
-            s3: 1,
-          }));
-        }
+        // second
+        await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
       } else {
         if (data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
@@ -208,7 +220,73 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
     }
-  };
+  }
+
+  async function accessDataStream2(dataMarshal: string, _nftId: string, _dataNonce: string, signature: string) {
+    try {
+      onAccessProgressModalOpen();
+
+      setUnlockAccessProgress((prevProgress) => ({
+        ...prevProgress,
+        s1: 1,
+        s2: 1,
+      }));
+      await sleep(3);
+
+      // auto download the file without ever exposing the url
+      const link = document.createElement("a");
+      link.target = "_blank";
+      link.setAttribute("target", "_blank");
+      const addressInHex = address;
+      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${addressInHex}`;
+      link.dispatchEvent(new MouseEvent("click"));
+
+      setUnlockAccessProgress((prevProgress) => ({
+        ...prevProgress,
+        s3: 1,
+      }));
+
+      if (isWebWallet) {
+        navigate("/datanfts/wallet");
+      }
+    } catch (e: any) {
+      setErrUnlockAccessGeneric(e.toString());
+    }
+  }
+
+  function getMessageSignatureFromWalletUrl(): string {
+    const url = window.location.search.slice(1);
+    // console.info("getMessageSignatureFromWalletUrl(), url:", url);
+
+    const urlParams = qs.parse(url);
+    const status = urlParams.status?.toString() || "";
+    const expectedStatus = "signed";
+
+    if (status !== expectedStatus) {
+      throw new Error("No signature");
+    }
+
+    const signature = urlParams.signature?.toString() || "";
+    return signature;
+  }
+
+  const [signatureProcessed, setSignatureProcessed] = useState<boolean>(false); // check if signature is processed with web wallet login
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!nftId || !dataNonce) return;
+    if (nftId != item.id) return;
+    if (signatureProcessed) return;
+    setSignatureProcessed(true);
+
+    (async () => {
+      try {
+        const signature = getMessageSignatureFromWalletUrl();
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
+      } catch (e: any) {
+        console.error(e);
+      }
+    })();
+  }, [item.id]);
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
@@ -377,12 +455,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={network.id == "devnet"}
+                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
@@ -390,13 +468,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={network.id == "devnet"}
+                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>
@@ -418,7 +496,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 step={1}
                 defaultValue={1}
                 min={1}
-                max={maxListLimit}
+                max={maxListNumber}
                 isValidCharacter={isValidNumericCharacter}
                 value={amount}
                 onChange={(value) => {
@@ -428,8 +506,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     error = "Cannot be zero or negative";
                   } else if (valueAsNumber > item.balance) {
                     error = "Not enough balance";
-                  } else if (valueAsNumber > maxListLimit) {
-                    error = "Cannot exceed Max List Limit";
+                  } else if (maxListLimit > 0 && valueAsNumber > maxListLimit) {
+                    error = "Cannot exceed max list limit";
                   }
 
                   setAmountError(error);

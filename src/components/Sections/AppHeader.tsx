@@ -46,10 +46,11 @@ import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
+import { TbSunset2 } from "react-icons/tb";
 import { TiArrowSortedDown } from "react-icons/ti";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import logoSmlD from "assets/img/logo-sml-d.png";
+import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
 import logoSmlL from "assets/img/logo-icon-b.png";
+import logoSmlD from "assets/img/logo-sml-d.png";
 import ClaimsHistory from "components/ClaimsHistory";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
@@ -58,7 +59,6 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { TbSunset2 } from "react-icons/tb";
 
 const exploreRouterMenu = [
   {
@@ -67,7 +67,7 @@ const exploreRouterMenu = [
     sectionItems: [
       {
         menuEnum: MENU.HOME,
-        path: "dashboard",
+        path: "/dashboard",
         label: "Dashboard",
         shortLbl: "Dash",
         Icon: MdSpaceDashboard,
@@ -75,7 +75,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.SELL,
-        path: "tradedata",
+        path: "/tradedata",
         label: "Trade Data",
         shortLbl: "Trade",
         Icon: RiExchangeFill,
@@ -83,7 +83,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.NFTMINE,
-        path: "datanfts/wallet",
+        path: "/datanfts/wallet",
         label: "Data NFT Wallet",
         shortLbl: "Wallet",
         Icon: MdAccountBalanceWallet,
@@ -91,7 +91,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.NFTALL,
-        path: "datanfts/marketplace/market",
+        path: "/datanfts/marketplace/market",
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: FaStore,
@@ -110,15 +110,19 @@ const exploreRouterMenu = [
   },
 ];
 
+const menuItmesMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
+
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
-  const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
-  const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { pathname } = useLocation();
+
+  const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
+  const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
 
   const navigate = useNavigate();
 
@@ -128,21 +132,21 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     if (isOpen) onClose();
   };
 
-  const isMenuItemSelected = (currentMenuItem: number) => {
-    return menuItem === currentMenuItem;
-  };
+  function isMenuItemSelected(itemPath: string): boolean {
+    return pathname.startsWith(itemPath);
+  }
 
-  const menuButtonDisabledStyle = (currentMenuItem: number) => {
+  const menuButtonDisabledStyle = (itemPath: string) => {
     let styleProps: any = {
       cursor: "not-allowed",
     };
-    if (isMenuItemSelected(currentMenuItem) && colorMode === "dark") {
+    if (isMenuItemSelected(itemPath) && colorMode === "dark") {
       styleProps = {
         backgroundColor: "#44444450",
         opacity: 0.6,
         ...styleProps,
       };
-    } else if (isMenuItemSelected(currentMenuItem) && colorMode !== "dark") {
+    } else if (isMenuItemSelected(itemPath) && colorMode !== "dark") {
       styleProps = {
         backgroundColor: "#EDF2F7",
         ...styleProps,
@@ -231,9 +235,9 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       borderColor="teal.200"
                       fontSize="md"
                       variant="outline"
-                      h={12}
-                      isDisabled={isMenuItemSelected(menuEnum) || hasPendingTransactions}
-                      _disabled={menuButtonDisabledStyle(menuEnum)}
+                      h={"12"}
+                      isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
+                      _disabled={menuButtonDisabledStyle(path)}
                       key={shortLbl}
                       size={isMxLoggedIn ? "sm" : "md"}
                       onClick={() => navigateToDiscover(menuEnum)}>
@@ -265,7 +269,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem
                                 key={label}
-                                isDisabled={hasPendingTransactions}
+                                isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                                 onClick={() => navigateToDiscover(menuEnum)}
                                 color="teal.200"
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
@@ -340,8 +344,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
                     aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(MENU.LANDING) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(MENU.LANDING)}
+                    isDisabled={isMenuItemSelected(menuItmesMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(menuItmesMap.get(MENU.LANDING)?.path)}
                     onClick={() => {
                       navigateToDiscover(MENU.LANDING);
                     }}
