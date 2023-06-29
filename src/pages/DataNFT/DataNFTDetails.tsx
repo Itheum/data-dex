@@ -330,22 +330,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             {marketRequirements && offer ? (
                               <>
                                 {printPrice(
-                                  convertWeiToEsdt(
-                                    new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                    tokenDecimals(offer.wanted_token_identifier)
-                                  ).toNumber(),
+                                  convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber(),
                                   getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                                 )}{" "}
                                 {itheumPrice &&
-                                convertWeiToEsdt(
-                                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber() > 0
+                                convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
                                   ? `(~${convertToLocalString(
-                                      convertWeiToEsdt(
-                                        new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                        tokenDecimals(offer.wanted_token_identifier)
-                                      ).toNumber() * itheumPrice,
+                                      convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() *
+                                        itheumPrice,
                                       2
                                     )} USD)`
                                   : ""}
@@ -428,7 +420,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements?.buyer_fee} />
             </Box>
           </VStack>
 
