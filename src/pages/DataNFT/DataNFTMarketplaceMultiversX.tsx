@@ -247,7 +247,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
         <Box position="relative">
           <Tabs pt={10}>
-            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflowX={{ base: "scroll", md: "scroll", lg: "unset" }} overflowY="hidden">
               <Flex>
                 <Tab
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
@@ -260,7 +260,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   }}>
                   <Flex ml="4.7rem" alignItems="center" py={3}>
                     <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                    <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
                       Public Marketplace
                     </Text>
                   </Flex>
@@ -276,7 +276,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   {isMxLoggedIn && (
                     <Flex ml="4.7rem" alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                         My Listed Data NFT(s)
                       </Text>
                       <Text fontSize="sm" px={1} color="whiteAlpha.800">
@@ -286,7 +286,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   )}
                 </Tab>
               </Flex>
-              <Flex mr="4.7rem">
+              <Flex pr={{ lg: "10" }} ml={{ base: "4.7rem", xl: 0 }}>
                 <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
               </Flex>
             </TabList>
@@ -394,7 +394,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
             <DrawerContent>
-              <DrawerHeader bgColor="#181818">
+              <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                   <Heading as="h4" size="lg">
@@ -402,7 +402,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   </Heading>
                 </HStack>
               </DrawerHeader>
-              <DrawerBody bgColor="#181818">
+              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}

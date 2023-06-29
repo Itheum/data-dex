@@ -67,7 +67,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
-  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const fee =
     marketRequirements && offer
@@ -135,11 +135,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
           size="sm"
           colorScheme="teal"
           variant="outline"
+          _disabled={{ opacity: 0.2 }}
           isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
-          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+          <Text py={3} color={colorMode === "dark" ? "bgWhite" : "bgDark"}>
             Preview Data
           </Text>
         </Button>

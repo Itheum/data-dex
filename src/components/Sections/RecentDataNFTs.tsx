@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid, Skeleton, useColorMode } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
-import { styleStrings } from "libs/config";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
 import { NetworkIdType } from "libs/types";
-import { sleep, convertWeiToEsdt, hexZero } from "libs/utils";
+import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NoDataHere } from "./NoDataHere";
 
@@ -109,14 +108,14 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
 
       {loadedOffers && latestOffers.length === 0 && <NoDataHere imgFromTop="5rem" />}
 
-      <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(220px, 1fr))">
+      <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(240px, 1fr))">
         {latestOffers.map((item: DataNftCondensedView, idx: number) => {
           return (
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
-                    <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" />
+                    <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

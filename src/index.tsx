@@ -27,7 +27,7 @@ const breakpoints = {
   sm: "30em",
   md: "48em",
   lg: "62em",
-  xl: "80em",
+  xl: "75em",
   "2xl": "96em",
 };
 
@@ -61,6 +61,7 @@ const theme = extendTheme({
       900: "#1D4044",
     },
     bgDark: "#0F0F0F",
+    bgWhite: "#F5F5F5",
   },
 });
 

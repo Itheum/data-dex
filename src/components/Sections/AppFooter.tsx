@@ -18,7 +18,7 @@ export default function () {
 
   return (
     <Box
-      backgroundColor={colorMode === "light" ? "white" : "bgDark"}
+      backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}
       height="5rem"
       borderTop="solid .1rem"
       borderColor="teal.200"

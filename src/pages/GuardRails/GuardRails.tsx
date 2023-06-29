@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Box, Flex, FormControl, FormLabel, Heading, SimpleGrid, Stack, Switch, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, FormControl, FormLabel, Heading, SimpleGrid, Stack, Switch, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
 import { FaWallet } from "react-icons/fa";
 import { useLocalStorage } from "libs/hooks";
@@ -19,6 +19,7 @@ export const GuardRails: React.FC = () => {
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
   const [maxSupply, setMaxSupply] = useState(-1);
   const [antiSpamTax, setAntiSpamTax] = useState(-1);
+  const { colorMode } = useColorMode();
   const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [previewDataFlag, setPreviewDataFlag] = useState<boolean>(previewDataOnDevnetSession == "true");
 
@@ -134,7 +135,7 @@ export const GuardRails: React.FC = () => {
         Guard Rails
       </Heading>
       <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} flexWrap="wrap">
-        <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "26rem" }}>
+        <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "24rem", "2xl": "26rem" }}>
           <Text
             textAlign="center"
             fontWeight="600"
@@ -146,7 +147,7 @@ export const GuardRails: React.FC = () => {
             fontSize="22px">
             Active Guardrails
           </Text>
-          <Stack>
+          <Stack textAlign="start">
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
@@ -243,10 +244,10 @@ export const GuardRails: React.FC = () => {
             fontSize="22px">
             Upcoming Guardrails
           </Text>
-          <Stack>
+          <Stack textAlign="start">
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Buyer fee:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails.buyer_fee ? upcomingGuardRails.buyer_fee : "-"}
                 </Text>
@@ -254,7 +255,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Seller fee:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.seller_fee ? upcomingGuardRails.seller_fee : "-"}
                 </Text>
@@ -262,7 +263,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Maximum payment fees:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.maximum_payment_fees ? upcomingGuardRails?.maximum_payment_fees : "-"}
                 </Text>
@@ -270,7 +271,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Minimum royalties:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.minimum_royalties ? upcomingGuardRails.minimum_royalties : "-"}
                 </Text>
@@ -278,7 +279,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Maximum royalties:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.maximum_royalties ? upcomingGuardRails?.maximum_royalties : "-"}
                 </Text>
@@ -286,7 +287,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Time between mints:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
                 </Text>
@@ -294,7 +295,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Max Data NFT supply:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.max_data_nft_supply ? upcomingGuardRails?.max_data_nft_supply : "-"}
                 </Text>
@@ -302,7 +303,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Anti-Spam fee:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.antiSpam_tax ? upcomingGuardRails?.antiSpam_tax : "-"}
                 </Text>
@@ -310,7 +311,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Accepted payments:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.accepted_payments ? upcomingGuardRails?.accepted_payments : "-"}
                 </Text>
@@ -318,7 +319,7 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg">
               Accepted tokens:&nbsp;
-              <Badge backgroundColor="#FFFFFF26" fontSize="0.8em" m={1} borderRadius="md">
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.accepted_tokens ? upcomingGuardRails?.accepted_tokens : "-"}
                 </Text>
@@ -342,7 +343,9 @@ export const GuardRails: React.FC = () => {
       <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
         <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 5, lg: 10 }} my="5">
           <FormControl as={SimpleGrid} columns={{ base: 2, lg: 4 }}>
-            <FormLabel htmlFor="isChecked" fontSize="lg">Preview Data on devnet:</FormLabel>
+            <FormLabel htmlFor="isChecked" fontSize="lg">
+              Preview Data on devnet:
+            </FormLabel>
             <Switch id="isChecked" colorScheme="teal" size="lg" isChecked={previewDataFlag} onChange={(e) => setPreviewDataFlag(e.target.checked)} />
           </FormControl>
         </Flex>
