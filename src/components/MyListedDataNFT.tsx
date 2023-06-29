@@ -24,7 +24,8 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
@@ -74,6 +75,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
@@ -185,14 +187,14 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   </Text>
                 </Box>
 
-                <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                   <Button
                     mt="2"
                     size="sm"
                     colorScheme="teal"
                     height="7"
                     variant="outline"
-                    isDisabled={network.id == "devnet"}
+                    isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                     onClick={() => {
                       window.open(nftMetadata[index].dataPreview);
                     }}>
