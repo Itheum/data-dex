@@ -563,6 +563,7 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
 
       setDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
       onChangeDatasetDescription(selObj.description);
+
       if (selObj.title) {
         onChangeDatasetTitle(selObj.title);
       }
@@ -1348,10 +1349,6 @@ export default function MintDataEVM({ onRfMount, dataCATAccount, setMenuItem }: 
                           You need to agree to anti-spam deduction to mint
                         </Text>
                       )}
-                    </Box>
-
-                    <Box>
-                      makeTradable = {makeTradable.toString()} prices = {prices[0]} dataNFTRoyalty = {dataNFTRoyalty}
                     </Box>
 
                     <Flex>

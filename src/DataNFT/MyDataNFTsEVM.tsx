@@ -28,6 +28,7 @@ import { createDataNftType, DataNftType, RecordStringNumberType, UserDataType } 
 import { useChainMeta } from "store/ChainMetaContext";
 import DataNFTDetails from "./DataNFTDetails";
 import WalletDataNFTEVM from "./WalletDataNFTEVM";
+import { NoDataHere } from "components/Sections/NoDataHere";
 
 import { ethers } from "ethers";
 import { ABIS } from "../EVM/ABIs";
@@ -35,7 +36,6 @@ import { ABIS } from "../EVM/ABIs";
 export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || null;
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
     for (let index = 0; index < 5; index++) {
@@ -248,7 +248,9 @@ export default function MyDataNFTsEVM({ onRfMount }: { onRfMount: any }) {
                   ))}
                 </SimpleGrid>
               ) : (
-                <Text>No data yet...</Text>
+                <Flex>
+                  <NoDataHere />
+                </Flex>
               )}
             </TabPanel>
             <TabPanel>Nothing here yet...</TabPanel>

@@ -52,6 +52,7 @@ import { DataNftType } from "MultiversX/typesEVM";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "UtilComps/ShortAddress";
 import ListDataNFTModal from "./ListDataNFTModal";
+import blueTickIcon from "img/creator-verified.png";
 
 import { ethers } from "ethers";
 
@@ -267,10 +268,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           <Box mt={1}>
             {
               <Box color="#8c8f9282" fontSize="md">
-                Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon ml="5px" fontSize="sm" />
-                </Link>
+                <HStack>
+                  {item.creator === "0x950c869b1af2543154bd668d83188c1bc77bf82c" && <Image h="20px" src={blueTickIcon} />}
+                  Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
+                  <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                    <ExternalLinkIcon ml="5px" fontSize="sm" />
+                  </Link>
+                </HStack>
               </Box>
             }
 
