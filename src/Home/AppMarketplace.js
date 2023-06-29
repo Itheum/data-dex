@@ -86,10 +86,9 @@ export default function AppMarketplace({ setMenuItem }) {
   const [joinProgress, setJoinProgress] = useState({ ...cleanSaveProgress });
   const [PSNCheckInProgress, setPSNCheckInProgress] = useState(false);
   const [psnUserDataStream, setPsnUserDataStream] = useState(null);
-  const [datastoreLocation, setDatastoreLocation] = useState("Germany");
+  const [datastoreLocation, setDatastoreLocation] = useState("North America");
   const [dataMarshalService, setDataMarshalService] = useState("Itheum Achilles");
   const [dataStreamSetupProgress, setDataStreamSetupProgress] = useState(true);
-
   const [npsso, setNpsso] = useState("");
   const [PSNUsername, setPSNUsername] = useState("");
   const [PSNValid, setPSNValid] = useState(null);
@@ -111,6 +110,7 @@ export default function AppMarketplace({ setMenuItem }) {
   };
 
   const handleJoinPS4Passport = () => {
+    resetProgramStateGamerPassport();
     setJoinProgress(() => ({ ...cleanSaveProgress, s0: 1 }));
     onPS4ModalOpen();
   };
@@ -172,6 +172,21 @@ export default function AppMarketplace({ setMenuItem }) {
       });
   };
 
+  const resetProgramStateGamerPassport = () => {
+    setReadTermsChecked(false);
+    setPSNCheckInProgress(false);
+    setPsnUserDataStream(null);
+    setDatastoreLocation("North America");
+    setDataMarshalService("Itheum Achilles");
+    setDataStreamSetupProgress(true);
+    setNpsso("");
+    setPSNUsername("");
+    setPSNValid(null);
+    setPSNUsernameValid(null);
+    setDataStreamGenProgress({ ...cleanDataStreamGenProgress });
+    setPSNFullCheckError(null);
+  };
+
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   let gradientBorder = styleStrings.gradientBorderPassive;
@@ -205,7 +220,7 @@ export default function AppMarketplace({ setMenuItem }) {
               <Box p="3">
                 <Box display="flex" alignItems="baseline">
                   <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                    Sony Playstation Web3 Gamer Passport
+                    Sony PlayStation Web3 Gamer Passport
                   </Box>
                 </Box>
                 <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("rhc")}>
@@ -353,11 +368,11 @@ export default function AppMarketplace({ setMenuItem }) {
             <ModalBody>
               {(joinProgress.s0 && (
                 <Stack spacing="5">
-                  <Heading size="lg">Sony Playstation Web3 Gamer Passport</Heading>
+                  <Heading size="lg">Sony PlayStation Web3 Gamer Passport</Heading>
                   <HStack spacing="5">
                     <Image borderRadius="5px" width="250px" src={imgProgSony} />
                     <Text>
-                      Unlock a live dataset of a Sony Playstation {`gamer's`} platform, preferences, active titles played, trophies, playtime, and achievements.
+                      Unlock a live dataset of a Sony PlayStation {`gamer's`} platform, preferences, active titles played, trophies, playtime, and achievements.
                       All sourced direct from the gamer!
                     </Text>
                   </HStack>
@@ -423,7 +438,7 @@ export default function AppMarketplace({ setMenuItem }) {
                 <Box>
                   <Heading size="md">Step 1 of 4</Heading>
                   <Heading size="lg" mt="10px">
-                    Link your Playstation Account
+                    Link your PlayStation Account
                   </Heading>
 
                   <HStack mt="40px">
@@ -434,7 +449,7 @@ export default function AppMarketplace({ setMenuItem }) {
                       value={npsso}
                       onChange={(event) => setNpsso(event.target.value)}
                       w="300px"
-                      placeholder="Your Playstation Network (PSN) NPSSO"
+                      placeholder="Your PlayStation Network (PSN) NPSSO"
                     />
                   </HStack>
                   {PSNValid && (
@@ -451,7 +466,7 @@ export default function AppMarketplace({ setMenuItem }) {
                       value={PSNUsername}
                       onChange={(event) => setPSNUsername(event.target.value)}
                       w="300px"
-                      placeholder="Your Playstation Network (PSN) Username"
+                      placeholder="Your PlayStation Network (PSN) Username"
                     />
                   </HStack>
                   {PSNUsernameValid && (
@@ -483,6 +498,22 @@ export default function AppMarketplace({ setMenuItem }) {
                   </Box>
 
                   <Flex justifyContent="end" mt="20 !important">
+                    <Text>{psnUserDataStream}</Text>
+                    <Button
+                      mx="3"
+                      colorScheme="grey"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setPSNCheckInProgress(false);
+                        setPsnUserDataStream(`https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json#f=${Date.now()}`);
+                        setPSNValid(null);
+                        setPSNUsernameValid(null);
+                        setJoinProgress(() => ({ ...cleanSaveProgress, s2: 1 }));
+                      }}>
+                      Let me test with a Demo PlayStation Gamer account
+                    </Button>
+                    <Spacer />
                     <Button mx="3" colorScheme="teal" size="sm" variant="outline" onClick={onPS4ModalClose}>
                       Cancel
                     </Button>
@@ -508,29 +539,10 @@ export default function AppMarketplace({ setMenuItem }) {
                   </Heading>
 
                   <HStack mt="20px">
-                    <Text>Select a jurisdiction where you would you like your de-identified Playstation Data Stream origin data to be stored at:</Text>
+                    <Text>Select a jurisdiction where you would you like your de-identified PlayStation Data Stream origin data to be stored at:</Text>
                   </HStack>
 
                   <HStack mt="20px">
-                    <IconButton
-                      variant="outline"
-                      colorScheme="teal"
-                      isActive={datastoreLocation === "Germany"}
-                      size="lg"
-                      padding="5px"
-                      onClick={() => setDatastoreLocation("Germany")}
-                      icon={<Image borderRadius="1px" height="30px" alt="Germany" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/DE.svg" />}
-                    />
-                    <IconButton
-                      variant="outline"
-                      colorScheme="teal"
-                      isActive={datastoreLocation === "Japan"}
-                      size="lg"
-                      padding="5px"
-                      onClick={() => setDatastoreLocation("Japan")}
-                      icon={
-                        <Image borderRadius="1px" height="30px" alt="Japan" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/JP.svg" />
-                      }></IconButton>
                     <IconButton
                       variant="outline"
                       colorScheme="teal"
@@ -545,10 +557,32 @@ export default function AppMarketplace({ setMenuItem }) {
                     <IconButton
                       variant="outline"
                       colorScheme="teal"
+                      isActive={datastoreLocation === "Germany"}
+                      size="lg"
+                      padding="5px"
+                      onClick={() => setDatastoreLocation("Germany")}
+                      isDisabled={true}
+                      icon={<Image borderRadius="1px" height="30px" alt="Germany" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/DE.svg" />}
+                    />
+                    <IconButton
+                      variant="outline"
+                      colorScheme="teal"
+                      isActive={datastoreLocation === "Japan"}
+                      size="lg"
+                      padding="5px"
+                      onClick={() => setDatastoreLocation("Japan")}
+                      isDisabled={true}
+                      icon={
+                        <Image borderRadius="1px" height="30px" alt="Japan" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/JP.svg" />
+                      }></IconButton>
+                    <IconButton
+                      variant="outline"
+                      colorScheme="teal"
                       isActive={datastoreLocation === "Hong Kong"}
                       size="lg"
                       padding="5px"
                       onClick={() => setDatastoreLocation("Hong Kong")}
+                      isDisabled={true}
                       icon={<Image borderRadius="1px" height="30px" alt="Hong Kong" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/HK.svg" />}
                     />
                     <IconButton
@@ -558,6 +592,7 @@ export default function AppMarketplace({ setMenuItem }) {
                       size="lg"
                       padding="5px"
                       onClick={() => setDatastoreLocation("Australia")}
+                      isDisabled={true}
                       icon={<Image borderRadius="1px" height="30px" alt="Australia" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/AU.svg" />}
                     />
                     <IconButton
@@ -567,6 +602,7 @@ export default function AppMarketplace({ setMenuItem }) {
                       size="lg"
                       padding="5px"
                       onClick={() => setDatastoreLocation("Singapore")}
+                      isDisabled={true}
                       icon={<Image borderRadius="1px" height="30px" alt="Singapore" src="http://purecatamphetamine.github.io/country-flag-icons/3x2/SG.svg" />}
                     />
                   </HStack>

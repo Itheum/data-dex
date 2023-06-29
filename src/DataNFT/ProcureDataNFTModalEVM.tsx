@@ -16,6 +16,7 @@ import {
   Button,
   Checkbox,
   Divider,
+  CloseButton,
   Alert,
   AlertTitle,
   AlertIcon,
@@ -72,24 +73,54 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
 
   useEffect(() => {
     const priceInInt: number = parseInt(props.nftData.feeInTokens.toString(), 10);
-    const _totalPriceForAllowance: number = priceInInt + (priceInInt / 100) * 2;
+    const _royalties = (priceInInt * props.nftData.royalties) / 100;
+    const _totalPriceForAllowance: number = priceInInt + _royalties + (priceInInt / 100) * 2;
 
-    setTotalPriceForAllowance(_totalPriceForAllowance);
+    setTotalPriceForAllowance(_totalPriceForAllowance); // TODO: 15.45 is shown as 15.4 (we need to be more accurate)
   }, [props]);
 
   const web3_approve = async () => {
     try {
       setProcureInProgress(true);
 
-      debugger; //eslint-disable-line
+      debugger; // eslint-disable-line
+
       const web3Signer = _chainMeta.ethersProvider.getSigner();
       const erc20 = new ethers.Contract(_chainMeta.contracts.itheumToken, ABIS.token, web3Signer);
       const allowance = await erc20.allowance(_chainMeta.loggedInAddress, _chainMeta.contracts.ddex);
       // const decimals = await erc20.decimals();
 
       const decimals = 18;
-      const formattedVal = itheumTokenRoundUtilExtended(totalPriceForAllowance, 18, ethers.BigNumber, true); // makes it like 10.2 or 10.0
-      const tokenInPrecision = ethers.utils.parseUnits(formattedVal.toString(), decimals).toHexString();
+      let tokenInPrecision = "";
+
+      try {
+        // makes it like 10.2 or 10.0 or 15.4. But for values like 15.45 it also becomes 15.4 so the allowance is too less
+        // ... so let's round UP... this is not the best option and not good for security but for now we can do it.
+        // ... TODO: HAS to be fixed before any mainnet release but only taking allowance exactly for what is needed in decimal points
+        const formattedAllowanceVal = itheumTokenRoundUtilExtended(totalPriceForAllowance, 18, ethers.BigNumber, true);
+
+        let roundedUpAllowanceVal = -1;
+
+        if (!Array.isArray(formattedAllowanceVal)) {
+          // itheumTokenRoundUtilExtended can return an array in some config but n/a here
+          roundedUpAllowanceVal = Math.ceil(parseFloat(formattedAllowanceVal)); // 15.4 becomes 16
+        }
+
+        if (Number.isNaN(roundedUpAllowanceVal) || roundedUpAllowanceVal < 1) {
+          setErrAllowanceStreamGeneric(new Error("ER-X-1: There is an issue calculating allowance figure."));
+          return;
+        }
+
+        tokenInPrecision = ethers.utils.parseUnits(`${roundedUpAllowanceVal}.0`, decimals).toHexString();
+
+        console.log("Asking for allowance for ", `${roundedUpAllowanceVal}.0`);
+      } catch (e) {
+        setErrAllowanceStreamGeneric(new Error("ER-X-2: There is an issue calculating allowance figure. Check console."));
+        console.log("ER-X-2 : S ------------------");
+        console.error(e);
+        console.log("ER-X-2 : E ------------------");
+        return;
+      }
 
       const approveTx = await erc20.increaseAllowance(_chainMeta.contracts.ddex, tokenInPrecision);
 
@@ -219,10 +250,14 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
                 <Box>: 2%</Box>
               </Flex>
               <Flex fontSize="md" mt="2">
+                <Box w="140px">Creator Royalty</Box>
+                <Box>: {props.nftData.royalties}%</Box>
+              </Flex>
+              <Flex fontSize="md" mt="2">
                 <Box w="140px">Total Fee</Box>
                 {totalPriceForAllowance !== -1 && (
                   <Box>
-                    {": "} {`${itheumTokenRoundUtilExtended(totalPriceForAllowance, 18, ethers.BigNumber, true)}`} ITHEUM
+                    {": "} {`${itheumTokenRoundUtilExtended(totalPriceForAllowance, 18, ethers.BigNumber, true, 2)}`} ITHEUM
                   </Box>
                 )}
               </Flex>
@@ -276,6 +311,7 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
                       Process Error
                     </AlertTitle>
                     {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
+                    <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAndClose} />
                   </Stack>
                 </Alert>
               )}
@@ -288,6 +324,7 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
                       Process Error
                     </AlertTitle>
                     {errAllowanceStreamGeneric.message && <AlertDescription fontSize="md">{errAllowanceStreamGeneric.message}</AlertDescription>}
+                    <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAndClose} />
                   </Stack>
                 </Alert>
               )}
@@ -298,7 +335,7 @@ export default function ProcureDataNFTModalEVM(props: ProcureAccessModalProps) {
                 <Button colorScheme="teal" size="sm" mx="3" onClick={web3_approve} isDisabled={!readTermsChecked || procureInProgress}>
                   Proceed
                 </Button>
-                <Button colorScheme="teal" size="sm" variant="outline" onClick={cleanupAndClose} isDisabled={procureInProgress}>
+                <Button colorScheme="teal" size="sm" variant="outline" onClick={cleanupAndClose} isDisabled={readTermsChecked && procureInProgress}>
                   Cancel
                 </Button>
               </Flex>

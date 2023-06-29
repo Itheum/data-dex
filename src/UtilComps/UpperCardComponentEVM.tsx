@@ -27,6 +27,7 @@ import { CHAIN_TX_VIEWER, styleStrings, uxConfig } from "../libs/util";
 import { convertToLocalString, transformDescription } from "../libs/util2";
 import { DataNftMetadataType, ItemType, MarketplaceRequirementsType } from "../MultiversX/typesEVM";
 import { useChainMeta } from "../store/ChainMetaContext";
+import blueTickIcon from "img/creator-verified.png";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -146,17 +147,23 @@ const UpperCardComponentEVM: FC<UpperCardComponentProps> = (props) => {
               <Flex backgroundColor="none" display="flex" flexDirection="column" mt={1}>
                 {nftMetadatas[index].creator !== "" && (
                   <Box color="#8c8f9282" fontSize="md">
-                    Creator: <ShortAddress address={nftMetadatas[index].creator} fontSize="md" />
-                    <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
-                      <ExternalLinkIcon ml="5px" fontSize="sm" />
-                    </Link>
+                    <HStack>
+                      {nftMetadatas[index].creator === "0x950c869b1af2543154bd668d83188c1bc77bf82c" && <Image h="20px" src={blueTickIcon} />}
+                      Creator: <ShortAddress address={nftMetadatas[index].creator} fontSize="md" />
+                      <Link href={`${ChainExplorer}/accounts/${nftMetadatas[index].creator}`} isExternal>
+                        <ExternalLinkIcon ml="5px" fontSize="sm" />
+                      </Link>
+                    </HStack>
                   </Box>
                 )}
                 <Box color="#8c8f9282" fontSize="md">
-                  Owner: <ShortAddress address={item?.owner} fontSize="md" />
-                  <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
-                    <ExternalLinkIcon ml="5px" fontSize="sm" />
-                  </Link>
+                  <HStack>
+                    {item?.owner === "0x950c869b1af2543154bd668d83188c1bc77bf82c" && <Image h="20px" src={blueTickIcon} />}
+                    Owner: <ShortAddress address={item?.owner} fontSize="md" />
+                    <Link href={`${ChainExplorer}/accounts/${item?.owner}`} isExternal>
+                      <ExternalLinkIcon ml="5px" fontSize="sm" />
+                    </Link>
+                  </HStack>
                 </Box>
                 <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2">
                   {_chainMeta.loggedInAddress && _chainMeta.loggedInAddress == nftMetadatas[index].creator && (

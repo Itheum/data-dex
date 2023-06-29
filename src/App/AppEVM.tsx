@@ -120,7 +120,7 @@ function App({
         itheumTokenBalanceUpdate(); // load initial balances (@TODO, after login is done and user reloads page, this method fires 2 times. Here and in the hasPendingTransactions effect. fix @TODO)
       }
 
-      linkOrRefreshDataDATAccount();
+      linkOrRefreshDataDATAccount(true);
     }
   }, [_chainMeta]);
 
@@ -194,7 +194,7 @@ function App({
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
-    await sleep(5);
+    await sleep(2);
 
     // setExplicit = to link the demo account after notifying user
     if ((dataCatLinkedSession === "1" && !dataCATAccount) || setExplicit) {

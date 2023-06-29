@@ -176,7 +176,7 @@ export const tmpProgIdMapping = {
   "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
   "custom-gamer-activity": "Gamer Passport Activity",
-  "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
+  "playstation-gamer-passport": "Sony PlayStation Web3 Gamer Passport",
 };
 
 export const qsParams = () => {
@@ -535,13 +535,13 @@ export const dataCATDemoUserData = {
           "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
       },
       "playstation-gamer-passport": {
-        "programName": "Sony Playstation Web3 Gamer Passport",
+        "programName": "Sony PlayStation Web3 Gamer Passport",
         "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
         "img": "sony-playstation-data-passport",
         "title": "My Sony PlayStation data passport",
         "description":
-          "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
+          "Unlock a live dataset of a Sony PlayStation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },
       "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
         "programName": "Hypertension Insights Intense",
@@ -590,24 +590,35 @@ export const styleStrings = {
     "linear-gradient(white, white) padding-box, linear-gradient(to left top, #00C79750, #686868, #FF439D50) border-box",
 };
 
-export const itheumTokenRoundUtilExtended = (balance: any, decimals: any, BigNumber: any, returnAsOurStandardFormat: boolean | undefined) => {
-  const _balanceWeiString = balance.toString(); // 10200000000000000000
-  const _balanceWeiBN = BigNumber.from(_balanceWeiString);
+export const itheumTokenRoundUtilExtended = (
+  balance: any,
+  decimals: any,
+  BigNumber: any,
+  returnAsOurStandardFormat?: boolean,
+  decimalsToAdjustStandardFormat?: number
+) => {
+  try {
+    const _balanceWeiString = balance.toString(); // 10200000000000000000
+    const _balanceWeiBN = BigNumber.from(_balanceWeiString);
 
-  const _decimals = 18;
-  const _decimalsBN = BigNumber.from(_decimals);
-  const _divisor = BigNumber.from(10).pow(_decimalsBN);
+    const _decimals = 18;
+    const _decimalsBN = BigNumber.from(_decimals);
+    const _divisor = BigNumber.from(10).pow(_decimalsBN);
 
-  const _beforeDecimal = _balanceWeiBN.div(_divisor);
-  const _afterDecimal = _balanceWeiBN.mod(_divisor);
+    const _beforeDecimal = _balanceWeiBN.div(_divisor);
+    const _afterDecimal = _balanceWeiBN.mod(_divisor);
 
-  // console.log(_beforeDecimal.toString()); // >> 10
-  // console.log(_afterDecimal.toString()); // >> 200000000000000000
+    // console.log(_beforeDecimal.toString()); // >> 10
+    // console.log(_afterDecimal.toString()); // >> 200000000000000000
 
-  // returnAsOurStandardFormat will format it as 10.2
-  if (returnAsOurStandardFormat) {
-    return `${_beforeDecimal.toString()}.${_afterDecimal.toString().substring(0, 1)}`;
-  } else {
-    return [_beforeDecimal.toString(), _afterDecimal.toString()];
+    // returnAsOurStandardFormat will format it as 10.2
+    if (returnAsOurStandardFormat) {
+      const charDigitsToShow = typeof decimalsToAdjustStandardFormat !== "undefined" ? decimalsToAdjustStandardFormat : 1;
+      return `${_beforeDecimal.toString()}.${_afterDecimal.toString().substring(0, charDigitsToShow)}`;
+    } else {
+      return [_beforeDecimal.toString(), _afterDecimal.toString()];
+    }
+  } catch (e) {
+    return "ERROR !";
   }
 };
