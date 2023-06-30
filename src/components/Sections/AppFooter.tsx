@@ -35,7 +35,7 @@ export default function () {
           <Link fontSize="xs" href="https://itheum.com/legal/datadex/termsofuse" isExternal>
             Terms of Use <ExternalLinkIcon mx={1} />
           </Link>
-          <Link fontSize="xs" href="https://itheum.com/privacypolicy" isExternal>
+          <Link fontSize="xs" href="https://itheum.com/legal/datadex/privacypolicy" isExternal>
             Privacy Policy <ExternalLinkIcon mx={1} />
           </Link>
         </HStack>
