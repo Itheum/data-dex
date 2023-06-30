@@ -119,7 +119,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                     Terms of Use <ExternalLinkIcon mx="2px" />
                   </Link>{" "}
                   &{" "}
-                  <Link href="https://itheum.com/privacypolicy" isExternal>
+                  <Link href="https://itheum.com/legal/datadex/privacypolicy" isExternal>
                     Privacy Policy <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Text>
