@@ -56,7 +56,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < 8; index++) {
       _dataNfts.push(createDataNftType());
     }
     return _dataNfts;

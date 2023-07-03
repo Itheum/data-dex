@@ -1251,7 +1251,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         </InputLabelWithPopover>
 
                         {/* This Royalties input control allows for fractional royalties. e.g. 3.22% */}
-                        <Controller
+                        {/* <Controller
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <NumberInput
@@ -1277,10 +1277,10 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             </NumberInput>
                           )}
                           name="royaltiesForm"
-                        />
+                        /> */}
 
                         {/* This Royalties input control DOES NOT allow for fractional royalties, only round number that increment by 5. e.g. 3% */}
-                        {/* <Controller
+                        <Controller
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <NumberInput
@@ -1305,7 +1305,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             </NumberInput>
                           )}
                           name="royaltiesForm"
-                        /> */}
+                        />
                         <Text color="gray.400" fontSize="sm" mt={"1"}>
                           Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
                         </Text>
