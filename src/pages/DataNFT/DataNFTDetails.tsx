@@ -22,6 +22,7 @@ import {
   useDisclosure,
   useColorMode,
   Tooltip,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -88,6 +89,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
+  const [totalOffers, setTotalOffers] = useState<Record<any, any>>({});
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
@@ -161,15 +163,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     const nonceHex = inputString?.split("-")[2];
     const nonceDec = parseInt(nonceHex, 16);
 
-    console.log("Identifier:", identifier);
-    console.log("Nonce (Decimal):", nonceDec);
-
     axios
       .get(`https://develop-itheum-api.up.railway.app/offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
         console.log(res.data);
+        if (res.data) {
+          setTotalOffers(res.data);
+        }
         let price = Math.min(...res.data.map((offer: any) => offer.price));
-        console.log("PRETUL CEL MAI MIC ", price);
 
         if (price !== Infinity) {
           if (marketRequirements) {
@@ -361,6 +362,21 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       )}
                     </Flex>
                   </Box>
+
+                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
+                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                      Offers:
+                      <Text color={"teal.200"}>{nftData.identifier}</Text>
+                    </Heading>
+                    <SimpleGrid columns={2}>
+                      {totalOffers.map((to: any, index: number) => (
+                        <Flex flexDirection="column" key={index}>
+                          {getListingText(to.price, true)}
+                        </Flex>
+                      ))}
+                    </SimpleGrid>
+                  </Box>
+
                   {offer && address && address != offer.owner && (
                     <Box>
                       <HStack gap={5}>
