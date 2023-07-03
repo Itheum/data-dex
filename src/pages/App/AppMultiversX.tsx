@@ -90,7 +90,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
         setAlertIsOpen(true);
       }
 
-      linkOrRefreshDataDATAccount();
+      linkOrRefreshDataDATAccount(true);
     }
   }, [_chainMeta]);
 
@@ -143,7 +143,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
-    await sleep(5);
+    await sleep(3);
 
     // setExplicit = to link the demo account after notifying user
     if ((dataCatLinkedSession === "1" && !dataCATAccount) || setExplicit) {

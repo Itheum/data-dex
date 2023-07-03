@@ -469,7 +469,7 @@ export default function HomeMultiversX({
         </Box>
 
         <Box m="auto" pt="10" pb="6rem">
-          <AppMarketplace />
+          <AppMarketplace setMenuItem={setMenuItem} />
         </Box>
       </Stack>
     </>

@@ -120,7 +120,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+        <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">

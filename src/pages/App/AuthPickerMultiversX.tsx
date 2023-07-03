@@ -75,7 +75,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
     <>
       {!mxAddress && (
         <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             <ModalHeader>
               Select a{" "}

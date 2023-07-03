@@ -40,35 +40,20 @@ import {
   useColorMode,
   Tooltip,
 } from "@chakra-ui/react";
-import {
-  useGetAccountInfo,
-  useGetLoginInfo,
-  useGetNetworkConfig,
-  useGetPendingTransactions,
-} from "@multiversx/sdk-dapp/hooks";
-import { useSignMessage } from '@multiversx/sdk-dapp/hooks/signMessage/useSignMessage';
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import moment from "moment";
 import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import {
-  CHAIN_TX_VIEWER,
-  uxConfig,
-  styleStrings,
-  PREVIEW_DATA_ON_DEVNET_SESSION_KEY,
-} from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import {
-  convertToLocalString,
-  transformDescription,
-  isValidNumericCharacter,
-  sleep,
-} from "libs/utils";
+import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -117,7 +102,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [amountError, setAmountError] = useState("");
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
-  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
@@ -468,7 +453,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+              <Tooltip
+                colorScheme="teal"
+                hasArrow
+                label="Preview Data is disabled on devnet"
+                isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                 <Button
                   size="sm"
                   colorScheme="teal"
@@ -610,7 +599,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         </Box>
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
-            <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+            <ModalOverlay backdropFilter="blur(10px)" />
             <ModalContent>
               {burnNFTModalState === 1 ? (
                 <>
@@ -735,7 +724,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           />
         )}
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             <ModalHeader>Data Access Unlock Progress</ModalHeader>
             <ModalCloseButton />
