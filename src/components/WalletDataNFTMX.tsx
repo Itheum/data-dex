@@ -47,7 +47,7 @@ import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_URL, TRAILBLAZER_NONCES } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -431,17 +431,36 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
               </Badge>
 
-              <Button
-                mt="1"
-                size="md"
-                borderRadius="lg"
-                fontSize="sm"
-                bgColor="#FF439D"
-                _hover={{ backgroundColor: "#FF439D70" }}
-                isDisabled={hasPendingTransactions}
-                onClick={() => onBurnButtonClick(item)}>
-                Burn
-              </Button>
+              <HStack mt="1">
+                <Button
+                  size="sm"
+                  w="full"
+                  borderRadius="lg"
+                  fontSize="sm"
+                  bgColor="#FF439D"
+                  _hover={{ backgroundColor: "#FF439D70" }}
+                  isDisabled={hasPendingTransactions}
+                  onClick={() => onBurnButtonClick(item)}>
+                  Burn
+                </Button>
+
+                {
+                  TRAILBLAZER_NONCES[_chainMeta.networkId].indexOf(item.nonce) >= 0 && (
+                    <Button
+                      size="sm"
+                      colorScheme="teal"
+                      w="full"
+                      isDisabled={network.id != "devnet"} // disable on mainnet atm
+                      onClick={() => {
+                        window.open(TRAILBLAZER_URL)?.focus();
+                      }}>
+                      <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                        Explore
+                      </Text>
+                    </Button>
+                  )
+                }
+              </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />

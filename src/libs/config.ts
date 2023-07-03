@@ -503,3 +503,9 @@ export const upcomingGuardRails = {
 export const whitelistWallets: Array<string> = [];
 
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
+
+export const TRAILBLAZER_NONCES: Record<string, Array<number>> = {
+  "ED": [407, 423],
+  "E1": [],
+};
+export const TRAILBLAZER_URL = 'https://stg.explorer.itheum.io/itheum-trailblazer-poc';
