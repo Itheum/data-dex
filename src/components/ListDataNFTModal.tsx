@@ -79,7 +79,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+        <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
@@ -134,8 +134,9 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                   <Box w="140px">Royalties (per NFT)</Box>
                   <Box>
                     :{" "}
-                    {`${convertToLocalString(nftData.royalties * 100)}% (${convertToLocalString(new BigNumber(offer.wanted_token_amount)
-                      .multipliedBy((1 - sellerFee / 10000) * nftData.royalties))} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
+                    {`${convertToLocalString(nftData.royalties * 100)}% (${convertToLocalString(
+                      new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties)
+                    )} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
                   </Box>
                 </Flex>
               )}

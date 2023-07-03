@@ -95,7 +95,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
-  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   useTrackTransactionStatus({
     transactionId: sessionId,
@@ -400,7 +400,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     </Tooltip>
 
-                    <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                    <Tooltip
+                      colorScheme="teal"
+                      hasArrow
+                      label="Preview Data is disabled on devnet"
+                      isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                       <Button
                         size={{ base: "md", lg: "lg" }}
                         colorScheme="teal"

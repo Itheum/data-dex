@@ -225,12 +225,13 @@ export const progInfoMeta = {
     canJoin: 1,
   },
   gdc: {
-    name: "Web3 Gamer Passport",
-    desc: "Calling all web3 gamers! The Gamer Passport app will empower you to claim and control your web3 gaming data as you move between games and guilds. You will then be able to attach it to your NFMe ID Avatar and trade your data with participants in the gaming industry.",
-    medium: "Data Adaptors",
-    outcome: 'Data produced from this app can be used to power "proof-of-play" and "proof-of-community-reputation"',
-    targetBuyer: "Games, Game Platforms, Guilds, Guild Hubs, GameFi Platforms",
-    data: "Discord community score, on-chain gaming performance, on-chain game earnings, game earnings and spending patterns, HOLDing ability, game assets composition to earning patterns",
+    name: "PlayStation Gamer Passport",
+    desc: "Calling all PlayStation gamers! The Gamer Passport app will empower you to claim some of your PlayStation Network (PSN) gaming data and mint Data NFTs that can unlock the data with your consent. You can use your Data NFTs as a 'Data Vault', which Web3 Apps can then unlock, or you can trade these Data NFTs in the Data NFT Marketplace.",
+    medium: null,
+    outcome:
+      'Data produced from this app can be used to power "proof-of-play", allow 3rd party Web3 platforms to unlock your data with your consent to personalize user experience, and group together bulk datasets from all PlayStation gamers to power a unified analytics toolkit for Game Studios.',
+    targetBuyer: "Game Studios, Game Platforms, Games, Guilds, GameFi Platforms",
+    data: "All data is de-identified and updated in real-time: PlayStation gaming titles, trophies and achievements per game, gaming time per game title,  total gaming time, and platform/hardware details.",
     url: "https://itheum.medium.com/do-you-want-to-be-part-of-the-gamer-passport-alpha-release-4ae98b93e7ae",
     dc: "Gamer Passport Data",
     id: "foo",
@@ -270,7 +271,7 @@ export const tmpProgIdMapping = {
   "ef62c220-50e1-11e7-9bd2-2f33680a66b6": "Blood Pressure Tracker",
   "48d7b020-eab0-11ea-a466-0334ff0e8bf2": "OkPulse",
   "custom-gamer-activity": "Gamer Passport Activity",
-  "playstation-gamer-passport": "Sony Playstation Web3 Gamer Passport",
+  "playstation-gamer-passport": "Sony Playstation Gamer Passport",
 };
 
 export const isValidNumericDecimalCharacter = (char: any) => {

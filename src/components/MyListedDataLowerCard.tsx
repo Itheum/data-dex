@@ -184,7 +184,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
       {offer && nftMetadata && (
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             {delistModalState === 0 ? (
               <>
@@ -293,7 +293,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
       {offer && marketRequirements && nftMetadata && (
         <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">

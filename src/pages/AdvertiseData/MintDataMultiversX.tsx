@@ -60,7 +60,7 @@ import { useGetPendingTransactions, useTrackTransactionStatus } from "@multivers
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import * as Yup from "yup";
 import ChainSupportedInput from "components/UtilComps/ChainSupportedInput";
 import { MENU, isValidNumericDecimalCharacter } from "libs/config";
@@ -224,6 +224,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   const [dataNFTCopiesError, setDataNFTCopiesError] = useState("");
   const [dataNFTRoyaltyError, setDataNFTRoyaltyError] = useState("");
   const [mintSessionId, setMintSessionId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
 
@@ -386,6 +387,22 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     setMaxSupply(-2);
     setAntiSpamTax(-2);
   }, []);
+
+  // load deep link default if needed
+  useEffect(() => {
+    if (searchParams) {
+      // console.log("loadDrawer ", searchParams.get("loadDrawer"));
+      // console.log("skipPreview ", searchParams.get("skipPreview"));
+      // console.log("dm", searchParams.get("dm"));
+      // console.log("ds", searchParams.get("ds"));
+
+      if (searchParams.get("loadDrawer") && searchParams.get("ds")) {
+        getDataForSale(dataCATAccount?.programsAllocation.find((i: any) => i.program === "playstation-gamer-passport"));
+        setMinRoyalties(0); // we need this here or else we get a -2 in the UI panel as the min royalty change is not firing (ONLY when searchParams are used)
+        // setDeepLinkMode(true);
+      }
+    }
+  }, [searchParams]);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // S: validation logic
@@ -616,9 +633,18 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
         dataCATStreamPreviewUrl = `https://itheumapi.com/programReadingPreview/${selObj.program}`;
       }
 
-      setDataNFTStreamUrl(dataCATStreamUrl);
+      if (searchParams.get("ds")) {
+        setDataNFTStreamUrl(decodeURIComponent(searchParams.get("ds") || ""));
+      } else {
+        setDataNFTStreamUrl(dataCATStreamUrl);
+      }
+
       setDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
       onChangeDatasetDescription(selObj.description);
+
+      if (selObj.title) {
+        onChangeDatasetTitle(selObj.title);
+      }
     }
 
     setIsStreamTrade(isStreamTrade);
@@ -628,7 +654,12 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     if (dataCATProgram?.program) {
       await sleep(3);
 
-      onChangeDataNFTStreamUrl(dataCATStreamUrl);
+      if (searchParams.get("ds")) {
+        onChangeDataNFTStreamUrl(decodeURIComponent(searchParams.get("ds") || ""));
+      } else {
+        onChangeDataNFTStreamUrl(dataCATStreamUrl);
+      }
+
       onChangeDataNFTStreamPreviewUrl(dataCATStreamPreviewUrl);
 
       setUserFocusedForm(true);
@@ -836,6 +867,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
     setDataNFTImg("");
+    setSearchParams(); // clear any deep link search params
   };
 
   function validateBaseInput() {
@@ -937,11 +969,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
         )}
 
         <Drawer onClose={onRfMount} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={true} closeOnOverlayClick={true}>
-          <DrawerOverlay />
+          <DrawerOverlay backdropFilter="blur(10px)" />
           <DrawerContent>
             <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <HStack spacing="5">
-                <CloseButton size="lg" onClick={onRfMount} />
+                <CloseButton
+                  size="lg"
+                  onClick={() => {
+                    setSearchParams(); // clear any deep link search params
+                    onRfMount();
+                  }}
+                />
                 {(currDataCATSellObj && (
                   <Stack>
                     <Box fontSize="2xl">
@@ -1251,7 +1289,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         </InputLabelWithPopover>
 
                         {/* This Royalties input control allows for fractional royalties. e.g. 3.22% */}
-                        <Controller
+                        {/* <Controller
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <NumberInput
@@ -1277,10 +1315,10 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             </NumberInput>
                           )}
                           name="royaltiesForm"
-                        />
+                        /> */}
 
                         {/* This Royalties input control DOES NOT allow for fractional royalties, only round number that increment by 5. e.g. 3% */}
-                        {/* <Controller
+                        <Controller
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <NumberInput
@@ -1305,7 +1343,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                             </NumberInput>
                           )}
                           name="royaltiesForm"
-                        /> */}
+                        />
                         <Text color="gray.400" fontSize="sm" mt={"1"}>
                           Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
                         </Text>
@@ -1420,7 +1458,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <HStack>
                         {(!saveProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                        <Text>Saving NFT Metadata to IPFS</Text>
+                        <Text>Saving NFT metadata to IPFS</Text>
                       </HStack>
 
                       <HStack>

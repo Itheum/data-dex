@@ -1,33 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons";
-import {
-  Spinner,
-  Box,
-  Text,
-  Link,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  TableContainer,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Td,
-  Tfoot,
-  useToast,
-  useBreakpointValue,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useToast, useBreakpointValue, useColorMode } from "@chakra-ui/react";
 import { NetworkIdType } from "libs/types";
-import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 import ClaimsTxTable from "./Tables/ClaimsTxTable";
-import { getClaimTransactions, getTransactionLink } from "../libs/MultiversX/api";
+import { getClaimTransactions } from "../libs/MultiversX/api";
 
 export default function ChaimsHistory({
   mxAddress,
@@ -69,8 +45,6 @@ export default function ChaimsHistory({
     setClaimTransactionsModalOpen(true);
   };
 
-  const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
-
   return (
     <Modal
       isOpen={claimTransactionsModalOpen}
@@ -79,7 +53,7 @@ export default function ChaimsHistory({
         setClaimTransactionsModalOpen(false);
       }}
       scrollBehavior="inside">
-      <ModalOverlay />
+      <ModalOverlay backdropFilter="blur(10px)" />
       <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
         <ModalHeader>Recent Claim Transactions</ModalHeader>
         <ModalCloseButton />
