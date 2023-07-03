@@ -36,41 +36,44 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   const onProcure = async () => {
-    if (!address) {
+    const showErrorToast = (title: string) => {
       toast({
-        title: "Connect your wallet",
+        title,
         status: "error",
         isClosable: true,
       });
-      return;
-    }
-    if (!sellerFee || !marketContract) {
-      toast({
-        title: "Data is not loaded",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!(offer && nftData)) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!readTermsChecked) {
-      toast({
-        title: "You must READ and Agree on Terms of Use",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    };
+
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !sellerFee || !marketContract,
+        errorMessage: "Data is not loaded",
+      },
+      {
+        condition: !(offer && nftData),
+        errorMessage: "No NFT data",
+      },
+      {
+        condition: !readTermsChecked,
+        errorMessage: "You must READ and Agree on Terms of Use",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
+
     setAmount(1);
+
     // a small delay for visual effect
     await sleep(0.5);
     onClose();

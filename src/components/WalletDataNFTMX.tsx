@@ -107,21 +107,40 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
 
+  const showErrorToast = (title: string) => {
+    toast({
+      title,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
   const onBurn = () => {
-    if (!address) {
-      toast({
-        title: labels.ERR_BURN_NO_WALLET_CONN,
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!selectedDataNft) {
-      toast({
-        title: labels.ERR_BURN_NO_NFT_SELECTED,
-        status: "error",
-        isClosable: true,
-      });
+    const errorMessages = {
+      noWalletConn: labels.ERR_BURN_NO_WALLET_CONN,
+      noNFTSelected: labels.ERR_BURN_NO_NFT_SELECTED,
+    };
+
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: errorMessages.noWalletConn,
+      },
+      {
+        condition: !selectedDataNft,
+        errorMessage: errorMessages.noNFTSelected,
+      },
+    ];
+
+    const shouldReturn = conditions.some(({ condition, errorMessage }) => {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return true;
+      }
+      return false;
+    });
+
+    if (shouldReturn || !selectedDataNft) {
       return;
     }
 
@@ -172,12 +191,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   };
 
   async function accessDataStream(dataMarshal: string, NFTId: string) {
-    /*
-      1) get a nonce from the data marshal (s1)
-      2) get user to sign the nonce and obtain signature (s2)
-      3) send the signature for verification from the marshal and open stream in new window (s3)
-    */
-
     onAccessProgressModalOpen();
 
     try {
@@ -186,17 +199,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       if (data && data.nonce) {
         setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
-
         await sleep(1);
 
-        const signResult = await fetchAccountSignature(NFTId, data.nonce);
-        // console.log('signResult', signResult);
-        if (isWebWallet) return;
+        if (!isWebWallet) {
+          const signResult = await fetchAccountSignature(NFTId, data.nonce);
+          // console.log('signResult', signResult);
 
-        // second
-        await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
+          await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
+        }
       } else {
-        if (data.success === false) {
+        if (data && data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
         } else {
           setErrUnlockAccessGeneric(labels.ERR_DATA_MARSHAL_GEN_ACCESS_FAIL);
@@ -256,22 +268,22 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   }
 
   const [signatureProcessed, setSignatureProcessed] = useState<boolean>(false); // check if signature is processed with web wallet login
-  useEffect(() => {
-    if (!isWebWallet) return;
-    if (!nftId || !dataNonce) return;
-    if (nftId != item.id) return;
-    if (signatureProcessed) return;
-    setSignatureProcessed(true);
 
-    (async () => {
+  useEffect(() => {
+    const processSignature = async () => {
       try {
         const signature = getMessageSignatureFromWalletUrl();
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
       } catch (e: any) {
         console.error(e);
       }
-    })();
-  }, [item.id]);
+    };
+
+    if (isWebWallet && nftId && dataNonce && nftId === item.id && !signatureProcessed) {
+      setSignatureProcessed(true);
+      processSignature();
+    }
+  }, [isWebWallet, nftId, dataNonce, item.id, signatureProcessed]);
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
@@ -294,12 +306,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         duration: 9000,
         isClosable: true,
       });
-
-      return;
+    } else {
+      setSelectedDataNft(nft);
+      onListNFTOpen();
     }
-
-    setSelectedDataNft(nft);
-    onListNFTOpen();
   };
 
   const onChangeDataNftBurnAmount = (valueAsString: string) => {

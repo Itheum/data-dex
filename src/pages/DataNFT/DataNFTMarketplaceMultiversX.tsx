@@ -61,15 +61,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
 
-  let mintContract: DataNftMintContract;
-  let marketContract: DataNftMarketContract;
-  if (!isMxLoggedIn && window.location.hostname === "datadex.itheum.io") {
-    mintContract = new DataNftMintContract("E1");
-    marketContract = new DataNftMarketContract("E1");
-  } else {
-    mintContract = new DataNftMintContract(_chainMeta.networkId);
-    marketContract = new DataNftMarketContract(_chainMeta.networkId);
-  }
+  const networkId = !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : _chainMeta.networkId;
+
+  const mintContract = new DataNftMintContract(networkId);
+  const marketContract = new DataNftMarketContract(networkId);
 
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const offers = useMarketStore((state) => state.offers);
