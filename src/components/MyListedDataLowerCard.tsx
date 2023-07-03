@@ -77,25 +77,35 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         ).toNumber()
       : 0;
 
+  const showErrorToast = (title: string) => {
+    toast({
+      title,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
   const onDelist = async () => {
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!offer) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !offer,
+        errorMessage: "No NFT data",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     contract.delistDataNft(offer.index, delistAmount, address);
+
     // a small delay for visual effect
     await sleep(0.5);
     onDelistModalClose();
@@ -103,21 +113,22 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   };
 
   const onUpdatePrice = async () => {
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!offer) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !offer,
+        errorMessage: "No NFT data",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     contract.updateOfferPrice(offer.index, convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(), address);

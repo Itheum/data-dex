@@ -3,6 +3,7 @@ import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { NetworkIdType } from "libs/types";
 import { convertToLocalString } from "./number";
+import { useToast } from "@chakra-ui/react";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
