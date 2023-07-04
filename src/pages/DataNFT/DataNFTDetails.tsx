@@ -22,7 +22,6 @@ import {
   useDisclosure,
   useColorMode,
   Tooltip,
-  SimpleGrid,
   GridItem,
   Grid,
 } from "@chakra-ui/react";
@@ -52,7 +51,6 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { TokenIdentifierValue } from "@multiversx/sdk-core/out";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 type DataNFTDetailsProps = {
@@ -131,6 +129,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
+        console.log(_offer);
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -145,6 +144,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         const attributes = new DataNftMintContract(_chainMeta.networkId).decodeNftAttributes(_nftData);
         _nftData.attributes = attributes;
         setNftData(_nftData);
+        console.log(_nftData);
         setIsLoadingDetails(false);
       })
       .catch((err) => {
@@ -170,7 +170,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     const nonceDec = parseInt(nonceHex, 16);
 
     axios
-      .get(`https://develop-itheum-api.up.railway.app/offers/${identifier}?nonces=${nonceDec}`)
+      .get(`https://staging-itheum-api.up.railway.app/offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
         console.log(res.data);
         if (res.data) {
@@ -373,7 +373,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <>
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
                         <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
-                          Offers:
+                          {totalOffers.length} Offers:
                           <Text color={"teal.200"}>{nftData.identifier}</Text>
                         </Heading>
                         <Grid templateColumns="repeat(7, 1fr)" maxH="18rem" overflowY="scroll" gap={2} px="28px" py="14px">
@@ -382,18 +382,27 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               <NoDataHere imgFromTop="0" />
                             </GridItem>
                           )}
-                          {totalOffers.map((to: any, index: number) => (
-                            <Fragment key={index}>
-                              <GridItem flexDirection="column" colSpan={5}>
-                                {getListingText(to.price, true)}
-                              </GridItem>
-                              <GridItem colSpan={2}>
-                                <Button w="full" colorScheme="teal" variant="outline">
-                                  {tokenId && pathname?.includes(tokenId) ? "Purchase Data" : "Preview"}
-                                </Button>
-                              </GridItem>
-                            </Fragment>
-                          ))}
+                          {totalOffers &&
+                            totalOffers.map((to: any, index: number) => (
+                              <Fragment key={index}>
+                                <GridItem flexDirection="column" colSpan={5}>
+                                  {getListingText(to.price, true)}
+                                </GridItem>
+                                <GridItem colSpan={2}>
+                                  <Button
+                                    w="full"
+                                    colorScheme="teal"
+                                    variant="outline"
+                                    onClick={() => {
+                                      tokenId && pathname?.includes(tokenId)
+                                        ? navigate(`/datanfts/marketplace/${nftData.identifier}/offer-${to[index].id}`)
+                                        : navigate(`/datanfts/marketplace/${nftData.identifier}`);
+                                    }}>
+                                    {tokenId && pathname?.includes(tokenId) ? "Procure Data" : "View"}
+                                  </Button>
+                                </GridItem>
+                              </Fragment>
+                            ))}
                         </Grid>
                       </Box>
                     </>
