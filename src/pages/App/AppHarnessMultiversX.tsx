@@ -6,6 +6,7 @@ import { Loader } from "@multiversx/sdk-dapp/UI";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
+import { sleep } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 import { StoreProvider } from "store/StoreProvider";
 import AppMx from "./AppMultiversX";
@@ -55,7 +56,11 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
-      setIsLoading(false);
+      (async () => {
+        // delay loading to prevent multiple rerenders
+        await sleep(process.env.REACT_APP_LOADING_DELAY_SECONDS ? Number(process.env.REACT_APP_LOADING_DELAY_SECONDS) : 2);
+        setIsLoading(false);
+      })();
     }
   }, [_chainMeta]);
 
@@ -70,10 +75,10 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   //   }
   // }, [mxAddress, isMxLoggedIn]);
 
-  const resetAppContexts = () => {
+  // const resetAppContexts = () => {
     // setUser({ ...baseUserContext });
     // setChainMeta({});
-  };
+  // };
 
   if (isLoading) {
     return <CustomLoader />;
@@ -83,10 +88,10 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     <StoreProvider>
       <AppMx
         onLaunchMode={handleLaunchMode}
-        resetAppContexts={resetAppContexts}
-        appConfig={{
-          mxEnvironment: launchEnvironment,
-        }}
+        // resetAppContexts={resetAppContexts}
+        // appConfig={{
+        //   mxEnvironment: launchEnvironment,
+        // }}
       />
     </StoreProvider>
   );

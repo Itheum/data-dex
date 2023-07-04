@@ -199,7 +199,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           </TabList>
           <TabPanels>
             <TabPanel mt={2} width={"full"}>
-              {dataNfts.length > 0 ? (
+              {tabState === 1 && dataNfts.length > 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
@@ -225,7 +225,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               )}
             </TabPanel>
             <TabPanel mt={2} width={"full"}>
-              {purchasedDataNfts.length >= 0 ? (
+              {tabState === 2 && purchasedDataNfts.length >= 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}

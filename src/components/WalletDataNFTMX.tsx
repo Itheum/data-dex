@@ -201,12 +201,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
         await sleep(1);
 
-        if (!isWebWallet) {
-          const signResult = await fetchAccountSignature(NFTId, data.nonce);
-          // console.log('signResult', signResult);
+        const signResult = await fetchAccountSignature(NFTId, data.nonce);
+        // console.log('signResult', signResult);
+        if (isWebWallet) return;
 
-          await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
-        }
+        await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
       } else {
         if (data && data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
@@ -267,29 +266,20 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     return signature;
   }
 
-  const [signatureProcessed, setSignatureProcessed] = useState<boolean>(false); // check if signature is processed with web wallet login
-  const [itemId, setItemId] = useState<string>('');
-
-  useEffect(() => {
-    if (itemId !== item.id) {
-      setItemId(item.id);
-    }
-  }, [item.id]);
   useEffect(() => {
     const processSignature = async () => {
       try {
         const signature = getMessageSignatureFromWalletUrl();
-        await accessDataStream2(item.dataMarshal, itemId, dataNonce || "", signature);
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
       } catch (e: any) {
         console.error(e);
       }
     };
 
-    if (isWebWallet && nftId && dataNonce && nftId === itemId && !signatureProcessed) {
-      setSignatureProcessed(true);
+    if (isWebWallet && nftId && dataNonce && nftId === item.id) {
       processSignature();
     }
-  }, [itemId]);
+  }, [item.id]);
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
