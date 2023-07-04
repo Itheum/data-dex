@@ -36,41 +36,44 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   const onProcure = async () => {
-    if (!address) {
+    const showErrorToast = (title: string) => {
       toast({
-        title: "Connect your wallet",
+        title,
         status: "error",
         isClosable: true,
       });
-      return;
-    }
-    if (!sellerFee || !marketContract) {
-      toast({
-        title: "Data is not loaded",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!(offer && nftData)) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!readTermsChecked) {
-      toast({
-        title: "You must READ and Agree on Terms of Use",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    };
+
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !sellerFee || !marketContract,
+        errorMessage: "Data is not loaded",
+      },
+      {
+        condition: !(offer && nftData),
+        errorMessage: "No NFT data",
+      },
+      {
+        condition: !readTermsChecked,
+        errorMessage: "You must READ and Agree on Terms of Use",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
+
     setAmount(1);
+
     // a small delay for visual effect
     await sleep(0.5);
     onClose();
@@ -79,7 +82,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+        <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
@@ -134,9 +137,9 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                   <Box w="140px">Royalties (per NFT)</Box>
                   <Box>
                     :{" "}
-                    {`${convertToLocalString(nftData.royalties * 100)}% (${new BigNumber(offer.wanted_token_amount)
-                      .multipliedBy((1 - sellerFee / 10000) * nftData.royalties)
-                      .toNumber()} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
+                    {`${convertToLocalString(nftData.royalties * 100)}% (${convertToLocalString(
+                      new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties)
+                    )} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
                   </Box>
                 </Flex>
               )}
@@ -161,15 +164,15 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                         ""
                       ) : (
                         <>
-                          {" " + new BigNumber(offer.wanted_token_amount).multipliedBy(amount).toNumber() + " "}
+                          {" " + convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy(amount)) + " "}
                           {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
                           {" - "}
-                          {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000).toNumber()}
+                          {convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000))}
                           {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
                           {address != nftData.creator && (
                             <>
                               {" - "}
-                              {new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties).toNumber()}
+                              {convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties))}
                               {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
                             </>
                           )}

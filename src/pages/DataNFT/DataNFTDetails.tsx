@@ -35,7 +35,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
@@ -100,6 +101,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   // console.log(pathname);
 
@@ -252,7 +254,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 />
 
                 <VStack alignItems={"flex-start"} gap={"15px"} w="full">
-                  <Box color="gray.100" fontSize={{ base: "lg", lg: "xl" }}>
+                  <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "lg", lg: "xl" }}>
                     <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
                       {nftData.identifier}
                       <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
@@ -334,7 +336,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <Text>{`Total supply: ${nftData.supply}`}</Text>
                           <Text>
                             {`Royalty: `}
-                            {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
+                            {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
                           </Text>
                         </>
                       )}
@@ -445,12 +447,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     </Tooltip>
 
-                    <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                    <Tooltip
+                      colorScheme="teal"
+                      hasArrow
+                      label="Preview Data is disabled on devnet"
+                      isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                       <Button
                         size={{ base: "md", lg: "lg" }}
                         colorScheme="teal"
                         variant="outline"
-                        isDisabled={network.id == "devnet"}
+                        isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                         onClick={() => {
                           window.open(nftData.attributes.dataPreview);
                         }}>

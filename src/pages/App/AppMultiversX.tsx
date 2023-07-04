@@ -90,7 +90,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
         setAlertIsOpen(true);
       }
 
-      linkOrRefreshDataDATAccount();
+      linkOrRefreshDataDATAccount(true);
     }
   }, [_chainMeta]);
 
@@ -143,7 +143,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
-    await sleep(5);
+    await sleep(3);
 
     // setExplicit = to link the demo account after notifying user
     if ((dataCatLinkedSession === "1" && !dataCATAccount) || setExplicit) {
@@ -176,7 +176,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     <>
       <Container maxW="97.5rem">
         <Flex
-          bgColor={colorMode === "dark" ? "bgDark" : "white"}
+          bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
           flexDirection="column"
           justifyContent="space-between"
           minH="100vh"
@@ -223,6 +223,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
                 <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
                 <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                 <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
+                <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />

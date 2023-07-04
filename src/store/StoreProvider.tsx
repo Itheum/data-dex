@@ -40,13 +40,13 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const userData = useMintStore((state) => state.userData);
   const updateUserData = useMintStore((state) => state.updateUserData);
 
-  console.log("itheumBalance", itheumBalance);
-  console.log("marketRequirements", marketRequirements);
-  console.log("userData", userData);
-  console.log("maxPaymentFeeMap", maxPaymentFeeMap);
-  console.log("itheumPrice", itheumPrice);
-  console.log("isMarketPaused", isMarketPaused);
-  console.log("Access token", accessToken);
+  // console.log("itheumBalance", itheumBalance);
+  // console.log("marketRequirements", marketRequirements);
+  // console.log("userData", userData);
+  // console.log("maxPaymentFeeMap", maxPaymentFeeMap);
+  // console.log("itheumPrice", itheumPrice);
+  // console.log("isMarketPaused", isMarketPaused);
+  // console.log("Access token", accessToken);
 
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);

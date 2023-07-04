@@ -1,32 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { CloseIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons";
-import {
-  Spinner,
-  Box,
-  Text,
-  Link,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  TableContainer,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Td,
-  Tfoot,
-  useToast,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useToast, useBreakpointValue, useColorMode } from "@chakra-ui/react";
 import { NetworkIdType } from "libs/types";
-import { formatNumberRoundFloor } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 import ClaimsTxTable from "./Tables/ClaimsTxTable";
-import { getClaimTransactions, getTransactionLink } from "../libs/MultiversX/api";
+import { getClaimTransactions } from "../libs/MultiversX/api";
 
 export default function ChaimsHistory({
   mxAddress,
@@ -42,6 +19,7 @@ export default function ChaimsHistory({
   const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
   const { chainMeta: _chainMeta } = useChainMeta();
   const toast = useToast();
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     fetchMxClaims();
@@ -67,8 +45,6 @@ export default function ChaimsHistory({
     setClaimTransactionsModalOpen(true);
   };
 
-  const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
-
   return (
     <Modal
       isOpen={claimTransactionsModalOpen}
@@ -77,8 +53,8 @@ export default function ChaimsHistory({
         setClaimTransactionsModalOpen(false);
       }}
       scrollBehavior="inside">
-      <ModalOverlay />
-      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor="#181818">
+      <ModalOverlay backdropFilter="blur(10px)" />
+      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
         <ModalHeader>Recent Claim Transactions</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

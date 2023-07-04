@@ -24,6 +24,8 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import {
@@ -65,6 +67,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+
   const fee =
     marketRequirements && offer
       ? convertWeiToEsdt(
@@ -73,25 +77,35 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         ).toNumber()
       : 0;
 
+  const showErrorToast = (title: string) => {
+    toast({
+      title,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
   const onDelist = async () => {
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!offer) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !offer,
+        errorMessage: "No NFT data",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     contract.delistDataNft(offer.index, delistAmount, address);
+
     // a small delay for visual effect
     await sleep(0.5);
     onDelistModalClose();
@@ -99,21 +113,22 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   };
 
   const onUpdatePrice = async () => {
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!offer) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !offer,
+        errorMessage: "No NFT data",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     contract.updateOfferPrice(offer.index, convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(), address);
@@ -125,17 +140,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
-          isDisabled={network.id == "devnet"}
+          _disabled={{ opacity: 0.2 }}
+          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
-          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+          <Text py={3} color={colorMode === "dark" ? "bgWhite" : "bgDark"}>
             Preview Data
           </Text>
         </Button>
@@ -179,7 +195,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
       {offer && nftMetadata && (
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             {delistModalState === 0 ? (
               <>
@@ -288,7 +304,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
       {offer && marketRequirements && nftMetadata && (
         <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">

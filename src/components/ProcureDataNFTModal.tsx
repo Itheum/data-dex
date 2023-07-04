@@ -44,71 +44,61 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     }
   }, [isOpen]);
 
+  const showErrorToast = (title: string) => {
+    toast({
+      title,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
   const onProcure = async () => {
-    if (!address) {
-      toast({
-        title: "Connect your wallet",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!buyerFee || !marketContract) {
-      toast({
-        title: "Data is not loaded",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!(offer && nftData)) {
-      toast({
-        title: "No NFT data",
-        status: "error",
-        isClosable: true,
-      });
-      return;
-    }
-    if (!readTermsChecked) {
-      toast({
-        title: "You must READ and Agree on Terms of Use",
-        status: "error",
-        isClosable: true,
-      });
-      return;
+    const conditions = [
+      {
+        condition: !address,
+        errorMessage: "Connect your wallet",
+      },
+      {
+        condition: !buyerFee || !marketContract,
+        errorMessage: "Data is not loaded",
+      },
+      {
+        condition: !(offer && nftData),
+        errorMessage: "No NFT data",
+      },
+      {
+        condition: !readTermsChecked,
+        errorMessage: "You must READ and Agree on Terms of Use",
+      },
+    ];
+
+    for (const { condition, errorMessage } of conditions) {
+      if (condition) {
+        showErrorToast(errorMessage);
+        return;
+      }
     }
 
     const paymentAmount = new BigNumber(offer.wanted_token_amount).multipliedBy(amount);
+
     if (offer.wanted_token_identifier == "EGLD") {
       marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
     } else {
-      if (offer.wanted_token_nonce === 0) {
-        const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
-          offer.index,
-          paymentAmount.toFixed(),
-          offer.wanted_token_identifier,
-          amount,
-          address
-        );
+      const sendAcceptOfferTransaction =
+        offer.wanted_token_nonce === 0 ? marketContract.sendAcceptOfferEsdtTransaction : marketContract.sendAcceptOfferNftEsdtTransaction;
 
-        // if offer is sold out by this transaction, close Drawer if opened
-        if (setSessionId && amount == offer.quantity) {
-          setSessionId(sessionId);
-        }
-      } else {
-        const { sessionId } = await marketContract.sendAcceptOfferNftEsdtTransaction(
-          offer.index,
-          paymentAmount.toFixed(),
-          offer.wanted_token_identifier,
-          offer.wanted_token_nonce,
-          amount,
-          address
-        );
+      const { sessionId } = await sendAcceptOfferTransaction(
+        offer.index,
+        paymentAmount.toFixed(),
+        offer.wanted_token_identifier,
+        offer.wanted_token_nonce,
+        amount as never,
+        address
+      );
 
-        // if offer is sold out by this transaction, close Drawer if opened
-        if (setSessionId && amount == offer.quantity) {
-          setSessionId(sessionId);
-        }
+      // if offer is sold out by this transaction, close Drawer if opened
+      if (setSessionId && amount == offer.quantity) {
+        setSessionId(sessionId);
       }
     }
 
@@ -120,7 +110,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
-        <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(10px) hue-rotate(90deg)" />
+        <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">

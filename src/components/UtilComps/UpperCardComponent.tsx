@@ -75,7 +75,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "780px" : "685px"}
+        h={isMxLoggedIn ? "780px" : "700px"}
         mx="3 !important"
         borderWidth="0.5px"
         borderRadius="xl"
@@ -141,13 +141,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 </PopoverContent>
               </Popover>
               <Flex display="flex" flexDirection="column" mt={1}>
-                <Box color="#8c8f9282" fontSize="md">
+                <Box color="#8c8f92d0" fontSize="md">
                   Creator: <ShortAddress address={nftMetadata.creator} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadata.creator}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Box color="#8c8f9282" fontSize="md">
+                <Box color="#8c8f92d0" fontSize="md">
                   Owner: <ShortAddress address={offer?.owner} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${offer?.owner}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
@@ -171,7 +171,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   )}
 
                   <Box borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
                       Fully Transferable License
                     </Text>
                   </Box>
@@ -183,7 +183,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               </Box>
 
               {nftMetadata && (
-                <Box color="#8c8f9282" fontSize="md" fontWeight="normal">
+                <Box color="#8c8f92d0" fontSize="md" fontWeight="normal">
                   {`Listed: ${offer?.quantity}`} <br />
                   {`Total supply: ${nftMetadata?.supply}`} <br />
                   {`Royalty: ${convertToLocalString(nftMetadata?.royalties * 100)}%`}
