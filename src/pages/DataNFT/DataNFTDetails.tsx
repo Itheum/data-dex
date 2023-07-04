@@ -378,15 +378,18 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Heading>
                         <Grid templateColumns="repeat(7, 1fr)" maxH="18rem" overflowY="scroll" gap={2} px="28px" py="14px">
                           {(totalOffers.length === 0 || totalOffers === null) && (
-                            <GridItem colSpan={7}>
+                            <GridItem colSpan={8}>
                               <NoDataHere imgFromTop="0" />
                             </GridItem>
                           )}
                           {totalOffers &&
                             totalOffers.map((to: any, index: number) => (
                               <Fragment key={index}>
-                                <GridItem flexDirection="column" colSpan={5}>
-                                  {getListingText(to.price, true)}
+                                <GridItem flexDirection="column" colSpan={4}>
+                                  {marketRequirements && getListingText(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
+                                </GridItem>
+                                <GridItem flexDirection="column" colSpan={1}>
+                                  {to.listed_supply}
                                 </GridItem>
                                 <GridItem colSpan={2}>
                                   <Button
@@ -395,7 +398,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                     variant="outline"
                                     onClick={() => {
                                       tokenId && pathname?.includes(tokenId)
-                                        ? navigate(`/datanfts/marketplace/${nftData.identifier}/offer-${to[index].id}`)
+                                        ? navigate(`/datanfts/marketplace/${nftData.identifier}/offer-${to.index}`)
                                         : navigate(`/datanfts/marketplace/${nftData.identifier}`);
                                     }}>
                                     {tokenId && pathname?.includes(tokenId) ? "Procure Data" : "View"}
