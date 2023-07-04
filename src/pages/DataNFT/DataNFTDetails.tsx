@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -23,6 +23,8 @@ import {
   useColorMode,
   Tooltip,
   SimpleGrid,
+  GridItem,
+  Grid,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -50,6 +52,7 @@ import {
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { TokenIdentifierValue } from "@multiversx/sdk-core/out";
+import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -98,8 +101,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
 
-  // console.log(tokenId);
+  // console.log(pathname);
 
+  console.log(tokenId);
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
@@ -363,19 +367,35 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     </Flex>
                   </Box>
 
-                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
-                      Offers:
-                      <Text color={"teal.200"}>{nftData.identifier}</Text>
-                    </Heading>
-                    <SimpleGrid columns={2}>
-                      {totalOffers.map((to: any, index: number) => (
-                        <Flex flexDirection="column" key={index}>
-                          {getListingText(to.price, true)}
-                        </Flex>
-                      ))}
-                    </SimpleGrid>
-                  </Box>
+                  {!offer && (
+                    <>
+                      <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
+                        <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                          Offers:
+                          <Text color={"teal.200"}>{nftData.identifier}</Text>
+                        </Heading>
+                        <Grid templateColumns="repeat(7, 1fr)" maxH="18rem" overflowY="scroll" gap={2} px="28px" py="14px">
+                          {(totalOffers.length === 0 || totalOffers === null) && (
+                            <GridItem colSpan={7}>
+                              <NoDataHere imgFromTop="0" />
+                            </GridItem>
+                          )}
+                          {totalOffers.map((to: any, index: number) => (
+                            <Fragment key={index}>
+                              <GridItem flexDirection="column" colSpan={5}>
+                                {getListingText(to.price, true)}
+                              </GridItem>
+                              <GridItem colSpan={2}>
+                                <Button w="full" colorScheme="teal" variant="outline">
+                                  {tokenId && pathname?.includes(tokenId) ? "Purchase Data" : "Preview"}
+                                </Button>
+                              </GridItem>
+                            </Fragment>
+                          ))}
+                        </Grid>
+                      </Box>
+                    </>
+                  )}
 
                   {offer && address && address != offer.owner && (
                     <Box>
