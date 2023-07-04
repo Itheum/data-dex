@@ -268,22 +268,28 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   }
 
   const [signatureProcessed, setSignatureProcessed] = useState<boolean>(false); // check if signature is processed with web wallet login
+  const [itemId, setItemId] = useState<string>('');
 
+  useEffect(() => {
+    if (itemId !== item.id) {
+      setItemId(item.id);
+    }
+  }, [item.id]);
   useEffect(() => {
     const processSignature = async () => {
       try {
         const signature = getMessageSignatureFromWalletUrl();
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
+        await accessDataStream2(item.dataMarshal, itemId, dataNonce || "", signature);
       } catch (e: any) {
         console.error(e);
       }
     };
 
-    if (isWebWallet && nftId && dataNonce && nftId === item.id && !signatureProcessed) {
+    if (isWebWallet && nftId && dataNonce && nftId === itemId && !signatureProcessed) {
       setSignatureProcessed(true);
       processSignature();
     }
-  }, [isWebWallet, nftId, dataNonce, item.id, signatureProcessed]);
+  }, [itemId]);
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
