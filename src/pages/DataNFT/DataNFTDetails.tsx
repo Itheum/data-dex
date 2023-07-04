@@ -212,9 +212,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       ? "Unlock for: FREE"
       : "Not Listed";
   }
+  function getOfferPrice(price: number, isApi: boolean) {
+    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
+    return esdtPrice > 0
+      ? `• ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      : esdtPrice === 0
+      ? "Unlock for: FREE"
+      : "Not Listed";
+  }
 
   return (
-    <Box mx={tokenIdParam ? { base: "5 !important", lg: "28 !important" } : 0}>
+    <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
         <Box mb="5">
           <Flex direction={"column"} alignItems={"flex-start"}>
@@ -240,12 +248,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             )}
             <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack
-                flexDirection={{ base: "column", md: "row" }}
+                flexDirection={{ base: "column", lg: "row" }}
                 m={5}
-                justifyContent={{ base: "center", md: "flex-start" }}
-                alignItems={{ base: "center", md: "flex-start" }}>
+                justifyContent={{ base: "center", lg: "flex-start" }}
+                alignItems={{ base: "center", lg: "flex-start" }}>
                 <Image
-                  boxSize={{ base: "240px", md: "330px" }}
+                  boxSize={{ base: "260px", lg: "330px" }}
                   p={10}
                   objectFit={"contain"}
                   src={nftData.url}
@@ -382,11 +390,18 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               <NoDataHere imgFromTop="0" />
                             </GridItem>
                           )}
+                          <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
+                            Price
+                          </GridItem>
+                          <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
+                            Quantity
+                          </GridItem>
+                          <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
                           {totalOffers &&
                             totalOffers.map((to: any, index: number) => (
                               <Fragment key={index}>
                                 <GridItem flexDirection="column" colSpan={4}>
-                                  {marketRequirements && getListingText(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
+                                  {marketRequirements && getOfferPrice(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
                                 </GridItem>
                                 <GridItem flexDirection="column" colSpan={1}>
                                   {to.listed_supply}
@@ -401,7 +416,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                         ? navigate(`/datanfts/marketplace/${nftData.identifier}/offer-${to.index}`)
                                         : navigate(`/datanfts/marketplace/${nftData.identifier}`);
                                     }}>
-                                    {tokenId && pathname?.includes(tokenId) ? "Procure Data" : "View"}
+                                    {tokenId && pathname?.includes(tokenId) ? "Purchase Data" : "View"}
                                   </Button>
                                 </GridItem>
                               </Fragment>
