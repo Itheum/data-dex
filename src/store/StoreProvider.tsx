@@ -8,6 +8,7 @@ import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import axios from "axios";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { chainID } = useGetNetworkConfig();
@@ -35,6 +36,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateItheumPrice = useMarketStore((state) => state.updateItheumPrice);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const updateIsMarketPaused = useMarketStore((state) => state.updateIsMarketPaused);
+  const isApiUp = useMarketStore((state) => state.isApiUp);
+  const updateIsApiUp = useMarketStore((state) => state.updateIsApiUp);
 
   // MINT STORE
   const userData = useMintStore((state) => state.userData);
@@ -62,6 +65,21 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       }
     })();
   }, [address, isMxLoggedIn]);
+
+  useEffect(() => {
+    axios
+      .get(`https://staging-itheum-api.up.railway.app/`)
+      .then((res) => {
+        if (res.status === 200) {
+          updateIsApiUp(true);
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          updateIsApiUp(false);
+        }
+      });
+  }, [isApiUp]);
 
   useEffect(() => {
     if (!chainMeta) return;
