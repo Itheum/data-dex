@@ -36,8 +36,6 @@ import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberRoundFloor } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { useChainMeta } from "store/ChainMetaContext";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
-import { useAccountStore } from "../../store";
 
 export default function HomeMultiversX({
   setMenuItem,

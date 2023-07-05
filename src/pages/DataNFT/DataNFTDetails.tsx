@@ -48,6 +48,7 @@ import {
   transformDescription,
   getTokenWantedRepresentation,
   tokenDecimals,
+  backendApi,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -172,7 +173,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     const nonceDec = parseInt(nonceHex, 16);
 
     axios
-      .get(`https://staging-itheum-api.up.railway.app/offers/${identifier}?nonces=${nonceDec}`)
+      .get(`${backendApi}offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
         // console.log(res.data);
         if (res.data) {
