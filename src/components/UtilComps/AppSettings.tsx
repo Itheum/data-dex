@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Flex, Heading, Stack } from "@chakra-ui/react";
+import { Box, Text, Flex, Heading, Stack, FormControl, FormLabel, Switch, SimpleGrid } from "@chakra-ui/react";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getApiDataDex, getApiDataMarshal, getSentryProfile } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -14,12 +16,20 @@ export default function () {
   const isPublicNetworkProvider = getNetworkProviderCodification(_chainMeta?.networkId).includes(".multiversx.com");
   const isApiNetworkProvider = getNetworkProvider(_chainMeta?.networkId) instanceof ApiNetworkProvider;
   const [isLoading, setIsLoading] = useState(true);
+  const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [previewDataFlag, setPreviewDataFlag] = useState<boolean>(previewDataOnDevnetSession == "true");
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
       setIsLoading(false);
     }
   }, [_chainMeta]);
+
+  useEffect(() => {
+    if ((previewDataFlag && !previewDataOnDevnetSession) || (!previewDataFlag && !!previewDataOnDevnetSession)) {
+      setPreviewDataOnDevnetSession(previewDataFlag ? "true" : null);
+    }
+  }, [previewDataFlag]);
 
   return (
     <Stack spacing={5}>
@@ -76,6 +86,15 @@ export default function () {
                 <Text>Web2 Data Marshal API : {getApiDataMarshal(_chainMeta?.networkId)}</Text>
                 <Text>Chain Meta Dump : {JSON.stringify(_chainMeta)}</Text>
               </Box>
+            </Box>
+
+            <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mt={10} mb={10} w="full">
+              <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 5, lg: 10 }} my="5">
+                <FormControl as={SimpleGrid} columns={{ base: 2, lg: 4 }}>
+                  <FormLabel htmlFor="isChecked" fontSize="lg">Preview Data on devnet:</FormLabel>
+                  <Switch id="isChecked" colorScheme="teal" size="lg" isChecked={previewDataFlag} onChange={(e) => setPreviewDataFlag(e.target.checked)} />
+                </FormControl>
+              </Flex>
             </Box>
           </Box>
         )}
