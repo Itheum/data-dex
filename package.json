@@ -10,6 +10,7 @@
     "@hookform/resolvers": "3.1.0",
     "@multiversx/sdk-core": "12.4.2",
     "@multiversx/sdk-dapp": "2.15.1",
+    "@multiversx/sdk-native-auth-client": "^1.0.4",
     "@multiversx/sdk-network-providers": "1.4.0",
     "@sentry/react": "7.51.2",
     "@tanstack/match-sorter-utils": "8.8.4",

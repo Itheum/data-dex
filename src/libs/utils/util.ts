@@ -27,6 +27,8 @@ export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId:
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
 };
 
+export const backendApi = process.env.REACT_APP_ENV_BACKEND_API;
+
 export const gtagGo = (category: string, action: any, label: any, value?: any) => {
   /*
   e.g.

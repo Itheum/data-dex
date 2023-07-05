@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -59,6 +59,7 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 
 const exploreRouterMenu = [
   {
@@ -484,6 +485,21 @@ export default AppHeader;
 
 const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
+  const [initToken, setInitToken] = useState<string>("");
+  const { address: mxAddress } = useGetAccountInfo();
+
+  const client = new NativeAuthClient({ origin: "test" });
+
+  useEffect(() => {
+    (async () => {
+      setInitToken(await client.initialize());
+    })();
+  }, []);
+
+  const parts = initToken.split(".");
+  const signature = mxAddress + parts.slice(1).join(".");
+
+  const accessToken = client.getToken(mxAddress, initToken, signature);
 
   return (
     <Popover

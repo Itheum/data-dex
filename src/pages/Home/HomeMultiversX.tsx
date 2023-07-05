@@ -252,6 +252,12 @@ export default function HomeMultiversX({
   const claimsStackMinW = "220px";
   const heroGridMargin = useBreakpointValue({ base: "auto", md: "initial" });
 
+  // obtain signature by signing the following message: `${address}${init}`
+  // Example:
+  // - if the address is `erd1qnk2vmuqywfqtdnkmauvpm8ls0xh00k8xeupuaf6cm6cd4rx89qqz0ppgl`
+  // - and the init string is `YXBpLmVscm9uZC5jb20.066de4ba7df143f2383c3e0cd7ef8eeaf13375d1123ec8bafcef9f7908344b0f.86400.e30`
+  // - then the signable message should be `erd1qnk2vmuqywfqtdnkmauvpm8ls0xh00k8xeupuaf6cm6cd4rx89qqz0ppgl066de4ba7df143f2383c3e0cd7ef8eeaf13375d1123ec8bafcef9f7908344b0f.86400.e30`
+
   return (
     <>
       <Stack mx={{ base: 5, lg: 24 }}>
