@@ -84,21 +84,33 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     if (offer.wanted_token_identifier == "EGLD") {
       marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
     } else {
-      const sendAcceptOfferTransaction =
-        offer.wanted_token_nonce === 0 ? marketContract.sendAcceptOfferEsdtTransaction : marketContract.sendAcceptOfferNftEsdtTransaction;
-
-      const { sessionId } = await sendAcceptOfferTransaction(
-        offer.index,
-        paymentAmount.toFixed(),
-        offer.wanted_token_identifier,
-        offer.wanted_token_nonce,
-        amount as never,
-        address
-      );
-
-      // if offer is sold out by this transaction, close Drawer if opened
-      if (setSessionId && amount == offer.quantity) {
-        setSessionId(sessionId);
+      if (offer.wanted_token_nonce === 0) {
+        const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
+          offer.index,
+          paymentAmount.toFixed(),
+          offer.wanted_token_identifier,
+          amount as never,
+          address
+        );
+  
+        // if offer is sold out by this transaction, close Drawer if opened
+        if (setSessionId && amount == offer.quantity) {
+          setSessionId(sessionId);
+        }
+      } else {
+        const { sessionId } = await marketContract.sendAcceptOfferNftEsdtTransaction(
+          offer.index,
+          paymentAmount.toFixed(),
+          offer.wanted_token_identifier,
+          offer.wanted_token_nonce,
+          amount as never,
+          address
+        );
+  
+        // if offer is sold out by this transaction, close Drawer if opened
+        if (setSessionId && amount == offer.quantity) {
+          setSessionId(sessionId);
+        }
       }
     }
 
