@@ -3,7 +3,7 @@ import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } fro
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
+import { backendApi, convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
@@ -68,7 +68,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     axios
-      .get(`https://staging-itheum-api.up.railway.app/`)
+      .get(`${backendApi}`)
       .then((res) => {
         if (res.status === 200) {
           updateIsApiUp(true);

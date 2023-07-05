@@ -105,7 +105,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   // console.log(pathname);
 
-  console.log(tokenId);
+  // console.log(tokenId);
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
@@ -131,7 +131,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-        console.log(_offer);
+        // console.log(_offer);
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -146,7 +146,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         const attributes = new DataNftMintContract(_chainMeta.networkId).decodeNftAttributes(_nftData);
         _nftData.attributes = attributes;
         setNftData(_nftData);
-        console.log(_nftData);
+        // console.log(_nftData);
         setIsLoadingDetails(false);
       })
       .catch((err) => {
@@ -174,7 +174,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     axios
       .get(`https://staging-itheum-api.up.railway.app/offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data) {
           setTotalOffers(res.data);
         }
@@ -394,12 +394,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 <NoDataHere imgFromTop="0" />
                               </GridItem>
                             )}
-                            <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
-                              Price
-                            </GridItem>
-                            <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
-                              Quantity
-                            </GridItem>
+                            {!(totalOffers.length === 0 || totalOffers === null) && (
+                              <>
+                                <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
+                                  Price
+                                </GridItem>
+                                <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
+                                  Quantity
+                                </GridItem>
+                              </>
+                            )}
                             <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
                             {totalOffers &&
                               totalOffers.map((to: any, index: number) => (

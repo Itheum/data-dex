@@ -67,8 +67,6 @@ export default function HomeMultiversX({
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
-  const accessToken = useAccountStore((state) => state.accessToken);
-
   const navigate = useNavigate();
 
   const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
@@ -255,26 +253,6 @@ export default function HomeMultiversX({
   const tileBoxH = "360px";
   const claimsStackMinW = "220px";
   const heroGridMargin = useBreakpointValue({ base: "auto", md: "initial" });
-
-  // const client = new NativeAuthClient({ origin: "test" });
-  //
-  // useEffect(() => {
-  //   (async () => {
-  //     setInitToken(await client.initialize());
-  //   })();
-  // }, []);
-  //
-  // const parts = initToken.split(".");
-  // const signature = mxAddress + parts.slice(1).join(".");
-  //
-  // const accessToken = client.getToken(mxAddress, initToken, signature);
-  //
-  // const handleOnClick = () => {
-  //   console.group();
-  //   console.log(initToken);
-  //   console.log(accessToken);
-  //   console.groupEnd();
-  // };
 
   // obtain signature by signing the following message: `${address}${init}`
   // Example:
@@ -493,8 +471,6 @@ export default function HomeMultiversX({
             </ChainSupportedComponent>
           </SimpleGrid>
         </Box>
-
-        <Button onClick={() => console.log(accessToken)}>Click me</Button>
 
         <Box m="auto" pt="10" pb="10">
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
