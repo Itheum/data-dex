@@ -181,3 +181,7 @@ export const getApiDataMarshal = (networkId: NetworkIdType) => {
 
   return process.env[envKey] || defaultUrl;
 };
+
+export const getExplorerTrailBlazerURL = (networkId: NetworkIdType) => {
+  return networkId === "E1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
+};

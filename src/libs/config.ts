@@ -508,4 +508,3 @@ export const TRAILBLAZER_NONCES: Record<string, Array<number>> = {
   "ED": [407, 423],
   "E1": [],
 };
-export const TRAILBLAZER_URL = 'https://stg.explorer.itheum.io/itheum-trailblazer-poc';
