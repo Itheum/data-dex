@@ -3,27 +3,27 @@ import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Flex,
+  Grid,
+  GridItem,
   Heading,
   HStack,
-  Link,
-  VStack,
-  Text,
   Image,
-  Stack,
-  Flex,
-  useToast,
-  Spinner,
-  useClipboard,
+  Link,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  useDisclosure,
-  useColorMode,
+  Spinner,
+  Stack,
+  Text,
   Tooltip,
-  GridItem,
-  Grid,
+  useClipboard,
+  useColorMode,
+  useDisclosure,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -34,21 +34,21 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { OfferType } from "libs/MultiversX/types";
 import {
-  convertWeiToEsdt,
-  isValidNumericCharacter,
-  convertToLocalString,
-  printPrice,
-  transformDescription,
-  getTokenWantedRepresentation,
-  tokenDecimals,
   backendApi,
+  convertToLocalString,
+  convertWeiToEsdt,
+  getTokenWantedRepresentation,
+  isValidNumericCharacter,
+  printPrice,
+  tokenDecimals,
+  transformDescription,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -92,6 +92,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
+  const backendApiRoute = backendApi(_chainMeta.networkId);
+
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
   const [totalOffers, setTotalOffers] = useState<Record<any, any>>({});
@@ -103,8 +105,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
-
-  // console.log(pathname);
 
   // console.log(tokenId);
   useTrackTransactionStatus({
@@ -173,7 +173,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     const nonceDec = parseInt(nonceHex, 16);
 
     axios
-      .get(`${backendApi}offers/${identifier}?nonces=${nonceDec}`)
+      .get(`${backendApiRoute}offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
         // console.log(res.data);
         if (res.data) {
@@ -223,6 +223,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       ? "Unlock for: FREE"
       : "Not Listed";
   }
+
+  const handleButtonClick = (offer: number, identifier: string) => {
+    return `/datanfts/marketplace/${identifier}/offer-${offer}`;
+  };
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -416,17 +420,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                     {to.listed_supply}
                                   </GridItem>
                                   <GridItem colSpan={2}>
-                                    <Button
-                                      w="full"
-                                      colorScheme="teal"
-                                      variant="outline"
-                                      onClick={() => {
-                                        tokenId && pathname?.includes(tokenId)
-                                          ? navigate(`/datanfts/marketplace/${nftData.identifier}/offer-${to.index}`)
-                                          : navigate(`/datanfts/marketplace/${nftData.identifier}`);
-                                      }}>
-                                      {tokenId && pathname?.includes(tokenId) ? "Purchase Data" : "View"}
-                                    </Button>
+                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                      <Button w="full" colorScheme="teal" variant="outline">
+                                        {tokenId && pathname?.includes(tokenId) ? "View Data" : "View"}
+                                      </Button>
+                                    </a>
                                   </GridItem>
                                 </Fragment>
                               ))}
