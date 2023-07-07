@@ -206,7 +206,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               navigateToDiscover(MENU.LANDING);
             }}>
             <HStack>
-              <Image w="45px" ml={5} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Image w="45px" ml={{ base: 0, md: 5 }} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
               <Heading
                 display={{ base: "flex", md: "flex", xl: "flex" }}
                 fontSize={{ base: "md", xl: "xl" }}
@@ -244,7 +244,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       onClick={() => navigateToDiscover(menuEnum)}>
                       <Flex justifyContent="center" alignItems="center" px={{ base: 0, "2xl": 1.5 }} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
-                        <Text pl={2} fontSize={{ base: "xs", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                        <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                           {shortLbl}
                         </Text>
                       </Flex>
@@ -565,7 +565,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   return (
     <Box
       display={displayParams}
-      fontSize={{ md: "xs", "2xl": "md" }}
+      fontSize={{ md: "sm", "2xl": "md" }}
       minWidth="5.5rem"
       textAlign="center"
       color="black"
@@ -590,7 +590,7 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
   return (
     <Box
       display={displayParams}
-      fontSize={{ md: "xs", "2xl": "md" }}
+      fontSize={{ md: "sm", "2xl": "md" }}
       textAlign="center"
       color="teal.200"
       fontWeight="semibold"
