@@ -33,6 +33,7 @@ import moment from "moment";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import TokenTxTable from "components/Tables/TokenTxTable";
+import ConditionalRender from "components/UtilComps/ApiWrapper";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -53,7 +54,6 @@ import {
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
-import ConditionalRender from "../../components/UtilComps/ApiWrapper";
 
 type DataNFTDetailsProps = {
   owner?: string;
