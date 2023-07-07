@@ -422,7 +422,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   <GridItem colSpan={2}>
                                     <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
                                       <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Data" : "View"}
+                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
                                       </Button>
                                     </a>
                                   </GridItem>

@@ -28,7 +28,7 @@ export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId:
 };
 
 export const backendApi = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_DEVNET_API";
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
   const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
 
   return process.env[envKey] || defaultUrl;
