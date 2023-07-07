@@ -72,6 +72,11 @@ export default function () {
                 <Text>API_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_MAINNET_KEY, 5, 5)}</Text>
                 <Text>DATADEX_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_MAINNET_API, 26, 5)}</Text>
                 <Text>DATAMARSHAL_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_MAINNET_API, 26, 5)}</Text>
+                <br />
+                <Text>REACT_APP_ENV_BACKEND_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_API, 10, 10)}</Text>
+                <Text>REACT_APP_ENV_BACKEND_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_DEVNET_API, 5, 5)}</Text>
+                <Text>REACT_APP_ENV_BACKEND_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_MAINNET_API, 26, 5)}</Text>
+                <Text>REACT_APP_LOADING_DELAY_SECONDS : {maskOutputString(process.env.REACT_APP_LOADING_DELAY_SECONDS, 1, 1)}</Text>
               </Box>
             </Box>
 
@@ -91,7 +96,9 @@ export default function () {
             <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mt={10} mb={10} w="full">
               <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 5, lg: 10 }} my="5">
                 <FormControl as={SimpleGrid} columns={{ base: 2, lg: 4 }}>
-                  <FormLabel htmlFor="isChecked" fontSize="lg">Preview Data on devnet:</FormLabel>
+                  <FormLabel htmlFor="isChecked" fontSize="lg">
+                    Preview Data on devnet:
+                  </FormLabel>
                   <Switch id="isChecked" colorScheme="teal" size="lg" isChecked={previewDataFlag} onChange={(e) => setPreviewDataFlag(e.target.checked)} />
                 </FormControl>
               </Flex>

@@ -20,7 +20,9 @@ function CustomLoader() {
       }}>
       <Box margin="auto !important">
         <Spinner size="xl" color="teal.200" margin="auto !important" />
-        <Text mt="5">Loading</Text>
+        <Text mt="5" ml="-5px">
+          Loading
+        </Text>
       </Box>
     </div>
   );
@@ -32,9 +34,7 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
-
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -63,35 +63,13 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
     }
   }, [_chainMeta]);
 
-  // useEffect(() => {
-  //   if (mxAddress && isMxLoggedIn) {
-  //     setUser({
-  //       ...baseUserContext,
-  //       ..._user,
-  //       isMxAuthenticated: true,
-  //       loggedInAddress: mxAddress,
-  //     });
-  //   }
-  // }, [mxAddress, isMxLoggedIn]);
-
-  // const resetAppContexts = () => {
-  // setUser({ ...baseUserContext });
-  // setChainMeta({});
-  // };
-
   if (isLoading) {
     return <CustomLoader />;
   }
 
   return (
     <StoreProvider>
-      <AppMx
-        onLaunchMode={handleLaunchMode}
-        // resetAppContexts={resetAppContexts}
-        // appConfig={{
-        //   mxEnvironment: launchEnvironment,
-        // }}
-      />
+      <AppMx onLaunchMode={handleLaunchMode} />
     </StoreProvider>
   );
 }
