@@ -138,15 +138,17 @@ export const getInteractionTransactions = async (
   try {
     const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
     const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;
-    const selfTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer%2Cburn&senderOrReceiver=${address}&withOperations=true`;
+    const selfTxsAddOffer = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=addOffer&senderOrReceiver=${address}&withOperations=true`;
+    const selfTxsBurn = `https://${api}/accounts/${address}/transactions?size=50&status=success&function=burn&senderOrReceiver=${address}&withOperations=true`;
 
-    const [minterResp, marketResp, selfResp] = await Promise.all([
+    const [minterResp, marketResp, selfResp, selfRespBurn] = await axios.all([
       axios.get(minterTxs, { timeout: uxConfig.mxAPITimeoutMs }),
       axios.get(marketTxs, { timeout: uxConfig.mxAPITimeoutMs }),
-      axios.get(selfTxs, { timeout: uxConfig.mxAPITimeoutMs }),
+      axios.get(selfTxsAddOffer, { timeout: uxConfig.mxAPITimeoutMs }),
+      axios.get(selfTxsBurn, { timeout: uxConfig.mxAPITimeoutMs }),
     ]);
 
-    const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data];
+    const allTransactions = [...minterResp.data, ...marketResp.data, ...selfResp.data, ...selfRespBurn.data];
 
     const transactions: any[] = [];
 
