@@ -53,6 +53,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
+  const backendApiRoute = backendApi(chainMeta.networkId);
 
   useEffect(() => {
     (async () => {
@@ -68,7 +69,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     axios
-      .get(`${backendApi}`)
+      .get(`${backendApiRoute}`)
       .then((res) => {
         if (res.status === 200) {
           updateIsApiUp(true);
