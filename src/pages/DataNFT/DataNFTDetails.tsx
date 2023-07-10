@@ -420,11 +420,19 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                     {to.listed_supply}
                                   </GridItem>
                                   <GridItem colSpan={2}>
-                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
+                                    {tokenId && pathname?.includes(tokenId) ? (
+                                      <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                        <Button w="full" colorScheme="teal" variant="outline">
+                                          {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                        </Button>
+                                      </a>
+                                    ) : (
+                                      <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                        <Button w="full" colorScheme="teal" variant="outline">
+                                          {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                        </Button>
+                                      </a>
+                                    )}
                                   </GridItem>
                                 </Fragment>
                               ))}
@@ -435,7 +443,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   </ConditionalRender>
 
                   {offer && address && address != offer.owner && (
-                    <Box>
+                    <Box h={14}>
                       <HStack gap={5}>
                         <Text fontSize="xl">How many to procure </Text>
                         <NumberInput
