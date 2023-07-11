@@ -1,15 +1,17 @@
 import React from "react";
-import { Box, Flex, Heading, Button, Image, Text, Center, Link } from "@chakra-ui/react";
+import { Box, Flex, Heading, Button, Image, Text, Center, Link, useColorMode } from "@chakra-ui/react";
 import { FaTwitter, FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import illustration from "assets/img/illustration.png";
 
 export const GetWhitelist: React.FC = () => {
+  const { colorMode } = useColorMode();
+
   return (
     <Flex w="full" h="full">
       <Flex
         w="100%"
         height={{ base: "auto", md: "87dvh" }}
-        bgGradient="linear(to-r, bgDark, #6B46C160, #00C79730)"
+        bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-r, bgDark, #6B46C160, #00C79730)"}
         bgSize="contain"
         bgPosition="bottom"
         bgRepeat="no-repeat"
@@ -66,22 +68,22 @@ export const GetWhitelist: React.FC = () => {
               />
             </Box>
           </Flex>
-          <Box position="absolute" bottom={2} right={4} display={{ base: "none", lg: "flex" }}>
+          <Box position="absolute" bottom={2} right={4} display={{ base: "none", md: "flex", xl: "flex" }}>
             <Flex direction="column" justifyContent="end" alignItems="end" gap={5} pb={16} pr={4}>
               <a href="https://twitter.com/itheum" target="_blank" rel="noreferrer">
-                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
+                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
                   <Image as={FaTwitter} m="auto" fontSize="3xl" h="full" />
                 </Box>
               </a>
 
               <a href="https://itheum.io/discord" target="_blank" rel="noreferrer">
-                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
+                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
                   <Image as={FaDiscord} m="auto" fontSize="3xl" h="full" />
                 </Box>
               </a>
 
               <a href="https://t.me/itheum" target="_blank" rel="noreferrer">
-                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor="bgDark">
+                <Box rounded="full" border="2px solid" w={16} h={16} alignContent={"center"} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
                   <Image as={FaTelegramPlane} m="auto" fontSize="3xl" h="full" />
                 </Box>
               </a>

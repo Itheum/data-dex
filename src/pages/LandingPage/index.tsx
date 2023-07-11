@@ -40,7 +40,7 @@ const LandingPage = () => {
         minH="100vh"
         boxShadow={containerShadow}
         zIndex={2}>
-        <Box backgroundColor={colorMode === "light" ? "white" : "bgDark"} flexGrow="1">
+        <Box backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"} flexGrow="1">
           <Flex
             w="100%"
             h={["45rem", "45rem"]}

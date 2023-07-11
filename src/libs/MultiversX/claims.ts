@@ -31,7 +31,7 @@ export class ClaimsContract {
     } else {
       this.chainID = "D";
     }
-    console.log(this.chainID);
+
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
 

@@ -2,6 +2,7 @@ import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Button,
   Flex,
   Image,
   Link,
@@ -74,7 +75,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "780px" : "685px"}
+        h={isMxLoggedIn ? "780px" : "700px"}
         mx="3 !important"
         borderWidth="0.5px"
         borderRadius="xl"
@@ -82,6 +83,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         position="relative"
         mb="1rem">
         <Flex justifyContent="center">
+          {/*<Box position="absolute" top={0} left={0} right={0} bottom={0} bgGradient="linear(to-b, #00000000, #1b1b1bb1)" zIndex="1" />*/}
           <Image
             src={imageUrl}
             alt={"item.dataPreview"}
@@ -98,6 +100,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
           />
+          {/*<Button position="absolute" bottom={2} right={4} size="xs" rounded="full" zIndex="2" colorScheme="teal" variant="outline">*/}
+          {/*  Details*/}
+          {/*</Button>*/}
         </Flex>
 
         <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
@@ -136,13 +141,13 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 </PopoverContent>
               </Popover>
               <Flex display="flex" flexDirection="column" mt={1}>
-                <Box color="#8c8f9282" fontSize="md">
+                <Box color="#8c8f92d0" fontSize="md">
                   Creator: <ShortAddress address={nftMetadata.creator} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${nftMetadata.creator}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
                   </Link>
                 </Box>
-                <Box color="#8c8f9282" fontSize="md">
+                <Box color="#8c8f92d0" fontSize="md">
                   Owner: <ShortAddress address={offer?.owner} fontSize="md" />
                   <Link href={`${ChainExplorer}/accounts/${offer?.owner}`} isExternal>
                     <ExternalLinkIcon ml="5px" fontSize="sm" />
@@ -166,7 +171,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   )}
 
                   <Box borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                    <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
                       Fully Transferable License
                     </Text>
                   </Box>
@@ -178,7 +183,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               </Box>
 
               {nftMetadata && (
-                <Box color="#8c8f9282" fontSize="md" fontWeight="normal">
+                <Box color="#8c8f92d0" fontSize="md" fontWeight="normal">
                   {`Listed: ${offer?.quantity}`} <br />
                   {`Total supply: ${nftMetadata?.supply}`} <br />
                   {`Royalty: ${convertToLocalString(nftMetadata?.royalties * 100)}%`}

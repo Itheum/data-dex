@@ -7,6 +7,7 @@ type State = {
   maxPaymentFeeMap: Record<string, number>;
   isMarketPaused: boolean;
 
+  isApiUp: boolean;
   offers: Array<OfferType>;
   loadingOffers: boolean;
   pageCount: number;
@@ -18,6 +19,7 @@ type Action = {
   updateMaxPaymentFeeMap: (maxPaymentFeeMap: State["maxPaymentFeeMap"]) => void;
   updateIsMarketPaused: (isMarketPaused: State["isMarketPaused"]) => void;
 
+  updateIsApiUp: (isApiUp: State["isApiUp"]) => void;
   updateOffers: (offers: State["offers"]) => void;
   updateLoadingOffers: (loadingOffers: State["loadingOffers"]) => void;
   updatePageCount: (pageCount: State["pageCount"]) => void;
@@ -33,9 +35,11 @@ export const useMarketStore = create<State & Action>((set) => ({
   updateMaxPaymentFeeMap: (value: Record<string, number>) => set((state) => ({ ...state, maxPaymentFeeMap: value })),
   updateIsMarketPaused: (value: boolean) => set((state) => ({ ...state, isMarketPaused: value })),
 
+  isApiUp: true,
   offers: [],
   loadingOffers: true,
   pageCount: 1,
+  updateIsApiUp: (value: boolean) => set((state) => ({ ...state, isApiUp: value })),
   updateOffers: (value: Array<OfferType>) => set((state) => ({ ...state, offers: value })),
   updateLoadingOffers: (value: boolean) => set((state) => ({ ...state, loadingOffers: value })),
   updatePageCount: (value: number) => set((state) => ({ ...state, pageCount: value })),

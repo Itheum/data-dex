@@ -13,7 +13,7 @@ type Props = {
 
 export const GuardRailsCards: React.FC<Props> = (props) => {
   const { items, title, badgeColor, textColor } = props;
-  const [currentIndex, setCurrentIndex] = useState<number>(2);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [xPosition, setXPosition] = useState<number>(0);
 
   const arrowUp = "↑";
@@ -36,32 +36,38 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
 
   const currentItem = items[currentIndex];
 
-  const isLowerBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) < parseInt(currentItem.buyer_fee_newPrice);
-  const isHigherBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) > parseInt(currentItem.buyer_fee_newPrice);
-  const isEqualBuyerFee = parseInt(currentItem.buyer_fee_oldPrice) === parseInt(currentItem.buyer_fee_newPrice);
+  const isLowerBuyerFee = parseInt(currentItem?.buyer_fee_oldPrice ?? "0") < parseInt(currentItem?.buyer_fee_newPrice ?? "0");
+  const isHigherBuyerFee = parseInt(currentItem?.buyer_fee_oldPrice ?? "0") > parseInt(currentItem?.buyer_fee_newPrice ?? "0");
+  const isEqualBuyerFee = parseInt(currentItem?.buyer_fee_oldPrice ?? "0") === parseInt(currentItem?.buyer_fee_newPrice ?? "0");
+  const isNullBuyerFee = "-";
 
-  const isLowerSellerFee = parseInt(currentItem.seller_fee_oldPrice) < parseInt(currentItem.seller_fee_newPrice);
-  const isHigherSellerFee = parseInt(currentItem.seller_fee_oldPrice) > parseInt(currentItem.seller_fee_newPrice);
-  const isEqualSellerFee = parseInt(currentItem.seller_fee_oldPrice) === parseInt(currentItem.seller_fee_newPrice);
+  const isLowerSellerFee = parseInt(currentItem?.seller_fee_oldPrice ?? "0") < parseInt(currentItem?.seller_fee_newPrice ?? "0");
+  const isHigherSellerFee = parseInt(currentItem?.seller_fee_oldPrice ?? "0") > parseInt(currentItem?.seller_fee_newPrice ?? "0");
+  const isEqualSellerFee = parseInt(currentItem?.seller_fee_oldPrice ?? "0") === parseInt(currentItem?.seller_fee_newPrice ?? "0");
+  const isNullSellerFee = "-";
 
-  const isLowerMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) < parseInt(currentItem.minimum_royalties_newPrice);
-  const isHigherMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) > parseInt(currentItem.minimum_royalties_newPrice);
-  const isEqualMinRoyalty = parseInt(currentItem.minimum_royalties_oldPrice) === parseInt(currentItem.minimum_royalties_newPrice);
+  const isLowerMinRoyalty = parseInt(currentItem?.minimum_royalties_oldPrice ?? "0") < parseInt(currentItem?.minimum_royalties_newPrice ?? "0");
+  const isHigherMinRoyalty = parseInt(currentItem?.minimum_royalties_oldPrice ?? "0") > parseInt(currentItem?.minimum_royalties_newPrice ?? "0");
+  const isEqualMinRoyalty = parseInt(currentItem?.minimum_royalties_oldPrice ?? "0") === parseInt(currentItem?.minimum_royalties_newPrice ?? "0");
+  const isNullMinRoyalty = "-";
 
-  const isLowerMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) < parseInt(currentItem.maximum_royalties_newPrice);
-  const isHigherMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) > parseInt(currentItem.maximum_royalties_newPrice);
-  const isEqualMaxRoyalty = parseInt(currentItem.maximum_royalties_oldPrice) === parseInt(currentItem.maximum_royalties_newPrice);
+  const isLowerMaxRoyalty = parseInt(currentItem?.maximum_royalties_oldPrice ?? "0") < parseInt(currentItem?.maximum_royalties_newPrice ?? "0");
+  const isHigherMaxRoyalty = parseInt(currentItem?.maximum_royalties_oldPrice ?? "0") > parseInt(currentItem?.maximum_royalties_newPrice ?? "0");
+  const isEqualMaxRoyalty = parseInt(currentItem?.maximum_royalties_oldPrice ?? "0") === parseInt(currentItem?.maximum_royalties_newPrice ?? "0");
+  const isNullMaxRoyalty = "-";
 
-  const isLowerTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) < parseInt(currentItem.time_between_mints_newPrice);
-  const isHigherTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) > parseInt(currentItem.time_between_mints_newPrice);
-  const isEqualTimeBetweenMints = parseInt(currentItem.time_between_mints_oldPrice) === parseInt(currentItem.time_between_mints_newPrice);
+  const isLowerTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice ?? "0") < parseInt(currentItem?.time_between_mints_newPrice ?? "0");
+  const isHigherTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice ?? "0") > parseInt(currentItem?.time_between_mints_newPrice ?? "0");
+  const isEqualTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice ?? "0") === parseInt(currentItem?.time_between_mints_newPrice ?? "0");
+  const isNullTimeBetweenMints = "-";
 
-  const isLowerAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) < parseInt(currentItem.antiSpam_tax_newPrice);
-  const isHigherAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) > parseInt(currentItem.antiSpam_tax_newPrice);
-  const isEqualAntiSpamFee = parseInt(currentItem.antiSpam_tax_oldPrice) === parseInt(currentItem.antiSpam_tax_newPrice);
+  const isLowerAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice ?? "0") < parseInt(currentItem?.antiSpam_tax_newPrice ?? "0");
+  const isHigherAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice ?? "0") > parseInt(currentItem?.antiSpam_tax_newPrice ?? "0");
+  const isEqualAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice ?? "0") === parseInt(currentItem?.antiSpam_tax_newPrice ?? "0");
+  const isNullAntiSpamFee = "-";
 
   return (
-    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" w="31.25rem">
+    <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" w={{ base: "31.25rem", xl: "27.3rem", "2xl": "31.25rem" }}>
       <Flex
         flexDirection="row"
         justifyContent="center"
@@ -77,12 +83,12 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>
       </Flex>
       {/*<motion.div animate={{ x: xPosition }} transition={{ type: "tween", duration: 1 }}>*/}
-      <Stack>
+      <Stack textAlign="start">
         <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
           <Flex flexDirection="row" alignItems="center">
             <Text>Buyer fee:&nbsp;</Text>
-            {currentItem.buyer_fee_newPrice ? (
-              <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {currentItem.buyer_fee_newPrice ? (
                 <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
                   {!isEqualBuyerFee ? (
                     <Text as="s" textColor={textColor}>
@@ -106,22 +112,22 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                       {equal}
                     </Text>
                   )}
-                  <Text textColor={textColor}>{currentItem.buyer_fee_newPrice}</Text>
+                  <Text textColor={textColor}>{currentItem?.buyer_fee_newPrice}</Text>
                   <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
                 </Flex>
-              </Badge>
-            ) : (
-              <Badge backgroundColor={badgeColor} textColor={textColor} fontSize="0.8em" m={1} borderRadius="md">
-                {"-"}
-              </Badge>
-            )}
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullBuyerFee}
+                </Text>
+              )}
+            </Badge>
           </Flex>
         </Text>
         <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
           <Flex flexDirection="row" alignItems="center">
             <Text>Seller fee:&nbsp;</Text>
             <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              {(
+              {currentItem.seller_fee_newPrice ? (
                 <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
                   {!isEqualSellerFee ? (
                     <Text as="s" textColor={textColor}>
@@ -148,7 +154,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                   <Text textColor={textColor}>{currentItem.seller_fee_newPrice}</Text>
                   <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
                 </Flex>
-              ) ?? "-"}
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullSellerFee}
+                </Text>
+              )}
             </Badge>
           </Flex>
         </Text>
@@ -164,7 +174,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           <Flex flexDirection="row" alignItems="center">
             <Text>Minimum royalties:&nbsp;</Text>
             <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              {(
+              {currentItem.minimum_royalties_newPrice ? (
                 <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
                   {!isEqualMinRoyalty ? (
                     <Text as="s" textColor={textColor}>
@@ -191,7 +201,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                   <Text textColor={textColor}>{currentItem.minimum_royalties_newPrice}</Text>
                   <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
                 </Flex>
-              ) ?? "-"}
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullMinRoyalty}
+                </Text>
+              )}
             </Badge>
           </Flex>
         </Text>
@@ -199,7 +213,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           <Flex flexDirection="row" alignItems="center">
             <Text>Max royalties:&nbsp;</Text>
             <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              {(
+              {currentItem.maximum_royalties_newPrice ? (
                 <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
                   {!isEqualMaxRoyalty ? (
                     <Text as="s" textColor={textColor}>
@@ -226,7 +240,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                   <Text textColor={textColor}>{currentItem.maximum_royalties_newPrice}</Text>
                   <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
                 </Flex>
-              ) ?? "-"}
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullMaxRoyalty}
+                </Text>
+              )}
             </Badge>
           </Flex>
         </Text>
@@ -234,7 +252,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           <Flex flexDirection="row" alignItems="center">
             <Text>Time between mints:&nbsp;</Text>
             <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              {(
+              {currentItem.time_between_mints_newPrice ? (
                 <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="0.8rem" fontWeight="500">
                   {!isEqualTimeBetweenMints ? (
                     <Text as="s" textColor={textColor} fontWeight="500">
@@ -267,7 +285,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                     &nbsp;({currentItem.date})
                   </Text>
                 </Flex>
-              ) ?? "-"}
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullTimeBetweenMints}
+                </Text>
+              )}
             </Badge>
           </Flex>
         </Text>
@@ -283,7 +305,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           <Flex flexDirection="row" alignItems="center">
             <Text>Anti-Spam fee:&nbsp;</Text>
             <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
-              {(
+              {currentItem.antiSpam_tax_newPrice ? (
                 <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="md" fontWeight="500">
                   {!isEqualAntiSpamFee ? (
                     <Text as="s" textColor={textColor}>
@@ -310,7 +332,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
                   <Text textColor={textColor}>{currentItem.antiSpam_tax_newPrice}</Text>
                   <Text textColor={textColor}>&nbsp;({currentItem.date})</Text>
                 </Flex>
-              ) ?? "-"}
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullAntiSpamFee}
+                </Text>
+              )}
             </Badge>
           </Flex>
         </Text>

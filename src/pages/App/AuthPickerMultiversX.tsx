@@ -75,7 +75,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
     <>
       {!mxAddress && (
         <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay />
+          <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
             <ModalHeader>
               Select a{" "}
@@ -119,7 +119,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                     Terms of Use <ExternalLinkIcon mx="2px" />
                   </Link>{" "}
                   &{" "}
-                  <Link href="https://itheum.com/privacypolicy" isExternal>
+                  <Link href="https://itheum.com/legal/datadex/privacypolicy" isExternal>
                     Privacy Policy <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Text>
