@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
-import moment from "moment/moment";
+import moment, { duration } from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
@@ -28,6 +28,7 @@ import { convertToLocalString, printPrice, transformDescription, convertWeiToEsd
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
+import { motion } from "framer-motion";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -83,7 +84,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         position="relative"
         mb="1rem">
         <Flex justifyContent="center">
-          {/*<Box position="absolute" top={0} left={0} right={0} bottom={0} bgGradient="linear(to-b, #00000000, #1b1b1bb1)" zIndex="1" />*/}
           <Image
             src={imageUrl}
             alt={"item.dataPreview"}
@@ -92,17 +92,40 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             mx={6}
             mt={6}
             borderRadius="32px"
-            cursor="pointer"
+            onLoad={() => setNftImageLoaded(true)}
+            onError={({ currentTarget }) => {
+              currentTarget.src = DEFAULT_NFT_IMAGE;
+            }}
+          />
+          <motion.button
+            style={{
+              position: "absolute",
+              zIndex: "1",
+              top: "0",
+              bottom: "0",
+              right: "0",
+              left: "0",
+              height: "236px",
+              width: "236px",
+              marginInlineStart: "1.2rem",
+              marginInlineEnd: "1.2rem",
+              marginTop: "1.5rem",
+              borderRadius: "32px",
+              cursor: "pointer",
+              opacity: 0,
+            }}
             onLoad={() => setNftImageLoaded(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping
-              currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
-          />
-          {/*<Button position="absolute" bottom={2} right={4} size="xs" rounded="full" zIndex="2" colorScheme="teal" variant="outline">*/}
-          {/*  Details*/}
-          {/*</Button>*/}
+            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
+            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
+              <Text as="p" mt={1} fontWeight="400">
+                Details
+              </Text>
+            </Text>
+          </motion.button>
         </Flex>
 
         <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">

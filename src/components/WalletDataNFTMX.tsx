@@ -57,6 +57,7 @@ import { convertToLocalString, transformDescription, isValidNumericCharacter, sl
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
+import { motion } from "framer-motion";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -361,10 +362,35 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             mx={6}
             mt={6}
             borderRadius="32px"
-            cursor="pointer"
             onLoad={() => item.setHasLoaded(true)}
             onClick={() => item.openNftDetailsDrawer(item.index)}
           />
+          <motion.button
+            style={{
+              position: "absolute",
+              zIndex: "1",
+              top: "0",
+              bottom: "0",
+              right: "0",
+              left: "0",
+              height: "236px",
+              width: "236px",
+              marginInlineStart: "1.2rem",
+              marginInlineEnd: "1.2rem",
+              marginTop: "1.5rem",
+              borderRadius: "32px",
+              cursor: "pointer",
+              opacity: 0,
+            }}
+            onLoad={() => item.setHasLoaded(true)}
+            onClick={() => item.openNftDetailsDrawer(item.index)}
+            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
+            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
+              <Text as="p" mt={1} fontWeight="400">
+                Details
+              </Text>
+            </Text>
+          </motion.button>
         </Flex>
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
