@@ -542,9 +542,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
-              <Text fontSize="md" color="#929497">
-                Unlock fee for each:{" "}
-              </Text>
+              <Tooltip label="This fee is what your dataset is advertised for on the marketplace">
+                <Text fontSize="md" color="#929497">
+                  Access fee for each:
+                </Text>
+              </Tooltip>
               <NumberInput
                 size="sm"
                 maxW={20}
