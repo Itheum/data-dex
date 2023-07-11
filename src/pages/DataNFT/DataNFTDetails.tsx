@@ -403,7 +403,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               {totalOffers.length === 1
                                 ? `${totalOffers.length} other offer:`
                                 : totalOffers.length === 0
-                                ? "other offers:"
+                                ? "Other offers:"
                                 : `${totalOffers.length} other offers:`}
                             </>
                           )}
