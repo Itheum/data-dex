@@ -31,14 +31,13 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const { setChainMeta } = useChainMeta();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   useEffect(() => {
     let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
-    if (searchParams.get("accessToken")) {
+    if (searchParams.get("accessToken") || tokenLogin) {
       networkId = "E1";
     }
     setChainMeta({
