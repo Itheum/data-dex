@@ -18,11 +18,12 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { isValidNumericCharacter } from "libs/utils";
+import { isValidNumericCharacter, getExplorerTrailBlazerURL } from "libs/utils";
 import { useMarketStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 
 type MarketplaceLowerCardProps = {
   offer: OfferType;
@@ -35,6 +36,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { chainMeta: _chainMeta } = useChainMeta();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
@@ -48,22 +50,40 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
-        <Button
-          my="3"
-          size="sm"
-          colorScheme="teal"
-          variant="outline"
-          _disabled={{ opacity: 0.2 }}
-          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
-          onClick={() => {
-            window.open(nftMetadata.dataPreview);
-          }}>
-          <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-            Preview Data
-          </Text>
-        </Button>
-      </Tooltip>
+      <HStack justifyContent="stretch">
+        <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+          <Button
+            my="3"
+            size="sm"
+            w="full"
+            colorScheme="teal"
+            variant="outline"
+            _disabled={{ opacity: 0.2 }}
+            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+            onClick={() => {
+              window.open(nftMetadata.dataPreview);
+            }}>
+            <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+              Preview Data
+            </Text>
+          </Button>
+        </Tooltip>
+
+        {TRAILBLAZER_NONCES[_chainMeta.networkId].indexOf(offer.offered_token_nonce) >= 0 && (
+          <Button
+            size="sm"
+            colorScheme="teal"
+            w="full"
+            isDisabled={network.id != "devnet"} // disable on mainnet atm
+            onClick={() => {
+              window.open(getExplorerTrailBlazerURL(_chainMeta.networkId))?.focus();
+            }}>
+            <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+              Explore
+            </Text>
+          </Button>
+        )}
+      </HStack>
 
       {!isMyNft ? (
         isMxLoggedIn && (

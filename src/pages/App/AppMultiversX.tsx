@@ -13,6 +13,7 @@ import {
   Flex,
   useColorMode,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { logout } from "@multiversx/sdk-dapp/utils";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
@@ -36,14 +37,13 @@ import { GuardRails } from "../GuardRails/GuardRails";
 
 const mxLogout = logout;
 
-function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; resetAppContexts: any; onLaunchMode: any }) {
+function App({ onLaunchMode }: { onLaunchMode: any }) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
-  const { mxEnvironment } = appConfig;
+  const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
-  const [chain, setChain] = useState("");
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
@@ -80,19 +80,16 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     console.log(consoleNotice);
   }, []);
 
+  const networkId = chainID === "1" ? "E1" : "ED";
   useEffect(() => {
-    if (_chainMeta?.networkId) {
-      const networkId = mxEnvironment === "mainnet" ? "E1" : "ED";
+    // setChain(CHAINS[networkId] || "Unknown chain");
 
-      setChain(CHAINS[networkId] || "Unknown chain");
-
-      if (!SUPPORTED_CHAINS.includes(networkId)) {
-        setAlertIsOpen(true);
-      }
-
-      linkOrRefreshDataDATAccount(true);
+    if (!SUPPORTED_CHAINS.includes(networkId)) {
+      setAlertIsOpen(true);
     }
-  }, [_chainMeta]);
+
+    linkOrRefreshDataDATAccount(true);
+  }, [chainID]);
 
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
@@ -128,7 +125,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
 
   const handleLogout = () => {
     clearAppSessionsLaunchMode();
-    resetAppContexts();
+    // resetAppContexts();
 
     gtagGo("auth", "logout", "el");
 
@@ -163,7 +160,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
-  console.log("menuItem", menuItem);
+  // console.log("menuItem", menuItem);
 
   let bodyMinHeightLg = "1000px";
 
@@ -253,7 +250,7 @@ function App({ appConfig, resetAppContexts, onLaunchMode }: { appConfig: any; re
               <AlertDialogBody>
                 Sorry the{" "}
                 <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                  {chain}
+                  {CHAINS[networkId]}
                 </Badge>{" "}
                 chain is currently not supported. We are working on it. You need to be on{" "}
                 {SUPPORTED_CHAINS.map((i) => (

@@ -203,7 +203,7 @@ export default function AppMarketplace(props: Props) {
         </Text>
         <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={4}>
           <Box overflow="hidden" backgroundColor="none">
-            <Image src={imgProgGaPa} w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
+            <Image src={imgProgGaPa} height="160px" w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
             <Box p="3">
               <Box display="flex" alignItems="baseline">
                 <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>

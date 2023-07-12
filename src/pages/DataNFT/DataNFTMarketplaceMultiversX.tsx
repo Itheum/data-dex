@@ -125,7 +125,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
 
-      console.log("_numberOfOffers", _numberOfOffers);
+      // console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
 
@@ -144,7 +144,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       // start loading offers
       updateLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
-      console.log("_offers", _offers);
+      // console.log("_offers", _offers);
       updateOffers(_offers);
 
       //
@@ -187,7 +187,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          console.log("transactionOnNetwork", transactionOnNetwork);
+          // console.log("transactionOnNetwork", transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {

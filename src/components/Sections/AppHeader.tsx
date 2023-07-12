@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -59,6 +59,7 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 
 const exploreRouterMenu = [
   {
@@ -205,7 +206,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               navigateToDiscover(MENU.LANDING);
             }}>
             <HStack>
-              <Image w="45px" ml={5} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
+              <Image w="45px" ml={{ base: 0, md: 5 }} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
               <Heading
                 display={{ base: "flex", md: "flex", xl: "flex" }}
                 fontSize={{ base: "md", xl: "xl" }}
@@ -243,7 +244,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       onClick={() => navigateToDiscover(menuEnum)}>
                       <Flex justifyContent="center" alignItems="center" px={{ base: 0, "2xl": 1.5 }} color="teal.200" pointerEvents="none">
                         <Icon size={"1.6em"} />
-                        <Text pl={2} fontSize={{ base: "xs", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
+                        <Text pl={2} fontSize={{ base: isMxLoggedIn ? "sm" : "md", "2xl": "lg" }} color={colorMode === "dark" ? "white" : "black"}>
                           {shortLbl}
                         </Text>
                       </Flex>
@@ -484,6 +485,21 @@ export default AppHeader;
 
 const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
+  const [initToken, setInitToken] = useState<string>("");
+  const { address: mxAddress } = useGetAccountInfo();
+
+  const client = new NativeAuthClient({ origin: "test" });
+
+  useEffect(() => {
+    (async () => {
+      setInitToken(await client.initialize());
+    })();
+  }, []);
+
+  const parts = initToken.split(".");
+  const signature = mxAddress + parts.slice(1).join(".");
+
+  const accessToken = client.getToken(mxAddress, initToken, signature);
 
   return (
     <Popover
@@ -549,7 +565,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   return (
     <Box
       display={displayParams}
-      fontSize={{ md: "xs", "2xl": "md" }}
+      fontSize={{ md: "sm", "2xl": "md" }}
       minWidth="5.5rem"
       textAlign="center"
       color="black"
@@ -574,7 +590,7 @@ function LoggedInChainBadge({ chain, displayParams }: { chain: any; displayParam
   return (
     <Box
       display={displayParams}
-      fontSize={{ md: "xs", "2xl": "md" }}
+      fontSize={{ md: "sm", "2xl": "md" }}
       textAlign="center"
       color="teal.200"
       fontWeight="semibold"

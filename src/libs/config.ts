@@ -370,7 +370,7 @@ export const dataCATDemoUserData = {
         "programName": "Hypertension Insights Intense",
         "img": "hii",
         "description":
-          'This Intense program aims to produce some blood pressure insights for our patient base. These insights can then be used to test some Hypothesis relating to the “Dangers of Morning Blood Pressure”, "Unusual trends in Arm to Arm BP difference" as well is the treatment plan a Patient on really controlling their Blood Pressure. \n\nAt the end of the Program the Patent will receive a report by post which we will recommend then take to their GP or Specialist. ',
+          'This Intense program aims to produce some blood pressure insights for our patient base. These insights can then be used to test some Hypothesis relating to the “Dangers of Morning Blood Pressure”, "Unusual trends in Arm to Arm BP difference" as well is the treatment plan a Patient on really controlling their Blood Pressure. \n\nAt the end of the Program the Patent will receive a report.',
         "duration": "2_weeks",
       },
       "476ab840-1cb7-11e9-84fe-e935b365220a": {
@@ -389,7 +389,7 @@ export const dataCATDemoUserData = {
         "programName": "Blood Pressure Tracker",
         "img": "bpt",
         "description":
-          "Hypertension is defined as a systolic blood pressure of 140 mm Hg or more, or a diastolic blood pressure of 90 mm Hg or more, or taking antihypertensive medication. It is estimated that 1 in 3 people globally supper from Hypertension.\n\nThis Program is to help anyone living with Hypertension or Mild Hypertension to better manger their condition with proactive monitoring and tracking. It's also designed to help anyone track and monitor their loved ones living with this condition as well.",
+          "Hypertension is defined as a systolic blood pressure of 140 mm Hg or more, or a diastolic blood pressure of 90 mm Hg or more, or taking antihypertensive medication. It is estimated that 1 in 3 people globally supper from Hypertension.\n\nThis Program is to help anyone living with Hypertension or Mild Hypertension to better manger their condition with proactive monitoring and tracking.",
         "duration": "ongoing",
       },
       "48d7b020-eab0-11ea-a466-0334ff0e8bf2": {
@@ -503,3 +503,8 @@ export const upcomingGuardRails = {
 export const whitelistWallets: Array<string> = [];
 
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
+
+export const TRAILBLAZER_NONCES: Record<string, Array<number>> = {
+  "ED": [407, 423],
+  "E1": [],
+};

@@ -47,13 +47,13 @@ import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
+import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, getExplorerTrailBlazerURL } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -201,12 +201,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
         await sleep(1);
 
-        if (!isWebWallet) {
-          const signResult = await fetchAccountSignature(NFTId, data.nonce);
-          // console.log('signResult', signResult);
+        const signResult = await fetchAccountSignature(NFTId, data.nonce);
+        // console.log('signResult', signResult);
+        if (isWebWallet) return;
 
-          await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
-        }
+        await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
       } else {
         if (data && data.success === false) {
           setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
@@ -267,8 +266,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     return signature;
   }
 
-  const [signatureProcessed, setSignatureProcessed] = useState<boolean>(false); // check if signature is processed with web wallet login
-
   useEffect(() => {
     const processSignature = async () => {
       try {
@@ -279,11 +276,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       }
     };
 
-    if (isWebWallet && nftId && dataNonce && nftId === item.id && !signatureProcessed) {
-      setSignatureProcessed(true);
+    if (isWebWallet && nftId && dataNonce && nftId === item.id) {
       processSignature();
     }
-  }, [isWebWallet, nftId, dataNonce, item.id, signatureProcessed]);
+  }, [item.id]);
 
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
@@ -431,17 +427,34 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Text>
               </Badge>
 
-              <Button
-                mt="1"
-                size="md"
-                borderRadius="lg"
-                fontSize="sm"
-                bgColor="#FF439D"
-                _hover={{ backgroundColor: "#FF439D70" }}
-                isDisabled={hasPendingTransactions}
-                onClick={() => onBurnButtonClick(item)}>
-                Burn
-              </Button>
+              <HStack mt="1">
+                <Button
+                  size="sm"
+                  w="full"
+                  borderRadius="lg"
+                  fontSize="sm"
+                  bgColor="#FF439D"
+                  _hover={{ backgroundColor: "#FF439D70" }}
+                  isDisabled={hasPendingTransactions}
+                  onClick={() => onBurnButtonClick(item)}>
+                  Burn
+                </Button>
+
+                {TRAILBLAZER_NONCES[_chainMeta.networkId].indexOf(item.nonce) >= 0 && (
+                  <Button
+                    size="sm"
+                    colorScheme="teal"
+                    w="full"
+                    isDisabled={network.id != "devnet"} // disable on mainnet atm
+                    onClick={() => {
+                      window.open(getExplorerTrailBlazerURL(_chainMeta.networkId))?.focus();
+                    }}>
+                    <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
+                      Explore
+                    </Text>
+                  </Button>
+                )}
+              </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
               {`Balance: ${item.balance}`} <br />
