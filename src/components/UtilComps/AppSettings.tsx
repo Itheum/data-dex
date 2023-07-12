@@ -59,24 +59,26 @@ export default function () {
                 Env Vars
               </Heading>
               <Box fontSize="sm">
-                <Text>SENTRY_DSN : {maskOutputString(process.env.REACT_APP_ENV_SENTRY_DSN, 10, 5)}</Text>
-                <Text>NFT_STORAGE_KEY : {maskOutputString(process.env.REACT_APP_ENV_NFT_STORAGE_KEY, 10, 10)}</Text>
-                <Text>WALLETCONNECTV2_PROJECTID : {maskOutputString(process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID, 5, 5)}</Text>
+                <Text>REACT_APP_ENV_SENTRY_DSN : {maskOutputString(process.env.REACT_APP_ENV_SENTRY_DSN, 10, 5)}</Text>
+                <Text>REACT_APP_ENV_NFT_STORAGE_KEY : {maskOutputString(process.env.REACT_APP_ENV_NFT_STORAGE_KEY, 10, 10)}</Text>
+                <Text>REACT_APP_ENV_WALLETCONNECTV2_PROJECTID : {maskOutputString(process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID, 5, 5)}</Text>
                 <br />
-                <Text>GATEWAY_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_DEVNET_KEY, 15, 10)}</Text>
-                <Text>API_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_DEVNET_KEY, 5, 5)}</Text>
-                <Text>DATADEX_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_DEVNET_API, 26, 5)}</Text>
-                <Text>DATAMARSHAL_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_DEVNET_API, 26, 5)}</Text>
+                <Text>REACT_APP_ENV_GATEWAY_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_DEVNET_KEY, 15, 10)}</Text>
+                <Text>REACT_APP_ENV_API_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_DEVNET_KEY, 5, 5)}</Text>
+                <Text>REACT_APP_ENV_DATADEX_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_DEVNET_API, 26, 5)}</Text>
+                <Text>REACT_APP_ENV_DATAMARSHAL_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_DEVNET_API, 26, 5)}</Text>
                 <br />
-                <Text>GATEWAY_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_MAINNET_KEY, 10, 10)}</Text>
-                <Text>API_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_MAINNET_KEY, 5, 5)}</Text>
-                <Text>DATADEX_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_MAINNET_API, 26, 5)}</Text>
-                <Text>DATAMARSHAL_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_MAINNET_API, 26, 5)}</Text>
+                <Text>REACT_APP_ENV_GATEWAY_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_MAINNET_KEY, 10, 10)}</Text>
+                <Text>REACT_APP_ENV_API_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_MAINNET_KEY, 5, 5)}</Text>
+                <Text>REACT_APP_ENV_DATADEX_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_MAINNET_API, 26, 5)}</Text>
+                <Text>REACT_APP_ENV_DATAMARSHAL_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_MAINNET_API, 26, 5)}</Text>
                 <br />
+                <Text>REACT_APP_MAX_BUY_LIMIT_PER_SFT : {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT}</Text>
+                <Text>REACT_APP_MAX_LIST_LIMIT_PER_SFT : {process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT}</Text>
                 <Text>REACT_APP_ENV_BACKEND_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_API, 10, 10)}</Text>
                 <Text>REACT_APP_ENV_BACKEND_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_DEVNET_API, 5, 5)}</Text>
                 <Text>REACT_APP_ENV_BACKEND_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_MAINNET_API, 26, 5)}</Text>
-                <Text>REACT_APP_LOADING_DELAY_SECONDS : {maskOutputString(process.env.REACT_APP_LOADING_DELAY_SECONDS, 1, 1)}</Text>
+                <Text>REACT_APP_LOADING_DELAY_SECONDS : {process.env.REACT_APP_LOADING_DELAY_SECONDS}</Text>
               </Box>
             </Box>
 
