@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { RouteType } from "@multiversx/sdk-dapp/types";
+import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
@@ -27,6 +29,24 @@ function CustomLoader() {
     </div>
   );
 }
+
+export const routes: RouteType[] = [
+  {
+    path: 'dashboard',
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: 'tradedata',
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: 'datanfts/wallet',
+    component: <></>,
+    authenticatedRoute: true,
+  },
+];
 
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
   const [searchParams] = useSearchParams();
@@ -69,7 +89,12 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   return (
     <StoreProvider>
-      <AppMx onLaunchMode={handleLaunchMode} />
+      <AuthenticatedRoutesWrapper
+        routes={routes}
+        unlockRoute={'/'}
+        >
+        <AppMx onLaunchMode={handleLaunchMode} />
+      </AuthenticatedRoutesWrapper>
     </StoreProvider>
   );
 }
