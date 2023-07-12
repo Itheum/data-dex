@@ -34,6 +34,7 @@ import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { useChainMeta } from "store/ChainMetaContext";
 import { GuardRails } from "../GuardRails/GuardRails";
+import { Profile } from "../Profile/Profile";
 
 const mxLogout = logout;
 
@@ -192,6 +193,10 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
 
               <Route path="guardRails" element={<Outlet />}>
                 <Route path="" element={<GuardRails />} />
+              </Route>
+
+              <Route path="profile" element={<Outlet />}>
+                <Route path="" element={<Profile />} />
               </Route>
 
               <Route
