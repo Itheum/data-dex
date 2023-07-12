@@ -385,26 +385,24 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   </Box>
 
                   <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
-                    {/*{!offer && (*/}
-                    {/*  <>*/}
                     <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
                       <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
                         <>
                           {!offer ? (
                             <>
                               {totalOffers.length === 1
-                                ? `${totalOffers.length} Offer:`
-                                : totalOffers.length === 0
+                                ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offer:`
+                                : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
                                 ? "Offers:"
-                                : `${totalOffers.length} Offers:`}
+                                : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
                             </>
                           ) : (
                             <>
                               {totalOffers.length === 1
-                                ? `${totalOffers.length} other offer:`
-                                : totalOffers.length === 0
+                                ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offer:`
+                                : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
                                 ? "Other offers:"
-                                : `${totalOffers.length} other offers:`}
+                                : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
                             </>
                           )}
                         </>
@@ -429,35 +427,35 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                         <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
                         {totalOffers &&
-                          totalOffers.map((to: any, index: number) => (
-                            <Fragment key={index}>
-                              <GridItem flexDirection="column" colSpan={4}>
-                                {marketRequirements && getOfferPrice(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
-                              </GridItem>
-                              <GridItem flexDirection="column" colSpan={1}>
-                                {to.listed_supply}
-                              </GridItem>
-                              <GridItem colSpan={2}>
-                                {tokenId && pathname?.includes(tokenId) ? (
-                                  <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                    <Button w="full" colorScheme="teal" variant="outline">
-                                      {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                    </Button>
-                                  </a>
-                                ) : (
-                                  <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                    <Button w="full" colorScheme="teal" variant="outline">
-                                      {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                    </Button>
-                                  </a>
-                                )}
-                              </GridItem>
-                            </Fragment>
-                          ))}
+                          totalOffers
+                            .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
+                            .map((to: any, index: number) => (
+                              <Fragment key={index}>
+                                <GridItem flexDirection="column" colSpan={4}>
+                                  {marketRequirements && getOfferPrice(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
+                                </GridItem>
+                                <GridItem flexDirection="column" colSpan={1}>
+                                  {to.listed_supply}
+                                </GridItem>
+                                <GridItem colSpan={2}>
+                                  {tokenId && pathname?.includes(tokenId) ? (
+                                    <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                      <Button w="full" colorScheme="teal" variant="outline">
+                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                      </Button>
+                                    </a>
+                                  ) : (
+                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                      <Button w="full" colorScheme="teal" variant="outline">
+                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                      </Button>
+                                    </a>
+                                  )}
+                                </GridItem>
+                              </Fragment>
+                            ))}
                       </Grid>
                     </Box>
-                    {/*</>*/}
-                    {/*)}*/}
                   </ConditionalRender>
 
                   {offer && address && address != offer.owner && (
