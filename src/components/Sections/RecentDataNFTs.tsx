@@ -13,6 +13,7 @@ import { NoDataHere } from "./NoDataHere";
 import axios from "axios";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { set } from "react-hook-form";
+import { useMarketStore } from "store";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -42,6 +43,8 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
 
@@ -65,6 +68,8 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
         offers.forEach((offer: any) => {
           const matchingDataNft = dataNfts.find((dataNft: DataNft) => dataNft.nonce === offer.nonce && dataNft.collection === offer.identifier);
           if (matchingDataNft) {
+            const buyerFee = marketRequirements?.buyer_fee ?? 0;
+            console.log("buyerFee", buyerFee);
             _latestOffers.push({
               data_nft_id: matchingDataNft?.tokenIdentifier,
               offered_token_identifier: offer.identifier,
@@ -78,7 +83,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
               title: offer?.title,
               nftImgUrl: matchingDataNft?.nftImgUrl,
               royalties: matchingDataNft?.royalties,
-              feePerSFT: offer?.price,
+              feePerSFT: offer?.price + offer?.price * (buyerFee / 10000),
             });
           }
         });
