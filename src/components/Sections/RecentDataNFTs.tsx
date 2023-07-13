@@ -49,7 +49,9 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
   const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
-    apiWrapper();
+    if (marketRequirements) {
+      apiWrapper();
+    }
   }, [_chainMeta]);
 
   const apiWrapper = async () => {
