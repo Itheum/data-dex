@@ -3,7 +3,7 @@ import { Box, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Loader } from "@multiversx/sdk-dapp/UI";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "libs/hooks";
 import { contractsForChain } from "libs/MultiversX";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -31,15 +31,18 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const { setChainMeta } = useChainMeta();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   useEffect(() => {
     let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
-    if (searchParams.get("accessToken")) {
+    if (searchParams.get("accessToken") || tokenLogin) {
       networkId = "E1";
+      if (window.location.pathname === "/") {
+        navigate("/dashboard" + window.location.search);
+      }
     }
     setChainMeta({
       networkId,
