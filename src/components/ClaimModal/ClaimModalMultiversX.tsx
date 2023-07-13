@@ -38,7 +38,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
 
   return (
     <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState()} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
-      <ModalOverlay />
+      <ModalOverlay backdropFilter="blur(10px)" />
 
       <ModalContent h="300px" w="400px">
         <ModalHeader>My Claimable {title}</ModalHeader>

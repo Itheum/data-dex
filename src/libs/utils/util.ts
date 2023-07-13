@@ -27,6 +27,13 @@ export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId:
   window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
 };
 
+export const backendApi = (networkId: NetworkIdType) => {
+  const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
+  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
+
+  return process.env[envKey] || defaultUrl;
+};
+
 export const gtagGo = (category: string, action: any, label: any, value?: any) => {
   /*
   e.g.
@@ -178,4 +185,8 @@ export const getApiDataMarshal = (networkId: NetworkIdType) => {
     networkId === "E1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
 
   return process.env[envKey] || defaultUrl;
+};
+
+export const getExplorerTrailBlazerURL = (networkId: NetworkIdType) => {
+  return networkId === "E1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
 };

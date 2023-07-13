@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { HStack, Link } from "@chakra-ui/react";
+import { HStack, Link, Spinner, Flex } from "@chakra-ui/react";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
@@ -15,6 +15,7 @@ import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, Transaction
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const [data, setData] = useState<TransactionInTable[]>([]);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
 
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
@@ -103,12 +104,21 @@ export default function TokenTxTable(props: TokenTableProps) {
       axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&size=10000&order=asc`),
     ]).then((responses) => {
       const mergedTransactions = getHistory(responses, props.tokenId);
-      const history = buildHistory(mergedTransactions);
+      const history = buildHistory(mergedTransactions, props.buyer_fee);
       setData(history);
+      setLoadingData(false);
     });
   }, []);
 
-  return <DataTable columns={columns} data={data} />;
+  return (
+    <>
+      {(loadingData && (
+        <Flex padding="5px" minH="100px" mb="10px" alignItems="center" justifyContent="center">
+          <Spinner speed="0.64s" color="teal.200" />
+        </Flex>
+      )) || <DataTable columns={columns} data={data} />}
+    </>
+  );
 }
 
 function getHistory(responses: any[], tokenId?: string) {

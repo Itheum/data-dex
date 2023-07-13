@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
+  Box,
   CloseButton,
   Drawer,
   DrawerBody,
@@ -55,7 +56,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < 8; index++) {
       _dataNfts.push(createDataNftType());
     }
     return _dataNfts;
@@ -175,7 +176,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         </Heading>
 
         <Tabs pt={10} index={tabState - 1}>
-          <TabList overflow={{ base: "scroll", md: "unset", lg: "unset" }}>
+          <TabList overflowX={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%" overflowY="hidden">
             {walletTabs.map((tab, index) => {
               return (
                 <Tab
@@ -183,9 +184,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   isDisabled={tab.isDisabled}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   onClick={() => onChangeTab(index + 1)}>
-                  <Flex ml="4.7rem" alignItems="center" py={3}>
+                  <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"}>
+                    <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
                     </Text>
                     <Text fontSize="sm" px={2} color="whiteAlpha.800">
@@ -196,10 +197,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               );
             })}
           </TabList>
-
           <TabPanels>
             <TabPanel mt={2} width={"full"}>
-              {dataNfts.length > 0 ? (
+              {tabState === 1 && dataNfts.length > 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
@@ -225,7 +225,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               )}
             </TabPanel>
             <TabPanel mt={2} width={"full"}>
-              {purchasedDataNfts.length >= 0 ? (
+              {tabState === 2 && purchasedDataNfts.length >= 0 ? (
                 <SimpleGrid
                   columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
                   spacingY={4}
@@ -262,7 +262,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <DrawerOverlay />
-            <DrawerContent bgColor="#181818">
+            <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <DrawerHeader>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
@@ -271,7 +271,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   </Heading>
                 </HStack>
               </DrawerHeader>
-              <DrawerBody bgColor="#181818">
+              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
               </DrawerBody>
             </DrawerContent>

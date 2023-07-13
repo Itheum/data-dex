@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Flex,
+  Grid,
+  GridItem,
   Heading,
   HStack,
-  Link,
-  VStack,
-  Text,
   Image,
-  Stack,
-  Flex,
-  useToast,
-  Spinner,
-  useClipboard,
+  Link,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  useDisclosure,
-  useColorMode,
+  Spinner,
+  Stack,
+  Text,
   Tooltip,
+  useClipboard,
+  useColorMode,
+  useDisclosure,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -31,23 +33,27 @@ import moment from "moment";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import TokenTxTable from "components/Tables/TokenTxTable";
+import ConditionalRender from "components/UtilComps/ApiWrapper";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { OfferType } from "libs/MultiversX/types";
 import {
-  convertWeiToEsdt,
-  isValidNumericCharacter,
+  backendApi,
   convertToLocalString,
-  printPrice,
-  transformDescription,
+  convertWeiToEsdt,
   getTokenWantedRepresentation,
+  isValidNumericCharacter,
+  printPrice,
   tokenDecimals,
+  transformDescription,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -71,6 +77,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
+  const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
@@ -85,8 +92,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
+  const backendApiRoute = backendApi(_chainMeta.networkId);
+
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
+  const [totalOffers, setTotalOffers] = useState<Record<any, any>>({});
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
@@ -94,7 +104,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
+  // console.log(tokenId);
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
@@ -110,7 +122,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   useEffect(() => {
     if (_chainMeta?.networkId) {
       getTokenDetails();
-      getTokenHistory();
+      getTokenHistory(tokenId ?? "");
     }
   }, [_chainMeta, hasPendingTransactions]);
 
@@ -120,6 +132,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
+        // console.log(_offer);
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
@@ -134,6 +147,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         const attributes = new DataNftMintContract(_chainMeta.networkId).decodeNftAttributes(_nftData);
         _nftData.attributes = attributes;
         setNftData(_nftData);
+        // console.log(_nftData);
         setIsLoadingDetails(false);
       })
       .catch((err) => {
@@ -148,23 +162,30 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  function getTokenHistory() {
-    const apiUrl = getApi(_chainMeta.networkId);
+  function getTokenHistory(tokenId: string) {
+    const inputString = tokenId;
+
+    // Extracting identifier
+    const identifier = inputString?.split("-").slice(0, 2).join("-");
+
+    // Extracting nonce
+    const nonceHex = inputString?.split("-")[2];
+    const nonceDec = parseInt(nonceHex, 16);
+
     axios
-      .get(`https://${apiUrl}/nfts/${tokenId}/transactions?status=success&function=addOffer&size=1&receiver=${_chainMeta?.contracts?.market}`)
+      .get(`${backendApiRoute}offers/${identifier}?nonces=${nonceDec}`)
       .then((res) => {
-        const txs = res.data;
-        if (txs.length > 0) {
-          const tx = txs[0];
-          const hexPrice = Buffer.from(tx.data, "base64").toString().split("@")[8];
-          let _price = 0;
-          if (hexPrice.trim() !== "") {
-            _price = parseInt("0x" + hexPrice, 16);
-            if (marketRequirements) {
-              _price += (_price * marketRequirements.buyer_fee) / 10000;
-            }
+        // console.log(res.data);
+        if (res.data) {
+          setTotalOffers(res.data);
+        }
+        let price = Math.min(...res.data.map((offer: any) => offer.price));
+
+        if (price !== Infinity) {
+          if (marketRequirements) {
+            price += (price * marketRequirements.buyer_fee) / 10000;
           }
-          setPriceFromApi(_price);
+          setPriceFromApi(price);
         } else {
           setPriceFromApi(-1);
         }
@@ -186,17 +207,29 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return isLoadingDetails || isLoadingPrice;
   }
 
-  function getListingText(price: number) {
-    const esdtPrice = convertWeiToEsdt(price).toNumber();
+  function getListingText(price: number, isApi: boolean) {
+    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
       ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
       ? "Unlock for: FREE"
       : "Not Listed";
   }
+  function getOfferPrice(price: number, isApi: boolean) {
+    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
+    return esdtPrice > 0
+      ? `• ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
+      : esdtPrice === 0
+      ? "Unlock for: FREE"
+      : "Not Listed";
+  }
+
+  const handleButtonClick = (offer: number, identifier: string) => {
+    return `/datanfts/marketplace/${identifier}/offer-${offer}`;
+  };
 
   return (
-    <Box mx={tokenIdParam ? { base: "5 !important", lg: "28 !important" } : 0}>
+    <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
         <Box mb="5">
           <Flex direction={"column"} alignItems={"flex-start"}>
@@ -222,12 +255,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             )}
             <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack
-                flexDirection={{ base: "column", md: "row" }}
+                flexDirection={{ base: "column", lg: "row" }}
                 m={5}
-                justifyContent={{ base: "center", md: "flex-start" }}
-                alignItems={{ base: "center", md: "flex-start" }}>
+                justifyContent={{ base: "center", lg: "flex-start" }}
+                alignItems={{ base: "center", lg: "flex-start" }}>
                 <Image
-                  boxSize={{ base: "240px", md: "330px" }}
+                  boxSize={{ base: "260px", lg: "330px" }}
                   p={10}
                   objectFit={"contain"}
                   src={nftData.url}
@@ -236,7 +269,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 />
 
                 <VStack alignItems={"flex-start"} gap={"15px"} w="full">
-                  <Box color="gray.100" fontSize={{ base: "lg", lg: "xl" }}>
+                  <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "lg", lg: "xl" }}>
                     <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
                       {nftData.identifier}
                       <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
@@ -265,8 +298,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                   <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                     <Text fontSize={{ base: "18px", lg: "28px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
-                      {!offer && getListingText(priceFromApi)}
-                      {offer && getListingText(Number(offer.wanted_token_amount))}
+                      {!offer && getListingText(priceFromApi, true)}
+                      {offer && getListingText(Number(offer.wanted_token_amount), false)}
                     </Text>
                     {showConnectWallet && (
                       <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -318,7 +351,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <Text>{`Total supply: ${nftData.supply}`}</Text>
                           <Text>
                             {`Royalty: `}
-                            {!isNaN(nftData.royalties) ? `${Math.round(nftData.royalties * 100) / 100}%` : "-"}
+                            {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
                           </Text>
                         </>
                       )}
@@ -330,22 +363,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             {marketRequirements && offer ? (
                               <>
                                 {printPrice(
-                                  convertWeiToEsdt(
-                                    new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                    tokenDecimals(offer.wanted_token_identifier)
-                                  ).toNumber(),
+                                  convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber(),
                                   getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
                                 )}{" "}
                                 {itheumPrice &&
-                                convertWeiToEsdt(
-                                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber() > 0
+                                convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
                                   ? `(~${convertToLocalString(
-                                      convertWeiToEsdt(
-                                        new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
-                                        tokenDecimals(offer.wanted_token_identifier)
-                                      ).toNumber() * itheumPrice,
+                                      convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() *
+                                        itheumPrice,
                                       2
                                     )} USD)`
                                   : ""}
@@ -358,8 +383,83 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       )}
                     </Flex>
                   </Box>
+
+                  <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
+                    <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
+                      <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                        <>
+                          {!offer ? (
+                            <>
+                              {totalOffers.length === 1
+                                ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offer:`
+                                : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
+                                ? "Offers:"
+                                : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
+                            </>
+                          ) : (
+                            <>
+                              {totalOffers.length === 1
+                                ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offer:`
+                                : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
+                                ? "Other offers:"
+                                : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
+                            </>
+                          )}
+                        </>
+                        {}
+                        <Text color={"teal.200"}>{nftData.identifier}</Text>
+                      </Heading>
+                      <Grid templateColumns="repeat(7, 1fr)" maxH="18rem" overflowY="scroll" gap={2} px="28px" py="14px">
+                        {(totalOffers.length === 0 || totalOffers === null) && (
+                          <GridItem colSpan={8}>
+                            <NoDataHere imgFromTop="0" />
+                          </GridItem>
+                        )}
+                        {!(totalOffers.length === 0 || totalOffers === null) && (
+                          <>
+                            <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
+                              Price
+                            </GridItem>
+                            <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
+                              Quantity
+                            </GridItem>
+                          </>
+                        )}
+                        <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
+                        {totalOffers &&
+                          totalOffers
+                            .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
+                            .map((to: any, index: number) => (
+                              <Fragment key={index}>
+                                <GridItem flexDirection="column" colSpan={4}>
+                                  {marketRequirements && getOfferPrice(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
+                                </GridItem>
+                                <GridItem flexDirection="column" colSpan={1}>
+                                  {to.listed_supply}
+                                </GridItem>
+                                <GridItem colSpan={2}>
+                                  {tokenId && pathname?.includes(tokenId) ? (
+                                    <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                      <Button w="full" colorScheme="teal" variant="outline">
+                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                      </Button>
+                                    </a>
+                                  ) : (
+                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                      <Button w="full" colorScheme="teal" variant="outline">
+                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                      </Button>
+                                    </a>
+                                  )}
+                                </GridItem>
+                              </Fragment>
+                            ))}
+                      </Grid>
+                    </Box>
+                  </ConditionalRender>
+
                   {offer && address && address != offer.owner && (
-                    <Box>
+                    <Box h={14}>
                       <HStack gap={5}>
                         <Text fontSize="xl">How many to procure </Text>
                         <NumberInput
@@ -406,12 +506,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Button>
                     </Tooltip>
 
-                    <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet"}>
+                    <Tooltip
+                      colorScheme="teal"
+                      hasArrow
+                      label="Preview Data is disabled on devnet"
+                      isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                       <Button
                         size={{ base: "md", lg: "lg" }}
                         colorScheme="teal"
                         variant="outline"
-                        isDisabled={network.id == "devnet"}
+                        isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                         onClick={() => {
                           window.open(nftData.attributes.dataPreview);
                         }}>
@@ -428,7 +532,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements?.buyer_fee} />
             </Box>
           </VStack>
 
