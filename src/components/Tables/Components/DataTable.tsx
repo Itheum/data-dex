@@ -102,7 +102,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         </Button>
       </Flex>
       <div style={{ maxHeight: "100%", overflowX: "scroll" }}>
-        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
+        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" my="6" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
           <Thead style={styles.th}>
             {table.getHeaderGroups().map((headerGroup) => (
               <Tr key={headerGroup.id}>
@@ -153,7 +153,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         </Table>
       </div>
       {table && table.getPageCount() > 0 && (
-        <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
+        <VStack gap={2} alignItems={"center"} justifyContent={"center"}>
           <VStack>
             <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
               Page

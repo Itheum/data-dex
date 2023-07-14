@@ -23,6 +23,11 @@ import {
   Button,
   TabPanels,
   TabPanel,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalOverlay,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -84,7 +89,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [myListedDataNFT, setMyListedDataNFT] = useState<number>(0);
-  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
+  const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   const marketplace = "/datanfts/marketplace/market";
   const location = useLocation();
@@ -164,13 +169,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
-  function openNftDetailsDrawer(index: number) {
+  function openNftDetailsModal(index: number) {
     setOfferForDrawer(offers[index]);
-    onOpenDrawerTradeStream();
+    onOpenDataNftDetails();
   }
 
   function closeDetailsView() {
-    onCloseDrawerTradeStream();
+    onCloseDataNftDetails();
     setOfferForDrawer(undefined);
   }
 
@@ -310,7 +315,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsDrawer}>
+                          openNftDetailsDrawer={openNftDetailsModal}>
                           <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
                         </UpperCardComponent>
                       ))}
@@ -340,7 +345,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsDrawer}>
+                          openNftDetailsDrawer={openNftDetailsModal}>
                           <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
                         </UpperCardComponent>
                       ))}
@@ -383,29 +388,28 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Box>
         </Box>
       </Stack>
-
       {offerForDrawer && (
         <>
-          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
-            <DrawerOverlay />
-            <DrawerContent>
-              <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent overflowY="scroll" h="90%">
+              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                   <Heading as="h4" size="lg">
                     Data NFT Details
                   </Heading>
                 </HStack>
-              </DrawerHeader>
-              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}
                   closeDetailsView={closeDetailsView}
                 />
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </>
       )}
     </>

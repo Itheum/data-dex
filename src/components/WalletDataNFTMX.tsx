@@ -386,7 +386,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             onClick={() => item.openNftDetailsDrawer(item.index)}
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400">
+              <Text as="p" mt={1} fontWeight="400" textColor="white">
                 Details
               </Text>
             </Text>

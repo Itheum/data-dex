@@ -2,7 +2,6 @@ import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
   Flex,
   Image,
   Link,
@@ -20,11 +19,11 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
-import moment, { duration } from "moment/moment";
+import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { convertToLocalString, printPrice, transformDescription, convertWeiToEsdt, getTokenWantedRepresentation, tokenDecimals } from "libs/utils";
+import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
@@ -121,7 +120,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             }}
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400">
+              <Text as="p" mt={1} fontWeight="400" textColor="white">
                 Details
               </Text>
             </Text>

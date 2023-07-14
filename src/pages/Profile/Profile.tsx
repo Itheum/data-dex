@@ -1,6 +1,5 @@
 import React from "react";
-import { Flex, Heading } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { Flex } from "@chakra-ui/react";
 import { DataCreatorInfo } from "./components/DataCreatorInfo";
 import { DataCreatorTabs } from "./components/DataCreatorTabs";
 
