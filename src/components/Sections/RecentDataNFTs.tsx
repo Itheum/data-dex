@@ -59,8 +59,9 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
     DataNft.setNetworkConfig(_chainMeta?.networkId == "E1" ? "mainnet" : "devnet");
 
     try {
-      const checkApiUpTime = await axios.get(apiUrl);
-      if (checkApiUpTime.status == 200) {
+      const checkApiUpTime = await (await axios.get(`${apiUrl}health-check`)).data;
+
+      if (checkApiUpTime == "OK") {
         const offers = await (await axios.get(`${apiUrl}offers/recent/`)).data;
         const recentNonces: number[] = offers.map((nft: any) => nft.nonce);
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
