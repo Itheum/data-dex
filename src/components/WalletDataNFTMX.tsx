@@ -107,6 +107,21 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
 
+  useEffect(() => {
+    const processSignature = async () => {
+      try {
+        const signature = getMessageSignatureFromWalletUrl();
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
+      } catch (e: any) {
+        console.error(e);
+      }
+    };
+
+    if (isWebWallet && nftId && dataNonce && nftId === item.id) {
+      processSignature();
+    }
+  }, [item.id]);
+
   const showErrorToast = (title: string) => {
     toast({
       title,
@@ -150,7 +165,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   };
 
   const fetchAccountSignature = async (_nftId: string, _dataNonce: string) => {
-    // console.log('fetchAccountSignature', _nftId, _dataNonce);
     const signResult = {
       signature: "",
       addrInHex: "",
@@ -266,21 +280,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     return signature;
   }
 
-  useEffect(() => {
-    const processSignature = async () => {
-      try {
-        const signature = getMessageSignatureFromWalletUrl();
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
-      } catch (e: any) {
-        console.error(e);
-      }
-    };
-
-    if (isWebWallet && nftId && dataNonce && nftId === item.id) {
-      processSignature();
-    }
-  }, [item.id]);
-
   const cleanupAccessDataStreamProcess = () => {
     setUnlockAccessProgress({ s1: 0, s2: 0, s3: 0 });
     setErrUnlockAccessGeneric("");
@@ -322,7 +321,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   };
 
   const formatButtonNumber = (price: number, amount: number) => {
-    //price ? `${formatButtonNumber(price)} ITHEUM ${amount > 1 ? "each" : ""}` : "Free"
     if (price > 0) {
       if (price >= item.maxPayment) {
         return item.maxPayment.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
@@ -333,12 +331,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       return "Free";
     }
   };
-
-  let gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRight;
-
-  if (colorMode === "light") {
-    gradientBorderForTrade = styleStrings.gradientBorderMulticolorToBottomRightLight;
-  }
 
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
