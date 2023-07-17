@@ -76,7 +76,7 @@ export default function () {
                 <Text>REACT_APP_MAX_BUY_LIMIT_PER_SFT : {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT}</Text>
                 <Text>REACT_APP_MAX_LIST_LIMIT_PER_SFT : {process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT}</Text>
                 <Text>REACT_APP_ENV_BACKEND_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_API, 10, 10)}</Text>
-                <Text>REACT_APP_ENV_BACKEND_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_DEVNET_API, 5, 5)}</Text>
+                <Text>REACT_APP_ENV_BACKEND_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_DEVNET_API, 26, 5)}</Text>
                 <Text>REACT_APP_ENV_BACKEND_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_MAINNET_API, 26, 5)}</Text>
                 <Text>REACT_APP_LOADING_DELAY_SECONDS : {process.env.REACT_APP_LOADING_DELAY_SECONDS}</Text>
               </Box>
