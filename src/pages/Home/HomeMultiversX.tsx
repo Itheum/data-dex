@@ -66,7 +66,6 @@ export default function HomeMultiversX({
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
   const navigate = useNavigate();
-
   const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
   const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
 
