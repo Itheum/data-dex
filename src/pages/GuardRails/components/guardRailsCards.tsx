@@ -28,9 +28,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   };
 
   const handlePrevClick = () => {
-    if (currentIndex < 2) {
+    if (currentIndex < 2 && currentIndex !== 0) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
       setXPosition(xPosition - 400);
+    } else {
+      return null;
     }
   };
 
