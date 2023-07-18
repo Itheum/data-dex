@@ -54,13 +54,13 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const navigate = useNavigate();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
+  const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
-
-    if (searchParams.get("accessToken")) {
+    if (searchParams.get("accessToken") || tokenLogin) {
       networkId = "E1";
       if (window.location.pathname === "/") {
         navigate("/dashboard" + window.location.search);

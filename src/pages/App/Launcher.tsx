@@ -8,12 +8,14 @@ import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConsta
 import { clearAppSessionsLaunchMode } from "libs/utils";
 import MxAppHarness from "./AppHarnessMultiversX";
 import AuthPickerMx from "./AuthPickerMultiversX";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
-  const [launchEnvironment, setLaunchEnvironment] = useState(launchEnvSession || "devnet");
+  const { tokenLogin } = useGetLoginInfo();
+  const [launchEnvironment, setLaunchEnvironment] = useState(tokenLogin ? "mainnet" : launchEnvSession || "devnet");
 
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component

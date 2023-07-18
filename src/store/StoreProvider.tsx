@@ -4,6 +4,7 @@ import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/Mult
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { backendApi, convertWeiToEsdt, tokenDecimals } from "libs/utils";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
@@ -17,9 +18,9 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { chainMeta } = useChainMeta();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
-  const networkId = chainID === "1" ? "E1" : "ED";
-
-  const client = new NativeAuthClient({ origin: "datadex.itheum.io", apiUrl: `https://${getApi(chainMeta.networkId)}` });
+  const chainIDToNetworkId = chainID === "1" ? "E1" : "ED"; // convert the mx chainID to our local networkId format
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, chainIDToNetworkId);
+  const client = new NativeAuthClient({ origin: "datadex.itheum.io", apiUrl: `https://${getApi(networkId)}` });
 
   // ACCOUNT STORE
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -53,7 +54,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
-  const backendApiRoute = backendApi(chainMeta.networkId);
+  const backendApiRoute = backendApi(networkId);
 
   useEffect(() => {
     (async () => {
@@ -112,7 +113,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     if (hasPendingTransactions) return;
 
     (async () => {
-      const _token = await getAccountTokenFromApi(address, chainMeta.contracts.itheumToken, chainMeta.networkId);
+      const _token = await getAccountTokenFromApi(address, chainMeta.contracts.itheumToken, networkId);
       const balance = _token ? convertWeiToEsdt(_token.balance, _token.decimals).toNumber() : 0;
       updateItheumBalance(balance);
     })();
