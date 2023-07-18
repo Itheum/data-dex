@@ -49,9 +49,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
   const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
-    if (marketRequirements) {
-      apiWrapper();
-    }
+    apiWrapper();
   }, [_chainMeta, marketRequirements]);
 
   const apiWrapper = async () => {
@@ -73,8 +71,6 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
             (dataNft: DataNft) => dataNft.nonce === offer.offered_token_nonce && dataNft.collection === offer.offered_token_identifier
           );
           if (matchingDataNft) {
-            const buyerFee = marketRequirements?.buyer_fee ?? 0;
-
             const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
             _latestOffers.push({
               data_nft_id: matchingDataNft?.tokenIdentifier,
