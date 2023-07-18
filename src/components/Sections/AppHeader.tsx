@@ -257,7 +257,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
-                <Box display={{ base: "none", md: "block" }}>
+                <Box display={{ base: "none", md: "block" }} zIndex="10">
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
                       <MenuButton as={Button} size={{ md: "md", "2xl": "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
