@@ -63,29 +63,33 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
 
       if (checkApiUpTime == "OK") {
         const offers = await (await axios.get(`${apiUrl}offers/recent/`)).data;
-        const recentNonces: number[] = offers.map((nft: any) => nft.nonce);
+        const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
         const _latestOffers: DataNftCondensedView[] = [];
 
         offers.forEach((offer: any) => {
-          const matchingDataNft = dataNfts.find((dataNft: DataNft) => dataNft.nonce === offer.nonce && dataNft.collection === offer.identifier);
+          const matchingDataNft = dataNfts.find(
+            (dataNft: DataNft) => dataNft.nonce === offer.offered_token_nonce && dataNft.collection === offer.offered_token_identifier
+          );
           if (matchingDataNft) {
             const buyerFee = marketRequirements?.buyer_fee ?? 0;
+
+            const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
             _latestOffers.push({
               data_nft_id: matchingDataNft?.tokenIdentifier,
-              offered_token_identifier: offer.identifier,
-              offered_token_nonce: offer.nonce,
+              offered_token_identifier: offer.offered_token_identifier,
+              offered_token_nonce: offer.offered_token_nonce,
               offer_index: offer.index,
-              offered_token_amount: "1",
-              quantity: offer.listed_supply,
-              wanted_token_amount: offer.price,
+              offered_token_amount: offer.offered_token_amount,
+              quantity: offer.quantity,
+              wanted_token_amount: offer.wanted_token_amount,
               creator: offer?.creator,
               tokenName: matchingDataNft?.tokenName,
               title: offer?.title,
               nftImgUrl: matchingDataNft?.nftImgUrl,
               royalties: matchingDataNft?.royalties,
-              feePerSFT: offer?.price + offer?.price * (buyerFee / 10000),
+              feePerSFT: tokenAmount,
             });
           }
         });
