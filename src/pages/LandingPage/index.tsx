@@ -6,11 +6,13 @@ import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import { styleStrings } from "libs/config";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useChainMeta } from "store/ChainMetaContext";
 
 const LandingPage = () => {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
   let gradientBorder = styleStrings.gradientBorderMulticolor;
@@ -18,17 +20,6 @@ const LandingPage = () => {
   if (colorMode === "light") {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
     gradientBorder = styleStrings.gradientBorderMulticolorLight;
-  }
-
-  let recentDataNFTsChain = "ED";
-  if (!isMxLoggedIn) {
-    if (window.location.hostname === "datadex.itheum.io") {
-      recentDataNFTsChain = "E1";
-    } else {
-      recentDataNFTsChain = "ED";
-    }
-  } else {
-    recentDataNFTsChain = _chainMeta.networkId.toString();
   }
 
   return (
@@ -75,7 +66,7 @@ const LandingPage = () => {
           </Flex>
 
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
-            <RecentDataNFTs headingText="Recent Data NFTs" networkId={recentDataNFTsChain} />
+            <RecentDataNFTs headingText="Recent Data NFTs" networkId={networkId} />
           </Box>
 
           <Box mx={{ base: 8, "2xl": 24 }} py="10" display="none">

@@ -29,7 +29,7 @@ export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId:
 
 export const backendApi = (networkId: NetworkIdType) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
-  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
+  const defaultUrl = networkId === "E1" ? "https://production-itheum-api.up.railway.app/" : "https://staging-itheum-api.up.railway.app/";
 
   return process.env[envKey] || defaultUrl;
 };
@@ -189,4 +189,10 @@ export const getApiDataMarshal = (networkId: NetworkIdType) => {
 
 export const getExplorerTrailBlazerURL = (networkId: NetworkIdType) => {
   return networkId === "E1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
+};
+
+// utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
+// ... this is used only for "public" components and routes where the user has not connected their wallet
+export const networkIdBasedOnLoggedInStatus = (isMxLoggedIn: boolean, networkId: NetworkIdType) => {
+  return !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : networkId;
 };
