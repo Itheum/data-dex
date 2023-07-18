@@ -178,11 +178,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         if (res.data) {
           setTotalOffers(res.data);
         }
-        let price = Math.min(...res.data.map((offer: any) => offer.wanted_token_amount));
+        const price = Math.min(...res.data.map((offer: any) => offer.wanted_token_amount));
         if (price !== Infinity) {
-          if (marketRequirements) {
-            price += (price * marketRequirements.buyer_fee) / 10000;
-          }
           setPriceFromApi(price);
         } else {
           setPriceFromApi(-1);
