@@ -5,7 +5,7 @@ import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { historicGuardrails, upcomingGuardRails, whitelistWallets } from "../../libs/config";
+import { historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt } from "../../libs/utils";
@@ -13,7 +13,7 @@ import { useMarketStore, useMintStore } from "../../store";
 import { useChainMeta } from "../../store/ChainMetaContext";
 
 export const GuardRails: React.FC = () => {
-  const [whitelistedAddress, setWhitelistedAddress] = useState<React.ReactNode>();
+  const [whitelistedAddresses, setWhitelistedAddresses] = useState<string[]>([]);
   const [minRoyalties, setMinRoyalties] = useState(-1);
   const [maxRoyalties, setMaxRoyalties] = useState(-1);
   const [maxSupply, setMaxSupply] = useState(-1);
@@ -99,25 +99,11 @@ export const GuardRails: React.FC = () => {
   }, [_chainMeta.networkId]);
 
   useEffect(() => {
-    const whitelistMap = (
-      <>
-        {whitelistWallets && whitelistWallets.length > 0 ? (
-          whitelistWallets.map((wl, index) => {
-            return (
-              <Tag key={index} size="lg" variant="subtle" colorScheme="cyan" m={1.5} maxW="200px">
-                <TagLeftIcon boxSize="12px" as={FaWallet} />
-                <TagLabel>
-                  <ShortAddress address={wl} />
-                </TagLabel>
-              </Tag>
-            );
-          })
-        ) : (
-          <NoDataHere imgFromTop="0rem" />
-        )}
-      </>
-    );
-    setWhitelistedAddress(whitelistMap);
+    (async () => {
+      const _whitelistedAddresses = await mxDataNftMintContract.getWhiteList();
+      // console.log('_whitelistedAddresses', _whitelistedAddresses);
+      setWhitelistedAddresses(_whitelistedAddresses);
+    })();
   }, []);
 
   return (
@@ -324,7 +310,20 @@ export const GuardRails: React.FC = () => {
       </Heading>
       <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
         <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 0, lg: 10 }} my="5">
-          {whitelistedAddress}
+          {whitelistedAddresses && whitelistedAddresses.length > 0 ? (
+            whitelistedAddresses.map((addr, index) => {
+              return (
+                <Tag key={index} size="lg" variant="subtle" colorScheme="cyan" m={1.5} maxW="200px">
+                  <TagLeftIcon boxSize="12px" as={FaWallet} />
+                  <TagLabel>
+                    <ShortAddress address={addr} />
+                  </TagLabel>
+                </Tag>
+              );
+            })
+          ) : (
+            <NoDataHere imgFromTop="0rem" />
+          )}
         </Flex>
       </Box>
     </Flex>

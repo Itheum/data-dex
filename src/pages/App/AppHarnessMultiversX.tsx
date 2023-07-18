@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { RouteType } from "@multiversx/sdk-dapp/types";
 import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { useNavigate, useSearchParams } from "react-router-dom";
