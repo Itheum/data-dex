@@ -178,8 +178,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         if (res.data) {
           setTotalOffers(res.data);
         }
-        let price = Math.min(...res.data.map((offer: any) => offer.price));
-
+        let price = Math.min(...res.data.map((offer: any) => offer.wanted_token_amount));
         if (price !== Infinity) {
           if (marketRequirements) {
             price += (price * marketRequirements.buyer_fee) / 10000;
@@ -205,8 +204,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return isLoadingDetails || isLoadingPrice;
   }
 
-  function getListingText(price: number, isApi: boolean) {
-    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
+  function getListingText(price: number) {
+    const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
       ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
@@ -214,8 +213,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       : "Not Listed";
   }
 
-  function getOfferPrice(price: number, isApi: boolean) {
-    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
+  function getOfferPrice(price: number) {
+    const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
       ? `• ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
@@ -299,8 +298,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                   <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                     <Text fontSize={{ base: "18px", lg: "28px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
-                      {!offer && getListingText(priceFromApi, true)}
-                      {offer && getListingText(Number(offer.wanted_token_amount), false)}
+                      {!offer && getListingText(priceFromApi)}
+                      {offer && getListingText(Number(offer.wanted_token_amount))}
                     </Text>
                     {showConnectWallet && (
                       <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -433,10 +432,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             .map((to: any, index: number) => (
                               <Fragment key={index}>
                                 <GridItem flexDirection="column" colSpan={4}>
-                                  {marketRequirements && getOfferPrice(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
+                                  {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
                                 </GridItem>
                                 <GridItem flexDirection="column" colSpan={1}>
-                                  {to.listed_supply}
+                                  {to.quantity}
                                 </GridItem>
                                 <GridItem colSpan={2}>
                                   {tokenId && pathname?.includes(tokenId) ? (
