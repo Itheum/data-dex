@@ -76,6 +76,9 @@ const web3Onboard = init({
   // transactionPreview,
   theme: "dark",
   apiKey: "5af74e3a-56a9-40cb-9345-362ca5030149",
+  connect: {
+    autoConnectAllPreviousWallet: true,
+  },
   wallets,
   chains,
   appMetadata,
