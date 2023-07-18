@@ -1,40 +1,33 @@
 import React, { FC, useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
+  Box,
+  CloseButton,
   Flex,
   Heading,
   HStack,
-  Stack,
-  Text,
-  CloseButton,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  useDisclosure,
-  SimpleGrid,
-  TabList,
-  Tabs,
-  Tab,
-  useColorMode,
-  useToast,
-  Box,
-  Button,
-  TabPanels,
-  TabPanel,
   Modal,
+  ModalBody,
   ModalContent,
   ModalHeader,
-  ModalBody,
   ModalOverlay,
+  SimpleGrid,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useColorMode,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
-import { FaStore, FaBrush } from "react-icons/fa";
+import { FaBrush, FaStore } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
@@ -46,7 +39,7 @@ import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { createNftId, sleep, hexZero } from "libs/utils";
+import { createNftId, hexZero, sleep } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
