@@ -41,10 +41,12 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { createNftId, sleep, hexZero } from "libs/utils";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
+import { backendApi, networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
+import ConditionalRender from "components/UtilComps/ApiWrapper";
+import axios from "axios";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -82,8 +84,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
+  const isApiUp = useMarketStore((state) => state.isApiUp);
+
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
-  const [myListedDataNFT, setMyListedDataNFT] = useState<number>(0);
+  const [myListedCount, setMyListedCount] = useState<number>(0);
+  const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
   const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
 
   const marketplace = "/datanfts/marketplace/market";
@@ -112,6 +117,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     (async () => {
       if (hasPendingTransactions) return;
       if (!_chainMeta.networkId) return;
+
+      if (isApiUp) {
+        const backendApiRoute = backendApi(_chainMeta.networkId);
+
+        const publicCount = await (await axios.get(`${backendApiRoute}offers/count`)).data;
+        const listedCount = await (await axios.get(`${backendApiRoute}offers/${address}/count`)).data;
+
+        setMyListedCount(listedCount);
+        setPublicMarketCount(publicCount);
+      }
 
       // start loading offers
       updateLoadingOffers(true);
@@ -254,9 +269,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   }}>
                   <Flex ml="4.7rem" alignItems="center" py={3}>
                     <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
-                      Public Marketplace
-                    </Text>
+                    <ConditionalRender
+                      fallback={
+                        <>
+                          <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
+                            Public Marketplace
+                          </Text>
+                        </>
+                      }
+                      checkFunction={isApiUp}>
+                      <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
+                        Public Marketplace
+                      </Text>
+                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                        {publicMarketCount > 0 && publicMarketCount}
+                      </Text>
+                    </ConditionalRender>
                   </Flex>
                 </Tab>
                 <Tab
@@ -270,12 +298,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   {isMxLoggedIn && (
                     <Flex ml="4.7rem" alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
-                        My Listed Data NFT(s)
-                      </Text>
-                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
-                        {myListedDataNFT > 0 && myListedDataNFT}
-                      </Text>
+                      <ConditionalRender
+                        fallback={
+                          <>
+                            <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
+                              My Listed Data NFT(s)
+                            </Text>
+                          </>
+                        }
+                        checkFunction={isApiUp}>
+                        <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
+                          My Listed Data NFT(s)
+                        </Text>
+                        <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                          {myListedCount > 0 && myListedCount}
+                        </Text>
+                      </ConditionalRender>
                     </Flex>
                   )}
                 </Tab>
