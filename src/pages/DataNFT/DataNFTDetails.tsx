@@ -40,12 +40,12 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
+import { getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { OfferType } from "libs/MultiversX/types";
 import {
-  backendApi,
   convertToLocalString,
   convertWeiToEsdt,
   getTokenWantedRepresentation,
@@ -161,40 +161,35 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  function getTokenHistory(tokenId: string) {
-    const backendApiRoute = backendApi(networkId);
-    const inputString = tokenId;
+  async function getTokenHistory(tokenId: string) {
+    try {
+      const inputString = tokenId;
 
-    // Extracting identifier
-    const identifier = inputString?.split("-").slice(0, 2).join("-");
+      // Extracting identifier
+      const identifier = inputString?.split("-").slice(0, 2).join("-");
 
-    // Extracting nonce
-    const nonceHex = inputString?.split("-")[2];
-    const nonceDec = parseInt(nonceHex, 16);
+      // Extracting nonce
+      const nonceHex = inputString?.split("-")[2];
+      const nonceDec = parseInt(nonceHex, 16);
 
-    axios
-      .get(`${backendApiRoute}offers/${identifier}?nonces=${nonceDec}&size=0`)
-      .then((res) => {
-        if (res.data) {
-          setTotalOffers(res.data);
-        }
-        const price = Math.min(...res.data.map((offer: any) => offer.wanted_token_amount));
-        if (price !== Infinity) {
-          setPriceFromApi(price);
-        } else {
-          setPriceFromApi(-1);
-        }
-        setIsLoadingPrice(false);
-      })
-      .catch((err) => {
-        toast({
-          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
-          description: err.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+      const _offers = await getOffersByIdAndNoncesFromBackendApi(networkId, identifier, [nonceDec]);
+      setTotalOffers(_offers);
+      const price = Math.min(..._offers.map((offer: any) => offer.wanted_token_amount));
+      if (price !== Infinity) {
+        setPriceFromApi(price);
+      } else {
+        setPriceFromApi(-1);
+      }
+      setIsLoadingPrice(false);
+    } catch (err) {
+      toast({
+        title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+        description: (err as Error).message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
       });
+    }
   }
 
   function isLoadingNftData() {

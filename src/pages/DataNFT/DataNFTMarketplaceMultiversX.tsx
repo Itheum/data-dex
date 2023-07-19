@@ -34,19 +34,19 @@ import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
+import { getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { createNftId, sleep, hexZero } from "libs/utils";
-import { backendApi, networkIdBasedOnLoggedInStatus } from "libs/utils/util";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import ConditionalRender from "components/UtilComps/ApiWrapper";
-import axios from "axios";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -119,10 +119,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (!_chainMeta.networkId) return;
 
       if (isApiUp) {
-        const backendApiRoute = backendApi(_chainMeta.networkId);
-
-        const publicCount = await (await axios.get(`${backendApiRoute}offers/count`)).data;
-        const listedCount = await (await axios.get(`${backendApiRoute}offers/${address}/count`)).data;
+        const publicCount = await getOffersCountFromBackendApi(_chainMeta.networkId);
+        const listedCount = await getOffersCountFromBackendApi(_chainMeta.networkId, address);
 
         setMyListedCount(listedCount);
         setPublicMarketCount(publicCount);
@@ -158,7 +156,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       updateLoadingOffers(true);
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
+
+      let _offers: OfferType[] = [];
+      const start = pageIndex * pageSize;
+      if (tabState === 1 && isApiUp) {
+        // console.log('Api Up');
+        _offers = await getOffersFromBackendApi(_chainMeta.networkId, start, pageSize);
+      } else {
+        // console.log('Api Down');
+        _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
+      }
 
       // console.log("_offers", _offers);
       updateOffers(_offers);
