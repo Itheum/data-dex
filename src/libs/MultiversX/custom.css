@@ -62,6 +62,14 @@ body {
   border: none !important;
 }
 
+.dapp-core-component__signWithDeviceModalStyles__modal-layout-content {
+  --modal-offset: 0px !important;
+}
+
+.dapp-core-component__main__mt-1 {
+  margin-top: 0.5rem !important;
+}
+
 /* START MVX LOGIN STYLING */
 .dapp-core-component__dappModalStyles__dappModalContent.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-dialog-content {
   background: var(--chakra-colors-gray-700) !important;
