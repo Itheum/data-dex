@@ -6,26 +6,21 @@ import {
   Flex,
   Heading,
   HStack,
-  Stack,
-  Text,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
   Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
   SimpleGrid,
+  Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
+  Text,
   useColorMode,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
@@ -44,7 +39,7 @@ import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { createNftId, sleep, hexZero } from "libs/utils";
+import { createNftId, hexZero, sleep } from "libs/utils";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";

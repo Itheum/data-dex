@@ -266,7 +266,12 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                         <Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>
                           <MenuItem
-                            isDisabled={isMenuItemSelected("/profile") || hasPendingTransactions}
+                            isDisabled={
+                              isMenuItemSelected("/profile") ||
+                              hasPendingTransactions ||
+                              isMenuItemSelected("/profile/created") ||
+                              isMenuItemSelected("/profile/listed")
+                            }
                             onClick={() => navigateToDiscover(MENU.PROFILE)}
                             color="teal.200"
                             backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
@@ -280,7 +285,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem
                                 key={label}
-                                isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
+                                isDisabled={isMenuItemSelected(path) || hasPendingTransactions || path.includes(path)}
                                 onClick={() => navigateToDiscover(menuEnum)}
                                 color="teal.200"
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>

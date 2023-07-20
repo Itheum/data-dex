@@ -18,6 +18,7 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useNavigate, useParams } from "react-router-dom";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
+import { CustomPagination } from "../../../components/CustomPagination";
 
 interface PropsType {
   tabState: number;
@@ -57,26 +58,34 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   console.log(offers);
   const profileTabs = [
     {
+      tabNumber: 1,
       tabName: "Created Data NFT(s)",
+      tabPath: "/profile/created",
       icon: FaBrush,
       isDisabled: false,
       pieces: 12,
     },
     {
+      tabNumber: 2,
       tabName: "Listed Data NFT(s)",
+      tabPath: "/profile/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
       pieces: 1,
     },
     {
+      tabNumber: 3,
       tabName: "Owned Data NFT(s)",
+      tabPath: "/owned",
       icon: MdFavoriteBorder,
       isDisabled: true,
     },
     {
+      tabNumber: 4,
       tabName: "Other NFT(s)/Reputation",
+      tabPath: "/other",
       icon: BsClockHistory,
-      isDisabled: false,
+      isDisabled: true,
     },
   ];
 
@@ -169,7 +178,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         <TabList overflowX={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%" overflowY="hidden">
           {profileTabs.map((tab, index) => {
             return (
-              <Tab key={index} isDisabled={tab.isDisabled} _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}>
+              <Tab
+                key={index}
+                isDisabled={tab.isDisabled}
+                _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
+                onClick={() => {
+                  if (hasPendingTransactions) return;
+                  navigate(`${tab.tabPath}`);
+                }}>
                 <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
                   <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                   <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
@@ -182,6 +198,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
               </Tab>
             );
           })}
+          <Flex pr={{ lg: "10" }} ml={{ base: "4.7rem", xl: 0 }}>
+            <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+          </Flex>
         </TabList>
         <TabPanels>
           <TabPanel mt={2} width={"full"}>
