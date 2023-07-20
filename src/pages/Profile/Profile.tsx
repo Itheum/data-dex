@@ -7,7 +7,7 @@ export const Profile: React.FC = () => {
   return (
     <Flex flexDirection="column">
       <DataCreatorInfo />
-      <DataCreatorTabs />
+      <DataCreatorTabs tabState={1} />
     </Flex>
   );
 };

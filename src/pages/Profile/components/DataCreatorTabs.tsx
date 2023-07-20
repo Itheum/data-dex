@@ -16,21 +16,31 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useNavigate, useParams } from "react-router-dom";
+import useThrottle from "../../../components/UtilComps/UseThrottle";
 
-export const DataCreatorTabs: React.FC = () => {
+interface PropsType {
+  tabState: number;
+}
+
+export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const networkId = !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : _chainMeta.networkId;
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
+  const { pageNumber } = useParams();
+  const navigate = useNavigate();
 
   const offers = useMarketStore((state) => state.offers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
   const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
+  const updateOffers = useMarketStore((state) => state.updateOffers);
   // pagination
   const pageCount = useMarketStore((state) => state.pageCount);
   const updatePageCount = useMarketStore((state) => state.updatePageCount);
   const pageSize = 8;
+  const pageIndex = pageNumber ? Number(pageNumber) : 0;
 
   const mintContract = new DataNftMintContract(networkId);
   const marketContract = new DataNftMarketContract(networkId);
@@ -44,6 +54,7 @@ export const DataCreatorTabs: React.FC = () => {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { colorMode } = useColorMode();
 
+  console.log(offers);
   const profileTabs = [
     {
       tabName: "Created Data NFT(s)",
@@ -69,6 +80,16 @@ export const DataCreatorTabs: React.FC = () => {
     },
   ];
 
+  const setPageIndex = (newPageIndex: number) => {
+    navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
+  };
+
+  const onGotoPage = useThrottle((newPageIndex: number) => {
+    if (0 <= newPageIndex && newPageIndex < pageCount) {
+      setPageIndex(newPageIndex);
+    }
+  });
+
   useEffect(() => {
     (async () => {
       if (!_chainMeta.networkId) return;
@@ -78,61 +99,61 @@ export const DataCreatorTabs: React.FC = () => {
     })();
   }, [_chainMeta.networkId]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (hasPendingTransactions) return;
-  //     if (!_chainMeta.networkId) return;
-  //
-  //     // start loading offers
-  //     updateLoadingOffers(true);
-  //
-  //     let _numberOfOffers = 0;
-  //     if (tabState === 1) {
-  //       // global offers
-  //       _numberOfOffers = await marketContract.viewNumberOfOffers();
-  //     } else {
-  //       // offers of User
-  //       _numberOfOffers = await marketContract.viewUserTotalOffers(address);
-  //     }
-  //
-  //     // console.log("_numberOfOffers", _numberOfOffers);
-  //     const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
-  //     updatePageCount(_pageCount);
-  //
-  //     // if pageIndex is out of range
-  //     if (pageIndex >= _pageCount) {
-  //       onGotoPage(0);
-  //     }
-  //   })();
-  // }, [hasPendingTransactions, tabState, _chainMeta.networkId]);
-  //
-  // useEffect(() => {
-  //   (async () => {
-  //     if (hasPendingTransactions) return;
-  //     if (!_chainMeta.networkId) return;
-  //
-  //     // start loading offers
-  //     updateLoadingOffers(true);
-  //     const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
-  //     // console.log("_offers", _offers);
-  //     updateOffers(_offers);
-  //
-  //     //
-  //     setNftMetadatasLoading(true);
-  //     const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-  //     const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
-  //     const _metadatas: DataNftMetadataType[] = [];
-  //     for (let i = 0; i < _nfts.length; i++) {
-  //       _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
-  //     }
-  //     setNftMetadatas(_metadatas);
-  //     setNftMetadatasLoading(false);
-  //
-  //     // end loading offers
-  //     await sleep(0.5);
-  //     updateLoadingOffers(false);
-  //   })();
-  // }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
+  useEffect(() => {
+    (async () => {
+      if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
+
+      // start loading offers
+      updateLoadingOffers(true);
+
+      let _numberOfOffers = 0;
+      if (tabState === 1) {
+        // global offers
+        _numberOfOffers = await marketContract.viewNumberOfOffers();
+      } else {
+        // offers of User
+        _numberOfOffers = await marketContract.viewUserTotalOffers(address);
+      }
+
+      // console.log("_numberOfOffers", _numberOfOffers);
+      const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
+      updatePageCount(_pageCount);
+
+      // if pageIndex is out of range
+      if (pageIndex >= _pageCount) {
+        onGotoPage(0);
+      }
+    })();
+  }, [hasPendingTransactions, tabState, _chainMeta.networkId]);
+
+  useEffect(() => {
+    (async () => {
+      if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
+
+      // start loading offers
+      updateLoadingOffers(true);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
+      // console.log("_offers", _offers);
+      updateOffers(_offers);
+
+      //
+      setNftMetadatasLoading(true);
+      const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
+      const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
+      const _metadatas: DataNftMetadataType[] = [];
+      for (let i = 0; i < _nfts.length; i++) {
+        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
+      }
+      setNftMetadatas(_metadatas);
+      setNftMetadatasLoading(false);
+
+      // end loading offers
+      await sleep(0.5);
+      updateLoadingOffers(false);
+    })();
+  }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
   function openNftDetailsModal(index: number) {
     onOpenDataNftDetails();
