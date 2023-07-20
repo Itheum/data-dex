@@ -60,6 +60,7 @@ export const GetWhitelist: React.FC = () => {
             <Box>
               <Image
                 className="bounce-hero-img"
+                marginLeft="15px"
                 boxSize={{ base: "auto", lg: "40rem" }}
                 w="100%"
                 height="auto"

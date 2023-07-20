@@ -578,7 +578,7 @@ export class DataNftMarketContract {
     } catch (e) {
       console.error(e);
       this.toast({
-        title: labels.ERR_MARKET_OFFERS_FAIL,
+        title: labels.ERR_CONTRACT_PARAM_READ,
         status: "error",
         isClosable: true,
         duration: 20000,

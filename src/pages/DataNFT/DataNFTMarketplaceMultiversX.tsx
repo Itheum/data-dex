@@ -6,21 +6,26 @@ import {
   Flex,
   Heading,
   HStack,
+  Stack,
+  Text,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
   Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  useDisclosure,
   SimpleGrid,
-  Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   useColorMode,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
@@ -39,7 +44,8 @@ import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { createNftId, hexZero, sleep } from "libs/utils";
+import { createNftId, sleep, hexZero } from "libs/utils";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -59,7 +65,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
 
-  const networkId = !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : _chainMeta.networkId;
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
   const mintContract = new DataNftMintContract(networkId);
   const marketContract = new DataNftMarketContract(networkId);
@@ -142,10 +148,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       // start loading offers
       updateLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
+
       // console.log("_offers", _offers);
       updateOffers(_offers);
 
-      //
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
       const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
@@ -172,7 +178,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     setOfferForDrawer(undefined);
   }
 
-  //
   const toast = useToast();
   useEffect(() => {
     if (!pendingTransactions) return;
@@ -371,7 +376,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             visibility={isMarketPaused ? "visible" : "collapse"}
             verticalAlign="middle"
             borderTop="solid .1rem"
-            borderColor="teal.200">
+            borderColor="teal.200"
+            backgroundImage={
+              colorMode === "dark" ? "linear-gradient(to bottom, rgba(255,0,0,0), rgb(15 15 15))" : "linear-gradient(to bottom, rgba(255,0,0,0), #F5F5F5)"
+            }>
             <Box top="20vh" position="relative" textAlign="center" fontSize="24px" fontWeight="500" lineHeight="38px" textColor="teal.200">
               - Marketplace is PAUSED -
               <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>

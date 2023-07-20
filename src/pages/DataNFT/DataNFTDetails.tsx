@@ -30,13 +30,16 @@ import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
+import { FaStore } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
+import { NoDataHere } from "components/Sections/NoDataHere";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
+import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
@@ -51,9 +54,9 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -88,11 +91,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const showConnectWallet = props.showConnectWallet || false;
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
 
-  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
-
-  const backendApiRoute = backendApi(_chainMeta.networkId);
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const chainExplorer = CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER];
+  const marketContract = new DataNftMarketContract(networkId);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
@@ -106,7 +108,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
-  // console.log(tokenId);
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
@@ -132,28 +133,26 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
-        // console.log(_offer);
       })();
     }
   }, [_chainMeta, offerId, hasPendingTransactions]);
 
   function getTokenDetails() {
-    const apiLink = getApi(_chainMeta.networkId);
+    const apiLink = getApi(networkId);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
+
     axios
       .get(nftApiLink)
       .then((res) => {
         const _nftData = res.data;
-        const attributes = new DataNftMintContract(_chainMeta.networkId).decodeNftAttributes(_nftData);
+        const attributes = new DataNftMintContract(networkId).decodeNftAttributes(_nftData);
         _nftData.attributes = attributes;
         setNftData(_nftData);
-        // console.log(_nftData);
         setIsLoadingDetails(false);
       })
       .catch((err) => {
         toast({
-          id: "er3",
-          title: "ER3: Could not fetch Data NFT-FT details",
+          title: labels.ERR_API_ISSUE_DATA_NFT_DETAILS,
           description: err.message,
           status: "error",
           duration: 9000,
@@ -163,6 +162,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }
 
   function getTokenHistory(tokenId: string) {
+    const backendApiRoute = backendApi(networkId);
     const inputString = tokenId;
 
     // Extracting identifier
@@ -173,18 +173,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     const nonceDec = parseInt(nonceHex, 16);
 
     axios
-      .get(`${backendApiRoute}offers/${identifier}?nonces=${nonceDec}`)
+      .get(`${backendApiRoute}offers/${identifier}?nonces=${nonceDec}&size=0`)
       .then((res) => {
-        // console.log(res.data);
         if (res.data) {
           setTotalOffers(res.data);
         }
-        let price = Math.min(...res.data.map((offer: any) => offer.price));
-
+        const price = Math.min(...res.data.map((offer: any) => offer.wanted_token_amount));
         if (price !== Infinity) {
-          if (marketRequirements) {
-            price += (price * marketRequirements.buyer_fee) / 10000;
-          }
           setPriceFromApi(price);
         } else {
           setPriceFromApi(-1);
@@ -193,8 +188,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })
       .catch((err) => {
         toast({
-          id: "er3",
-          title: "ER3: Could not fetch Data NFT-FT details",
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
           description: err.message,
           status: "error",
           duration: 9000,
@@ -207,16 +201,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return isLoadingDetails || isLoadingPrice;
   }
 
-  function getListingText(price: number, isApi: boolean) {
-    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
+  function getListingText(price: number) {
+    const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
       ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
       ? "Unlock for: FREE"
       : "Not Listed";
   }
-  function getOfferPrice(price: number, isApi: boolean) {
-    const esdtPrice = isApi ? price : convertWeiToEsdt(price).toNumber();
+
+  function getOfferPrice(price: number) {
+    const esdtPrice = convertWeiToEsdt(price).toNumber();
     return esdtPrice > 0
       ? `• ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
@@ -234,26 +229,28 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         <Box mb="5">
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
-              <>
-                <Heading size="lg" marginBottom={4} marginTop={10}>
-                  Data NFT Marketplace
+              <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
+                <Heading size="xl" fontWeight="medium" marginBottom={4} marginTop={10}>
+                  Data NFT Details
                 </Heading>
                 <HStack>
                   <Button
+                    marginTop={{ md: "25px" }}
                     colorScheme="teal"
-                    width={{ base: "120px", md: "160px" }}
                     _disabled={{ opacity: 1 }}
                     fontSize={{ base: "sm", md: "md" }}
+                    leftIcon={<FaStore />}
+                    variant="outline"
                     onClick={() => {
                       navigate("/datanfts/marketplace/market");
                     }}
                     marginRight={2}>
-                    Public Marketplace
+                    Visit Public Marketplace
                   </Button>
                 </HStack>
-              </>
+              </Box>
             )}
-            <Box width={"100%"} marginY={tokenIdParam ? "56px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
+            <Box width={"100%"} marginY={tokenIdParam ? "20px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
                 <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
                   <Image
@@ -268,7 +265,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
-                        <Link href={`${ChainExplorer}/nfts/${nftData.identifier}`} isExternal>
+                        <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
                           {nftData.identifier}
                           <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
@@ -442,14 +439,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
                             Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
-                            <Link href={`${ChainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
+                            <Link href={`${chainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
                               <ExternalLinkIcon mx="4px" fontSize="lg" />
                             </Link>
                           </Box>
                           {offer && offer.owner && (
                             <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
                               Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
-                              <Link href={`${ChainExplorer}/accounts/${offer.owner}`} isExternal>
+                              <Link href={`${chainExplorer}/accounts/${offer.owner}`} isExternal>
                                 <ExternalLinkIcon mx="4px" fontSize="lg" />
                               </Link>
                             </Box>
@@ -471,18 +468,18 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             {!offer ? (
                               <>
                                 {totalOffers.length === 1
-                                  ? `${totalOffers.length} Offer:`
-                                  : totalOffers.length === 0
+                                  ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offer:`
+                                  : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
                                   ? "Offers:"
-                                  : `${totalOffers.length} Offers:`}
+                                  : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
                               </>
                             ) : (
                               <>
                                 {totalOffers.length === 1
-                                  ? `${totalOffers.length} other offer:`
-                                  : totalOffers.length === 0
+                                  ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offer:`
+                                  : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
                                   ? "Other offers:"
-                                  : `${totalOffers.length} other offers:`}
+                                  : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
                               </>
                             )}
                           </>
@@ -507,13 +504,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           )}
                           <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
                           {totalOffers &&
-                            totalOffers.map((to: any, index: number) => (
+                            totalOffers
+                              .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
+                              .map((to: any, index: number) => (
                               <Fragment key={index}>
                                 <GridItem flexDirection="column" colSpan={4}>
-                                  {marketRequirements && getOfferPrice(to.price + to.price * (marketRequirements?.buyer_fee / 10000), true)}
+                                  {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
                                 </GridItem>
                                 <GridItem flexDirection="column" colSpan={1}>
-                                  {to.listed_supply}
+                                  {to.quantity}
                                 </GridItem>
                                 <GridItem colSpan={2}>
                                   {tokenId && pathname?.includes(tokenId) ? (
@@ -541,7 +540,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             </Box>
           </Flex>
           <VStack alignItems={"flex-start"}>
-            <Heading size="lg" fontWeight="500" marginBottom={2}>
+            <Heading size="lg" fontWeight="500" mt="10px" marginBottom={2}>
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
@@ -563,7 +562,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         </Box>
       ) : (
         <Flex direction={"column"} justifyContent={"center"} alignItems={"center"} minHeight={"500px"}>
-          <Spinner size={"xl"} thickness="4px" speed="0.64s" emptyColor="gray.200" color="teal.200" label="Fetching Data NFT-FT details..." />
+          <Spinner size="xl" color="teal.200" margin="auto !important" label="Fetching Data NFT-FT details..." />
         </Flex>
       )}
     </Box>
