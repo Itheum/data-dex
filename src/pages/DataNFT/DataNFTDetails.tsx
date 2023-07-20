@@ -295,8 +295,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                       <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                         <Text fontSize={{ base: "18px", md: "22px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
-                          {!offer && getListingText(priceFromApi, true)}
-                          {offer && getListingText(Number(offer.wanted_token_amount), false)}
+                          {!offer && getListingText(priceFromApi)}
+                          {offer && getListingText(Number(offer.wanted_token_amount))}
                         </Text>
                         {showConnectWallet && (
                           <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -487,12 +487,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <Text color={"teal.200"}>{nftData.identifier}</Text>
                         </Heading>
                         <Grid templateColumns="repeat(7, 1fr)" h="18.6rem" overflowY="scroll" gap={2} px="28px" py="14px">
-                          {(totalOffers.length === 0 || totalOffers === null) && (
+                          {(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
                             <GridItem colSpan={8}>
-                              <NoDataHere imgFromTop="0" />
+                              <NoDataHere imgFromTop="6.5rem" />
                             </GridItem>
                           )}
-                          {!(totalOffers.length === 0 || totalOffers === null) && (
+                          {!(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
                             <>
                               <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
                                 Price
@@ -507,30 +507,30 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             totalOffers
                               .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
                               .map((to: any, index: number) => (
-                              <Fragment key={index}>
-                                <GridItem flexDirection="column" colSpan={4}>
-                                  {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
-                                </GridItem>
-                                <GridItem flexDirection="column" colSpan={1}>
-                                  {to.quantity}
-                                </GridItem>
-                                <GridItem colSpan={2}>
-                                  {tokenId && pathname?.includes(tokenId) ? (
-                                    <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) && window.innerWidth > 500 ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
-                                  ) : (
-                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
-                                  )}
-                                </GridItem>
-                              </Fragment>
-                            ))}
+                                <Fragment key={index}>
+                                  <GridItem flexDirection="column" colSpan={4}>
+                                    {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
+                                  </GridItem>
+                                  <GridItem flexDirection="column" colSpan={1}>
+                                    {to.quantity}
+                                  </GridItem>
+                                  <GridItem colSpan={2}>
+                                    {tokenId && pathname?.includes(tokenId) ? (
+                                      <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                        <Button w="full" colorScheme="teal" variant="outline">
+                                          {tokenId && pathname?.includes(tokenId) && window.innerWidth > 500 ? "View Offer" : "View"}
+                                        </Button>
+                                      </a>
+                                    ) : (
+                                      <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                        <Button w="full" colorScheme="teal" variant="outline">
+                                          {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                        </Button>
+                                      </a>
+                                    )}
+                                  </GridItem>
+                                </Fragment>
+                              ))}
                         </Grid>
                       </Box>
                     </ConditionalRender>
