@@ -437,7 +437,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                     size="sm"
                     colorScheme="teal"
                     w="full"
-                    isDisabled={network.id != "devnet"} // disable on mainnet atm
                     onClick={() => {
                       window.open(getExplorerTrailBlazerURL(_chainMeta.networkId))?.focus();
                     }}>
