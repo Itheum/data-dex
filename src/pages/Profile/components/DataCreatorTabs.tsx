@@ -2,23 +2,43 @@ import React, { useEffect, useState } from "react";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { BsClockHistory } from "react-icons/bs";
-import { Flex, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useColorMode, useDisclosure } from "@chakra-ui/react";
+import {
+  CloseButton,
+  Flex,
+  Heading,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useColorMode,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { Icon } from "@chakra-ui/icons";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
-import { getApi, getNftsByIds } from "../../../libs/MultiversX/api";
-import { createNftId, hexZero, sleep } from "../../../libs/utils";
+import { getApi, getCollectionNfts, getNftsByIds } from "../../../libs/MultiversX/api";
+import { createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
 import { useMarketStore } from "../../../store";
 import { useChainMeta } from "../../../store/ChainMetaContext";
-import { DataNftMetadataType } from "../../../libs/MultiversX/types";
+import { DataNftMetadataType, OfferType } from "../../../libs/MultiversX/types";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useNavigate, useParams } from "react-router-dom";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
-import { CustomPagination } from "../../../components/CustomPagination";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 
 interface PropsType {
   tabState: number;
@@ -27,7 +47,7 @@ interface PropsType {
 export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const networkId = !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : _chainMeta.networkId;
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
   const { pageNumber } = useParams();
@@ -49,13 +69,17 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
+  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+
+  const [dataNft, setDataNft] = useState<DataNft[]>();
 
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { colorMode } = useColorMode();
 
-  console.log(offers);
+  // console.log(offers);
   const profileTabs = [
     {
       tabNumber: 1,
@@ -63,7 +87,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/created",
       icon: FaBrush,
       isDisabled: false,
-      pieces: 12,
+      pieces: dataNft?.length,
     },
     {
       tabNumber: 2,
@@ -71,7 +95,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      pieces: 1,
+      // pieces: offers.length,
     },
     {
       tabNumber: 3,
@@ -88,6 +112,15 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       isDisabled: true,
     },
   ];
+
+  useEffect(() => {
+    (async () => {
+      const data = await getCollectionNfts(_chainMeta.contracts.dataNFTFTTicker, networkId);
+      const dataNfts = await DataNft.createFromApiResponseBulk(data);
+      const createdData = dataNfts.filter((data: any) => data.creator === address);
+      setDataNft(createdData);
+    })();
+  }, [dataNft]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -145,6 +178,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       updateLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
       // console.log("_offers", _offers);
+
       updateOffers(_offers);
 
       //
@@ -165,11 +199,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
   function openNftDetailsModal(index: number) {
+    setOfferForDrawer(offers[index]);
     onOpenDataNftDetails();
   }
 
   function closeDetailsView() {
     onCloseDataNftDetails();
+    setOfferForDrawer(undefined);
   }
 
   return (
@@ -192,19 +228,27 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                     {tab.tabName}
                   </Text>
                   <Text fontSize="sm" px={2} color="whiteAlpha.800">
-                    {tab.pieces}
+                    {tab.pieces ?? ""}
                   </Text>
                 </Flex>
               </Tab>
             );
           })}
-          <Flex pr={{ lg: "10" }} ml={{ base: "4.7rem", xl: 0 }}>
-            <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-          </Flex>
         </TabList>
         <TabPanels>
-          <TabPanel mt={2} width={"full"}>
-            Hello im here
+          <TabPanel>
+            {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
+              <NoDataHere />
+            ) : (
+              <SimpleGrid
+                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                spacingY={4}
+                mx={{ base: 0, "2xl": "24 !important" }}
+                mt="5 !important"
+                justifyItems={"center"}>
+                DA
+              </SimpleGrid>
+            )}
           </TabPanel>
           <TabPanel>
             {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
@@ -240,6 +284,30 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
           <TabPanel>Nothing here yet...</TabPanel>
         </TabPanels>
       </Tabs>
+      {offerForDrawer && (
+        <>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent overflowY="scroll" h="90%">
+              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <HStack spacing="5">
+                  <CloseButton size="lg" onClick={closeDetailsView} />
+                  <Heading as="h4" size="lg">
+                    Data NFT Details
+                  </Heading>
+                </HStack>
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <DataNFTDetails
+                  tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
+                  offerIdProp={offerForDrawer.index}
+                  closeDetailsView={closeDetailsView}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </>
+      )}
     </>
   );
 };

@@ -285,7 +285,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem
                                 key={label}
-                                isDisabled={isMenuItemSelected(path) || hasPendingTransactions || path.includes(path)}
+                                isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                                 onClick={() => navigateToDiscover(menuEnum)}
                                 color="teal.200"
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>

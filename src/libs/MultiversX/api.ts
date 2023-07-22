@@ -3,6 +3,8 @@ import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-networ
 import axios from "axios";
 import { uxConfig } from "libs/config";
 import { NetworkIdType } from "libs/types";
+import { decodeData } from "@multiversx/sdk-dapp/utils";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 export const getApi = (networkId: NetworkIdType) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_API_MAINNET_KEY" : "REACT_APP_ENV_API_DEVNET_KEY";
@@ -72,6 +74,20 @@ export const checkBalance = async (token: string, address: string, networkId: Ne
         }
       });
   });
+};
+
+//get collection nfts
+export const getCollectionNfts = async (identifier: string, networkId: NetworkIdType) => {
+  const api = getApi(networkId);
+  const collectionNfts = axios
+    .get(`https://${api}/collections/${identifier}/nfts?size=10000`)
+    .then((response) => response.data)
+    .catch((error) => {
+      if (error) {
+        console.error(error);
+      }
+    });
+  return collectionNfts;
 };
 
 export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: NetworkIdType) => {
