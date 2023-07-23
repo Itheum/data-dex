@@ -46,14 +46,15 @@ import moment from "moment";
 import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES } from "libs/config";
+import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, getExplorerTrailBlazerURL } from "libs/utils";
+import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -432,20 +433,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   Burn
                 </Button>
 
-                {TRAILBLAZER_NONCES[_chainMeta.networkId].indexOf(item.nonce) >= 0 && (
-                  <Button
-                    size="sm"
-                    colorScheme="teal"
-                    w="full"
-                    isDisabled={network.id != "devnet"} // disable on mainnet atm
-                    onClick={() => {
-                      window.open(getExplorerTrailBlazerURL(_chainMeta.networkId))?.focus();
-                    }}>
-                    <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                      Explore
-                    </Text>
-                  </Button>
-                )}
+                <ExploreAppButton nonce={item.nonce} />
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
