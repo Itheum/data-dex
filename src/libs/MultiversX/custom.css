@@ -5,7 +5,6 @@
   justify-content: center;
   align-items: center !important;
   background-color: var(--chakra-colors-whiteAlpha-200);
-  color: var(--chakra-colors-chakra-body-text);
   border-radius: 0.375rem;
   width: 220px;
   height: 64px;
