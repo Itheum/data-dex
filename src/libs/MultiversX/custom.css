@@ -5,6 +5,7 @@
   justify-content: center;
   align-items: center !important;
   background-color: var(--chakra-colors-whiteAlpha-200);
+  color: var(--chakra-colors-chakra-body-text);
   border-radius: 0.375rem;
   width: 220px;
   height: 64px;
@@ -25,9 +26,30 @@ body {
   color: white;
 }
 
+.chakra-ui-light .dapp-core-component__signWithDeviceModalStyles__title {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light .dapp-core-component__confirmReceiverStyles__receiver .dapp-core-component__confirmReceiverStyles__value {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light .dapp-core-component__confirmAmountStyles__value {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light [data-testid="confirmFee"] {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light [data-testid="signBtn"] {
+  background-color: var(--chakra-colors-whiteAlpha-700) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
+  border-color: var(--chakra-colors-whiteAlpha-200) !important;
+}
+
 .chakra-ui-light .auth_wrap {
   background-color: var(--chakra-colors-gray-200) !important;
-  color: black !important;
 }
 
 .auth_button {
