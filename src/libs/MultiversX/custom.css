@@ -26,7 +26,8 @@ body {
 }
 
 .chakra-ui-light .auth_wrap {
-  background-color: var(--chakra-colors-gray-200);
+  background-color: var(--chakra-colors-gray-200) !important;
+  color: black !important;
 }
 
 .auth_button {
@@ -60,6 +61,14 @@ body {
 .dapp-core-component__main__card {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   border: none !important;
+}
+
+.dapp-core-component__dappModalStyles__dappModalBody {
+  padding: 0px !important;
+}
+
+.dapp-core-component__main__card-body {
+  padding: 0px !important;
 }
 
 .dapp-core-component__signWithDeviceModalStyles__modal-layout-content {
