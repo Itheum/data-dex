@@ -159,9 +159,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       let _offers: OfferType[] = [];
       const start = pageIndex * pageSize;
-      if (tabState === 1 && isApiUp) {
+      if (isApiUp) {
         // console.log('Api Up');
-        _offers = await getOffersFromBackendApi(_chainMeta.networkId, start, pageSize);
+        _offers = await getOffersFromBackendApi(_chainMeta.networkId, start, pageSize, tabState === 1 ? undefined : address);
       } else {
         // console.log('Api Down');
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);

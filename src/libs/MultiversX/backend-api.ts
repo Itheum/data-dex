@@ -42,9 +42,13 @@ export async function getOffersFromBackendApi(
   networkId: NetworkIdType,
   from: number,
   size: number,
+  address?: string,
 ): Promise<OfferType[]> {
   try {
-    const url = `${backendApi(networkId)}/offers?from=${from}&size=${size}`;
+    let url = `${backendApi(networkId)}/offers?from=${from}&size=${size}`;
+    if (address) {
+      url += `&address=${address}`;
+    }
     const { data } = await axios.get<OfferType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
