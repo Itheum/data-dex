@@ -30,7 +30,7 @@ import { createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../
 import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
 import { useMarketStore } from "../../../store";
 import { useChainMeta } from "../../../store/ChainMetaContext";
-import { DataNftMetadataType, OfferType } from "../../../libs/MultiversX/types";
+import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -112,12 +112,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       isDisabled: true,
     },
   ];
-
   useEffect(() => {
     (async () => {
       const data = await getCollectionNfts(_chainMeta.contracts.dataNFTFTTicker, networkId);
       const dataNfts = await DataNft.createFromApiResponseBulk(data);
       const createdData = dataNfts.filter((data: any) => data.creator === address);
+      // const mappedDataNfts: DataNftType[] = [];
       setDataNft(createdData);
     })();
   }, [dataNft]);
@@ -152,7 +152,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = await marketContract.viewNumberOfOffers();
+        _numberOfOffers = dataNft ? dataNft.length : 0;
       } else {
         // offers of User
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
