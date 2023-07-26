@@ -39,6 +39,7 @@ import {
   Spinner,
   useColorMode,
   Tooltip,
+  Heading,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
@@ -53,11 +54,12 @@ import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, getExplorerTrailBlazerURL } from "libs/utils";
+import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, getExplorerTrailBlazerURL, createNftId } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
 import { motion } from "framer-motion";
+import DataNFTDetails from "../pages/DataNFT/DataNFTDetails";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -65,6 +67,7 @@ export type WalletDataNFTMxPropType = {
   setHasLoaded: (hasLoaded: boolean) => void;
   sellerFee: number;
   openNftDetailsDrawer: (e: number) => void;
+  isProfile?: boolean;
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
@@ -108,6 +111,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
 
+  console.log(item.isProfile);
   useEffect(() => {
     const processSignature = async () => {
       try {
@@ -337,7 +341,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="840px"
+        h={item.isProfile === true ? "660px" : "840px"}
         mx="3 !important"
         key={item.id}
         border="1px solid transparent"
@@ -385,7 +389,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           </motion.button>
         </Flex>
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+        <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -515,7 +519,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Tooltip>
             </HStack>
 
-            <Flex mt="7" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
@@ -559,7 +563,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               )}
             </Box>
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="5" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Tooltip label="This fee is what your dataset is advertised for on the marketplace">
                 <Text fontSize="md" color="#929497">
                   Access fee for each:
@@ -606,6 +610,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 size="sm"
                 mt={4}
                 width="215px"
+                display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
                 variant="outline"
                 isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
@@ -766,6 +771,28 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             setAmount={setAmount}
           />
         )}
+
+        {/*<Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>*/}
+        {/*  <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />*/}
+        {/*  <ModalContent overflowY="scroll" h="90%">*/}
+        {/*    <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
+        {/*      <HStack spacing="5">*/}
+        {/*        <CloseButton size="lg" onClick={closeDetailsView} />*/}
+        {/*        <Heading as="h4" size="lg">*/}
+        {/*          Data NFT Details*/}
+        {/*        </Heading>*/}
+        {/*      </HStack>*/}
+        {/*    </ModalHeader>*/}
+        {/*    <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
+        {/*      <DataNFTDetails*/}
+        {/*        tokenIdProp={createNftId(item.tokenName, item.nonce)}*/}
+        {/*        offerIdProp={item.index}*/}
+        {/*        closeDetailsView={closeDetailsView}*/}
+        {/*      />*/}
+        {/*    </ModalBody>*/}
+        {/*  </ModalContent>*/}
+        {/*</Modal>*/}
+
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>

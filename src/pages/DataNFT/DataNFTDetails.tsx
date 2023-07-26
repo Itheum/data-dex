@@ -173,7 +173,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     const nonceDec = parseInt(nonceHex, 16);
 
     axios
-      .get(`${backendApiRoute}offers/${identifier}?nonces=${nonceDec}&size=0`)
+      .get(`${backendApiRoute}/offers/${identifier}?nonces=${nonceDec}&size=0`)
       .then((res) => {
         if (res.data) {
           setTotalOffers(res.data);

@@ -21,12 +21,13 @@ import {
   Text,
   useColorMode,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { Icon } from "@chakra-ui/icons";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
 import { getApi, getCollectionNfts, getNftsByIds } from "../../../libs/MultiversX/api";
-import { createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
+import { backendApi, createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
 import { useMarketStore } from "../../../store";
 import { useChainMeta } from "../../../store/ChainMetaContext";
@@ -39,6 +40,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import axios from "axios";
+import { labels } from "../../../libs/language";
+import WalletDataNFTMX from "../../../components/WalletDataNFTMX";
 
 interface PropsType {
   tabState: number;
@@ -49,9 +53,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
+  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
   const { address } = useGetAccountInfo();
+
   const { pageNumber } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const offers = useMarketStore((state) => state.offers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
@@ -68,13 +75,21 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
+  const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
 
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
 
-  const [dataNft, setDataNft] = useState<DataNft[]>();
+  const [dataNft, setDataNft] = useState<DataNftType[]>(() => {
+    const _dataNfts: DataNftType[] = [];
+    for (let index = 0; index < 8; index++) {
+      _dataNfts.push(createDataNftType());
+    }
+    return _dataNfts;
+  });
 
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { colorMode } = useColorMode();
@@ -112,15 +127,41 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       isDisabled: true,
     },
   ];
+
+  const getDataNfts = (address: string) => {
+    const backendApiRoute = backendApi(networkId);
+
+    axios
+      .get(`${backendApiRoute}/data-nfts/${address}`)
+      .then((res) => {
+        if (res.data) {
+          setDataNft(res.data);
+        }
+      })
+      .catch((err) => {
+        toast({
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+          description: err.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      });
+  };
+
   useEffect(() => {
-    (async () => {
-      const data = await getCollectionNfts(_chainMeta.contracts.dataNFTFTTicker, networkId);
-      const dataNfts = await DataNft.createFromApiResponseBulk(data);
-      const createdData = dataNfts.filter((data: any) => data.creator === address);
-      // const mappedDataNfts: DataNftType[] = [];
-      setDataNft(createdData);
-    })();
-  }, [dataNft]);
+    if (_chainMeta?.networkId) {
+      getDataNfts(address);
+    }
+    //   (async () => {
+    //     const data = await getCollectionNfts(_chainMeta.contracts.dataNFTFTTicker, networkId);
+    //     const dataNfts = await DataNft.createFromApiResponseBulk(data);
+    //     const createdData = dataNfts.filter((data: any) => data.creator === address);
+    //     // const mappedDataNfts: DataNftType[] = [];
+    //     setDataNft(createdData);
+    //   })();
+    console.log(dataNft);
+  }, [dataNft, _chainMeta, hasPendingTransactions]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -237,7 +278,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
+            {!loadingOffers && !nftMetadatasLoading && dataNft.length === 0 ? (
               <NoDataHere />
             ) : (
               <SimpleGrid
@@ -246,7 +287,19 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 mx={{ base: 0, "2xl": "24 !important" }}
                 mt="5 !important"
                 justifyItems={"center"}>
-                DA
+                {dataNft.length > 0 &&
+                  dataNft.map((dataNft, index) => (
+                    <WalletDataNFTMX
+                      key={index}
+                      hasLoaded={oneNFTImgLoaded}
+                      setHasLoaded={setOneNFTImgLoaded}
+                      maxPayment={maxPaymentFeeMap[itheumToken]}
+                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      openNftDetailsDrawer={openNftDetailsModal}
+                      isProfile={true}
+                      {...dataNft}
+                    />
+                  ))}
               </SimpleGrid>
             )}
           </TabPanel>

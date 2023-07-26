@@ -210,6 +210,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       maxPayment={maxPaymentFeeMap[itheumToken]}
                       sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
+                      isProfile={false}
                       {...item}
                     />
                   ))}
@@ -236,6 +237,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       maxPayment={maxPaymentFeeMap[itheumToken]}
                       sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
+                      isProfile={false}
                       {...item}
                     />
                   ))}
