@@ -29,7 +29,7 @@ export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId:
 
 export const backendApi = (networkId: NetworkIdType) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
-  const defaultUrl = networkId === "E1" ? "https://production-itheum-api.up.railway.app/" : "https://staging-itheum-api.up.railway.app/";
+  const defaultUrl = networkId === "E1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
 
   return process.env[envKey] || defaultUrl;
 };
