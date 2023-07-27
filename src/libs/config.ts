@@ -80,6 +80,10 @@ export const MENU = {
   DATACAT: 19,
 };
 
+export const BUTTONS = {
+  JOIN_NOW: 0,
+};
+
 export const PATHS = {
   home: [0, [-1]],
   buydata: [1, [0]],
@@ -155,7 +159,7 @@ export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
     ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT],
+    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT, BUTTONS.JOIN_NOW],
   };
 
   if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
@@ -506,5 +510,5 @@ export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
 
 export const TRAILBLAZER_NONCES: Record<string, Array<number>> = {
   "ED": [407, 423],
-  "E1": [],
+  "E1": [1],
 };

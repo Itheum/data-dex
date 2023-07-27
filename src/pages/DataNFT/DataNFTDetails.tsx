@@ -36,6 +36,7 @@ import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -515,6 +516,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Text px={tokenId ? 0 : 3}>Preview Data</Text>
                       </Button>
                     </Tooltip>
+
+                    <ExploreAppButton nonce={nftData.attributes.nonce} w="auto" size={{ base: "md", lg: "lg" }} />
                   </Flex>
                 </VStack>
               </Stack>

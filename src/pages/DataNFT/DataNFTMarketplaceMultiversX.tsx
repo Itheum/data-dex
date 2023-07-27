@@ -65,6 +65,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
+  console.log("DATA NFT MARKETPLACE : _chainMeta.networkId", _chainMeta.networkId);
+  console.log("DATA NFT MARKETPLACE : isMxLoggedIn", isMxLoggedIn);
+  console.log("DATA NFT MARKETPLACE : networkId", networkId);
+
   const mintContract = new DataNftMintContract(networkId);
   const marketContract = new DataNftMarketContract(networkId);
 
@@ -172,7 +176,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-      const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
+      const _nfts = await getNftsByIds(nftIds, networkId);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
@@ -200,7 +204,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     if (!pendingTransactions) return;
 
-    const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+    const networkProvider = getNetworkProvider(networkId, undefined);
     const watcher = new TransactionWatcher(networkProvider);
     for (const [, value] of Object.entries(pendingTransactions)) {
       const stxs = (value as SignedTransactionsBodyType).transactions;
@@ -346,9 +350,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
-                            offer?.offered_token_nonce
-                          )}/thumbnail`}
+                          imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
                           setNftImageLoaded={setOneNFTImgLoaded}
                           nftMetadata={nftMetadatas[index]}
                           offer={offer}
@@ -376,9 +378,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
-                            offer?.offered_token_nonce
-                          )}/thumbnail`}
+                          imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
                           setNftImageLoaded={setOneNFTImgLoaded}
                           nftMetadata={nftMetadatas[index]}
                           offer={offer}

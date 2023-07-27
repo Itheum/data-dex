@@ -37,7 +37,7 @@ function Launcher() {
       <DappProvider
         environment={launchEnvironment}
         customNetworkConfig={{
-          name: "customConfig",
+          name: "itheum-data-dex",
           apiTimeout: uxConfig.mxAPITimeoutMs,
           walletConnectV2ProjectId,
         }}

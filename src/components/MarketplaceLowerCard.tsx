@@ -18,10 +18,11 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES } from "libs/config";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { isValidNumericCharacter, getExplorerTrailBlazerURL } from "libs/utils";
+import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -69,20 +70,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
           </Button>
         </Tooltip>
 
-        {TRAILBLAZER_NONCES[_chainMeta.networkId].indexOf(offer.offered_token_nonce) >= 0 && (
-          <Button
-            size="sm"
-            colorScheme="teal"
-            w="full"
-            isDisabled={network.id != "devnet"} // disable on mainnet atm
-            onClick={() => {
-              window.open(getExplorerTrailBlazerURL(_chainMeta.networkId))?.focus();
-            }}>
-            <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-              Explore
-            </Text>
-          </Button>
-        )}
+        <ExploreAppButton nonce={offer.offered_token_nonce} />
       </HStack>
 
       {!isMyNft ? (
