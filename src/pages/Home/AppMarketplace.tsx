@@ -27,7 +27,7 @@ import {
   useDisclosure,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { useGetAccount } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useNavigate } from "react-router-dom";
 import AstarIcon from "assets/img/astar-icon.png";
 import ItheumIcon from "assets/img/logo-sml-d.png";
@@ -36,13 +36,12 @@ import MXIcon from "assets/img/mx-logo.png";
 import imgProgGaPa from "assets/img/prog-gaming-passport.png";
 import imgProgGaPaES from "assets/img/prog-gaming.jpg";
 import imgProgRhc from "assets/img/prog-rhc.png";
-import imgProgSony from "assets/img/prog-sony.png";
 import imgProgWfh from "assets/img/prog-wfh.png";
 import zedgeLogo from "assets/img/zedge-logo.png";
-import { BUTTONS, CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/config";
+import { progInfoMeta } from "libs/config";
 import { sleep } from "libs/utils/util";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useChainMeta } from "store/ChainMetaContext";
-import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 
 type MarshalFeatures = {
   [index: string]: any;
@@ -69,7 +68,8 @@ type Props = {
 
 export default function AppMarketplace(props: Props) {
   const { chainMeta: _chainMeta } = useChainMeta();
-  const { address } = useGetAccount();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
 
@@ -110,17 +110,6 @@ export default function AppMarketplace(props: Props) {
   const handleLearnMoreProg = (progCode: any) => {
     setLearnMoreProg(progCode);
     onProgressModalOpen();
-  };
-
-  const appendUserAddressAndRedirect = (link: string) => {
-    let updatedLink = link;
-
-    // if user logged in
-    if (address) {
-      updatedLink = `${updatedLink}?ddexref=${window.btoa(`addr=${address}`)}`;
-    }
-
-    window.open(updatedLink);
   };
 
   const handleJoinPS4Passport = () => {
@@ -196,12 +185,9 @@ export default function AppMarketplace(props: Props) {
   return (
     <>
       <Stack pt="5">
-        <Heading size="lg" fontWeight="semibold">
+        <Heading size="lg" fontWeight="semibold" mb="15px">
           App Marketplace
         </Heading>
-        <Text size="sm" opacity=".7" fontWeight="normal">
-          Join a community built app and earn {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} when you trade your data
-        </Text>
         <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={4}>
           <Box overflow="hidden" backgroundColor="none">
             <Image src={imgProgGaPa} height="160px" w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
@@ -214,11 +200,11 @@ export default function AppMarketplace(props: Props) {
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
                 Learn More
               </Button>
-              <ChainSupportedComponent feature={BUTTONS.JOIN_NOW}>
+              {networkId === "ED" && (
                 <Button size="sm" mt="3" colorScheme="teal" onClick={() => handleJoinPS4Passport()}>
                   Join Now
                 </Button>
-              </ChainSupportedComponent>
+              )}
             </Box>
           </Box>
 
@@ -309,11 +295,6 @@ export default function AppMarketplace(props: Props) {
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
-              {progInfoMeta[learnMoreProd].canJoin === 1 && (
-                <Button size="sm" colorScheme="teal" onClick={() => appendUserAddressAndRedirect(`${progInfoMeta[learnMoreProd].url}`)}>
-                  Join Now
-                </Button>
-              )}
             </ModalFooter>
           </ModalContent>
         </Modal>

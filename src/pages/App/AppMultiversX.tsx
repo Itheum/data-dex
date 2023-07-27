@@ -87,8 +87,9 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
     if (!SUPPORTED_CHAINS.includes(networkId)) {
       setAlertIsOpen(true);
     }
-
-    linkOrRefreshDataDATAccount(true);
+    if (networkId === "ED") {
+      linkOrRefreshDataDATAccount(true);
+    }
   }, [chainID]);
 
   useEffect(() => {
