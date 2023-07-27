@@ -932,10 +932,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
             <Heading size="lg" fontWeight="semibold" marginTop="6rem !important">
               Supported Data CAT Programs
             </Heading>
-            <Heading size="sm" opacity=".7" fontWeight="normal" marginBottom="5 !important">
-              Join a community built app and earn rewards if you trade your data
-            </Heading>
-            <Wrap shouldWrapChildren={true} spacingX={5} marginBottom="8 !important">
+            <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
               {dataCATAccount.programsAllocation.map((item: any) => (
                 <Box key={item.program} maxW="22.4rem" borderWidth="1px" overflow="hidden" border=".1rem solid transparent" backgroundColor="none">
                   <Image
