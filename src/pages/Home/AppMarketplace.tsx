@@ -38,10 +38,11 @@ import imgProgGaPaES from "assets/img/prog-gaming.jpg";
 import imgProgRhc from "assets/img/prog-rhc.png";
 import imgProgWfh from "assets/img/prog-wfh.png";
 import zedgeLogo from "assets/img/zedge-logo.png";
-import { progInfoMeta } from "libs/config";
+import { BUTTONS, CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/config";
 import { sleep } from "libs/utils/util";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useChainMeta } from "store/ChainMetaContext";
+import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 
 type MarshalFeatures = {
   [index: string]: any;
