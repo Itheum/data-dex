@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, Link, Card, CardBody, Stack, SimpleGrid } from "@chakra-ui/react";
 import explainerArticleBG from "assets/img/explainer-article-bg.jpeg";
 
 const ExplainerArticles = ({ skipSpacing }: { skipSpacing?: boolean }) => {
@@ -48,7 +48,7 @@ function ArticleCard({ imgTitle, title, link }: { imgTitle: string; title: strin
                 backgroundRepeat="no-repeat"
                 h="150px"
                 w="auto"></Box>
-              <Text position="absolute" top="40px" left="25px" fontSize=".8rem" width="128px">
+              <Text position="absolute" top="40px" left="25px" fontSize=".8rem" width="128px" color="bgWhite">
                 {imgTitle}
               </Text>
             </Box>
