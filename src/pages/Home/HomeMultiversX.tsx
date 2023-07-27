@@ -28,6 +28,7 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import myNFMe from "assets/img/my-nfme.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
+import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
@@ -251,12 +252,6 @@ export default function HomeMultiversX({
   const claimsStackMinW = "220px";
   const heroGridMargin = useBreakpointValue({ base: "auto", md: "initial" });
 
-  // obtain signature by signing the following message: `${address}${init}`
-  // Example:
-  // - if the address is `erd1qnk2vmuqywfqtdnkmauvpm8ls0xh00k8xeupuaf6cm6cd4rx89qqz0ppgl`
-  // - and the init string is `YXBpLmVscm9uZC5jb20.066de4ba7df143f2383c3e0cd7ef8eeaf13375d1123ec8bafcef9f7908344b0f.86400.e30`
-  // - then the signable message should be `erd1qnk2vmuqywfqtdnkmauvpm8ls0xh00k8xeupuaf6cm6cd4rx89qqz0ppgl066de4ba7df143f2383c3e0cd7ef8eeaf13375d1123ec8bafcef9f7908344b0f.86400.e30`
-
   return (
     <>
       <Stack mx={{ base: 5, lg: 24 }}>
@@ -295,8 +290,6 @@ export default function HomeMultiversX({
                         </Alert>
 
                         <Spacer />
-                        {/*<Box h={{ base: 32, md: 12, xl: 12 }}></Box>*/}
-
                         <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={() => onDataCATAccount(true)}>
                           <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
                         </Button>
@@ -471,6 +464,14 @@ export default function HomeMultiversX({
 
         <Box m="auto" pt="10" pb="10">
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
+        </Box>
+
+        <Box m="auto" pt="10" pb="10">
+          <Heading size="lg" fontWeight="semibold">
+            Data DEX 101 Guides
+          </Heading>
+
+          <ExplainerArticles skipSpacing={true} />
         </Box>
 
         <Box m="auto" pt="10" pb="6rem">
