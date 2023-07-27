@@ -501,6 +501,11 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
 
   const accessToken = client.getToken(mxAddress, initToken, signature);
 
+  // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
+  // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);
+  // ... we need to fix this properly (i.e stop that useEffect being called)
+  localStorage?.removeItem("itm-datacat-linked");
+
   return (
     <Popover
       isOpen={showMxEnvPicker}
