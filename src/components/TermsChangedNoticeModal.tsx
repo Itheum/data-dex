@@ -18,7 +18,7 @@ import { useLocalStorage } from "libs/hooks";
 
 const NONE = "none";
 function convertDateToDays(time: Date): number {
-  return Math.floor(time.getTime() / (1000 * 3600 * 24));
+  return Math.floor((time.getTime() - time.getTimezoneOffset() * 60 * 1000) / (1000 * 3600 * 24));
 }
 
 function PrintNoticeList() {
