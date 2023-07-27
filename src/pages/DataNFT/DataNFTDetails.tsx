@@ -498,7 +498,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </GridItem>
                             </>
                           )}
-<<<<<<< HEAD
                           <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
                           {totalOffers &&
                             totalOffers
@@ -533,130 +532,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     </ConditionalRender>
                   </GridItem>
                 </Grid>
-=======
-                        </>
-                        {}
-                        <Text color={"teal.200"}>{nftData.identifier}</Text>
-                      </Heading>
-                      <Grid templateColumns="repeat(7, 1fr)" maxH="18rem" overflowY="scroll" gap={2} px="28px" py="14px">
-                        {(totalOffers.length === 0 || totalOffers === null) && (
-                          <GridItem colSpan={8}>
-                            <NoDataHere imgFromTop="0" />
-                          </GridItem>
-                        )}
-                        {!(totalOffers.length === 0 || totalOffers === null) && (
-                          <>
-                            <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
-                              Price
-                            </GridItem>
-                            <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
-                              Quantity
-                            </GridItem>
-                          </>
-                        )}
-                        <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
-                        {totalOffers &&
-                          totalOffers
-                            .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
-                            .map((to: any, index: number) => (
-                              <Fragment key={index}>
-                                <GridItem flexDirection="column" colSpan={4}>
-                                  {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
-                                </GridItem>
-                                <GridItem flexDirection="column" colSpan={1}>
-                                  {to.quantity}
-                                </GridItem>
-                                <GridItem colSpan={2}>
-                                  {tokenId && pathname?.includes(tokenId) ? (
-                                    <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
-                                  ) : (
-                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
-                                  )}
-                                </GridItem>
-                              </Fragment>
-                            ))}
-                      </Grid>
-                    </Box>
-                  </ConditionalRender>
-
-                  {offer && address && address != offer.owner && (
-                    <Box h={14}>
-                      <HStack gap={5}>
-                        <Text fontSize="xl">How many to procure </Text>
-                        <NumberInput
-                          size="md"
-                          maxW={24}
-                          step={1}
-                          min={1}
-                          max={offer.quantity}
-                          isValidCharacter={isValidNumericCharacter}
-                          value={amount}
-                          defaultValue={1}
-                          onChange={(valueAsString) => {
-                            const value = Number(valueAsString);
-                            let error = "";
-                            if (value <= 0) {
-                              error = "Cannot be zero or negative";
-                            } else if (value > offer.quantity) {
-                              error = "Cannot exceed balance";
-                            }
-                            setAmountError(error);
-                            setAmount(value);
-                          }}>
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      </HStack>
-                      <Text color="red.400" fontSize="sm" mt="2" ml="190px">
-                        {amountError}
-                      </Text>
-                    </Box>
-                  )}
-
-                  <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
-                    <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
-                      <Button
-                        size={{ base: "md", lg: "lg" }}
-                        colorScheme="teal"
-                        isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
-                        hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                        onClick={onProcureModalOpen}>
-                        <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
-                      </Button>
-                    </Tooltip>
-
-                    <Tooltip
-                      colorScheme="teal"
-                      hasArrow
-                      label="Preview Data is disabled on devnet"
-                      isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
-                      <Button
-                        size={{ base: "md", lg: "lg" }}
-                        colorScheme="teal"
-                        variant="outline"
-                        isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
-                        onClick={() => {
-                          window.open(nftData.attributes.dataPreview);
-                        }}>
-                        <Text px={tokenId ? 0 : 3}>Preview Data</Text>
-                      </Button>
-                    </Tooltip>
-
-                    <ExploreAppButton nonce={nftData.attributes.nonce} w="auto" size={{ base: "md", lg: "lg" }} />
-                  </Flex>
-                </VStack>
->>>>>>> milestone-1.3.0
               </Stack>
             </Box>
           </Flex>
