@@ -42,10 +42,12 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
+import { motion } from "framer-motion";
 import moment from "moment";
 import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -57,7 +59,6 @@ import { convertToLocalString, getExplorerTrailBlazerURL, isValidNumericCharacte
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
-import { motion } from "framer-motion";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -460,20 +461,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   Burn
                 </Button>
 
-                {TRAILBLAZER_NONCES[_chainMeta.networkId].indexOf(item.nonce) >= 0 && (
-                  <Button
-                    size="sm"
-                    colorScheme="teal"
-                    w="full"
-                    isDisabled={network.id != "devnet"} // disable on mainnet atm
-                    onClick={() => {
-                      window.open(getExplorerTrailBlazerURL(_chainMeta.networkId))?.focus();
-                    }}>
-                    <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                      Explore
-                    </Text>
-                  </Button>
-                )}
+                <ExploreAppButton nonce={item.nonce} />
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>

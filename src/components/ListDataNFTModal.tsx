@@ -206,17 +206,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
             </Box>
 
             <Flex justifyContent="end" mt="4 !important">
-              <Button
-                colorScheme="teal"
-                size="sm"
-                mx="3"
-                onClick={onProcure}
-                isDisabled={
-                  !readTermsChecked ||
-                  liveUptimeFAIL ||
-                  new BigNumber(offer.wanted_token_amount).multipliedBy(amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0 ||
-                  !isLiveUptimeSuccessful
-                }>
+              <Button colorScheme="teal" size="sm" mx="3" onClick={onProcure} isDisabled={!readTermsChecked || liveUptimeFAIL || !isLiveUptimeSuccessful}>
                 Proceed
               </Button>
               <Button colorScheme="teal" size="sm" variant="outline" onClick={onClose}>
