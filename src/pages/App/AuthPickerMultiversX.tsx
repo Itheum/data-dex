@@ -18,7 +18,13 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
+import {
+  ExtensionLoginButton,
+  LedgerLoginButton,
+  WalletConnectLoginButton,
+  WebWalletLoginButton,
+} from "@multiversx/sdk-dapp/UI";
+import { useLocation } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
@@ -28,6 +34,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -71,6 +78,11 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
+  const commonProps = {
+    // nativeAuth: true, // optional
+    callbackRoute: pathname,
+  };
+
   return (
     <>
       {!mxAddress && (
@@ -92,22 +104,34 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                     <Wrap spacing="20px" justify="space-between" padding="10px">
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
                         <WalletConnectLoginButton
-                          callbackRoute={"/dashboard"}
                           loginButtonText={"xPortal App"}
                           buttonClassName="auth_button"
+                          {...commonProps}
                           {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
-                        <ExtensionLoginButton callbackRoute={"/dashboard"} loginButtonText={"DeFi Wallet"} buttonClassName="auth_button"></ExtensionLoginButton>
+                        <ExtensionLoginButton
+                          loginButtonText={"DeFi Wallet"}
+                          buttonClassName="auth_button"
+                          {...commonProps}
+                        ></ExtensionLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
-                        <WebWalletLoginButton callbackRoute={"/dashboard"} loginButtonText={"Web Wallet"} buttonClassName="auth_button"></WebWalletLoginButton>
+                        <WebWalletLoginButton
+                          loginButtonText={"Web Wallet"}
+                          buttonClassName="auth_button"
+                          {...commonProps}
+                        ></WebWalletLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
-                        <LedgerLoginButton callbackRoute={"/dashboard"} loginButtonText={"Ledger"} buttonClassName="auth_button"></LedgerLoginButton>
+                        <LedgerLoginButton
+                          loginButtonText={"Ledger"}
+                          buttonClassName="auth_button"
+                          {...commonProps}
+                        ></LedgerLoginButton>
                       </WrapItem>
                     </Wrap>
                   </Stack>

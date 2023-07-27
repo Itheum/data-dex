@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, Image, Text, Link, Card, CardBody, Stack, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, Link, Card, CardBody, Stack, SimpleGrid } from "@chakra-ui/react";
 
 const RecentArticles = () => {
   return (
@@ -45,7 +45,15 @@ function ArticleCard({ date, title, description, link, imgLink }: { date: string
       <CardBody>
         <Box>
           <Link href={link} isExternal>
-            <Image src={imgLink} alt={title} border="1px solid transparent" borderColor="#00C797" borderRadius="16px" height="150px" />
+            <Box
+              border="1px solid transparent"
+              borderColor="#00C797"
+              borderRadius="16px"
+              backgroundImage={imgLink}
+              backgroundSize="cover"
+              backgroundRepeat="no-repeat"
+              h="150px"
+              w="auto"></Box>
           </Link>
         </Box>
         <Stack mt="6" spacing="2">

@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
+import { getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
 import { NetworkIdType } from "libs/types";
-import { backendApi, convertWeiToEsdt, hexZero, sleep } from "libs/utils";
+import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NoDataHere } from "./NoDataHere";
-import axios from "axios";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { set } from "react-hook-form";
-import { useMarketStore } from "store";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -53,14 +52,13 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
   }, [_chainMeta, marketRequirements]);
 
   const apiWrapper = async () => {
-    const apiUrl = backendApi(_chainMeta?.networkId);
     DataNft.setNetworkConfig(_chainMeta?.networkId == "E1" ? "mainnet" : "devnet");
 
     try {
-      const checkApiUpTime = await (await axios.get(`${apiUrl}health-check`)).data;
+      const isApiUp = await getHealthCheckFromBackendApi(_chainMeta?.networkId);
 
-      if (checkApiUpTime == "OK") {
-        const offers = await (await axios.get(`${apiUrl}offers/recent/`)).data;
+      if (isApiUp) {
+        const offers = await getRecentOffersFromBackendApi(_chainMeta?.networkId);
         const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
