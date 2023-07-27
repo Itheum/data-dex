@@ -42,7 +42,6 @@ import { BUTTONS, CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/config";
 import { sleep } from "libs/utils/util";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useChainMeta } from "store/ChainMetaContext";
-import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 
 type MarshalFeatures = {
   [index: string]: any;
