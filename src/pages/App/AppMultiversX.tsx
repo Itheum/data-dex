@@ -24,7 +24,6 @@ import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAI
 import { useLocalStorage } from "libs/hooks";
 import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
-import DataCoalitions from "pages/DataCoalition";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
@@ -87,8 +86,9 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
     if (!SUPPORTED_CHAINS.includes(networkId)) {
       setAlertIsOpen(true);
     }
-
-    linkOrRefreshDataDATAccount(true);
+    if (networkId === "ED") {
+      linkOrRefreshDataDATAccount(true);
+    }
   }, [chainID]);
 
   useEffect(() => {
@@ -227,10 +227,6 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
                 <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
                 <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                 <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
-              </Route>
-
-              <Route path="datacoalitions" element={<Outlet />}>
-                <Route path="" element={<DataCoalitions setMenuItem={setMenuItem} />} />
               </Route>
 
               <Route path="settings" element={<AppSettings />} />
