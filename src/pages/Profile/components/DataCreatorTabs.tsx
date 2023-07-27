@@ -13,6 +13,7 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Skeleton,
   Tab,
   TabList,
   TabPanel,
@@ -36,7 +37,7 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 import axios from "axios";
@@ -78,9 +79,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+  const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
 
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+  const { pathname } = useLocation();
+  const isCratedPage = "/profile/created";
+  const isListedPage = "/profile/listed";
 
   const [dataNft, setDataNft] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
@@ -133,10 +138,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       .get(`${backendApiRoute}/data-nfts/${address}`)
       .then((res) => {
         if (res.data) {
+          setOneNFTImgLoaded(true);
           setDataNft(res.data);
         }
       })
       .catch((err) => {
+        setOneNFTImgLoaded(false);
         toast({
           title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
           description: err.message,
@@ -230,8 +237,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
   function openNftDetailsModal(index: number) {
-    setOfferForDrawer(offers[index]);
-    onOpenDataNftDetails();
+    if (pathname === isListedPage) {
+      setOfferForDrawer(offers[index]);
+      onOpenDataNftDetails();
+    }
+    if (pathname === isCratedPage) {
+      setDataNftForDrawer(dataNft[index]);
+      onOpenDataNftDetails();
+    }
   }
 
   function closeDetailsView() {
@@ -271,26 +284,28 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
             {!loadingOffers && !nftMetadatasLoading && dataNft.length === 0 ? (
               <NoDataHere />
             ) : (
-              <SimpleGrid
-                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                spacingY={4}
-                mx={{ base: 0, "2xl": "24 !important" }}
-                mt="5 !important"
-                justifyItems={"center"}>
-                {dataNft.length > 0 &&
-                  dataNft.map((dataNft, index) => (
-                    <WalletDataNFTMX
-                      key={index}
-                      hasLoaded={oneNFTImgLoaded}
-                      setHasLoaded={setOneNFTImgLoaded}
-                      maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
-                      openNftDetailsDrawer={openNftDetailsModal}
-                      isProfile={true}
-                      {...dataNft}
-                    />
-                  ))}
-              </SimpleGrid>
+              <Skeleton fitContent={true} isLoaded={oneNFTImgLoaded}>
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
+                  {dataNft.length > 0 &&
+                    dataNft.map((dataNft, index) => (
+                      <WalletDataNFTMX
+                        key={index}
+                        hasLoaded={oneNFTImgLoaded}
+                        setHasLoaded={setOneNFTImgLoaded}
+                        maxPayment={maxPaymentFeeMap[itheumToken]}
+                        sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                        openNftDetailsDrawer={openNftDetailsModal}
+                        isProfile={true}
+                        {...dataNft}
+                      />
+                    ))}
+                </SimpleGrid>
+              </Skeleton>
             )}
           </TabPanel>
           <TabPanel>
@@ -344,6 +359,30 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}
+                  closeDetailsView={closeDetailsView}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </>
+      )}
+      {dataNftForDrawer && (
+        <>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent overflowY="scroll" h="90%">
+              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <HStack spacing="5">
+                  <CloseButton size="lg" onClick={closeDetailsView} />
+                  <Heading as="h4" size="lg">
+                    Data NFT Details
+                  </Heading>
+                </HStack>
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <DataNFTDetails
+                  tokenIdProp={createNftId(dataNftForDrawer.tokenName, dataNftForDrawer.nonce)}
+                  offerIdProp={dataNftForDrawer.index}
                   closeDetailsView={closeDetailsView}
                 />
               </ModalBody>

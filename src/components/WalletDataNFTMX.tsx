@@ -1,45 +1,44 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
-  Box,
-  Text,
-  Link,
-  Image,
-  Flex,
-  Skeleton,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  Badge,
-  Button,
-  HStack,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  useToast,
-  useDisclosure,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Badge,
+  Box,
+  Button,
   CloseButton,
+  Flex,
+  HStack,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Skeleton,
   Spinner,
-  useColorMode,
+  Stack,
+  Text,
   Tooltip,
-  Heading,
+  useColorMode,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
@@ -48,18 +47,17 @@ import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, styleStrings, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, getExplorerTrailBlazerURL, createNftId } from "libs/utils";
+import { convertToLocalString, getExplorerTrailBlazerURL, isValidNumericCharacter, sleep, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
 import { motion } from "framer-motion";
-import DataNFTDetails from "../pages/DataNFT/DataNFTDetails";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -771,27 +769,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             setAmount={setAmount}
           />
         )}
-
-        {/*<Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>*/}
-        {/*  <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />*/}
-        {/*  <ModalContent overflowY="scroll" h="90%">*/}
-        {/*    <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
-        {/*      <HStack spacing="5">*/}
-        {/*        <CloseButton size="lg" onClick={closeDetailsView} />*/}
-        {/*        <Heading as="h4" size="lg">*/}
-        {/*          Data NFT Details*/}
-        {/*        </Heading>*/}
-        {/*      </HStack>*/}
-        {/*    </ModalHeader>*/}
-        {/*    <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
-        {/*      <DataNFTDetails*/}
-        {/*        tokenIdProp={createNftId(item.tokenName, item.nonce)}*/}
-        {/*        offerIdProp={item.index}*/}
-        {/*        closeDetailsView={closeDetailsView}*/}
-        {/*      />*/}
-        {/*    </ModalBody>*/}
-        {/*  </ModalContent>*/}
-        {/*</Modal>*/}
 
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
