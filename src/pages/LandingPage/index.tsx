@@ -1,11 +1,11 @@
 import React from "react";
-import { Box, Flex, Heading, Image, Text, Center, Link, Card, CardBody, Stack, SimpleGrid, useColorMode } from "@chakra-ui/react";
+import { Box, Flex, Heading, Image, Text, Center, useColorMode } from "@chakra-ui/react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
+import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
-import { styleStrings } from "libs/config";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -15,11 +15,9 @@ const LandingPage = () => {
   const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
-  let gradientBorder = styleStrings.gradientBorderMulticolor;
 
   if (colorMode === "light") {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
-    gradientBorder = styleStrings.gradientBorderMulticolorLight;
   }
 
   return (
@@ -69,40 +67,12 @@ const LandingPage = () => {
             <RecentDataNFTs headingText="Recent Data NFTs" networkId={networkId} />
           </Box>
 
-          <Box mx={{ base: 8, "2xl": 24 }} py="10" display="none">
+          <Box mx={{ base: 8, "lg": 20 }} py="10">
             <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
-              Data NFT 101
+              Data DEX 101 Guides
             </Heading>
 
-            <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
-              {Array.from("1234").map((idx) => (
-                <Card key={idx} variant="outline" border="none">
-                  <CardBody>
-                    <Box>
-                      <Image
-                        src="https://www.colorbook.io/imagecreator.php?hex=none&width=350&height=200"
-                        alt=">Article Title GOES IN HERE"
-                        borderRadius="1.5rem"
-                        border=".1rem solid transparent"
-                        style={{ "background": gradientBorder }}
-                      />
-                    </Box>
-                    <Stack mt="6" spacing="2">
-                      <Text>10 March,2023</Text>
-                      <Heading size="md" noOfLines={2}>
-                        Article Title GOES IN HERE, CAPS AND it might be two to three lines long
-                      </Heading>
-                      <Text noOfLines={2}>
-                        Lorem ipsum dolor sit amet consectetur. Tui pis vul vulputate vel elementum nibh viverra cri cras duifa faucibus.....
-                      </Text>
-                      <Link href="https://chakra-ui.com" isExternal textDecoration="underline">
-                        Read More
-                      </Link>
-                    </Stack>
-                  </CardBody>
-                </Card>
-              ))}
-            </SimpleGrid>
+            <ExplainerArticles />
           </Box>
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
