@@ -26,7 +26,7 @@ import {
 import { Icon } from "@chakra-ui/icons";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
-import { getApi, getCollectionNfts, getNftsByIds } from "../../../libs/MultiversX/api";
+import { getApi, getNftsByIds } from "../../../libs/MultiversX/api";
 import { backendApi, createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
 import { useMarketStore } from "../../../store";
@@ -38,7 +38,6 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useNavigate, useParams } from "react-router-dom";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 import axios from "axios";
 import { labels } from "../../../libs/language";
@@ -94,7 +93,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { colorMode } = useColorMode();
 
-  // console.log(offers);
   const profileTabs = [
     {
       tabNumber: 1,
@@ -153,14 +151,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     if (_chainMeta?.networkId) {
       getDataNfts(address);
     }
-    //   (async () => {
-    //     const data = await getCollectionNfts(_chainMeta.contracts.dataNFTFTTicker, networkId);
-    //     const dataNfts = await DataNft.createFromApiResponseBulk(data);
-    //     const createdData = dataNfts.filter((data: any) => data.creator === address);
-    //     // const mappedDataNfts: DataNftType[] = [];
-    //     setDataNft(createdData);
-    //   })();
-    console.log(dataNft);
   }, [dataNft, _chainMeta, hasPendingTransactions]);
 
   const setPageIndex = (newPageIndex: number) => {

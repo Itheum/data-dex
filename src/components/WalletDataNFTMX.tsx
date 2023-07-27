@@ -111,7 +111,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
 
-  console.log(item.isProfile);
+  // console.log(item.isProfile);
   useEffect(() => {
     const processSignature = async () => {
       try {

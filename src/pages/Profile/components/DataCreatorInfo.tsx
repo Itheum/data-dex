@@ -11,7 +11,7 @@ export const DataCreatorInfo: React.FC = () => {
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const account = useGetAccount();
-  console.log(account);
+  // console.log(account);
 
   return (
     <>
