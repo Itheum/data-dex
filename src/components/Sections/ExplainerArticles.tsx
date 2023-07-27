@@ -12,7 +12,7 @@ const ExplainerArticles = ({ skipSpacing }: { skipSpacing?: boolean }) => {
       />
 
       <ArticleCard
-        imgTitle="How to List a Data NFT"
+        imgTitle="How to List a Data NFT for Trading"
         title="Quick Guide to Listing Your Data NFTs for Trading"
         link="https://docs.itheum.io/product-docs/product/data-nft-marketplace/listing-a-data-nft"
       />
@@ -48,7 +48,7 @@ function ArticleCard({ imgTitle, title, link }: { imgTitle: string; title: strin
                 backgroundRepeat="no-repeat"
                 h="150px"
                 w="auto"></Box>
-              <Text position="absolute" top="40px" left="25px" fontSize=".8rem" width="128px" color="bgWhite">
+              <Text position="absolute" top="20px" left="25px" fontSize=".9rem" width="128px" color="bgWhite">
                 {imgTitle}
               </Text>
             </Box>
