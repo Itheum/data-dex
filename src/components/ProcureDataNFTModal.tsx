@@ -92,7 +92,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
-  
+
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -106,7 +106,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
-  
+
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
