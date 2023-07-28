@@ -247,94 +247,133 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Box>
             )}
             <Box width={"100%"} marginY={tokenIdParam ? "20px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
-              <Stack
-                flexDirection={{ base: "column", lg: "row" }}
-                m={5}
-                justifyContent={{ base: "center", lg: "flex-start" }}
-                alignItems={{ base: "center", lg: "flex-start" }}>
-                <Image
-                  boxSize={{ base: "260px", lg: "330px" }}
-                  p={10}
-                  objectFit={"contain"}
-                  src={nftData.url}
-                  alt={"Data NFT Image"}
-                  mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 14 }}
-                />
-
-                <VStack alignItems={"flex-start"} gap={"15px"} w="full">
-                  <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "lg", lg: "xl" }}>
-                    <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
-                      {nftData.identifier}
-                      <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
-                    </Link>
-                  </Box>
-
-                  <Flex direction="row" alignItems="center" gap="3">
-                    <Text fontSize={pathname === marketplaceDrawer ? "38px" : { base: "25px", lg: "48px" }} noOfLines={2} fontWeight="semibold">
-                      {nftData.attributes?.title}
-                    </Text>
-                    {!!offerId && (
-                      <Button
-                        size={{ base: "md", lg: "xl" }}
-                        onClick={() => {
-                          onCopy();
-                          toast({
-                            title: "NFT detail page link is copied!",
-                            status: "success",
-                            isClosable: true,
-                          });
-                        }}>
-                        <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} />
-                      </Button>
-                    )}
-                  </Flex>
-
-                  <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
-                    <Text fontSize={{ base: "18px", lg: "28px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
-                      {!offer && getListingText(priceFromApi)}
-                      {offer && getListingText(Number(offer.wanted_token_amount))}
-                    </Text>
-                    {showConnectWallet && (
-                      <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
-                        Connect MultiversX Wallet
-                      </Button>
-                    )}
-                  </Flex>
-                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
-                      Description
-                    </Heading>
-                    <Text fontSize={"16px"} px="28px" py="14px">
-                      {transformDescription(nftData.attributes?.description)}
-                    </Text>
-                    <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
-                      <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
-                        Fully Transferable License
-                      </Text>
-                    </Box>
-                    <Flex direction={"column"} gap="1" px="28px" mt="3">
-                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
-                        Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
-                        <Link href={`${chainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
-                          <ExternalLinkIcon mx="4px" fontSize="lg" />
+              <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
+                <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
+                  <Image
+                    w={{ base: "210px", xl: "260px" }}
+                    h={{ base: "210px", xl: "260px" }}
+                    py={2}
+                    objectFit={"contain"}
+                    src={nftData.url}
+                    alt={"Data NFT Image"}
+                    mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
+                  />
+                  <Flex mr={2}>
+                    <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
+                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
+                        <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
+                          {nftData.identifier}
+                          <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
                       </Box>
-                      {offer && offer.owner && (
-                        <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
-                          Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
-                          <Link href={`${chainExplorer}/accounts/${offer.owner}`} isExternal>
-                            <ExternalLinkIcon mx="4px" fontSize="lg" />
-                          </Link>
+
+                      <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
+                        <Tooltip label={nftData.attributes?.title}>
+                          <Text fontSize={"32px"} noOfLines={1} fontWeight="500" lineHeight="10">
+                            {nftData.attributes?.title}
+                          </Text>
+                        </Tooltip>
+                        {!!offerId && (
+                          <Button
+                            size={{ base: "md", lg: "md" }}
+                            onClick={() => {
+                              onCopy();
+                              toast({
+                                title: "NFT detail page link is copied!",
+                                status: "success",
+                                isClosable: true,
+                              });
+                            }}>
+                            <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} />
+                          </Button>
+                        )}
+                      </Flex>
+
+                      <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
+                        <Text fontSize={{ base: "18px", md: "22px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
+                          {!offer && getListingText(priceFromApi)}
+                          {offer && getListingText(Number(offer.wanted_token_amount))}
+                        </Text>
+                        {showConnectWallet && (
+                          <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
+                            Connect MultiversX Wallet
+                          </Button>
+                        )}
+                      </Flex>
+                      {offer && address && address != offer.owner && (
+                        <Box h={14}>
+                          <HStack gap={5}>
+                            <Text fontSize="xl">How many to procure </Text>
+                            <NumberInput
+                              size="md"
+                              maxW={24}
+                              step={1}
+                              min={1}
+                              max={offer.quantity}
+                              isValidCharacter={isValidNumericCharacter}
+                              value={amount}
+                              defaultValue={1}
+                              onChange={(valueAsString) => {
+                                const value = Number(valueAsString);
+                                let error = "";
+                                if (value <= 0) {
+                                  error = "Cannot be zero or negative";
+                                } else if (value > offer.quantity) {
+                                  error = "Cannot exceed balance";
+                                }
+                                setAmountError(error);
+                                setAmount(value);
+                              }}>
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          </HStack>
+                          <Text color="red.400" fontSize="sm" mt="2" ml="190px">
+                            {amountError}
+                          </Text>
                         </Box>
                       )}
-                      <Box display="flex" justifyContent="flex-start" pb="14px">
-                        <Text color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">{`Creation time: ${moment(
-                          nftData.attributes?.creationTime
-                        ).format(uxConfig.dateStr)}`}</Text>
-                      </Box>
+                      <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
+                        <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
+                          <Button
+                            size={{ base: "md", lg: "lg" }}
+                            colorScheme="teal"
+                            isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
+                            hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
+                            onClick={onProcureModalOpen}>
+                            <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
+                          </Button>
+                        </Tooltip>
+
+                        <Tooltip
+                          colorScheme="teal"
+                          hasArrow
+                          label="Preview Data is disabled on devnet"
+                          isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                          <Button
+                            size={{ base: "md", lg: "lg" }}
+                            colorScheme="teal"
+                            variant="outline"
+                            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                            onClick={() => {
+                              window.open(nftData.attributes.dataPreview);
+                            }}>
+                            <Text px={tokenId ? 0 : 3}>Preview Data</Text>
+                          </Button>
+                        </Tooltip>
+                      </Flex>
                     </Flex>
-                  </Box>
-                  <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
+                  </Flex>
+                  <Box
+                    border="1px solid"
+                    borderColor="#00C79740"
+                    borderRadius="2xl"
+                    mt={3}
+                    justifyContent="right"
+                    w={marketplaceDrawer ? { base: "full", md: "initial", xl: "30rem" } : { base: "full", md: "initial", xl: "inherit" }}>
                     <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
                       Details
                     </Heading>
@@ -376,150 +415,123 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       )}
                     </Flex>
                   </Box>
+                </Flex>
 
-                  <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
+                <Grid templateColumns="repeat(8, 1fr)" gap={3} w="full" marginTop="1.5rem !important">
+                  <GridItem colSpan={{ base: 8, xl: 5 }}>
                     <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                      <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
-                        <>
-                          {!offer ? (
+                      <Heading fontSize="20px" fontWeight={500} pl="28px" py={8} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                        Description
+                      </Heading>
+                      <Flex flexDirection="column" h="18.6rem" justifyContent="space-between">
+                        <Text fontSize={"16px"} px="28px" py="14px" noOfLines={6} h="inherit">
+                          {transformDescription(nftData.attributes?.description)}
+                        </Text>
+                        <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
+                          <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                            Fully Transferable License
+                          </Text>
+                        </Box>
+                        <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
+                          <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
+                            Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
+                            <Link href={`${chainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
+                              <ExternalLinkIcon mx="4px" fontSize="lg" />
+                            </Link>
+                          </Box>
+                          {offer && offer.owner && (
+                            <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
+                              Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
+                              <Link href={`${chainExplorer}/accounts/${offer.owner}`} isExternal>
+                                <ExternalLinkIcon mx="4px" fontSize="lg" />
+                              </Link>
+                            </Box>
+                          )}
+                          <Box display="flex" justifyContent="flex-start" pb="14px">
+                            <Text color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">{`Creation time: ${moment(
+                              nftData.attributes?.creationTime
+                            ).format(uxConfig.dateStr)}`}</Text>
+                          </Box>
+                        </Flex>
+                      </Flex>
+                    </Box>
+                  </GridItem>
+                  <GridItem colSpan={{ base: 8, xl: 3 }}>
+                    <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
+                      <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
+                        <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                          <>
+                            {!offer ? (
+                              <>
+                                {totalOffers.length === 1
+                                  ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offer:`
+                                  : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
+                                  ? "Offers:"
+                                  : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
+                              </>
+                            ) : (
+                              <>
+                                {totalOffers.length === 1
+                                  ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offer:`
+                                  : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
+                                  ? "Other offers:"
+                                  : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
+                              </>
+                            )}
+                          </>
+                          {}
+                          <Text color={"teal.200"}>{nftData.identifier}</Text>
+                        </Heading>
+                        <Grid templateColumns="repeat(7, 1fr)" h="18.6rem" overflowY="scroll" gap={2} px="28px" py="14px">
+                          {(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
+                            <GridItem colSpan={8}>
+                              <NoDataHere imgFromTop="6.5rem" />
+                            </GridItem>
+                          )}
+                          {!(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
                             <>
-                              {totalOffers.length === 1
-                                ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offer:`
-                                : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
-                                ? "Offers:"
-                                : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
-                            </>
-                          ) : (
-                            <>
-                              {totalOffers.length === 1
-                                ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offer:`
-                                : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
-                                ? "Other offers:"
-                                : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
+                              <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
+                                Price
+                              </GridItem>
+                              <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
+                                Quantity
+                              </GridItem>
                             </>
                           )}
-                        </>
-                        {}
-                        <Text color={"teal.200"}>{nftData.identifier}</Text>
-                      </Heading>
-                      <Grid templateColumns="repeat(7, 1fr)" maxH="18rem" overflowY="scroll" gap={2} px="28px" py="14px">
-                        {(totalOffers.length === 0 || totalOffers === null) && (
-                          <GridItem colSpan={8}>
-                            <NoDataHere imgFromTop="0" />
-                          </GridItem>
-                        )}
-                        {!(totalOffers.length === 0 || totalOffers === null) && (
-                          <>
-                            <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
-                              Price
-                            </GridItem>
-                            <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
-                              Quantity
-                            </GridItem>
-                          </>
-                        )}
-                        <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
-                        {totalOffers &&
-                          totalOffers
-                            .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
-                            .map((to: any, index: number) => (
-                              <Fragment key={index}>
-                                <GridItem flexDirection="column" colSpan={4}>
-                                  {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
-                                </GridItem>
-                                <GridItem flexDirection="column" colSpan={1}>
-                                  {to.quantity}
-                                </GridItem>
-                                <GridItem colSpan={2}>
-                                  {tokenId && pathname?.includes(tokenId) ? (
-                                    <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
-                                  ) : (
-                                    <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                      <Button w="full" colorScheme="teal" variant="outline">
-                                        {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
-                                      </Button>
-                                    </a>
-                                  )}
-                                </GridItem>
-                              </Fragment>
-                            ))}
-                      </Grid>
-                    </Box>
-                  </ConditionalRender>
-
-                  {offer && address && address != offer.owner && (
-                    <Box h={14}>
-                      <HStack gap={5}>
-                        <Text fontSize="xl">How many to procure </Text>
-                        <NumberInput
-                          size="md"
-                          maxW={24}
-                          step={1}
-                          min={1}
-                          max={offer.quantity}
-                          isValidCharacter={isValidNumericCharacter}
-                          value={amount}
-                          defaultValue={1}
-                          onChange={(valueAsString) => {
-                            const value = Number(valueAsString);
-                            let error = "";
-                            if (value <= 0) {
-                              error = "Cannot be zero or negative";
-                            } else if (value > offer.quantity) {
-                              error = "Cannot exceed balance";
-                            }
-                            setAmountError(error);
-                            setAmount(value);
-                          }}>
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      </HStack>
-                      <Text color="red.400" fontSize="sm" mt="2" ml="190px">
-                        {amountError}
-                      </Text>
-                    </Box>
-                  )}
-
-                  <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
-                    <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
-                      <Button
-                        size={{ base: "md", lg: "lg" }}
-                        colorScheme="teal"
-                        isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
-                        hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
-                        onClick={onProcureModalOpen}>
-                        <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
-                      </Button>
-                    </Tooltip>
-
-                    <Tooltip
-                      colorScheme="teal"
-                      hasArrow
-                      label="Preview Data is disabled on devnet"
-                      isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
-                      <Button
-                        size={{ base: "md", lg: "lg" }}
-                        colorScheme="teal"
-                        variant="outline"
-                        isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
-                        onClick={() => {
-                          window.open(nftData.attributes.dataPreview);
-                        }}>
-                        <Text px={tokenId ? 0 : 3}>Preview Data</Text>
-                      </Button>
-                    </Tooltip>
-
-                    <ExploreAppButton nonce={nftData.attributes.nonce} w="auto" size={{ base: "md", lg: "lg" }} />
-                  </Flex>
-                </VStack>
+                          <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
+                          {totalOffers &&
+                            totalOffers
+                              .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
+                              .map((to: any, index: number) => (
+                                <Fragment key={index}>
+                                  <GridItem flexDirection="column" colSpan={4}>
+                                    {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
+                                  </GridItem>
+                                  <GridItem flexDirection="column" colSpan={1}>
+                                    {to.quantity}
+                                  </GridItem>
+                                  <GridItem colSpan={2}>
+                                    {tokenId && pathname?.includes(tokenId) ? (
+                                      <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                        <Button w="full" colorScheme="teal" variant="outline">
+                                          {tokenId && pathname?.includes(tokenId) && window.innerWidth > 500 ? "View Offer" : "View"}
+                                        </Button>
+                                      </a>
+                                    ) : (
+                                      <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                        <Button w="full" colorScheme="teal" variant="outline">
+                                          {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                        </Button>
+                                      </a>
+                                    )}
+                                  </GridItem>
+                                </Fragment>
+                              ))}
+                        </Grid>
+                      </Box>
+                    </ConditionalRender>
+                  </GridItem>
+                </Grid>
               </Stack>
             </Box>
           </Flex>

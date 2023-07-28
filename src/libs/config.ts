@@ -78,6 +78,7 @@ export const MENU = {
   NFTDETAILS: 17,
   GETWHITELISTED: 18,
   DATACAT: 19,
+  PROFILE: 20,
 };
 
 export const BUTTONS = {

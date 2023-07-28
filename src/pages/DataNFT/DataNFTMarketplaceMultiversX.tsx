@@ -1,34 +1,33 @@
 import React, { FC, useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
+  Box,
+  CloseButton,
   Flex,
   Heading,
   HStack,
-  Stack,
-  Text,
-  CloseButton,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   SimpleGrid,
-  TabList,
-  Tabs,
+  Stack,
   Tab,
-  useColorMode,
-  useToast,
-  Box,
-  TabPanels,
+  TabList,
   TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useColorMode,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
-import { FaStore, FaBrush } from "react-icons/fa";
+import { FaBrush, FaStore } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
@@ -42,7 +41,7 @@ import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { createNftId, sleep, hexZero } from "libs/utils";
+import { createNftId, hexZero, sleep } from "libs/utils";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
@@ -91,12 +90,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+  const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
-  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
-
-  const marketplace = "/datanfts/marketplace/market";
-  const location = useLocation();
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -190,13 +186,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
-  function openNftDetailsDrawer(index: number) {
+  function openNftDetailsModal(index: number) {
     setOfferForDrawer(offers[index]);
-    onOpenDrawerTradeStream();
+    onOpenDataNftDetails();
   }
 
   function closeDetailsView() {
-    onCloseDrawerTradeStream();
+    onCloseDataNftDetails();
     setOfferForDrawer(undefined);
   }
 
@@ -356,7 +352,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsDrawer}>
+                          openNftDetailsDrawer={openNftDetailsModal}>
                           <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
                         </UpperCardComponent>
                       ))}
@@ -384,7 +380,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsDrawer}>
+                          openNftDetailsDrawer={openNftDetailsModal}>
                           <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
                         </UpperCardComponent>
                       ))}
@@ -430,29 +426,28 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Box>
         </Box>
       </Stack>
-
       {offerForDrawer && (
         <>
-          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
-            <DrawerOverlay />
-            <DrawerContent>
-              <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent overflowY="scroll" h="90%">
+              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                   <Heading as="h4" size="lg">
                     Data NFT Details
                   </Heading>
                 </HStack>
-              </DrawerHeader>
-              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}
                   closeDetailsView={closeDetailsView}
                 />
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </>
       )}
     </>

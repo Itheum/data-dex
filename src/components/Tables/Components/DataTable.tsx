@@ -103,7 +103,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
         </Button>
       </Flex>
       <div style={{ maxHeight: "100%", overflowX: "scroll" }}>
-        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" mt="5" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
+        <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" my="6" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
           <Thead style={styles.th}>
             {table.getHeaderGroups().map((headerGroup) => (
               <Tr key={headerGroup.id}>
@@ -136,36 +136,32 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
               </Tr>
             ))}
           </Thead>
-          {
-            table.getRowModel().rows && table.getRowModel().rows.length > 0 && (
-              <Tbody style={styles.tbody}>
-                {table.getRowModel().rows.map((row) => {
-                  return (
-                    <Tr key={row.id} borderColor="#00C79740">
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <Td fontSize="lg !important" key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </Td>
-                        );
-                      })}
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            )
-          }
+          {table.getRowModel().rows && table.getRowModel().rows.length > 0 && (
+            <Tbody style={styles.tbody}>
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <Tr key={row.id} borderColor="#00C79740">
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <Td fontSize="lg !important" key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Td>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          )}
         </Table>
-        {
-          !(table.getRowModel().rows && table.getRowModel().rows.length > 0) && (
-            <Flex justifyContent="center" w="full" mb="4rem">
-              <NoDataHere imgFromTop="4rem" />
-            </Flex>
-          )
-        }
+        {!(table.getRowModel().rows && table.getRowModel().rows.length > 0) && (
+          <Flex justifyContent="center" w="full" mb="4rem">
+            <NoDataHere imgFromTop="4rem" />
+          </Flex>
+        )}
       </div>
       {table && table.getPageCount() > 0 && (
-        <VStack gap={2} alignItems={"center"} justifyContent={"center"} marginTop={4}>
+        <VStack gap={2} alignItems={"center"} justifyContent={"center"}>
           <VStack>
             <Text as={"span"} display={"flex"} alignItems={"center"} gap={1}>
               Page

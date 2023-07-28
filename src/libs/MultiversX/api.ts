@@ -1,4 +1,6 @@
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
+import { decodeData } from "@multiversx/sdk-dapp/utils";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 import { uxConfig } from "libs/config";
@@ -72,6 +74,20 @@ export const checkBalance = async (token: string, address: string, networkId: Ne
         }
       });
   });
+};
+
+//get collection nfts
+export const getCollectionNfts = async (identifier: string, networkId: NetworkIdType) => {
+  const api = getApi(networkId);
+  const collectionNfts = axios
+    .get(`https://${api}/collections/${identifier}/nfts?size=10000`)
+    .then((response) => response.data)
+    .catch((error) => {
+      if (error) {
+        console.error(error);
+      }
+    });
+  return collectionNfts;
 };
 
 export const getClaimTransactions = async (address: string, smartContractAddress: string, networkId: NetworkIdType) => {

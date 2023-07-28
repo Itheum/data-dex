@@ -42,9 +42,10 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
-import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdSpaceDashboard } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TbSunset2 } from "react-icons/tb";
 import { TiArrowSortedDown } from "react-icons/ti";
@@ -59,7 +60,6 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 
 const exploreRouterMenu = [
   {
@@ -257,13 +257,28 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
-                <Box display={{ base: "none", md: "block" }}>
+                <Box display={{ base: "none", md: "block" }} zIndex="10">
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
                       <MenuButton as={Button} size={{ md: "md", "2xl": "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                        <Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>
+                          <MenuItem
+                            isDisabled={
+                              isMenuItemSelected("/profile") ||
+                              hasPendingTransactions ||
+                              isMenuItemSelected("/profile/created") ||
+                              isMenuItemSelected("/profile/listed")
+                            }
+                            onClick={() => navigateToDiscover(MENU.PROFILE)}
+                            color="teal.200"
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
+                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
+                          </MenuItem>
+                        </Link>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, Icon } = menuItem;
                           return (

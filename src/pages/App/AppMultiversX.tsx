@@ -16,7 +16,7 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { logout } from "@multiversx/sdk-dapp/utils";
-import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation, useRoutes } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
@@ -33,8 +33,20 @@ import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { useChainMeta } from "store/ChainMetaContext";
 import { GuardRails } from "../GuardRails/GuardRails";
+import { Profile } from "../Profile/Profile";
 
 const mxLogout = logout;
+
+const routes = [
+  {
+    path: "/profile",
+    element: <Profile />,
+    children: [
+      { path: "created", element: <Profile tabState={1} /> },
+      { path: "listed", element: <Profile tabState={2} /> },
+    ],
+  },
+];
 
 function App({ onLaunchMode }: { onLaunchMode: any }) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
@@ -57,6 +69,17 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
+
+  const routing = useRoutes([
+    {
+      path: "/profile",
+      element: <Profile />,
+      children: [
+        { path: "created", element: <Profile tabState={1} /> },
+        { path: "listed", element: <Profile tabState={2} /> },
+      ],
+    },
+  ]);
 
   // context hooks
   const { chainMeta: _chainMeta } = useChainMeta();
@@ -193,6 +216,13 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
               <Route path="guardRails" element={<Outlet />}>
                 <Route path="" element={<GuardRails />} />
               </Route>
+
+              <Route path="/profile" element={<Outlet />}>
+                <Route path="" element={<Profile tabState={1} />} />
+                <Route path="created" element={<Profile tabState={1} />} />
+                <Route path="listed" element={<Profile tabState={2} />} />
+              </Route>
+              {/*{routing}*/}
 
               <Route
                 path="dashboard"
