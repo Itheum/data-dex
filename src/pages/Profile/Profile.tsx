@@ -11,10 +11,8 @@ interface PropsType {
 export const Profile: React.FC<PropsType> = ({ tabState }) => {
   return (
     <Flex flexDirection="column">
-      <Suspense fallback={<Spinner color="teal.200" />}>
-        <DataCreatorInfo />
-        <DataCreatorTabs tabState={tabState ? tabState : 1} />
-      </Suspense>
+      <DataCreatorInfo />
+      <DataCreatorTabs tabState={tabState ? tabState : 1} />
     </Flex>
   );
 };
