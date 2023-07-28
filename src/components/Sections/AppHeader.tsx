@@ -42,6 +42,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
@@ -59,7 +60,6 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 
 const exploreRouterMenu = [
   {

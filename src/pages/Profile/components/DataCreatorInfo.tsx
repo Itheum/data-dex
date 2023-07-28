@@ -1,9 +1,9 @@
 import React from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Heading, Link } from "@chakra-ui/react";
 import { useGetAccount, useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { useChainMeta } from "../../../store/ChainMetaContext";
 import { CHAIN_TX_VIEWER } from "../../../libs/config";
+import { useChainMeta } from "../../../store/ChainMetaContext";
 
 export const DataCreatorInfo: React.FC = () => {
   // MX Api

@@ -18,12 +18,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import {
-  ExtensionLoginButton,
-  LedgerLoginButton,
-  WalletConnectLoginButton,
-  WebWalletLoginButton,
-} from "@multiversx/sdk-dapp/UI";
+import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useLocation } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -111,27 +106,15 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
-                        <ExtensionLoginButton
-                          loginButtonText={"DeFi Wallet"}
-                          buttonClassName="auth_button"
-                          {...commonProps}
-                        ></ExtensionLoginButton>
+                        <ExtensionLoginButton loginButtonText={"DeFi Wallet"} buttonClassName="auth_button" {...commonProps}></ExtensionLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
-                        <WebWalletLoginButton
-                          loginButtonText={"Web Wallet"}
-                          buttonClassName="auth_button"
-                          {...commonProps}
-                        ></WebWalletLoginButton>
+                        <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
 
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
-                        <LedgerLoginButton
-                          loginButtonText={"Ledger"}
-                          buttonClassName="auth_button"
-                          {...commonProps}
-                        ></LedgerLoginButton>
+                        <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
                       </WrapItem>
                     </Wrap>
                   </Stack>

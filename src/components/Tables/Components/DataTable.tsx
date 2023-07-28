@@ -136,33 +136,29 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
               </Tr>
             ))}
           </Thead>
-          {
-            table.getRowModel().rows && table.getRowModel().rows.length > 0 && (
-              <Tbody style={styles.tbody}>
-                {table.getRowModel().rows.map((row) => {
-                  return (
-                    <Tr key={row.id} borderColor="#00C79740">
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <Td fontSize="lg !important" key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </Td>
-                        );
-                      })}
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            )
-          }
+          {table.getRowModel().rows && table.getRowModel().rows.length > 0 && (
+            <Tbody style={styles.tbody}>
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <Tr key={row.id} borderColor="#00C79740">
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <Td fontSize="lg !important" key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Td>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          )}
         </Table>
-        {
-          !(table.getRowModel().rows && table.getRowModel().rows.length > 0) && (
-            <Flex justifyContent="center" w="full" mb="4rem">
-              <NoDataHere imgFromTop="4rem" />
-            </Flex>
-          )
-        }
+        {!(table.getRowModel().rows && table.getRowModel().rows.length > 0) && (
+          <Flex justifyContent="center" w="full" mb="4rem">
+            <NoDataHere imgFromTop="4rem" />
+          </Flex>
+        )}
       </div>
       {table && table.getPageCount() > 0 && (
         <VStack gap={2} alignItems={"center"} justifyContent={"center"}>
