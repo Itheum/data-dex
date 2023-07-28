@@ -137,7 +137,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
-
+      console.log("dataNfts", _dataNfts);
       setDataNft(_dataNfts);
     } catch (err: any) {
       setOneCreatedNFTImgLoaded(false);
@@ -377,7 +377,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 </HStack>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <DataNFTDetails tokenIdProp={createNftId(dataNftForDrawer.tokenName, Number(dataNftForDrawer.nonce))} closeDetailsView={closeDetailsView} />
+                <DataNFTDetails tokenIdProp={dataNftForDrawer.tokenIdentifier} closeDetailsView={closeDetailsView} />
               </ModalBody>
             </ModalContent>
           </Modal>
