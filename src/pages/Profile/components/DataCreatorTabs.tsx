@@ -85,7 +85,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
   const [oneListedNFTImgLoaded, setOneListedNFTImgLoaded] = useState(false);
   const { pathname } = useLocation();
-  const isCratedPage = "/profile/created";
+  const isCreatedPage = "/profile/created";
   const isListedPage = "/profile/listed";
 
   const [dataNfts, setDataNft] = useState<DataNftType[]>(() => {
@@ -97,6 +97,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   });
 
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+  const { isOpen: isOpenListingDetails, onOpen: onOpenListingDetails, onClose: onCloseListingDetails } = useDisclosure();
   const { colorMode } = useColorMode();
 
   const profileTabs = [
@@ -233,9 +234,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   function openNftDetailsModal(index: number) {
     if (pathname === isListedPage) {
       setOfferForDrawer(offers[index]);
-      onOpenDataNftDetails();
+      onOpenListingDetails();
     }
-    if ((pathname === isCratedPage || pathname === "/profile") && dataNfts) {
+    if ((pathname === isCreatedPage || pathname === "/profile") && dataNfts) {
       setDataNftForDrawer(dataNfts[index]);
       onOpenDataNftDetails();
     }
@@ -243,6 +244,10 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   function closeDetailsView() {
     onCloseDataNftDetails();
+  }
+
+  function closeListingDetailsView() {
+    onCloseListingDetails();
     setOfferForDrawer(undefined);
   }
 
@@ -335,48 +340,44 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabPanels>
       </Tabs>
       {offerForDrawer && (
-        <>
-          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
-            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent overflowY="scroll" h="90%">
-              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <HStack spacing="5">
-                  <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
-                </HStack>
-              </ModalHeader>
-              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <DataNFTDetails
-                  tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
-                  offerIdProp={offerForDrawer.index}
-                  closeDetailsView={closeDetailsView}
-                />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        </>
+        <Modal onClose={onCloseListingDetails} isOpen={isOpenListingDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+          <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+          <ModalContent overflowY="scroll" h="90%">
+            <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <HStack spacing="5">
+                <CloseButton size="lg" onClick={closeListingDetailsView} />
+                <Heading as="h4" size="lg">
+                  Data NFT Details
+                </Heading>
+              </HStack>
+            </ModalHeader>
+            <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <DataNFTDetails
+                tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
+                offerIdProp={offerForDrawer.index}
+                closeDetailsView={closeListingDetailsView}
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       )}
       {dataNftForDrawer && (
-        <>
-          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
-            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent overflowY="scroll" h="90%">
-              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <HStack spacing="5">
-                  <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
-                </HStack>
-              </ModalHeader>
-              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <DataNFTDetails tokenIdProp={dataNftForDrawer.tokenIdentifier} closeDetailsView={closeDetailsView} />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        </>
+        <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+          <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+          <ModalContent overflowY="scroll" h="90%">
+            <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <HStack spacing="5">
+                <CloseButton size="lg" onClick={closeDetailsView} />
+                <Heading as="h4" size="lg">
+                  Data NFT Details
+                </Heading>
+              </HStack>
+            </ModalHeader>
+            <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <DataNFTDetails tokenIdProp={dataNftForDrawer.tokenIdentifier} closeDetailsView={closeDetailsView} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       )}
     </>
   );
