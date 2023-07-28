@@ -137,7 +137,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
-      console.log("dataNfts", _dataNfts);
       setDataNft(_dataNfts);
     } catch (err: any) {
       setOneCreatedNFTImgLoaded(false);
@@ -193,7 +192,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
 
-      // console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
 
@@ -212,7 +210,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       // start loading offers
       updateLoadingOffers(true);
       const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
-      // console.log("_offers", _offers);
 
       updateOffers(_offers);
 
@@ -239,8 +236,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       onOpenDataNftDetails();
     }
     if ((pathname === isCratedPage || pathname === "/profile") && dataNfts) {
-      console.log(dataNfts[0]);
-      console.log(offers[0]);
       setDataNftForDrawer(dataNfts[index]);
       onOpenDataNftDetails();
     }
