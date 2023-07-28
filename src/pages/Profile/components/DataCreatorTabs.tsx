@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaBrush } from "react-icons/fa";
-import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
-import { BsClockHistory } from "react-icons/bs";
+import { Icon } from "@chakra-ui/icons";
 import {
   CloseButton,
   Flex,
@@ -24,25 +22,27 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Icon } from "@chakra-ui/icons";
-import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
-import { getApi, getNftsByIds } from "../../../libs/MultiversX/api";
-import { backendApi, createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
-import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
-import { useMarketStore } from "../../../store";
-import { useChainMeta } from "../../../store/ChainMetaContext";
-import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import useThrottle from "../../../components/UtilComps/UseThrottle";
-import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 import axios from "axios";
-import { labels } from "../../../libs/language";
+import { BsClockHistory } from "react-icons/bs";
+import { FaBrush } from "react-icons/fa";
+import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
+import { NoDataHere } from "../../../components/Sections/NoDataHere";
+import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
+import useThrottle from "../../../components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "../../../components/WalletDataNFTMX";
+import { labels } from "../../../libs/language";
+import { getApi, getNftsByIds } from "../../../libs/MultiversX/api";
+import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
+import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
+import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
+import { backendApi, createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
+import { useMarketStore } from "../../../store";
+import { useChainMeta } from "../../../store/ChainMetaContext";
+import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 
 interface PropsType {
   tabState: number;
@@ -82,12 +82,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
 
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
-  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+  const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
+  const [oneListedNFTImgLoaded, setOneListedNFTImgLoaded] = useState(false);
   const { pathname } = useLocation();
   const isCratedPage = "/profile/created";
   const isListedPage = "/profile/listed";
 
-  const [dataNft, setDataNft] = useState<DataNftType[]>(() => {
+  const [dataNfts, setDataNft] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
     for (let index = 0; index < 8; index++) {
       _dataNfts.push(createDataNftType());
@@ -105,7 +106,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/created",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNft?.length,
+      pieces: dataNfts?.length,
     },
     {
       tabNumber: 2,
@@ -131,34 +132,28 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     },
   ];
 
-  const getDataNfts = (address: string) => {
+  const getDataNfts = async (addressArg: string) => {
     const backendApiRoute = backendApi(networkId);
-
-    axios
-      .get(`${backendApiRoute}/data-nfts/${address}`)
-      .then((res) => {
-        if (res.data) {
-          setOneNFTImgLoaded(true);
-          setDataNft(res.data);
-        }
-      })
-      .catch((err) => {
-        setOneNFTImgLoaded(false);
-        toast({
-          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
-          description: err.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+    try {
+      const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
+      setDataNft(res.data);
+    } catch (err: any) {
+      setOneCreatedNFTImgLoaded(false);
+      toast({
+        title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+        description: err.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
       });
+    }
   };
 
   useEffect(() => {
     if (_chainMeta?.networkId) {
       getDataNfts(address);
     }
-  }, [dataNft, _chainMeta, hasPendingTransactions]);
+  }, [dataNfts, _chainMeta, hasPendingTransactions]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -190,7 +185,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = dataNft ? dataNft.length : 0;
+        _numberOfOffers = dataNfts ? dataNfts.length : 0;
       } else {
         // offers of User
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
@@ -242,7 +237,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       onOpenDataNftDetails();
     }
     if (pathname === isCratedPage) {
-      setDataNftForDrawer(dataNft[index]);
+      setDataNftForDrawer(dataNfts[index]);
       onOpenDataNftDetails();
     }
   }
@@ -281,31 +276,29 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            {!loadingOffers && !nftMetadatasLoading && dataNft.length === 0 ? (
+            {!loadingOffers && !nftMetadatasLoading && dataNfts.length === 0 ? (
               <NoDataHere />
             ) : (
-              <Skeleton fitContent={true} isLoaded={oneNFTImgLoaded}>
-                <SimpleGrid
-                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                  spacingY={4}
-                  mx={{ base: 0, "2xl": "24 !important" }}
-                  mt="5 !important"
-                  justifyItems={"center"}>
-                  {dataNft.length > 0 &&
-                    dataNft.map((dataNft, index) => (
-                      <WalletDataNFTMX
-                        key={index}
-                        hasLoaded={oneNFTImgLoaded}
-                        setHasLoaded={setOneNFTImgLoaded}
-                        maxPayment={maxPaymentFeeMap[itheumToken]}
-                        sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
-                        openNftDetailsDrawer={openNftDetailsModal}
-                        isProfile={true}
-                        {...dataNft}
-                      />
-                    ))}
-                </SimpleGrid>
-              </Skeleton>
+              <SimpleGrid
+                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                spacingY={4}
+                mx={{ base: 0, "2xl": "24 !important" }}
+                mt="5 !important"
+                justifyItems={"center"}>
+                {dataNfts.length > 0 &&
+                  dataNfts.map((nft, index) => (
+                    <WalletDataNFTMX
+                      key={index}
+                      hasLoaded={oneCreatedNFTImgLoaded}
+                      setHasLoaded={setOneCreatedNFTImgLoaded}
+                      maxPayment={maxPaymentFeeMap[itheumToken]}
+                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      openNftDetailsDrawer={openNftDetailsModal}
+                      isProfile={true}
+                      {...nft}
+                    />
+                  ))}
+              </SimpleGrid>
             )}
           </TabPanel>
           <TabPanel>
@@ -322,11 +315,11 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                   offers.map((offer, index) => (
                     <UpperCardComponent
                       key={index}
-                      nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                      nftImageLoading={oneListedNFTImgLoaded && !loadingOffers}
                       imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
                         offer?.offered_token_nonce
                       )}/thumbnail`}
-                      setNftImageLoaded={setOneNFTImgLoaded}
+                      setNftImageLoaded={setOneListedNFTImgLoaded}
                       nftMetadata={nftMetadatas[index]}
                       offer={offer}
                       index={index}
