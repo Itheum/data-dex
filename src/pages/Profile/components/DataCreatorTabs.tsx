@@ -136,7 +136,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     const backendApiRoute = backendApi(networkId);
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
-      setDataNft(res.data);
+      const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
+
+      setDataNft(_dataNfts);
     } catch (err: any) {
       setOneCreatedNFTImgLoaded(false);
       toast({
@@ -236,7 +238,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       setOfferForDrawer(offers[index]);
       onOpenDataNftDetails();
     }
-    if (pathname === isCratedPage) {
+    if ((pathname === isCratedPage || pathname === "/profile") && dataNfts) {
+      console.log(dataNfts[0]);
+      console.log(offers[0]);
       setDataNftForDrawer(dataNfts[index]);
       onOpenDataNftDetails();
     }
@@ -286,7 +290,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 mt="5 !important"
                 justifyItems={"center"}>
                 {dataNfts.length > 0 &&
-                  dataNfts.map((nft, index) => (
+                  dataNfts.map((item, index) => (
                     <WalletDataNFTMX
                       key={index}
                       hasLoaded={oneCreatedNFTImgLoaded}
@@ -295,7 +299,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                       sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsModal}
                       isProfile={true}
-                      {...nft}
+                      {...item}
                     />
                   ))}
               </SimpleGrid>
@@ -373,11 +377,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 </HStack>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <DataNFTDetails
-                  tokenIdProp={createNftId(dataNftForDrawer.tokenName, dataNftForDrawer.nonce)}
-                  offerIdProp={dataNftForDrawer.index}
-                  closeDetailsView={closeDetailsView}
-                />
+                <DataNFTDetails tokenIdProp={createNftId(dataNftForDrawer.tokenName, Number(dataNftForDrawer.nonce))} closeDetailsView={closeDetailsView} />
               </ModalBody>
             </ModalContent>
           </Modal>

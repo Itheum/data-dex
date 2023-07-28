@@ -143,7 +143,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       setDataNfts([]);
     }
   };
-
+  console.log(nftForDrawer);
   useEffect(() => {
     if (hasPendingTransactions) return;
     if (!_chainMeta) return;
@@ -161,6 +161,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     setNftForDrawer(undefined);
   }
 
+  console.log(nftForDrawer);
   return (
     <>
       <Stack>

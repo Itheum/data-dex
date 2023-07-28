@@ -68,6 +68,7 @@ export interface DataNftType {
   dataStream: string;
   dataMarshal: string;
   tokenName: string;
+  tokenIdentifier?: string;
   feeInTokens: number;
   creator: string;
   creationTime: Date;
