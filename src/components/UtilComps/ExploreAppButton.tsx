@@ -1,18 +1,18 @@
 import React from "react";
 import { Button, Text, Tooltip } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { TRAILBLAZER_NONCES } from "libs/config";
-import { networkIdBasedOnLoggedInStatus, getExplorerTrailBlazerURL } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
+import { routeChainIDBasedOnLoggedInStatus, getExplorerTrailBlazerURL } from "libs/utils";
 
 export default function ExploreAppButton({ nonce, w, size }: { nonce: number; w?: string; size?: any }) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
   return (
     <>
-      {TRAILBLAZER_NONCES[networkId].indexOf(nonce) >= 0 && (
+      {TRAILBLAZER_NONCES[routedChainID].indexOf(nonce) >= 0 && (
         <Tooltip hasArrow label="Unlocks custom app on Itheum Explorer">
           <Button
             size={size ? size : "sm"}
@@ -22,7 +22,7 @@ export default function ExploreAppButton({ nonce, w, size }: { nonce: number; w?
             }}
             w={w ? w : "full"}
             onClick={() => {
-              window.open(getExplorerTrailBlazerURL(networkId))?.focus();
+              window.open(getExplorerTrailBlazerURL(routedChainID))?.focus();
             }}>
             <Text py={3} color="black">
               Explore

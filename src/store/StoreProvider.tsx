@@ -2,25 +2,22 @@ import React, { PropsWithChildren, useEffect } from "react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
-import { getHealthCheckFromBackendApi } from "libs/MultiversX";
+import { contractsForChain, getHealthCheckFromBackendApi } from "libs/MultiversX";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
-  const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
-  const chainIDToNetworkId = chainID === "1" ? "E1" : "ED"; // convert the mx chainID to our local networkId format
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, chainIDToNetworkId);
-  const client = new NativeAuthClient({ origin: "datadex.itheum.io", apiUrl: `https://${getApi(networkId)}` });
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const client = new NativeAuthClient({ origin: "datadex.itheum.io", apiUrl: `https://${getApi(routedChainID)}` });
 
   // ACCOUNT STORE
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -52,8 +49,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // console.log("isMarketPaused", isMarketPaused);
   // console.log("Access token", accessToken);
 
-  const marketContract = new DataNftMarketContract(networkId);
-  const mintContract = new DataNftMintContract(networkId);
+  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(routedChainID);
 
   useEffect(() => {
     (async () => {
@@ -69,14 +66,12 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     (async () => {
-      const _isApiUp = await getHealthCheckFromBackendApi(networkId);
+      const _isApiUp = await getHealthCheckFromBackendApi(routedChainID);
       updateIsApiUp(_isApiUp);
     })();
   }, [isApiUp]);
 
   useEffect(() => {
-    if (!chainMeta) return;
-
     (async () => {
       const _marketRequirements = await marketContract.viewRequirements();
       updateMarketRequirements(_marketRequirements);
@@ -97,23 +92,23 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const _isMarketPaused = await marketContract.getIsPaused();
       updateIsMarketPaused(_isMarketPaused);
     })();
-  }, [chainMeta]);
+  }, [routedChainID]);
 
   useEffect(() => {
-    if (!chainMeta || !address) return;
+    if (!address) return;
     if (hasPendingTransactions) return;
 
     (async () => {
-      const _token = await getAccountTokenFromApi(address, chainMeta.contracts.itheumToken, networkId);
+      const _token = await getAccountTokenFromApi(address, contractsForChain(routedChainID).itheumToken, routedChainID);
       const balance = _token ? convertWeiToEsdt(_token.balance, _token.decimals).toNumber() : 0;
       updateItheumBalance(balance);
     })();
 
     (async () => {
-      const _userData = await mintContract.getUserDataOut(address, chainMeta.contracts.itheumToken);
+      const _userData = await mintContract.getUserDataOut(address, contractsForChain(routedChainID).itheumToken);
       updateUserData(_userData);
     })();
-  }, [chainMeta, address, hasPendingTransactions]);
+  }, [address, hasPendingTransactions]);
 
   const getItheumPrice = () => {
     (async () => {

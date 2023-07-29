@@ -24,7 +24,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
@@ -38,7 +38,6 @@ import {
   tokenDecimals,
 } from "libs/utils";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -46,11 +45,10 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { network } = useGetNetworkConfig();
+  const { network, chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const contract = new DataNftMarketContract(_chainMeta.networkId);
+  const contract = new DataNftMarketContract(chainID);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
@@ -63,7 +61,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [delistAmountError, setDelistAmountError] = useState<string>("");
-  const itheumToken = _chainMeta.contracts.itheumToken;
+  const itheumToken = contractsForChain(chainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
