@@ -22,7 +22,7 @@ import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
+import { clearAppSessionsLaunchMode, gtagGo, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
@@ -42,6 +42,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
@@ -77,13 +78,13 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
   }, []);
 
   useEffect(() => {
-    if (!SUPPORTED_CHAINS.includes(chainID)) {
+    if (!SUPPORTED_CHAINS.includes(routedChainID)) {
       setAlertIsOpen(true);
     }
-    if (chainID === "D") {
+    if (routedChainID === "D") {
       linkOrRefreshDataDATAccount(true);
     }
-  }, [chainID]);
+  }, [routedChainID]);
 
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
@@ -247,7 +248,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
               <AlertDialogBody>
                 Sorry the{" "}
                 <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                  {CHAINS[chainID as keyof typeof CHAINS]}
+                  {CHAINS[routedChainID as keyof typeof CHAINS]}
                 </Badge>{" "}
                 chain is currently not supported. We are working on it. You need to be on{" "}
                 {SUPPORTED_CHAINS.map((i) => (
