@@ -6,11 +6,8 @@ import { RouteType } from "@multiversx/sdk-dapp/types";
 import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "libs/hooks";
-import { contractsForChain } from "libs/MultiversX";
-import { sleep } from "libs/utils";
 import { StoreProvider } from "store/StoreProvider";
 import AppMx from "./AppMultiversX";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 
 function CustomLoader() {
   return (

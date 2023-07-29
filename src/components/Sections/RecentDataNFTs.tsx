@@ -43,8 +43,8 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
-  const marketContract = new DataNftMarketContract(chainID);
-  const mintContract = new DataNftMintContract(chainID);
+  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(routedChainID);
 
   useEffect(() => {
     apiWrapper();
