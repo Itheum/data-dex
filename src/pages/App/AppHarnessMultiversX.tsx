@@ -32,17 +32,17 @@ function CustomLoader() {
 
 export const routes: RouteType[] = [
   {
-    path: 'dashboard',
+    path: "dashboard",
     component: <></>,
     authenticatedRoute: true,
   },
   {
-    path: 'tradedata',
+    path: "tradedata",
     component: <></>,
     authenticatedRoute: true,
   },
   {
-    path: 'datanfts/wallet',
+    path: "datanfts/wallet",
     component: <></>,
     authenticatedRoute: true,
   },
@@ -89,10 +89,7 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
 
   return (
     <StoreProvider>
-      <AuthenticatedRoutesWrapper
-        routes={routes}
-        unlockRoute={'/'}
-        >
+      <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
         <AppMx onLaunchMode={handleLaunchMode} />
       </AuthenticatedRoutesWrapper>
     </StoreProvider>

@@ -20,6 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
+import { motion } from "framer-motion";
 import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
@@ -28,7 +29,6 @@ import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, p
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
-import { motion } from "framer-motion";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;

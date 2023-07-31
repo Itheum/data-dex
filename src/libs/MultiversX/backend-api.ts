@@ -4,9 +4,7 @@ import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
 import { OfferType } from "./types";
 
-export async function getHealthCheckFromBackendApi(
-  networkId: NetworkIdType,
-): Promise<boolean> {
+export async function getHealthCheckFromBackendApi(networkId: NetworkIdType): Promise<boolean> {
   try {
     const url = `${backendApi(networkId)}/health-check`;
     const { data } = await axios.get<string>(url, {
@@ -20,11 +18,7 @@ export async function getHealthCheckFromBackendApi(
   }
 }
 
-
-export async function getOffersCountFromBackendApi(
-  networkId: NetworkIdType,
-  address?: string,
-): Promise<number> {
+export async function getOffersCountFromBackendApi(networkId: NetworkIdType, address?: string): Promise<number> {
   try {
     const url = address ? `${backendApi(networkId)}/offers/${address}/count` : `${backendApi(networkId)}/offers/count`;
     const { data } = await axios.get<number>(url, {
@@ -38,12 +32,7 @@ export async function getOffersCountFromBackendApi(
   }
 }
 
-export async function getOffersFromBackendApi(
-  networkId: NetworkIdType,
-  from: number,
-  size: number,
-  address?: string,
-): Promise<OfferType[]> {
+export async function getOffersFromBackendApi(networkId: NetworkIdType, from: number, size: number, address?: string): Promise<OfferType[]> {
   try {
     let url = `${backendApi(networkId)}/offers?from=${from}&size=${size}`;
     if (address) {
@@ -60,9 +49,7 @@ export async function getOffersFromBackendApi(
   }
 }
 
-export async function getRecentOffersFromBackendApi(
-  networkId: NetworkIdType,
-): Promise<OfferType[]> {
+export async function getRecentOffersFromBackendApi(networkId: NetworkIdType): Promise<OfferType[]> {
   try {
     const url = `${backendApi(networkId)}/offers/recent`;
     const { data } = await axios.get<OfferType[]>(url, {
@@ -81,13 +68,13 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   identifier: string,
   nonces: number[],
   from?: number,
-  size?: number,
+  size?: number
 ): Promise<OfferType[]> {
   if (nonces.length === 0) {
     throw Error("getOffersByIdAndNoncesFromBackendApi: nonces must not be empty.");
   }
 
-  let url = `${backendApi(networkId)}/offers/${identifier}?nonces=${nonces.join(',')}`;
+  let url = `${backendApi(networkId)}/offers/${identifier}?nonces=${nonces.join(",")}`;
   if (from != null) {
     url += `&from=${from}`;
   }

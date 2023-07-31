@@ -1,10 +1,10 @@
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
+import { decodeData } from "@multiversx/sdk-dapp/utils";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 import { uxConfig } from "libs/config";
 import { NetworkIdType } from "libs/types";
-import { decodeData } from "@multiversx/sdk-dapp/utils";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 export const getApi = (networkId: NetworkIdType) => {
   const envKey = networkId === "E1" ? "REACT_APP_ENV_API_MAINNET_KEY" : "REACT_APP_ENV_API_DEVNET_KEY";
