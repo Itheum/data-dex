@@ -158,6 +158,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
+  console.log(totalOffers);
   async function getTokenHistory(tokenIdArg: string) {
     try {
       const inputString = tokenIdArg;
@@ -479,12 +480,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <Text color={"teal.200"}>{nftData.identifier}</Text>
                         </Heading>
                         <Grid templateColumns="repeat(7, 1fr)" h="18.6rem" overflowY="scroll" gap={2} px="28px" py="14px">
-                          {(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
+                          {(totalOffers.length === 0 ||
+                            false ||
+                            (totalOffers.length === 1 && totalOffers[0].owner === address) ||
+                            totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0) && (
                             <GridItem colSpan={8}>
                               <NoDataHere imgFromTop="6.5rem" />
                             </GridItem>
                           )}
-                          {!(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
+                          {!(
+                            totalOffers.length === 0 ||
+                            false ||
+                            (totalOffers.length === 1 && totalOffers[0].owner === address) ||
+                            totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
+                          ) && (
                             <>
                               <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
                                 Price
