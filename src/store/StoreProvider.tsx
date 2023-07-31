@@ -17,7 +17,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  console.log(routedChainID);
+  // console.log(routedChainID);
   const client = new NativeAuthClient({ origin: "datadex.itheum.io", apiUrl: `https://${getApi(routedChainID)}` });
 
   // ACCOUNT STORE

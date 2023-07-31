@@ -133,7 +133,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
     }
   }, [offerId, hasPendingTransactions]);
-
+  // console.log(nftData);
   function getTokenDetails() {
     const apiLink = getApi(routedChainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
@@ -149,7 +149,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })
       .catch((err) => {
         toast({
-          title: labels.ERR_API_ISSUE_DATA_NFT_DETAILS,
+          title: labels.ERR_MARKET_OFFER_NOT_FOUND,
           description: err.message,
           status: "error",
           duration: 9000,
@@ -158,7 +158,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  console.log(totalOffers);
+  // console.log(totalOffers);
   async function getTokenHistory(tokenIdArg: string) {
     try {
       const inputString = tokenIdArg;
@@ -180,8 +180,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       }
       setIsLoadingPrice(false);
     } catch (err) {
+      console.log(err);
       toast({
-        title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+        title: labels.ERR_MARKET_OFFER_NOT_FOUND,
         description: (err as Error).message,
         status: "error",
         duration: 9000,

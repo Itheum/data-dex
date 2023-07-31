@@ -177,9 +177,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 <Tab
                   key={index}
                   isDisabled={tab.isDisabled}
+                  p={{ base: "0", md: "initial" }}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   onClick={() => onChangeTab(index + 1)}>
-                  <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
+                  <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3} overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}

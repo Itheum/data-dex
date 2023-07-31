@@ -265,12 +265,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   flexDirection="row"
                   _disabled={{ opacity: 1 }}
+                  p={{ base: "0", md: "initial" }}
                   fontSize={{ base: "sm", md: "md" }}
                   onClick={() => {
                     if (hasPendingTransactions) return;
                     navigate("/datanfts/marketplace/market");
                   }}>
-                  <Flex ml="4.7rem" alignItems="center" py={3}>
+                  <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3}>
                     <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                     <ConditionalRender
                       fallback={
@@ -293,13 +294,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 <Tab
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   _disabled={{ opacity: 1 }}
+                  p={{ base: "0", md: "initial" }}
                   fontSize={{ base: "sm", md: "md" }}
                   onClick={() => {
                     if (hasPendingTransactions) return;
                     navigate("/datanfts/marketplace/my");
                   }}>
                   {isMxLoggedIn && (
-                    <Flex ml="4.7rem" alignItems="center" py={3}>
+                    <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
                       <ConditionalRender
                         fallback={
@@ -321,7 +323,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   )}
                 </Tab>
               </Flex>
-              <Flex pr={{ lg: "10" }} ml={{ base: "4.7rem", xl: 0 }}>
+              <Flex pr={{ lg: "10" }} ml={{ base: "0.8rem", xl: 0 }} pb={1}>
                 <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
               </Flex>
             </TabList>
