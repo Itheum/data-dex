@@ -18,6 +18,20 @@ export async function getHealthCheckFromBackendApi(networkId: NetworkIdType): Pr
   }
 }
 
+export async function getMarketplaceHealthCheckFromBackendApi(networkId: NetworkIdType): Promise<boolean> {
+  try {
+    const url = `${backendApi(networkId)}/health-check?marketplace=1`;
+    const { data } = await axios.get<string>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+
+    return data == "OK";
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
 export async function getOffersCountFromBackendApi(networkId: NetworkIdType, address?: string): Promise<number> {
   try {
     const url = address ? `${backendApi(networkId)}/offers/${address}/count` : `${backendApi(networkId)}/offers/count`;
