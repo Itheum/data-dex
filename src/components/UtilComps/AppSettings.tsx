@@ -15,7 +15,7 @@ export default function () {
   const isPublicApi = getApi(chainID).includes("api.multiversx.com");
   const isPublicNetworkProvider = getNetworkProviderCodification(chainID).includes(".multiversx.com");
   const isApiNetworkProvider = getNetworkProvider(chainID) instanceof ApiNetworkProvider;
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [previewDataFlag, setPreviewDataFlag] = useState<boolean>(previewDataOnDevnetSession == "true");
 
