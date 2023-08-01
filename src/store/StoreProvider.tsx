@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useEffect } from "react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
-import { getHealthCheckFromBackendApi } from "libs/MultiversX";
+import { getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
@@ -39,6 +39,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateIsMarketPaused = useMarketStore((state) => state.updateIsMarketPaused);
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const updateIsApiUp = useMarketStore((state) => state.updateIsApiUp);
+  const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
+  const updateIsMarketplaceApiUp = useMarketStore((state) => state.updateIsMarketplaceApiUp);
 
   // MINT STORE
   const userData = useMintStore((state) => state.userData);
@@ -71,6 +73,11 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     (async () => {
       const _isApiUp = await getHealthCheckFromBackendApi(networkId);
       updateIsApiUp(_isApiUp);
+    })();
+
+    (async () => {
+      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(networkId);
+      updateIsMarketplaceApiUp(_isMarketplaceApiUp);
     })();
   }, [isApiUp]);
 
