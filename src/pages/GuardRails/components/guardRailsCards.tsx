@@ -73,12 +73,16 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         justifyContent="center"
         alignItems="center"
         borderBottom="1px solid"
+        borderTopRadius="22px"
         borderColor="#00C79740"
         backgroundColor="#00C7970D"
         w="full">
         <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handlePrevClick} mx="2"></Button>
-        <Text textAlign="center" fontWeight="600" borderTopRadius="22px" py={3} fontSize="22px">
-          {title}
+        <Text as="div" textAlign="center" fontWeight="600" borderTopRadius="22px" py={3} fontSize="22px">
+          <Text fontSize="xl" px={3}>
+            {title}
+          </Text>
+          <Text fontSize="sm">{currentItem.date}</Text>
         </Text>
         <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>
       </Flex>

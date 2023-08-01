@@ -117,11 +117,12 @@ export const GuardRails: React.FC = () => {
             textAlign="center"
             fontWeight="600"
             borderTopRadius="22px"
-            py={3}
+            py={5}
+            h="68px"
             borderBottom="1px solid"
             borderColor="#00C79740"
             backgroundColor="#00C7970D"
-            fontSize="22px">
+            fontSize="xl">
             Active Guardrails
           </Text>
           <Stack textAlign="start">
@@ -214,11 +215,12 @@ export const GuardRails: React.FC = () => {
             textAlign="center"
             fontWeight="600"
             borderTopRadius="22px"
-            py={3}
+            py={5}
+            h="68px"
             borderBottom="1px solid"
             borderColor="#00C79740"
             backgroundColor="#00C7970D"
-            fontSize="22px">
+            fontSize="xl">
             Upcoming Guardrails
           </Text>
           <Stack textAlign="start">
