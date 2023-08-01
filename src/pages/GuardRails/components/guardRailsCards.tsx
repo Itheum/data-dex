@@ -13,7 +13,7 @@ type Props = {
 
 export const GuardRailsCards: React.FC<Props> = (props) => {
   const { items, title, badgeColor, textColor } = props;
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(items.length - 1);
   const [xPosition, setXPosition] = useState<number>(0);
 
   const arrowUp = "↑";
@@ -28,7 +28,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   };
 
   const handlePrevClick = () => {
-    if (currentIndex < 2 && currentIndex !== 0) {
+    if (currentIndex < 2) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
       setXPosition(xPosition - 400);
     } else {

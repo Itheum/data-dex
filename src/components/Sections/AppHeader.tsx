@@ -67,12 +67,22 @@ const exploreRouterMenu = [
     sectionLabel: "Main Sections",
     sectionItems: [
       {
+        menuEnum: MENU.PROFILE,
+        path: "/profile",
+        label: "Profile",
+        shortLbl: "Profile",
+        Icon: MdPerson,
+        needToBeLoggedIn: true,
+        isHidden: true,
+      },
+      {
         menuEnum: MENU.HOME,
         path: "/dashboard",
         label: "Dashboard",
         shortLbl: "Dash",
         Icon: MdSpaceDashboard,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.SELL,
@@ -81,6 +91,7 @@ const exploreRouterMenu = [
         shortLbl: "Trade",
         Icon: RiExchangeFill,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.NFTMINE,
@@ -89,6 +100,7 @@ const exploreRouterMenu = [
         shortLbl: "Wallet",
         Icon: MdAccountBalanceWallet,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.NFTALL,
@@ -97,6 +109,7 @@ const exploreRouterMenu = [
         shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
+        isHidden: false,
       },
       {
         menuEnum: MENU.GETWHITELISTED,
@@ -106,6 +119,7 @@ const exploreRouterMenu = [
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
+        isHidden: false,
       },
     ],
   },
@@ -160,6 +174,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
   const handleGuardrails = () => {
     navigate("/guardRails");
+    if (isOpen) onClose();
   };
 
   return (
@@ -224,7 +239,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
-                const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
+                const { path, menuEnum, shortLbl, isHidden, Icon } = quickMenuItem;
                 return (
                   <Link
                     as={ReactRouterLink}
@@ -236,6 +251,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       borderColor="teal.200"
                       fontSize="md"
                       variant="outline"
+                      display={isHidden ? "none" : "initial"}
                       h={"12"}
                       isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(path)}
@@ -264,29 +280,30 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                        <Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>
-                          <MenuItem
-                            isDisabled={
-                              isMenuItemSelected("/profile") ||
-                              hasPendingTransactions ||
-                              isMenuItemSelected("/profile/created") ||
-                              isMenuItemSelected("/profile/listed")
-                            }
-                            onClick={() => navigateToDiscover(MENU.PROFILE)}
-                            color="teal.200"
-                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
-                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
-                          </MenuItem>
-                        </Link>
+                        {/*<Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>*/}
+                        {/*  <MenuItem*/}
+                        {/*    isDisabled={*/}
+                        {/*      isMenuItemSelected("/profile") ||*/}
+                        {/*      hasPendingTransactions ||*/}
+                        {/*      isMenuItemSelected("/profile/created") ||*/}
+                        {/*      isMenuItemSelected("/profile/listed")*/}
+                        {/*    }*/}
+                        {/*    onClick={() => navigateToDiscover(MENU.PROFILE)}*/}
+                        {/*    color="teal.200"*/}
+                        {/*    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
+                        {/*    <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />*/}
+                        {/*    <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>*/}
+                        {/*  </MenuItem>*/}
+                        {/*</Link>*/}
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, path, menuEnum, Icon } = menuItem;
+                          const { label, path, menuEnum, isHidden, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem
                                 key={label}
                                 isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                                 onClick={() => navigateToDiscover(menuEnum)}
+                                display={isHidden ? "none" : "flex"}
                                 color="teal.200"
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
@@ -332,6 +349,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
                           <MenuItem
                             onClick={handleGuardrails}
+                            display="none"
                             fontSize="lg"
                             fontWeight="500"
                             isDisabled={hasPendingTransactions}
@@ -416,8 +434,23 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       </Text>
                       <hr />
                       <List>
+                        {/*<Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>*/}
+                        {/*  <MenuItem*/}
+                        {/*    isDisabled={*/}
+                        {/*      isMenuItemSelected("/profile") ||*/}
+                        {/*      hasPendingTransactions ||*/}
+                        {/*      isMenuItemSelected("/profile/created") ||*/}
+                        {/*      isMenuItemSelected("/profile/listed")*/}
+                        {/*    }*/}
+                        {/*    onClick={() => navigateToDiscover(MENU.PROFILE)}*/}
+                        {/*    color="teal.200"*/}
+                        {/*    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
+                        {/*    <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />*/}
+                        {/*    <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>*/}
+                        {/*  </MenuItem>*/}
+                        {/*</Link>*/}
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, menuEnum, path, Icon } = menuItem;
+                          const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <ListItem
@@ -425,7 +458,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 variant={"ghost"}
                                 w={"full"}
                                 borderRadius={"0"}
-                                display={"flex"}
+                                display={isHidden ? "none" : "flex"}
                                 justifyContent={"start"}
                                 p={3}
                                 key={label}
@@ -465,6 +498,20 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                           p={3}
                           onClick={() => setMxInteractionsHistory(true)}>
                           View Interactions History
+                        </ListItem>
+
+                        <ListItem
+                          as={Button}
+                          onClick={handleGuardrails}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          display={"none"}
+                          justifyContent={"start"}
+                          p={3}
+                          isDisabled={hasPendingTransactions}
+                          backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                          CanaryNet Dashboard
                         </ListItem>
 
                         <ListItem
