@@ -349,7 +349,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
                           <MenuItem
                             onClick={handleGuardrails}
-                            display="none"
                             fontSize="lg"
                             fontWeight="500"
                             isDisabled={hasPendingTransactions}
@@ -434,21 +433,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       </Text>
                       <hr />
                       <List>
-                        {/*<Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>*/}
-                        {/*  <MenuItem*/}
-                        {/*    isDisabled={*/}
-                        {/*      isMenuItemSelected("/profile") ||*/}
-                        {/*      hasPendingTransactions ||*/}
-                        {/*      isMenuItemSelected("/profile/created") ||*/}
-                        {/*      isMenuItemSelected("/profile/listed")*/}
-                        {/*    }*/}
-                        {/*    onClick={() => navigateToDiscover(MENU.PROFILE)}*/}
-                        {/*    color="teal.200"*/}
-                        {/*    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
-                        {/*    <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />*/}
-                        {/*    <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>*/}
-                        {/*  </MenuItem>*/}
-                        {/*</Link>*/}
                         {menu.sectionItems.map((menuItem) => {
                           const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (
@@ -506,7 +490,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                           variant={"ghost"}
                           w={"full"}
                           borderRadius={"0"}
-                          display={"none"}
                           justifyContent={"start"}
                           p={3}
                           isDisabled={hasPendingTransactions}
