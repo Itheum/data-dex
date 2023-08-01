@@ -13,7 +13,7 @@ type Props = {
 
 export const GuardRailsCards: React.FC<Props> = (props) => {
   const { items, title, badgeColor, textColor } = props;
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(items.length - 1);
   const [xPosition, setXPosition] = useState<number>(0);
 
   const arrowUp = "↑";
@@ -28,11 +28,9 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   };
 
   const handlePrevClick = () => {
-    if (currentIndex < 2 && currentIndex !== 0) {
+    if (currentIndex < items.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
       setXPosition(xPosition - 400);
-    } else {
-      return null;
     }
   };
 
@@ -75,12 +73,16 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         justifyContent="center"
         alignItems="center"
         borderBottom="1px solid"
+        borderTopRadius="22px"
         borderColor="#00C79740"
         backgroundColor="#00C7970D"
         w="full">
         <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handlePrevClick} mx="2"></Button>
-        <Text textAlign="center" fontWeight="600" borderTopRadius="22px" py={3} fontSize="22px">
-          {title}
+        <Text as="div" textAlign="center" fontWeight="600" borderTopRadius="22px" py={3} fontSize="22px">
+          <Text fontSize="xl" px={3}>
+            {title}
+          </Text>
+          <Text fontSize="sm">{currentItem.date}</Text>
         </Text>
         <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>
       </Flex>
