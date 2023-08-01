@@ -280,21 +280,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                        {/*<Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>*/}
-                        {/*  <MenuItem*/}
-                        {/*    isDisabled={*/}
-                        {/*      isMenuItemSelected("/profile") ||*/}
-                        {/*      hasPendingTransactions ||*/}
-                        {/*      isMenuItemSelected("/profile/created") ||*/}
-                        {/*      isMenuItemSelected("/profile/listed")*/}
-                        {/*    }*/}
-                        {/*    onClick={() => navigateToDiscover(MENU.PROFILE)}*/}
-                        {/*    color="teal.200"*/}
-                        {/*    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>*/}
-                        {/*    <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />*/}
-                        {/*    <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>*/}
-                        {/*  </MenuItem>*/}
-                        {/*</Link>*/}
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, isHidden, Icon } = menuItem;
                           return (
