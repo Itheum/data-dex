@@ -273,7 +273,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         </Tooltip>
                         {!!offerId && (
                           <Button
-                            size={{ base: "md", lg: "md" }}
+                            variant="ghost"
+                            size={{ base: "sm", lg: "sm" }}
                             onClick={() => {
                               onCopy();
                               toast({
@@ -282,7 +283,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 isClosable: true,
                               });
                             }}>
-                            <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} />
+                            <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} textAlign="left" />
                           </Button>
                         )}
                       </Flex>
@@ -372,7 +373,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     mt={3}
                     justifyContent="right"
                     w={marketplaceDrawer ? { base: "full", md: "initial", xl: "30rem" } : { base: "full", md: "initial", xl: "inherit" }}>
-                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                    <Heading
+                      fontSize="20px"
+                      fontWeight={500}
+                      pl="28px"
+                      py={5}
+                      borderBottom="1px solid"
+                      borderColor="#00C79740"
+                      bgColor="#00C7970D"
+                      borderTopRadius="xl">
                       Details
                     </Heading>
                     <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
@@ -418,7 +427,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Grid templateColumns="repeat(8, 1fr)" gap={3} w="full" marginTop="1.5rem !important">
                   <GridItem colSpan={{ base: 8, xl: 5 }}>
                     <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                      <Heading fontSize="20px" fontWeight={500} pl="28px" py={8} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                      <Heading
+                        fontSize="20px"
+                        fontWeight={500}
+                        pl="28px"
+                        py={8}
+                        borderBottom="1px solid"
+                        borderColor="#00C79740"
+                        bgColor="#00C7970D"
+                        borderTopRadius="xl">
                         Description
                       </Heading>
                       <Flex flexDirection="column" h="18.6rem" justifyContent="space-between">
@@ -457,7 +474,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   <GridItem colSpan={{ base: 8, xl: 3 }}>
                     <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                        <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                        <Heading
+                          fontSize="20px"
+                          fontWeight={500}
+                          pl="28px"
+                          py={5}
+                          borderBottom="1px solid"
+                          borderColor="#00C79740"
+                          bgColor="#00C7970D"
+                          borderTopRadius="xl">
                           <>
                             {!offer ? (
                               <>
@@ -504,7 +529,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </GridItem>
                             </>
                           )}
-                          <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
+                          <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center" rowSpan={1}></GridItem>
                           {totalOffers &&
                             totalOffers
                               .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
