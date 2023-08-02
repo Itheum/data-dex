@@ -148,13 +148,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         setIsLoadingDetails(false);
       })
       .catch((err) => {
-        toast({
-          title: labels.ERR_MARKET_OFFER_NOT_FOUND,
-          description: err.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+        if (err.response.status === 404) {
+          toast({
+            title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+            description: err.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: labels.ERR_API_ISSUE_DATA_NFT_DETAILS,
+            description: err.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
       });
   }
 
@@ -180,14 +190,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       }
       setIsLoadingPrice(false);
     } catch (err) {
-      console.log(err);
-      toast({
-        title: labels.ERR_MARKET_OFFER_NOT_FOUND,
-        description: (err as Error).message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
+      if ((err as any).response.status === 404) {
+        toast({
+          title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+          description: (err as Error).message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+          description: (err as Error).message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
     }
   }
 
