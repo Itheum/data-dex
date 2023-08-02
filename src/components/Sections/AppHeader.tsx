@@ -43,7 +43,6 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
@@ -496,21 +495,6 @@ export default AppHeader;
 
 const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
-  const [initToken, setInitToken] = useState<string>("");
-  const { address: mxAddress } = useGetAccountInfo();
-
-  const client = new NativeAuthClient({ origin: "test" });
-
-  useEffect(() => {
-    (async () => {
-      setInitToken(await client.initialize());
-    })();
-  }, []);
-
-  const parts = initToken.split(".");
-  const signature = mxAddress + parts.slice(1).join(".");
-
-  const accessToken = client.getToken(mxAddress, initToken, signature);
 
   // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
   // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);

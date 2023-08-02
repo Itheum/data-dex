@@ -18,13 +18,10 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   console.log(routedChainID);
-  const client = new NativeAuthClient({ origin: "datadex.itheum.io", apiUrl: `https://${getApi(routedChainID)}` });
 
   // ACCOUNT STORE
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
-  const accessToken = useAccountStore((state) => state.accessToken);
-  const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
 
   // MARKET STORE
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -52,18 +49,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   const marketContract = new DataNftMarketContract(routedChainID);
   const mintContract = new DataNftMintContract(routedChainID);
-
-  useEffect(() => {
-    (async () => {
-      const initToken = await client.initialize();
-      const parts = initToken.split(".");
-      if (parts) {
-        const formatToken = address + parts.slice(1).join(".");
-        const finalAccessToken = client.getToken(address, initToken, formatToken);
-        updateAccessToken(finalAccessToken);
-      }
-    })();
-  }, [address, isMxLoggedIn]);
 
   useEffect(() => {
     (async () => {
