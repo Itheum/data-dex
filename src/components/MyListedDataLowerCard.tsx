@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetPendingTransactions, useGetSuccessfulTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -107,6 +107,25 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     }
 
     contract.delistDataNft(offer.index, delistAmount, address);
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = { supply: delistAmount };
+      const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log("Response:", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
 
     // a small delay for visual effect
     await sleep(0.5);
