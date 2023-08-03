@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
-import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation } from "libs/utils";
+import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
 import { useMarketStore } from "store";
 
 export type ListModalProps = {
@@ -18,6 +18,7 @@ export type ListModalProps = {
 };
 
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
+  const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const fullPrice = amount * offer.wanted_token_amount;
@@ -31,6 +32,10 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+
+  const { tokenLogin } = useGetLoginInfo();
+
+  const backendUrl = backendApi(chainID);
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
@@ -70,6 +75,41 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     }
 
     marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
+
+    const lastIndex = await fetch(`${backendUrl}/offers/recent/index`).then((res) => res.json());
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = {
+        index: lastIndex + 1,
+        offered_token_identifier: nftData.collection,
+        offered_token_nonce: nftData.nonce,
+        offered_token_amount: 1,
+        title: nftData.title,
+        description: nftData.description,
+        wanted_token_identifier: offer.wanted_token_identifier,
+        wanted_token_nonce: offer.wanted_token_nonce,
+        wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
+        quantity: amount,
+        owner: address,
+      };
+
+      console.log(requestBody);
+      const response = await fetch(`${backendUrl}/addOffer`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log("Response:", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
 
     setAmount(1);
 

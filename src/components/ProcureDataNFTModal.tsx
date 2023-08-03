@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString, tokenDecimals, getTokenWantedRepresentation } from "libs/utils";
+import {
+  convertEsdtToWei,
+  convertWeiToEsdt,
+  sleep,
+  printPrice,
+  convertToLocalString,
+  tokenDecimals,
+  getTokenWantedRepresentation,
+  backendApi,
+} from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 
 export interface ProcureAccessModalProps {
@@ -26,6 +35,10 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(chainID);
+
+  const { tokenLogin } = useGetLoginInfo();
+
+  const backendUrl = backendApi(chainID);
 
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
@@ -113,6 +126,24 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       }
     }
 
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = { supply: amount };
+      const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log("Response:", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
     // a small delay for visual effect
     await sleep(0.5);
     onClose();
