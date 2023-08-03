@@ -264,13 +264,13 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                        <Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
                           <MenuItem
                             isDisabled={
-                              isMenuItemSelected("/profile") ||
+                              isMenuItemSelected(`/profile/${mxAddress}`) ||
                               hasPendingTransactions ||
-                              isMenuItemSelected("/profile/created") ||
-                              isMenuItemSelected("/profile/listed")
+                              isMenuItemSelected(`/profile/${mxAddress}/created`) ||
+                              isMenuItemSelected(`/profile/${mxAddress}/listed`)
                             }
                             onClick={() => navigateToDiscover(MENU.PROFILE)}
                             color="teal.200"
