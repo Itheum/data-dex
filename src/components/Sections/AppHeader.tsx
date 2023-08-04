@@ -42,9 +42,10 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
-import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdSpaceDashboard } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TbSunset2 } from "react-icons/tb";
 import { TiArrowSortedDown } from "react-icons/ti";
@@ -59,7 +60,6 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 
 const exploreRouterMenu = [
   {
@@ -67,12 +67,22 @@ const exploreRouterMenu = [
     sectionLabel: "Main Sections",
     sectionItems: [
       {
+        menuEnum: MENU.PROFILE,
+        path: "/profile",
+        label: "Profile",
+        shortLbl: "Profile",
+        Icon: MdPerson,
+        needToBeLoggedIn: true,
+        isHidden: true,
+      },
+      {
         menuEnum: MENU.HOME,
         path: "/dashboard",
         label: "Dashboard",
         shortLbl: "Dash",
         Icon: MdSpaceDashboard,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.SELL,
@@ -81,6 +91,7 @@ const exploreRouterMenu = [
         shortLbl: "Trade",
         Icon: RiExchangeFill,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.NFTMINE,
@@ -89,6 +100,7 @@ const exploreRouterMenu = [
         shortLbl: "Wallet",
         Icon: MdAccountBalanceWallet,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.NFTALL,
@@ -97,6 +109,7 @@ const exploreRouterMenu = [
         shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
+        isHidden: false,
       },
       {
         menuEnum: MENU.GETWHITELISTED,
@@ -106,6 +119,7 @@ const exploreRouterMenu = [
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
+        isHidden: false,
       },
     ],
   },
@@ -159,7 +173,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
   const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
-    navigate("/guardRails");
+    navigate("/guardrails");
+    if (isOpen) onClose();
   };
 
   return (
@@ -224,7 +239,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
-                const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
+                const { path, menuEnum, shortLbl, isHidden, Icon } = quickMenuItem;
                 return (
                   <Link
                     as={ReactRouterLink}
@@ -236,6 +251,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       borderColor="teal.200"
                       fontSize="md"
                       variant="outline"
+                      display={isHidden ? "none" : "initial"}
                       h={"12"}
                       isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(path)}
@@ -257,7 +273,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               <>
                 <ItheumTokenBalanceBadge displayParams={["none", null, "block"]} />
                 <LoggedInChainBadge chain={chainFriendlyName} displayParams={["none", null, "block"]} />
-                <Box display={{ base: "none", md: "block" }}>
+                <Box display={{ base: "none", md: "block" }} zIndex="10">
                   {exploreRouterMenu.map((menu) => (
                     <Menu key={menu.sectionId} isLazy>
                       <MenuButton as={Button} size={{ md: "md", "2xl": "lg" }} rightIcon={<TiArrowSortedDown size="18px" />}>
@@ -265,13 +281,14 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, path, menuEnum, Icon } = menuItem;
+                          const { label, path, menuEnum, isHidden, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem
                                 key={label}
                                 isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                                 onClick={() => navigateToDiscover(menuEnum)}
+                                display={isHidden ? "none" : "flex"}
                                 color="teal.200"
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
@@ -402,7 +419,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       <hr />
                       <List>
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, menuEnum, path, Icon } = menuItem;
+                          const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <ListItem
@@ -410,7 +427,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 variant={"ghost"}
                                 w={"full"}
                                 borderRadius={"0"}
-                                display={"flex"}
+                                display={isHidden ? "none" : "flex"}
                                 justifyContent={"start"}
                                 p={3}
                                 key={label}
@@ -450,6 +467,19 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                           p={3}
                           onClick={() => setMxInteractionsHistory(true)}>
                           View Interactions History
+                        </ListItem>
+
+                        <ListItem
+                          as={Button}
+                          onClick={handleGuardrails}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          justifyContent={"start"}
+                          p={3}
+                          isDisabled={hasPendingTransactions}
+                          backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                          CanaryNet Dashboard
                         </ListItem>
 
                         <ListItem

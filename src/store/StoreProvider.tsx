@@ -1,15 +1,15 @@
 import React, { PropsWithChildren, useEffect } from "react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
+import { getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { backendApi, convertWeiToEsdt, tokenDecimals } from "libs/utils";
+import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import axios from "axios";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { chainID } = useGetNetworkConfig();
@@ -39,6 +39,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateIsMarketPaused = useMarketStore((state) => state.updateIsMarketPaused);
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const updateIsApiUp = useMarketStore((state) => state.updateIsApiUp);
+  const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
+  const updateIsMarketplaceApiUp = useMarketStore((state) => state.updateIsMarketplaceApiUp);
 
   // MINT STORE
   const userData = useMintStore((state) => state.userData);
@@ -54,7 +56,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
-  const backendApiRoute = backendApi(networkId);
 
   useEffect(() => {
     (async () => {
@@ -69,18 +70,15 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   }, [address, isMxLoggedIn]);
 
   useEffect(() => {
-    axios
-      .get(`${backendApiRoute}`)
-      .then((res) => {
-        if (res.status === 200) {
-          updateIsApiUp(true);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          updateIsApiUp(false);
-        }
-      });
+    (async () => {
+      const _isApiUp = await getHealthCheckFromBackendApi(networkId);
+      updateIsApiUp(_isApiUp);
+    })();
+
+    (async () => {
+      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(networkId);
+      updateIsMarketplaceApiUp(_isMarketplaceApiUp);
+    })();
   }, [isApiUp]);
 
   useEffect(() => {

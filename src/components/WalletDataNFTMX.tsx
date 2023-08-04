@@ -1,60 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import {
-  Box,
-  Text,
-  Link,
-  Image,
-  Flex,
-  Skeleton,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  Badge,
-  Button,
-  HStack,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  useToast,
-  useDisclosure,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Badge,
+  Box,
+  Button,
   CloseButton,
+  Flex,
+  HStack,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Skeleton,
   Spinner,
-  useColorMode,
+  Stack,
+  Text,
   Tooltip,
+  useColorMode,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
+import { motion } from "framer-motion";
 import moment from "moment";
 import qs from "qs";
 import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep } from "libs/utils";
+import { convertToLocalString, getExplorerTrailBlazerURL, isValidNumericCharacter, sleep, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -65,6 +66,7 @@ export type WalletDataNFTMxPropType = {
   setHasLoaded: (hasLoaded: boolean) => void;
   sellerFee: number;
   openNftDetailsDrawer: (e: number) => void;
+  isProfile?: boolean;
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
@@ -108,6 +110,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
 
+  // console.log(item.isProfile);
   useEffect(() => {
     const processSignature = async () => {
       try {
@@ -337,7 +340,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h="840px"
+        h={item.isProfile === true ? "660px" : "840px"}
         mx="3 !important"
         key={item.id}
         border="1px solid transparent"
@@ -354,13 +357,38 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             mx={6}
             mt={6}
             borderRadius="32px"
-            cursor="pointer"
             onLoad={() => item.setHasLoaded(true)}
             onClick={() => item.openNftDetailsDrawer(item.index)}
           />
+          <motion.button
+            style={{
+              position: "absolute",
+              zIndex: "1",
+              top: "0",
+              bottom: "0",
+              right: "0",
+              left: "0",
+              height: "236px",
+              width: "236px",
+              marginInlineStart: "1.2rem",
+              marginInlineEnd: "1.2rem",
+              marginTop: "1.5rem",
+              borderRadius: "32px",
+              cursor: "pointer",
+              opacity: 0,
+            }}
+            onLoad={() => item.setHasLoaded(true)}
+            onClick={() => item.openNftDetailsDrawer(item.index)}
+            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
+            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
+              <Text as="p" mt={1} fontWeight="400" textColor="white">
+                Details
+              </Text>
+            </Text>
+          </motion.button>
         </Flex>
 
-        <Flex h="28rem" mx={6} my={3} direction="column" justify="space-between">
+        <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
             <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
@@ -477,7 +505,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </Tooltip>
             </HStack>
 
-            <Flex mt="7" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+            <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
               <Text fontSize="md" color="#929497">
                 How many to list:{" "}
               </Text>
@@ -521,10 +549,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               )}
             </Box>
 
-            <Flex mt="5" flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
-              <Text fontSize="md" color="#929497">
-                Unlock fee for each:{" "}
-              </Text>
+            <Flex mt="5" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
+              <Tooltip label="This fee is what your dataset is advertised for on the marketplace">
+                <Text fontSize="md" color="#929497">
+                  Access fee for each:
+                </Text>
+              </Tooltip>
               <NumberInput
                 size="sm"
                 maxW={20}
@@ -566,6 +596,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 size="sm"
                 mt={4}
                 width="215px"
+                display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
                 variant="outline"
                 isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
@@ -726,6 +757,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             setAmount={setAmount}
           />
         )}
+
         <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>

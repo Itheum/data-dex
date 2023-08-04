@@ -258,4 +258,32 @@ export class DataNftMintContract {
       return [];
     }
   }
+
+  async getWhiteList(): Promise<string[]> {
+    try {
+      const networkProvider = getNetworkProvider("", this.chainID);
+
+      const interaction = this.contract.methods.getWhiteList();
+      const query = interaction.buildQuery();
+      const res = await networkProvider.queryContract(query);
+      const endpointDefinition = interaction.getEndpoint();
+
+      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
+
+      if (returnCode && returnCode.isSuccess() && firstValue) {
+        const values = firstValue.valueOf();
+        const decoded = values.map((value: any) => value.toString());
+
+        return decoded;
+      } else {
+        console.error(returnMessage);
+
+        return [];
+      }
+    } catch (error) {
+      console.error(error);
+
+      return [];
+    }
+  }
 }

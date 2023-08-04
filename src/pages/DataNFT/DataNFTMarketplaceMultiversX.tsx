@@ -1,46 +1,47 @@
 import React, { FC, useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
+  Box,
+  CloseButton,
   Flex,
   Heading,
   HStack,
-  Stack,
-  Text,
-  CloseButton,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   SimpleGrid,
-  TabList,
-  Tabs,
+  Stack,
   Tab,
-  useColorMode,
-  useToast,
-  Box,
-  TabPanels,
+  TabList,
   TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useColorMode,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
-import { FaStore, FaBrush } from "react-icons/fa";
+import { FaBrush, FaStore } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
 import { NoDataHere } from "components/Sections/NoDataHere";
+import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
+import { getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { createNftId, sleep, hexZero } from "libs/utils";
+import { createNftId, hexZero, sleep } from "libs/utils";
 import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
@@ -86,12 +87,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
-  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
-  const [myListedDataNFT, setMyListedDataNFT] = useState<number>(0);
-  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream } = useDisclosure();
+  const isApiUp = useMarketStore((state) => state.isApiUp);
+  const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
 
-  const marketplace = "/datanfts/marketplace/market";
-  const location = useLocation();
+  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+  const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+  const [myListedCount, setMyListedCount] = useState<number>(0);
+  const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -116,6 +118,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     (async () => {
       if (hasPendingTransactions) return;
       if (!_chainMeta.networkId) return;
+
+      if (isApiUp) {
+        const publicCount = await getOffersCountFromBackendApi(_chainMeta.networkId);
+        const listedCount = await getOffersCountFromBackendApi(_chainMeta.networkId, address);
+
+        setMyListedCount(listedCount);
+        setPublicMarketCount(publicCount);
+      }
 
       // start loading offers
       updateLoadingOffers(true);
@@ -147,7 +157,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       updateLoadingOffers(true);
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
+
+      let _offers: OfferType[] = [];
+      const start = pageIndex * pageSize;
+      if (isApiUp && isMarketplaceApiUp) {
+        // console.log('Api Up');
+        _offers = await getOffersFromBackendApi(_chainMeta.networkId, start, pageSize, tabState === 1 ? undefined : address);
+      } else {
+        // console.log('Api Down');
+        _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
+      }
 
       // console.log("_offers", _offers);
       updateOffers(_offers);
@@ -168,13 +187,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
 
-  function openNftDetailsDrawer(index: number) {
+  function openNftDetailsModal(index: number) {
     setOfferForDrawer(offers[index]);
-    onOpenDrawerTradeStream();
+    onOpenDataNftDetails();
   }
 
   function closeDetailsView() {
-    onCloseDrawerTradeStream();
+    onCloseDataNftDetails();
     setOfferForDrawer(undefined);
   }
 
@@ -258,9 +277,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   }}>
                   <Flex ml="4.7rem" alignItems="center" py={3}>
                     <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
-                    <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
-                      Public Marketplace
-                    </Text>
+                    <ConditionalRender
+                      fallback={
+                        <>
+                          <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
+                            Public Marketplace
+                          </Text>
+                        </>
+                      }
+                      checkFunction={isApiUp}>
+                      <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
+                        Public Marketplace
+                      </Text>
+                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                        {publicMarketCount > 0 && publicMarketCount}
+                      </Text>
+                    </ConditionalRender>
                   </Flex>
                 </Tab>
                 <Tab
@@ -274,12 +306,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   {isMxLoggedIn && (
                     <Flex ml="4.7rem" alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
-                      <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
-                        My Listed Data NFT(s)
-                      </Text>
-                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
-                        {myListedDataNFT > 0 && myListedDataNFT}
-                      </Text>
+                      <ConditionalRender
+                        fallback={
+                          <>
+                            <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
+                              My Listed Data NFT(s)
+                            </Text>
+                          </>
+                        }
+                        checkFunction={isApiUp}>
+                        <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
+                          My Listed Data NFT(s)
+                        </Text>
+                        <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                          {myListedCount > 0 && myListedCount}
+                        </Text>
+                      </ConditionalRender>
                     </Flex>
                   )}
                 </Tab>
@@ -311,7 +353,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsDrawer}>
+                          openNftDetailsDrawer={openNftDetailsModal}>
                           <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
                         </UpperCardComponent>
                       ))}
@@ -339,7 +381,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          openNftDetailsDrawer={openNftDetailsDrawer}>
+                          openNftDetailsDrawer={openNftDetailsModal}>
                           <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
                         </UpperCardComponent>
                       ))}
@@ -385,29 +427,28 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Box>
         </Box>
       </Stack>
-
       {offerForDrawer && (
         <>
-          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
-            <DrawerOverlay />
-            <DrawerContent>
-              <DrawerHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent overflowY="scroll" h="90%">
+              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                   <Heading as="h4" size="lg">
                     Data NFT Details
                   </Heading>
                 </HStack>
-              </DrawerHeader>
-              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
                   tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
                   offerIdProp={offerForDrawer.index}
                   closeDetailsView={closeDetailsView}
                 />
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </>
       )}
     </>
