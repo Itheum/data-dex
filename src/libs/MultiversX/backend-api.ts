@@ -17,9 +17,9 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   }
 }
 
-export async function getMarketplaceHealthCheckFromBackendApi(networkId: NetworkIdType): Promise<boolean> {
+export async function getMarketplaceHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
-    const url = `${backendApi(networkId)}/health-check?marketplace=1`;
+    const url = `${backendApi(chainID)}/health-check?marketplace=1`;
     const { data } = await axios.get<string>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });

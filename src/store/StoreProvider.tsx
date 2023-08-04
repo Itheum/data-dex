@@ -74,7 +74,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
 
     (async () => {
-      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(networkId);
+      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(routedChainID);
       updateIsMarketplaceApiUp(_isMarketplaceApiUp);
     })();
   }, [isApiUp]);
