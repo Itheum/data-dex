@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Badge, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
-import { motion } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { historicGuardrails } from "../../../libs/config";
 
@@ -86,7 +85,6 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         </Text>
         <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>
       </Flex>
-      {/*<motion.div animate={{ x: xPosition }} transition={{ type: "tween", duration: 1 }}>*/}
       <Stack textAlign="start">
         <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
           <Flex flexDirection="row" alignItems="center">
@@ -361,7 +359,6 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
           </Badge>
         </Text>
       </Stack>
-      {/*</motion.div>*/}
     </Box>
   );
 };

@@ -173,7 +173,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
   const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
-    navigate("/guardRails");
+    navigate("/guardrails");
     if (isOpen) onClose();
   };
 
