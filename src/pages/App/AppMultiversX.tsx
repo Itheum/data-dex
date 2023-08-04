@@ -213,7 +213,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
                 <Route path="" element={<GetWhitelist />} />
               </Route>
 
-              <Route path="guardRails" element={<Outlet />}>
+              <Route path="guardrails" element={<Outlet />}>
                 <Route path="" element={<GuardRails />} />
               </Route>
 
