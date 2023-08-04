@@ -40,6 +40,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
@@ -59,7 +60,6 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const exploreRouterMenu = [
   {
@@ -129,7 +129,7 @@ const menuItmesMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems
 
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
@@ -170,7 +170,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -388,12 +388,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         </Flex>
       </Flex>
 
-      {mxShowClaimsHistory && (
-        <ClaimsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
-      )}
-      {mxShowInteractionsHistory && (
-        <InteractionsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />
-      )}
+      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />}
+      {mxShowInteractionsHistory && <InteractionsHistory mxAddress={mxAddress} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
         <DrawerOverlay />
@@ -594,7 +590,7 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 }
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -614,7 +610,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

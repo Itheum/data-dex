@@ -1,17 +1,15 @@
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Heading, Link } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccount, useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { CHAIN_TX_VIEWER } from "../../../libs/config";
-import { useChainMeta } from "../../../store/ChainMetaContext";
 
 export const DataCreatorInfo: React.FC = () => {
-  // MX Api
   const { address: mxAddress } = useGetAccountInfo();
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const { chainID } = useGetNetworkConfig();
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const account = useGetAccount();
-  // console.log(account);
 
   return (
     <>

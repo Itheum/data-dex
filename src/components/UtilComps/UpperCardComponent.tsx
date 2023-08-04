@@ -27,8 +27,8 @@ import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -57,8 +57,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
 
   // Multiversx API
   const { address } = useGetAccountInfo();
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const { chainID } = useGetNetworkConfig();
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const userData = useMintStore((state) => state.userData);

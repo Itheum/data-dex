@@ -1,7 +1,6 @@
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
-import { NetworkIdType } from "libs/types";
 import { convertToLocalString } from "./number";
 
 export const qsParams = () => {
@@ -23,13 +22,13 @@ export const itheumTokenRoundUtil = (balance: BigNumber.Value, decimals: number)
 
 export const sleep = (sec: number) => new Promise((r) => setTimeout(r, sec * 1000));
 
-export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId: NetworkIdType) => {
-  window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
+export const buyOnOpenSea = (txNFTId: string, dnftContract: string, chainID: string) => {
+  window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainID]}/${dnftContract}/${txNFTId}`);
 };
 
-export const backendApi = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
-  const defaultUrl = networkId === "E1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
+export const backendApi = (chainID: string) => {
+  const envKey = chainID === "1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
+  const defaultUrl = chainID === "1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
 
   return process.env[envKey] || defaultUrl;
 };
@@ -172,27 +171,34 @@ export const tokenDecimals = (token_identifier: string) => {
   } else return 0;
 };
 
-export const getApiDataDex = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
-  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
+export const getApiDataDex = (chainID: string) => {
+  const envKey = chainID === "1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
+  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
 
   return process.env[envKey] || defaultUrl;
 };
 
-export const getApiDataMarshal = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
-  const defaultUrl =
-    networkId === "E1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
+export const getApiDataMarshal = (chainID: string) => {
+  const envKey = chainID === "1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
+  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
 
   return process.env[envKey] || defaultUrl;
 };
 
-export const getExplorerTrailBlazerURL = (networkId: NetworkIdType) => {
-  return networkId === "E1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
+export const getExplorerTrailBlazerURL = (chainID: string) => {
+  return chainID === "1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
 };
 
 // utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
 // ... this is used only for "public" components and routes where the user has not connected their wallet
-export const networkIdBasedOnLoggedInStatus = (isMxLoggedIn: boolean, networkId: NetworkIdType) => {
-  return !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : networkId;
+export const routeChainIDBasedOnLoggedInStatus = (isMxLoggedIn: boolean, chainID: string) => {
+  if (!isMxLoggedIn && window.location.hostname === "datadex.itheum.io") {
+    return "1";
+  } else {
+    if (chainID === undefined || chainID === "-1") {
+      return "D";
+    } else {
+      return chainID;
+    }
+  }
 };

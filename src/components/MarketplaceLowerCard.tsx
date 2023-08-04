@@ -24,7 +24,6 @@ import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 type MarketplaceLowerCardProps = {
   offer: OfferType;
@@ -37,7 +36,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const { chainMeta: _chainMeta } = useChainMeta();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
