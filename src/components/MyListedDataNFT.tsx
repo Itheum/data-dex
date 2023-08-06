@@ -28,7 +28,7 @@ import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "l
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
+import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals, networkIdBasedOnLoggedInStatus } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -73,12 +73,15 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { network } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
+  const isMxLoggedIn = !!address;
+
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
   return (
     <Skeleton isLoaded={nftMetadataLoading}>
@@ -191,14 +194,14 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   colorScheme="teal"
                   hasArrow
                   label="Preview Data is disabled on devnet"
-                  isDisabled={!(_chainMeta.networkId == "ED" && !previewDataOnDevnetSession)}>
+                  isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
                   <Button
                     mt="2"
                     size="sm"
                     colorScheme="teal"
                     height="7"
                     variant="outline"
-                    isDisabled={_chainMeta.networkId == "ED" && !previewDataOnDevnetSession}
+                    isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                     onClick={() => {
                       window.open(nftMetadata[index].dataPreview);
                     }}>
