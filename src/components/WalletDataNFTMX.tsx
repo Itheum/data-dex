@@ -460,13 +460,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 hasArrow
                 label="Preview Data is disabled on devnet"
-                isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                isDisabled={!(_chainMeta.networkId == "ED" && !previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                  isDisabled={_chainMeta.networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>

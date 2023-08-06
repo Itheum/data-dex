@@ -509,12 +509,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       colorScheme="teal"
                       hasArrow
                       label="Preview Data is disabled on devnet"
-                      isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                      isDisabled={!(_chainMeta.networkId == "ED" && !previewDataOnDevnetSession)}>
                       <Button
                         size={{ base: "md", lg: "lg" }}
                         colorScheme="teal"
                         variant="outline"
-                        isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                        isDisabled={_chainMeta.networkId == "ED" && !previewDataOnDevnetSession}
                         onClick={() => {
                           window.open(nftData.attributes.dataPreview);
                         }}>

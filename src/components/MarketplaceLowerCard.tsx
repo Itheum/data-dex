@@ -52,7 +52,11 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   return (
     <>
       <HStack justifyContent="stretch">
-        <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+        <Tooltip
+          colorScheme="teal"
+          hasArrow
+          label="Preview Data is disabled on devnet"
+          isDisabled={!(_chainMeta.networkId == "ED" && !previewDataOnDevnetSession)}>
           <Button
             my="3"
             size="sm"
@@ -60,7 +64,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
             colorScheme="teal"
             variant="outline"
             _disabled={{ opacity: 0.2 }}
-            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+            isDisabled={_chainMeta.networkId == "ED" && !previewDataOnDevnetSession}
             onClick={() => {
               window.open(nftMetadata.dataPreview);
             }}>

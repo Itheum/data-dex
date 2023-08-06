@@ -140,14 +140,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(_chainMeta.networkId == "ED" && !previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+          isDisabled={_chainMeta.networkId == "ED" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

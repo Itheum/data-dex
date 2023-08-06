@@ -75,7 +75,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { address } = useGetAccountInfo();
   const { chainMeta: _chainMeta } = useChainMeta() as any;
   const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
-  const [previewDataOnDevnetSession,] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
@@ -187,14 +187,18 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   </Text>
                 </Box>
 
-                <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                <Tooltip
+                  colorScheme="teal"
+                  hasArrow
+                  label="Preview Data is disabled on devnet"
+                  isDisabled={!(_chainMeta.networkId == "ED" && !previewDataOnDevnetSession)}>
                   <Button
                     mt="2"
                     size="sm"
                     colorScheme="teal"
                     height="7"
                     variant="outline"
-                    isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                    isDisabled={_chainMeta.networkId == "ED" && !previewDataOnDevnetSession}
                     onClick={() => {
                       window.open(nftMetadata[index].dataPreview);
                     }}>
