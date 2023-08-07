@@ -40,12 +40,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import {
-  useGetAccountInfo,
-  useGetLoginInfo,
-  useGetNetworkConfig,
-  useGetPendingTransactions,
-} from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
@@ -55,13 +50,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, TRAILBLAZER_NONCES, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, getExplorerTrailBlazerURL, isValidNumericCharacter, sleep, transformDescription } from "libs/utils";
+import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, networkIdBasedOnLoggedInStatus } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -76,15 +71,16 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
-  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
+  const isMxLoggedIn = !!address;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
   const { signMessage } = useSignMessage();
   const loginInfo = useGetLoginInfo();
   const lastSignedMessageSession = useGetLastSignedMessageSession();
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
@@ -121,7 +117,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   useEffect(() => {
     const processSignature = async () => {
       try {
-        const signature = lastSignedMessageSession.signature ?? '';
+        const signature = lastSignedMessageSession.signature ?? "";
         await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
       } catch (e: any) {
         console.error(e);
@@ -462,12 +458,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
@@ -475,17 +471,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label="Preview Data is disabled on devnet"
-                isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>

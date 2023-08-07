@@ -28,7 +28,7 @@ import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "l
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
+import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals, networkIdBasedOnLoggedInStatus } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
@@ -73,8 +73,11 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { network } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
+  const isMxLoggedIn = !!address;
+
   const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const ChainExplorer = CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER];
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -86,7 +89,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <Image
-              src={`https://${getApi(_chainMeta.networkId)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(networkId)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}
@@ -191,14 +194,14 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   colorScheme="teal"
                   hasArrow
                   label="Preview Data is disabled on devnet"
-                  isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                  isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
                   <Button
                     mt="2"
                     size="sm"
                     colorScheme="teal"
                     height="7"
                     variant="outline"
-                    isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                    isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                     onClick={() => {
                       window.open(nftMetadata[index].dataPreview);
                     }}>
