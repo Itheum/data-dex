@@ -504,7 +504,24 @@ export const whitelistWallets: Array<string> = [];
 
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
 
-export const TRAILBLAZER_NONCES: Record<string, Array<number>> = {
-  "ED": [407, 423],
-  "E1": [1],
+export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
+  "ED": {
+    "trailblazer": [407, 423],
+    "multiversxbubbles": [416],
+  },
+  "E1": {
+    "trailblazer": [1],
+    "multiversxbubbles": [2],
+  },
+};
+
+export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
+  "ED": {
+    "trailblazer": "https://stg.explorer.itheum.io/project-trailblazer",
+    "multiversxbubbles": "https://stg.explorer.itheum.io/multiversx-bubbles",
+  },
+  "E1": {
+    "trailblazer": "https://explorer.itheum.io/project-trailblazer",
+    "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
+  },
 };
