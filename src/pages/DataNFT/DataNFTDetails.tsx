@@ -54,7 +54,7 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
+import { routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils/util";
 import { useMarketStore } from "store";
 
 type DataNFTDetailsProps = {
@@ -67,13 +67,13 @@ type DataNFTDetailsProps = {
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
-  const { network } = useGetNetworkConfig();
-  const { colorMode } = useColorMode();
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const toast = useToast();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -91,7 +91,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
 
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const chainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
   const marketContract = new DataNftMarketContract(routedChainID);
 
@@ -348,12 +347,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           colorScheme="teal"
                           hasArrow
                           label="Preview Data is disabled on devnet"
-                          isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                          isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                           <Button
                             size={{ base: "md", lg: "lg" }}
                             colorScheme="teal"
                             variant="outline"
-                            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                            isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>
