@@ -146,7 +146,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
 
   return (
     <>
-      <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
+      <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
@@ -164,7 +164,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
                   <Stack mt={isMxLoggedIn ? "12" : "4"}>
-                    <Heading size="md" noOfLines={1}>
+                    <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {item.title}
                     </Heading>
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>

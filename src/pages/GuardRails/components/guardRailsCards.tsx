@@ -78,7 +78,7 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
         backgroundColor="#00C7970D"
         w="full">
         <Button as={FaChevronLeft} size="sm" isDisabled={currentIndex === items.length - 1} onClick={handlePrevClick} mx="2"></Button>
-        <Text textAlign="center" fontWeight="600" borderTopRadius="22px" py={3} fontSize="22px">
+        <Text textAlign="center" fontFamily="Clash-Medium" fontWeight="semibold" borderTopRadius="22px" py={3} fontSize="22px">
           {title}
         </Text>
         <Button as={FaChevronRight} size="sm" isDisabled={currentIndex === 0} onClick={handleNextClick} mx="2"></Button>

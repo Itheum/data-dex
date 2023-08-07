@@ -261,7 +261,7 @@ export default function HomeMultiversX({
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
                   {!dataCATAccount && (
-                    <Heading size="md" fontWeight="semibold" pb={2}>
+                    <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                       Linked Data CAT Accounts
                     </Heading>
                   )}
@@ -297,7 +297,7 @@ export default function HomeMultiversX({
                     )) || (
                       <>
                         <Stack h="395px" w="full">
-                          <Heading size="md" fontWeight="semibold" pb={2} textAlign={{ base: "center", xl: "left" }}>
+                          <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "left" }}>
                             Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}
                           </Heading>
                           <Text fontSize="md" mb="4 !important" textAlign={{ base: "center", xl: "left" }} color="#929497">
@@ -334,7 +334,7 @@ export default function HomeMultiversX({
             <ChainSupportedComponent feature={MENU.FAUCET}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
-                  <Heading size="md" fontWeight="semibold" pb={2}>
+                  <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                     {CHAIN_TOKEN_SYMBOL(chainID)} Faucet
                   </Heading>
                   <Stack h={tileBoxH} w={"full"}>
@@ -355,7 +355,7 @@ export default function HomeMultiversX({
 
             <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
-                <Heading size="md" pb={2}>
+                <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                   NFMe ID Avatar
                 </Heading>
                 <Spacer />
@@ -373,7 +373,7 @@ export default function HomeMultiversX({
             <ChainSupportedComponent feature={MENU.CLAIMS}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={"430px"} minW={claimsStackMinW}>
-                  <Heading size="md" pb={2} textAlign={{ base: "center", xl: "start" }}>
+                  <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
                     My Claims
                   </Heading>
 
@@ -467,7 +467,7 @@ export default function HomeMultiversX({
         </Box>
 
         <Box m="auto" pt="10" pb="10">
-          <Heading size="lg" fontWeight="semibold">
+          <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
             Data DEX 101 Guides
           </Heading>
 

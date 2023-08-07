@@ -13,10 +13,17 @@ export const DataCreatorInfo: React.FC = () => {
 
   return (
     <>
-      <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+      <Heading size="xl" fontFamily="Clash-Medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
         Data Creator Profile
       </Heading>
-      <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} mt={1}>
+      <Heading
+        size="1rem"
+        opacity=".7"
+        fontFamily="Satoshi-Medium"
+        fontWeight="light"
+        px={{ base: 10, lg: 24 }}
+        textAlign={{ base: "center", lg: "start" }}
+        mt={1}>
         {mxAddress}
         <Link href={`${ChainExplorer}/accounts/${mxAddress}`} isExternal>
           <ExternalLinkIcon mx="4px" fontSize="lg" />

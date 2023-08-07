@@ -243,7 +243,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
-                <Heading size="xl" fontWeight="medium" marginBottom={4} marginTop={10}>
+                <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
                   Data NFT Details
                 </Heading>
                 <HStack>
@@ -263,7 +263,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 </HStack>
               </Box>
             )}
-            <Box width={"100%"} marginY={tokenIdParam ? "20px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
+            <Box width={"100%"} marginY={tokenIdParam ? "20px" : "10px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
                 <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
                   <Image
@@ -286,7 +286,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
                         <Tooltip label={nftData.attributes?.title}>
-                          <Text fontSize={"32px"} noOfLines={1} fontWeight="500" lineHeight="10">
+                          <Text fontSize={"32px"} fontFamily="Clash-Medium" noOfLines={1} fontWeight="light" lineHeight="10">
                             {nftData.attributes?.title}
                           </Text>
                         </Tooltip>
@@ -394,7 +394,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     w={marketplaceDrawer ? { base: "full", md: "initial", xl: "30rem" } : { base: "full", md: "initial", xl: "inherit" }}>
                     <Heading
                       fontSize="20px"
-                      fontWeight={500}
+                      fontFamily="Clash-Medium"
+                      fontWeight="semibold"
                       pl="28px"
                       py={5}
                       borderBottom="1px solid"
@@ -448,7 +449,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
                       <Heading
                         fontSize="20px"
-                        fontWeight={500}
+                        fontFamily="Clash-Medium"
+                        fontWeight="semibold"
                         pl="28px"
                         py={8}
                         borderBottom="1px solid"
@@ -495,7 +497,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
                         <Heading
                           fontSize="20px"
-                          fontWeight={500}
+                          fontFamily="Clash-Medium"
+                          fontWeight="semibold"
                           pl="28px"
                           py={5}
                           borderBottom="1px solid"
@@ -582,7 +585,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             </Box>
           </Flex>
           <VStack alignItems={"flex-start"}>
-            <Heading size="lg" fontWeight="500" mt="10px" marginBottom={2}>
+            <Heading size="lg" fontFamily="Clash-Medium" mt="10px" marginBottom={2}>
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>

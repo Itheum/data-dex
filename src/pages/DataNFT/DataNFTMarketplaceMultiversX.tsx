@@ -250,10 +250,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   return (
     <>
       <Stack>
-        <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="xl" fontFamily="Clash-Medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Data NFT Marketplace
         </Heading>
-        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
         </Heading>
 
@@ -429,13 +429,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
             <ModalContent overflowY="scroll" h="90%">
-              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
                 </HStack>
+                <Text fontFamily="Clash-Medium" fontSize="32px" mt={3}>
+                  Data NFT Details
+                </Text>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails

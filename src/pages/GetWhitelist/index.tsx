@@ -25,7 +25,7 @@ export const GetWhitelist: React.FC = () => {
             mx={{ base: 0, "2xl": 20 }}
             alignItems="center">
             <Box width={["100%", null, null, "500px", "690px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
-              <Heading as="h1" size={["1xl", null, null, "1xl", "2xl"]} fontWeight="500">
+              <Heading as="h1" size={["2xl", null, null, "2xl", "2xl"]} fontFamily="Clash-Regular">
                 Your data is now a{" "}
                 <Text as="span" color="teal.200">
                   new asset class!

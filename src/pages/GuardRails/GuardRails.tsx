@@ -106,14 +106,15 @@ export const GuardRails: React.FC = () => {
 
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-      <Heading fontSize="36px" fontWeight="medium" mt={14} mb="32px">
+      <Heading fontSize="36px" fontFamily="Clash-Medium" mt={14} mb="32px">
         Guard Rails
       </Heading>
       <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} flexWrap="wrap">
         <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "24rem", "2xl": "26rem" }}>
           <Text
             textAlign="center"
-            fontWeight="600"
+            fontFamily="Clash-Medium"
+            fontWeight="semibold"
             borderTopRadius="22px"
             py={3}
             borderBottom="1px solid"
@@ -210,7 +211,8 @@ export const GuardRails: React.FC = () => {
         <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width={{ base: "31.25rem", xl: "20.5rem" }}>
           <Text
             textAlign="center"
-            fontWeight="600"
+            fontFamily="Clash-Medium"
+            fontWeight="semibold"
             borderTopRadius="22px"
             py={3}
             borderBottom="1px solid"
@@ -303,7 +305,7 @@ export const GuardRails: React.FC = () => {
           </Stack>
         </Box>
       </Flex>
-      <Heading fontSize="36px" fontWeight="medium" mt={32} mb="32px">
+      <Heading fontSize="36px" fontFamily="Clash-Medium" mt={32} mb="32px">
         Whitelisted Addresses
       </Heading>
       <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">

@@ -58,10 +58,10 @@ function ArticleCard({ date, title, description, link, imgLink }: { date: string
         </Box>
         <Stack mt="6" spacing="2">
           <Text fontSize="sm">{date}</Text>
-          <Heading size="md" noOfLines={2} minH="43px">
+          <Heading size="md" fontFamily="Clash-Medium" noOfLines={2} minH="43px">
             {title}
           </Heading>
-          <Text fontSize="sm" noOfLines={2} minH="30px">
+          <Text fontSize="md" noOfLines={2} minH="30px">
             {description}
           </Text>
           <Link fontSize="sm" href={link} isExternal textDecoration="underline">
