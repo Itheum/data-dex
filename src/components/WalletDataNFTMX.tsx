@@ -40,7 +40,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import {
+  useGetAccountInfo,
+  useGetLoginInfo,
+  useGetNetworkConfig,
+  useGetPendingTransactions,
+} from "@multiversx/sdk-dapp/hooks";
+import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
 import moment from "moment";
@@ -78,6 +84,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const toast = useToast();
   const { signMessage } = useSignMessage();
   const loginInfo = useGetLoginInfo();
+  const lastSignedMessageSession = useGetLastSignedMessageSession();
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
@@ -114,14 +121,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   useEffect(() => {
     const processSignature = async () => {
       try {
-        const signature = getMessageSignatureFromWalletUrl();
+        const signature = lastSignedMessageSession.signature ?? '';
         await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
       } catch (e: any) {
         console.error(e);
       }
     };
 
-    if (isWebWallet && nftId && dataNonce && nftId === item.id) {
+    if (isWebWallet && nftId && dataNonce && nftId === item.id && lastSignedMessageSession) {
       processSignature();
     }
   }, [item.id]);
@@ -266,22 +273,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
     }
-  }
-
-  function getMessageSignatureFromWalletUrl(): string {
-    const url = window.location.search.slice(1);
-    // console.info("getMessageSignatureFromWalletUrl(), url:", url);
-
-    const urlParams = qs.parse(url);
-    const status = urlParams.status?.toString() || "";
-    const expectedStatus = "signed";
-
-    if (status !== expectedStatus) {
-      throw new Error("No signature");
-    }
-
-    const signature = urlParams.signature?.toString() || "";
-    return signature;
   }
 
   const cleanupAccessDataStreamProcess = () => {
