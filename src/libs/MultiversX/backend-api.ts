@@ -17,6 +17,20 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   }
 }
 
+export async function getMarketplaceHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
+  try {
+    const url = `${backendApi(chainID)}/health-check?marketplace=1`;
+    const { data } = await axios.get<string>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+
+    return data == "OK";
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
 export async function getOffersCountFromBackendApi(chainID: string, address?: string): Promise<number> {
   try {
     const url = address ? `${backendApi(chainID)}/offers/${address}/count` : `${backendApi(chainID)}/offers/count`;

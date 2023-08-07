@@ -88,6 +88,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
   const isApiUp = useMarketStore((state) => state.isApiUp);
+  const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
@@ -155,7 +156,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       let _offers: OfferType[] = [];
       const start = pageIndex * pageSize;
-      if (isApiUp) {
+      if (isApiUp && isMarketplaceApiUp) {
         // console.log('Api Up');
         _offers = await getOffersFromBackendApi(routedChainID, start, pageSize, tabState === 1 ? undefined : address);
       } else {
