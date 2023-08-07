@@ -36,6 +36,7 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
+  networkIdBasedOnLoggedInStatus,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
@@ -66,6 +67,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const itheumToken = _chainMeta.contracts.itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
+  const isMxLoggedIn = !!address;
 
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
@@ -138,16 +140,17 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     onUpdatePriceModalClose();
   };
 
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+          isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
