@@ -187,10 +187,6 @@ export const getApiDataMarshal = (networkId: NetworkIdType) => {
   return process.env[envKey] || defaultUrl;
 };
 
-export const getExplorerTrailBlazerURL = (networkId: NetworkIdType) => {
-  return networkId === "E1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
-};
-
 // utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
 // ... this is used only for "public" components and routes where the user has not connected their wallet
 export const networkIdBasedOnLoggedInStatus = (isMxLoggedIn: boolean, networkId: NetworkIdType) => {
