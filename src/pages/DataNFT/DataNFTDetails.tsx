@@ -336,15 +336,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Text>
                         </Box>
                       )}
-                      <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
+                      <Flex flexDirection="row" gap={3} justifyContent={{ base: "center", md: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
                           <Button
-                            size={{ base: "md", lg: "lg" }}
+                            size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                             onClick={onProcureModalOpen}>
-                            <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
+                            <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
+                              Purchase Data
+                            </Text>
                           </Button>
                         </Tooltip>
 
@@ -354,16 +356,24 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           label="Preview Data is disabled on devnet"
                           isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
                           <Button
-                            size={{ base: "md", lg: "lg" }}
+                            size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             variant="outline"
                             isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>
-                            <Text px={tokenId ? 0 : 3}>Preview Data</Text>
+                            <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
+                              Preview Data
+                            </Text>
                           </Button>
                         </Tooltip>
+                        <ExploreAppButton
+                          nonce={nftData.nonce}
+                          size={{ base: "sm", md: "md", xl: "lg" }}
+                          w={{ base: "auto", xl: "5rem" }}
+                          fontSize={{ base: "xs", md: "sm", xl: "md" }}
+                        />
                       </Flex>
                     </Flex>
                   </Flex>
