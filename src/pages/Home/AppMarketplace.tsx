@@ -304,7 +304,7 @@ export default function AppMarketplace(props: Props) {
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
           <ModalHeader>
-            <Heading size="md" opacity=".5">
+            <Heading size="md" fontFamily="Satoshi-Medium" opacity=".5">
               Bridge your Data to Web3!
             </Heading>
           </ModalHeader>
@@ -499,8 +499,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s2 && (
               <Box>
-                <Heading size="md">Step 2 of 4</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Step 2 of 4
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Choose your Data Sovereignty Preferences
                 </Heading>
 
@@ -508,13 +510,14 @@ export default function AppMarketplace(props: Props) {
                   <Text>Select a jurisdiction where you would you like your de-identified PlayStation Data Stream origin data to be stored at:</Text>
                 </HStack>
 
-                <HStack mt="20px">
+                <HStack mt="20px" flexWrap="wrap" gap={3}>
                   <IconButton
                     aria-label="Germany"
                     variant="outline"
                     colorScheme="teal"
                     isActive={datastoreLocation === "North America"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("North America")}
                     icon={
@@ -527,6 +530,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Germany"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Germany")}
                     isDisabled={true}
@@ -538,6 +542,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Japan"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Japan")}
                     isDisabled={true}
@@ -550,6 +555,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Hong Kong"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Hong Kong")}
                     isDisabled={true}
@@ -561,6 +567,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Australia"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Australia")}
                     isDisabled={true}
@@ -572,6 +579,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Singapore"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Singapore")}
                     isDisabled={true}
@@ -615,8 +623,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s3 && (
               <Box>
-                <Heading size="md">Step 3 of 4</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Step 3 of 4
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Pick your preferred Data Marshal
                 </Heading>
 
@@ -714,8 +724,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s4 && (
               <Box>
-                <Heading size="md">Final Step</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Final Step
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Building your Data Stream...
                 </Heading>
 
