@@ -312,7 +312,9 @@ export default function AppMarketplace(props: Props) {
           <ModalBody>
             {(joinProgress.s0 && (
               <Stack spacing="5">
-                <Heading size="lg">Sony PlayStation Gamer Passport</Heading>
+                <Heading size={{ base: "md", md: "lg" }} fontFamily="Clash-Medium">
+                  Sony PlayStation Gamer Passport
+                </Heading>
                 <HStack spacing="5">
                   <Text>
                     Unlock a live dataset of a Sony PlayStation {`gamer's`} platform, preferences, active titles played, trophies, playtime, and achievements.
@@ -322,36 +324,47 @@ export default function AppMarketplace(props: Props) {
 
                 <Spacer></Spacer>
 
-                <Flex justifyContent="space-between" textAlign="center">
+                <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="space-between" textAlign="center">
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       App Publisher
                     </Heading>
-                    <Image opacity=".8" mt="5px" borderRadius="5px" width="130px" src={zedgeLogo} />
+                    <Image opacity=".8" mt="5px" display="initial" borderRadius="5px" width="130px" src={zedgeLogo} />
                   </Box>
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       Rating
                     </Heading>
-                    <Text mt="30px">4 / 5</Text>
+                    <Text mt={{ base: "10px", md: "30px" }} mb={{ base: "10px", md: "0px" }}>
+                      4 / 5
+                    </Text>
                   </Box>
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       Users
                     </Heading>
-                    <Text mt="30px">10</Text>
+                    <Text mt={{ base: "10px", md: "30px" }} mb={{ base: "10px", md: "0px" }}>
+                      10
+                    </Text>
                   </Box>
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       Verified App
                     </Heading>
-                    <Text mt="30px">No</Text>
+                    <Text mt={{ base: "10px", md: "30px" }} mb={{ base: "10px", md: "0px" }}>
+                      No
+                    </Text>
                   </Box>
                 </Flex>
 
                 <Box>
                   <Flex mt="4 !important">
-                    <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/termsofuse")}>
+                    <Button
+                      colorScheme="teal"
+                      variant="outline"
+                      size={{ base: "sm", md: "sm" }}
+                      fontSize={{ base: "9px !important", md: "md" }}
+                      onClick={() => window.open("https://itheum.com/legal/termsofuse")}>
                       Read Terms of Use
                     </Button>
                     <Checkbox size="sm" ml="15px" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
@@ -380,8 +393,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s1 && (
               <Box>
-                <Heading size="md">Step 1 of 4</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Step 1 of 4
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Link your PlayStation Account
                 </Heading>
 
@@ -462,7 +477,7 @@ export default function AppMarketplace(props: Props) {
                       setPSNUsernameValid(null);
                       setJoinProgress(() => ({ ...cleanSaveProgress, s2: 1 }));
                     }}>
-                    Let me test with a Demo PlayStation Gamer account
+                    Test it
                   </Button>
                   <Spacer />
                   <Button mx="3" colorScheme="teal" size="sm" variant="outline" onClick={onPS4ModalClose}>

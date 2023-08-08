@@ -210,9 +210,9 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               <Heading
                 display={{ base: "flex", md: "flex", xl: "flex" }}
                 fontSize={{ base: "md", xl: "xl" }}
+                fontFamily="Clash-Medium"
                 fontWeight="400"
-                lineHeight="16.29px"
-                fontFamily="">
+                lineHeight="16.29px">
                 Data&nbsp;
                 <Text fontWeight="700">DEX</Text>
               </Heading>
