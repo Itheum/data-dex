@@ -26,6 +26,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   SimpleGrid,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -72,6 +73,7 @@ export default function AppMarketplace(props: Props) {
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
+  const { colorMode } = useColorMode();
 
   const cleanSaveProgress = {
     s0: 0,
@@ -258,9 +260,9 @@ export default function AppMarketplace(props: Props) {
         <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
-            <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
+            <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>{progInfoMeta[learnMoreProd].name}</ModalHeader>
             <ModalCloseButton />
-            <ModalBody pb={6}>
+            <ModalBody pb={6} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <Stack spacing="5">
                 <Text>{progInfoMeta[learnMoreProd].desc}</Text>
                 {progInfoMeta[learnMoreProd].medium !== null && (
@@ -291,7 +293,7 @@ export default function AppMarketplace(props: Props) {
                 </Stack>
               </Stack>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
@@ -303,13 +305,13 @@ export default function AppMarketplace(props: Props) {
       <Modal size={modelSize} isOpen={isPS4ModalOpen} onClose={onPS4ModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
-          <ModalHeader>
+          <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <Heading size="md" fontFamily="Satoshi-Medium" opacity=".5">
               Bridge your Data to Web3!
             </Heading>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             {(joinProgress.s0 && (
               <Stack spacing="5">
                 <Heading size={{ base: "md", md: "lg" }} fontFamily="Clash-Medium">
@@ -805,7 +807,7 @@ export default function AppMarketplace(props: Props) {
             )) ||
               null}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <Text display="none">{JSON.stringify(joinProgress)}</Text>
           </ModalFooter>
         </ModalContent>
