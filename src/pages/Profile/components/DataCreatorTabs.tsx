@@ -58,7 +58,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const itheumToken = contractsForChain(routedChainID).itheumToken;
   const { address } = useGetAccountInfo();
   const isApiUp = useMarketStore((state) => state.isApiUp);
-  console.log(isApiUp);
 
   const { pageNumber } = useParams();
   const navigate = useNavigate();
@@ -120,7 +119,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      pieces: myListedCount,
+      pieces: myListedCount == 0 ? "" : myListedCount,
     },
     {
       tabNumber: 3,
