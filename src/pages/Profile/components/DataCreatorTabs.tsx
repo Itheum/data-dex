@@ -111,7 +111,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/created",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNfts?.length,
+      pieces: dataNfts?.length === 0 ? "" : dataNfts?.length,
     },
     {
       tabNumber: 2,
@@ -119,7 +119,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      pieces: myListedCount == 0 ? "" : myListedCount,
+      pieces: myListedCount === 0 ? "" : myListedCount,
     },
     {
       tabNumber: 3,
@@ -154,16 +154,6 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       });
     }
   };
-
-  useEffect(() => {
-    async () => {
-      if (isApiUp) {
-        const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
-        console.log("listedCount", listedCount);
-        setMyListedCount(listedCount);
-      }
-    };
-  }, [isApiUp]);
 
   useEffect(() => {
     getDataNfts(address);
@@ -205,6 +195,10 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
 
+      if (isApiUp) {
+        const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
+        setMyListedCount(listedCount);
+      }
       // if pageIndex is out of range
       if (pageIndex >= _pageCount) {
         onGotoPage(0);
