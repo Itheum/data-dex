@@ -44,6 +44,7 @@ import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "
 import { backendApi, createNftId, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import { getOffersCountFromBackendApi } from "libs/MultiversX/backend-api";
 
 interface PropsType {
   tabState: number;
@@ -56,6 +57,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const itheumToken = contractsForChain(routedChainID).itheumToken;
   const { address } = useGetAccountInfo();
+  const isApiUp = useMarketStore((state) => state.isApiUp);
+  console.log(isApiUp);
 
   const { pageNumber } = useParams();
   const navigate = useNavigate();
@@ -81,6 +84,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
+  const [myListedCount, setMyListedCount] = useState<number>(0);
 
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
@@ -116,7 +120,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      // pieces: offers.length,
+      pieces: myListedCount,
     },
     {
       tabNumber: 3,
@@ -151,6 +155,16 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       });
     }
   };
+
+  useEffect(() => {
+    async () => {
+      if (isApiUp) {
+        const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
+        console.log("listedCount", listedCount);
+        setMyListedCount(listedCount);
+      }
+    };
+  }, [isApiUp]);
 
   useEffect(() => {
     getDataNfts(address);

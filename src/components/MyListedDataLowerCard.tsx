@@ -106,26 +106,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    contract.delistDataNft(offer.index, delistAmount, address);
-
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = { supply: delistAmount };
-      const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-      console.log("Response:", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
+    contract.delistDataNft(offer.index, delistAmount, address, tokenLogin?.nativeAuthToken ?? "");
 
     // a small delay for visual effect
     await sleep(0.5);
