@@ -54,7 +54,7 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
+import { routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils/util";
 import { useMarketStore } from "store";
 
 type DataNFTDetailsProps = {
@@ -67,13 +67,13 @@ type DataNFTDetailsProps = {
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
-  const { network } = useGetNetworkConfig();
-  const { colorMode } = useColorMode();
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const toast = useToast();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -91,7 +91,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
 
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const chainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
   const marketContract = new DataNftMarketContract(routedChainID);
 
@@ -242,7 +241,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 </HStack>
               </Box>
             )}
-            <Box width={"100%"} marginY={tokenIdParam ? "20px" : "30px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
+            <Box width={"100%"} marginY={tokenIdParam ? { base: "10px", xl: "0" } : 0} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
                 <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
                   <Image
@@ -348,12 +347,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           colorScheme="teal"
                           hasArrow
                           label="Preview Data is disabled on devnet"
-                          isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                          isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                           <Button
                             size={{ base: "md", lg: "lg" }}
                             colorScheme="teal"
                             variant="outline"
-                            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                            isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>
@@ -478,7 +477,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           {}
                           <Text color={"teal.200"}>{nftData.identifier}</Text>
                         </Heading>
-                        <Grid templateColumns="repeat(7, 1fr)" h="18.6rem" overflowY="scroll" gap={2} px="28px" py="14px">
+                        <Grid templateColumns="repeat(7, 1fr)" h="18.6rem" overflowY="scroll" gap={2} px="28px" py="14px" fontSize="md">
                           {(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
                             <GridItem colSpan={8}>
                               <NoDataHere imgFromTop="6.5rem" />
@@ -509,13 +508,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   <GridItem colSpan={2}>
                                     {tokenId && pathname?.includes(tokenId) ? (
                                       <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                        <Button w="full" colorScheme="teal" variant="outline">
+                                        <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                           {tokenId && pathname?.includes(tokenId) && window.innerWidth > 500 ? "View Offer" : "View"}
                                         </Button>
                                       </a>
                                     ) : (
                                       <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                        <Button w="full" colorScheme="teal" variant="outline">
+                                        <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                           {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
                                         </Button>
                                       </a>

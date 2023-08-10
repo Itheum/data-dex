@@ -8,6 +8,7 @@ type State = {
   isMarketPaused: boolean;
 
   isApiUp: boolean;
+  isMarketplaceApiUp: boolean;
   offers: Array<OfferType>;
   loadingOffers: boolean;
   pageCount: number;
@@ -20,6 +21,7 @@ type Action = {
   updateIsMarketPaused: (isMarketPaused: State["isMarketPaused"]) => void;
 
   updateIsApiUp: (isApiUp: State["isApiUp"]) => void;
+  updateIsMarketplaceApiUp: (isApiUp: State["isMarketplaceApiUp"]) => void;
   updateOffers: (offers: State["offers"]) => void;
   updateLoadingOffers: (loadingOffers: State["loadingOffers"]) => void;
   updatePageCount: (pageCount: State["pageCount"]) => void;
@@ -36,10 +38,12 @@ export const useMarketStore = create<State & Action>((set) => ({
   updateIsMarketPaused: (value: boolean) => set((state) => ({ ...state, isMarketPaused: value })),
 
   isApiUp: true,
+  isMarketplaceApiUp: true,
   offers: [],
   loadingOffers: true,
   pageCount: 1,
   updateIsApiUp: (value: boolean) => set((state) => ({ ...state, isApiUp: value })),
+  updateIsMarketplaceApiUp: (value: boolean) => set((state) => ({ ...state, isMarketplaceApiUp: value })),
   updateOffers: (value: Array<OfferType>) => set((state) => ({ ...state, offers: value })),
   updateLoadingOffers: (value: boolean) => set((state) => ({ ...state, loadingOffers: value })),
   updatePageCount: (value: number) => set((state) => ({ ...state, pageCount: value })),
