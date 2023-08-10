@@ -55,7 +55,14 @@ import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, isValidNumericCharacter, sleep, transformDescription } from "libs/utils";
+import {
+  convertToLocalString,
+  isValidNumericCharacter,
+  routeChainIDBasedOnLoggedInStatus,
+  shouldPreviewDataBeEnabled,
+  sleep,
+  transformDescription,
+} from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
 
@@ -69,7 +76,9 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
-  const { network, chainID } = useGetNetworkConfig();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -469,12 +478,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+              <Tooltip
+                colorScheme="teal"
+                hasArrow
+                label="View Data is disabled on devnet"
+                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
@@ -486,13 +499,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 hasArrow
                 label="Preview Data is disabled on devnet"
-                isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>

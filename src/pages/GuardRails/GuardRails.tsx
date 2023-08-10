@@ -115,11 +115,12 @@ export const GuardRails: React.FC = () => {
             textAlign="center"
             fontWeight="600"
             borderTopRadius="22px"
-            py={3}
+            py={5}
+            h="68px"
             borderBottom="1px solid"
             borderColor="#00C79740"
             backgroundColor="#00C7970D"
-            fontSize="22px">
+            fontSize="xl">
             Active Guardrails
           </Text>
           <Stack textAlign="start">
@@ -205,18 +206,19 @@ export const GuardRails: React.FC = () => {
             </Text>
           </Stack>
         </Box>
-        <GuardRailsCards items={historyGuardrails} title="History Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />
+        <GuardRailsCards items={historyGuardrails} title="Historic Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />
 
         <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width={{ base: "31.25rem", xl: "20.5rem" }}>
           <Text
             textAlign="center"
             fontWeight="600"
             borderTopRadius="22px"
-            py={3}
+            py={5}
+            h="68px"
             borderBottom="1px solid"
             borderColor="#00C79740"
             backgroundColor="#00C7970D"
-            fontSize="22px">
+            fontSize="xl">
             Upcoming Guardrails
           </Text>
           <Stack textAlign="start">
@@ -303,10 +305,10 @@ export const GuardRails: React.FC = () => {
           </Stack>
         </Box>
       </Flex>
-      <Heading fontSize="36px" fontWeight="medium" mt={32} mb="32px">
+      <Heading fontSize="30px" fontWeight="medium" mt={32} mb="25px">
         Whitelisted Addresses
       </Heading>
-      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
+      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb="100px" w="full">
         <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 0, lg: 10 }} my="5">
           {whitelistedAddresses && whitelistedAddresses.length > 0 ? (
             whitelistedAddresses.map((addr, index) => {
