@@ -73,6 +73,7 @@ export type WalletDataNFTMxPropType = {
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
+  const { loginMethod } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const isMxLoggedIn = !!address;
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -756,7 +757,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 <HStack>
                   {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
                   <Stack>
-                    <Text>Please sign transaction to complete handshake</Text>
+                    {["ledger", "walletconnectv2", "extra"].includes(loginMethod) ? (
+                      <Text>Please sign the message using xPortal or Ledger</Text>
+                    ) : (
+                      <Text>Please sign the message to complete handshake</Text>
+                    )}
                     <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
                   </Stack>
                 </HStack>
