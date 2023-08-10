@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions, useGetSuccessfulTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetPendingTransactions, useGetSuccessfulTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -68,6 +68,82 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const itheumToken = contractsForChain(chainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
+  const [sessionId, setSessionId] = useState<string>("");
+  const [delistTxStatus, setDelistTxStatus] = useState<boolean>(false);
+
+  const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
+  const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);
+
+  const trackUpdatePriceTransactionStatus = useTrackTransactionStatus({
+    transactionId: updatePriceSessionId,
+  });
+
+  useEffect(() => {
+    setUpdatePriceTxStatus(trackUpdatePriceTransactionStatus.isPending ? true : false);
+  }, [trackUpdatePriceTransactionStatus]);
+
+  const trackTransactionStatus = useTrackTransactionStatus({
+    transactionId: sessionId,
+  });
+
+  useEffect(() => {
+    setDelistTxStatus(trackTransactionStatus.isPending ? true : false);
+  }, [trackTransactionStatus]);
+
+  useEffect(() => {
+    async function updatePriceOnBackend() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const price = newListingPrice + (newListingPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
+
+        const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
+        const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+    if (updatePriceTxStatus) {
+      updatePriceOnBackend();
+    }
+  }, [updatePriceTxStatus]);
+
+  useEffect(() => {
+    async function updateOfferOnBackend() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = { supply: delistAmount };
+        const response = await fetch(`${backendApi(chainID)}/updateOffer/${offer.index}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const responseData = await response.json();
+        console.log("Response:", responseData);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+
+    if (delistTxStatus) {
+      updateOfferOnBackend();
+    }
+  }, [delistTxStatus]);
 
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
@@ -106,7 +182,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    contract.delistDataNft(offer.index, delistAmount, address, tokenLogin?.nativeAuthToken ?? "");
+    const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
+    console.log(sessionId);
+    setSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -133,28 +211,12 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    await contract.updateOfferPrice(offer.index, convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(), address);
-
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const price = newListingPrice + (newListingPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
-
-      const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
-      const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-      console.log("Response:", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
+    const { sessionId } = await contract.updateOfferPrice(
+      offer.index,
+      convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
+      address
+    );
+    setUpdatePriceSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);

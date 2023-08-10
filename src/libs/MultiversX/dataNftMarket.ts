@@ -26,7 +26,7 @@ import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain } from "../config";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { backendApi } from "libs/utils";
 
 export class DataNftMarketContract {
@@ -237,7 +237,7 @@ export class DataNftMarketContract {
       chainID: this.chainID,
     });
     await refreshAccount();
-    await sendTransactions({
+    const { sessionId, error } = await sendTransactions({
       transactions: addERewTx,
       transactionsDisplayInfo: {
         processingMessage: "Adding Data NFT to marketplace",
@@ -246,9 +246,11 @@ export class DataNftMarketContract {
       },
       redirectAfterSign: false,
     });
+
+    return { sessionId, error };
   }
 
-  async delistDataNft(index: number, delistAmount: number, senderAddress: string, nativeAuthToken: string) {
+  async delistDataNft(index: number, delistAmount: number, senderAddress: string) {
     const data = new ContractCallPayloadBuilder()
       .setFunction(new ContractFunction("cancelOffer"))
       .addArg(new U64Value(index))
@@ -276,25 +278,6 @@ export class DataNftMarketContract {
       },
       redirectAfterSign: false,
     });
-
-    try {
-      const headers = {
-        Authorization: `Bearer ${nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = { supply: delistAmount };
-      const response = await fetch(`${backendApi(this.chainID)}/updateOffer/${index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-      console.log("Response:", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
 
     return { sessionId, error };
   }

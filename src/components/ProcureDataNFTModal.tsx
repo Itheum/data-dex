@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -16,6 +16,7 @@ import {
   backendApi,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
+import { set } from "react-hook-form";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -48,6 +49,43 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+
+  const [purchaseSessionId, setPurchaseSessionId] = useState<string>("");
+  const [purchaseTxStatus, setPurchaseTxStatus] = useState<boolean>(false);
+
+  const trackPurchaseTxStatus = useTrackTransactionStatus({
+    transactionId: purchaseSessionId,
+  });
+
+  useEffect(() => {
+    setPurchaseTxStatus(trackPurchaseTxStatus.isPending ? true : false);
+  }, [trackPurchaseTxStatus]);
+
+  useEffect(() => {
+    async function updateOfferOnBackend() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = { supply: amount };
+        const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+    if (purchaseTxStatus) {
+      updateOfferOnBackend();
+    }
+  }, [purchaseTxStatus]);
 
   // set ReadTermChecked checkbox as false when modal opened
   useEffect(() => {
@@ -104,7 +142,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
-
+        setPurchaseSessionId(sessionId);
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -118,6 +156,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
+        setPurchaseSessionId(sessionId);
 
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
@@ -126,24 +165,6 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       }
     }
 
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = { supply: amount };
-      const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-      console.log("Response:", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
     // a small delay for visual effect
     await sleep(0.5);
     onClose();

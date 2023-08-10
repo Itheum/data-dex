@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
 import { useMarketStore } from "store";
+import axios from "axios";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const fullPrice = amount * offer.wanted_token_amount;
   const priceWithSellerFee = fullPrice - (fullPrice * sellerFee) / 10000;
   const priceWithSellerFeeAndRoyalties = priceWithSellerFee - priceWithSellerFee * nftData.royalties;
@@ -32,12 +34,64 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
-
   const { tokenLogin } = useGetLoginInfo();
 
   const backendUrl = backendApi(chainID);
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+
+  const [listTxSessionId, setListTxSessionId] = useState<string>("");
+  const [listTxStatus, setListTxStatus] = useState<boolean>(false);
+
+  const trackTransactionStatus = useTrackTransactionStatus({
+    transactionId: listTxSessionId,
+  });
+
+  useEffect(() => {
+    setListTxStatus(trackTransactionStatus.isPending ? true : false);
+  }, [trackTransactionStatus]);
+
+  useEffect(() => {
+    async function addOfferBackend() {
+      const lastIndex = await axios.get(`${backendUrl}/offers/recent/index`).then((res) => res.data);
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          index: lastIndex + 1,
+          offered_token_identifier: nftData.collection,
+          offered_token_nonce: nftData.nonce,
+          offered_token_amount: 1,
+          title: nftData.title,
+          description: nftData.description,
+          wanted_token_identifier: offer.wanted_token_identifier,
+          wanted_token_nonce: offer.wanted_token_nonce,
+          wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
+          quantity: amount * 1,
+          owner: address,
+        };
+
+        console.log(requestBody);
+        const response = await fetch(`${backendUrl}/addOffer`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+    if (listTxStatus) {
+      addOfferBackend();
+      setAmount(1);
+    }
+  }, [listTxStatus]);
 
   const onProcure = async () => {
     const showErrorToast = (title: string) => {
@@ -74,47 +128,13 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       }
     }
 
-    marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
+    const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
 
-    const lastIndex = await fetch(`${backendUrl}/offers/recent/index`).then((res) => res.json());
-
-    try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
-
-      const requestBody = {
-        index: lastIndex + 1,
-        offered_token_identifier: nftData.collection,
-        offered_token_nonce: nftData.nonce,
-        offered_token_amount: 1,
-        title: nftData.title,
-        description: nftData.description,
-        wanted_token_identifier: offer.wanted_token_identifier,
-        wanted_token_nonce: offer.wanted_token_nonce,
-        wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
-        quantity: amount,
-        owner: address,
-      };
-
-      console.log(requestBody);
-      const response = await fetch(`${backendUrl}/addOffer`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-      console.log("Response:", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-
-    setAmount(1);
+    setListTxSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
+
     onClose();
   };
 
