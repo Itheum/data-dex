@@ -78,7 +78,7 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-launch-mode");
   localStorage?.removeItem("itm-launch-env");
   localStorage?.removeItem("itm-datacat-linked");
-  sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo'); // clear signedSessions
+  sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo"); // clear signedSessions
 };
 
 export const printPrice = (price: number, token: string): string => {
