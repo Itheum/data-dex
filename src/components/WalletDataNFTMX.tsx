@@ -128,6 +128,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           }
         }
         sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
+        if (isWebWallet) {
+          navigate("/datanfts/wallet");
+        }
 
         if (!dataNonce) {
           throw Error("DataNonce is not set");
@@ -284,10 +287,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         ...prevProgress,
         s3: 1,
       }));
-
-      if (isWebWallet) {
-        navigate("/datanfts/wallet");
-      }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
     }
