@@ -632,7 +632,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay backdropFilter="blur(10px)" />
-            <ModalContent>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               {burnNFTModalState === 1 ? (
                 <>
                   <ModalHeader>Burn Supply from my Data NFT</ModalHeader>
