@@ -109,6 +109,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
+  const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT) : 0;
+  const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+
   useTrackTransactionStatus({
     transactionId: sessionId,
     onSuccess: () => {
@@ -309,7 +312,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               maxW={24}
                               step={1}
                               min={1}
-                              max={offer.quantity}
+                              max={maxBuyNumber}
                               isValidCharacter={isValidNumericCharacter}
                               value={amount}
                               defaultValue={1}
@@ -320,6 +323,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   error = "Cannot be zero or negative";
                                 } else if (value > offer.quantity) {
                                   error = "Cannot exceed balance";
+                                } else if (maxBuyLimit > 0 && value > maxBuyLimit) {
+                                  error = "Cannot exceed max buy limit";
                                 }
                                 setAmountError(error);
                                 setAmount(value);

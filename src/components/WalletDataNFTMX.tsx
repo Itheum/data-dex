@@ -73,6 +73,7 @@ export type WalletDataNFTMxPropType = {
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { colorMode } = useColorMode();
   const { chainMeta: _chainMeta } = useChainMeta();
+  const { loginMethod } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const isMxLoggedIn = !!address;
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -119,10 +120,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       try {
         let signSessions = JSON.parse(sessionStorage.getItem("persist:sdk-dapp-signedMessageInfo") ?? "{'signedSessions':{}}");
         signSessions = JSON.parse(signSessions.signedSessions);
-        console.log('signSessions', signSessions);
+        console.log("signSessions", signSessions);
         let signature = "";
         for (const session of Object.values(signSessions) as any[]) {
-          if (session.status && session.status == 'signed' && session.signature) {
+          if (session.status && session.status == "signed" && session.signature) {
             signature = session.signature;
           }
         }
@@ -131,7 +132,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           throw Error("DataNonce is not set");
         }
         if (!signature) {
-          throw Error ("Signature is empty");
+          throw Error("Signature is empty");
         }
 
         await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
@@ -148,7 +149,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     if (isWebWallet && nftId && dataNonce && nftId === item.id && lastSignedMessageSession) {
       processSignature();
     }
-  }, [item.id]);
+  }, [item.id, lastSignedMessageSession]);
 
   const showErrorToast = (title: string) => {
     toast({
@@ -204,7 +205,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
     try {
       if (isWebWallet) {
-        sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
+        sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       }
 
       const callbackRoute = `${window.location.href}/${_nftId}/${_dataNonce}`;
@@ -288,7 +289,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         s3: 1,
       }));
 
-      sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
+      sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       if (isWebWallet) {
         navigate("/datanfts/wallet");
       }
@@ -782,7 +783,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 <HStack>
                   {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
                   <Stack>
-                    <Text>Please sign transaction to complete handshake</Text>
+                    {["ledger", "walletconnectv2", "extra"].includes(loginMethod) ? (
+                      <Text>Please sign the message using xPortal or Ledger</Text>
+                    ) : (
+                      <Text>Please sign the message to complete handshake</Text>
+                    )}
                     <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
                   </Stack>
                 </HStack>
