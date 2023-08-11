@@ -118,16 +118,28 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     const processSignature = async () => {
       try {
         const signature = lastSignedMessageSession.signature ?? "";
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
+        if (!dataNonce) {
+          throw Error("DataNonce is not set");
+        }
+        if (!signature) {
+          throw Error ("Signature is empty");
+        }
+
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
       } catch (e: any) {
         console.error(e);
+        toast({
+          title: e.message,
+          status: "error",
+          isClosable: true,
+        });
       }
     };
 
     if (isWebWallet && nftId && dataNonce && nftId === item.id && lastSignedMessageSession) {
       processSignature();
     }
-  }, [item.id]);
+  }, [item.id, lastSignedMessageSession]);
 
   const showErrorToast = (title: string) => {
     toast({
