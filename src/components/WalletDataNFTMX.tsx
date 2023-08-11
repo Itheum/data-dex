@@ -118,7 +118,24 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   useEffect(() => {
     const processSignature = async () => {
       try {
-        const signature = lastSignedMessageSession.signature ?? "";
+        let signSessions = JSON.parse(sessionStorage.getItem("persist:sdk-dapp-signedMessageInfo") ?? "{'signedSessions':{}}");
+        signSessions = JSON.parse(signSessions.signedSessions);
+        console.log('signSessions', signSessions);
+        let signature = "";
+        for (const session of Object.values(signSessions) as any[]) {
+          if (session.status && session.status == 'signed' && session.signature) {
+            signature = session.signature;
+          }
+        }
+        sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
+
+        if (!dataNonce) {
+          throw Error("DataNonce is not set");
+        }
+        if (!signature) {
+          throw Error ("Signature is empty");
+        }
+
         await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
       } catch (e: any) {
         console.error(e);
@@ -128,7 +145,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     if (isWebWallet && nftId && dataNonce && nftId === item.id && lastSignedMessageSession) {
       processSignature();
     }
-  }, [item.id]);
+  }, [item.id, lastSignedMessageSession]);
 
   const showErrorToast = (title: string) => {
     toast({
@@ -183,6 +200,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     const customError = labels.ERR_WALLET_SIG_GENERIC;
 
     try {
+      if (isWebWallet) {
+        sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
+      }
+
       const callbackRoute = `${window.location.href}/${_nftId}/${_dataNonce}`;
       const signatureObj = await signMessage({
         message: _dataNonce,
@@ -464,7 +485,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
+                  // isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
