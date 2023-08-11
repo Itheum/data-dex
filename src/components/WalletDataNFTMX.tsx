@@ -485,7 +485,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  // isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
+                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
