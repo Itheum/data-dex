@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
+import { getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
 import { NetworkIdType } from "libs/types";
 import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import { NoDataHere } from "./NoDataHere";
 
@@ -39,60 +42,102 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const marketContract = new DataNftMarketContract(networkId);
   const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
-    if (_chainMeta?.networkId) {
-      (async () => {
-        const highestOfferIndex = await marketContract.getLastValidOfferId();
+    apiWrapper();
+  }, [_chainMeta, marketRequirements]);
 
-        // get latest 10 offers from the SC
-        const startIndex = Math.max(highestOfferIndex - 40, 0);
-        const stopIndex = highestOfferIndex;
+  const apiWrapper = async () => {
+    DataNft.setNetworkConfig(_chainMeta?.networkId == "E1" ? "mainnet" : "devnet");
 
-        const offers = await marketContract.viewOffers(startIndex, stopIndex);
-        const slicedOffers = offers.slice(0, 10);
-        // get these offers metadata from the API
-        const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
-        const dataNfts = await getNftsByIds(nftIds, networkId);
+    try {
+      const isApiUp = await getHealthCheckFromBackendApi(_chainMeta?.networkId);
 
-        // merge the offer data and meta data
+      if (isApiUp) {
+        const offers = await getRecentOffersFromBackendApi(_chainMeta?.networkId);
+        const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
+        const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
+
         const _latestOffers: DataNftCondensedView[] = [];
 
-        slicedOffers.forEach((offer, idx) => {
-          const _nft = dataNfts.find((nft) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
-
-          if (_nft !== undefined) {
-            const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
-
+        offers.forEach((offer: any) => {
+          const matchingDataNft = dataNfts.find(
+            (dataNft: DataNft) => dataNft.nonce === offer.offered_token_nonce && dataNft.collection === offer.offered_token_identifier
+          );
+          if (matchingDataNft) {
             const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
-
             _latestOffers.push({
-              data_nft_id: _nftMetaData.id,
+              data_nft_id: matchingDataNft?.tokenIdentifier,
               offered_token_identifier: offer.offered_token_identifier,
               offered_token_nonce: offer.offered_token_nonce,
               offer_index: offer.index,
               offered_token_amount: offer.offered_token_amount,
               quantity: offer.quantity,
               wanted_token_amount: offer.wanted_token_amount,
-              creator: _nftMetaData.creator,
-              tokenName: _nftMetaData.tokenName,
-              title: _nftMetaData.title,
-              nftImgUrl: _nftMetaData.nftImgUrl,
-              royalties: _nftMetaData.royalties,
+              creator: offer?.creator,
+              tokenName: matchingDataNft?.tokenName,
+              title: offer?.title,
+              nftImgUrl: matchingDataNft?.nftImgUrl,
+              royalties: matchingDataNft?.royalties,
               feePerSFT: tokenAmount,
             });
           }
         });
-
-        await sleep(1);
-
         setLatestOffers(_latestOffers);
         setLoadedOffers(true);
-      })();
+      } else {
+        throw new Error("API is down");
+      }
+    } catch (error) {
+      const highestOfferIndex = await marketContract.getLastValidOfferId();
+
+      // get latest 10 offers from the SC
+      const startIndex = Math.max(highestOfferIndex - 40, 0);
+      const stopIndex = highestOfferIndex;
+
+      const offers = await marketContract.viewOffers(startIndex, stopIndex);
+      const slicedOffers = offers.slice(0, 10);
+      // get these offers metadata from the API
+      const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
+      const dataNfts = await getNftsByIds(nftIds, networkId);
+
+      // merge the offer data and meta data
+      const _latestOffers: DataNftCondensedView[] = [];
+
+      slicedOffers.forEach((offer, idx) => {
+        const _nft = dataNfts.find((nft) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
+
+        if (_nft !== undefined) {
+          const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
+
+          const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
+
+          _latestOffers.push({
+            data_nft_id: _nftMetaData.id,
+            offered_token_identifier: offer.offered_token_identifier,
+            offered_token_nonce: offer.offered_token_nonce,
+            offer_index: offer.index,
+            offered_token_amount: offer.offered_token_amount,
+            quantity: offer.quantity,
+            wanted_token_amount: offer.wanted_token_amount,
+            creator: _nftMetaData.creator,
+            tokenName: _nftMetaData.tokenName,
+            title: _nftMetaData.title,
+            nftImgUrl: _nftMetaData.nftImgUrl,
+            royalties: _nftMetaData.royalties,
+            feePerSFT: tokenAmount,
+          });
+        }
+      });
+      await sleep(1);
+      setLatestOffers(_latestOffers);
+      setLoadedOffers(true);
     }
-  }, [_chainMeta]);
+  };
 
   let skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 

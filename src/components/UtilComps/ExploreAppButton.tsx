@@ -5,7 +5,7 @@ import { EXPLORER_APP_SUPPORTED_NONCES, EXPLORER_APP_FOR_NONCE } from "libs/conf
 import { networkIdBasedOnLoggedInStatus } from "libs/utils";
 import { useChainMeta } from "store/ChainMetaContext";
 
-export default function ExploreAppButton({ nonce, w, size }: { nonce: number; w?: string; size?: any }) {
+export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: number; w?: any; size?: any; fontSize?: any }) {
   const { chainMeta: _chainMeta } = useChainMeta();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
@@ -33,7 +33,7 @@ export default function ExploreAppButton({ nonce, w, size }: { nonce: number; w?
                 window.open(EXPLORER_APP_FOR_NONCE[networkId][appKey])?.focus();
               }
             }}>
-            <Text py={3} color="black">
+            <Text py={3} color="black" fontSize={fontSize ? fontSize : ""}>
               Explore
             </Text>
           </Button>

@@ -76,12 +76,12 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const isMxLoggedIn = !!address;
 
   const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const ChainExplorer = CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER];
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
   return (
     <Skeleton isLoaded={nftMetadataLoading}>
@@ -89,7 +89,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <Image
-              src={`https://${getApi(_chainMeta.networkId)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(networkId)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}

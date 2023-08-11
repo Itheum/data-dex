@@ -105,7 +105,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                 <Box>: {amount ? amount : 1}</Box>
               </Flex>
               <Flex fontSize="md" mt="2">
-                <Box w="140px">Unlock Fee (per NFT)</Box>
+                <Box w="140px">Access Fee (per NFT)</Box>
                 <Box>
                   {sellerFee ? (
                     <>

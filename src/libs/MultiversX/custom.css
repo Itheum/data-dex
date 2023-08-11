@@ -25,8 +25,30 @@ body {
   color: white;
 }
 
+.chakra-ui-light .dapp-core-component__signWithDeviceModalStyles__title {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light .dapp-core-component__confirmReceiverStyles__receiver .dapp-core-component__confirmReceiverStyles__value {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light .dapp-core-component__confirmAmountStyles__value {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light [data-testid="confirmFee"] {
+  color: var(--chakra-colors-chakra-body-text) !important;
+}
+
+.chakra-ui-light [data-testid="signBtn"] {
+  background-color: var(--chakra-colors-whiteAlpha-700) !important;
+  color: var(--chakra-colors-chakra-body-text) !important;
+  border-color: var(--chakra-colors-whiteAlpha-200) !important;
+}
+
 .chakra-ui-light .auth_wrap {
-  background-color: var(--chakra-colors-gray-200);
+  background-color: var(--chakra-colors-gray-200) !important;
 }
 
 .auth_button {
@@ -60,6 +82,22 @@ body {
 .dapp-core-component__main__card {
   background-color: var(--chakra-colors-chakra-body-bg) !important;
   border: none !important;
+}
+
+.dapp-core-component__dappModalStyles__dappModalBody {
+  padding: 0px !important;
+}
+
+.dapp-core-component__main__card-body {
+  padding: 0px !important;
+}
+
+.dapp-core-component__signWithDeviceModalStyles__modal-layout-content {
+  --modal-offset: 0px !important;
+}
+
+.dapp-core-component__main__mt-1 {
+  margin-top: 0.5rem !important;
 }
 
 /* START MVX LOGIN STYLING */

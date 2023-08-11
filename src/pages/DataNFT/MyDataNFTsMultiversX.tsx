@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
-  Box,
   CloseButton,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
   Flex,
   Heading,
   HStack,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   SimpleGrid,
   Stack,
   Tab,
@@ -37,10 +36,7 @@ import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
-import {
-  useMarketStore,
-  // useMintStore,
-} from "store";
+import { useMarketStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
@@ -67,7 +63,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { hasPendingTransactions } = useGetPendingTransactions();
 
   const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
-  const { isOpen: isDrawerOpenTradeStream, onOpen: onOpenDrawerTradeStream, onClose: onCloseDrawerTradeStream, getDisclosureProps } = useDisclosure();
+  const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   const onChangeTab = useThrottle((newTabState: number) => {
     navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : ""}`);
@@ -147,7 +143,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       setDataNfts([]);
     }
   };
-
+  console.log(nftForDrawer);
   useEffect(() => {
     if (hasPendingTransactions) return;
     if (!_chainMeta) return;
@@ -157,14 +153,15 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);
-    onOpenDrawerTradeStream();
+    onOpenDataNftDetails();
   }
 
   function closeDetailsView() {
-    onCloseDrawerTradeStream();
+    onCloseDataNftDetails();
     setNftForDrawer(undefined);
   }
 
+  console.log(nftForDrawer);
   return (
     <>
       <Stack>
@@ -214,6 +211,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       maxPayment={maxPaymentFeeMap[itheumToken]}
                       sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
+                      isProfile={false}
                       {...item}
                     />
                   ))}
@@ -240,6 +238,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       maxPayment={maxPaymentFeeMap[itheumToken]}
                       sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
+                      isProfile={false}
                       {...item}
                     />
                   ))}
@@ -260,22 +259,22 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       </Stack>
       {nftForDrawer && (
         <>
-          <Drawer onClose={closeDetailsView} isOpen={isDrawerOpenTradeStream} size="xl" closeOnEsc={false} closeOnOverlayClick={true}>
-            <DrawerOverlay />
-            <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-              <DrawerHeader>
+          <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <ModalHeader paddingBottom={0}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
                 </HStack>
-              </DrawerHeader>
-              <DrawerBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <Text fontSize="32px" fontWeight="500" textAlign="center">
+                  Data NFT Details
+                </Text>
+              </ModalHeader>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} paddingTop={0}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </>
       )}
     </>
