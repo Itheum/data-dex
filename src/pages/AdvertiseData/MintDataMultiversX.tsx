@@ -57,7 +57,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ResultsParser } from "@multiversx/sdk-core";
 import { useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -67,7 +67,7 @@ import { MENU, contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { getNetworkProvider } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "libs/utils";
+import { convertWeiToEsdt, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
@@ -173,6 +173,9 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+
   const toast = useToast();
 
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -225,7 +228,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   const [mintSessionId, setMintSessionId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
+  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
 
   // React hook form + yup integration
   // Declaring a validation schema for the form with the validation needed
@@ -315,7 +318,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   // query settings from Data NFT Minter SC
   useEffect(() => {
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -328,7 +331,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -341,7 +344,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -354,8 +357,8 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken]);
+      const networkProvider = getNetworkProvider(routedChainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -371,7 +374,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   useEffect(() => {
     onChangeDataNFTStreamUrl("");
     onChangeDataNFTStreamPreviewUrl("");
-    onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
+    onChangeDataNFTMarshalService(getApiDataMarshal(routedChainID));
     onChangeDataNFTImageGenService();
     onChangeDataNFTTokenName("");
     onChangeDatasetTitle("");
@@ -454,7 +457,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${getApiDataMarshal(chainID)}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataMarshal(routedChainID)}/health-check`).then(({ isSuccess, message }) => {
       setDataNFTMarshalServiceStatus(!isSuccess);
     });
 
@@ -463,7 +466,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${getApiDataDex(chainID)}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataDex(routedChainID)}/health-check`).then(({ isSuccess, message }) => {
       setDataNFTImgGenService(isSuccess);
     });
   };
@@ -713,7 +716,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     };
 
     try {
-      const res = await fetch(`${getApiDataMarshal(chainID)}/generate`, requestOptions);
+      const res = await fetch(`${getApiDataMarshal(routedChainID)}/generate`, requestOptions);
       const data = await res.json();
 
       if (data && data.encryptedMessage && data.messageHash) {
@@ -769,7 +772,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
-    const newNFTImg = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
+    const newNFTImg = `${getApiDataDex(routedChainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
@@ -827,7 +830,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
       title: datasetTitle,
       description: datasetDescription,
       sender: mxAddress,
-      itheumToken: contractsForChain(chainID).itheumToken,
+      itheumToken: contractsForChain(routedChainID).itheumToken,
       antiSpamTax: antiSpamTax,
     });
     if (error) {
