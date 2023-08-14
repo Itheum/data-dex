@@ -255,7 +255,7 @@ export default function HomeMultiversX({
   return (
     <>
       <Stack mx={{ base: 5, lg: 24 }}>
-        <Box m={heroGridMargin} pt="20" pb="10">
+        <Box m={heroGridMargin} pt="20" pb="10" w={"100%"}>
           <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
@@ -462,11 +462,11 @@ export default function HomeMultiversX({
           </SimpleGrid>
         </Box>
 
-        <Box m="auto" pt="10" pb="10">
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
         </Box>
 
-        <Box m="auto" pt="10" pb="10">
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
           <Heading size="lg" fontWeight="semibold">
             Data DEX 101 Guides
           </Heading>
@@ -474,7 +474,7 @@ export default function HomeMultiversX({
           <ExplainerArticles skipSpacing={true} />
         </Box>
 
-        <Box m="auto" pt="10" pb="6rem">
+        <Box m="auto" pt="10" pb="6rem" w={"100%"}>
           <AppMarketplace setMenuItem={setMenuItem} />
         </Box>
       </Stack>

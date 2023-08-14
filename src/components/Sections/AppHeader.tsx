@@ -244,6 +244,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                   <Link
                     as={ReactRouterLink}
                     to={path}
+                    mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
