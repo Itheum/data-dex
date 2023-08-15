@@ -48,10 +48,10 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
 
   useEffect(() => {
     apiWrapper();
-  }, [marketRequirements]);
+  }, [routedChainID, marketRequirements]);
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(routedChainID == "1" ? "mainnet" : "devnet");
+    DataNft.setNetworkConfig(routedChainID === "1" ? "mainnet" : "devnet");
 
     try {
       const isApiUp = await getHealthCheckFromBackendApi(routedChainID);
