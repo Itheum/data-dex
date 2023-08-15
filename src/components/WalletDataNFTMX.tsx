@@ -120,28 +120,29 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       try {
         let signSessions = JSON.parse(sessionStorage.getItem("persist:sdk-dapp-signedMessageInfo") ?? "{'signedSessions':{}}");
         signSessions = JSON.parse(signSessions.signedSessions);
-        console.log('signSessions', signSessions);
+        console.log("signSessions", signSessions);
         let signature = "";
         for (const session of Object.values(signSessions) as any[]) {
-          if (session.status && session.status == 'signed' && session.signature) {
+          if (session.status && session.status == "signed" && session.signature) {
             signature = session.signature;
           }
-        }
-        sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
-        if (isWebWallet) {
-          navigate("/datanfts/wallet");
         }
 
         if (!dataNonce) {
           throw Error("DataNonce is not set");
         }
         if (!signature) {
-          throw Error ("Signature is empty");
+          throw Error("Signature is empty");
         }
 
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
       } catch (e: any) {
         console.error(e);
+        toast({
+          title: e.message,
+          status: "error",
+          isClosable: true,
+        });
       }
     };
 
@@ -204,7 +205,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
     try {
       if (isWebWallet) {
-        sessionStorage.removeItem('persist:sdk-dapp-signedMessageInfo');
+        sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       }
 
       const callbackRoute = `${window.location.href}/${_nftId}/${_dataNonce}`;
@@ -287,6 +288,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         ...prevProgress,
         s3: 1,
       }));
+
+      sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
+      if (isWebWallet) {
+        navigate("/datanfts/wallet");
+      }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
     }
