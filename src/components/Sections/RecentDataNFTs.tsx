@@ -36,7 +36,6 @@ for (let i = 0; i < 10; i++) {
 }
 
 const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: string; networkId: NetworkIdType; headingSize?: string }) => {
-  const { chainMeta: _chainMeta } = useChainMeta();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
@@ -49,16 +48,16 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
 
   useEffect(() => {
     apiWrapper();
-  }, [_chainMeta, marketRequirements]);
+  }, [networkId, marketRequirements]);
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(_chainMeta?.networkId == "E1" ? "mainnet" : "devnet");
+    DataNft.setNetworkConfig(networkId === "E1" ? "mainnet" : "devnet");
 
     try {
-      const isApiUp = await getHealthCheckFromBackendApi(_chainMeta?.networkId);
+      const isApiUp = await getHealthCheckFromBackendApi(networkId);
 
       if (isApiUp) {
-        const offers = await getRecentOffersFromBackendApi(_chainMeta?.networkId);
+        const offers = await getRecentOffersFromBackendApi(networkId);
         const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
