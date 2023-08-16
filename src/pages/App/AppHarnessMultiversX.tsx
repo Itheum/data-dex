@@ -51,10 +51,11 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
-
+  const [, setHubAccessToken] = useLocalStorage("itm-hub-access-token", null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
     if (searchParams.get("accessToken") || tokenLogin) {
+      setHubAccessToken(searchParams.get("accessToken"));
       if (window.location.pathname === "/") {
         navigate("/dashboard" + window.location.search);
       }

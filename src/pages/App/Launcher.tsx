@@ -14,8 +14,8 @@ function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
-  const { tokenLogin } = useGetLoginInfo();
-  const [launchEnvironment, setLaunchEnvironment] = useState(tokenLogin ? "mainnet" : launchEnvSession || "devnet");
+  const [hubAccessToken] = useLocalStorage("itm-hub-access-token", null);
+  const [launchEnvironment, setLaunchEnvironment] = useState(hubAccessToken ? "mainnet" : launchEnvSession || "devnet");
 
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
