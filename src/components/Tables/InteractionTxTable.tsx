@@ -1,19 +1,21 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { Box, HStack, Link, Spinner, useToast } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TransactionDecoder } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, contractsForChain, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { convertWeiToEsdt } from "libs/utils";
+import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
 
 export default function InteractionTxTable(props: { address: string }) {
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [data, setData] = useState<InteractionsInTable[]>([]);
   const [loadingInteractions, setLoadingInteractions] = useState(-1);
   const toast = useToast();
@@ -27,7 +29,10 @@ export default function InteractionTxTable(props: { address: string }) {
         cell: (cellProps) => (
           <HStack>
             <ShortAddress address={cellProps.getValue()} />
-            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
+            <Link
+              href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
+              isExternal
+              style={linkIconStyle}>
               <ExternalLinkIcon />
             </Link>
           </HStack>
@@ -63,8 +68,8 @@ export default function InteractionTxTable(props: { address: string }) {
           const isChangeOfferPrice = row.original.method === "Changed offer price";
 
           const linkHref = isChangeOfferPrice
-            ? `${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/tokens/${cellProps.getValue()}`
-            : `${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`;
+            ? `${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/tokens/${cellProps.getValue()}`
+            : `${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`;
 
           return <Link href={linkHref}>{cellProps.getValue()}</Link>;
         },
@@ -82,8 +87,13 @@ export default function InteractionTxTable(props: { address: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!contractsForChain(chainID).dataNftMint || !contractsForChain(chainID).market) return;
-      const interactions = await getInteractionTransactions(props.address, contractsForChain(chainID).dataNftMint, contractsForChain(chainID).market, chainID);
+      if (!contractsForChain(routedChainID).dataNftMint || !contractsForChain(routedChainID).market) return;
+      const interactions = await getInteractionTransactions(
+        props.address,
+        contractsForChain(routedChainID).dataNftMint,
+        contractsForChain(routedChainID).market,
+        routedChainID
+      );
       if ("error" in interactions) {
         toast({
           title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",
@@ -117,7 +127,6 @@ export default function InteractionTxTable(props: { address: string }) {
 
 export const getInteractionTransactions = async (address: string, minterSmartContractAddress: string, marketSmartContractAddress: string, chainID: string) => {
   const api = getApi(chainID);
-
   try {
     const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
     const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;

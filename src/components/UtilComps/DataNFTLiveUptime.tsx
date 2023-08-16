@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Text, Progress, Stack, Heading, Badge, Box } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { labels } from "libs/language";
-import { sleep } from "libs/utils";
+import { routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
 
 export type DataNFTLiveUptimeProps = {
   dataMarshal: string;
@@ -14,6 +14,8 @@ export type DataNFTLiveUptimeProps = {
 
 const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [liveUptimeCheckInProgress, setLiveUptimeCheckInProgress] = useState(true);
   const [liveUptimeOKMsg, setLiveUptimeOKMsg] = useState<null | string>(null);
   const [liveUptimeFAILMsg, setLiveUptimeFAILMsg] = useState<null | string>(null);
@@ -37,7 +39,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
 
     let _isLiveUptimeSuccessful = false;
     try {
-      const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=E${chainID}`);
+      const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=E${routedChainID}`);
       const data = await res.json();
 
       if (data?.response_code) {

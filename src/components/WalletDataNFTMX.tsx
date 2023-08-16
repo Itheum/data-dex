@@ -41,6 +41,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
 import moment from "moment";
@@ -77,7 +78,7 @@ export type WalletDataNFTMxPropType = {
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn, loginMethod } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
@@ -85,10 +86,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const toast = useToast();
   const { signMessage } = useSignMessage();
   const loginInfo = useGetLoginInfo();
+  const lastSignedMessageSession = useGetLastSignedMessageSession();
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
-  const isWebWallet = loginInfo.loginMethod == "wallet";
+  const isWebWallet = loginMethod == "wallet";
 
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
@@ -101,8 +103,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
-  const mintContract = new DataNftMintContract(chainID);
-  const marketContract = new DataNftMarketContract(chainID);
+  const mintContract = new DataNftMintContract(routedChainID);
+  const marketContract = new DataNftMarketContract(routedChainID);
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
   const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
@@ -121,17 +123,38 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   useEffect(() => {
     const processSignature = async () => {
       try {
-        const signature = getMessageSignatureFromWalletUrl();
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce || "", signature);
+        let signSessions = JSON.parse(sessionStorage.getItem("persist:sdk-dapp-signedMessageInfo") ?? "{'signedSessions':{}}");
+        signSessions = JSON.parse(signSessions.signedSessions);
+        console.log("signSessions", signSessions);
+        let signature = "";
+        for (const session of Object.values(signSessions) as any[]) {
+          if (session.status && session.status == "signed" && session.signature) {
+            signature = session.signature;
+          }
+        }
+
+        if (!dataNonce) {
+          throw Error("DataNonce is not set");
+        }
+        if (!signature) {
+          throw Error("Signature is empty");
+        }
+
+        await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
       } catch (e: any) {
         console.error(e);
+        toast({
+          title: e.message,
+          status: "error",
+          isClosable: true,
+        });
       }
     };
 
-    if (isWebWallet && nftId && dataNonce && nftId === item.id) {
+    if (isWebWallet && nftId && dataNonce && nftId === item.id && lastSignedMessageSession) {
       processSignature();
     }
-  }, [item.id]);
+  }, [item.id, lastSignedMessageSession]);
 
   const showErrorToast = (title: string) => {
     toast({
@@ -186,6 +209,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     const customError = labels.ERR_WALLET_SIG_GENERIC;
 
     try {
+      if (isWebWallet) {
+        sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
+      }
+
       const callbackRoute = `${window.location.href}/${_nftId}/${_dataNonce}`;
       const signatureObj = await signMessage({
         message: _dataNonce,
@@ -219,7 +246,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalOpen();
 
     try {
-      const res = await fetch(`${dataMarshal}/preaccess?chainId=E${chainID}`);
+      const res = await fetch(`${dataMarshal}/preaccess?chainId=E${routedChainID}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -259,7 +286,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       link.target = "_blank";
       link.setAttribute("target", "_blank");
       const addressInHex = address;
-      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=E${chainID}&accessRequesterAddr=${addressInHex}`;
+      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=E${routedChainID}&accessRequesterAddr=${addressInHex}`;
       link.dispatchEvent(new MouseEvent("click"));
 
       setUnlockAccessProgress((prevProgress) => ({
@@ -267,28 +294,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         s3: 1,
       }));
 
+      sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       if (isWebWallet) {
         navigate("/datanfts/wallet");
       }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
     }
-  }
-
-  function getMessageSignatureFromWalletUrl(): string {
-    const url = window.location.search.slice(1);
-    // console.info("getMessageSignatureFromWalletUrl(), url:", url);
-
-    const urlParams = qs.parse(url);
-    const status = urlParams.status?.toString() || "";
-    const expectedStatus = "signed";
-
-    if (status !== expectedStatus) {
-      throw new Error("No signature");
-    }
-
-    const signature = urlParams.signature?.toString() || "";
-    return signature;
   }
 
   const cleanupAccessDataStreamProcess = () => {
@@ -397,7 +409,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+            <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
@@ -432,7 +444,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             {
               <Box color="#8c8f92d0" fontSize="md">
                 Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                   <ExternalLinkIcon ml="5px" fontSize="sm" />
                 </Link>
               </Box>
@@ -763,7 +775,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             nftData={selectedDataNft}
             marketContract={marketContract}
             sellerFee={item.sellerFee || 0}
-            offer={{ wanted_token_identifier: contractsForChain(chainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
+            offer={{ wanted_token_identifier: contractsForChain(routedChainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
             setAmount={setAmount}
           />
@@ -784,7 +796,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 <HStack>
                   {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
                   <Stack>
-                    <Text>Please sign transaction to complete handshake</Text>
+                    {["ledger", "walletconnectv2", "extra"].includes(loginMethod) ? (
+                      <Text>Please sign the message using xPortal or Ledger</Text>
+                    ) : (
+                      <Text>Please sign the message to complete handshake</Text>
+                    )}
                     <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
                   </Stack>
                 </HStack>

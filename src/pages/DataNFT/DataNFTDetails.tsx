@@ -56,6 +56,7 @@ import {
 } from "libs/utils";
 import { routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils/util";
 import { useMarketStore } from "store";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -105,6 +106,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+
+  const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT) : 0;
+  const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
 
   useTrackTransactionStatus({
     transactionId: sessionId,
@@ -304,7 +308,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               maxW={24}
                               step={1}
                               min={1}
-                              max={offer.quantity}
+                              max={maxBuyNumber}
                               isValidCharacter={isValidNumericCharacter}
                               value={amount}
                               defaultValue={1}
@@ -315,6 +319,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   error = "Cannot be zero or negative";
                                 } else if (value > offer.quantity) {
                                   error = "Cannot exceed balance";
+                                } else if (maxBuyLimit > 0 && value > maxBuyLimit) {
+                                  error = "Cannot exceed max buy limit";
                                 }
                                 setAmountError(error);
                                 setAmount(value);
@@ -331,15 +337,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Text>
                         </Box>
                       )}
-                      <Flex flexDirection="row" gap={5} justifyContent={{ base: "center", lg: "start" }} w="full">
+                      <Flex flexDirection="row" gap={3} justifyContent={{ base: "center", lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
                           <Button
-                            size={{ base: "md", lg: "lg" }}
+                            size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                             onClick={onProcureModalOpen}>
-                            <Text px={tokenId ? 0 : 3}>Purchase Data</Text>
+                            <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
+                              Purchase Data
+                            </Text>
                           </Button>
                         </Tooltip>
 
@@ -349,16 +357,24 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           label="Preview Data is disabled on devnet"
                           isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                           <Button
-                            size={{ base: "md", lg: "lg" }}
+                            size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             variant="outline"
                             isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>
-                            <Text px={tokenId ? 0 : 3}>Preview Data</Text>
+                            <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
+                              Preview Data
+                            </Text>
                           </Button>
                         </Tooltip>
+                        <ExploreAppButton
+                          nonce={nftData.nonce}
+                          size={{ base: "sm", md: "md", xl: "lg" }}
+                          w={{ base: "auto", xl: "5rem" }}
+                          fontSize={{ base: "xs", md: "sm", xl: "md" }}
+                        />
                       </Flex>
                     </Flex>
                   </Flex>

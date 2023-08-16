@@ -58,7 +58,7 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor } from "libs/utils";
+import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { useAccountStore } from "store";
 
 const exploreRouterMenu = [
@@ -130,10 +130,11 @@ const menuItmesMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -170,7 +171,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -244,6 +245,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                   <Link
                     as={ReactRouterLink}
                     to={path}
+                    mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
@@ -606,6 +608,8 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -625,7 +629,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>
