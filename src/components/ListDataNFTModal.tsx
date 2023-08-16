@@ -6,6 +6,7 @@ import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
 import { useMarketStore } from "store";
 import axios from "axios";
+import { getApi } from "libs/MultiversX/api";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -22,7 +23,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-  const { hasPendingTransactions } = useGetPendingTransactions();
   const fullPrice = amount * offer.wanted_token_amount;
   const priceWithSellerFee = fullPrice - (fullPrice * sellerFee) / 10000;
   const priceWithSellerFeeAndRoyalties = priceWithSellerFee - priceWithSellerFee * nftData.royalties;
@@ -42,18 +42,36 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
   const [listTxSessionId, setListTxSessionId] = useState<string>("");
   const [listTxStatus, setListTxStatus] = useState<boolean>(false);
+  const [listTxHash, setListTxHash] = useState<string>("");
 
   const trackTransactionStatus = useTrackTransactionStatus({
     transactionId: listTxSessionId,
   });
 
+  const { pendingTransactions } = useGetPendingTransactions();
+
   useEffect(() => {
-    setListTxStatus(trackTransactionStatus.isPending ? true : false);
+    if (!pendingTransactions[listTxSessionId]) return;
+    const transactionHash = pendingTransactions[listTxSessionId].transactions[0].hash;
+    setListTxHash(transactionHash);
+  }, [pendingTransactions]);
+
+  useEffect(() => {
+    setListTxStatus(trackTransactionStatus.isSuccessful ? true : false);
   }, [trackTransactionStatus]);
 
   useEffect(() => {
     async function addOfferBackend() {
-      const lastIndex = await axios.get(`${backendUrl}/offers/recent/index`).then((res) => res.data);
+      const indexResponse = (await axios.get(`https://${getApi(chainID)}/transactions/${listTxHash}?withLogs=true`)).data;
+
+      console.log(indexResponse);
+      const logs = indexResponse.logs;
+      const events = logs.events;
+
+      const indexFind = events.find((event: any) => event.identifier === "addOffer");
+
+      const index = parseInt(Buffer.from(indexFind.topics[1], "base64").toString("hex"), 16);
+
       try {
         const headers = {
           Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
@@ -61,7 +79,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         };
 
         const requestBody = {
-          index: lastIndex + 1,
+          index: index,
           offered_token_identifier: nftData.collection,
           offered_token_nonce: nftData.nonce,
           offered_token_amount: 1,
