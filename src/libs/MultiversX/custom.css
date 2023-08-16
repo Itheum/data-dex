@@ -148,12 +148,12 @@ body {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
+.chakra-ui-dark .dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
   .dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-dialog-content {
   background: var(--chakra-colors-gray-700) !important;
 }
 
-.dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
+.chakra-ui-dark .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
   background: var(--chakra-colors-gray-700) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
 }
