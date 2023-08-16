@@ -259,7 +259,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         </Heading>
 
         <Box position="relative">
-          <Tabs pt={10}>
+          <Tabs pt={10} index={tabState - 1}>
             <TabList justifyContent={{ base: "start", lg: "space-between" }} overflowX={{ base: "scroll", md: "scroll", lg: "unset" }} overflowY="hidden">
               <Flex>
                 <Tab
