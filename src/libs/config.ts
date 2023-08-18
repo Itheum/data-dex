@@ -1,4 +1,4 @@
-import { ContractsType, NetworkIdType } from "libs/types";
+import { ContractsType } from "libs/types";
 import {
   tokenContractAddress_Mx_Devnet,
   dataNFTFTTicker_Mx_Devnet,
@@ -14,31 +14,31 @@ import {
   dataNFTFTTicker_Mx_Mainnet,
 } from "./contractAddresses";
 
-export function contractsForChain(networkId: NetworkIdType): ContractsType {
-  switch (networkId) {
-    case "ED": {
+export function contractsForChain(chainID: string): ContractsType {
+  switch (chainID) {
+    case "D": {
       return {
         itheumToken: tokenContractAddress_Mx_Devnet,
-        dataNFTFTTicker: dataNFTFTTicker_Mx_Devnet,
         claims: claimsContractAddress_Mx_Devnet,
         faucet: faucetContractAddress_Mx_Devnet,
-        dataNftMint: dataNftMintContractAddress_Mx_Devnet,
         market: dataNftMarketContractAddress_Mx_Devnet,
+        dataNftMint: dataNftMintContractAddress_Mx_Devnet,
+        dataNFTFTTicker: dataNFTFTTicker_Mx_Devnet,
       };
     }
-    case "E1": {
+    case "1": {
       return {
         itheumToken: tokenContractAddress_Mx_Mainnet,
         claims: claimsContractAddress_Mx_Mainnet,
         faucet: faucetContractAddress_Mx_Mainnet,
-        dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
         market: dataNftMarketContractAddress_Mx_Mainnet,
+        dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
         dataNFTFTTicker: dataNFTFTTicker_Mx_Mainnet,
       };
     }
   }
 
-  throw Error("Undefined Network ID");
+  throw Error("Undefined chainID");
 }
 
 export const uxConfig = {
@@ -106,7 +106,7 @@ export const PATHS = {
 
 export const CHAINS = {
   31337: "Localhost",
-  1: "Eth - Mainnet",
+  "_1": "Eth - Mainnet",
   5: "Eth - Görli",
   137: "Matic - Mainnet",
   80001: "Matic - Mumbai",
@@ -114,8 +114,8 @@ export const CHAINS = {
   56: "BSC - Mainnet",
   1666700000: "Harmony - Testnet",
   43113: "Avalanche - Testnet",
-  E1: "MultiversX - Mainnet",
-  ED: "MultiversX - Devnet",
+  "1": "MultiversX - Mainnet",
+  "D": "MultiversX - Devnet",
 };
 
 // these are used by moralis SDK to identify the chain (e.g. Web3Api.account.getNFTs)
@@ -131,14 +131,14 @@ export const CHAIN_NAMES = {
   43113: "avalanche testnet",
 };
 
-export const OPENSEA_CHAIN_NAMES: Record<NetworkIdType, string> = {
+export const OPENSEA_CHAIN_NAMES: Record<string, string> = {
   1: "eth",
   5: "goerli",
   137: "matic",
   80001: "mumbai",
 };
 
-export const SUPPORTED_CHAINS = ["E1", "ED", 5, 80001, 97, 1666700000, 43113];
+export const SUPPORTED_CHAINS = ["1", "D", 5, 80001, 97, 1666700000, 43113];
 
 export const WALLETS = {
   METAMASK: "evm_metamask",
@@ -153,19 +153,19 @@ export const consoleNotice = `DATA DEX NOTES --------------------------\n
 1) Nothing to report for now...\n
 -----------------------------------------`;
 
-export function notSupportedOnChain(menuItem: any, networkId: NetworkIdType) {
-  const UNSUPPORTED_CHAIN_FEATURES: Record<NetworkIdType, number[]> = {
+export function notSupportedOnChain(menuItem: any, chainID: string) {
+  const UNSUPPORTED_CHAIN_FEATURES: Record<string, number[]> = {
     5: [MENU.TX],
     31337: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     97: [MENU.TX, MENU.COALITION],
     1666700000: [MENU.CLAIMS, MENU.NFTALL, MENU.NFTMINE, MENU.TX],
     43113: [MENU.CLAIMS, MENU.TX],
-    ED: [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
-    E1: [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT, BUTTONS.JOIN_NOW],
+    "D": [MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS],
+    "1": [MENU.FAUCET, MENU.TX, MENU.COALITION, MENU.BUY, MENU.PURCHASED, MENU.ADVERTISED, MENU.DATAPROOFS, MENU.DATACAT, BUTTONS.JOIN_NOW],
   };
 
-  if (UNSUPPORTED_CHAIN_FEATURES[networkId]) {
-    return UNSUPPORTED_CHAIN_FEATURES[networkId].includes(menuItem);
+  if (UNSUPPORTED_CHAIN_FEATURES[chainID]) {
+    return UNSUPPORTED_CHAIN_FEATURES[chainID].includes(menuItem);
   } else {
     return false;
   }
@@ -177,8 +177,8 @@ export const CHAIN_TX_VIEWER = {
   97: "https://testnet.bscscan.com/tx/",
   1666700000: "https://explorer.pops.one/#/",
   43113: "https://testnet.snowtrace.io/tx/",
-  E1: "https://explorer.multiversx.com",
-  ED: "https://devnet-explorer.multiversx.com",
+  "1": "https://explorer.multiversx.com",
+  "D": "https://devnet-explorer.multiversx.com",
 };
 
 export const CHAIN_TX_LIST = {
@@ -188,9 +188,9 @@ export const CHAIN_TX_LIST = {
   },
 };
 
-export const CHAIN_TOKEN_SYMBOL = (networkId: NetworkIdType) => {
+export const CHAIN_TOKEN_SYMBOL = (chainID: string) => {
   const mapping: Record<string, any[]> = {
-    ITHEUM: ["E1", "ED"],
+    ITHEUM: ["1", "D"],
     eITHEUM: [5, 1],
     mITHEUM: [80001, 137],
     bITHEUM: [97, 56],
@@ -201,11 +201,11 @@ export const CHAIN_TOKEN_SYMBOL = (networkId: NetworkIdType) => {
   let sym = null;
 
   Object.keys(mapping).some((i) => {
-    if (mapping[i].includes(networkId)) {
+    if (mapping[i].includes(chainID)) {
       sym = i;
     }
 
-    return mapping[i].includes(networkId);
+    return mapping[i].includes(chainID);
   });
 
   return sym;
@@ -511,23 +511,27 @@ export const whitelistWallets: Array<string> = [];
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
 
 export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
-  "ED": {
+  "D": {
     "trailblazer": [407, 423],
     "multiversxbubbles": [416],
+    "multiversxinfographics": [480],
   },
-  "E1": {
+  "1": {
     "trailblazer": [1],
     "multiversxbubbles": [2],
+    "multiversxinfographics": [3],
   },
 };
 
 export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
-  "ED": {
+  "D": {
     "trailblazer": "https://stg.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://stg.explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://stg.explorer.itheum.io/multiversx-infographics",
   },
-  "E1": {
+  "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
   },
 };

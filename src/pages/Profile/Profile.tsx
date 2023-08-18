@@ -1,6 +1,5 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { Flex } from "@chakra-ui/react";
-import { Spinner } from "@chakra-ui/spinner";
 import { DataCreatorInfo } from "./components/DataCreatorInfo";
 import { DataCreatorTabs } from "./components/DataCreatorTabs";
 
