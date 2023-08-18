@@ -207,3 +207,18 @@ export const routeChainIDBasedOnLoggedInStatus = (isMxLoggedIn: boolean, chainID
 export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
   return !(chainID == "D" && !previewDataOnDevnetSession);
 };
+
+export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
+  const reversedString = string.split('').reverse().join('');
+  let index = -1;
+
+  for(let i = 0; i < n; i++) {
+      index = reversedString.indexOf(char, index + 1);
+      if(index === -1) {
+          return -1;
+      }
+  }
+
+  // Subtract the found index from the length of the string - 1 (because string index starts from 0)
+  return string.length - 1 - index;
+}
