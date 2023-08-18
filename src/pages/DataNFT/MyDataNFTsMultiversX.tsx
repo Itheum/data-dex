@@ -143,7 +143,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       setDataNfts([]);
     }
   };
-
+  console.log(nftForDrawer);
   useEffect(() => {
     if (hasPendingTransactions) return;
     if (!_chainMeta) return;
@@ -161,6 +161,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     setNftForDrawer(undefined);
   }
 
+  console.log(nftForDrawer);
   return (
     <>
       <Stack>
@@ -260,16 +261,16 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent overflowY="scroll" h="90%">
-              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <ModalHeader paddingBottom={0}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
                 </HStack>
+                <Text fontSize="32px" fontWeight="500" textAlign="center">
+                  Data NFT Details
+                </Text>
               </ModalHeader>
-              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} paddingTop={0}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
               </ModalBody>
             </ModalContent>

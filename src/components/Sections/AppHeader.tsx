@@ -42,6 +42,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
@@ -124,7 +125,7 @@ const exploreRouterMenu = [
   },
 ];
 
-const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
+const menuItmesMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -361,8 +362,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
                     aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(menuItemsMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(menuItemsMap.get(MENU.LANDING)?.path)}
+                    isDisabled={isMenuItemSelected(menuItmesMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(menuItmesMap.get(MENU.LANDING)?.path)}
                     onClick={() => {
                       navigateToDiscover(MENU.LANDING);
                     }}
@@ -514,6 +515,21 @@ export default AppHeader;
 
 const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
+  const [initToken, setInitToken] = useState<string>("");
+  const { address: mxAddress } = useGetAccountInfo();
+
+  const client = new NativeAuthClient({ origin: "test" });
+
+  useEffect(() => {
+    (async () => {
+      setInitToken(await client.initialize());
+    })();
+  }, []);
+
+  const parts = initToken.split(".");
+  const signature = mxAddress + parts.slice(1).join(".");
+
+  const accessToken = client.getToken(mxAddress, initToken, signature);
 
   // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
   // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);
