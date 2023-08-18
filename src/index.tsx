@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
 import { getSentryProfile } from "libs/utils";
 import Launcher from "pages/App/Launcher";
+import { ChainMetaContextProvider } from "store/ChainMetaContext";
 import reportWebVitals from "./reportWebVitals";
 import "libs/MultiversX/custom.css";
 
@@ -69,9 +70,11 @@ const root = createRoot(container as HTMLElement);
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <Router>
-        <Launcher />
-      </Router>
+      <ChainMetaContextProvider>
+        <Router>
+          <Launcher />
+        </Router>
+      </ChainMetaContextProvider>
     </ChakraProvider>
   </React.StrictMode>
 );

@@ -1,10 +1,10 @@
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { notSupportedOnChain } from "libs/config";
+import { useChainMeta } from "store/ChainMetaContext";
 
 export default function ChainSupportedComponent({ feature, children }: { feature: any; children: any }) {
-  const { chainID } = useGetNetworkConfig();
+  const { chainMeta: _chainMeta } = useChainMeta();
 
-  if (notSupportedOnChain(feature, chainID)) {
+  if (notSupportedOnChain(feature, _chainMeta.networkId)) {
     if (children.length && children.length > 1) {
       return children;
     } else {
