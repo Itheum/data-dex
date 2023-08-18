@@ -11,6 +11,7 @@ import {
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { contractsForChain } from "libs/MultiversX";
+import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/claims.abi.json";
 import { getNetworkProvider } from "./api";
 
@@ -20,10 +21,16 @@ export class ClaimsContract {
   chainID: string;
   contract: SmartContract;
 
-  constructor(chainID: string) {
+  constructor(networkId: NetworkIdType) {
     this.timeout = 5000;
-    this.claimsContractAddress = contractsForChain(chainID).claims;
-    this.chainID = chainID;
+    this.claimsContractAddress = contractsForChain(networkId).claims;
+    this.chainID = "D";
+
+    if (networkId === "E1") {
+      this.chainID = "1";
+    } else {
+      this.chainID = "D";
+    }
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
@@ -40,7 +47,7 @@ export class ClaimsContract {
     const result: any[] = [];
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
 
@@ -77,7 +84,7 @@ export class ClaimsContract {
     let result = false;
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

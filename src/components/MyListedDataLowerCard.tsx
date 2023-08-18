@@ -21,10 +21,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
@@ -36,10 +36,10 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
-  routeChainIDBasedOnLoggedInStatus,
-  shouldPreviewDataBeEnabled,
+  networkIdBasedOnLoggedInStatus,
 } from "libs/utils";
 import { useMarketStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -47,12 +47,11 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { chainID } = useGetNetworkConfig();
+  const { network } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const contract = new DataNftMarketContract(routedChainID);
+  const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const contract = new DataNftMarketContract(_chainMeta.networkId);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
@@ -65,9 +64,10 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [delistAmountError, setDelistAmountError] = useState<string>("");
-  const itheumToken = contractsForChain(routedChainID).itheumToken;
+  const itheumToken = _chainMeta.contracts.itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
+  const isMxLoggedIn = !!address;
 
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
@@ -140,20 +140,17 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     onUpdatePriceModalClose();
   };
 
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   return (
     <>
-      <Tooltip
-        colorScheme="teal"
-        hasArrow
-        label="View Data is disabled on devnet"
-        isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+          isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

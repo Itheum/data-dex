@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import { getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
@@ -9,8 +8,10 @@ import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
-import { convertWeiToEsdt, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
+import { NetworkIdType } from "libs/types";
+import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useMarketStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 import { NoDataHere } from "./NoDataHere";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
@@ -34,30 +35,29 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; headingSize?: string }) => {
+const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: string; networkId: NetworkIdType; headingSize?: string }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const { chainID } = useGetNetworkConfig();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
-  const marketContract = new DataNftMarketContract(routedChainID);
-  const mintContract = new DataNftMintContract(routedChainID);
+  const marketContract = new DataNftMarketContract(networkId);
+  const mintContract = new DataNftMintContract(networkId);
 
   useEffect(() => {
     apiWrapper();
-  }, [routedChainID, marketRequirements]);
+  }, [networkId, marketRequirements]);
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(routedChainID === "1" ? "mainnet" : "devnet");
+    DataNft.setNetworkConfig(networkId === "E1" ? "mainnet" : "devnet");
 
     try {
-      const isApiUp = await getHealthCheckFromBackendApi(routedChainID);
+      const isApiUp = await getHealthCheckFromBackendApi(networkId);
 
       if (isApiUp) {
-        const offers = await getRecentOffersFromBackendApi(routedChainID);
+        const offers = await getRecentOffersFromBackendApi(networkId);
         const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
@@ -102,7 +102,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       const slicedOffers = offers.slice(0, 10);
       // get these offers metadata from the API
       const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
-      const dataNfts = await getNftsByIds(nftIds, routedChainID);
+      const dataNfts = await getNftsByIds(nftIds, networkId);
 
       // merge the offer data and meta data
       const _latestOffers: DataNftCondensedView[] = [];

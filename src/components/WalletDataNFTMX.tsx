@@ -50,21 +50,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import {
-  convertToLocalString,
-  isValidNumericCharacter,
-  routeChainIDBasedOnLoggedInStatus,
-  shouldPreviewDataBeEnabled,
-  sleep,
-  transformDescription,
-} from "libs/utils";
+import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, networkIdBasedOnLoggedInStatus } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
 
 export type WalletDataNFTMxPropType = {
@@ -77,20 +71,21 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
-  const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn, loginMethod } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
+  const { chainMeta: _chainMeta } = useChainMeta();
+  const { loginMethod } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
+  const isMxLoggedIn = !!address;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
   const { signMessage } = useSignMessage();
   const loginInfo = useGetLoginInfo();
   const lastSignedMessageSession = useGetLastSignedMessageSession();
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
-  const isWebWallet = loginMethod == "wallet";
+  const isWebWallet = loginInfo.loginMethod == "wallet";
 
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
@@ -103,8 +98,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
-  const mintContract = new DataNftMintContract(routedChainID);
-  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(_chainMeta.networkId);
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
   const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
@@ -246,7 +241,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalOpen();
 
     try {
-      const res = await fetch(`${dataMarshal}/preaccess?chainId=E${routedChainID}`);
+      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -286,7 +281,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       link.target = "_blank";
       link.setAttribute("target", "_blank");
       const addressInHex = address;
-      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=E${routedChainID}&accessRequesterAddr=${addressInHex}`;
+      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${addressInHex}`;
       link.dispatchEvent(new MouseEvent("click"));
 
       setUnlockAccessProgress((prevProgress) => ({
@@ -409,7 +404,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
@@ -444,7 +439,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             {
               <Box color="#8c8f92d0" fontSize="md">
                 Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
+                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
                   <ExternalLinkIcon ml="5px" fontSize="sm" />
                 </Link>
               </Box>
@@ -490,16 +485,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label="View Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
@@ -507,17 +498,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label="Preview Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>
@@ -775,7 +762,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             nftData={selectedDataNft}
             marketContract={marketContract}
             sellerFee={item.sellerFee || 0}
-            offer={{ wanted_token_identifier: contractsForChain(routedChainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
+            offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
             setAmount={setAmount}
           />

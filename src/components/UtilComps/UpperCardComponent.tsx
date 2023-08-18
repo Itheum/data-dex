@@ -18,7 +18,6 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import { motion } from "framer-motion";
@@ -26,16 +25,9 @@ import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import {
-  convertToLocalString,
-  convertWeiToEsdt,
-  getTokenWantedRepresentation,
-  printPrice,
-  routeChainIDBasedOnLoggedInStatus,
-  tokenDecimals,
-  transformDescription,
-} from "libs/utils";
+import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
 
 type UpperCardComponentProps = {
@@ -65,10 +57,9 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
 
   // Multiversx API
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
+  const { chainMeta: _chainMeta } = useChainMeta() as any;
+  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
 
   const userData = useMintStore((state) => state.userData);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);

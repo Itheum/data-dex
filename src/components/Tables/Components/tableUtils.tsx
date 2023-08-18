@@ -4,6 +4,7 @@ import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
 import BigNumber from "bignumber.js";
+import { MarketplaceRequirementsType } from "libs/MultiversX/types";
 import { convertWeiToEsdt } from "libs/utils";
 
 declare module "@tanstack/table-core" {

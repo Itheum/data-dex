@@ -22,6 +22,7 @@ import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
 import { uxConfig } from "libs/config";
 import { labels } from "libs/language";
+import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType, OfferType } from "./types";
@@ -36,10 +37,14 @@ export class DataNftMarketContract {
 
   toast = useToast();
 
-  constructor(chainID: string) {
+  constructor(networkId: NetworkIdType) {
     this.timeout = uxConfig.mxAPITimeoutMs;
-    this.dataNftMarketContractAddress = contractsForChain(chainID).market;
-    this.chainID = chainID;
+    this.dataNftMarketContractAddress = contractsForChain(networkId).market;
+    this.chainID = "D";
+
+    if (networkId === "E1") {
+      this.chainID = "1";
+    }
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
@@ -49,7 +54,7 @@ export class DataNftMarketContract {
       abi: abiRegistry,
     });
 
-    this.itheumToken = contractsForChain(chainID).itheumToken as unknown as string;
+    this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
   }
 
   async viewNumberOfOffers() {
@@ -57,7 +62,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -283,7 +288,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -330,7 +335,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -376,7 +381,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -418,7 +423,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -460,7 +465,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -524,7 +529,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -556,7 +561,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const networkProvider = getNetworkProvider("", this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
