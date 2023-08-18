@@ -1,11 +1,12 @@
 import axios from "axios";
+import { NetworkIdType } from "libs/types";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
 import { OfferType } from "./types";
 
-export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
+export async function getHealthCheckFromBackendApi(networkId: NetworkIdType): Promise<boolean> {
   try {
-    const url = `${backendApi(chainID)}/health-check`;
+    const url = `${backendApi(networkId)}/health-check`;
     const { data } = await axios.get<string>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
@@ -17,9 +18,9 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   }
 }
 
-export async function getMarketplaceHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
+export async function getMarketplaceHealthCheckFromBackendApi(networkId: NetworkIdType): Promise<boolean> {
   try {
-    const url = `${backendApi(chainID)}/health-check?marketplace=1`;
+    const url = `${backendApi(networkId)}/health-check?marketplace=1`;
     const { data } = await axios.get<string>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
@@ -31,9 +32,9 @@ export async function getMarketplaceHealthCheckFromBackendApi(chainID: string): 
   }
 }
 
-export async function getOffersCountFromBackendApi(chainID: string, address?: string): Promise<number> {
+export async function getOffersCountFromBackendApi(networkId: NetworkIdType, address?: string): Promise<number> {
   try {
-    const url = address ? `${backendApi(chainID)}/offers/${address}/count` : `${backendApi(chainID)}/offers/count`;
+    const url = address ? `${backendApi(networkId)}/offers/${address}/count` : `${backendApi(networkId)}/offers/count`;
     const { data } = await axios.get<number>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
@@ -45,9 +46,9 @@ export async function getOffersCountFromBackendApi(chainID: string, address?: st
   }
 }
 
-export async function getOffersFromBackendApi(chainID: string, from: number, size: number, address?: string): Promise<OfferType[]> {
+export async function getOffersFromBackendApi(networkId: NetworkIdType, from: number, size: number, address?: string): Promise<OfferType[]> {
   try {
-    let url = `${backendApi(chainID)}/offers?from=${from}&size=${size}`;
+    let url = `${backendApi(networkId)}/offers?from=${from}&size=${size}`;
     if (address) {
       url += `&address=${address}`;
     }
@@ -62,9 +63,9 @@ export async function getOffersFromBackendApi(chainID: string, from: number, siz
   }
 }
 
-export async function getRecentOffersFromBackendApi(chainID: string): Promise<OfferType[]> {
+export async function getRecentOffersFromBackendApi(networkId: NetworkIdType): Promise<OfferType[]> {
   try {
-    const url = `${backendApi(chainID)}/offers/recent`;
+    const url = `${backendApi(networkId)}/offers/recent`;
     const { data } = await axios.get<OfferType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
@@ -77,7 +78,7 @@ export async function getRecentOffersFromBackendApi(chainID: string): Promise<Of
 }
 
 export async function getOffersByIdAndNoncesFromBackendApi(
-  chainID: string,
+  networkId: NetworkIdType,
   identifier: string,
   nonces: number[],
   from?: number,
@@ -87,7 +88,7 @@ export async function getOffersByIdAndNoncesFromBackendApi(
     throw Error("getOffersByIdAndNoncesFromBackendApi: nonces must not be empty.");
   }
 
-  let url = `${backendApi(chainID)}/offers/${identifier}?nonces=${nonces.join(",")}`;
+  let url = `${backendApi(networkId)}/offers/${identifier}?nonces=${nonces.join(",")}`;
   if (from != null) {
     url += `&from=${from}`;
   }

@@ -1,10 +1,49 @@
-import React, { useState } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useColorMode } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useToast, useBreakpointValue, useColorMode } from "@chakra-ui/react";
+import { NetworkIdType } from "libs/types";
+import { useChainMeta } from "store/ChainMetaContext";
 import ClaimsTxTable from "./Tables/ClaimsTxTable";
+import { getClaimTransactions } from "../libs/MultiversX/api";
 
-export default function ChaimsHistory({ mxAddress, onAfterCloseChaimsHistory }: { mxAddress: string; onAfterCloseChaimsHistory: () => void }) {
+export default function ChaimsHistory({
+  mxAddress,
+  networkId,
+  onAfterCloseChaimsHistory,
+}: {
+  mxAddress: string;
+  networkId: NetworkIdType;
+  onAfterCloseChaimsHistory: () => void;
+}) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
+  const [mxClaims, setMxClaims] = useState<any[]>([]);
+  const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
+  const { chainMeta: _chainMeta } = useChainMeta();
+  const toast = useToast();
   const { colorMode } = useColorMode();
+
+  useEffect(() => {
+    fetchMxClaims();
+  }, []);
+
+  const fetchMxClaims = async () => {
+    const res = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
+
+    if (res.error) {
+      toast({
+        title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",
+        status: "error",
+        isClosable: true,
+        duration: null,
+      });
+
+      setLoadingClaims(-2);
+    } else {
+      setMxClaims(res.transactions);
+      setLoadingClaims(0);
+    }
+
+    setClaimTransactionsModalOpen(true);
+  };
 
   return (
     <Modal
