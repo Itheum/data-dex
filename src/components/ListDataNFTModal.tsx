@@ -3,8 +3,8 @@ import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack,
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
-import { convertEsdtToWei, sleep, printPrice, convertToLocalString, getTokenWantedRepresentation } from "libs/utils";
-import { useAccountStore, useMarketStore } from "store";
+import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation } from "libs/utils";
+import { useMarketStore } from "store";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -33,7 +33,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-  const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   const onProcure = async () => {
     const showErrorToast = (title: string) => {

@@ -1,18 +1,12 @@
 import React from "react";
 import { Box, Flex, Heading, Image, Text, Center, useColorMode } from "@chakra-ui/react";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const LandingPage = () => {
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
 
@@ -64,7 +58,7 @@ const LandingPage = () => {
           </Flex>
 
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
-            <RecentDataNFTs headingText="Recent Data NFTs" networkId={networkId} />
+            <RecentDataNFTs headingText="Recent Data NFTs" />
           </Box>
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">

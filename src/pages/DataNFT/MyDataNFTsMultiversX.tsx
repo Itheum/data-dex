@@ -22,7 +22,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
@@ -32,17 +33,20 @@ import { NoDataHere } from "components/Sections/NoDataHere";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX";
+import { contractsForChain } from "libs/config";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const itheumToken = contractsForChain(routedChainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
 
@@ -100,9 +104,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    if (!_chainMeta) return;
-
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(routedChainID).dataNFTFTTicker, routedChainID);
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
@@ -146,10 +148,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   useEffect(() => {
     if (hasPendingTransactions) return;
-    if (!_chainMeta) return;
 
     getOnChainNFTs();
-  }, [hasPendingTransactions, _chainMeta]);
+  }, [hasPendingTransactions]);
 
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);

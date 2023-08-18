@@ -40,6 +40,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
@@ -56,9 +57,8 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor } from "libs/utils";
+import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { useAccountStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const exploreRouterMenu = [
   {
@@ -128,11 +128,12 @@ const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems
 
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -169,7 +170,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -243,6 +244,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                   <Link
                     as={ReactRouterLink}
                     to={path}
+                    mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
@@ -279,6 +281,21 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
+                          <MenuItem
+                            isDisabled={
+                              isMenuItemSelected(`/profile/${mxAddress}`) ||
+                              hasPendingTransactions ||
+                              isMenuItemSelected(`/profile/${mxAddress}/created`) ||
+                              isMenuItemSelected(`/profile/${mxAddress}/listed`)
+                            }
+                            onClick={() => navigateToDiscover(MENU.PROFILE)}
+                            color="teal.200"
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
+                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
+                          </MenuItem>
+                        </Link>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, isHidden, Icon } = menuItem;
                           return (
@@ -387,12 +404,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         </Flex>
       </Flex>
 
-      {mxShowClaimsHistory && (
-        <ClaimsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
-      )}
-      {mxShowInteractionsHistory && (
-        <InteractionsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />
-      )}
+      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />}
+      {mxShowInteractionsHistory && <InteractionsHistory mxAddress={mxAddress} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
         <DrawerOverlay />
@@ -578,7 +591,9 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 }
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -598,7 +613,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

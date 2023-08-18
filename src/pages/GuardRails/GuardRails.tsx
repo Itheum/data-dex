@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { historicGuardrails, upcomingGuardRails } from "../../libs/config";
+import { contractsForChain, historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt } from "../../libs/utils";
+import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
-import { useChainMeta } from "../../store/ChainMetaContext";
 
 export const GuardRails: React.FC = () => {
   const [whitelistedAddresses, setWhitelistedAddresses] = useState<string[]>([]);
@@ -23,8 +23,10 @@ export const GuardRails: React.FC = () => {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
 
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
 
   const historyGuardrails = historicGuardrails;
 
@@ -43,10 +45,8 @@ export const GuardRails: React.FC = () => {
   }
 
   useEffect(() => {
-    if (!_chainMeta.networkId) return;
-
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -59,7 +59,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -72,7 +72,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -85,8 +85,8 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
+      const networkProvider = getNetworkProvider(routedChainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -96,7 +96,7 @@ export const GuardRails: React.FC = () => {
         setAntiSpamTax(convertWeiToEsdt(value).toNumber());
       }
     })();
-  }, [_chainMeta.networkId]);
+  }, [routedChainID]);
 
   useEffect(() => {
     (async () => {

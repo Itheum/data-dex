@@ -1,20 +1,21 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { Box, HStack, Link, Spinner, useToast } from "@chakra-ui/react";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TransactionDecoder } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, contractsForChain, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { ChainMetaType, NetworkIdType } from "libs/types";
-import { convertWeiToEsdt } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
+import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
 
 export default function InteractionTxTable(props: { address: string }) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [data, setData] = useState<InteractionsInTable[]>([]);
   const [loadingInteractions, setLoadingInteractions] = useState(-1);
   const toast = useToast();
@@ -29,7 +30,7 @@ export default function InteractionTxTable(props: { address: string }) {
           <HStack>
             <ShortAddress address={cellProps.getValue()} />
             <Link
-              href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
+              href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
               isExternal
               style={linkIconStyle}>
               <ExternalLinkIcon />
@@ -67,8 +68,8 @@ export default function InteractionTxTable(props: { address: string }) {
           const isChangeOfferPrice = row.original.method === "Changed offer price";
 
           const linkHref = isChangeOfferPrice
-            ? `${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/tokens/${cellProps.getValue()}`
-            : `${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`;
+            ? `${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/tokens/${cellProps.getValue()}`
+            : `${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${cellProps.getValue()}`;
 
           return <Link href={linkHref}>{cellProps.getValue()}</Link>;
         },
@@ -86,13 +87,12 @@ export default function InteractionTxTable(props: { address: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!_chainMeta || !_chainMeta.contracts.dataNftMint || !_chainMeta.contracts.market || !_chainMeta.networkId) return;
+      if (!contractsForChain(routedChainID).dataNftMint || !contractsForChain(routedChainID).market) return;
       const interactions = await getInteractionTransactions(
         props.address,
-        _chainMeta.contracts.dataNftMint,
-        _chainMeta.contracts.market,
-        _chainMeta.networkId,
-        _chainMeta
+        contractsForChain(routedChainID).dataNftMint,
+        contractsForChain(routedChainID).market,
+        routedChainID
       );
       if ("error" in interactions) {
         toast({
@@ -109,7 +109,7 @@ export default function InteractionTxTable(props: { address: string }) {
       }
     };
     fetchData();
-  }, [_chainMeta]);
+  }, []);
   return (
     <>
       {((loadingInteractions === -1 || loadingInteractions === -2) && (
@@ -125,16 +125,8 @@ export default function InteractionTxTable(props: { address: string }) {
   );
 }
 
-export const getInteractionTransactions = async (
-  address: string,
-  minterSmartContractAddress: string,
-  marketSmartContractAddress: string,
-  networkId: NetworkIdType,
-  chainMeta: ChainMetaType,
-  tokenId?: string
-) => {
-  const api = getApi(networkId);
-
+export const getInteractionTransactions = async (address: string, minterSmartContractAddress: string, marketSmartContractAddress: string, chainID: string) => {
+  const api = getApi(chainID);
   try {
     const minterTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${minterSmartContractAddress}&withOperations=true`;
     const marketTxs = `https://${api}/accounts/${address}/transactions?size=50&status=success&senderOrReceiver=${marketSmartContractAddress}&withOperations=true`;
@@ -172,9 +164,9 @@ export const getInteractionTransactions = async (
       });
 
       value = convertWeiToEsdt(parseInt(metadata.functionArgs![1], 16)).toString();
-      data = chainMeta.contracts.itheumToken;
+      data = contractsForChain(chainID).itheumToken;
       if (["mint", "burn", "acceptOffer", "cancelOffer", "addOffer", "changeOfferPrice"].includes(tx["function"])) {
-        data = chainMeta.contracts.itheumToken;
+        data = contractsForChain(chainID).itheumToken;
         if (Array.isArray(tx.operations)) {
           for (const operation of tx.operations) {
             if (operation.action === "transfer") {

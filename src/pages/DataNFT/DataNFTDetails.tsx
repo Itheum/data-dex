@@ -36,7 +36,6 @@ import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
-import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -55,9 +54,9 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
+import { routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils/util";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -69,13 +68,13 @@ type DataNFTDetailsProps = {
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
-  const { network } = useGetNetworkConfig();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
-  const { chainMeta: _chainMeta } = useChainMeta();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const toast = useToast();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -93,9 +92,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
 
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
-  const chainExplorer = CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER];
-  const marketContract = new DataNftMarketContract(networkId);
+  const chainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
+  const marketContract = new DataNftMarketContract(routedChainID);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
@@ -125,31 +123,29 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   });
 
   useEffect(() => {
-    if (_chainMeta?.networkId) {
-      getTokenDetails();
-      getTokenHistory(tokenId ?? "");
-    }
-  }, [_chainMeta, hasPendingTransactions]);
+    getTokenDetails();
+    getTokenHistory(tokenId ?? "");
+  }, [hasPendingTransactions]);
 
   useEffect(() => {
-    if (_chainMeta.networkId && offerId != null && !sessionId) {
+    if (offerId != null && !sessionId) {
       // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         setOffer(_offer);
       })();
     }
-  }, [_chainMeta, offerId, hasPendingTransactions]);
+  }, [offerId, hasPendingTransactions]);
 
   function getTokenDetails() {
-    const apiLink = getApi(networkId);
+    const apiLink = getApi(routedChainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
 
     axios
       .get(nftApiLink)
       .then((res) => {
         const _nftData = res.data;
-        const attributes = new DataNftMintContract(networkId).decodeNftAttributes(_nftData);
+        const attributes = new DataNftMintContract(routedChainID).decodeNftAttributes(_nftData);
         _nftData.attributes = attributes;
         setNftData(_nftData);
         setIsLoadingDetails(false);
@@ -165,9 +161,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  async function getTokenHistory(tokenId: string) {
+  async function getTokenHistory(tokenIdArg: string) {
     try {
-      const inputString = tokenId;
+      const inputString = tokenIdArg;
 
       // Extracting identifier
       const identifier = inputString?.split("-").slice(0, 2).join("-");
@@ -176,9 +172,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
 
-      const _offers = await getOffersByIdAndNoncesFromBackendApi(networkId, identifier, [nonceDec]);
+      const _offers = await getOffersByIdAndNoncesFromBackendApi(routedChainID, identifier, [nonceDec]);
       setTotalOffers(_offers);
-      const price = Math.min(..._offers.map((offer: any) => offer.wanted_token_amount));
+      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wanted_token_amount));
       if (price !== Infinity) {
         setPriceFromApi(price);
       } else {
@@ -218,8 +214,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       : "Not Listed";
   }
 
-  const handleButtonClick = (offer: number, identifier: string) => {
-    return `/datanfts/marketplace/${identifier}/offer-${offer}`;
+  const handleButtonClick = (offerArg: number, identifier: string) => {
+    return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
   return (
@@ -359,12 +355,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           colorScheme="teal"
                           hasArrow
                           label="Preview Data is disabled on devnet"
-                          isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+                          isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             variant="outline"
-                            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+                            isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>
