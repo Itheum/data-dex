@@ -101,6 +101,7 @@ export const GuardRails: React.FC = () => {
   useEffect(() => {
     (async () => {
       const _whitelistedAddresses = await mxDataNftMintContract.getWhiteList();
+      // console.log('_whitelistedAddresses', _whitelistedAddresses);
       setWhitelistedAddresses(_whitelistedAddresses);
     })();
   }, []);
