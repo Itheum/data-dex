@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString, tokenDecimals, getTokenWantedRepresentation } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
+import { useChainMeta } from "store/ChainMetaContext";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -19,13 +20,13 @@ export interface ProcureAccessModalProps {
 }
 
 export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId }: ProcureAccessModalProps) {
-  const { chainID } = useGetNetworkConfig();
+  const { chainMeta: _chainMeta } = useChainMeta();
   const { address } = useGetAccountInfo();
   const toast = useToast();
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
-  const marketContract = new DataNftMarketContract(chainID);
+  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
 
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),

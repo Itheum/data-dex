@@ -1,18 +1,18 @@
 import React from "react";
 import { Button, Text, Tooltip } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { EXPLORER_APP_SUPPORTED_NONCES, EXPLORER_APP_FOR_NONCE } from "libs/config";
-import { getExplorerTrailBlazerURL, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { networkIdBasedOnLoggedInStatus } from "libs/utils";
+import { useChainMeta } from "store/ChainMetaContext";
 
-export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: number; w?: object; size?: any; fontSize?: any }) {
-  const { chainID } = useGetNetworkConfig();
+export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: number; w?: any; size?: any; fontSize?: any }) {
+  const { chainMeta: _chainMeta } = useChainMeta();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
   return (
     <>
-      {Object.values(EXPLORER_APP_SUPPORTED_NONCES[routedChainID]).flat().indexOf(nonce) >= 0 && (
+      {Object.values(EXPLORER_APP_SUPPORTED_NONCES[networkId]).flat().indexOf(nonce) >= 0 && (
         <Tooltip hasArrow label="Unlocks custom app on Itheum Explorer">
           <Button
             size={size ? size : "sm"}
@@ -22,7 +22,7 @@ export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: 
             }}
             w={w ? w : "full"}
             onClick={() => {
-              const appNonceMappings = EXPLORER_APP_SUPPORTED_NONCES[routedChainID];
+              const appNonceMappings = EXPLORER_APP_SUPPORTED_NONCES[networkId];
 
               // find the app key id based on nonce
               const appKey = Object.keys(appNonceMappings).find((_appKey) => {
@@ -30,7 +30,7 @@ export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: 
               });
 
               if (appKey) {
-                window.open(EXPLORER_APP_FOR_NONCE[routedChainID][appKey])?.focus();
+                window.open(EXPLORER_APP_FOR_NONCE[networkId][appKey])?.focus();
               }
             }}>
             <Text py={3} color="black" fontSize={fontSize ? fontSize : ""}>

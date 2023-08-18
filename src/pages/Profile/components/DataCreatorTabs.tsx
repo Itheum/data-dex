@@ -1,4 +1,3 @@
-import util from "util";
 import React, { useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
@@ -23,7 +22,6 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
@@ -31,7 +29,6 @@ import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { contractsForChain } from "libs/config";
 import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
@@ -42,8 +39,9 @@ import { getApi, getNftsByIds } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
-import { backendApi, createNftId, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
+import { backendApi, createNftId, hexZero, networkIdBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
+import { useChainMeta } from "../../../store/ChainMetaContext";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 
 interface PropsType {
@@ -51,13 +49,14 @@ interface PropsType {
 }
 
 export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
-  const { chainID } = useGetNetworkConfig();
+  const { chainMeta: _chainMeta } = useChainMeta() as any;
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const { hasPendingTransactions } = useGetPendingTransactions();
-  const itheumToken = contractsForChain(routedChainID).itheumToken;
+  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
+  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
+  const { address } = useGetAccountInfo();
 
-  const { pageNumber, profileAddress } = useParams();
+  const { pageNumber } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -71,8 +70,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const pageSize = 8;
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
 
-  const mintContract = new DataNftMintContract(routedChainID);
-  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(networkId);
+  const marketContract = new DataNftMarketContract(networkId);
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
@@ -105,7 +104,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     {
       tabNumber: 1,
       tabName: "Created Data NFT(s)",
-      tabPath: "/profile/%s/created",
+      tabPath: "/profile/created",
       icon: FaBrush,
       isDisabled: false,
       pieces: dataNfts?.length,
@@ -113,7 +112,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     {
       tabNumber: 2,
       tabName: "Listed Data NFT(s)",
-      tabPath: "/profile/%s/listed",
+      tabPath: "/profile/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
       // pieces: offers.length,
@@ -121,21 +120,21 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     {
       tabNumber: 3,
       tabName: "Owned Data NFT(s)",
-      tabPath: "/profile/%s/owned",
+      tabPath: "/owned",
       icon: MdFavoriteBorder,
       isDisabled: true,
     },
     {
       tabNumber: 4,
       tabName: "Other NFT(s)/Reputation",
-      tabPath: "/profile/%s/other",
+      tabPath: "/other",
       icon: BsClockHistory,
       isDisabled: true,
     },
   ];
 
   const getDataNfts = async (addressArg: string) => {
-    const backendApiRoute = backendApi(routedChainID);
+    const backendApiRoute = backendApi(networkId);
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
@@ -153,9 +152,10 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   };
 
   useEffect(() => {
-    if (!profileAddress) return;
-    getDataNfts(profileAddress);
-  }, [profileAddress, dataNfts, hasPendingTransactions]);
+    if (_chainMeta?.networkId) {
+      getDataNfts(address);
+    }
+  }, [dataNfts, _chainMeta, hasPendingTransactions]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -169,14 +169,17 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
+      if (!_chainMeta.networkId) return;
+
       const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
-  }, []);
+  }, [_chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
-      if (!profileAddress || hasPendingTransactions) return;
+      if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       // start loading offers
       updateLoadingOffers(true);
@@ -187,7 +190,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = dataNfts ? dataNfts.length : 0;
       } else {
         // offers of User
-        _numberOfOffers = await marketContract.viewUserTotalOffers(profileAddress);
+        _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
 
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
@@ -198,22 +201,23 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         onGotoPage(0);
       }
     })();
-  }, [hasPendingTransactions, tabState]);
+  }, [hasPendingTransactions, tabState, _chainMeta.networkId]);
 
   useEffect(() => {
     (async () => {
-      if (!profileAddress || hasPendingTransactions) return;
+      if (hasPendingTransactions) return;
+      if (!_chainMeta.networkId) return;
 
       // start loading offers
       updateLoadingOffers(true);
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : profileAddress);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
 
       updateOffers(_offers);
 
       //
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-      const _nfts = await getNftsByIds(nftIds, routedChainID);
+      const _nfts = await getNftsByIds(nftIds, _chainMeta.networkId);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
@@ -249,7 +253,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   return (
     <>
-      <Tabs pt={10} index={tabState - 1}>
+      <Tabs pt={10}>
         <TabList overflowX={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%" overflowY="hidden">
           {profileTabs.map((tab, index) => {
             return (
@@ -259,7 +263,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                 onClick={() => {
                   if (hasPendingTransactions) return;
-                  navigate(util.format(tab.tabPath, profileAddress));
+                  navigate(`${tab.tabPath}`);
                 }}>
                 <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
                   <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
@@ -316,7 +320,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                     <UpperCardComponent
                       key={index}
                       nftImageLoading={oneListedNFTImgLoaded && !loadingOffers}
-                      imageUrl={`https://${getApi(routedChainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                      imageUrl={`https://${getApi(_chainMeta.networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
+                        offer?.offered_token_nonce
+                      )}/thumbnail`}
                       setNftImageLoaded={setOneListedNFTImgLoaded}
                       nftMetadata={nftMetadatas[index]}
                       offer={offer}
