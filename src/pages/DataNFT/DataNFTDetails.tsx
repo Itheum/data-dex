@@ -218,6 +218,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
+  console.log("routedChainID", routedChainID);
+
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
       {!isLoadingNftData() ? (
@@ -384,7 +386,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     borderRadius="2xl"
                     mt={3}
                     justifyContent="right"
-                    w={marketplaceDrawer ? { base: "full", md: "initial", xl: "30rem" } : { base: "full", md: "initial", xl: "inherit" }}>
+                    w={marketplaceDrawer ? { base: "full", md: "initial", xl: "26.3rem", "2xl": "29rem" } : { base: "full", md: "initial", xl: "inherit" }}>
                     <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
                       Details
                     </Heading>
@@ -525,13 +527,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                     {tokenId && pathname?.includes(tokenId) ? (
                                       <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
                                         <Button w="full" colorScheme="teal" variant="outline" size="sm">
-                                          {tokenId && pathname?.includes(tokenId) && window.innerWidth > 500 ? "View Offer" : "View"}
+                                          {window.innerWidth > 500 ? "View Offer" : "View"}
                                         </Button>
                                       </a>
                                     ) : (
                                       <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
                                         <Button w="full" colorScheme="teal" variant="outline" size="sm">
-                                          {tokenId && pathname?.includes(tokenId) ? "View Offer" : "View"}
+                                          {window.innerWidth > 500 ? "View Offer" : "View"}
                                         </Button>
                                       </a>
                                     )}
@@ -547,7 +549,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             </Box>
           </Flex>
           <VStack alignItems={"flex-start"}>
-            <Heading size="lg" fontWeight="500" mt="10px" marginBottom={2}>
+            <Heading size="lg" fontWeight="500" mt="30px" marginBottom={2}>
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>

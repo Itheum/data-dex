@@ -508,16 +508,18 @@ export const upcomingGuardRails = {
 
 export const whitelistWallets: Array<string> = [];
 
-export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
+export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
 export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
   "D": {
     "trailblazer": [407, 423],
     "multiversxbubbles": [416],
+    "multiversxinfographics": [480],
   },
   "1": {
     "trailblazer": [1],
     "multiversxbubbles": [2],
+    "multiversxinfographics": [3],
   },
 };
 
@@ -525,9 +527,11 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
   "D": {
     "trailblazer": "https://stg.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://stg.explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://stg.explorer.itheum.io/multiversx-infographics",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
   },
 };
