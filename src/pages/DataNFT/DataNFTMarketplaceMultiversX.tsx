@@ -64,10 +64,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
 
-  console.log("DATA NFT MARKETPLACE : _chainMeta.networkId", _chainMeta.networkId);
-  console.log("DATA NFT MARKETPLACE : isMxLoggedIn", isMxLoggedIn);
-  console.log("DATA NFT MARKETPLACE : networkId", networkId);
-
   const mintContract = new DataNftMintContract(networkId);
   const marketContract = new DataNftMarketContract(networkId);
 

@@ -48,7 +48,7 @@ function ArticleCard({ imgTitle, title, link }: { imgTitle: string; title: strin
                 backgroundRepeat="no-repeat"
                 h="150px"
                 w="auto"></Box>
-              <Text position="absolute" top="20px" left="25px" fontSize=".9rem" width="128px" color="bgWhite">
+              <Text position="absolute" top="20px" left="25px" fontSize="1rem" width="128px" color="bgWhite">
                 {imgTitle}
               </Text>
             </Box>
