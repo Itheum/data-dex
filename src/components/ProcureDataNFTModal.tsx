@@ -58,7 +58,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   });
 
   useEffect(() => {
-    setPurchaseTxStatus(trackPurchaseTxStatus.isPending ? true : false);
+    setPurchaseTxStatus(trackPurchaseTxStatus.isSuccessful ? true : false);
   }, [trackPurchaseTxStatus]);
 
   useEffect(() => {
