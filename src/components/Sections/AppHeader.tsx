@@ -124,7 +124,7 @@ const exploreRouterMenu = [
   },
 ];
 
-const menuItmesMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
+const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -378,8 +378,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
                     aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(menuItmesMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(menuItmesMap.get(MENU.LANDING)?.path)}
+                    isDisabled={isMenuItemSelected(menuItemsMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(menuItemsMap.get(MENU.LANDING)?.path)}
                     onClick={() => {
                       navigateToDiscover(MENU.LANDING);
                     }}

@@ -64,10 +64,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
-  console.log("DATA NFT MARKETPLACE : chainID", chainID);
-  console.log("DATA NFT MARKETPLACE : isMxLoggedIn", isMxLoggedIn);
-  console.log("DATA NFT MARKETPLACE : routedChainID", routedChainID);
-
   const mintContract = new DataNftMintContract(routedChainID);
   const marketContract = new DataNftMarketContract(routedChainID);
 
@@ -205,7 +201,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          // console.log("transactionOnNetwork", transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
