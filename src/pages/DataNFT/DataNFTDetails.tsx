@@ -129,6 +129,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
+        if (_offer === null || _offer === undefined) {
+          if (!toast.isActive("ER-23")) {
+            toast({
+              id: "ER-23",
+              title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+              description: "This offer is no longer available",
+              status: "warning",
+              position: "top",
+              duration: 10000,
+              isClosable: true,
+              containerStyle: {
+                marginTop: "1rem",
+              },
+            });
+          }
+        }
         setOffer(_offer);
       })();
     }
