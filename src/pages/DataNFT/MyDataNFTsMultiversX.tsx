@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
@@ -37,13 +37,16 @@ import { contractsForChain } from "libs/config";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
   const { chainID } = useGetNetworkConfig();
-  const itheumToken = contractsForChain(chainID).itheumToken;
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const itheumToken = contractsForChain(routedChainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
 
@@ -101,7 +104,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(chainID).dataNFTFTTicker, chainID);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(routedChainID).dataNFTFTTicker, routedChainID);
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
@@ -142,7 +145,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       setDataNfts([]);
     }
   };
-  console.log(nftForDrawer);
+
   useEffect(() => {
     if (hasPendingTransactions) return;
 
@@ -159,7 +162,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     setNftForDrawer(undefined);
   }
 
-  console.log(nftForDrawer);
   return (
     <>
       <Stack>
@@ -260,16 +262,16 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowY="scroll" h="90%">
-              <ModalHeader paddingBottom={0}>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}  overflowY="scroll" h="90%">
+              <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
                 </HStack>
-                <Text fontSize="32px" fontFamily="Clash-Medium" mt={3}>
+                <Text fontSize="32px" fontFamily="Clash-Medium" mt={3} fontWeight="500" textAlign="center">
                   Data NFT Details
                 </Text>
               </ModalHeader>
-              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} paddingTop={0}>
+              <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
               </ModalBody>
             </ModalContent>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
@@ -9,7 +9,7 @@ import ShortAddress from "../../components/UtilComps/ShortAddress";
 import { contractsForChain, historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt } from "../../libs/utils";
+import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
 
 export const GuardRails: React.FC = () => {
@@ -24,7 +24,9 @@ export const GuardRails: React.FC = () => {
   const userData = useMintStore((state) => state.userData);
 
   const { chainID } = useGetNetworkConfig();
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
 
   const historyGuardrails = historicGuardrails;
 
@@ -44,7 +46,7 @@ export const GuardRails: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -57,7 +59,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -70,7 +72,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -83,8 +85,8 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(chainID);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken]);
+      const networkProvider = getNetworkProvider(routedChainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -94,12 +96,11 @@ export const GuardRails: React.FC = () => {
         setAntiSpamTax(convertWeiToEsdt(value).toNumber());
       }
     })();
-  }, [chainID]);
+  }, [routedChainID]);
 
   useEffect(() => {
     (async () => {
       const _whitelistedAddresses = await mxDataNftMintContract.getWhiteList();
-      // console.log('_whitelistedAddresses', _whitelistedAddresses);
       setWhitelistedAddresses(_whitelistedAddresses);
     })();
   }, []);
@@ -116,11 +117,12 @@ export const GuardRails: React.FC = () => {
             fontFamily="Clash-Medium"
             fontWeight="semibold"
             borderTopRadius="22px"
-            py={3}
+            py={5}
+            h="68px"
             borderBottom="1px solid"
             borderColor="#00C79740"
             backgroundColor="#00C7970D"
-            fontSize="22px">
+            fontSize="xl">
             Active Guardrails
           </Text>
           <Stack textAlign="start">
@@ -206,7 +208,7 @@ export const GuardRails: React.FC = () => {
             </Text>
           </Stack>
         </Box>
-        <GuardRailsCards items={historyGuardrails} title="History Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />
+        <GuardRailsCards items={historyGuardrails} title="Historic Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />
 
         <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width={{ base: "31.25rem", xl: "20.5rem" }}>
           <Text
@@ -214,11 +216,12 @@ export const GuardRails: React.FC = () => {
             fontFamily="Clash-Medium"
             fontWeight="semibold"
             borderTopRadius="22px"
-            py={3}
+            py={5}
+            h="68px"
             borderBottom="1px solid"
             borderColor="#00C79740"
             backgroundColor="#00C7970D"
-            fontSize="22px">
+            fontSize="xl">
             Upcoming Guardrails
           </Text>
           <Stack textAlign="start">
@@ -305,10 +308,10 @@ export const GuardRails: React.FC = () => {
           </Stack>
         </Box>
       </Flex>
-      <Heading fontSize="36px" fontFamily="Clash-Medium" mt={32} mb="32px">
+      <Heading fontSize="30px" fontFamily="Clash-Medium" mt={32} mb="25px">
         Whitelisted Addresses
       </Heading>
-      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb={10} w="full">
+      <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb="100px" w="full">
         <Flex flexWrap="wrap" justifyContent={{ base: "center", lg: "normal" }} mx={{ base: 0, lg: 10 }} my="5">
           {whitelistedAddresses && whitelistedAddresses.length > 0 ? (
             whitelistedAddresses.map((addr, index) => {

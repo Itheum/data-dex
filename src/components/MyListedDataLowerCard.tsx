@@ -21,7 +21,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
@@ -36,6 +36,8 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
+  routeChainIDBasedOnLoggedInStatus,
+  shouldPreviewDataBeEnabled,
 } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -45,10 +47,12 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { network, chainID } = useGetNetworkConfig();
+  const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const contract = new DataNftMarketContract(chainID);
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const contract = new DataNftMarketContract(routedChainID);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
@@ -61,7 +65,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [delistAmountError, setDelistAmountError] = useState<string>("");
-  const itheumToken = contractsForChain(chainID).itheumToken;
+  const itheumToken = contractsForChain(routedChainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
 
@@ -138,14 +142,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+      <Tooltip
+        colorScheme="teal"
+        hasArrow
+        label="View Data is disabled on devnet"
+        isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+          isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

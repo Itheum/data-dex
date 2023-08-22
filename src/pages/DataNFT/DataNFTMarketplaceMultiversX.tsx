@@ -64,10 +64,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
-  console.log("DATA NFT MARKETPLACE : chainID", chainID);
-  console.log("DATA NFT MARKETPLACE : isMxLoggedIn", isMxLoggedIn);
-  console.log("DATA NFT MARKETPLACE : routedChainID", routedChainID);
-
   const mintContract = new DataNftMintContract(routedChainID);
   const marketContract = new DataNftMarketContract(routedChainID);
 
@@ -88,6 +84,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
 
   const isApiUp = useMarketStore((state) => state.isApiUp);
+  const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
@@ -155,7 +152,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       let _offers: OfferType[] = [];
       const start = pageIndex * pageSize;
-      if (isApiUp) {
+      if (isApiUp && isMarketplaceApiUp) {
         // console.log('Api Up');
         _offers = await getOffersFromBackendApi(routedChainID, start, pageSize, tabState === 1 ? undefined : address);
       } else {
@@ -204,7 +201,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         (async () => {
           const stx = stxs[0];
           const transactionOnNetwork = await watcher.awaitCompleted({ getHash: () => ({ hex: () => stx.hash }) });
-          // console.log("transactionOnNetwork", transactionOnNetwork);
           if (transactionOnNetwork.status.isFailed()) {
             for (const event of transactionOnNetwork.logs.events) {
               if (event.identifier == "internalVMErrors") {
@@ -258,7 +254,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         </Heading>
 
         <Box position="relative">
-          <Tabs pt={10}>
+          <Tabs pt={10} index={tabState - 1}>
             <TabList justifyContent={{ base: "start", lg: "space-between" }} overflowX={{ base: "scroll", md: "scroll", lg: "unset" }} overflowY="hidden">
               <Flex>
                 <Tab

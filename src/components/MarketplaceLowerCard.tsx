@@ -22,7 +22,7 @@ import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { isValidNumericCharacter } from "libs/utils";
+import { isValidNumericCharacter, routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils";
 import { useMarketStore } from "store";
 
 type MarketplaceLowerCardProps = {
@@ -31,12 +31,12 @@ type MarketplaceLowerCardProps = {
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { network } = useGetNetworkConfig();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [amount, setAmount] = useState<number>(1);
@@ -46,11 +46,14 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
-
   return (
     <>
       <HStack justifyContent="stretch">
-        <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={network.id != "devnet" || !!previewDataOnDevnetSession}>
+        <Tooltip
+          colorScheme="teal"
+          hasArrow
+          label="Preview Data is disabled on devnet"
+          isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
           <Button
             my="3"
             size="sm"
@@ -58,7 +61,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
             colorScheme="teal"
             variant="outline"
             _disabled={{ opacity: 0.2 }}
-            isDisabled={network.id == "devnet" && !previewDataOnDevnetSession}
+            isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
             onClick={() => {
               window.open(nftMetadata.dataPreview);
             }}>

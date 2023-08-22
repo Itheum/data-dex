@@ -1,3 +1,4 @@
+import util from "util";
 import React, { useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
@@ -55,9 +56,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const itheumToken = contractsForChain(routedChainID).itheumToken;
-  const { address } = useGetAccountInfo();
 
-  const { pageNumber } = useParams();
+  const { pageNumber, profileAddress } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -105,7 +105,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     {
       tabNumber: 1,
       tabName: "Created Data NFT(s)",
-      tabPath: "/profile/created",
+      tabPath: "/profile/%s/created",
       icon: FaBrush,
       isDisabled: false,
       pieces: dataNfts?.length,
@@ -113,7 +113,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     {
       tabNumber: 2,
       tabName: "Listed Data NFT(s)",
-      tabPath: "/profile/listed",
+      tabPath: "/profile/%s/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
       // pieces: offers.length,
@@ -121,14 +121,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     {
       tabNumber: 3,
       tabName: "Owned Data NFT(s)",
-      tabPath: "/owned",
+      tabPath: "/profile/%s/owned",
       icon: MdFavoriteBorder,
       isDisabled: true,
     },
     {
       tabNumber: 4,
       tabName: "Other NFT(s)/Reputation",
-      tabPath: "/other",
+      tabPath: "/profile/%s/other",
       icon: BsClockHistory,
       isDisabled: true,
     },
@@ -153,8 +153,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   };
 
   useEffect(() => {
-    getDataNfts(address);
-  }, [address, dataNfts, hasPendingTransactions]);
+    if (!profileAddress) return;
+    getDataNfts(profileAddress);
+  }, [profileAddress, dataNfts, hasPendingTransactions]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -175,7 +176,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      if (hasPendingTransactions) return;
+      if (!profileAddress || hasPendingTransactions) return;
 
       // start loading offers
       updateLoadingOffers(true);
@@ -186,7 +187,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = dataNfts ? dataNfts.length : 0;
       } else {
         // offers of User
-        _numberOfOffers = await marketContract.viewUserTotalOffers(address);
+        _numberOfOffers = await marketContract.viewUserTotalOffers(profileAddress);
       }
 
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
@@ -201,11 +202,11 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      if (hasPendingTransactions) return;
+      if (!profileAddress || hasPendingTransactions) return;
 
       // start loading offers
       updateLoadingOffers(true);
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : address);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : profileAddress);
 
       updateOffers(_offers);
 
@@ -248,7 +249,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
   return (
     <>
-      <Tabs pt={10}>
+      <Tabs pt={10} index={tabState - 1}>
         <TabList overflowX={{ base: "scroll", md: "scroll", xl: "unset", "2xl": "unset" }} maxW="100%" overflowY="hidden">
           {profileTabs.map((tab, index) => {
             return (
@@ -258,7 +259,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                 onClick={() => {
                   if (hasPendingTransactions) return;
-                  navigate(`${tab.tabPath}`);
+                  navigate(util.format(tab.tabPath, profileAddress));
                 }}>
                 <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
                   <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />

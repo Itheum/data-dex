@@ -43,7 +43,6 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
@@ -58,7 +57,7 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor } from "libs/utils";
+import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { useAccountStore } from "store";
 
 const exploreRouterMenu = [
@@ -67,12 +66,22 @@ const exploreRouterMenu = [
     sectionLabel: "Main Sections",
     sectionItems: [
       {
+        menuEnum: MENU.PROFILE,
+        path: "/profile",
+        label: "Profile",
+        shortLbl: "Profile",
+        Icon: MdPerson,
+        needToBeLoggedIn: true,
+        isHidden: true,
+      },
+      {
         menuEnum: MENU.HOME,
         path: "/dashboard",
         label: "Dashboard",
         shortLbl: "Dash",
         Icon: MdSpaceDashboard,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.SELL,
@@ -81,6 +90,7 @@ const exploreRouterMenu = [
         shortLbl: "Trade",
         Icon: RiExchangeFill,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.NFTMINE,
@@ -89,6 +99,7 @@ const exploreRouterMenu = [
         shortLbl: "Wallet",
         Icon: MdAccountBalanceWallet,
         needToBeLoggedIn: true,
+        isHidden: false,
       },
       {
         menuEnum: MENU.NFTALL,
@@ -97,6 +108,7 @@ const exploreRouterMenu = [
         shortLbl: "Market",
         Icon: FaStore,
         needToBeLoggedIn: false,
+        isHidden: false,
       },
       {
         menuEnum: MENU.GETWHITELISTED,
@@ -106,20 +118,22 @@ const exploreRouterMenu = [
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
+        isHidden: false,
       },
     ],
   },
 ];
 
-const menuItmesMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
+const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -156,10 +170,11 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
-    navigate("/guardRails");
+    navigate("/guardrails");
+    if (isOpen) onClose();
   };
 
   return (
@@ -224,11 +239,12 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
-                const { path, menuEnum, shortLbl, Icon } = quickMenuItem;
+                const { path, menuEnum, shortLbl, isHidden, Icon } = quickMenuItem;
                 return (
                   <Link
                     as={ReactRouterLink}
                     to={path}
+                    mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
@@ -236,6 +252,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       borderColor="teal.200"
                       fontSize="md"
                       variant="outline"
+                      display={isHidden ? "none" : "initial"}
                       h={"12"}
                       isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                       _disabled={menuButtonDisabledStyle(path)}
@@ -264,13 +281,13 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                        <Link as={ReactRouterLink} to="/profile" style={{ textDecoration: "none" }}>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
                           <MenuItem
                             isDisabled={
-                              isMenuItemSelected("/profile") ||
+                              isMenuItemSelected(`/profile/${mxAddress}`) ||
                               hasPendingTransactions ||
-                              isMenuItemSelected("/profile/created") ||
-                              isMenuItemSelected("/profile/listed")
+                              isMenuItemSelected(`/profile/${mxAddress}/created`) ||
+                              isMenuItemSelected(`/profile/${mxAddress}/listed`)
                             }
                             onClick={() => navigateToDiscover(MENU.PROFILE)}
                             color="teal.200"
@@ -280,13 +297,14 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                           </MenuItem>
                         </Link>
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, path, menuEnum, Icon } = menuItem;
+                          const { label, path, menuEnum, isHidden, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <MenuItem
                                 key={label}
                                 isDisabled={isMenuItemSelected(path) || hasPendingTransactions}
                                 onClick={() => navigateToDiscover(menuEnum)}
+                                display={isHidden ? "none" : "flex"}
                                 color="teal.200"
                                 backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                                 <Icon size={"1.25em"} style={{ marginRight: "1rem" }} />
@@ -360,8 +378,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
                     aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(menuItmesMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(menuItmesMap.get(MENU.LANDING)?.path)}
+                    isDisabled={isMenuItemSelected(menuItemsMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
+                    _disabled={menuButtonDisabledStyle(menuItemsMap.get(MENU.LANDING)?.path)}
                     onClick={() => {
                       navigateToDiscover(MENU.LANDING);
                     }}
@@ -413,7 +431,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       <hr />
                       <List>
                         {menu.sectionItems.map((menuItem) => {
-                          const { label, menuEnum, path, Icon } = menuItem;
+                          const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (
                             <Link as={ReactRouterLink} to={path} style={{ textDecoration: "none" }} key={path}>
                               <ListItem
@@ -421,7 +439,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                                 variant={"ghost"}
                                 w={"full"}
                                 borderRadius={"0"}
-                                display={"flex"}
+                                display={isHidden ? "none" : "flex"}
                                 justifyContent={"start"}
                                 p={3}
                                 key={label}
@@ -465,6 +483,19 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
                         <ListItem
                           as={Button}
+                          onClick={handleGuardrails}
+                          variant={"ghost"}
+                          w={"full"}
+                          borderRadius={"0"}
+                          justifyContent={"start"}
+                          p={3}
+                          isDisabled={hasPendingTransactions}
+                          backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                          CanaryNet Dashboard
+                        </ListItem>
+
+                        <ListItem
+                          as={Button}
                           variant={"ghost"}
                           w={"full"}
                           borderRadius={"0"}
@@ -496,21 +527,6 @@ export default AppHeader;
 
 const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
-  const [initToken, setInitToken] = useState<string>("");
-  const { address: mxAddress } = useGetAccountInfo();
-
-  const client = new NativeAuthClient({ origin: "test" });
-
-  useEffect(() => {
-    (async () => {
-      setInitToken(await client.initialize());
-    })();
-  }, []);
-
-  const parts = initToken.split(".");
-  const signature = mxAddress + parts.slice(1).join(".");
-
-  const accessToken = client.getToken(mxAddress, initToken, signature);
 
   // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
   // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);
@@ -576,6 +592,8 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -595,7 +613,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

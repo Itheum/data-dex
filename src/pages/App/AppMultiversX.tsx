@@ -185,14 +185,14 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
                 <Route path="" element={<GetWhitelist />} />
               </Route>
 
-              <Route path="guardRails" element={<Outlet />}>
+              <Route path="guardrails" element={<Outlet />}>
                 <Route path="" element={<GuardRails />} />
               </Route>
 
               <Route path="/profile" element={<Outlet />}>
-                <Route path="" element={<Profile tabState={1} />} />
-                <Route path="created" element={<Profile tabState={1} />} />
-                <Route path="listed" element={<Profile tabState={2} />} />
+                <Route path=":profileAddress" element={<Profile tabState={1} />} />
+                <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
+                <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
               </Route>
               {/*{routing}*/}
 

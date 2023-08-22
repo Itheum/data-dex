@@ -79,6 +79,7 @@ export const MENU = {
   GETWHITELISTED: 18,
   DATACAT: 19,
   PROFILE: 20,
+  GUARDRAILS: 21,
 };
 
 export const BUTTONS = {
@@ -431,13 +432,13 @@ export interface GuardRailsInfo {
 
 export const historicGuardrails = [
   {
-    id: "0",
+    id: 0,
     buyer_fee_oldPrice: null,
     buyer_fee_newPrice: null,
-    date: null,
+    date: "20 Jul 23 10:00:00",
     seller_fee_oldPrice: null,
     seller_fee_newPrice: null,
-    maximum_payment_fees: null,
+    maximum_payment_fees: "1000",
     minimum_royalties_oldPrice: null,
     minimum_royalties_newPrice: null,
     maximum_royalties_oldPrice: null,
@@ -450,26 +451,26 @@ export const historicGuardrails = [
     accepted_payments: null,
     accepted_tokens: null,
   },
-  // {
-  //   id: "1",
-  //   buyer_fee_oldPrice: "60",
-  //   buyer_fee_newPrice: "40",
-  //   date: "13/03/2024 10:00:00",
-  //   seller_fee_oldPrice: "60",
-  //   seller_fee_newPrice: "80",
-  //   maximum_payment_fees: "800",
-  //   minimum_royalties_oldPrice: "0",
-  //   minimum_royalties_newPrice: "0",
-  //   maximum_royalties_oldPrice: "90",
-  //   maximum_royalties_newPrice: "90",
-  //   time_between_mints_oldPrice: "20",
-  //   time_between_mints_newPrice: "20",
-  //   max_data_nft_supply: "3000",
-  //   antiSpam_tax_oldPrice: "10",
-  //   antiSpam_tax_newPrice: "10",
-  //   accepted_payments: "ITHEUM",
-  //   accepted_tokens: "ITHEUM",
-  // },
+  {
+    id: 1,
+    buyer_fee_oldPrice: null,
+    buyer_fee_newPrice: null,
+    date: "27 Jul 23 10:00:00",
+    seller_fee_oldPrice: null,
+    seller_fee_newPrice: null,
+    maximum_payment_fees: "10000",
+    minimum_royalties_oldPrice: null,
+    minimum_royalties_newPrice: null,
+    maximum_royalties_oldPrice: null,
+    maximum_royalties_newPrice: null,
+    time_between_mints_oldPrice: null,
+    time_between_mints_newPrice: null,
+    max_data_nft_supply: null,
+    antiSpam_tax_oldPrice: null,
+    antiSpam_tax_newPrice: null,
+    accepted_payments: null,
+    accepted_tokens: null,
+  },
   // {
   //   id: "2",
   //   buyer_fee_oldPrice: "80",
@@ -507,9 +508,30 @@ export const upcomingGuardRails = {
 
 export const whitelistWallets: Array<string> = [];
 
-export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "preview-data-on-devnet";
+export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
-export const TRAILBLAZER_NONCES: Record<string, Array<number>> = {
-  "D": [407, 423],
-  "1": [1],
+export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
+  "D": {
+    "trailblazer": [407, 423],
+    "multiversxbubbles": [416],
+    "multiversxinfographics": [480],
+  },
+  "1": {
+    "trailblazer": [1],
+    "multiversxbubbles": [2],
+    "multiversxinfographics": [3],
+  },
+};
+
+export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
+  "D": {
+    "trailblazer": "https://stg.explorer.itheum.io/project-trailblazer",
+    "multiversxbubbles": "https://stg.explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://stg.explorer.itheum.io/multiversx-infographics",
+  },
+  "1": {
+    "trailblazer": "https://explorer.itheum.io/project-trailblazer",
+    "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
+  },
 };
