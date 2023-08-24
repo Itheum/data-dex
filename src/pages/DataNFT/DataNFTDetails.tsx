@@ -138,10 +138,10 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             toast({
               id: "ER-23",
               title: labels.ERR_MARKET_OFFER_NOT_FOUND,
-              description: "This offer is no longer available",
+              description: "We are showing Data NFT Details and other available offers below",
               status: "warning",
               position: "top",
-              duration: 10000,
+              duration: null,
               isClosable: true,
               containerStyle: {
                 marginTop: "1rem",
