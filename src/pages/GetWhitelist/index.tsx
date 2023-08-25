@@ -1,10 +1,10 @@
 import React from "react";
 import { Flex } from "@chakra-ui/react";
-import { LandingPage } from "./components/LandingPage";
-import { UseCases } from "./components/UseCases";
-import { TrendingData } from "./components/TrendingData";
-import { Testimonials } from "./components/Testimonials";
-import { FeaturedArticles } from "./components/FeaturedArticles";
+import { LandingPage } from "./LandingPage/LandingPage";
+import { UseCases } from "./UseCases/UseCases";
+import { TrendingData } from "./TrendingData/TrendingData";
+import { Testimonials } from "./Testimonials/Testimonials";
+import { FeaturedArticles } from "./FeaturedArticle/FeaturedArticles";
 
 export const GetWhitelist: React.FC = () => {
   return (
