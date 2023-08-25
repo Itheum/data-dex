@@ -7,6 +7,7 @@ import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, 
 import { useMarketStore } from "store";
 import axios from "axios";
 import { getApi } from "libs/MultiversX/api";
+import { contractsForChain } from "libs/config";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -62,10 +63,14 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
   useEffect(() => {
     async function addOfferBackend() {
-      const indexResponse = (await axios.get(`https://${getApi(chainID)}/transactions/${listTxHash}?withLogs=true`)).data;
+      const indexResponse = await axios.get(
+        `https://${getApi(chainID)}/accounts/${
+          contractsForChain(chainID).market
+        }/transactions?hashes=${listTxHash}&status=success&withScResults=true&withLogs=true`
+      );
 
-      console.log(indexResponse);
-      const logs = indexResponse.logs;
+      console.log(indexResponse.data);
+      const logs = indexResponse.data[0].results[0].logs;
       const events = logs.events;
 
       const indexFind = events.find((event: any) => event.identifier === "addOffer");
