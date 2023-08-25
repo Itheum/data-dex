@@ -83,7 +83,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   });
 
   useEffect(() => {
-    setUpdatePriceTxStatus(trackUpdatePriceTransactionStatus.isPending ? true : false);
+    setUpdatePriceTxStatus(trackUpdatePriceTransactionStatus.isSuccessful ? true : false);
   }, [trackUpdatePriceTransactionStatus]);
 
   const trackTransactionStatus = useTrackTransactionStatus({
@@ -91,7 +91,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   });
 
   useEffect(() => {
-    setDelistTxStatus(trackTransactionStatus.isPending ? true : false);
+    setDelistTxStatus(trackTransactionStatus.isSuccessful ? true : false);
   }, [trackTransactionStatus]);
 
   useEffect(() => {
