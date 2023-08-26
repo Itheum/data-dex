@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -41,6 +41,8 @@ const ProfileCard = ({
   royalties,
   creationTime,
   openNftDetailsDrawer,
+  hasLoaded,
+  setHasLoaded,
 } : {
   index: number,
   collection: string,
@@ -52,13 +54,13 @@ const ProfileCard = ({
   royalties: number,
   creationTime: Date,
   openNftDetailsDrawer: any,
+  hasLoaded: boolean,
+  setHasLoaded: any,
 }) => {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
-
-  const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
   const nftId = createNftId(collection, nonce);
   const imageUrl = `https://${getApi(routedChainID)}/nfts/${nftId}/thumbnail`;
@@ -66,7 +68,7 @@ const ProfileCard = ({
   return (
     <Skeleton
       fitContent={true}
-      isLoaded={imageLoaded}
+      isLoaded={hasLoaded}
       borderRadius="lg"
       display={"flex"}
       alignItems={"center"}
@@ -91,7 +93,7 @@ const ProfileCard = ({
             mx={6}
             mt={6}
             borderRadius="32px"
-            onLoad={() => setImageLoaded(true)}
+            onLoad={() => setHasLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -113,7 +115,7 @@ const ProfileCard = ({
               cursor: "pointer",
               opacity: 0,
             }}
-            onLoad={() => setImageLoaded(true)}
+            onLoad={() => setHasLoaded(true)}
             onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping

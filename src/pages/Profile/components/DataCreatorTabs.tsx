@@ -12,7 +12,6 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
-  Skeleton,
   Tab,
   TabList,
   TabPanel,
@@ -24,28 +23,26 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { CustomPagination } from "components/CustomPagination";
+import ProfileCard from "components/ProfileCard";
 import { contractsForChain } from "libs/config";
-import MyListedDataLowerCard from "../../../components/MyListedDataLowerCard";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import UpperCardComponent from "../../../components/UtilComps/UpperCardComponent";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
-import WalletDataNFTMX from "../../../components/WalletDataNFTMX";
 import { labels } from "../../../libs/language";
-import { getApi, getNftsByIds } from "../../../libs/MultiversX/api";
+import { getNftsByIds } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
-import { backendApi, createNftId, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
+import { backendApi, createNftId, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
-import ProfileCard from "components/ProfileCard";
 
 interface PropsType {
   tabState: number;
@@ -83,12 +80,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
 
-  const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
   const [oneListedNFTImgLoaded, setOneListedNFTImgLoaded] = useState(false);
-  const { pathname } = useLocation();
-  const isCreatedPage = "/profile/created";
-  const isListedPage = "/profile/listed";
 
   const [dataNfts, setDataNft] = useState<DataNftType[]>(() => {
     const _dataNfts: DataNftType[] = [];
@@ -156,7 +149,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     if (!profileAddress) return;
     getDataNfts(profileAddress);
-  }, [profileAddress, dataNfts, hasPendingTransactions]);
+  }, [profileAddress, hasPendingTransactions]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -199,7 +192,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         onGotoPage(0);
       }
     })();
-  }, [hasPendingTransactions, tabState]);
+  }, [profileAddress, hasPendingTransactions, tabState]);
 
   useEffect(() => {
     (async () => {
@@ -207,12 +200,11 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       updateLoadingOffers(true);
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : profileAddress);
 
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : profileAddress);
       updateOffers(_offers);
 
       //
-      setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
       const _nfts = await getNftsByIds(nftIds, routedChainID);
       const _metadatas: DataNftMetadataType[] = [];
@@ -220,22 +212,22 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
       }
       setNftMetadatas(_metadatas);
-      setNftMetadatasLoading(false);
 
       // end loading offers
       await sleep(0.5);
       updateLoadingOffers(false);
     })();
-  }, [pageIndex, pageSize, tabState, hasPendingTransactions]);
+  }, [profileAddress, pageIndex, pageSize, tabState, hasPendingTransactions]);
 
   function openNftDetailsModal(index: number) {
-    if (pathname === isListedPage) {
-      setOfferForDrawer(offers[index]);
-      onOpenListingDetails();
-    }
-    if ((pathname === isCreatedPage || pathname === "/profile") && dataNfts) {
+    if (tabState == 1) {
       setDataNftForDrawer(dataNfts[index]);
       onOpenDataNftDetails();
+    } else if (tabState == 2) {
+      setOfferForDrawer(offers[index]);
+      onOpenListingDetails();
+    } else {
+      throw Error(`openNftDetailsModal: Invalid tabState (${tabState})`);
     }
   }
 
@@ -260,6 +252,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                 onClick={() => {
                   if (hasPendingTransactions) return;
+                  setOneCreatedNFTImgLoaded(false);
+                  setOneListedNFTImgLoaded(false);
                   navigate(util.format(tab.tabPath, profileAddress));
                 }}>
                 <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
@@ -277,7 +271,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            {tabState == 1 && (!loadingOffers && !nftMetadatasLoading && dataNfts.length === 0 ? (
+            {tabState == 1 && (!loadingOffers && dataNfts.length === 0 ? (
               <NoDataHere />
             ) : (
               <SimpleGrid
@@ -300,13 +294,15 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                       royalties={item.royalties}
                       creationTime={item.creationTime}
                       openNftDetailsDrawer={openNftDetailsModal}
+                      hasLoaded={oneCreatedNFTImgLoaded}
+                      setHasLoaded={setOneCreatedNFTImgLoaded}
                     />
                   ))}
               </SimpleGrid>
             ))}
           </TabPanel>
           <TabPanel>
-            {tabState == 2 && (!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
+            {tabState == 2 && (!loadingOffers && nftMetadatas.length === 0 ? (
               <NoDataHere />
             ) : (
               <SimpleGrid
@@ -315,8 +311,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 mx={{ base: 0, "2xl": "24 !important" }}
                 mt="5 !important"
                 justifyItems={"center"}>
-                {offers.length > 0 &&
-                  offers.map((offer, index) => (
+                {nftMetadatas.length > 0 &&
+                  nftMetadatas.map((item, index) => (
                     <ProfileCard
                       key={index}
                       index={index}
@@ -329,6 +325,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                       royalties={nftMetadatas[index].royalties}
                       creationTime={nftMetadatas[index].creationTime}
                       openNftDetailsDrawer={openNftDetailsModal}
+                      hasLoaded={oneListedNFTImgLoaded}
+                      setHasLoaded={setOneListedNFTImgLoaded}
                     />
                   ))}
               </SimpleGrid>
@@ -338,6 +336,11 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
           <TabPanel>Nothing here yet...</TabPanel>
         </TabPanels>
       </Tabs>
+
+      <Flex justifyContent={{ base: "center", md: "center" }} py="5">
+        <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+      </Flex>
+
       {offerForDrawer && (
         <Modal onClose={onCloseListingDetails} isOpen={isOpenListingDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
           <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
