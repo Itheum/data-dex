@@ -45,6 +45,7 @@ import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "
 import { backendApi, createNftId, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import ProfileCard from "components/ProfileCard";
 
 interface PropsType {
   tabState: number;
@@ -276,7 +277,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            {!loadingOffers && !nftMetadatasLoading && dataNfts.length === 0 ? (
+            {tabState == 1 && (!loadingOffers && !nftMetadatasLoading && dataNfts.length === 0 ? (
               <NoDataHere />
             ) : (
               <SimpleGrid
@@ -287,22 +288,25 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 justifyItems={"center"}>
                 {dataNfts.length > 0 &&
                   dataNfts.map((item, index) => (
-                    <WalletDataNFTMX
+                    <ProfileCard
                       key={index}
-                      hasLoaded={oneCreatedNFTImgLoaded}
-                      setHasLoaded={setOneCreatedNFTImgLoaded}
-                      maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      index={index}
+                      collection={item.collection}
+                      nonce={item.nonce}
+                      tokenName={item.tokenName}
+                      title={item.title}
+                      description={item.description}
+                      supply={item.supply}
+                      royalties={item.royalties}
+                      creationTime={item.creationTime}
                       openNftDetailsDrawer={openNftDetailsModal}
-                      isProfile={true}
-                      {...item}
                     />
                   ))}
               </SimpleGrid>
-            )}
+            ))}
           </TabPanel>
           <TabPanel>
-            {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
+            {tabState == 2 && (!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
               <NoDataHere />
             ) : (
               <SimpleGrid
@@ -313,21 +317,22 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                 justifyItems={"center"}>
                 {offers.length > 0 &&
                   offers.map((offer, index) => (
-                    <UpperCardComponent
+                    <ProfileCard
                       key={index}
-                      nftImageLoading={oneListedNFTImgLoaded && !loadingOffers}
-                      imageUrl={`https://${getApi(routedChainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
-                      setNftImageLoaded={setOneListedNFTImgLoaded}
-                      nftMetadata={nftMetadatas[index]}
-                      offer={offer}
                       index={index}
-                      marketFreezedNonces={marketFreezedNonces}
-                      openNftDetailsDrawer={openNftDetailsModal}>
-                      <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
-                    </UpperCardComponent>
+                      collection={nftMetadatas[index].collection}
+                      nonce={nftMetadatas[index].nonce}
+                      tokenName={nftMetadatas[index].tokenName}
+                      title={nftMetadatas[index].title}
+                      description={nftMetadatas[index].description}
+                      supply={nftMetadatas[index].supply}
+                      royalties={nftMetadatas[index].royalties}
+                      creationTime={nftMetadatas[index].creationTime}
+                      openNftDetailsDrawer={openNftDetailsModal}
+                    />
                   ))}
               </SimpleGrid>
-            )}
+            ))}
           </TabPanel>
           <TabPanel>Nothing here yet...</TabPanel>
           <TabPanel>Nothing here yet...</TabPanel>
