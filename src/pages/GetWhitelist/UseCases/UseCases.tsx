@@ -1,13 +1,12 @@
 import React, { Fragment } from "react";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
-import { FaHome } from "react-icons/fa";
 import { UseCasesCards } from "./components/UseCasesCards";
 import artists from "../../../assets/img/artists.png";
+import buildingButton from "../../../assets/img/buildingButton.svg";
 import buildings from "../../../assets/img/buildings.png";
 import gamepad from "../../../assets/img/gamepad.png";
-import psButtons from "../../../assets/img/psButtons.svg";
-import buildingButton from "../../../assets/img/buildingButton.svg";
 import personButton from "../../../assets/img/personButtons.svg";
+import psButtons from "../../../assets/img/psButtons.svg";
 
 const cardContent = [
   {
@@ -50,12 +49,12 @@ const cardContent = [
 
 export const UseCases: React.FC = () => {
   return (
-    <Flex flexDirection="column" w="full" h="100dvh" justifyContent="center">
+    <Flex flexDirection="column" w="full" h="auto" justifyContent="center" my={10}>
       <Text textAlign="center" fontSize="67px" fontFamily="Clash-Medium" my={5}>
         Data NFT Use Cases
       </Text>
-      <Box display="flex" flexDirection={{ base: "column", xl: "row" }} justifyContent="center" alignItems="center" gap={6} mx={5}>
-        {cardContent.map((item: any) => {
+      <Box display="flex" flexDirection={{ xl: "row" }} justifyContent="center" flexWrap="wrap" alignItems="center" gap={6} mx={5}>
+        {cardContent.map((item) => {
           return (
             <Fragment key={item.id}>
               <UseCasesCards
@@ -73,7 +72,7 @@ export const UseCases: React.FC = () => {
           );
         })}
       </Box>
-      <Box w="full" display="flex" justifyContent="center" mt={5}>
+      <Box w="full" display="flex" justifyContent="center" my={5}>
         <Button
           as={Link}
           variant="solid"
