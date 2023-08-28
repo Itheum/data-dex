@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button, Center, Flex, Heading, Image, Link, Text, useColorMode } from "@chakra-ui/react";
-import illustration from "../../../assets/img/getWhitelist.png";
+import illustration from "../../../assets/img/whitelist/getWhitelist.png";
 import { FaDiscord, FaTelegramPlane, FaTwitter } from "react-icons/fa";
 
 export const LandingPage: React.FC = () => {

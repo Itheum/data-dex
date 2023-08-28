@@ -1,12 +1,12 @@
 import React, { Fragment } from "react";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
 import { UseCasesCards } from "./components/UseCasesCards";
-import artists from "../../../assets/img/artists.png";
-import buildingButton from "../../../assets/img/buildingButton.svg";
-import buildings from "../../../assets/img/buildings.png";
-import gamepad from "../../../assets/img/gamepad.png";
-import personButton from "../../../assets/img/personButtons.svg";
-import psButtons from "../../../assets/img/psButtons.svg";
+import artists from "../../../assets/img/whitelist/artists.png";
+import buildingButton from "../../../assets/img/whitelist/buildingButton.svg";
+import buildings from "../../../assets/img/whitelist/buildings.png";
+import gamepad from "../../../assets/img/whitelist/gamepad.png";
+import personButton from "../../../assets/img/whitelist/personButtons.svg";
+import psButtons from "../../../assets/img/whitelist/psButtons.svg";
 
 const cardContent = [
   {
