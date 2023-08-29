@@ -32,7 +32,7 @@ import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import ProfileCard from "components/ProfileCard";
-import { contractsForChain } from "libs/config";
+// import { contractsForChain } from "libs/config";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import { labels } from "../../../libs/language";
@@ -53,7 +53,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const itheumToken = contractsForChain(routedChainID).itheumToken;
+  // const itheumToken = contractsForChain(routedChainID).itheumToken;
 
   const { pageNumber, profileAddress } = useParams();
   const navigate = useNavigate();
@@ -73,9 +73,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const marketContract = new DataNftMarketContract(routedChainID);
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
-  const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
-  const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
-  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
+  // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
+  // const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
@@ -161,12 +161,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     }
   });
 
-  useEffect(() => {
-    (async () => {
-      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
-      setMarketFreezedNonces(_marketFreezedNonces);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
+  //     setMarketFreezedNonces(_marketFreezedNonces);
+  //   })();
+  // }, []);
 
   useEffect(() => {
     (async () => {
