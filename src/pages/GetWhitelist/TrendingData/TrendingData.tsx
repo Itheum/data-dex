@@ -37,7 +37,7 @@ export const TrendingData: React.FC = () => {
       flexDirection="column"
       justifyContent="center"
       w="100%"
-      height={{ base: "auto", xl: "75dvh" }}
+      height="auto"
       bgGradient={colorMode === "light" ? "bgWhite" : "linear(to-r, bgDark, #6B46C160, #00C79730)"}
       bgSize="contain"
       bgPosition="bottom"

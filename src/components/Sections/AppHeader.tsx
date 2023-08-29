@@ -188,11 +188,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack
-          alignItems={"center"}
-          backgroundColor="none"
-          width={{ base: "full", md: "15rem" }}
-          justifyContent={{ base: "space-around", md: "space-around" }}>
+        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "15rem" }} justifyContent="space-around">
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"
@@ -233,7 +229,29 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               </Heading>
             </HStack>
           </Link>
-          <Box></Box>
+          {isMxLoggedIn ? (
+            <Box display={{ base: "block", md: "none" }}>
+              <IconButton
+                size="lg"
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
+          ) : (
+            <Box display={{ base: "block", md: "none" }}>
+              <IconButton
+                size="lg"
+                ml={12}
+                bgColor=""
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
+          )}
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
