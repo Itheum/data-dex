@@ -242,7 +242,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
           ) : (
             <Box display={{ base: "block", md: "none" }}>
               <IconButton
-                size="lg"
+                size="md"
                 ml={12}
                 bgColor=""
                 icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
