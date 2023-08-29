@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Card, CardBody, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, Link, Text, useColorMode } from "@chakra-ui/react";
 
 type TrendingDataCardsProps = {
   id: number;
@@ -10,6 +10,7 @@ type TrendingDataCardsProps = {
 };
 export const TrendingDataCards: React.FC<TrendingDataCardsProps> = (props) => {
   const { id, headerImage, title, description, url } = props;
+  const { colorMode } = useColorMode();
   return (
     <Card
       direction={{ base: "column", sm: "row" }}
@@ -18,9 +19,10 @@ export const TrendingDataCards: React.FC<TrendingDataCardsProps> = (props) => {
       w="358px"
       h={{ base: "auto", xl: "540px" }}
       borderColor="transparent"
+      shadow="md"
       borderRadius="20px"
       key={id}>
-      <CardBody bgColor="#141414" p={0}>
+      <CardBody bgColor={colorMode === "dark" ? "#141414" : "white"} p={0}>
         <Box h="260px">
           <img src={headerImage} alt={title} height="260px !important" />
         </Box>

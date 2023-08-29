@@ -42,9 +42,10 @@ export const TrendingData: React.FC = () => {
       bgSize="contain"
       bgPosition="bottom"
       bgRepeat="no-repeat"
-      position="relative">
+      position="relative"
+      p={2}>
       <Box display="flex" justifyContent="center">
-        <Text textAlign="center" fontSize="59px" fontFamily="Clash-Medium" my={5} w="690px">
+        <Text textAlign="center" fontSize={{ base: "40px", md: "59px" }} fontFamily="Clash-Medium" my={5} w="690px">
           Explore Trending Data NFTs Collections
         </Text>
       </Box>

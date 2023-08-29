@@ -49,8 +49,8 @@ const cardContent = [
 
 export const UseCases: React.FC = () => {
   return (
-    <Flex flexDirection="column" w="full" h="auto" justifyContent="center" my={10}>
-      <Text textAlign="center" fontSize="67px" fontFamily="Clash-Medium" my={5}>
+    <Flex flexDirection="column" w="full" h="auto" justifyContent="center" my={10} p={2}>
+      <Text textAlign="center" fontSize={{ base: "45px", md: "67px" }} fontFamily="Clash-Medium" my={5}>
         Data NFT Use Cases
       </Text>
       <Box display="flex" flexDirection={{ xl: "row" }} justifyContent="center" flexWrap="wrap" alignItems="center" gap={6} mx={5}>
