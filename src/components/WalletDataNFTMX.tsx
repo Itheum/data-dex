@@ -45,8 +45,7 @@ import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signM
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
 import moment from "moment";
-import qs from "qs";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -58,6 +57,7 @@ import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
 import {
   convertToLocalString,
+  findNthOccurrenceFromEnd,
   isValidNumericCharacter,
   routeChainIDBasedOnLoggedInStatus,
   shouldPreviewDataBeEnabled,
@@ -86,8 +86,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
   const { signMessage } = useSignMessage();
-  const loginInfo = useGetLoginInfo();
   const lastSignedMessageSession = useGetLastSignedMessageSession();
+  const location = useLocation();
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
@@ -297,7 +297,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       if (isWebWallet) {
-        navigate("/datanfts/wallet");
+        let url = location.pathname;
+        url = url.slice(0, findNthOccurrenceFromEnd(url, '/', 2)); // remove last 2 segments in the url - those are for WebWallet callback
+        navigate(url);
       }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
