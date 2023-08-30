@@ -30,13 +30,13 @@ import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
-import { contractsForChain } from "libs/config";
 import { CustomPagination } from "components/CustomPagination";
 import ProfileCard from "components/ProfileCard";
 // import { contractsForChain } from "libs/config";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import { labels } from "../../../libs/language";
+import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 import { getNftsByIds } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
@@ -44,7 +44,6 @@ import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "
 import { backendApi, createNftId, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
-import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 
 interface PropsType {
   tabState: number;
@@ -140,6 +139,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
       setDataNft(_dataNfts);
     } catch (err: any) {
+      setDataNft([]);
       setOneCreatedNFTImgLoaded(false);
       toast({
         title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
@@ -152,7 +152,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   };
 
   useEffect(() => {
-    if (!profileAddress) return;
+    if (!profileAddress || hasPendingTransactions) return;
     getDataNfts(profileAddress);
   }, [profileAddress, hasPendingTransactions]);
 
@@ -350,9 +350,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabPanels>
       </Tabs>
 
-      <Flex justifyContent={{ base: "center", md: "center" }} py="5">
-        <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-      </Flex>
+      {
+        (tabState == 1 && dataNfts.length > 0 || tabState == 2 && offers.length > 0) && (
+          <Flex justifyContent={{ base: "center", md: "center" }} py="5">
+            <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+          </Flex>
+        )
+      }
 
       {offerForDrawer && (
         <Modal onClose={onCloseListingDetails} isOpen={isOpenListingDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
