@@ -202,7 +202,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       {offer && nftMetadata && (
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             {delistModalState === 0 ? (
               <>
                 <ModalBody py={6}>
@@ -210,7 +210,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                        <Text
+                          px="15px"
+                          py="5px"
+                          borderRadius="md"
+                          fontWeight="bold"
+                          fontSize="md"
+                          backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}>
                           {nftMetadata.tokenName}
                           <br />
                           Listed supply: {offer.quantity}
@@ -275,7 +281,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                        <Text
+                          px="15px"
+                          py="5px"
+                          borderRadius="md"
+                          fontWeight="bold"
+                          fontSize="md"
+                          backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}>
                           {nftMetadata ? nftMetadata.tokenName : ""}
                           <br />
                           Listed supply: {offer.quantity}
@@ -311,13 +323,20 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       {offer && marketRequirements && nftMetadata && (
         <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">
                 <Box flex="4" alignContent="center">
                   <Text fontSize="lg">Update Listing Fee for Each</Text>
                   <Flex mt="1">
-                    <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
+                    <Text
+                      px="15px"
+                      py="5px"
+                      borderRadius="md"
+                      fontWeight="bold"
+                      fontSize="md"
+                      backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                      textAlign="center">
                       {nftMetadata.tokenName}
                     </Text>
                   </Flex>

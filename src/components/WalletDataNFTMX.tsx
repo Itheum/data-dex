@@ -66,6 +66,7 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
+import { MdOutlineInfo } from "react-icons/md";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -443,14 +444,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </PopoverContent>
           </Popover>
           <Box mt={1}>
-            {
-              <Box color="#8c8f92d0" fontSize="md">
-                Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon ml="5px" fontSize="sm" />
-                </Link>
-              </Box>
-            }
+            <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
+              Creator:&nbsp;
+              <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
+                <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
+                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
+              </Flex>
+            </Box>
 
             <Box color="#8c8f92d0" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -659,7 +659,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay backdropFilter="blur(10px)" />
-            <ModalContent>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               {burnNFTModalState === 1 ? (
                 <>
                   <ModalHeader>Burn Supply from my Data NFT</ModalHeader>

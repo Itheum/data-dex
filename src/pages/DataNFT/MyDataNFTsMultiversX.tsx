@@ -165,10 +165,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   return (
     <>
       <Stack>
-        <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="xl" fontFamily="Clash-Medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Data NFT Wallet
         </Heading>
-        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
@@ -179,9 +179,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 <Tab
                   key={index}
                   isDisabled={tab.isDisabled}
+                  p={{ base: "0", md: "initial" }}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   onClick={() => onChangeTab(index + 1)}>
-                  <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
+                  <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3} overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
@@ -261,14 +262,14 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent overflowY="scroll" h="90%">
-              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}  overflowY="scroll" h="90%">
+              <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
                 </HStack>
+                <Text fontSize="32px" fontFamily="Clash-Medium" mt={3} fontWeight="500" textAlign="center">
+                  Data NFT Details
+                </Text>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />

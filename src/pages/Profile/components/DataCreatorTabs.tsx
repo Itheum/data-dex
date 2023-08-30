@@ -23,7 +23,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
 import { BsClockHistory } from "react-icons/bs";
@@ -43,6 +43,7 @@ import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "
 import { backendApi, createNftId, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 
 interface PropsType {
   tabState: number;
@@ -53,6 +54,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { address } = useGetAccountInfo();
   // const itheumToken = contractsForChain(routedChainID).itheumToken;
 
   const { pageNumber, profileAddress } = useParams();
@@ -73,6 +75,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const marketContract = new DataNftMarketContract(routedChainID);
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
+  const [myListedCount, setMyListedCount] = useState<number>(0);
   // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
   // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   // const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -110,7 +113,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/%s/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      // pieces: offers.length,
+      pieces: myListedCount,
     },
     {
       tabNumber: 3,
@@ -127,13 +130,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       isDisabled: true,
     },
   ];
-
   const getDataNfts = async (addressArg: string) => {
     const backendApiRoute = backendApi(routedChainID);
+    const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
       setDataNft(_dataNfts);
+      setMyListedCount(listedCount);
     } catch (err: any) {
       setOneCreatedNFTImgLoaded(false);
       toast({
@@ -248,6 +252,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
             return (
               <Tab
                 key={index}
+                p={{ base: "0", md: "initial" }}
+                fontSize={{ base: "sm", md: "md" }}
                 isDisabled={tab.isDisabled}
                 _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                 onClick={() => {
@@ -256,7 +262,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                   setOneListedNFTImgLoaded(false);
                   navigate(util.format(tab.tabPath, profileAddress));
                 }}>
-                <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
+                <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3} overflow="hidden">
                   <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                   <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                     {tab.tabName}
@@ -271,66 +277,68 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            {tabState == 1 && (!loadingOffers && dataNfts.length === 0 ? (
-              <NoDataHere />
-            ) : (
-              <SimpleGrid
-                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                spacingY={4}
-                mx={{ base: 0, "2xl": "24 !important" }}
-                mt="5 !important"
-                justifyItems={"center"}>
-                {dataNfts.length > 0 &&
-                  dataNfts.map((item, index) => (
-                    <ProfileCard
-                      key={index}
-                      index={index}
-                      collection={item.collection}
-                      nonce={item.nonce}
-                      tokenName={item.tokenName}
-                      title={item.title}
-                      description={item.description}
-                      supply={item.supply}
-                      royalties={item.royalties}
-                      creationTime={item.creationTime}
-                      openNftDetailsDrawer={openNftDetailsModal}
-                      hasLoaded={oneCreatedNFTImgLoaded}
-                      setHasLoaded={setOneCreatedNFTImgLoaded}
-                    />
-                  ))}
-              </SimpleGrid>
-            ))}
+            {tabState == 1 &&
+              (!loadingOffers && dataNfts.length === 0 ? (
+                <NoDataHere />
+              ) : (
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
+                  {dataNfts.length > 0 &&
+                    dataNfts.map((item, index) => (
+                      <ProfileCard
+                        key={index}
+                        index={index}
+                        collection={item.collection}
+                        nonce={item.nonce}
+                        tokenName={item.tokenName}
+                        title={item.title}
+                        description={item.description}
+                        supply={item.supply}
+                        royalties={item.royalties}
+                        creationTime={item.creationTime}
+                        openNftDetailsDrawer={openNftDetailsModal}
+                        hasLoaded={oneCreatedNFTImgLoaded}
+                        setHasLoaded={setOneCreatedNFTImgLoaded}
+                      />
+                    ))}
+                </SimpleGrid>
+              ))}
           </TabPanel>
           <TabPanel>
-            {tabState == 2 && (!loadingOffers && nftMetadatas.length === 0 ? (
-              <NoDataHere />
-            ) : (
-              <SimpleGrid
-                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                spacingY={4}
-                mx={{ base: 0, "2xl": "24 !important" }}
-                mt="5 !important"
-                justifyItems={"center"}>
-                {nftMetadatas.length > 0 &&
-                  nftMetadatas.map((item, index) => (
-                    <ProfileCard
-                      key={index}
-                      index={index}
-                      collection={nftMetadatas[index].collection}
-                      nonce={nftMetadatas[index].nonce}
-                      tokenName={nftMetadatas[index].tokenName}
-                      title={nftMetadatas[index].title}
-                      description={nftMetadatas[index].description}
-                      supply={nftMetadatas[index].supply}
-                      royalties={nftMetadatas[index].royalties}
-                      creationTime={nftMetadatas[index].creationTime}
-                      openNftDetailsDrawer={openNftDetailsModal}
-                      hasLoaded={oneListedNFTImgLoaded}
-                      setHasLoaded={setOneListedNFTImgLoaded}
-                    />
-                  ))}
-              </SimpleGrid>
-            ))}
+            {tabState == 2 &&
+              (!loadingOffers && nftMetadatas.length === 0 ? (
+                <NoDataHere />
+              ) : (
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
+                  {nftMetadatas.length > 0 &&
+                    nftMetadatas.map((item, index) => (
+                      <ProfileCard
+                        key={index}
+                        index={index}
+                        collection={nftMetadatas[index].collection}
+                        nonce={nftMetadatas[index].nonce}
+                        tokenName={nftMetadatas[index].tokenName}
+                        title={nftMetadatas[index].title}
+                        description={nftMetadatas[index].description}
+                        supply={nftMetadatas[index].supply}
+                        royalties={nftMetadatas[index].royalties}
+                        creationTime={nftMetadatas[index].creationTime}
+                        openNftDetailsDrawer={openNftDetailsModal}
+                        hasLoaded={oneListedNFTImgLoaded}
+                        setHasLoaded={setOneListedNFTImgLoaded}
+                      />
+                    ))}
+                </SimpleGrid>
+              ))}
           </TabPanel>
           <TabPanel>Nothing here yet...</TabPanel>
           <TabPanel>Nothing here yet...</TabPanel>

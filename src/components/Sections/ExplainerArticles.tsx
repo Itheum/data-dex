@@ -57,7 +57,7 @@ function ArticleCard({ imgTitle, title, link }: { imgTitle: string; title: strin
         </Box>
         <Stack mt="3" spacing="2">
           <Link fontSize="sm" href={link} isExternal textDecoration="none">
-            <Heading size="md" noOfLines={2} minH="43px">
+            <Heading size="md" fontFamily="Clash-Medium" noOfLines={2} minH="43px">
               {title}
             </Heading>
           </Link>

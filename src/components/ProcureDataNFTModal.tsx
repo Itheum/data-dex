@@ -1,5 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  HStack,
+  Flex,
+  Button,
+  Checkbox,
+  Divider,
+  useToast,
+  useColorMode,
+} from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
@@ -22,6 +37,8 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
+
+  const { colorMode } = useColorMode();
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
@@ -122,13 +139,20 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay backdropFilter="blur(10px)" />
-        <ModalContent>
+        <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">Procure Access to Data NFTs</Text>
                 <Flex mt="1">
-                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
+                  <Text
+                    px="15px"
+                    py="5px"
+                    borderRadius="md"
+                    fontWeight="bold"
+                    fontSize="md"
+                    backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                    textAlign="center">
                     {nftData.tokenName}
                   </Text>
                 </Flex>
