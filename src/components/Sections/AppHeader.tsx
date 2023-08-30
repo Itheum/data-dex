@@ -103,7 +103,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.NFTALL,
-        path: "/datanfts/marketplace/market",
+        path: "/datanfts/marketplace",
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: FaStore,
@@ -188,11 +188,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack
-          alignItems={"center"}
-          backgroundColor="none"
-          width={{ base: "full", md: "15rem" }}
-          justifyContent={{ base: "space-around", md: "space-around" }}>
+        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "15rem" }} justifyContent="space-around">
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"
@@ -225,15 +221,37 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               <Heading
                 display={{ base: "flex", md: "flex", xl: "flex" }}
                 fontSize={{ base: "md", xl: "xl" }}
+                fontFamily="Clash-Medium"
                 fontWeight="400"
-                lineHeight="16.29px"
-                fontFamily="">
+                lineHeight="16.29px">
                 Data&nbsp;
                 <Text fontWeight="700">DEX</Text>
               </Heading>
             </HStack>
           </Link>
-          <Box></Box>
+          {isMxLoggedIn ? (
+            <Box display={{ base: "block", md: "none" }}>
+              <IconButton
+                size="lg"
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
+          ) : (
+            <Box display={{ base: "block", md: "none" }}>
+              <IconButton
+                size="md"
+                ml={12}
+                bgColor=""
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
+          )}
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
@@ -430,6 +448,20 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       </Text>
                       <hr />
                       <List>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
+                          <ListItem
+                            onClick={() => navigateToDiscover(MENU.PROFILE)}
+                            as={Button}
+                            variant={"ghost"}
+                            w={"full"}
+                            borderRadius={"0"}
+                            display={"flex"}
+                            justifyContent={"start"}
+                            p={3}>
+                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
+                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
+                          </ListItem>
+                        </Link>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (

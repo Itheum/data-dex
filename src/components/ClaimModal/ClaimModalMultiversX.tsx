@@ -13,6 +13,7 @@ import {
   Button,
   Stack,
   useBreakpointValue,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -22,6 +23,7 @@ import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }: any) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const { colorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
@@ -42,7 +44,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
     <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState()} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay backdropFilter="blur(10px)" />
 
-      <ModalContent h="300px" w="400px">
+      <ModalContent h="300px" w="400px" bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
         <ModalHeader>My Claimable {title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={5}>

@@ -1,7 +1,6 @@
 import React, { PropsWithChildren, useEffect } from "react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -17,7 +16,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  console.log(routedChainID);
+  // console.log(routedChainID);
 
   // ACCOUNT STORE
   const itheumBalance = useAccountStore((state) => state.itheumBalance);

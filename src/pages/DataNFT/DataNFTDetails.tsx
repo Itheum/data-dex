@@ -57,6 +57,7 @@ import {
 import { routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils/util";
 import { useMarketStore } from "store";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
+import { MdOutlineInfo } from "react-icons/md";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -132,11 +133,27 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       // if sessionId exists, it means the offer is going to be sold out by user
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
+        if (_offer === null || _offer === undefined) {
+          if (!toast.isActive("ER-23")) {
+            toast({
+              id: "ER-23",
+              title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+              description: "We are showing Data NFT Details and other available offers below",
+              status: "warning",
+              position: "top",
+              duration: null,
+              isClosable: true,
+              containerStyle: {
+                marginTop: "1rem",
+              },
+            });
+          }
+        }
         setOffer(_offer);
       })();
     }
   }, [offerId, hasPendingTransactions]);
-
+  // console.log(nftData);
   function getTokenDetails() {
     const apiLink = getApi(routedChainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
@@ -151,16 +168,27 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         setIsLoadingDetails(false);
       })
       .catch((err) => {
-        toast({
-          title: labels.ERR_API_ISSUE_DATA_NFT_DETAILS,
-          description: err.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+        if (err.response.status === 404) {
+          toast({
+            title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+            description: err.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: labels.ERR_API_ISSUE_DATA_NFT_DETAILS,
+            description: err.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
       });
   }
 
+  // console.log(totalOffers);
   async function getTokenHistory(tokenIdArg: string) {
     try {
       const inputString = tokenIdArg;
@@ -182,13 +210,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       }
       setIsLoadingPrice(false);
     } catch (err) {
-      toast({
-        title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
-        description: (err as Error).message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
+      if ((err as any).response.status === 404) {
+        toast({
+          title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+          description: (err as Error).message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+          description: (err as Error).message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
     }
   }
 
@@ -218,7 +256,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
-  console.log("routedChainID", routedChainID);
+  // console.log("routedChainID", routedChainID);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -227,7 +265,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
           <Flex direction={"column"} alignItems={"flex-start"}>
             {tokenIdParam && (
               <Box display={{ md: "Flex" }} justifyContent="space-between" w="100%">
-                <Heading size="xl" fontWeight="medium" marginBottom={4} marginTop={10}>
+                <Heading size="xl" fontFamily="Clash-Medium" marginBottom={4} marginTop={10}>
                   Data NFT Details
                 </Heading>
                 <HStack>
@@ -247,7 +285,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 </HStack>
               </Box>
             )}
-            <Box width={"100%"} marginY={tokenIdParam ? { base: "10px", xl: "0" } : 0} border="1px solid" borderColor="#00C79740" borderRadius="xl">
+            <Box width={"100%"} marginY={tokenIdParam ? "20px" : "10px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
               <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
                 <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
                   <Image
@@ -270,13 +308,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
                         <Tooltip label={nftData.attributes?.title}>
-                          <Text fontSize={"32px"} noOfLines={1} fontWeight="500" lineHeight="10">
+                          <Text fontSize={"32px"} fontFamily="Clash-Medium" noOfLines={1} fontWeight="light" lineHeight="10">
                             {nftData.attributes?.title}
                           </Text>
                         </Tooltip>
                         {!!offerId && (
                           <Button
-                            size={{ base: "md", lg: "md" }}
+                            variant="ghost"
+                            size={{ base: "sm", lg: "sm" }}
                             onClick={() => {
                               onCopy();
                               toast({
@@ -285,7 +324,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 isClosable: true,
                               });
                             }}>
-                            <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} />
+                            <CopyIcon color="teal.200" fontSize={{ base: "md", lg: "xl" }} textAlign="left" />
                           </Button>
                         )}
                       </Flex>
@@ -387,7 +426,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     mt={3}
                     justifyContent="right"
                     w={marketplaceDrawer ? { base: "full", md: "initial", xl: "26.3rem", "2xl": "29rem" } : { base: "full", md: "initial", xl: "inherit" }}>
-                    <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                    <Heading
+                      fontSize="20px"
+                      fontFamily="Clash-Medium"
+                      fontWeight="semibold"
+                      pl="28px"
+                      py={5}
+                      borderBottom="1px solid"
+                      borderColor="#00C79740"
+                      bgColor="#00C7970D"
+                      borderTopRadius="xl">
                       Details
                     </Heading>
                     <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
@@ -433,7 +481,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                 <Grid templateColumns="repeat(8, 1fr)" gap={3} w="full" marginTop="1.5rem !important">
                   <GridItem colSpan={{ base: 8, xl: 5 }}>
                     <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                      <Heading fontSize="20px" fontWeight={500} pl="28px" py={8} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                      <Heading
+                        fontSize="20px"
+                        fontFamily="Clash-Medium"
+                        fontWeight="semibold"
+                        pl="28px"
+                        py={8}
+                        borderBottom="1px solid"
+                        borderColor="#00C79740"
+                        bgColor="#00C7970D"
+                        borderTopRadius="xl">
                         Description
                       </Heading>
                       <Flex flexDirection="column" h="18.6rem" justifyContent="space-between">
@@ -446,18 +503,32 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Text>
                         </Box>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
-                          <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
-                            Creator: <ShortAddress fontSize="lg" address={nftData.attributes?.creator}></ShortAddress>
-                            <Link href={`${chainExplorer}/accounts/${nftData.attributes?.creator}`} isExternal>
-                              <ExternalLinkIcon mx="4px" fontSize="lg" />
-                            </Link>
+                          <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
+                            Creator:&nbsp;
+                            <Flex
+                              onClick={() => {
+                                if (props.closeDetailsView) {
+                                  props.closeDetailsView();
+                                }
+                                navigate(`/profile/${nftData.attributes?.creator}`);
+                              }}>
+                              <ShortAddress address={nftData.attributes?.creator} fontSize="lg" tooltipLabel="Profile" />
+                              <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
+                            </Flex>
                           </Box>
                           {offer && offer.owner && (
-                            <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">
-                              Owner: <ShortAddress fontSize="lg" address={offer.owner}></ShortAddress>
-                              <Link href={`${chainExplorer}/accounts/${offer.owner}`} isExternal>
-                                <ExternalLinkIcon mx="4px" fontSize="lg" />
-                              </Link>
+                            <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
+                              Owner:&nbsp;
+                              <Flex
+                                onClick={() => {
+                                  if (props.closeDetailsView) {
+                                    props.closeDetailsView();
+                                  }
+                                  navigate(`/profile/${offer.owner}`);
+                                }}>
+                                <ShortAddress address={offer.owner} fontSize="lg" tooltipLabel="Profile" />
+                                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
+                              </Flex>
                             </Box>
                           )}
                           <Box display="flex" justifyContent="flex-start" pb="14px">
@@ -472,7 +543,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   <GridItem colSpan={{ base: 8, xl: 3 }}>
                     <ConditionalRender fallback={<></>} checkFunction={isApiUp}>
                       <Box border="1px solid" borderColor="#00C79740" borderRadius="2xl" w="full">
-                        <Heading fontSize="20px" fontWeight={500} pl="28px" py={5} borderBottom="1px solid" borderColor="#00C79740" bgColor="#00C7970D">
+                        <Heading
+                          fontSize="20px"
+                          fontFamily="Clash-Medium"
+                          fontWeight="semibold"
+                          pl="28px"
+                          py={5}
+                          borderBottom="1px solid"
+                          borderColor="#00C79740"
+                          bgColor="#00C7970D"
+                          borderTopRadius="xl">
                           <>
                             {!offer ? (
                               <>
@@ -495,52 +575,56 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           {}
                           <Text color={"teal.200"}>{nftData.identifier}</Text>
                         </Heading>
-                        <Grid templateColumns="repeat(7, 1fr)" h="18.6rem" overflowY="scroll" gap={2} px="28px" py="14px" fontSize="md">
-                          {(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
-                            <GridItem colSpan={8}>
+                        <Box flex="1" overflowY="scroll" h="18.6rem" px="28px" py="14px">
+                          {totalOffers.length === 0 ||
+                          false ||
+                          (totalOffers.length === 1 && totalOffers[0].owner === address) ||
+                          totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0 ? (
+                            <Box flex="1" display="flex" justifyContent="center" alignItems="center">
                               <NoDataHere imgFromTop="6.5rem" />
-                            </GridItem>
+                            </Box>
+                          ) : (
+                            <Grid templateColumns="repeat(4, 1fr)" gap={2}>
+                              <>
+                                <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" py={2}>
+                                  Price
+                                </GridItem>
+                                <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
+                                  Quantity
+                                </GridItem>
+                                <GridItem colSpan={1} fontSize="xl" fontWeight="500" textAlign="center" rowSpan={1}></GridItem>
+                              </>
+                              {totalOffers &&
+                                totalOffers
+                                  .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
+                                  .map((to: any, index: number) => (
+                                    <Fragment key={index}>
+                                      <GridItem flexDirection="column" colSpan={2}>
+                                        {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
+                                      </GridItem>
+                                      <GridItem flexDirection="column" colSpan={1}>
+                                        {to.quantity}
+                                      </GridItem>
+                                      <GridItem colSpan={1}>
+                                        {tokenId && pathname?.includes(tokenId) ? (
+                                          <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                            <Button w="full" colorScheme="teal" variant="outline" size="sm">
+                                              {window.innerWidth > 500 ? "View Offer" : "View"}
+                                            </Button>
+                                          </a>
+                                        ) : (
+                                          <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                            <Button w="full" colorScheme="teal" variant="outline" size="sm">
+                                              {window.innerWidth > 500 ? "View Offer" : "View"}
+                                            </Button>
+                                          </a>
+                                        )}
+                                      </GridItem>
+                                    </Fragment>
+                                  ))}
+                            </Grid>
                           )}
-                          {!(totalOffers.length === 0 || totalOffers === null || (totalOffers.length === 1 && totalOffers[0].owner === address)) && (
-                            <>
-                              <GridItem flexDirection="column" colSpan={4} fontSize="xl" fontWeight="500" py={2}>
-                                Price
-                              </GridItem>
-                              <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
-                                Quantity
-                              </GridItem>
-                            </>
-                          )}
-                          <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" textAlign="center"></GridItem>
-                          {totalOffers &&
-                            totalOffers
-                              .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
-                              .map((to: any, index: number) => (
-                                <Fragment key={index}>
-                                  <GridItem flexDirection="column" colSpan={4}>
-                                    {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
-                                  </GridItem>
-                                  <GridItem flexDirection="column" colSpan={1}>
-                                    {to.quantity}
-                                  </GridItem>
-                                  <GridItem colSpan={2}>
-                                    {tokenId && pathname?.includes(tokenId) ? (
-                                      <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                        <Button w="full" colorScheme="teal" variant="outline" size="sm">
-                                          {window.innerWidth > 500 ? "View Offer" : "View"}
-                                        </Button>
-                                      </a>
-                                    ) : (
-                                      <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                        <Button w="full" colorScheme="teal" variant="outline" size="sm">
-                                          {window.innerWidth > 500 ? "View Offer" : "View"}
-                                        </Button>
-                                      </a>
-                                    )}
-                                  </GridItem>
-                                </Fragment>
-                              ))}
-                        </Grid>
+                        </Box>
                       </Box>
                     </ConditionalRender>
                   </GridItem>
@@ -549,7 +633,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             </Box>
           </Flex>
           <VStack alignItems={"flex-start"}>
-            <Heading size="lg" fontWeight="500" mt="30px" marginBottom={2}>
+            <Heading size="lg" fontFamily="Clash-Medium" mt="30px" marginBottom={2}>
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
