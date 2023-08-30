@@ -448,6 +448,20 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       </Text>
                       <hr />
                       <List>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
+                          <ListItem
+                            onClick={() => navigateToDiscover(MENU.PROFILE)}
+                            as={Button}
+                            variant={"ghost"}
+                            w={"full"}
+                            borderRadius={"0"}
+                            display={"flex"}
+                            justifyContent={"start"}
+                            p={3}>
+                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
+                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
+                          </ListItem>
+                        </Link>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (

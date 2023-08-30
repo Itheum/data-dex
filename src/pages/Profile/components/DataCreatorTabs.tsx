@@ -248,6 +248,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
             return (
               <Tab
                 key={index}
+                p={{ base: "0", md: "initial" }}
+                fontSize={{ base: "sm", md: "md" }}
                 isDisabled={tab.isDisabled}
                 _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                 onClick={() => {
@@ -256,7 +258,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                   setOneListedNFTImgLoaded(false);
                   navigate(util.format(tab.tabPath, profileAddress));
                 }}>
-                <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
+                <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3} overflow="hidden">
                   <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                   <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                     {tab.tabName}
@@ -271,66 +273,68 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            {tabState == 1 && (!loadingOffers && dataNfts.length === 0 ? (
-              <NoDataHere />
-            ) : (
-              <SimpleGrid
-                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                spacingY={4}
-                mx={{ base: 0, "2xl": "24 !important" }}
-                mt="5 !important"
-                justifyItems={"center"}>
-                {dataNfts.length > 0 &&
-                  dataNfts.map((item, index) => (
-                    <ProfileCard
-                      key={index}
-                      index={index}
-                      collection={item.collection}
-                      nonce={item.nonce}
-                      tokenName={item.tokenName}
-                      title={item.title}
-                      description={item.description}
-                      supply={item.supply}
-                      royalties={item.royalties}
-                      creationTime={item.creationTime}
-                      openNftDetailsDrawer={openNftDetailsModal}
-                      hasLoaded={oneCreatedNFTImgLoaded}
-                      setHasLoaded={setOneCreatedNFTImgLoaded}
-                    />
-                  ))}
-              </SimpleGrid>
-            ))}
+            {tabState == 1 &&
+              (!loadingOffers && dataNfts.length === 0 ? (
+                <NoDataHere />
+              ) : (
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
+                  {dataNfts.length > 0 &&
+                    dataNfts.map((item, index) => (
+                      <ProfileCard
+                        key={index}
+                        index={index}
+                        collection={item.collection}
+                        nonce={item.nonce}
+                        tokenName={item.tokenName}
+                        title={item.title}
+                        description={item.description}
+                        supply={item.supply}
+                        royalties={item.royalties}
+                        creationTime={item.creationTime}
+                        openNftDetailsDrawer={openNftDetailsModal}
+                        hasLoaded={oneCreatedNFTImgLoaded}
+                        setHasLoaded={setOneCreatedNFTImgLoaded}
+                      />
+                    ))}
+                </SimpleGrid>
+              ))}
           </TabPanel>
           <TabPanel>
-            {tabState == 2 && (!loadingOffers && nftMetadatas.length === 0 ? (
-              <NoDataHere />
-            ) : (
-              <SimpleGrid
-                columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-                spacingY={4}
-                mx={{ base: 0, "2xl": "24 !important" }}
-                mt="5 !important"
-                justifyItems={"center"}>
-                {nftMetadatas.length > 0 &&
-                  nftMetadatas.map((item, index) => (
-                    <ProfileCard
-                      key={index}
-                      index={index}
-                      collection={nftMetadatas[index].collection}
-                      nonce={nftMetadatas[index].nonce}
-                      tokenName={nftMetadatas[index].tokenName}
-                      title={nftMetadatas[index].title}
-                      description={nftMetadatas[index].description}
-                      supply={nftMetadatas[index].supply}
-                      royalties={nftMetadatas[index].royalties}
-                      creationTime={nftMetadatas[index].creationTime}
-                      openNftDetailsDrawer={openNftDetailsModal}
-                      hasLoaded={oneListedNFTImgLoaded}
-                      setHasLoaded={setOneListedNFTImgLoaded}
-                    />
-                  ))}
-              </SimpleGrid>
-            ))}
+            {tabState == 2 &&
+              (!loadingOffers && nftMetadatas.length === 0 ? (
+                <NoDataHere />
+              ) : (
+                <SimpleGrid
+                  columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+                  spacingY={4}
+                  mx={{ base: 0, "2xl": "24 !important" }}
+                  mt="5 !important"
+                  justifyItems={"center"}>
+                  {nftMetadatas.length > 0 &&
+                    nftMetadatas.map((item, index) => (
+                      <ProfileCard
+                        key={index}
+                        index={index}
+                        collection={nftMetadatas[index].collection}
+                        nonce={nftMetadatas[index].nonce}
+                        tokenName={nftMetadatas[index].tokenName}
+                        title={nftMetadatas[index].title}
+                        description={nftMetadatas[index].description}
+                        supply={nftMetadatas[index].supply}
+                        royalties={nftMetadatas[index].royalties}
+                        creationTime={nftMetadatas[index].creationTime}
+                        openNftDetailsDrawer={openNftDetailsModal}
+                        hasLoaded={oneListedNFTImgLoaded}
+                        setHasLoaded={setOneListedNFTImgLoaded}
+                      />
+                    ))}
+                </SimpleGrid>
+              ))}
           </TabPanel>
           <TabPanel>Nothing here yet...</TabPanel>
           <TabPanel>Nothing here yet...</TabPanel>
