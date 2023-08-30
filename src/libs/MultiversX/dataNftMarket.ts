@@ -26,6 +26,8 @@ import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain } from "../config";
+import { useGetAccountInfo, useGetLoginInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { backendApi } from "libs/utils";
 
 export class DataNftMarketContract {
   timeout: number;
@@ -235,7 +237,7 @@ export class DataNftMarketContract {
       chainID: this.chainID,
     });
     await refreshAccount();
-    await sendTransactions({
+    const { sessionId, error } = await sendTransactions({
       transactions: addERewTx,
       transactionsDisplayInfo: {
         processingMessage: "Adding Data NFT to marketplace",
@@ -244,6 +246,8 @@ export class DataNftMarketContract {
       },
       redirectAfterSign: false,
     });
+
+    return { sessionId, error };
   }
 
   async delistDataNft(index: number, delistAmount: number, senderAddress: string) {

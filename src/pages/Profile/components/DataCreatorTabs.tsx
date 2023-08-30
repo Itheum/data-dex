@@ -30,6 +30,7 @@ import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
+import { contractsForChain } from "libs/config";
 import { CustomPagination } from "components/CustomPagination";
 import ProfileCard from "components/ProfileCard";
 // import { contractsForChain } from "libs/config";
@@ -54,8 +55,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { address } = useGetAccountInfo();
   // const itheumToken = contractsForChain(routedChainID).itheumToken;
+  const { address } = useGetAccountInfo();
+  const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const { pageNumber, profileAddress } = useParams();
   const navigate = useNavigate();
@@ -75,13 +77,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const marketContract = new DataNftMarketContract(routedChainID);
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
-  const [myListedCount, setMyListedCount] = useState<number>(0);
   // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
   // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   // const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
+  const [myListedCount, setMyListedCount] = useState<number>(0);
 
   const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
   const [oneListedNFTImgLoaded, setOneListedNFTImgLoaded] = useState(false);
@@ -105,7 +107,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/%s/created",
       icon: FaBrush,
       isDisabled: false,
-      pieces: dataNfts?.length,
+      pieces: dataNfts?.length === 0 ? "" : dataNfts?.length,
     },
     {
       tabNumber: 2,
@@ -113,7 +115,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/%s/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      pieces: myListedCount,
+      pieces: myListedCount === 0 ? "" : myListedCount,
     },
     {
       tabNumber: 3,
@@ -130,14 +132,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       isDisabled: true,
     },
   ];
+
   const getDataNfts = async (addressArg: string) => {
     const backendApiRoute = backendApi(routedChainID);
-    const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
       setDataNft(_dataNfts);
-      setMyListedCount(listedCount);
     } catch (err: any) {
       setOneCreatedNFTImgLoaded(false);
       toast({
@@ -191,6 +192,10 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
 
+      if (isApiUp) {
+        const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
+        setMyListedCount(listedCount);
+      }
       // if pageIndex is out of range
       if (pageIndex >= _pageCount) {
         onGotoPage(0);

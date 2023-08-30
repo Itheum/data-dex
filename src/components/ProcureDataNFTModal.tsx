@@ -15,13 +15,23 @@ import {
   useToast,
   useColorMode,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString, tokenDecimals, getTokenWantedRepresentation } from "libs/utils";
+import {
+  convertEsdtToWei,
+  convertWeiToEsdt,
+  sleep,
+  printPrice,
+  convertToLocalString,
+  tokenDecimals,
+  getTokenWantedRepresentation,
+  backendApi,
+} from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
+import { set } from "react-hook-form";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -44,6 +54,10 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(chainID);
 
+  const { tokenLogin } = useGetLoginInfo();
+
+  const backendUrl = backendApi(chainID);
+
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
     getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
@@ -52,6 +66,43 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+
+  const [purchaseSessionId, setPurchaseSessionId] = useState<string>("");
+  const [purchaseTxStatus, setPurchaseTxStatus] = useState<boolean>(false);
+
+  const trackPurchaseTxStatus = useTrackTransactionStatus({
+    transactionId: purchaseSessionId,
+  });
+
+  useEffect(() => {
+    setPurchaseTxStatus(trackPurchaseTxStatus.isSuccessful ? true : false);
+  }, [trackPurchaseTxStatus]);
+
+  useEffect(() => {
+    async function updateOfferOnBackend() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = { supply: amount };
+        const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+    if (purchaseTxStatus) {
+      updateOfferOnBackend();
+    }
+  }, [purchaseTxStatus]);
 
   // set ReadTermChecked checkbox as false when modal opened
   useEffect(() => {
@@ -108,7 +159,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
-
+        setPurchaseSessionId(sessionId);
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -122,6 +173,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
+        setPurchaseSessionId(sessionId);
 
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
