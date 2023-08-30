@@ -28,7 +28,7 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
 import { FaBrush, FaStore } from "react-icons/fa";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";

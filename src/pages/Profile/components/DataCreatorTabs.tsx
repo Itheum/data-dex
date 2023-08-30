@@ -23,7 +23,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
 import { BsClockHistory } from "react-icons/bs";
@@ -43,6 +43,7 @@ import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "
 import { backendApi, createNftId, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 
 interface PropsType {
   tabState: number;
@@ -53,6 +54,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { address } = useGetAccountInfo();
   // const itheumToken = contractsForChain(routedChainID).itheumToken;
 
   const { pageNumber, profileAddress } = useParams();
@@ -73,6 +75,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const marketContract = new DataNftMarketContract(routedChainID);
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
+  const [myListedCount, setMyListedCount] = useState<number>(0);
   // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
   // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   // const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -110,7 +113,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       tabPath: "/profile/%s/listed",
       icon: MdOutlineShoppingBag,
       isDisabled: false,
-      // pieces: offers.length,
+      pieces: myListedCount,
     },
     {
       tabNumber: 3,
@@ -127,13 +130,14 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       isDisabled: true,
     },
   ];
-
   const getDataNfts = async (addressArg: string) => {
     const backendApiRoute = backendApi(routedChainID);
+    const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
     try {
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
       setDataNft(_dataNfts);
+      setMyListedCount(listedCount);
     } catch (err: any) {
       setOneCreatedNFTImgLoaded(false);
       toast({
