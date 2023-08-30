@@ -505,7 +505,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
                             Creator:&nbsp;
-                            <Flex onClick={() => navigate(`/profile/${nftData.attributes?.creator}`)}>
+                            <Flex
+                              onClick={() => {
+                                if (props.closeDetailsView) {
+                                  props.closeDetailsView();
+                                }
+                                navigate(`/profile/${nftData.attributes?.creator}`);
+                              }}>
                               <ShortAddress address={nftData.attributes?.creator} fontSize="lg" tooltipLabel="Profile" />
                               <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
                             </Flex>
@@ -513,7 +519,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           {offer && offer.owner && (
                             <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
                               Owner:&nbsp;
-                              <Flex onClick={() => navigate(`/profile/${offer.owner}`)}>
+                              <Flex
+                                onClick={() => {
+                                  if (props.closeDetailsView) {
+                                    props.closeDetailsView();
+                                  }
+                                  navigate(`/profile/${offer.owner}`);
+                                }}>
                                 <ShortAddress address={offer.owner} fontSize="lg" tooltipLabel="Profile" />
                                 <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
                               </Flex>
