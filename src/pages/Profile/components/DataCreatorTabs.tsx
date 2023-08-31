@@ -132,29 +132,34 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     },
   ];
 
-  const getDataNfts = async (addressArg: string) => {
-    try {
-      const backendApiRoute = backendApi(routedChainID);
-      const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
-      const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
-      setDataNft(_dataNfts);
-    } catch (err: any) {
-      setDataNft([]);
-      setOneCreatedNFTImgLoaded(false);
-      toast({
-        title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
-        description: err.message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    }
-  };
-
   useEffect(() => {
     if (!profileAddress || hasPendingTransactions) return;
-    getDataNfts(profileAddress);
-  }, [profileAddress, hasPendingTransactions]);
+    if (tabState !== 1) return;
+
+    // start loading offers
+    updateLoadingOffers(true);
+
+    (async () => {
+      try {
+        const backendApiRoute = backendApi(routedChainID);
+        const res = await axios.get(`${backendApiRoute}/data-nfts/${profileAddress}`);
+        const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
+        setDataNft(_dataNfts);
+      } catch (err: any) {
+        setDataNft([]);
+        setOneCreatedNFTImgLoaded(false);
+        toast({
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+          description: err.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    })();
+
+    updateLoadingOffers(false);
+  }, [profileAddress, hasPendingTransactions, tabState]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -176,18 +181,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     (async () => {
       if (!profileAddress || hasPendingTransactions) return;
+      if (tabState !== 2) return;
 
       // start loading offers
       updateLoadingOffers(true);
 
-      let _numberOfOffers = 0;
-      if (tabState === 1) {
-        // global offers
-        _numberOfOffers = dataNfts ? dataNfts.length : 0;
-      } else {
-        // offers of User
-        _numberOfOffers = await marketContract.viewUserTotalOffers(profileAddress);
-      }
+      const _numberOfOffers = await marketContract.viewUserTotalOffers(profileAddress);
 
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
@@ -206,6 +205,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     (async () => {
       if (!profileAddress || hasPendingTransactions) return;
+      if (tabState != 1) return;
 
       // start loading offers
       updateLoadingOffers(true);
