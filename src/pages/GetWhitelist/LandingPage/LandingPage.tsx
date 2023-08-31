@@ -28,11 +28,14 @@ export const LandingPage: React.FC = () => {
             </Heading>
 
             <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="7">
-              Are you a Data Creator? Do you generate valuable data insights for the Blockchain, DeFi, Gaming, Entertainment, or any other industry? If so, we
-              want to work with you!
+              It’s time to own and trade your data
             </Text>
-            <Text fontSize="lg" fontWeight="400" lineHeight="25px" mt={7}>
-              Get <strong>Whitelisted</strong> to be part of the first batch of Data Creators to mint Data NFTs. Make history!
+            <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={7}>
+              Whether you’re a data creator, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the value of
+              your data. Transform your unique datasets into a new asset class by minting your very own Data NFTs.
+            </Text>
+            <Text fontSize="lg" fontWeight="400" lineHeight="25px">
+              Don’t just be a part of the change, lead it.
             </Text>
             <Button
               as={Link}
