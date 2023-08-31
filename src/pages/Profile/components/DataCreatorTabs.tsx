@@ -351,7 +351,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       </Tabs>
 
       {
-        (tabState == 1 && dataNfts.length > 0 || tabState == 2 && offers.length > 0) && (
+        (tabState == 2 && offers.length > 0) && (
           <Flex justifyContent={{ base: "center", md: "center" }} py="5">
             <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
           </Flex>
