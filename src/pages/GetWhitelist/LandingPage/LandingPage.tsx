@@ -24,7 +24,7 @@ export const LandingPage: React.FC = () => {
           alignItems="center">
           <Box width={["100%", null, null, "500px", "650px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
             <Heading as="h1" size={["2xl", null, null, "2xl", "4xl"]} fontFamily="Clash-Medium">
-              Fully Unlock your Data’s Value and Mint as an NFT
+              Fully Unlock your Data’s Value by Minting it as a Data NFT
             </Heading>
 
             <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="7">

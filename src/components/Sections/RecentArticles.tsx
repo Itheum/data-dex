@@ -50,7 +50,9 @@ function ArticleCard({ date, title, description, link, imgLink }: { date: string
             borderRadius="16px"
             backgroundImage={imgLink}
             backgroundSize="cover"
-            backgroundRepeat="no-repeat"></Box>
+            backgroundRepeat="no-repeat"
+            h="195px"
+            w="393px"></Box>
         </Link>
         <Stack mt="6" spacing="2">
           <Text fontSize="sm">{date}</Text>
