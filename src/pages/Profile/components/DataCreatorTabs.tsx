@@ -133,8 +133,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   ];
 
   const getDataNfts = async (addressArg: string) => {
-    const backendApiRoute = backendApi(routedChainID);
     try {
+      const backendApiRoute = backendApi(routedChainID);
       const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
       const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
       setDataNft(_dataNfts);
