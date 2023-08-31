@@ -27,37 +27,21 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  // console.log(routedChainID);
 
   // ACCOUNT STORE
-  // const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
 
   // MARKET STORE
-  // const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
-  // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const updateMaxPaymentFeeMap = useMarketStore((state) => state.updateMaxPaymentFeeMap);
-  // const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const updateItheumPrice = useMarketStore((state) => state.updateItheumPrice);
-  // const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const updateIsMarketPaused = useMarketStore((state) => state.updateIsMarketPaused);
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const updateIsApiUp = useMarketStore((state) => state.updateIsApiUp);
-  // const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
   const updateIsMarketplaceApiUp = useMarketStore((state) => state.updateIsMarketplaceApiUp);
 
   // MINT STORE
-  // const userData = useMintStore((state) => state.userData);
   const updateUserData = useMintStore((state) => state.updateUserData);
-
-  // console.log("itheumBalance", itheumBalance);
-  // console.log("marketRequirements", marketRequirements);
-  // console.log("userData", userData);
-  // console.log("maxPaymentFeeMap", maxPaymentFeeMap);
-  // console.log("itheumPrice", itheumPrice);
-  // console.log("isMarketPaused", isMarketPaused);
-  // console.log("Access token", accessToken);
 
   const marketContract = new DataNftMarketContract(routedChainID);
   const mintContract = new DataNftMintContract(routedChainID);
