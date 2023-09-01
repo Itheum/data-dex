@@ -46,7 +46,7 @@ export const UseCasesCards: React.FC<CardProps> = (props) => {
         <hr style={{ marginTop: "25px", marginBottom: "25px" }} />
 
         <Stack direction="column" alignItems="center">
-          <Text fontFamily="Satoshi-Light" h="110px">
+          <Text fontFamily="Satoshi-Light" h="120px">
             {bodyContent}
           </Text>
           <img src={bodyImage} alt={bodyContent} style={{ marginTop: "70px" }} />
