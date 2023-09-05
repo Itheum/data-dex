@@ -87,7 +87,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       );
 
       const results = indexResponse.data[0].results;
-      const txLogs = indexResponse.data[0].logs;
+      const txLogs = indexResponse.data[0].logs.events;
 
       const allLogs = [];
 
@@ -102,44 +102,45 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
       const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
 
-      if (addOfferEvent) {
-        const indexFound = addOfferEvent.topics[1];
-        const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
+      console.log(addOfferEvent);
 
-        try {
-          const headers = {
-            Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-            "Content-Type": "application/json",
-          };
+      const indexFound = addOfferEvent.topics[1];
+      const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
 
-          const requestBody = {
-            index: index,
-            offered_token_identifier: nftData.collection,
-            offered_token_nonce: nftData.nonce,
-            offered_token_amount: 1,
-            title: nftData.title,
-            description: nftData.description,
-            wanted_token_identifier: offer.wanted_token_identifier,
-            wanted_token_nonce: offer.wanted_token_nonce,
-            wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
-            quantity: amount * 1,
-            owner: address,
-          };
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
 
-          console.log(requestBody);
-          const response = await fetch(`${backendUrl}/addOffer`, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify(requestBody),
-          });
+        const requestBody = {
+          index: index,
+          offered_token_identifier: nftData.collection,
+          offered_token_nonce: nftData.nonce,
+          offered_token_amount: 1,
+          title: nftData.title,
+          description: nftData.description,
+          wanted_token_identifier: offer.wanted_token_identifier,
+          wanted_token_nonce: offer.wanted_token_nonce,
+          wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
+          quantity: amount * 1,
+          owner: address,
+        };
 
-          const data = await response.json();
-          console.log("Response:", data);
-        } catch (error) {
-          console.log("Error:", error);
-        }
+        console.log(requestBody);
+        const response = await fetch(`${backendUrl}/addOffer`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      } catch (error) {
+        console.log("Error:", error);
       }
     }
+
     if (listTxStatus) {
       addOfferBackend();
       setAmount(1);
