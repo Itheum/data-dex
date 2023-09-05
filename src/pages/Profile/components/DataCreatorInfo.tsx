@@ -33,9 +33,13 @@ export const DataCreatorInfo: React.FC = () => {
           <ExternalLinkIcon mx="4px" fontSize="lg" />
         </Link>
       </Heading>
-      <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} mt={1}>
-        @{account.username}
-      </Heading>
+      {account.address === profileAddress ? (
+        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} mt={1}>
+          @{account.username}
+        </Heading>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
