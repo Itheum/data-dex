@@ -104,7 +104,6 @@ export const GuardRails: React.FC = () => {
       setWhitelistedAddresses(_whitelistedAddresses);
     })();
   }, []);
-
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading fontSize="36px" fontWeight="medium" mt={14} mb="32px">
@@ -174,6 +173,15 @@ export const GuardRails: React.FC = () => {
               </Badge>
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+              Transaction limitation:&nbsp;
+              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
+                  {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT : "-"}
+                </Text>
+              </Badge>
+            </Text>
+
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Max Data NFT supply:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
@@ -207,6 +215,7 @@ export const GuardRails: React.FC = () => {
             </Text>
           </Stack>
         </Box>
+        {/* add the the transaction limit here also */}
         <GuardRailsCards items={historyGuardrails} title="Historic Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />
 
         <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width={{ base: "31.25rem", xl: "20.5rem" }}>
@@ -268,6 +277,14 @@ export const GuardRails: React.FC = () => {
               <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
+                </Text>
+              </Badge>
+            </Text>
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+              Transaction limitation:&nbsp;
+              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
+                  {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT : "-"}
                 </Text>
               </Badge>
             </Text>

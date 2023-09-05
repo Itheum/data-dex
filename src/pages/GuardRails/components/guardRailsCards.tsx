@@ -60,6 +60,11 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
   const isEqualTimeBetweenMints = parseInt(currentItem?.time_between_mints_oldPrice ?? "0") === parseInt(currentItem?.time_between_mints_newPrice ?? "0");
   const isNullTimeBetweenMints = "-";
 
+  const isLowerTransactionLimitation = parseInt(currentItem?.transaction_limitation_old ?? "0") < parseInt(currentItem?.transaction_limitation_new ?? "0");
+  const isHigherTransactionLimitation = parseInt(currentItem?.transaction_limitation_old ?? "0") > parseInt(currentItem?.transaction_limitation_new ?? "0");
+  const isEqualTransactionLimitation = parseInt(currentItem?.transaction_limitation_old ?? "0") === parseInt(currentItem?.transaction_limitation_new ?? "0");
+  const isNullTransactionLimitation = "-";
+
   const isLowerAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice ?? "0") < parseInt(currentItem?.antiSpam_tax_newPrice ?? "0");
   const isHigherAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice ?? "0") > parseInt(currentItem?.antiSpam_tax_newPrice ?? "0");
   const isEqualAntiSpamFee = parseInt(currentItem?.antiSpam_tax_oldPrice ?? "0") === parseInt(currentItem?.antiSpam_tax_newPrice ?? "0");
@@ -290,6 +295,51 @@ export const GuardRailsCards: React.FC<Props> = (props) => {
               ) : (
                 <Text textColor={textColor} px={3} py={1.5}>
                   {isNullTimeBetweenMints}
+                </Text>
+              )}
+            </Badge>
+          </Flex>
+        </Text>
+        <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+          <Flex flexDirection="row" alignItems="center">
+            <Text>Transaction limitation:&nbsp;</Text>
+            <Badge backgroundColor={badgeColor} fontSize="0.8em" m={1} borderRadius="md">
+              {currentItem.transaction_limitation_new ? (
+                <Flex flexDirection="row" flexWrap="wrap" px={3} py={1.5} fontSize="0.8rem" fontWeight="500">
+                  {!isEqualTransactionLimitation ? (
+                    <Text as="s" textColor={textColor} fontWeight="500">
+                      {currentItem.transaction_limitation_old}
+                    </Text>
+                  ) : (
+                    <Text textColor={textColor} fontWeight="500">
+                      {currentItem.transaction_limitation_old}
+                    </Text>
+                  )}
+                  {isLowerTransactionLimitation && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowUp}
+                    </Text>
+                  )}
+                  {isHigherTransactionLimitation && (
+                    <Text as="span" textColor={textColor}>
+                      {arrowDown}
+                    </Text>
+                  )}
+                  {isEqualTransactionLimitation && (
+                    <Text as="span" textColor={textColor}>
+                      {equal}
+                    </Text>
+                  )}
+                  <Text textColor={textColor} fontWeight="500">
+                    {currentItem.transaction_limitation_new}
+                  </Text>
+                  <Text textColor={textColor} fontWeight="500">
+                    &nbsp;({currentItem.date})
+                  </Text>
+                </Flex>
+              ) : (
+                <Text textColor={textColor} px={3} py={1.5}>
+                  {isNullTransactionLimitation}
                 </Text>
               )}
             </Badge>
