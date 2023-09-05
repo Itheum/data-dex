@@ -1,9 +1,10 @@
 import React from "react";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
-import andreiTweet from "../../../assets/img/whitelist/andreiTweet.png";
-import coinTelegraphTweet from "../../../assets/img/whitelist/coinTelegraphTweet.png";
-import foudresTweet from "../../../assets/img/whitelist/foudresTweet.png";
-import mvxTweet from "../../../assets/img/whitelist/mvxTweet.png";
+import andreiTweet from "assets/img/whitelist/andreiTweet.png";
+import coinTelegraphTweet from "assets/img/whitelist/coinTelegraphTweet.png";
+import foudresTweet from "assets/img/whitelist/foudresTweet.png";
+import mvxTweet from "assets/img/whitelist/mvxTweet.png";
+import { gtagGo } from "libs/utils";
 
 export const Testimonials: React.FC = () => {
   return (
@@ -48,6 +49,9 @@ export const Testimonials: React.FC = () => {
           py={6}
           rounded="lg"
           mt={7}
+          onClick={() => {
+            gtagGo("gwl", "join", "testi");
+          }}
           href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
           isExternal>
           Get Whitelisted Today

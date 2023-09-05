@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Button, Card, CardBody, Link, Text, useColorMode } from "@chakra-ui/react";
+import { gtagGo } from "libs/utils";
 
 type TrendingDataCardsProps = {
   id: number;
@@ -33,7 +34,13 @@ export const TrendingDataCards: React.FC<TrendingDataCardsProps> = (props) => {
           <Text fontSize="17px" fontFamily="Satoshi-Light" h="100px">
             {description}
           </Text>
-          <Link mt="10" href={url} isExternal>
+          <Link
+            mt="10"
+            onClick={() => {
+              gtagGo("gwl", "expl", `crd${id}`);
+            }}
+            href={url}
+            isExternal>
             <Button size="lg" colorScheme="teal" variant="outline">
               View Data NFT
             </Button>
