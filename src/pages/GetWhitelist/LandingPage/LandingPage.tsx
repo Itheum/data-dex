@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Button, Center, Flex, Heading, Image, Link, Text, useColorMode } from "@chakra-ui/react";
-import illustration from "../../../assets/img/whitelist/getWhitelist.png";
 import { FaDiscord, FaTelegramPlane, FaTwitter } from "react-icons/fa";
+import illustration from "assets/img/whitelist/getWhitelist.png";
+import { gtagGo } from "libs/utils";
 
 export const LandingPage: React.FC = () => {
   const { colorMode } = useColorMode();
@@ -45,6 +46,9 @@ export const LandingPage: React.FC = () => {
               py={6}
               rounded="lg"
               mt={7}
+              onClick={() => {
+                gtagGo("gwl", "join", "hero");
+              }}
               href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
               isExternal>
               Get Whitelisted Today
@@ -52,7 +56,7 @@ export const LandingPage: React.FC = () => {
           </Box>
 
           <Box>
-            <Image marginLeft="15px" boxSize="auto" w="90%" src={illustration} alt="Data NFTs Illustration" />
+            <Image className="bounce-hero-img" marginLeft="15px" boxSize="auto" w="90%" src={illustration} alt="Data NFTs Illustration" />
           </Box>
         </Flex>
         <Box position="absolute" bottom={2} right={4} display={{ base: "none", md: "flex", xl: "flex" }}>
