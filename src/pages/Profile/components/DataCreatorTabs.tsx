@@ -30,13 +30,13 @@ import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
 import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
-import { contractsForChain } from "libs/config";
 import { CustomPagination } from "components/CustomPagination";
 import ProfileCard from "components/ProfileCard";
 // import { contractsForChain } from "libs/config";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import { labels } from "../../../libs/language";
+import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 import { getNftsByIds } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
@@ -44,7 +44,6 @@ import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "
 import { backendApi, createNftId, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
-import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 
 interface PropsType {
   tabState: number;
@@ -64,9 +63,9 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const toast = useToast();
 
   const offers = useMarketStore((state) => state.offers);
-  const loadingOffers = useMarketStore((state) => state.loadingOffers);
-  const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
   const updateOffers = useMarketStore((state) => state.updateOffers);
+  const [isLoadingFirst, setIsLoadingFirst] = useState<boolean>(false);
+
   // pagination
   const pageCount = useMarketStore((state) => state.pageCount);
   const updatePageCount = useMarketStore((state) => state.updatePageCount);
@@ -80,6 +79,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
   // const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   // const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const [isLoadingSecond, setIsLoadingSecond] = useState<boolean>(false);
 
   const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
@@ -133,28 +133,41 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     },
   ];
 
-  const getDataNfts = async (addressArg: string) => {
-    const backendApiRoute = backendApi(routedChainID);
-    try {
-      const res = await axios.get(`${backendApiRoute}/data-nfts/${addressArg}`);
-      const _dataNfts: DataNftType[] = res.data.map((data: any, index: number) => ({ ...data, index }));
-      setDataNft(_dataNfts);
-    } catch (err: any) {
-      setOneCreatedNFTImgLoaded(false);
-      toast({
-        title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
-        description: err.message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    }
-  };
-
   useEffect(() => {
-    if (!profileAddress) return;
-    getDataNfts(profileAddress);
-  }, [profileAddress, hasPendingTransactions]);
+    if (!profileAddress || hasPendingTransactions) return;
+    if (tabState !== 1) return;
+
+    (async () => {
+      try {
+        // start loading offers
+        setIsLoadingFirst(true);
+        setDataNft(() => {
+          const _dataNfts: DataNftType[] = [];
+          for (let index = 0; index < 8; index++) {
+            _dataNfts.push(createDataNftType());
+          }
+          return _dataNfts;
+        });
+
+        const backendApiRoute = backendApi(routedChainID);
+        const res = await axios.get(`${backendApiRoute}/data-nfts/${profileAddress}`);
+        const _dataNfts: DataNftType[] = res.data ? res.data.map((data: any, index: number) => ({ ...data, index })) : [];
+        setDataNft(_dataNfts);
+      } catch (err: any) {
+        setDataNft([]);
+        setOneCreatedNFTImgLoaded(false);
+        toast({
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+          description: err.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } finally {
+        setIsLoadingFirst(false);
+      }
+    })();
+  }, [profileAddress, hasPendingTransactions, tabState]);
 
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
@@ -176,18 +189,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     (async () => {
       if (!profileAddress || hasPendingTransactions) return;
+      if (tabState !== 2) return;
 
       // start loading offers
-      updateLoadingOffers(true);
+      setIsLoadingSecond(true);
 
-      let _numberOfOffers = 0;
-      if (tabState === 1) {
-        // global offers
-        _numberOfOffers = dataNfts ? dataNfts.length : 0;
-      } else {
-        // offers of User
-        _numberOfOffers = await marketContract.viewUserTotalOffers(profileAddress);
-      }
+      const _numberOfOffers = await marketContract.viewUserTotalOffers(profileAddress);
 
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
@@ -206,11 +213,12 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     (async () => {
       if (!profileAddress || hasPendingTransactions) return;
+      if (tabState !== 2) return;
 
       // start loading offers
-      updateLoadingOffers(true);
+      setIsLoadingSecond(true);
 
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, tabState === 1 ? "" : profileAddress);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, profileAddress);
       updateOffers(_offers);
 
       //
@@ -224,7 +232,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
       // end loading offers
       await sleep(0.5);
-      updateLoadingOffers(false);
+      setIsLoadingSecond(false);
     })();
   }, [profileAddress, pageIndex, pageSize, tabState, hasPendingTransactions]);
 
@@ -283,7 +291,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         <TabPanels>
           <TabPanel>
             {tabState == 1 &&
-              (!loadingOffers && dataNfts.length === 0 ? (
+              (!isLoadingFirst && dataNfts.length === 0 ? (
                 <NoDataHere />
               ) : (
                 <SimpleGrid
@@ -306,7 +314,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                         royalties={item.royalties}
                         creationTime={item.creationTime}
                         openNftDetailsDrawer={openNftDetailsModal}
-                        hasLoaded={oneCreatedNFTImgLoaded}
+                        hasLoaded={oneCreatedNFTImgLoaded && !isLoadingFirst}
                         setHasLoaded={setOneCreatedNFTImgLoaded}
                       />
                     ))}
@@ -315,7 +323,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
           </TabPanel>
           <TabPanel>
             {tabState == 2 &&
-              (!loadingOffers && nftMetadatas.length === 0 ? (
+              (!isLoadingSecond && nftMetadatas.length === 0 ? (
                 <NoDataHere />
               ) : (
                 <SimpleGrid
@@ -338,7 +346,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                         royalties={nftMetadatas[index].royalties}
                         creationTime={nftMetadatas[index].creationTime}
                         openNftDetailsDrawer={openNftDetailsModal}
-                        hasLoaded={oneListedNFTImgLoaded}
+                        hasLoaded={oneListedNFTImgLoaded && !isLoadingSecond}
                         setHasLoaded={setOneListedNFTImgLoaded}
                       />
                     ))}
@@ -350,9 +358,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabPanels>
       </Tabs>
 
-      <Flex justifyContent={{ base: "center", md: "center" }} py="5">
-        <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-      </Flex>
+      {
+        (tabState == 2 && offers.length > 0 && !isLoadingSecond) && (
+          <Flex justifyContent={{ base: "center", md: "center" }} py="5">
+            <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+          </Flex>
+        )
+      }
 
       {offerForDrawer && (
         <Modal onClose={onCloseListingDetails} isOpen={isOpenListingDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>

@@ -134,9 +134,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       (async () => {
         const _offer = await marketContract.viewOffer(Number(offerId));
         if (_offer === null || _offer === undefined) {
-          if (!toast.isActive("ER-23")) {
+          if (!toast.isActive("ER-24")) {
             toast({
-              id: "ER-23",
+              id: "ER-24",
               title: labels.ERR_MARKET_OFFER_NOT_FOUND,
               description: "We are showing Data NFT Details and other available offers below",
               status: "warning",
