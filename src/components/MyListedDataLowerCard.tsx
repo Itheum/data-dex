@@ -22,7 +22,12 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions, useGetSuccessfulTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
+import {
+  useGetPendingTransactions,
+  useGetSignedTransactions,
+  useGetSuccessfulTransactions,
+  useTrackTransactionStatus,
+} from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -51,11 +56,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { tokenLogin } = useGetLoginInfo();
+  const { tokenLogin, loginMethod } = useGetLoginInfo();
 
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const contract = new DataNftMarketContract(routedChainID);
+
+  const isWebWallet = loginMethod === "wallet";
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
@@ -74,6 +81,22 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { address } = useGetAccountInfo();
   const [sessionId, setSessionId] = useState<string>("");
   const [delistTxStatus, setDelistTxStatus] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+
+    const sessionInfo = sessionStorage.getItem("web-wallet-tx");
+    if (sessionInfo) {
+      const { type, index, amount } = JSON.parse(sessionInfo);
+      if (type == "delist-tx") {
+        updateOfferOnBackend(index, amount);
+        sessionStorage.removeItem("web-wallet-tx");
+      } else if (type == "update-price-tx") {
+        updatePriceOnBackend(index, amount);
+        sessionStorage.removeItem("web-wallet-tx");
+      }
+    }
+  }, []);
 
   const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
   const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);
@@ -95,58 +118,59 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   }, [trackTransactionStatus]);
 
   useEffect(() => {
-    async function updatePriceOnBackend() {
-      try {
-        const headers = {
-          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-          "Content-Type": "application/json",
-        };
-
-        const price = newListingPrice + (newListingPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
-
-        const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
-        const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(requestBody),
-        });
-
-        if (response.ok) {
-          console.log("Response:", response.ok);
-        }
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    }
-    if (updatePriceTxStatus) {
+    if (updatePriceTxStatus && !isWebWallet) {
       updatePriceOnBackend();
     }
   }, [updatePriceTxStatus]);
 
-  useEffect(() => {
-    async function updateOfferOnBackend() {
-      try {
-        const headers = {
-          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-          "Content-Type": "application/json",
-        };
+  async function updatePriceOnBackend(index = offer.index, newPrice = newListingPrice) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
 
-        const requestBody = { supply: delistAmount };
-        const response = await fetch(`${backendApi(chainID)}/updateOffer/${offer.index}`, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(requestBody),
-        });
+      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
 
-        if (response.ok) {
-          console.log("Response:", response.ok);
-        }
-      } catch (error) {
-        console.log("Error:", error);
+      const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
+      const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log("Response:", response.ok);
       }
+    } catch (error) {
+      console.log("Error:", error);
     }
+  }
 
-    if (delistTxStatus) {
+  async function updateOfferOnBackend(index = offer.index, supply = delistAmount) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = { supply: supply };
+      const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log("Response:", response.ok);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (delistTxStatus && !isWebWallet) {
       updateOfferOnBackend();
     }
   }, [delistTxStatus]);
@@ -189,7 +213,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     }
 
     const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
-    console.log(sessionId);
+    if (isWebWallet) {
+      sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "delist-tx", index: offer.index, amount: delistAmount }));
+    }
     setSessionId(sessionId);
 
     // a small delay for visual effect
@@ -222,6 +248,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
       address
     );
+    if (isWebWallet) {
+      sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "update-price-tx", index: offer.index, price: newListingPrice }));
+    }
     setUpdatePriceSessionId(sessionId);
 
     // a small delay for visual effect
