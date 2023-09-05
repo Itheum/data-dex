@@ -73,9 +73,9 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
     eventObj["event_value"] = value;
   }
 
-  // if (window.location.hostname !== "localhost") {
-  (window as any).gtag("event", action, eventObj);
-  // }
+  if (window.location.hostname !== "localhost") {
+    (window as any).gtag("event", action, eventObj);
+  }
 };
 
 export const clearAppSessionsLaunchMode = () => {
