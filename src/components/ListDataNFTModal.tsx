@@ -87,22 +87,24 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       );
 
       const results = indexResponse.data[0].results;
+      const txLogs = indexResponse.data[0].logs.events;
 
-      let indexFound;
+      const allLogs = [];
 
       for (const result of results) {
         if (result.logs && result.logs.events) {
-          const logs = result.logs;
-          const events = logs.events;
-
-          const indexFind = events.find((event: any) => event.identifier === "addOffer");
-
-          if (indexFind) {
-            indexFound = indexFind.topics[1];
-          }
+          const events = result.logs.events;
+          allLogs.push(...events);
         }
       }
 
+      allLogs.push(...txLogs);
+
+      const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
+
+      console.log(addOfferEvent);
+
+      const indexFound = addOfferEvent.topics[1];
       const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
 
       try {
@@ -138,6 +140,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         console.log("Error:", error);
       }
     }
+
     if (listTxStatus) {
       addOfferBackend();
       setAmount(1);
