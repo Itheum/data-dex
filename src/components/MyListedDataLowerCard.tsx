@@ -111,8 +111,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
           body: JSON.stringify(requestBody),
         });
 
-        const data = await response.json();
-        console.log("Response:", data);
+        if (response.ok) {
+          console.log("Response:", response.ok);
+        }
       } catch (error) {
         console.log("Error:", error);
       }
@@ -137,8 +138,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
           body: JSON.stringify(requestBody),
         });
 
-        const responseData = await response.json();
-        console.log("Response:", responseData);
+        if (response.ok) {
+          console.log("Response:", response.ok);
+        }
       } catch (error) {
         console.log("Error:", error);
       }
