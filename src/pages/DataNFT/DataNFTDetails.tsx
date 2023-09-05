@@ -497,11 +497,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Text fontSize={"16px"} px="28px" py="14px" noOfLines={6} h="inherit">
                           {transformDescription(nftData.attributes?.description)}
                         </Text>
-                        <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
-                          <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
-                            Fully Transferable License
-                          </Text>
-                        </Box>
+                        <Flex flexDirection="row" gap={3}>
+                          <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
+                            <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                              Fully Transferable License
+                            </Text>
+                          </Box>
+                          {address && address == offer?.owner && (
+                            <Box borderRadius="md" px="3" py="1.5" bgColor="#0ab8ff30">
+                              <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
+                                You are the Owner
+                              </Text>
+                            </Box>
+                          )}
+                        </Flex>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
                             Creator:&nbsp;
