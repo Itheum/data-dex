@@ -193,7 +193,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       updatePageCount(_pageCount);
 
       if (isApiUp) {
-        const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
+        const listedCount = await getOffersCountFromBackendApi(routedChainID, profileAddress);
         setMyListedCount(listedCount);
       }
       // if pageIndex is out of range
