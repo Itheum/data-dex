@@ -586,23 +586,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           ) : (
                             <Grid templateColumns="repeat(4, 1fr)" gap={2}>
                               <>
-                                <GridItem flexDirection="column" colSpan={2} fontSize="xl" fontWeight="500" py={2}>
+                                <GridItem flexDirection="column" colSpan={2} fontSize="lg" fontWeight="500" py={2}>
                                   Price
                                 </GridItem>
-                                <GridItem flexDirection="column" colSpan={1} fontSize="xl" fontWeight="500" py={2}>
+                                <GridItem flexDirection="column" colSpan={1} fontSize="lg" fontWeight="500" py={2}>
                                   Quantity
                                 </GridItem>
-                                <GridItem colSpan={1} fontSize="xl" fontWeight="500" textAlign="center" rowSpan={1}></GridItem>
+                                <GridItem colSpan={1} fontSize="lg" fontWeight="500" textAlign="center" rowSpan={1}></GridItem>
                               </>
                               {totalOffers &&
                                 totalOffers
                                   .filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index))
                                   .map((to: any, index: number) => (
                                     <Fragment key={index}>
-                                      <GridItem flexDirection="column" colSpan={2}>
+                                      <GridItem flexDirection="column" colSpan={2} fontSize="sm">
                                         {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
                                       </GridItem>
-                                      <GridItem flexDirection="column" colSpan={1}>
+                                      <GridItem flexDirection="column" colSpan={1} fontSize="sm">
                                         {to.quantity}
                                       </GridItem>
                                       <GridItem colSpan={1}>

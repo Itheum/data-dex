@@ -40,6 +40,7 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   Category: 'Videos'; Action: 'Play - Mac Chrome'
   Category: 'Videos', Action: 'Video Load Time', Label: 'Gone With the Wind', Value: downloadTime
 
+  // AUTH
   Category: 'Auth', Action: 'Login', Label: 'Metamask'
   Category: 'Auth', Action: 'Login - Success', Label: 'Metamask'
   Category: 'Auth', Action: 'Login', Label: 'DeFi'
@@ -48,6 +49,11 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   Category: 'Auth', Action: 'Login', Label: 'WebWallet'
 
   Category: 'Auth', Action: 'Logout', Label: 'WebWallet'
+
+  // Get Whitelist Page
+  Category: 'GWT', Action: 'Join', Label: 'hero/useca/Testi' // tracking the join whitelist links
+  Category: 'GWT', Action: 'Exp', Label: 'crd1/2/3' // explore trending collections
+
   */
 
   if (!action || !category) {
@@ -67,9 +73,9 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
     eventObj["event_value"] = value;
   }
 
-  if (window.location.hostname !== "localhost") {
-    (window as any).gtag("event", action, eventObj);
-  }
+  // if (window.location.hostname !== "localhost") {
+  (window as any).gtag("event", action, eventObj);
+  // }
 };
 
 export const clearAppSessionsLaunchMode = () => {
@@ -210,14 +216,14 @@ export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetS
 };
 
 export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
-  const reversedString = string.split('').reverse().join('');
+  const reversedString = string.split("").reverse().join("");
   let index = -1;
 
-  for(let i = 0; i < n; i++) {
-      index = reversedString.indexOf(char, index + 1);
-      if(index === -1) {
-          return -1;
-      }
+  for (let i = 0; i < n; i++) {
+    index = reversedString.indexOf(char, index + 1);
+    if (index === -1) {
+      return -1;
+    }
   }
 
   // Subtract the found index from the length of the string - 1 (because string index starts from 0)

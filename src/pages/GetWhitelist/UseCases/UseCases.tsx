@@ -1,12 +1,13 @@
 import React, { Fragment } from "react";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
 import { UseCasesCards } from "./components/UseCasesCards";
-import artists from "../../../assets/img/whitelist/artists.png";
-import buildingButton from "../../../assets/img/whitelist/buildingButton.svg";
-import buildings from "../../../assets/img/whitelist/buildings.png";
-import gamepad from "../../../assets/img/whitelist/gamepad.png";
-import personButton from "../../../assets/img/whitelist/personButtons.svg";
-import psButtons from "../../../assets/img/whitelist/psButtons.svg";
+import artists from "assets/img/whitelist/artists.png";
+import buildingButton from "assets/img/whitelist/buildingButton.svg";
+import buildings from "assets/img/whitelist/buildings.png";
+import gamepad from "assets/img/whitelist/gamepad.png";
+import personButton from "assets/img/whitelist/personButtons.svg";
+import psButtons from "assets/img/whitelist/psButtons.svg";
+import { gtagGo } from "libs/utils";
 
 const cardContent = [
   {
@@ -81,6 +82,9 @@ export const UseCases: React.FC = () => {
           py={6}
           rounded="lg"
           mt={7}
+          onClick={() => {
+            gtagGo("gwl", "join", "useca");
+          }}
           href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
           isExternal>
           Get Whitelisted Today
