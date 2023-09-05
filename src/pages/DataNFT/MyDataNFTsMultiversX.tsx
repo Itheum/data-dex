@@ -187,7 +187,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
                     </Text>
-                    <Text fontSize="sm" px={2} color="whiteAlpha.800">
+                    <Text fontSize="sm" px={2} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                       {tab.pieces}
                     </Text>
                   </Flex>
@@ -262,7 +262,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}  overflowY="scroll" h="90%">
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowY="scroll" h="90%">
               <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />

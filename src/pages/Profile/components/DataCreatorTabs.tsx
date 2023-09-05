@@ -280,7 +280,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                   <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                     {tab.tabName}
                   </Text>
-                  <Text fontSize="sm" px={2} color="whiteAlpha.800">
+                  <Text fontSize="sm" px={2} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                     {tab.pieces ?? ""}
                   </Text>
                 </Flex>
@@ -358,13 +358,11 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabPanels>
       </Tabs>
 
-      {
-        (tabState == 2 && offers.length > 0 && !isLoadingSecond) && (
-          <Flex justifyContent={{ base: "center", md: "center" }} py="5">
-            <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-          </Flex>
-        )
-      }
+      {tabState == 2 && offers.length > 0 && !isLoadingSecond && (
+        <Flex justifyContent={{ base: "center", md: "center" }} py="5">
+          <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+        </Flex>
+      )}
 
       {offerForDrawer && (
         <Modal onClose={onCloseListingDetails} isOpen={isOpenListingDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
