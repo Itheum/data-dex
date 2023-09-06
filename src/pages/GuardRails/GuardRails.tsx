@@ -282,9 +282,9 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Transaction limitation:&nbsp;
-              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
-                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT : "-"}
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails.transaction_limitation ? upcomingGuardRails.transaction_limitation : "-"}
                 </Text>
               </Badge>
             </Text>

@@ -506,6 +506,7 @@ export const upcomingGuardRails = {
   minimum_royalties: null,
   maximum_royalties: null,
   time_between_mints: null,
+  transaction_limitation: null,
   max_data_nft_supply: null,
   antiSpam_tax: null,
   accepted_payments: null,

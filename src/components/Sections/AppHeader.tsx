@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
+import { SunIcon, WarningTwoIcon } from "@chakra-ui/icons";
+
 import {
   Accordion,
   AccordionItem,
@@ -43,10 +44,9 @@ import {
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { FaStore, FaUserCheck } from "react-icons/fa";
+import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
-import { TbSunset2 } from "react-icons/tb";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
 import logoSmlL from "assets/img/logo-icon-b.png";
@@ -131,7 +131,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
   const { chainMeta: _chainMeta } = useChainMeta();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pathname } = useLocation();
 
@@ -372,17 +372,25 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
             )}
             {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
             Toggle Mode
-            <Box display={{ base: "none", md: "block", xl: "block" }}>
-              <IconButton
-                size={{ md: "md", xl: "lg", "2xl": "lg" }}
-                px="2 !important"
-                mr={{ md: "1", xl: "0" }}
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                aria-label="Options"
+                icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
+                variant="solid"
               />
-            </Box>
+              <MenuList>
+                <MenuItem icon={<SunIcon />} command="⌘N" onClick={() => setColorMode("light")}>
+                  Light
+                </MenuItem>
+                <MenuItem icon={<MdDarkMode />} command="⌘⇧N" onClick={() => setColorMode("dark")}>
+                  Dark
+                </MenuItem>
+                <MenuItem icon={<FaLaptop />} command="⌘O" onClick={() => setColorMode("system")}>
+                  System
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </HStack>
         </Flex>
       </Flex>
