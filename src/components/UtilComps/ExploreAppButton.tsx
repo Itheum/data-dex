@@ -3,12 +3,14 @@ import { Button, Text, Tooltip } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { EXPLORER_APP_SUPPORTED_NONCES, EXPLORER_APP_FOR_NONCE } from "libs/config";
-import { getExplorerTrailBlazerURL, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { useAccountStore } from "store";
 
 export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: number; w?: object; size?: any; fontSize?: any }) {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const accessToken = useAccountStore((state) => state.accessToken);
 
   return (
     <>
@@ -30,7 +32,9 @@ export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: 
               });
 
               if (appKey) {
-                window.open(EXPLORER_APP_FOR_NONCE[routedChainID][appKey])?.focus();
+                let url = EXPLORER_APP_FOR_NONCE[routedChainID][appKey];
+                if (accessToken) url += `?accessToken=${accessToken}`;
+                window.open(url)?.focus();
               }
             }}>
             <Text py={3} color="black" fontSize={fontSize ? fontSize : ""}>

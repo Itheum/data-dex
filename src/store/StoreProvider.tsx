@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useEffect } from "react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
+import { useSearchParams } from "react-router-dom";
 import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
 import { getAccountTokenFromApi, getApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -15,6 +16,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const [ searchParams ] = useSearchParams();
 
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   console.log(routedChainID);
@@ -56,16 +58,9 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const mintContract = new DataNftMintContract(routedChainID);
 
   useEffect(() => {
-    (async () => {
-      const initToken = await client.initialize();
-      const parts = initToken.split(".");
-      if (parts) {
-        const formatToken = address + parts.slice(1).join(".");
-        const finalAccessToken = client.getToken(address, initToken, formatToken);
-        updateAccessToken(finalAccessToken);
-      }
-    })();
-  }, [address, isMxLoggedIn]);
+    const accessToken = searchParams.get("accessToken");
+    updateAccessToken(accessToken ?? "");
+  }, [address]);
 
   useEffect(() => {
     (async () => {
