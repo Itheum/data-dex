@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { historicGuardrails, upcomingGuardRails } from "../../libs/config";
+import { contractsForChain, historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt } from "../../libs/utils";
+import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
-import { useChainMeta } from "../../store/ChainMetaContext";
 
 export const GuardRails: React.FC = () => {
   const [whitelistedAddresses, setWhitelistedAddresses] = useState<string[]>([]);
@@ -23,8 +23,10 @@ export const GuardRails: React.FC = () => {
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
 
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const mxDataNftMintContract = new DataNftMintContract(_chainMeta.networkId);
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
 
   const historyGuardrails = historicGuardrails;
 
@@ -43,10 +45,8 @@ export const GuardRails: React.FC = () => {
   }
 
   useEffect(() => {
-    if (!_chainMeta.networkId) return;
-
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -59,7 +59,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -72,7 +72,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
+      const networkProvider = getNetworkProvider(routedChainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -85,8 +85,8 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(_chainMeta.networkId, undefined);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([_chainMeta.contracts.itheumToken]);
+      const networkProvider = getNetworkProvider(routedChainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -96,7 +96,7 @@ export const GuardRails: React.FC = () => {
         setAntiSpamTax(convertWeiToEsdt(value).toNumber());
       }
     })();
-  }, [_chainMeta.networkId]);
+  }, [routedChainID]);
 
   useEffect(() => {
     (async () => {
@@ -107,14 +107,15 @@ export const GuardRails: React.FC = () => {
 
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-      <Heading fontSize="36px" fontWeight="medium" mt={14} mb="32px">
+      <Heading fontSize="36px" fontFamily="Clash-Medium" mt={14} mb="32px">
         Guard Rails
       </Heading>
       <Flex gap={4} w="full" justifyContent={{ base: "center", lg: "space-between" }} flexWrap="wrap">
         <Box border="1px solid transparent" borderColor="#00C79740" borderRadius="22px" width={{ base: "31.25rem", xl: "24rem", "2xl": "26rem" }}>
           <Text
             textAlign="center"
-            fontWeight="600"
+            fontFamily="Clash-Medium"
+            fontWeight="semibold"
             borderTopRadius="22px"
             py={5}
             h="68px"
@@ -212,7 +213,8 @@ export const GuardRails: React.FC = () => {
         <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="22px" width={{ base: "31.25rem", xl: "20.5rem" }}>
           <Text
             textAlign="center"
-            fontWeight="600"
+            fontFamily="Clash-Medium"
+            fontWeight="semibold"
             borderTopRadius="22px"
             py={5}
             h="68px"
@@ -306,7 +308,7 @@ export const GuardRails: React.FC = () => {
           </Stack>
         </Box>
       </Flex>
-      <Heading fontSize="30px" fontWeight="medium" mt={32} mb="25px">
+      <Heading fontSize="30px" fontFamily="Clash-Medium" mt={32} mb="25px">
         Whitelisted Addresses
       </Heading>
       <Box border="1px solid transparent" borderColor="#00C79750" borderRadius="15px" mb="100px" w="full">

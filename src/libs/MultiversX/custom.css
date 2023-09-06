@@ -15,18 +15,94 @@
   src: url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 }
 
+@font-face {
+  font-family: 'Satoshi-Light';
+  src: url(../../assets/fonts/Satoshi-Light.woff2) format('woff2'),
+  url(../../assets/fonts/Satoshi-Light.woff) format('woff'),
+  url(../../assets/fonts/Satoshi-Light.ttf) format('truetype');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-Regular';
+  src: url(../../assets/fonts/Satoshi-Regular.woff2) format('woff2'),
+  url(../../assets/fonts/Satoshi-Regular.woff) format('woff'),
+  url(../../assets/fonts/Satoshi-Regular.ttf) format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-Medium';
+  src: url(../../assets/fonts/Satoshi-Medium.woff2) format('woff2'),
+  url(../../assets/fonts/Satoshi-Medium.woff) format('woff'),
+  url(../../assets/fonts/Satoshi-Medium.ttf) format('truetype');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-Bold';
+  src: url(../../assets/fonts/Satoshi-Bold.woff2) format('woff2'),
+  url(../../assets/fonts/Satoshi-Bold.woff) format('woff'),
+  url(../../assets/fonts/Satoshi-Bold.ttf) format('truetype');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash-Light';
+  src: url(../../assets/fonts/ClashDisplay-Light.woff2) format('woff2'),
+  url(../../assets/fonts/ClashDisplay-Light.woff) format('woff'),
+  url(../../assets/fonts/ClashDisplay-Light.ttf) format('truetype');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash-Regular';
+  src: url(../../assets/fonts/ClashDisplay-Regular.woff2) format('woff2'),
+  url(../../assets/fonts/ClashDisplay-Regular.woff) format('woff'),
+  url(../../assets/fonts/ClashDisplay-Regular.ttf) format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash-Medium';
+  src: url(../../assets/fonts/ClashDisplay-Medium.woff2) format('woff2'),
+  url(../../assets/fonts/ClashDisplay-Medium.woff) format('woff'),
+  url(../../assets/fonts/ClashDisplay-Medium.ttf) format('truetype');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash-Bold';
+  src: url(../../assets/fonts/ClashDisplay-Bold.woff2) format('woff2'),
+  url(../../assets/fonts/ClashDisplay-Bold.woff) format('woff'),
+  url(../../assets/fonts/ClashDisplay-Bold.ttf) format('truetype');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
 .filter::placeholder {
   font-size: 14px;
   font-weight: 600;
 }
 
 body {
-  font-family: "Inter", sans-serif !important;
+  font-family: "Satoshi-Medium", sans-serif !important;
   color: white;
-}
-
-.chakra-ui-light .dapp-core-component__signWithDeviceModalStyles__title {
-  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .chakra-ui-light .dapp-core-component__confirmReceiverStyles__receiver .dapp-core-component__confirmReceiverStyles__value {
@@ -42,13 +118,29 @@ body {
 }
 
 .chakra-ui-light [data-testid="signBtn"] {
-  background-color: var(--chakra-colors-whiteAlpha-700) !important;
+  background-color: var(--chakra-colors-blackAlpha-200) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
-  border-color: var(--chakra-colors-whiteAlpha-200) !important;
+  border-color: var(--chakra-colors-whiteAlpha-900) !important;
+  border-width: 4px !important;
+  border-style: solid !important;
+  border-radius: 12px !important;
+}
+
+.chakra-ui-light [data-testid="signBtn"]:hover {
+  background-color: var(--chakra-colors-blackAlpha-400) !important;
+  color: var(--chakra-colors-chakra-whiteAlpha-400) !important;
+  border-color: var(--chakra-colors-whiteAlpha-900) !important;
+  border-width: 4px !important;
+  border-style: solid !important;
+  border-radius: 12px !important;
 }
 
 .chakra-ui-light .auth_wrap {
   background-color: var(--chakra-colors-gray-200) !important;
+}
+
+.dapp-core-component__signWithDeviceModalStyles__title {
+  color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .auth_button {
@@ -102,28 +194,28 @@ body {
 
 /* START MVX LOGIN STYLING */
 .dapp-core-component__dappModalStyles__dappModalContent.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-dialog-content {
-  background: var(--chakra-colors-gray-700) !important;
+  background: var(--chakra-colors-chakra-body-bg) !important;
 }
 
 .dapp-core-component__dappModalStyles__dappModalHeader.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-header {
-  background: var(--chakra-colors-gray-700) !important;
+  background: var(--chakra-colors-chakra-body-bg) !important;
 }
 
 .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__ledgerLoginContainerStyles__ledger-modal-close-button {
-  background: var(--chakra-colors-gray-700) !important;
+  background: var(--chakra-colors-chakra-body-bg) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__main__btn.dapp-core-component__main__btn-primary.dapp-core-component__ledgerConnectStyles__login-connect-container-button {
   background: var(--chakra-colors-whiteAlpha-200) !important;
-  border-color: var(--chakra-colors-whiteAlpha-200) !important;
+  border-color: var(--chakra-colors-whiteAlpha-900) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
 .dapp-core-component__addressTableStyles__ledger-address-table-wrapper
   .dapp-core-component__addressTableStyles__ledger-address-table
   .dapp-core-component__addressTableStyles__ledger-address-table-header {
-  background: var(--chakra-colors-gray-700) !important;
+  background: var(--chakra-colors-chakra-body-bg) !important;
 }
 
 .dapp-core-component__confirmAddressStyles__ledger-confirm-address
@@ -136,12 +228,12 @@ body {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
+.chakra-ui-dark .dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
   .dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-dialog-content {
   background: var(--chakra-colors-gray-700) !important;
 }
 
-.dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
+.chakra-ui-dark .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
   background: var(--chakra-colors-gray-700) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
 }
@@ -156,7 +248,7 @@ body {
 }
 
 .dapp-core-component__ledgerConnectStyles__login-connect-container-icon {
-  filter: invert(1) !important;
+  filter: invert(70%) !important;
 }
 
 .dapp-core-component__addressRowStyles__ledger-address-table-body-item.dapp-ledger-address-row {

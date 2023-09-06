@@ -1,20 +1,22 @@
 import React from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Text, Flex, HStack, Link, useColorMode } from "@chakra-ui/react";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
-import { getSentryProfile } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
+import { getSentryProfile, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `env:${getSentryProfile()}`;
 
 export default function () {
   const { colorMode } = useColorMode();
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const isPublicApi = getApi(_chainMeta?.networkId).includes("api.multiversx.com");
-  const isPublicNetworkProvider = getNetworkProviderCodification(_chainMeta?.networkId).includes(".multiversx.com");
-  const isApiNetworkProvider = getNetworkProvider(_chainMeta?.networkId) instanceof ApiNetworkProvider;
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const isPublicApi = getApi(routedChainID).includes("api.multiversx.com");
+  const isPublicNetworkProvider = getNetworkProviderCodification(routedChainID).includes(".multiversx.com");
+  const isApiNetworkProvider = getNetworkProvider(routedChainID) instanceof ApiNetworkProvider;
 
   return (
     <Box

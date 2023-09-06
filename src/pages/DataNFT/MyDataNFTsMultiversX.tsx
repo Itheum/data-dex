@@ -22,7 +22,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
@@ -32,17 +33,20 @@ import { NoDataHere } from "components/Sections/NoDataHere";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX";
+import { contractsForChain } from "libs/config";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const itheumToken = _chainMeta?.contracts?.itheumToken || "";
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const itheumToken = contractsForChain(routedChainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
 
@@ -100,9 +104,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    if (!_chainMeta) return;
-
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, _chainMeta.contracts.dataNFTFTTicker, _chainMeta.networkId);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(routedChainID).dataNFTFTTicker, routedChainID);
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
@@ -146,10 +148,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   useEffect(() => {
     if (hasPendingTransactions) return;
-    if (!_chainMeta) return;
 
     getOnChainNFTs();
-  }, [hasPendingTransactions, _chainMeta]);
+  }, [hasPendingTransactions]);
 
   function openNftDetailsDrawer(index: number) {
     setNftForDrawer(dataNfts[index]);
@@ -164,10 +165,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   return (
     <>
       <Stack>
-        <Heading size="xl" fontWeight="medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="xl" fontFamily="Clash-Medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Data NFT Wallet
         </Heading>
-        <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
           Below are the Data NFTs you created or purchased on the current blockchain
         </Heading>
 
@@ -178,9 +179,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 <Tab
                   key={index}
                   isDisabled={tab.isDisabled}
+                  p={{ base: "0", md: "initial" }}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   onClick={() => onChangeTab(index + 1)}>
-                  <Flex ml="4.7rem" alignItems="center" py={3} overflow="hidden">
+                  <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3} overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
@@ -260,14 +262,14 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent overflowY="scroll" h="90%">
-              <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}  overflowY="scroll" h="90%">
+              <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />
-                  <Heading as="h4" size="lg">
-                    Data NFT Details
-                  </Heading>
                 </HStack>
+                <Text fontSize="32px" fontFamily="Clash-Medium" mt={3} fontWeight="500" textAlign="center">
+                  Data NFT Details
+                </Text>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />

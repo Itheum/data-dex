@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -21,10 +21,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetPendingTransactions, useGetSuccessfulTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
@@ -36,10 +36,11 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
-  networkIdBasedOnLoggedInStatus,
+  routeChainIDBasedOnLoggedInStatus,
+  shouldPreviewDataBeEnabled,
+  backendApi,
 } from "libs/utils";
-import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
+import { useAccountStore, useMarketStore } from "store";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -47,15 +48,19 @@ type MyListedDataLowerCardProps = {
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { network } = useGetNetworkConfig();
+  const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const contract = new DataNftMarketContract(_chainMeta.networkId);
+  const { tokenLogin } = useGetLoginInfo();
+
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const contract = new DataNftMarketContract(routedChainID);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  const backendUrl = backendApi(chainID);
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -64,10 +69,87 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [delistAmountError, setDelistAmountError] = useState<string>("");
-  const itheumToken = _chainMeta.contracts.itheumToken;
+  const itheumToken = contractsForChain(routedChainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
-  const isMxLoggedIn = !!address;
+  const [sessionId, setSessionId] = useState<string>("");
+  const [delistTxStatus, setDelistTxStatus] = useState<boolean>(false);
+
+  const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
+  const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);
+
+  const trackUpdatePriceTransactionStatus = useTrackTransactionStatus({
+    transactionId: updatePriceSessionId,
+  });
+
+  useEffect(() => {
+    setUpdatePriceTxStatus(trackUpdatePriceTransactionStatus.isPending ? true : false);
+  }, [trackUpdatePriceTransactionStatus]);
+
+  const trackTransactionStatus = useTrackTransactionStatus({
+    transactionId: sessionId,
+  });
+
+  useEffect(() => {
+    setDelistTxStatus(trackTransactionStatus.isPending ? true : false);
+  }, [trackTransactionStatus]);
+
+  useEffect(() => {
+    async function updatePriceOnBackend() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const price = newListingPrice + (newListingPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
+
+        const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
+        const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+          console.log("Response:", response.ok);
+        }
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+    if (updatePriceTxStatus) {
+      updatePriceOnBackend();
+    }
+  }, [updatePriceTxStatus]);
+
+  useEffect(() => {
+    async function updateOfferOnBackend() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = { supply: delistAmount };
+        const response = await fetch(`${backendApi(chainID)}/updateOffer/${offer.index}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+          console.log("Response:", response.ok);
+        }
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+
+    if (delistTxStatus) {
+      updateOfferOnBackend();
+    }
+  }, [delistTxStatus]);
 
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
@@ -106,7 +188,9 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    contract.delistDataNft(offer.index, delistAmount, address);
+    const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
+    console.log(sessionId);
+    setSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -133,24 +217,32 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    contract.updateOfferPrice(offer.index, convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(), address);
+    const { sessionId } = await contract.updateOfferPrice(
+      offer.index,
+      convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
+      address
+    );
+    setUpdatePriceSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
     onUpdatePriceModalClose();
   };
 
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
+      <Tooltip
+        colorScheme="teal"
+        hasArrow
+        label="View Data is disabled on devnet"
+        isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
+          isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
@@ -199,7 +291,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       {offer && nftMetadata && (
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             {delistModalState === 0 ? (
               <>
                 <ModalBody py={6}>
@@ -207,7 +299,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                        <Text
+                          px="15px"
+                          py="5px"
+                          borderRadius="md"
+                          fontWeight="bold"
+                          fontSize="md"
+                          backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}>
                           {nftMetadata.tokenName}
                           <br />
                           Listed supply: {offer.quantity}
@@ -272,7 +370,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                        <Text
+                          px="15px"
+                          py="5px"
+                          borderRadius="md"
+                          fontWeight="bold"
+                          fontSize="md"
+                          backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}>
                           {nftMetadata ? nftMetadata.tokenName : ""}
                           <br />
                           Listed supply: {offer.quantity}
@@ -308,13 +412,20 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       {offer && marketRequirements && nftMetadata && (
         <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">
                 <Box flex="4" alignContent="center">
                   <Text fontSize="lg">Update Listing Fee for Each</Text>
                   <Flex mt="1">
-                    <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
+                    <Text
+                      px="15px"
+                      py="5px"
+                      borderRadius="md"
+                      fontWeight="bold"
+                      fontSize="md"
+                      backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                      textAlign="center">
                       {nftMetadata.tokenName}
                     </Text>
                   </Flex>

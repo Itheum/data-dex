@@ -1,10 +1,28 @@
-import React, { useState } from "react";
-import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Text,
+  Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  HStack,
+  Flex,
+  Button,
+  Checkbox,
+  Divider,
+  useToast,
+  useColorMode,
+} from "@chakra-ui/react";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
-import { convertEsdtToWei, sleep, printPrice, convertToLocalString, getTokenWantedRepresentation } from "libs/utils";
-import { useAccountStore, useMarketStore } from "store";
+import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
+import { useMarketStore } from "store";
+import axios from "axios";
+import { getApi } from "libs/MultiversX/api";
+import { contractsForChain } from "libs/config";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -18,6 +36,7 @@ export type ListModalProps = {
 };
 
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
+  const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
   const fullPrice = amount * offer.wanted_token_amount;
@@ -31,9 +50,102 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+  const { tokenLogin } = useGetLoginInfo();
+
+  const backendUrl = backendApi(chainID);
+
+  const { colorMode } = useColorMode();
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-  const itheumBalance = useAccountStore((state) => state.itheumBalance);
+
+  const [listTxSessionId, setListTxSessionId] = useState<string>("");
+  const [listTxStatus, setListTxStatus] = useState<boolean>(false);
+  const [listTxHash, setListTxHash] = useState<string>("");
+
+  const trackTransactionStatus = useTrackTransactionStatus({
+    transactionId: listTxSessionId,
+  });
+
+  const { pendingTransactions } = useGetPendingTransactions();
+
+  useEffect(() => {
+    if (!pendingTransactions[listTxSessionId]) return;
+    const transactionHash = pendingTransactions[listTxSessionId].transactions[0].hash;
+    setListTxHash(transactionHash);
+  }, [pendingTransactions]);
+
+  useEffect(() => {
+    setListTxStatus(trackTransactionStatus.isSuccessful ? true : false);
+  }, [trackTransactionStatus]);
+
+  useEffect(() => {
+    async function addOfferBackend() {
+      const indexResponse = await axios.get(
+        `https://${getApi(chainID)}/accounts/${
+          contractsForChain(chainID).market
+        }/transactions?hashes=${listTxHash}&status=success&withScResults=true&withLogs=true`
+      );
+
+      const results = indexResponse.data[0].results;
+      const txLogs = indexResponse.data[0].logs.events;
+
+      const allLogs = [];
+
+      for (const result of results) {
+        if (result.logs && result.logs.events) {
+          const events = result.logs.events;
+          allLogs.push(...events);
+        }
+      }
+
+      allLogs.push(...txLogs);
+
+      const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
+
+      console.log(addOfferEvent);
+
+      const indexFound = addOfferEvent.topics[1];
+      const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
+
+      try {
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          index: index,
+          offered_token_identifier: nftData.collection,
+          offered_token_nonce: nftData.nonce,
+          offered_token_amount: 1,
+          title: nftData.title,
+          description: nftData.description,
+          wanted_token_identifier: offer.wanted_token_identifier,
+          wanted_token_nonce: offer.wanted_token_nonce,
+          wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
+          quantity: amount * 1,
+          owner: address,
+        };
+
+        console.log(requestBody);
+        const response = await fetch(`${backendUrl}/addOffer`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+
+    if (listTxStatus) {
+      addOfferBackend();
+      setAmount(1);
+    }
+  }, [listTxStatus]);
 
   const onProcure = async () => {
     const showErrorToast = (title: string) => {
@@ -70,12 +182,13 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       }
     }
 
-    marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
+    const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
 
-    setAmount(1);
+    setListTxSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
+
     onClose();
   };
 
@@ -83,13 +196,20 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay backdropFilter="blur(10px)" />
-        <ModalContent>
+        <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">List Data NFTs on Marketplace</Text>
                 <Flex mt="1">
-                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
+                  <Text
+                    px="15px"
+                    py="5px"
+                    borderRadius="md"
+                    fontWeight="bold"
+                    fontSize="md"
+                    backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                    textAlign="center">
                     {nftData.tokenName}
                   </Text>
                 </Flex>

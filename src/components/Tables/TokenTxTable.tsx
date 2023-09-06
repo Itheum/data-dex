@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Link, Spinner, Flex } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
@@ -9,18 +10,17 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
-import { useChainMeta } from "store/ChainMetaContext";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 import { DataTable } from "./Components/DataTable";
 import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 
 export default function TokenTxTable(props: TokenTableProps) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [data, setData] = useState<TransactionInTable[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
-  const marketContract = new DataNftMarketContract(networkId);
+  const marketContract = new DataNftMarketContract(routedChainID);
   const linkIconStyle = { display: "flex" };
 
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
@@ -31,7 +31,10 @@ export default function TokenTxTable(props: TokenTableProps) {
         cell: (cellProps) => (
           <HStack>
             <ShortAddress address={cellProps.getValue()} fontSize="lg" />
-            <Link href={`${CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
+            <Link
+              href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
+              isExternal
+              style={linkIconStyle}>
               <ExternalLinkIcon fontSize="lg" />
             </Link>
           </HStack>
@@ -45,7 +48,7 @@ export default function TokenTxTable(props: TokenTableProps) {
         cell: (cellProps) => (
           <HStack>
             <ShortAddress address={cellProps.getValue()} fontSize="lg" />
-            <Link href={`${CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
+            <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
               <ExternalLinkIcon />
             </Link>
           </HStack>
@@ -59,7 +62,7 @@ export default function TokenTxTable(props: TokenTableProps) {
         cell: (cellProps) => (
           <HStack>
             <ShortAddress address={cellProps.getValue()} fontSize="lg" />
-            <Link href={`${CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
+            <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${cellProps.getValue()}`} isExternal style={linkIconStyle}>
               <ExternalLinkIcon fontSize="lg" />
             </Link>
           </HStack>
@@ -91,7 +94,7 @@ export default function TokenTxTable(props: TokenTableProps) {
   );
 
   useEffect(() => {
-    const apiUrl = getApi(networkId);
+    const apiUrl = getApi(routedChainID);
 
     Promise.all([
       axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),

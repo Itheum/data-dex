@@ -16,13 +16,13 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { logout } from "@multiversx/sdk-dapp/utils";
-import { Navigate, Outlet, Route, Routes, useLocation, useRoutes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
+import { clearAppSessionsLaunchMode, gtagGo, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
@@ -31,22 +31,10 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
-import { useChainMeta } from "store/ChainMetaContext";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
 
 const mxLogout = logout;
-
-const routes = [
-  {
-    path: "/profile",
-    element: <Profile />,
-    children: [
-      { path: "created", element: <Profile tabState={1} /> },
-      { path: "listed", element: <Profile tabState={2} /> },
-    ],
-  },
-];
 
 function App({ onLaunchMode }: { onLaunchMode: any }) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
@@ -54,6 +42,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
@@ -69,20 +58,6 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
-
-  const routing = useRoutes([
-    {
-      path: "/profile",
-      element: <Profile />,
-      children: [
-        { path: "created", element: <Profile tabState={1} /> },
-        { path: "listed", element: <Profile tabState={2} /> },
-      ],
-    },
-  ]);
-
-  // context hooks
-  const { chainMeta: _chainMeta } = useChainMeta();
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
@@ -102,17 +77,14 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
     console.log(consoleNotice);
   }, []);
 
-  const networkId = chainID === "1" ? "E1" : "ED";
   useEffect(() => {
-    // setChain(CHAINS[networkId] || "Unknown chain");
-
-    if (!SUPPORTED_CHAINS.includes(networkId)) {
+    if (!SUPPORTED_CHAINS.includes(routedChainID)) {
       setAlertIsOpen(true);
     }
-    if (networkId === "ED") {
+    if (routedChainID === "D") {
       linkOrRefreshDataDATAccount(true);
     }
-  }, [chainID]);
+  }, [routedChainID]);
 
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
@@ -218,9 +190,9 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
               </Route>
 
               <Route path="/profile" element={<Outlet />}>
-                <Route path="" element={<Profile tabState={1} />} />
-                <Route path="created" element={<Profile tabState={1} />} />
-                <Route path="listed" element={<Profile tabState={2} />} />
+                <Route path=":profileAddress" element={<Profile tabState={1} />} />
+                <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
+                <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
               </Route>
               {/*{routing}*/}
 
@@ -251,6 +223,8 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
                 <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                 <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
                 <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
+                <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
+                <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
@@ -276,7 +250,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
               <AlertDialogBody>
                 Sorry the{" "}
                 <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                  {CHAINS[networkId]}
+                  {CHAINS[routedChainID as keyof typeof CHAINS]}
                 </Badge>{" "}
                 chain is currently not supported. We are working on it. You need to be on{" "}
                 {SUPPORTED_CHAINS.map((i) => (

@@ -40,6 +40,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
@@ -56,9 +57,8 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor } from "libs/utils";
+import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { useAccountStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const exploreRouterMenu = [
   {
@@ -103,7 +103,7 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.NFTALL,
-        path: "/datanfts/marketplace/market",
+        path: "/datanfts/marketplace",
         label: "Data NFT Marketplace",
         shortLbl: "Market",
         Icon: FaStore,
@@ -128,11 +128,12 @@ const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems
 
 const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -169,7 +170,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[_chainMeta.networkId as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -187,11 +188,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack
-          alignItems={"center"}
-          backgroundColor="none"
-          width={{ base: "full", md: "15rem" }}
-          justifyContent={{ base: "space-around", md: "space-around" }}>
+        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "15rem" }} justifyContent="space-around">
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"
@@ -224,15 +221,37 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               <Heading
                 display={{ base: "flex", md: "flex", xl: "flex" }}
                 fontSize={{ base: "md", xl: "xl" }}
+                fontFamily="Clash-Medium"
                 fontWeight="400"
-                lineHeight="16.29px"
-                fontFamily="">
+                lineHeight="16.29px">
                 Data&nbsp;
                 <Text fontWeight="700">DEX</Text>
               </Heading>
             </HStack>
           </Link>
-          <Box></Box>
+          {isMxLoggedIn ? (
+            <Box display={{ base: "block", md: "none" }}>
+              <IconButton
+                size="lg"
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
+          ) : (
+            <Box display={{ base: "block", md: "none" }}>
+              <IconButton
+                size="md"
+                ml={12}
+                bgColor=""
+                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
+                aria-label="Change Color Theme"
+                color="teal.200"
+                onClick={toggleColorMode}
+              />
+            </Box>
+          )}
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
@@ -243,6 +262,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                   <Link
                     as={ReactRouterLink}
                     to={path}
+                    mx={"4px"}
                     style={{ textDecoration: "none" }}
                     key={path}
                     display={shouldDisplayQuickMenuItem(quickMenuItem, isMxLoggedIn)}>
@@ -279,6 +299,21 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         <ShortAddress address={mxAddress} fontSize="md" />
                       </MenuButton>
                       <MenuList maxW={"fit-content"} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
+                          <MenuItem
+                            isDisabled={
+                              isMenuItemSelected(`/profile/${mxAddress}`) ||
+                              hasPendingTransactions ||
+                              isMenuItemSelected(`/profile/${mxAddress}/created`) ||
+                              isMenuItemSelected(`/profile/${mxAddress}/listed`)
+                            }
+                            onClick={() => navigateToDiscover(MENU.PROFILE)}
+                            color="teal.200"
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
+                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
+                          </MenuItem>
+                        </Link>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, path, menuEnum, isHidden, Icon } = menuItem;
                           return (
@@ -387,12 +422,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
         </Flex>
       </Flex>
 
-      {mxShowClaimsHistory && (
-        <ClaimsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />
-      )}
-      {mxShowInteractionsHistory && (
-        <InteractionsHistory mxAddress={mxAddress} networkId={_chainMeta.networkId} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />
-      )}
+      {mxShowClaimsHistory && <ClaimsHistory mxAddress={mxAddress} onAfterCloseChaimsHistory={() => setMxShowClaimsHistory(false)} />}
+      {mxShowInteractionsHistory && <InteractionsHistory mxAddress={mxAddress} onAfterCloseInteractionsHistory={() => setMxInteractionsHistory(false)} />}
 
       <Drawer placement={"left"} onClose={onClose} isOpen={isOpen} blockScrollOnMount={false}>
         <DrawerOverlay />
@@ -417,6 +448,20 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                       </Text>
                       <hr />
                       <List>
+                        <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
+                          <ListItem
+                            onClick={() => navigateToDiscover(MENU.PROFILE)}
+                            as={Button}
+                            variant={"ghost"}
+                            w={"full"}
+                            borderRadius={"0"}
+                            display={"flex"}
+                            justifyContent={"start"}
+                            p={3}>
+                            <MdPerson size={"1.25em"} style={{ marginRight: "1rem" }} />
+                            <Text color={colorMode === "dark" ? "bgWhite" : "black"}>Profile</Text>
+                          </ListItem>
+                        </Link>
                         {menu.sectionItems.map((menuItem) => {
                           const { label, menuEnum, path, isHidden, Icon } = menuItem;
                           return (
@@ -578,7 +623,9 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 }
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -598,7 +645,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

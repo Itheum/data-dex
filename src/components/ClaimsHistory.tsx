@@ -1,49 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useToast, useBreakpointValue, useColorMode } from "@chakra-ui/react";
-import { NetworkIdType } from "libs/types";
-import { useChainMeta } from "store/ChainMetaContext";
+import React, { useState } from "react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, Text, ModalCloseButton, useColorMode, HStack } from "@chakra-ui/react";
 import ClaimsTxTable from "./Tables/ClaimsTxTable";
-import { getClaimTransactions } from "../libs/MultiversX/api";
 
-export default function ChaimsHistory({
-  mxAddress,
-  networkId,
-  onAfterCloseChaimsHistory,
-}: {
-  mxAddress: string;
-  networkId: NetworkIdType;
-  onAfterCloseChaimsHistory: () => void;
-}) {
+export default function ChaimsHistory({ mxAddress, onAfterCloseChaimsHistory }: { mxAddress: string; onAfterCloseChaimsHistory: () => void }) {
   const [claimTransactionsModalOpen, setClaimTransactionsModalOpen] = useState(true);
-  const [mxClaims, setMxClaims] = useState<any[]>([]);
-  const [loadingClaims, setLoadingClaims] = useState(-1); // 0 is done, -1 is loading, -2 is an error
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const toast = useToast();
   const { colorMode } = useColorMode();
-
-  useEffect(() => {
-    fetchMxClaims();
-  }, []);
-
-  const fetchMxClaims = async () => {
-    const res = await getClaimTransactions(mxAddress, _chainMeta.contracts.claims, networkId);
-
-    if (res.error) {
-      toast({
-        title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",
-        status: "error",
-        isClosable: true,
-        duration: null,
-      });
-
-      setLoadingClaims(-2);
-    } else {
-      setMxClaims(res.transactions);
-      setLoadingClaims(0);
-    }
-
-    setClaimTransactionsModalOpen(true);
-  };
 
   return (
     <Modal
@@ -54,10 +15,16 @@ export default function ChaimsHistory({
       }}
       scrollBehavior="inside">
       <ModalOverlay backdropFilter="blur(10px)" />
-      <ModalContent maxWidth={{ md: "70vw" }} maxHeight={{ md: "90vh" }} backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
-        <ModalHeader>Recent Claim Transactions</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
+      <ModalContent maxWidth={{ md: "70vw" }} overflowY="scroll" maxH="90%" backgroundColor={colorMode === "light" ? "bgWhite" : "bgDark"}>
+        <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+          <HStack spacing="5">
+            <ModalCloseButton />
+          </HStack>
+          <Text fontFamily="Clash-Medium" fontSize="32px" mt={3}>
+            Recent Claim Transactions
+          </Text>
+        </ModalHeader>
+        <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
           <ClaimsTxTable address={mxAddress} />
         </ModalBody>
       </ModalContent>

@@ -17,7 +17,6 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { uxConfig } from "libs/config";
-import { NetworkIdType } from "libs/types";
 import { convertEsdtToWei } from "libs/utils";
 import jsonData from "./ABIs/datanftmint.abi.json";
 import { getNetworkProvider } from "./api";
@@ -32,14 +31,10 @@ export class DataNftMintContract {
   abiRegistry: AbiRegistry;
   dataNftMintContractAddress: string;
 
-  constructor(networkId: NetworkIdType) {
+  constructor(chainID: string) {
     this.timeout = uxConfig.mxAPITimeoutMs;
-    this.dataNftMintContractAddress = contractsForChain(networkId).dataNftMint || "";
-    this.chainID = "D";
-
-    if (networkId === "E1") {
-      this.chainID = "1";
-    }
+    this.dataNftMintContractAddress = contractsForChain(chainID).dataNftMint || "";
+    this.chainID = chainID;
 
     const json = JSON.parse(JSON.stringify(jsonData));
     this.abiRegistry = AbiRegistry.create(json);
@@ -167,7 +162,7 @@ export class DataNftMintContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -233,7 +228,7 @@ export class DataNftMintContract {
 
   async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
       const query = interaction.buildQuery();
@@ -261,7 +256,7 @@ export class DataNftMintContract {
 
   async getWhiteList(): Promise<string[]> {
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const interaction = this.contract.methods.getWhiteList();
       const query = interaction.buildQuery();
