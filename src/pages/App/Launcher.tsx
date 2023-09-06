@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
+import { useSearchParams } from "react-router-dom";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
 import { uxConfig } from "libs/config";
 import { useLocalStorage, useSessionStorage } from "libs/hooks";
@@ -9,7 +10,6 @@ import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConsta
 import { clearAppSessionsLaunchMode } from "libs/utils";
 import MxAppHarness from "./AppHarnessMultiversX";
 import AuthPickerMx from "./AuthPickerMultiversX";
-import { useSearchParams } from "react-router-dom";
 
 function Launcher() {
   const [searchParams] = useSearchParams();
@@ -40,7 +40,7 @@ function Launcher() {
     // resetting all launch mode sessions here is nice an clean
     clearAppSessionsLaunchMode();
   };
-  console.log(launchEnvironment);
+
   return (
     <>
       <DappProvider
