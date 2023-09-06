@@ -154,7 +154,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   useEffect(() => {
     if (!isWebWallet) return;
-
+    if (!webWalletListTxHash) return;
     const data = sessionStorage.getItem("web-wallet-tx");
 
     if (!data) return;
@@ -194,57 +194,73 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     quantity: number,
     owner: string
   ) {
-    const indexResponse = await axios.get(
-      `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&status=success&withScResults=true&withLogs=true`
-    );
-
-    const results = indexResponse.data[0].results;
-    const txLogs = indexResponse.data[0].logs.events;
-
-    const allLogs = [];
-
-    for (const result of results) {
-      if (result.logs && result.logs.events) {
-        const events = result.logs.events;
-        allLogs.push(...events);
-      }
-    }
-
-    allLogs.push(...txLogs);
-
-    const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
-
-    const indexFound = addOfferEvent.topics[1];
-    const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
-
     try {
-      const headers = {
-        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-        "Content-Type": "application/json",
-      };
+      let indexResponse;
+      let success = false;
 
-      const requestBody = {
-        index: index,
-        offered_token_identifier: offered_token_identifier,
-        offered_token_nonce: offered_token_nonce,
-        offered_token_amount: offered_token_amount,
-        title: title,
-        description: description,
-        wanted_token_identifier: wanted_token_identifier,
-        wanted_token_nonce: wanted_token_nonce,
-        wanted_token_amount: wanted_token_amount,
-        quantity: quantity,
-        owner: owner,
-      };
+      // Use a loop with a boolean condition
+      while (!success) {
+        indexResponse = await axios.get(
+          `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
+        );
+        console.log(indexResponse.data);
+        console.log(indexResponse.data[0].status);
+        if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {
+          success = true;
+          break;
+        }
 
-      const response = await fetch(`${backendUrl}/addOffer`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(requestBody),
-      });
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+      }
 
-      const data = await response.json();
-      console.log("Response:", data);
+      if (indexResponse) {
+        const results = indexResponse.data[0].results;
+        const txLogs = indexResponse.data[0].logs.events;
+
+        const allLogs = [];
+
+        for (const result of results) {
+          if (result.logs && result.logs.events) {
+            const events = result.logs.events;
+            allLogs.push(...events);
+          }
+        }
+
+        allLogs.push(...txLogs);
+
+        const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
+
+        const indexFound = addOfferEvent.topics[1];
+        const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
+
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          index: index,
+          offered_token_identifier: offered_token_identifier,
+          offered_token_nonce: offered_token_nonce,
+          offered_token_amount: offered_token_amount,
+          title: title,
+          description: description,
+          wanted_token_identifier: wanted_token_identifier,
+          wanted_token_nonce: wanted_token_nonce,
+          wanted_token_amount: wanted_token_amount,
+          quantity: quantity,
+          owner: owner,
+        };
+
+        const response = await fetch(`${backendUrl}/addOffer`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      }
     } catch (error) {
       console.log("Error:", error);
     }
