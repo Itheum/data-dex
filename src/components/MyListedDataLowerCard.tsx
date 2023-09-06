@@ -82,9 +82,17 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [sessionId, setSessionId] = useState<string>("");
   const [delistTxStatus, setDelistTxStatus] = useState<boolean>(false);
 
+  const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
+
   useEffect(() => {
     if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
 
+    try {
+      const session = signedTransactionsArray[0][0];
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
     const sessionInfo = sessionStorage.getItem("web-wallet-tx");
     if (sessionInfo) {
       const { type } = JSON.parse(sessionInfo);
@@ -98,7 +106,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         sessionStorage.removeItem("web-wallet-tx");
       }
     }
-  }, []);
+  }, [hasSignedTransactions]);
 
   const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
   const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);

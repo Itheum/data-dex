@@ -76,8 +76,17 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     transactionId: purchaseSessionId,
   });
 
+  const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
+
   useEffect(() => {
     if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
+
+    try {
+      const session = signedTransactionsArray[0][0];
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
 
     const sessionInfo = sessionStorage.getItem("web-wallet-tx");
     if (sessionInfo) {
@@ -87,7 +96,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
         sessionStorage.removeItem("web-wallet-tx");
       }
     }
-  }, []);
+  }, [hasSignedTransactions]);
 
   useEffect(() => {
     setPurchaseTxStatus(trackPurchaseTxStatus.isPending ? true : false);

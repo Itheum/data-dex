@@ -40,7 +40,14 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useGetSignedTransactions } from "@multiversx/sdk-dapp/hooks";
+import {
+  useGetAccountInfo,
+  useGetLoginInfo,
+  useGetNetworkConfig,
+  useGetPendingTransactions,
+  useGetSignedTransactions,
+  useTrackTransactionStatus,
+} from "@multiversx/sdk-dapp/hooks";
 import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
@@ -127,18 +134,23 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   const backendUrl = backendApi(chainID);
 
-  const { signedTransactionsArray } = useGetSignedTransactions();
+  const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
 
   useEffect(() => {
     if (!isWebWallet) return;
-    if (signedTransactionsArray.length > 0) {
-      const txHash = signedTransactionsArray[0][1]["transactions"][0]["hash"];
+    if (!hasSignedTransactions) return;
+
+    const [_, sessionInfo] = signedTransactionsArray[0];
+    try {
+      const txHash = sessionInfo.transactions[0].hash;
 
       if (webWalletListTxHash == "") {
         setWebWalletListTxHash(txHash);
       }
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
     }
-  }, [signedTransactionsArray]);
+  }, [hasSignedTransactions]);
 
   useEffect(() => {
     if (!isWebWallet) return;
@@ -147,7 +159,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     if (!data) return;
 
     const txData = JSON.parse(data);
-    console.log(txData);
+
     if (txData) {
       if (txData.type === "add-offer-tx") {
         addOfferBackend(
