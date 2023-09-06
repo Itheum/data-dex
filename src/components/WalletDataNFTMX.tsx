@@ -153,31 +153,35 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   }, [hasSignedTransactions]);
 
   useEffect(() => {
-    if (!isWebWallet) return;
-    const data = sessionStorage.getItem("web-wallet-tx");
+    async () => {
+      if (!isWebWallet) return;
 
-    if (!data) return;
+      await sleep(2);
+      const data = sessionStorage.getItem("web-wallet-tx");
 
-    const txData = JSON.parse(data);
+      if (!data) return;
 
-    if (txData) {
-      if (txData.type === "add-offer-tx") {
-        addOfferBackend(
-          webWalletListTxHash,
-          txData.offered_token_identifier,
-          txData.offered_token_nonce,
-          txData.offered_token_amount,
-          txData.title,
-          txData.description,
-          txData.wanted_token_identifier,
-          txData.wanted_token_nonce,
-          txData.wanted_token_amount,
-          txData.quantity,
-          txData.owner
-        );
+      const txData = JSON.parse(data);
+
+      if (txData) {
+        if (txData.type === "add-offer-tx") {
+          addOfferBackend(
+            webWalletListTxHash,
+            txData.offered_token_identifier,
+            txData.offered_token_nonce,
+            txData.offered_token_amount,
+            txData.title,
+            txData.description,
+            txData.wanted_token_identifier,
+            txData.wanted_token_nonce,
+            txData.wanted_token_amount,
+            txData.quantity,
+            txData.owner
+          );
+        }
+        sessionStorage.removeItem("web-wallet-tx");
       }
-      sessionStorage.removeItem("web-wallet-tx");
-    }
+    };
   }, [webWalletListTxHash]);
 
   async function addOfferBackend(
