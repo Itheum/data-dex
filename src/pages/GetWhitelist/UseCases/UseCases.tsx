@@ -1,12 +1,13 @@
 import React, { Fragment } from "react";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
 import { UseCasesCards } from "./components/UseCasesCards";
-import artists from "../../../assets/img/whitelist/artists.png";
-import buildingButton from "../../../assets/img/whitelist/buildingButton.svg";
-import buildings from "../../../assets/img/whitelist/buildings.png";
-import gamepad from "../../../assets/img/whitelist/gamepad.png";
-import personButton from "../../../assets/img/whitelist/personButtons.svg";
-import psButtons from "../../../assets/img/whitelist/psButtons.svg";
+import artists from "assets/img/whitelist/artists.png";
+import buildingButton from "assets/img/whitelist/buildingButton.svg";
+import buildings from "assets/img/whitelist/buildings.png";
+import gamepad from "assets/img/whitelist/gamepad.png";
+import personButton from "assets/img/whitelist/personButtons.svg";
+import psButtons from "assets/img/whitelist/psButtons.svg";
+import { gtagGo } from "libs/utils";
 
 const cardContent = [
   {
@@ -29,7 +30,7 @@ const cardContent = [
     headerIcon: buildingButton,
     headerText: "A new era of opportunities",
     bodyContent:
-      "Data enterprises gather and manage vast amounts of data, often of diverse types and from various sources. Now, with Data NFTs, they can further unlock the potential of their data assets.",
+      "Enterprises manage an array of diverse assets and data. The introduction of Data NFTs offers a groundbreaking way to both secure and monetize these resources, opening up a new era of opportunities.",
     bodyImage: buildings,
     bgGradient: "linear(to-b, #00C7971A, transparent)",
   },
@@ -53,7 +54,7 @@ export const UseCases: React.FC = () => {
       <Text textAlign="center" fontSize={{ base: "45px", md: "67px" }} fontFamily="Clash-Medium" my={5}>
         Data NFT Use Cases
       </Text>
-      <Box display="flex" flexDirection={{ xl: "row" }} justifyContent="center" flexWrap="wrap" alignItems="center" gap={6} mx={5}>
+      <Box display="flex" justifyContent="center" flexWrap="wrap" alignItems="center" gap={6} mx={5}>
         {cardContent.map((item) => {
           return (
             <Fragment key={item.id}>
@@ -81,6 +82,9 @@ export const UseCases: React.FC = () => {
           py={6}
           rounded="lg"
           mt={7}
+          onClick={() => {
+            gtagGo("gwl", "join", "useca");
+          }}
           href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
           isExternal>
           Get Whitelisted Today

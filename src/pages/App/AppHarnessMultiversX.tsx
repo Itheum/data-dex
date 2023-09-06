@@ -56,9 +56,9 @@ function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironme
   useEffect(() => {
     if (searchParams.get("accessToken") || tokenLogin) {
       setHubAccessToken(searchParams.get("accessToken"));
-      if (window.location.pathname === "/" && isMxLoggedIn) {
-        navigate("/dashboard" + window.location.search);
-      }
+      // if (window.location.pathname === "/" && isMxLoggedIn) {
+      //   navigate("/dashboard" + window.location.search);
+      // }
     }
   }, [mxAddress]);
 

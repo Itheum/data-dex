@@ -40,6 +40,7 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   Category: 'Videos'; Action: 'Play - Mac Chrome'
   Category: 'Videos', Action: 'Video Load Time', Label: 'Gone With the Wind', Value: downloadTime
 
+  // AUTH
   Category: 'Auth', Action: 'Login', Label: 'Metamask'
   Category: 'Auth', Action: 'Login - Success', Label: 'Metamask'
   Category: 'Auth', Action: 'Login', Label: 'DeFi'
@@ -48,6 +49,11 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   Category: 'Auth', Action: 'Login', Label: 'WebWallet'
 
   Category: 'Auth', Action: 'Logout', Label: 'WebWallet'
+
+  // Get Whitelist Page
+  Category: 'GWT', Action: 'Join', Label: 'hero/useca/Testi' // tracking the join whitelist links
+  Category: 'GWT', Action: 'Exp', Label: 'crd1/2/3' // explore trending collections
+
   */
 
   if (!action || !category) {
@@ -194,15 +200,17 @@ export const getExplorerTrailBlazerURL = (chainID: string) => {
 // utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
 // ... this is used only for "public" components and routes where the user has not connected their wallet
 export const routeChainIDBasedOnLoggedInStatus = (isMxLoggedIn: boolean, chainID: string) => {
+  let routedChainId;
   if (!isMxLoggedIn && window.location.hostname === "datadex.itheum.io") {
-    return "1";
+    routedChainId = "1";
   } else {
     if (chainID === undefined || chainID === "-1") {
-      return "D";
+      routedChainId = "D";
     } else {
-      return chainID;
+      routedChainId = chainID;
     }
   }
+  return routedChainId;
 };
 
 export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
@@ -210,14 +218,14 @@ export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetS
 };
 
 export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
-  const reversedString = string.split('').reverse().join('');
+  const reversedString = string.split("").reverse().join("");
   let index = -1;
 
-  for(let i = 0; i < n; i++) {
-      index = reversedString.indexOf(char, index + 1);
-      if(index === -1) {
-          return -1;
-      }
+  for (let i = 0; i < n; i++) {
+    index = reversedString.indexOf(char, index + 1);
+    if (index === -1) {
+      return -1;
+    }
   }
 
   // Subtract the found index from the length of the string - 1 (because string index starts from 0)

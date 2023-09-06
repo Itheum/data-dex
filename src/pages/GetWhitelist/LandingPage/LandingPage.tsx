@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Button, Center, Flex, Heading, Image, Link, Text, useColorMode } from "@chakra-ui/react";
-import illustration from "../../../assets/img/whitelist/getWhitelist.png";
 import { FaDiscord, FaTelegramPlane, FaTwitter } from "react-icons/fa";
+import illustration from "assets/img/whitelist/getWhitelist.png";
+import { gtagGo } from "libs/utils";
 
 export const LandingPage: React.FC = () => {
   const { colorMode } = useColorMode();
@@ -24,15 +25,18 @@ export const LandingPage: React.FC = () => {
           alignItems="center">
           <Box width={["100%", null, null, "500px", "650px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
             <Heading as="h1" size={["2xl", null, null, "2xl", "4xl"]} fontFamily="Clash-Medium">
-              Fully Unlock your Data’s Value and Mint as an NFT
+              Fully Unlock your Data’s Value by Minting it as a Data NFT
             </Heading>
 
             <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="7">
-              Are you a Data Creator? Do you generate valuable data insights for the Blockchain, DeFi, Gaming, Entertainment, or any other industry? If so, we
-              want to work with you!
+              It’s time to own and trade your data
             </Text>
-            <Text fontSize="lg" fontWeight="400" lineHeight="25px" mt={7}>
-              Get <strong>Whitelisted</strong> to be part of the first batch of Data Creators to mint Data NFTs. Make history!
+            <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={7}>
+              Whether you’re a data creator, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the value of
+              your data. Transform your unique datasets into a new asset class by minting your very own Data NFTs.
+            </Text>
+            <Text fontSize="lg" fontWeight="400" lineHeight="25px">
+              Don’t just be a part of the change, lead it.
             </Text>
             <Button
               as={Link}
@@ -42,6 +46,9 @@ export const LandingPage: React.FC = () => {
               py={6}
               rounded="lg"
               mt={7}
+              onClick={() => {
+                gtagGo("gwl", "join", "hero");
+              }}
               href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
               isExternal>
               Get Whitelisted Today
@@ -49,7 +56,7 @@ export const LandingPage: React.FC = () => {
           </Box>
 
           <Box>
-            <Image marginLeft="15px" boxSize="auto" w="90%" src={illustration} alt="Data NFTs Illustration" />
+            <Image className="bounce-hero-img" marginLeft="15px" boxSize="auto" w="90%" src={illustration} alt="Data NFTs Illustration" />
           </Box>
         </Flex>
         <Box position="absolute" bottom={2} right={4} display={{ base: "none", md: "flex", xl: "flex" }}>

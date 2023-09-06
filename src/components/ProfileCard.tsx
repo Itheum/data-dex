@@ -63,7 +63,7 @@ const ProfileCard = ({
   const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
 
   const nftId = createNftId(collection, nonce);
-  const imageUrl = `https://${getApi(routedChainID)}/nfts/${nftId}/thumbnail`;
+  const imageUrl = collection ? `https://${getApi(routedChainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
 
   return (
     <Skeleton

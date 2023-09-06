@@ -86,13 +86,26 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         }/transactions?hashes=${listTxHash}&status=success&withScResults=true&withLogs=true`
       );
 
-      console.log(indexResponse.data);
-      const logs = indexResponse.data[0].results[0].logs;
-      const events = logs.events;
+      const results = indexResponse.data[0].results;
+      const txLogs = indexResponse.data[0].logs.events;
 
-      const indexFind = events.find((event: any) => event.identifier === "addOffer");
+      const allLogs = [];
 
-      const index = parseInt(Buffer.from(indexFind.topics[1], "base64").toString("hex"), 16);
+      for (const result of results) {
+        if (result.logs && result.logs.events) {
+          const events = result.logs.events;
+          allLogs.push(...events);
+        }
+      }
+
+      allLogs.push(...txLogs);
+
+      const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
+
+      console.log(addOfferEvent);
+
+      const indexFound = addOfferEvent.topics[1];
+      const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
 
       try {
         const headers = {
@@ -127,6 +140,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         console.log("Error:", error);
       }
     }
+
     if (listTxStatus) {
       addOfferBackend();
       setAmount(1);

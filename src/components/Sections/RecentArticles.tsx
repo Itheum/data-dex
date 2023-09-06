@@ -1,9 +1,9 @@
 import React from "react";
-import { Box, Heading, Text, Link, Card, CardBody, Stack, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, Link, Card, CardBody, Stack, Flex } from "@chakra-ui/react";
 
 const RecentArticles = () => {
   return (
-    <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
+    <Flex flexWrap="wrap" gap={5}>
       <ArticleCard
         date="25 Jul, 2023"
         title="The Itheum Trailblazer Competition is Live"
@@ -35,30 +35,28 @@ const RecentArticles = () => {
         link="https://medium.com/itheum-newsletter/the-whitelisting-process-is-now-live-apply-to-mint-your-data-as-nfts-on-itheums-data-marketplace-799361c15099"
         imgLink="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*SDBbvXYR2CR3F7oxqeMnfQ.jpeg"
       />
-    </SimpleGrid>
+    </Flex>
   );
 };
 
 function ArticleCard({ date, title, description, link, imgLink }: { date: string; title: string; description: string; link: string; imgLink: string }) {
   return (
-    <Card variant="outline" backgroundColor="none" border="none">
+    <Card variant="outline" backgroundColor="none" border="none" w="393px">
       <CardBody>
-        <Box>
-          <Link href={link} isExternal>
-            <Box
-              border="1px solid transparent"
-              borderColor="#00C797"
-              borderRadius="16px"
-              backgroundImage={imgLink}
-              backgroundSize="cover"
-              backgroundRepeat="no-repeat"
-              h="150px"
-              w="auto"></Box>
-          </Link>
-        </Box>
+        <Link href={link} isExternal>
+          <Box
+            border="1px solid transparent"
+            borderColor="#00C797"
+            borderRadius="16px"
+            backgroundImage={imgLink}
+            backgroundSize="cover"
+            backgroundRepeat="no-repeat"
+            h="195px"
+            w="393px"></Box>
+        </Link>
         <Stack mt="6" spacing="2">
           <Text fontSize="sm">{date}</Text>
-          <Heading size="md" fontFamily="Clash-Medium" noOfLines={2} minH="43px">
+          <Heading size="md" fontFamily="Clash-Medium" noOfLines={2}>
             {title}
           </Heading>
           <Text fontSize="md" noOfLines={2} minH="30px">

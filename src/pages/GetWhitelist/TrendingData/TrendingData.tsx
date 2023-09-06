@@ -1,15 +1,15 @@
 import React, { Fragment } from "react";
 import { Box, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { TrendingDataCards } from "./components/TrendingDataCards";
-import bubbleImage from "../../../assets/img/whitelist/BubbleImage.png";
-import infographicsImage from "../../../assets/img/whitelist/InfographicsImage.png";
-import trailblazerImage from "../../../assets/img/whitelist/TrailblazerImage.png";
+import bubbleImage from "assets/img/whitelist/BubbleImage.png";
+import infographicsImage from "assets/img/whitelist/InfographicsImage.png";
+import trailblazerImage from "assets/img/whitelist/TrailblazerImage.png";
 
 const cardContent = [
   {
     id: 1,
     headerImage: infographicsImage,
-    title: "Multiversx Infographics",
+    title: "MultiversX Infographics",
     description:
       'This app visualizes dynamic and evolving data streams rendered into PDF files that showcase unique MultiversX ecosystem "alpha", insights, and education.',
     url: "https://explorer.itheum.io/multiversx-infographics",
@@ -46,7 +46,7 @@ export const TrendingData: React.FC = () => {
       p={2}>
       <Box display="flex" justifyContent="center">
         <Text textAlign="center" fontSize={{ base: "40px", md: "59px" }} fontFamily="Clash-Medium" my={5} w="690px">
-          Explore Trending Data NFTs Collections
+          Explore Trending Data NFT Collections
         </Text>
       </Box>
       <Box display="flex" flexDirection={{ xl: "row" }} justifyContent="center" flexWrap="wrap" alignItems="center" gap={6} mx={5} mb={5}>
