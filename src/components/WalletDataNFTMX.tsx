@@ -95,6 +95,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
@@ -298,7 +299,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       if (isWebWallet) {
         let url = location.pathname;
-        url = url.slice(0, findNthOccurrenceFromEnd(url, '/', 2)); // remove last 2 segments in the url - those are for WebWallet callback
+        url = url.slice(0, findNthOccurrenceFromEnd(url, "/", 2)); // remove last 2 segments in the url - those are for WebWallet callback
         navigate(url);
       }
     } catch (e: any) {
@@ -358,6 +359,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
   };
 
+  console.log();
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -624,7 +626,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
                 variant="outline"
-                isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
+                isDisabled={
+                  hasPendingTransactions ||
+                  !!amountError ||
+                  !!priceError ||
+                  isMarketPaused ||
+                  marketRequirements?.maximum_payment_fees[0] === undefined ||
+                  marketRequirements?.maximum_payment_fees[0] === null
+                }
                 onClick={() => onListButtonClick(item)}>
                 <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}

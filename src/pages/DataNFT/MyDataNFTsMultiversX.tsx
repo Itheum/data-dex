@@ -254,7 +254,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
           </TabPanels>
         </Tabs>
       </Stack>
