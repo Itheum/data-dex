@@ -91,6 +91,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
 
+  const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
+
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
   };
@@ -141,7 +143,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         onGotoPage(0);
       }
     })();
-  }, [hasPendingTransactions, tabState]);
+  }, [hasWebWalletTx, hasPendingTransactions, tabState]);
 
   useEffect(() => {
     (async () => {
@@ -177,7 +179,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       await sleep(0.5);
       updateLoadingOffers(false);
     })();
-  }, [pageIndex, tabState, hasPendingTransactions]);
+  }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
   function openNftDetailsModal(index: number) {
     setOfferForDrawer(offers[index]);
