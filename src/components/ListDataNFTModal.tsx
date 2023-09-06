@@ -47,6 +47,7 @@ export type ListModalProps = {
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const toast = useToast();
   const fullPrice = amount * offer.wanted_token_amount;
   const priceWithSellerFee = fullPrice - (fullPrice * sellerFee) / 10000;
@@ -78,17 +79,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   });
 
   const { pendingTransactions } = useGetPendingTransactions();
-
-  const { signedTransactionsArray } = useGetSignedTransactions();
-
-  useEffect(() => {
-    if (signedTransactionsArray.length > 0) {
-      const sessionId = signedTransactionsArray.at(0)?.at(0);
-      if (sessionStorage.getItem("list-sessionId") == null) {
-        sessionStorage.setItem("list-sessionId", sessionId);
-      }
-    }
-  }, [signedTransactionsArray]);
 
   useEffect(() => {
     if (!pendingTransactions[listTxSessionId]) return;
@@ -213,6 +203,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
     const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
     if (isWebWallet) {
+      const price = Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements?.buyer_fee ?? 0)) / 10000;
       sessionStorage.setItem(
         "web-wallet-tx",
         JSON.stringify({
@@ -224,10 +215,9 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
           description: nftData.description,
           wanted_token_identifier: offer.wanted_token_identifier,
           wanted_token_nonce: offer.wanted_token_nonce,
-          wanted_token_amount: Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
+          wanted_token_amount: Number(price * Number(10 ** 18)).toString(),
           quantity: amount * 1,
           owner: address,
-          txHash: listTxHash,
         })
       );
     }

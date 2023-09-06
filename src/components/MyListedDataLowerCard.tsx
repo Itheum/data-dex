@@ -87,12 +87,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
     const sessionInfo = sessionStorage.getItem("web-wallet-tx");
     if (sessionInfo) {
-      const { type, index, amount } = JSON.parse(sessionInfo);
+      const { type } = JSON.parse(sessionInfo);
       if (type == "delist-tx") {
+        const { index, amount } = JSON.parse(sessionInfo);
         updateOfferOnBackend(index, amount);
         sessionStorage.removeItem("web-wallet-tx");
       } else if (type == "update-price-tx") {
-        updatePriceOnBackend(index, amount);
+        const { index, price } = JSON.parse(sessionInfo);
+        updatePriceOnBackend(index, price);
         sessionStorage.removeItem("web-wallet-tx");
       }
     }
