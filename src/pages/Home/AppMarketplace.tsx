@@ -26,7 +26,9 @@ import {
   useBreakpointValue,
   useDisclosure,
   SimpleGrid,
+  useColorMode,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useNavigate } from "react-router-dom";
 import AstarIcon from "assets/img/astar-icon.png";
@@ -38,10 +40,9 @@ import imgProgGaPaES from "assets/img/prog-gaming.jpg";
 import imgProgRhc from "assets/img/prog-rhc.png";
 import imgProgWfh from "assets/img/prog-wfh.png";
 import zedgeLogo from "assets/img/zedge-logo.png";
-import { BUTTONS, CHAIN_TOKEN_SYMBOL, progInfoMeta } from "libs/config";
+import { progInfoMeta } from "libs/config";
 import { sleep } from "libs/utils/util";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
-import { useChainMeta } from "store/ChainMetaContext";
+import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 
 type MarshalFeatures = {
   [index: string]: any;
@@ -67,11 +68,12 @@ type Props = {
 };
 
 export default function AppMarketplace(props: Props) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
+  const { colorMode } = useColorMode();
 
   const cleanSaveProgress = {
     s0: 0,
@@ -185,7 +187,7 @@ export default function AppMarketplace(props: Props) {
   return (
     <>
       <Stack pt="5">
-        <Heading size="lg" fontWeight="semibold" mb="15px">
+        <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold" mb="15px">
           App Marketplace
         </Heading>
         <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={4}>
@@ -193,14 +195,14 @@ export default function AppMarketplace(props: Props) {
             <Image src={imgProgGaPa} height="160px" w="full" border="1px solid transparent" borderColor="#00C797" borderRadius="16px" />
             <Box p="3">
               <Box display="flex" alignItems="baseline">
-                <Box mt="1" mr="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                <Box mt="1" mr="1" as="h4" noOfLines={1}>
                   PlayStation Gamer Passport
                 </Box>
               </Box>
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
                 Learn More
               </Button>
-              {networkId === "ED" && (
+              {routedChainID === "D" && (
                 <Button size="sm" mt="3" colorScheme="teal" onClick={() => handleJoinPS4Passport()}>
                   Join Now
                 </Button>
@@ -258,9 +260,9 @@ export default function AppMarketplace(props: Props) {
         <Modal size={modelSize} isOpen={isProgressModalOpen} onClose={onProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
-            <ModalHeader>{progInfoMeta[learnMoreProd].name}</ModalHeader>
+            <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>{progInfoMeta[learnMoreProd].name}</ModalHeader>
             <ModalCloseButton />
-            <ModalBody pb={6}>
+            <ModalBody pb={6} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <Stack spacing="5">
                 <Text>{progInfoMeta[learnMoreProd].desc}</Text>
                 {progInfoMeta[learnMoreProd].medium !== null && (
@@ -291,7 +293,7 @@ export default function AppMarketplace(props: Props) {
                 </Stack>
               </Stack>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <Button size="sm" mr={3} colorScheme="teal" variant="outline" onClick={onProgressModalClose}>
                 Close
               </Button>
@@ -303,16 +305,18 @@ export default function AppMarketplace(props: Props) {
       <Modal size={modelSize} isOpen={isPS4ModalOpen} onClose={onPS4ModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent>
-          <ModalHeader>
-            <Heading size="md" opacity=".5">
+          <ModalHeader bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+            <Heading size="md" fontFamily="Satoshi-Medium" opacity=".5">
               Bridge your Data to Web3!
             </Heading>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             {(joinProgress.s0 && (
               <Stack spacing="5">
-                <Heading size="lg">Sony PlayStation Gamer Passport</Heading>
+                <Heading size={{ base: "md", md: "lg" }} fontFamily="Clash-Medium">
+                  Sony PlayStation Gamer Passport
+                </Heading>
                 <HStack spacing="5">
                   <Text>
                     Unlock a live dataset of a Sony PlayStation {`gamer's`} platform, preferences, active titles played, trophies, playtime, and achievements.
@@ -322,36 +326,47 @@ export default function AppMarketplace(props: Props) {
 
                 <Spacer></Spacer>
 
-                <Flex justifyContent="space-between" textAlign="center">
+                <Flex flexDirection={{ base: "column", md: "row" }} justifyContent="space-between" textAlign="center">
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       App Publisher
                     </Heading>
-                    <Image opacity=".8" mt="5px" borderRadius="5px" width="130px" src={zedgeLogo} />
+                    <Image opacity=".8" mt="5px" display="initial" borderRadius="5px" width="130px" src={zedgeLogo} />
                   </Box>
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       Rating
                     </Heading>
-                    <Text mt="30px">4 / 5</Text>
+                    <Text mt={{ base: "10px", md: "30px" }} mb={{ base: "10px", md: "0px" }}>
+                      4 / 5
+                    </Text>
                   </Box>
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       Users
                     </Heading>
-                    <Text mt="30px">10</Text>
+                    <Text mt={{ base: "10px", md: "30px" }} mb={{ base: "10px", md: "0px" }}>
+                      10
+                    </Text>
                   </Box>
                   <Box>
-                    <Heading size="md" mb="2px" color="teal.200">
+                    <Heading size="md" mb="2px" fontFamily="Clash-Regular" color="teal.200">
                       Verified App
                     </Heading>
-                    <Text mt="30px">No</Text>
+                    <Text mt={{ base: "10px", md: "30px" }} mb={{ base: "10px", md: "0px" }}>
+                      No
+                    </Text>
                   </Box>
                 </Flex>
 
                 <Box>
                   <Flex mt="4 !important">
-                    <Button colorScheme="teal" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/termsofuse")}>
+                    <Button
+                      colorScheme="teal"
+                      variant="outline"
+                      size={{ base: "sm", md: "sm" }}
+                      fontSize={{ base: "9px !important", md: "md" }}
+                      onClick={() => window.open("https://itheum.com/legal/termsofuse")}>
                       Read Terms of Use
                     </Button>
                     <Checkbox size="sm" ml="15px" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
@@ -380,8 +395,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s1 && (
               <Box>
-                <Heading size="md">Step 1 of 4</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Step 1 of 4
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Link your PlayStation Account
                 </Heading>
 
@@ -462,7 +479,7 @@ export default function AppMarketplace(props: Props) {
                       setPSNUsernameValid(null);
                       setJoinProgress(() => ({ ...cleanSaveProgress, s2: 1 }));
                     }}>
-                    Let me test with a Demo PlayStation Gamer account
+                    Test it
                   </Button>
                   <Spacer />
                   <Button mx="3" colorScheme="teal" size="sm" variant="outline" onClick={onPS4ModalClose}>
@@ -484,8 +501,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s2 && (
               <Box>
-                <Heading size="md">Step 2 of 4</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Step 2 of 4
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Choose your Data Sovereignty Preferences
                 </Heading>
 
@@ -493,13 +512,14 @@ export default function AppMarketplace(props: Props) {
                   <Text>Select a jurisdiction where you would you like your de-identified PlayStation Data Stream origin data to be stored at:</Text>
                 </HStack>
 
-                <HStack mt="20px">
+                <HStack mt="20px" flexWrap="wrap" gap={3}>
                   <IconButton
                     aria-label="Germany"
                     variant="outline"
                     colorScheme="teal"
                     isActive={datastoreLocation === "North America"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("North America")}
                     icon={
@@ -512,6 +532,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Germany"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Germany")}
                     isDisabled={true}
@@ -523,6 +544,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Japan"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Japan")}
                     isDisabled={true}
@@ -535,6 +557,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Hong Kong"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Hong Kong")}
                     isDisabled={true}
@@ -546,6 +569,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Australia"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Australia")}
                     isDisabled={true}
@@ -557,6 +581,7 @@ export default function AppMarketplace(props: Props) {
                     colorScheme="teal"
                     isActive={datastoreLocation === "Singapore"}
                     size="lg"
+                    marginInlineStart="0px !important"
                     padding="5px"
                     onClick={() => setDatastoreLocation("Singapore")}
                     isDisabled={true}
@@ -600,8 +625,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s3 && (
               <Box>
-                <Heading size="md">Step 3 of 4</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Step 3 of 4
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Pick your preferred Data Marshal
                 </Heading>
 
@@ -699,8 +726,10 @@ export default function AppMarketplace(props: Props) {
 
             {(joinProgress.s4 && (
               <Box>
-                <Heading size="md">Final Step</Heading>
-                <Heading size="lg" mt="10px">
+                <Heading size="md" fontFamily="Satoshi-Medium">
+                  Final Step
+                </Heading>
+                <Heading size="lg" fontFamily="Clash-Medium" mt="10px">
                   Building your Data Stream...
                 </Heading>
 
@@ -778,7 +807,7 @@ export default function AppMarketplace(props: Props) {
             )) ||
               null}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <Text display="none">{JSON.stringify(joinProgress)}</Text>
           </ModalFooter>
         </ModalContent>

@@ -40,26 +40,43 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import {
+  useGetAccountInfo,
+  useGetLoginInfo,
+  useGetNetworkConfig,
+  useGetPendingTransactions,
+  useGetSignedTransactions,
+  useTrackTransactionStatus,
+} from "@multiversx/sdk-dapp/hooks";
 import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
 import moment from "moment";
-import qs from "qs";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
+import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { convertToLocalString, transformDescription, isValidNumericCharacter, sleep, networkIdBasedOnLoggedInStatus } from "libs/utils";
+import {
+  backendApi,
+  convertToLocalString,
+  findNthOccurrenceFromEnd,
+  isValidNumericCharacter,
+  routeChainIDBasedOnLoggedInStatus,
+  shouldPreviewDataBeEnabled,
+  sleep,
+  transformDescription,
+} from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 import ListDataNFTModal from "./ListDataNFTModal";
+import { MdOutlineInfo } from "react-icons/md";
+import axios from "axios";
+import { getApi } from "libs/MultiversX/api";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -71,21 +88,20 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn, loginMethod, tokenLogin } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const { loginMethod } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
-  const isMxLoggedIn = !!address;
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
   const { signMessage } = useSignMessage();
-  const loginInfo = useGetLoginInfo();
   const lastSignedMessageSession = useGetLastSignedMessageSession();
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
+  const location = useLocation();
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
-  const isWebWallet = loginInfo.loginMethod == "wallet";
+  const isWebWallet = loginMethod == "wallet";
 
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
@@ -98,8 +114,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
-  const mintContract = new DataNftMintContract(_chainMeta.networkId);
-  const marketContract = new DataNftMarketContract(_chainMeta.networkId);
+  const mintContract = new DataNftMintContract(routedChainID);
+  const marketContract = new DataNftMarketContract(routedChainID);
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
   const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
@@ -111,8 +127,144 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
+  const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
+
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
+
+  const backendUrl = backendApi(chainID);
+
+  const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
+
+    const [_, sessionInfo] = signedTransactionsArray[0];
+    try {
+      const txHash = sessionInfo.transactions[0].hash;
+
+      if (webWalletListTxHash == "") {
+        setWebWalletListTxHash(txHash);
+      }
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+  }, [hasSignedTransactions]);
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!webWalletListTxHash) return;
+    const data = sessionStorage.getItem("web-wallet-tx");
+
+    if (!data) return;
+
+    const txData = JSON.parse(data);
+
+    if (txData) {
+      if (txData.type === "add-offer-tx") {
+        addOfferBackend(
+          webWalletListTxHash,
+          txData.offered_token_identifier,
+          txData.offered_token_nonce,
+          txData.offered_token_amount,
+          txData.title,
+          txData.description,
+          txData.wanted_token_identifier,
+          txData.wanted_token_nonce,
+          txData.wanted_token_amount,
+          txData.quantity,
+          txData.owner
+        );
+      }
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+  }, [webWalletListTxHash]);
+
+  async function addOfferBackend(
+    txHash: string,
+    offered_token_identifier: string,
+    offered_token_nonce: string,
+    offered_token_amount: string,
+    title: string,
+    description: string,
+    wanted_token_identifier: string,
+    wanted_token_nonce: string,
+    wanted_token_amount: string,
+    quantity: number,
+    owner: string
+  ) {
+    try {
+      let indexResponse;
+      let success = false;
+
+      // Use a loop with a boolean condition
+      while (!success) {
+        indexResponse = await axios.get(
+          `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
+        );
+        console.log(indexResponse.data);
+        console.log(indexResponse.data[0].status);
+        if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {
+          success = true;
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+      }
+
+      if (indexResponse) {
+        const results = indexResponse.data[0].results;
+        const txLogs = indexResponse.data[0].logs.events;
+
+        const allLogs = [];
+
+        for (const result of results) {
+          if (result.logs && result.logs.events) {
+            const events = result.logs.events;
+            allLogs.push(...events);
+          }
+        }
+
+        allLogs.push(...txLogs);
+
+        const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
+
+        const indexFound = addOfferEvent.topics[1];
+        const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
+
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          index: index,
+          offered_token_identifier: offered_token_identifier,
+          offered_token_nonce: offered_token_nonce,
+          offered_token_amount: offered_token_amount,
+          title: title,
+          description: description,
+          wanted_token_identifier: wanted_token_identifier,
+          wanted_token_nonce: wanted_token_nonce,
+          wanted_token_amount: wanted_token_amount,
+          quantity: quantity,
+          owner: owner,
+        };
+
+        const response = await fetch(`${backendUrl}/addOffer`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
 
   // console.log(item.isProfile);
   useEffect(() => {
@@ -241,7 +393,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalOpen();
 
     try {
-      const res = await fetch(`${dataMarshal}/preaccess?chainId=${_chainMeta.networkId}`);
+      const res = await fetch(`${dataMarshal}/preaccess?chainId=E${routedChainID}`);
       const data = await res.json();
 
       if (data && data.nonce) {
@@ -281,7 +433,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       link.target = "_blank";
       link.setAttribute("target", "_blank");
       const addressInHex = address;
-      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=${_chainMeta.networkId}&accessRequesterAddr=${addressInHex}`;
+      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=E${routedChainID}&accessRequesterAddr=${addressInHex}`;
       link.dispatchEvent(new MouseEvent("click"));
 
       setUnlockAccessProgress((prevProgress) => ({
@@ -291,7 +443,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       if (isWebWallet) {
-        navigate("/datanfts/wallet");
+        let url = location.pathname;
+        url = url.slice(0, findNthOccurrenceFromEnd(url, "/", 2)); // remove last 2 segments in the url - those are for WebWallet callback
+        navigate(url);
       }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
@@ -404,7 +558,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+            <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
@@ -436,14 +590,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </PopoverContent>
           </Popover>
           <Box mt={1}>
-            {
-              <Box color="#8c8f92d0" fontSize="md">
-                Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon ml="5px" fontSize="sm" />
-                </Link>
-              </Box>
-            }
+            <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
+              Creator:&nbsp;
+              <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
+                <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
+                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
+              </Flex>
+            </Box>
 
             <Box color="#8c8f92d0" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -485,12 +638,16 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </Box>
 
             <HStack mt="2">
-              <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
+              <Tooltip
+                colorScheme="teal"
+                hasArrow
+                label="View Data is disabled on devnet"
+                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
+                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     accessDataStream(item.dataMarshal, item.id);
                   }}>
@@ -498,13 +655,17 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip colorScheme="teal" hasArrow label="Preview Data is disabled on devnet" isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
+              <Tooltip
+                colorScheme="teal"
+                hasArrow
+                label="Preview Data is disabled on devnet"
+                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
+                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>
@@ -644,7 +805,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay backdropFilter="blur(10px)" />
-            <ModalContent>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               {burnNFTModalState === 1 ? (
                 <>
                   <ModalHeader>Burn Supply from my Data NFT</ModalHeader>
@@ -762,7 +923,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             nftData={selectedDataNft}
             marketContract={marketContract}
             sellerFee={item.sellerFee || 0}
-            offer={{ wanted_token_identifier: _chainMeta.contracts.itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
+            offer={{ wanted_token_identifier: contractsForChain(routedChainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
             setAmount={setAmount}
           />
