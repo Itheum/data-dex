@@ -2,7 +2,9 @@ import React, { FC, useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
   Box,
+  Button,
   CloseButton,
+  Container,
   Flex,
   Heading,
   HStack,
@@ -69,6 +71,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const offers = useMarketStore((state) => state.offers);
+
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
   const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
@@ -90,7 +93,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
-
+  const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(false);
   const setPageIndex = (newPageIndex: number) => {
     navigate(`/datanfts/marketplace/${tabState === 1 ? "market" : "my"}${newPageIndex > 0 ? "/" + newPageIndex : ""}`);
   };
@@ -101,6 +104,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
   });
 
+  const groupDataNfts = () => {
+    console.log(offers[0]);
+    console.log("META", nftMetadatas[0]);
+    console.log(offers[offers.length - 1]);
+    console.log("META", nftMetadatas[offers.length - 1]);
+    setShowGroupedDataNfts(!showGroupedDataNfts);
+  };
   useEffect(() => {
     (async () => {
       if (!_chainMeta.networkId) return;
@@ -321,7 +331,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   )}
                 </Tab>
               </Flex>
-              <Flex pr={{ lg: "10" }} ml={{ base: "4.7rem", xl: 0 }}>
+
+              <Flex pr={{ lg: "10" }} gap={{ base: "5", lg: "20" }} ml={{ base: "1.7rem", xl: 0 }}>
+                <Button onClick={groupDataNfts} justifyContent="center" alignItems="center" mt={{ base: "3", lg: "5" }} colorScheme="teal">
+                  Group
+                </Button>
+
                 <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
               </Flex>
             </TabList>
@@ -351,6 +366,33 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           openNftDetailsDrawer={openNftDetailsModal}>
                           <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
                         </UpperCardComponent>
+
+                        /*<Container zIndex={2}>
+                            <UpperCardComponent
+                              nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                              imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                              setNftImageLoaded={setOneNFTImgLoaded}
+                              nftMetadata={nftMetadatas[index]}
+                              offer={offer}
+                              index={index}
+                              marketFreezedNonces={marketFreezedNonces}
+                              openNftDetailsDrawer={openNftDetailsModal}>
+                              <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
+                            </UpperCardComponent>
+                          </Container>{" "}
+                          <Container ml={"-10px"} zIndex={1}>
+                            <UpperCardComponent
+                              nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                              imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                              setNftImageLoaded={setOneNFTImgLoaded}
+                              nftMetadata={nftMetadatas[index]}
+                              offer={offer}
+                              index={index}
+                              marketFreezedNonces={marketFreezedNonces}
+                              openNftDetailsDrawer={openNftDetailsModal}>
+                              <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
+                            </UpperCardComponent>
+                          </Container> */
                       ))}
                   </SimpleGrid>
                 )}
