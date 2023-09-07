@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Flex, Heading, Stack, FormControl, FormLabel, Switch, SimpleGrid } from "@chakra-ui/react";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
-import { getApiDataDex, getApiDataMarshal, getSentryProfile } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
+import { getApiDataDex, getApiDataMarshal, getSentryProfile, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `${getSentryProfile()}`;
 
 export default function () {
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const isPublicApi = getApi(_chainMeta?.networkId).includes("api.multiversx.com");
-  const isPublicNetworkProvider = getNetworkProviderCodification(_chainMeta?.networkId).includes(".multiversx.com");
-  const isApiNetworkProvider = getNetworkProvider(_chainMeta?.networkId) instanceof ApiNetworkProvider;
-  const [isLoading, setIsLoading] = useState(true);
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const isPublicApi = getApi(routedChainID).includes("api.multiversx.com");
+  const isPublicNetworkProvider = getNetworkProviderCodification(routedChainID).includes(".multiversx.com");
+  const isApiNetworkProvider = getNetworkProvider(routedChainID) instanceof ApiNetworkProvider;
+  const [isLoading, setIsLoading] = useState(false);
   const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [previewDataFlag, setPreviewDataFlag] = useState<boolean>(previewDataOnDevnetSession == "true");
-
-  useEffect(() => {
-    if (_chainMeta?.networkId) {
-      setIsLoading(false);
-    }
-  }, [_chainMeta]);
 
   useEffect(() => {
     if ((previewDataFlag && !previewDataOnDevnetSession) || (!previewDataFlag && !!previewDataOnDevnetSession)) {
@@ -87,11 +83,11 @@ export default function () {
                 Dynamic Settings
               </Heading>
               <Box fontSize="sm">
-                <Text>MultiversX API being used : {getApi(_chainMeta?.networkId)}</Text>
-                <Text>MultiversX Gateway being used : {getNetworkProviderCodification(_chainMeta?.networkId)}</Text>
-                <Text>Web2 Data DEX API : {getApiDataDex(_chainMeta?.networkId)}</Text>
-                <Text>Web2 Data Marshal API : {getApiDataMarshal(_chainMeta?.networkId)}</Text>
-                <Text>Chain Meta Dump : {JSON.stringify(_chainMeta)}</Text>
+                <Text>MultiversX API being used : {getApi(routedChainID)}</Text>
+                <Text>MultiversX Gateway being used : {getNetworkProviderCodification(routedChainID)}</Text>
+                <Text>Web2 Data DEX API : {getApiDataDex(routedChainID)}</Text>
+                <Text>Web2 Data Marshal API : {getApiDataMarshal(routedChainID)}</Text>
+                <Text>Chain ID : {routedChainID}</Text>
               </Box>
             </Box>
 

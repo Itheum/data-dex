@@ -1,18 +1,12 @@
 import React from "react";
 import { Box, Flex, Heading, Image, Text, Center, useColorMode } from "@chakra-ui/react";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentArticles from "components/Sections/RecentArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
-import { networkIdBasedOnLoggedInStatus } from "libs/utils/util";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const LandingPage = () => {
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
   const { colorMode } = useColorMode();
   let containerShadow = "rgb(255 255 255 / 16%) 0px 10px 36px 0px, rgb(255 255 255 / 6%) 0px 0px 0px 1px";
 
@@ -41,7 +35,7 @@ const LandingPage = () => {
             <Center w="95%" pt="5rem">
               <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "lg": 12 }}>
                 <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
-                  <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
+                  <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]} fontFamily="Clash-Regular">
                     Own and trade{" "}
                     <Text as="span" color="teal.200">
                       your data
@@ -64,11 +58,11 @@ const LandingPage = () => {
           </Flex>
 
           <Box pt={{ base: "28", "2xl": "10" }} pb="10" mx={{ base: 8, "lg": 20 }}>
-            <RecentDataNFTs headingText="Recent Data NFTs" networkId={networkId} />
+            <RecentDataNFTs headingText="Recent Data NFTs" />
           </Box>
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
-            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+            <Heading as="h2" size="lg" fontFamily="Clash-Medium" textAlign={["center", "initial"]}>
               Data DEX 101 Guides
             </Heading>
 
@@ -76,10 +70,9 @@ const LandingPage = () => {
           </Box>
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
-            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+            <Heading as="h2" fontFamily="Clash-Medium" size="lg" textAlign={["center", "initial"]}>
               Featured Articles
             </Heading>
-
             <RecentArticles />
           </Box>
         </Box>

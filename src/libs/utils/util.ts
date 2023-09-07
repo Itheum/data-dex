@@ -1,7 +1,6 @@
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
-import { NetworkIdType } from "libs/types";
 import { convertToLocalString } from "./number";
 
 export const qsParams = () => {
@@ -23,13 +22,13 @@ export const itheumTokenRoundUtil = (balance: BigNumber.Value, decimals: number)
 
 export const sleep = (sec: number) => new Promise((r) => setTimeout(r, sec * 1000));
 
-export const buyOnOpenSea = (txNFTId: string, dnftContract: string, txNetworkId: NetworkIdType) => {
-  window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[txNetworkId]}/${dnftContract}/${txNFTId}`);
+export const buyOnOpenSea = (txNFTId: string, dnftContract: string, chainID: string) => {
+  window.open(`https://testnets.opensea.io/assets/${OPENSEA_CHAIN_NAMES[chainID]}/${dnftContract}/${txNFTId}`);
 };
 
-export const backendApi = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
-  const defaultUrl = networkId === "E1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
+export const backendApi = (chainID: string) => {
+  const envKey = chainID === "1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
+  const defaultUrl = chainID === "1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
 
   return process.env[envKey] || defaultUrl;
 };
@@ -41,6 +40,7 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   Category: 'Videos'; Action: 'Play - Mac Chrome'
   Category: 'Videos', Action: 'Video Load Time', Label: 'Gone With the Wind', Value: downloadTime
 
+  // AUTH
   Category: 'Auth', Action: 'Login', Label: 'Metamask'
   Category: 'Auth', Action: 'Login - Success', Label: 'Metamask'
   Category: 'Auth', Action: 'Login', Label: 'DeFi'
@@ -49,6 +49,11 @@ export const gtagGo = (category: string, action: any, label: any, value?: any) =
   Category: 'Auth', Action: 'Login', Label: 'WebWallet'
 
   Category: 'Auth', Action: 'Logout', Label: 'WebWallet'
+
+  // Get Whitelist Page
+  Category: 'GWT', Action: 'Join', Label: 'hero/useca/Testi' // tracking the join whitelist links
+  Category: 'GWT', Action: 'Exp', Label: 'crd1/2/3' // explore trending collections
+
   */
 
   if (!action || !category) {
@@ -79,6 +84,7 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-launch-env");
   localStorage?.removeItem("itm-datacat-linked");
   sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo"); // clear signedSessions
+  //sessionStorage.removeItem("itm-hub-access-token");
 };
 
 export const printPrice = (price: number, token: string): string => {
@@ -173,23 +179,55 @@ export const tokenDecimals = (token_identifier: string) => {
   } else return 0;
 };
 
-export const getApiDataDex = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
-  const defaultUrl = networkId === "E1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
+export const getApiDataDex = (chainID: string) => {
+  const envKey = chainID === "1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
+  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
 
   return process.env[envKey] || defaultUrl;
 };
 
-export const getApiDataMarshal = (networkId: NetworkIdType) => {
-  const envKey = networkId === "E1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
-  const defaultUrl =
-    networkId === "E1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
+export const getApiDataMarshal = (chainID: string) => {
+  const envKey = chainID === "1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
+  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
 
   return process.env[envKey] || defaultUrl;
+};
+
+export const getExplorerTrailBlazerURL = (chainID: string) => {
+  return chainID === "1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
 };
 
 // utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
 // ... this is used only for "public" components and routes where the user has not connected their wallet
-export const networkIdBasedOnLoggedInStatus = (isMxLoggedIn: boolean, networkId: NetworkIdType) => {
-  return !isMxLoggedIn && window.location.hostname === "datadex.itheum.io" ? "E1" : networkId;
+export const routeChainIDBasedOnLoggedInStatus = (isMxLoggedIn: boolean, chainID: string) => {
+  let routedChainId;
+  if (!isMxLoggedIn && window.location.hostname === "datadex.itheum.io") {
+    routedChainId = "1";
+  } else {
+    if (chainID === undefined || chainID === "-1") {
+      routedChainId = "D";
+    } else {
+      routedChainId = chainID;
+    }
+  }
+  return routedChainId;
 };
+
+export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
+  return !(chainID == "D" && !previewDataOnDevnetSession);
+};
+
+export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
+  const reversedString = string.split("").reverse().join("");
+  let index = -1;
+
+  for (let i = 0; i < n; i++) {
+    index = reversedString.indexOf(char, index + 1);
+    if (index === -1) {
+      return -1;
+    }
+  }
+
+  // Subtract the found index from the length of the string - 1 (because string index starts from 0)
+  return string.length - 1 - index;
+}

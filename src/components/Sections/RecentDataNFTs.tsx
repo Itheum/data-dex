@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
+import { Link as ReactRouterLink } from "react-router-dom";
 import { getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
-import { NetworkIdType } from "libs/types";
-import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
+import { convertWeiToEsdt, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 import { NoDataHere } from "./NoDataHere";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
@@ -35,29 +35,30 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: string; networkId: NetworkIdType; headingSize?: string }) => {
+const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; headingSize?: string }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-
+  const { chainID } = useGetNetworkConfig();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
-  const marketContract = new DataNftMarketContract(networkId);
-  const mintContract = new DataNftMintContract(networkId);
+  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(routedChainID);
 
   useEffect(() => {
     apiWrapper();
-  }, [networkId, marketRequirements]);
+  }, [routedChainID, marketRequirements]);
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(networkId === "E1" ? "mainnet" : "devnet");
+    DataNft.setNetworkConfig(routedChainID === "1" ? "mainnet" : "devnet");
 
     try {
-      const isApiUp = await getHealthCheckFromBackendApi(networkId);
+      const isApiUp = await getHealthCheckFromBackendApi(routedChainID);
 
       if (isApiUp) {
-        const offers = await getRecentOffersFromBackendApi(networkId);
+        const offers = await getRecentOffersFromBackendApi(routedChainID);
         const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
@@ -102,7 +103,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
       const slicedOffers = offers.slice(0, 10);
       // get these offers metadata from the API
       const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
-      const dataNfts = await getNftsByIds(nftIds, networkId);
+      const dataNfts = await getNftsByIds(nftIds, routedChainID);
 
       // merge the offer data and meta data
       const _latestOffers: DataNftCondensedView[] = [];
@@ -146,7 +147,7 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
 
   return (
     <>
-      <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
+      <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
@@ -158,13 +159,13 @@ const RecentDataNFTs = ({ headingText, networkId, headingSize }: { headingText: 
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
-                  <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
+                  <Link to={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`} as={ReactRouterLink}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
                   <Stack mt={isMxLoggedIn ? "12" : "4"}>
-                    <Heading size="md" noOfLines={1}>
+                    <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {item.title}
                     </Heading>
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>
