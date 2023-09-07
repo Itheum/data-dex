@@ -140,7 +140,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         "Content-Type": "application/json",
       };
 
-      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
+      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 200)) / 10000;
 
       const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
       const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
