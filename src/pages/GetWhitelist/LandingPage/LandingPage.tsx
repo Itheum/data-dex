@@ -24,14 +24,14 @@ export const LandingPage: React.FC = () => {
           mx={{ base: 0, "2xl": 20 }}
           alignItems="center">
           <Box width={["100%", null, null, "500px", "650px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
-            <Heading as="h1" size={["2xl", null, null, "2xl", "4xl"]} fontFamily="Clash-Medium">
+            <Heading as="h1" size="2xl" fontFamily="Clash-Medium" pt={20}>
               Fully Unlock your Data’s Value by Minting it as a Data NFT
             </Heading>
 
-            <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="7">
+            <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="2">
               It’s time to own and trade your data
             </Text>
-            <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={7}>
+            <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={4}>
               Whether you’re a data creator, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the value of
               your data. Transform your unique datasets into a new asset class by minting your very own Data NFTs.
             </Text>
