@@ -74,7 +74,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   const commonProps = {
-    // nativeAuth: true, // optional
+    nativeAuth: true, // optional
     callbackRoute: pathname,
   };
 
