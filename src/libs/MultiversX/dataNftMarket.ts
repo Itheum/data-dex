@@ -277,6 +277,7 @@ export class DataNftMarketContract {
         successMessage: "Offer de-listed successfully",
       },
       redirectAfterSign: false,
+      sessionInformation: "delist-tx",
     });
 
     return { sessionId, error };
@@ -518,6 +519,7 @@ export class DataNftMarketContract {
         successMessage: "Fee updated successfully",
       },
       redirectAfterSign: false,
+      sessionInformation: "update-price-tx",
     });
 
     return { sessionId, error };
