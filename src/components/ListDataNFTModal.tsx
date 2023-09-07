@@ -107,7 +107,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     description = nftData.description,
     wanted_token_identifier = offer.wanted_token_identifier,
     wanted_token_nonce = offer.wanted_token_nonce,
-    wanted_token_amount = Number(Number(offer.wanted_token_amount) * Number(10 ** 18)).toString(),
+    wanted_token_amount = Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements?.buyer_fee ?? 200)) / 10000,
     quantity = amount * 1,
     owner = address
   ) {
