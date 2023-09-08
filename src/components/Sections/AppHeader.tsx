@@ -37,6 +37,7 @@ import {
   Spinner,
   Stack,
   Text,
+  useBreakpointValue,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -113,8 +114,8 @@ const exploreRouterMenu = [
       {
         menuEnum: MENU.GETWHITELISTED,
         path: "/getwhitelisted",
-        label: "Get whitelisted to mint Data NFTs",
-        shortLbl: "Get whitelisted to mint Data NFTs",
+        label: "Get Whitelisted to Mint Data NFTs",
+        shortLbl: "Get Whitelisted to Mint Data NFTs",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
@@ -565,6 +566,9 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   // ... we need to fix this properly (i.e stop that useEffect being called)
   localStorage?.removeItem("itm-datacat-linked");
 
+  // need to adjust title or it break mobile view
+  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
+
   return (
     <Popover
       isOpen={showMxEnvPicker}
@@ -576,7 +580,7 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
       <HStack marginLeft={3}>
         <PopoverTrigger>
           <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
-            Connect MultiversX Wallet
+            {connectBtnTitle}
           </Button>
         </PopoverTrigger>
       </HStack>
