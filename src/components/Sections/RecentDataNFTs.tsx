@@ -4,6 +4,7 @@ import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
+import { Link as ReactRouterLink } from "react-router-dom";
 import { getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -146,7 +147,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
 
   return (
     <>
-      <Heading as="h4" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
+      <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>
         {headingText}
       </Heading>
 
@@ -158,13 +159,13 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
-                  <Link href={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`}>
+                  <Link to={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`} as={ReactRouterLink}>
                     <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>
                   <Stack mt={isMxLoggedIn ? "12" : "4"}>
-                    <Heading size="md" noOfLines={1}>
+                    <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {item.title}
                     </Heading>
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>

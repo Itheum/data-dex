@@ -16,7 +16,7 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { logout } from "@multiversx/sdk-dapp/utils";
-import { Navigate, Outlet, Route, Routes, useLocation, useRoutes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
@@ -223,6 +223,8 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
                 <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                 <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
                 <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
+                <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
+                <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
                 <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
                 <Route path="marketplace" element={<Navigate to={"market"} />} />
                 <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
