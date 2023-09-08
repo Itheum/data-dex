@@ -22,6 +22,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import moment from "moment";
@@ -34,9 +35,8 @@ import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponen
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
-import { formatNumberRoundFloor } from "libs/utils";
+import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
-import { useChainMeta } from "store/ChainMetaContext";
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -53,10 +53,11 @@ export default function HomeMultiversX({
 }) {
   const { colorMode } = useColorMode();
   const toast = useToast();
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);
@@ -67,14 +68,14 @@ export default function HomeMultiversX({
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
   const navigate = useNavigate();
-  const mxFaucetContract = new FaucetContract(_chainMeta.networkId);
-  const mxClaimsContract = new ClaimsContract(_chainMeta.networkId);
+  const mxFaucetContract = new FaucetContract(routedChainID);
+  const mxClaimsContract = new ClaimsContract(routedChainID);
 
   // S: Faucet
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (_chainMeta?.networkId === "ED" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
+    if (routedChainID === "D" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
@@ -255,13 +256,13 @@ export default function HomeMultiversX({
   return (
     <>
       <Stack mx={{ base: 5, lg: 24 }}>
-        <Box m={heroGridMargin} pt="20" pb="10">
+        <Box m={heroGridMargin} pt="20" pb="10" w={"100%"}>
           <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
                   {!dataCATAccount && (
-                    <Heading size="md" fontWeight="semibold" pb={2}>
+                    <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                       Linked Data CAT Accounts
                     </Heading>
                   )}
@@ -297,7 +298,7 @@ export default function HomeMultiversX({
                     )) || (
                       <>
                         <Stack h="395px" w="full">
-                          <Heading size="md" fontWeight="semibold" pb={2} textAlign={{ base: "center", xl: "left" }}>
+                          <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "left" }}>
                             Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}
                           </Heading>
                           <Text fontSize="md" mb="4 !important" textAlign={{ base: "center", xl: "left" }} color="#929497">
@@ -334,19 +335,19 @@ export default function HomeMultiversX({
             <ChainSupportedComponent feature={MENU.FAUCET}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
-                  <Heading size="md" fontWeight="semibold" pb={2}>
-                    {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} Faucet
+                  <Heading size="md" fontFamily="Clash-Medium" pb={2}>
+                    {CHAIN_TOKEN_SYMBOL(routedChainID)} Faucet
                   </Heading>
                   <Stack h={tileBoxH} w={"full"}>
                     <Text textAlign={{ base: "center", xl: "left" }} fontSize="md" color="#929497" pb={5}>
-                      Get some free {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)} tokens to try DEX features
+                      Get some free {CHAIN_TOKEN_SYMBOL(routedChainID)} tokens to try DEX features
                     </Text>
 
                     <Spacer />
                     {/*<Box h={{ base: 40, md: 40, xl: 40 }}></Box>*/}
 
                     <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                      <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}</Text>
+                      <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(routedChainID)}</Text>
                     </Button>
                   </Stack>
                 </Stack>
@@ -355,7 +356,7 @@ export default function HomeMultiversX({
 
             <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
-                <Heading size="md" pb={2}>
+                <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                   NFMe ID Avatar
                 </Heading>
                 <Spacer />
@@ -373,7 +374,7 @@ export default function HomeMultiversX({
             <ChainSupportedComponent feature={MENU.CLAIMS}>
               <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={"430px"} minW={claimsStackMinW}>
-                  <Heading size="md" pb={2} textAlign={{ base: "center", xl: "start" }}>
+                  <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
                     My Claims
                   </Heading>
 
@@ -462,19 +463,19 @@ export default function HomeMultiversX({
           </SimpleGrid>
         </Box>
 
-        <Box m="auto" pt="10" pb="10">
-          <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" networkId={_chainMeta.networkId} />
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
+          <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
         </Box>
 
-        <Box m="auto" pt="10" pb="10">
-          <Heading size="lg" fontWeight="semibold">
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
+          <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
             Data DEX 101 Guides
           </Heading>
 
-          <ExplainerArticles skipSpacing={true} />
+          <ExplainerArticles reduceGap={true} />
         </Box>
 
-        <Box m="auto" pt="10" pb="6rem">
+        <Box m="auto" pt="10" pb="6rem" w={"100%"}>
           <AppMarketplace setMenuItem={setMenuItem} />
         </Box>
       </Stack>

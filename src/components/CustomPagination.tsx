@@ -2,25 +2,14 @@ import React, { FC, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Tooltip } from "@chakra-ui/react";
 
-// const PAGE_SIZES: number[] = [8, 16, 24];
-
 interface PropsType {
   pageCount: number;
   pageIndex: number;
-  pageSize: number;
   gotoPage: (e: number) => void;
   disabled: boolean;
-  // setPageSize: (e: number) => void,
 }
 
-export const CustomPagination: FC<PropsType> = ({
-  pageCount,
-  pageIndex,
-  pageSize,
-  gotoPage,
-  disabled,
-  // setPageSize,
-}) => {
+export const CustomPagination: FC<PropsType> = ({ pageCount, pageIndex, gotoPage, disabled }) => {
   const canPreviousPage = pageIndex > 0;
   const canNextPage = pageIndex < pageCount - 1;
   const [isInThrottle, setIsInThrottle] = useState(false);

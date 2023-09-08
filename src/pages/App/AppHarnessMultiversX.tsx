@@ -5,10 +5,7 @@ import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/a
 import { RouteType } from "@multiversx/sdk-dapp/types";
 import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useLocalStorage } from "libs/hooks";
-import { contractsForChain } from "libs/MultiversX";
-import { sleep } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
+import { useLocalStorage, useSessionStorage } from "libs/hooks";
 import { StoreProvider } from "store/StoreProvider";
 import AppMx from "./AppMultiversX";
 
@@ -50,38 +47,20 @@ export const routes: RouteType[] = [
 
 function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
   const [searchParams] = useSearchParams();
-  const { setChainMeta } = useChainMeta();
   const navigate = useNavigate();
-  const { chainMeta: _chainMeta } = useChainMeta();
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [, setHubAccessToken] = useSessionStorage("itm-hub-access-token", null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
-    let networkId = launchEnvironment === "mainnet" ? "E1" : "ED";
     if (searchParams.get("accessToken") || tokenLogin) {
-      networkId = "E1";
-      if (window.location.pathname === "/") {
-        navigate("/dashboard" + window.location.search);
-      }
+      setHubAccessToken(searchParams.get("accessToken"));
+      // if (window.location.pathname === "/" && isMxLoggedIn) {
+      //   navigate("/dashboard" + window.location.search);
+      // }
     }
-    setChainMeta({
-      networkId,
-      contracts: contractsForChain(networkId),
-      walletUsed: walletUsedSession,
-    });
   }, [mxAddress]);
-
-  useEffect(() => {
-    if (_chainMeta?.networkId) {
-      (async () => {
-        // delay loading to prevent multiple rerenders
-        await sleep(process.env.REACT_APP_LOADING_DELAY_SECONDS ? Number(process.env.REACT_APP_LOADING_DELAY_SECONDS) : 2);
-        setIsLoading(false);
-      })();
-    }
-  }, [_chainMeta]);
 
   if (isLoading) {
     return <CustomLoader />;

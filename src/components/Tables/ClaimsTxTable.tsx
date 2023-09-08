@@ -1,17 +1,19 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { Box, HStack, Link, Spinner, useToast } from "@chakra-ui/react";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER } from "libs/config";
 import { getClaimTransactions } from "libs/MultiversX/api";
-import { formatNumberRoundFloor } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
+import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { DataTable } from "./Components/DataTable";
 import { ClaimsInTable, timeSince } from "./Components/tableUtils";
 
 export default function ClaimsTxTable(props: { address: string }) {
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [data, setData] = useState<ClaimsInTable[]>([]);
   const [loadingClaims, setLoadingClaims] = useState(-1);
   const toast = useToast();
@@ -26,7 +28,7 @@ export default function ClaimsTxTable(props: { address: string }) {
           <HStack>
             <ShortAddress address={cellProps.getValue()} />
             <Link
-              href={`${CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
+              href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
               isExternal
               style={linkIconStyle}>
               <ExternalLinkIcon />
@@ -64,7 +66,7 @@ export default function ClaimsTxTable(props: { address: string }) {
   }, []);
 
   const fetchMxClaims = async () => {
-    const res = await getClaimTransactions(props.address, _chainMeta.contracts.claims, _chainMeta.networkId);
+    const res = await getClaimTransactions(props.address, routedChainID);
 
     if (res.error) {
       toast({
