@@ -35,7 +35,7 @@ const LandingPage = () => {
             <Center w="95%" pt="5rem">
               <Flex w="100%" justifyContent={[null, null, null, "space-between"]} flexDirection={["column", null, "row"]} mx={{ base: 0, "lg": 12 }}>
                 <Box width={["300px", null, null, "500px", "690px"]} textAlign={["center", null, null, "center", "left"]} m={["auto", "initial"]} pt={10}>
-                  <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]}>
+                  <Heading as="h1" size={["2xl", null, null, "3xl", "4xl"]} fontFamily="Clash-Regular">
                     Own and trade{" "}
                     <Text as="span" color="teal.200">
                       your data
@@ -62,7 +62,7 @@ const LandingPage = () => {
           </Box>
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
-            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+            <Heading as="h2" size="lg" fontFamily="Clash-Medium" textAlign={["center", "initial"]}>
               Data DEX 101 Guides
             </Heading>
 
@@ -70,10 +70,9 @@ const LandingPage = () => {
           </Box>
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
-            <Heading as="h2" size="lg" textAlign={["center", "initial"]}>
+            <Heading as="h2" fontFamily="Clash-Medium" size="lg" textAlign={["center", "initial"]}>
               Featured Articles
             </Heading>
-
             <RecentArticles />
           </Box>
         </Box>

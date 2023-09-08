@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -22,7 +22,12 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import {
+  useGetPendingTransactions,
+  useGetSignedTransactions,
+  useGetSuccessfulTransactions,
+  useTrackTransactionStatus,
+} from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -38,8 +43,9 @@ import {
   tokenDecimals,
   routeChainIDBasedOnLoggedInStatus,
   shouldPreviewDataBeEnabled,
+  backendApi,
 } from "libs/utils";
-import { useMarketStore } from "store";
+import { useAccountStore, useMarketStore } from "store";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -50,13 +56,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { tokenLogin, loginMethod } = useGetLoginInfo();
+
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const contract = new DataNftMarketContract(routedChainID);
 
+  const isWebWallet = loginMethod === "wallet";
+
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
+  const backendUrl = backendApi(chainID);
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -68,6 +79,111 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const itheumToken = contractsForChain(routedChainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
+  const [sessionId, setSessionId] = useState<string>("");
+  const [delistTxStatus, setDelistTxStatus] = useState<boolean>(false);
+
+  const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
+
+    try {
+      const session = signedTransactionsArray[0][0];
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+    const sessionInfo = sessionStorage.getItem("web-wallet-tx");
+    if (sessionInfo) {
+      const { type } = JSON.parse(sessionInfo);
+      if (type == "delist-tx") {
+        const { index, amount } = JSON.parse(sessionInfo);
+        updateOfferOnBackend(index, amount);
+        sessionStorage.removeItem("web-wallet-tx");
+      } else if (type == "update-price-tx") {
+        const { index, price } = JSON.parse(sessionInfo);
+        updatePriceOnBackend(index, price);
+        sessionStorage.removeItem("web-wallet-tx");
+      }
+    }
+  }, [hasSignedTransactions]);
+
+  const [updatePriceSessionId, setUpdatePriceSessionId] = useState<string>("");
+  const [updatePriceTxStatus, setUpdatePriceTxStatus] = useState<boolean>(false);
+
+  const trackUpdatePriceTransactionStatus = useTrackTransactionStatus({
+    transactionId: updatePriceSessionId,
+  });
+
+  useEffect(() => {
+    setUpdatePriceTxStatus(trackUpdatePriceTransactionStatus.isPending ? true : false);
+  }, [trackUpdatePriceTransactionStatus]);
+
+  const trackTransactionStatus = useTrackTransactionStatus({
+    transactionId: sessionId,
+  });
+
+  useEffect(() => {
+    setDelistTxStatus(trackTransactionStatus.isPending ? true : false);
+  }, [trackTransactionStatus]);
+
+  useEffect(() => {
+    if (updatePriceTxStatus && !isWebWallet) {
+      updatePriceOnBackend();
+    }
+  }, [updatePriceTxStatus]);
+
+  async function updatePriceOnBackend(index = offer.index, newPrice = newListingPrice) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
+
+      const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
+      const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log("Response:", response.ok);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+  async function updateOfferOnBackend(index = offer.index, supply = delistAmount) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = { supply: supply };
+      const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log("Response:", response.ok);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (delistTxStatus && !isWebWallet) {
+      updateOfferOnBackend();
+    }
+  }, [delistTxStatus]);
 
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
@@ -106,7 +222,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    contract.delistDataNft(offer.index, delistAmount, address);
+    const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
+    if (isWebWallet) {
+      sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "delist-tx", index: offer.index, amount: delistAmount }));
+    }
+    setSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -133,7 +253,15 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    contract.updateOfferPrice(offer.index, convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(), address);
+    const { sessionId } = await contract.updateOfferPrice(
+      offer.index,
+      convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
+      address
+    );
+    if (isWebWallet) {
+      sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "update-price-tx", index: offer.index, price: newListingPrice }));
+    }
+    setUpdatePriceSessionId(sessionId);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -202,7 +330,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       {offer && nftMetadata && (
         <Modal isOpen={isDelistModalOpen} onClose={onDelistModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             {delistModalState === 0 ? (
               <>
                 <ModalBody py={6}>
@@ -210,7 +338,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                        <Text
+                          px="15px"
+                          py="5px"
+                          borderRadius="md"
+                          fontWeight="bold"
+                          fontSize="md"
+                          backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}>
                           {nftMetadata.tokenName}
                           <br />
                           Listed supply: {offer.quantity}
@@ -275,7 +409,13 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     <Box flex="4" alignContent="center">
                       <Text fontSize="lg">De-List Data NFTs from Marketplace</Text>
                       <Flex mt="1">
-                        <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300">
+                        <Text
+                          px="15px"
+                          py="5px"
+                          borderRadius="md"
+                          fontWeight="bold"
+                          fontSize="md"
+                          backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}>
                           {nftMetadata ? nftMetadata.tokenName : ""}
                           <br />
                           Listed supply: {offer.quantity}
@@ -311,13 +451,20 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       {offer && marketRequirements && nftMetadata && (
         <Modal isOpen={isUpdatePriceModalOpen} onClose={onUpdatePriceModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <ModalBody py={6}>
               <HStack spacing={5} alignItems="center">
                 <Box flex="4" alignContent="center">
                   <Text fontSize="lg">Update Listing Fee for Each</Text>
                   <Flex mt="1">
-                    <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
+                    <Text
+                      px="15px"
+                      py="5px"
+                      borderRadius="md"
+                      fontWeight="bold"
+                      fontSize="md"
+                      backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                      textAlign="center">
                       {nftMetadata.tokenName}
                     </Text>
                   </Flex>

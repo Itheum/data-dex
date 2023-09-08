@@ -1,12 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalBody, HStack, Flex, Button, Checkbox, Divider, useToast } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import {
+  Box,
+  Text,
+  Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  HStack,
+  Flex,
+  Button,
+  Checkbox,
+  Divider,
+  useToast,
+  useColorMode,
+} from "@chakra-ui/react";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertEsdtToWei, convertWeiToEsdt, sleep, printPrice, convertToLocalString, tokenDecimals, getTokenWantedRepresentation } from "libs/utils";
+import {
+  convertEsdtToWei,
+  convertWeiToEsdt,
+  sleep,
+  printPrice,
+  convertToLocalString,
+  tokenDecimals,
+  getTokenWantedRepresentation,
+  backendApi,
+} from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
+import { set } from "react-hook-form";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -23,9 +48,17 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const { address } = useGetAccountInfo();
   const toast = useToast();
 
+  const { colorMode } = useColorMode();
+
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(chainID);
+
+  const { tokenLogin, loginMethod } = useGetLoginInfo();
+
+  const isWebWallet = loginMethod === "wallet";
+
+  const backendUrl = backendApi(chainID);
 
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
@@ -36,12 +69,73 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
 
+  const [purchaseSessionId, setPurchaseSessionId] = useState<string>("");
+  const [purchaseTxStatus, setPurchaseTxStatus] = useState<boolean>(false);
+
+  const trackPurchaseTxStatus = useTrackTransactionStatus({
+    transactionId: purchaseSessionId,
+  });
+
+  const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
+
+    try {
+      const session = signedTransactionsArray[0][0];
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+
+    const sessionInfo = sessionStorage.getItem("web-wallet-tx");
+    if (sessionInfo) {
+      const { type, index, amount } = JSON.parse(sessionInfo);
+      if (type == "purchase-tx") {
+        updateOfferOnBackend(index, amount);
+        sessionStorage.removeItem("web-wallet-tx");
+      }
+    }
+  }, [hasSignedTransactions]);
+
+  useEffect(() => {
+    setPurchaseTxStatus(trackPurchaseTxStatus.isPending ? true : false);
+  }, [trackPurchaseTxStatus]);
+
+  useEffect(() => {
+    if (purchaseTxStatus && !isWebWallet) {
+      updateOfferOnBackend();
+    }
+  }, [purchaseTxStatus]);
+
   // set ReadTermChecked checkbox as false when modal opened
   useEffect(() => {
     if (isOpen) {
       setReadTermsChecked(false);
     }
   }, [isOpen]);
+
+  async function updateOfferOnBackend(index = offer.index, supply = amount) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = { supply: supply };
+      const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log("Response:", response.ok);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
 
   const showErrorToast = (title: string) => {
     toast({
@@ -91,7 +185,10 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
-
+        setPurchaseSessionId(sessionId);
+        if (isWebWallet) {
+          sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "purchase-tx", index: offer.index, amount: amount }));
+        }
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -105,7 +202,10 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           amount as never,
           address
         );
-
+        setPurchaseSessionId(sessionId);
+        if (isWebWallet) {
+          sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "purchase-tx", index: offer.index, amount: amount }));
+        }
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -122,13 +222,20 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
         <ModalOverlay backdropFilter="blur(10px)" />
-        <ModalContent>
+        <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
                 <Text fontSize="lg">Procure Access to Data NFTs</Text>
                 <Flex mt="1">
-                  <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
+                  <Text
+                    px="15px"
+                    py="5px"
+                    borderRadius="md"
+                    fontWeight="bold"
+                    fontSize="md"
+                    backgroundColor={colorMode === "dark" ? "teal.400" : "teal.100"}
+                    textAlign="center">
                     {nftData.tokenName}
                   </Text>
                 </Flex>

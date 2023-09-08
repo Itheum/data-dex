@@ -40,13 +40,19 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import {
+  useGetAccountInfo,
+  useGetLoginInfo,
+  useGetNetworkConfig,
+  useGetPendingTransactions,
+  useGetSignedTransactions,
+  useTrackTransactionStatus,
+} from "@multiversx/sdk-dapp/hooks";
 import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
 import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
 import { motion } from "framer-motion";
 import moment from "moment";
-import qs from "qs";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -57,7 +63,9 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
 import {
+  backendApi,
   convertToLocalString,
+  findNthOccurrenceFromEnd,
   isValidNumericCharacter,
   routeChainIDBasedOnLoggedInStatus,
   shouldPreviewDataBeEnabled,
@@ -66,6 +74,9 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
+import { MdOutlineInfo } from "react-icons/md";
+import axios from "axios";
+import { getApi } from "libs/MultiversX/api";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -78,15 +89,15 @@ export type WalletDataNFTMxPropType = {
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn, loginMethod } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn, loginMethod, tokenLogin } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
   const { signMessage } = useSignMessage();
-  const loginInfo = useGetLoginInfo();
   const lastSignedMessageSession = useGetLastSignedMessageSession();
+  const location = useLocation();
 
   const navigate = useNavigate();
   const { nftId, dataNonce } = useParams();
@@ -116,8 +127,144 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [priceError, setPriceError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
+  const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
+
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
+
+  const backendUrl = backendApi(chainID);
+
+  const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
+
+    const [_, sessionInfo] = signedTransactionsArray[0];
+    try {
+      const txHash = sessionInfo.transactions[0].hash;
+
+      if (webWalletListTxHash == "") {
+        setWebWalletListTxHash(txHash);
+      }
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+  }, [hasSignedTransactions]);
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!webWalletListTxHash) return;
+    const data = sessionStorage.getItem("web-wallet-tx");
+
+    if (!data) return;
+
+    const txData = JSON.parse(data);
+
+    if (txData) {
+      if (txData.type === "add-offer-tx") {
+        addOfferBackend(
+          webWalletListTxHash,
+          txData.offered_token_identifier,
+          txData.offered_token_nonce,
+          txData.offered_token_amount,
+          txData.title,
+          txData.description,
+          txData.wanted_token_identifier,
+          txData.wanted_token_nonce,
+          txData.wanted_token_amount,
+          txData.quantity,
+          txData.owner
+        );
+      }
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+  }, [webWalletListTxHash]);
+
+  async function addOfferBackend(
+    txHash: string,
+    offered_token_identifier: string,
+    offered_token_nonce: string,
+    offered_token_amount: string,
+    title: string,
+    description: string,
+    wanted_token_identifier: string,
+    wanted_token_nonce: string,
+    wanted_token_amount: string,
+    quantity: number,
+    owner: string
+  ) {
+    try {
+      let indexResponse;
+      let success = false;
+
+      // Use a loop with a boolean condition
+      while (!success) {
+        indexResponse = await axios.get(
+          `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
+        );
+        console.log(indexResponse.data);
+        console.log(indexResponse.data[0].status);
+        if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {
+          success = true;
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+      }
+
+      if (indexResponse) {
+        const results = indexResponse.data[0].results;
+        const txLogs = indexResponse.data[0].logs.events;
+
+        const allLogs = [];
+
+        for (const result of results) {
+          if (result.logs && result.logs.events) {
+            const events = result.logs.events;
+            allLogs.push(...events);
+          }
+        }
+
+        allLogs.push(...txLogs);
+
+        const addOfferEvent = allLogs.find((log: any) => log.identifier === "addOffer");
+
+        const indexFound = addOfferEvent.topics[1];
+        const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
+
+        const headers = {
+          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+          "Content-Type": "application/json",
+        };
+
+        const requestBody = {
+          index: index,
+          offered_token_identifier: offered_token_identifier,
+          offered_token_nonce: offered_token_nonce,
+          offered_token_amount: offered_token_amount,
+          title: title,
+          description: description,
+          wanted_token_identifier: wanted_token_identifier,
+          wanted_token_nonce: wanted_token_nonce,
+          wanted_token_amount: wanted_token_amount,
+          quantity: quantity,
+          owner: owner,
+        };
+
+        const response = await fetch(`${backendUrl}/addOffer`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = await response.json();
+        console.log("Response:", data);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
 
   // console.log(item.isProfile);
   useEffect(() => {
@@ -296,7 +443,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
       if (isWebWallet) {
-        navigate("/datanfts/wallet");
+        let url = location.pathname;
+        url = url.slice(0, findNthOccurrenceFromEnd(url, "/", 2)); // remove last 2 segments in the url - those are for WebWallet callback
+        navigate(url);
       }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
@@ -441,14 +590,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             </PopoverContent>
           </Popover>
           <Box mt={1}>
-            {
-              <Box color="#8c8f92d0" fontSize="md">
-                Creator: <ShortAddress address={item.creator} fontSize="md"></ShortAddress>
-                <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${item.creator}`} isExternal>
-                  <ExternalLinkIcon ml="5px" fontSize="sm" />
-                </Link>
-              </Box>
-            }
+            <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
+              Creator:&nbsp;
+              <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
+                <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
+                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
+              </Flex>
+            </Box>
 
             <Box color="#8c8f92d0" fontSize="md">
               {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
@@ -657,7 +805,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         {selectedDataNft && (
           <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay backdropFilter="blur(10px)" />
-            <ModalContent>
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               {burnNFTModalState === 1 ? (
                 <>
                   <ModalHeader>Burn Supply from my Data NFT</ModalHeader>

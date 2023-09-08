@@ -903,10 +903,10 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   return (
     <>
       <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-        <Heading size="xl" fontWeight="medium">
+        <Heading size="xl" fontFamily="Clash-Medium">
           Trade Data
         </Heading>
-        <Heading size="1rem" opacity=".7" fontWeight="light">
+        <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
           Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
         </Heading>
 
@@ -929,7 +929,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
         {dataCATAccount?.programsAllocation?.length > 0 && (
           <>
-            <Heading size="lg" fontWeight="semibold" marginTop="6rem !important">
+            <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">
               Supported Data CAT Programs
             </Heading>
             <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
@@ -951,7 +951,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         {" "}
                         New
                       </Badge>
-                      <Box ml="2" fontWeight="semibold" lineHeight="tight" fontSize="2xl" noOfLines={1}>
+                      <Box ml="2" fontWeight="semibold" fontFamily="Clash-Medium" fontSize="2xl" noOfLines={1}>
                         {dataCATAccount._lookups.programs[item.program].programName}
                       </Box>
                     </Box>
@@ -988,7 +988,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                     </Box>
                   </Stack>
                 )) || (
-                  <Heading as="h4" size="lg">
+                  <Heading as="h4" fontFamily="Clash-Medium" size="lg">
                     Trade a Data Stream as a Data NFT-FT
                   </Heading>
                 )}
