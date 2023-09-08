@@ -1,19 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Heading, Link } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccount, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useParams } from "react-router-dom";
+import { getAccountDetailFromApi } from "libs/MultiversX/api";
 import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { CHAIN_TX_VIEWER } from "../../../libs/config";
+
+function processHerotag(value: string): string {
+  return value.length > 7 ? value.slice(0, -7) : value;
+}
 
 export const DataCreatorInfo: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
-  const account = useGetAccount();
   const { profileAddress } = useParams();
+
+  const [herotag, setHerotag] = useState<string>("");
+
+  useEffect(() => {
+    if (!profileAddress) return;
+    (async () => {
+      const _accountDetail = await getAccountDetailFromApi(profileAddress, "1"); // query mainnet to get herotag
+      const _herotag = _accountDetail && _accountDetail.username ? processHerotag(_accountDetail.username) : "";
+      setHerotag(_herotag);
+    })();
+  }, [profileAddress]);
 
   return (
     <>
@@ -33,9 +48,9 @@ export const DataCreatorInfo: React.FC = () => {
           <ExternalLinkIcon mx="4px" fontSize="lg" />
         </Link>
       </Heading>
-      {account.address === profileAddress ? (
+      {herotag ? (
         <Heading size="1rem" opacity=".7" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} mt={1}>
-          @{account.username}
+          @{herotag}
         </Heading>
       ) : (
         <></>
