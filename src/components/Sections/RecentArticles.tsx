@@ -3,7 +3,7 @@ import { Box, Heading, Text, Link, Card, CardBody, Stack, Flex } from "@chakra-u
 
 const RecentArticles = () => {
   return (
-    <Flex flexWrap="wrap" gap={5}>
+    <Flex flexWrap="wrap" gap={5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
         date="25 Jul, 2023"
         title="The Itheum Trailblazer Competition is Live"
@@ -41,7 +41,7 @@ const RecentArticles = () => {
 
 function ArticleCard({ date, title, description, link, imgLink }: { date: string; title: string; description: string; link: string; imgLink: string }) {
   return (
-    <Card variant="outline" backgroundColor="none" border="none" w="393px">
+    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", xl: "290px", "2xl": "315px" }}>
       <CardBody>
         <Link href={link} isExternal>
           <Box
@@ -51,8 +51,8 @@ function ArticleCard({ date, title, description, link, imgLink }: { date: string
             backgroundImage={imgLink}
             backgroundSize="cover"
             backgroundRepeat="no-repeat"
-            h="195px"
-            w="393px"></Box>
+            h={{ base: "140px", xl: "160px", "2xl": "160px" }}
+            w={{ base: "235px", xl: "265px", "2xl": "290px" }}></Box>
         </Link>
         <Stack mt="6" spacing="2">
           <Text fontSize="sm">{date}</Text>
