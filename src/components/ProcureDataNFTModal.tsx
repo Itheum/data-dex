@@ -31,7 +31,6 @@ import {
   backendApi,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
-import { set } from "react-hook-form";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -178,12 +177,18 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
     } else {
       if (offer.wanted_token_nonce === 0) {
+        //Check if we buy all quantity, use web wallet and are on that offer's details page and thus should use callback route
+        const isOnOfferPage = window.location.pathname.includes("/offer-");
+        const shouldUseCallbackRoute = isWebWallet && amount == offer.quantity && isOnOfferPage;
+        const callbackRoute = "/datanfts/wallet";
+
         const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
           offer.wanted_token_identifier,
           amount as never,
-          address
+          address,
+          shouldUseCallbackRoute ? callbackRoute : undefined
         );
         setPurchaseSessionId(sessionId);
         if (isWebWallet) {
