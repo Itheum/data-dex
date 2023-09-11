@@ -15,21 +15,31 @@ export const LandingPage: React.FC = () => {
       bgPosition="bottom"
       bgRepeat="no-repeat"
       justifyContent="center"
+      backgroundColor="none"
       position="relative">
-      <Center w="95%">
+      <Center w={{ base: "95%", md: "89%", xl: "89%", "2xl": "95%" }}>
         <Flex
           w="100%"
-          justifyContent={[null, null, "space-between", "space-between"]}
+          justifyContent={[null, null, null, null, "space-between"]}
           flexDirection={["column", null, "row"]}
           mx={{ base: 0, "2xl": 20 }}
           alignItems="center">
-          <Box width={["100%", null, null, "500px", "650px"]} textAlign={["center", null, null, "left", "left"]} ml={{ xs: "auto", xl: 10 }} pt={10}>
+          <Box
+            backgroundColor="none"
+            width={["100%", null, null, "500px", "650px"]}
+            textAlign={["center", null, null, "left", "left"]}
+            ml={{ xs: "auto", xl: 10 }}
+            pt={10}>
             <Heading as="h1" size="2xl" fontFamily="Clash-Medium" pt={20}>
-              Fully Unlock your Data’s Value by Minting it as a Data NFT
+              Fully Unlock the Value from{" "}
+              <Text as="span" color="teal.200">
+                Your Data{" "}
+              </Text>
+              by Minting it as a Data NFT
             </Heading>
 
             <Text mt="1rem" fontSize="lg" fontWeight="400" lineHeight="25px" marginTop="2">
-              It’s time to own and trade your data
+              It’s time to own and trade your data.
             </Text>
             <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={4}>
               Whether you’re a data creator, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the value of
@@ -55,8 +65,15 @@ export const LandingPage: React.FC = () => {
             </Button>
           </Box>
 
-          <Box>
-            <Image className="bounce-hero-img" marginLeft="15px" boxSize="auto" w="90%" src={illustration} alt="Data NFTs Illustration" />
+          <Box backgroundColor="none">
+            <Image
+              className="bounce-hero-img"
+              marginLeft="15px"
+              boxSize="auto"
+              w={{ base: "90%", md: "80%", xl: "80%", "2xl": "90%" }}
+              src={illustration}
+              alt="Data NFTs Illustration"
+            />
           </Box>
         </Flex>
         <Box position="absolute" bottom={2} right={4} display={{ base: "none", md: "flex", xl: "flex" }}>
