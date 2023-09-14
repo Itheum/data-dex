@@ -40,32 +40,32 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import {
   useGetAccountInfo,
   useGetLoginInfo,
   useGetNetworkConfig,
   useGetPendingTransactions,
   useGetSignedTransactions,
-  useTrackTransactionStatus,
 } from "@multiversx/sdk-dapp/hooks";
-import { useGetLastSignedMessageSession } from "@multiversx/sdk-dapp/hooks/signMessage/useGetLastSignedMessageSession";
-import { useSignMessage } from "@multiversx/sdk-dapp/hooks/signMessage/useSignMessage";
+import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { MdOutlineInfo } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
+import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
 import {
   backendApi,
   convertToLocalString,
-  findNthOccurrenceFromEnd,
   isValidNumericCharacter,
   routeChainIDBasedOnLoggedInStatus,
   shouldPreviewDataBeEnabled,
@@ -74,9 +74,7 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
-import { MdOutlineInfo } from "react-icons/md";
-import axios from "axios";
-import { getApi } from "libs/MultiversX/api";
+
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -88,19 +86,15 @@ export type WalletDataNFTMxPropType = {
 } & DataNftType;
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
-  const { chainID } = useGetNetworkConfig();
+  const { chainID, network } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn, loginMethod, tokenLogin } = useGetLoginInfo();
   const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
-  const { signMessage } = useSignMessage();
-  const lastSignedMessageSession = useGetLastSignedMessageSession();
-  const location = useLocation();
 
   const navigate = useNavigate();
-  const { nftId, dataNonce } = useParams();
   const isWebWallet = loginMethod == "wallet";
 
   const userData = useMintStore((state) => state.userData);
@@ -140,7 +134,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     if (!isWebWallet) return;
     if (!hasSignedTransactions) return;
 
-    const [_, sessionInfo] = signedTransactionsArray[0];
+    const [, sessionInfo] = signedTransactionsArray[0];
     try {
       const txHash = sessionInfo.transactions[0].hash;
 
@@ -266,43 +260,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
   }
 
-  // console.log(item.isProfile);
-  useEffect(() => {
-    const processSignature = async () => {
-      try {
-        let signSessions = JSON.parse(sessionStorage.getItem("persist:sdk-dapp-signedMessageInfo") ?? "{'signedSessions':{}}");
-        signSessions = JSON.parse(signSessions.signedSessions);
-        console.log("signSessions", signSessions);
-        let signature = "";
-        for (const session of Object.values(signSessions) as any[]) {
-          if (session.status && session.status == "signed" && session.signature) {
-            signature = session.signature;
-          }
-        }
-
-        if (!dataNonce) {
-          throw Error("DataNonce is not set");
-        }
-        if (!signature) {
-          throw Error("Signature is empty");
-        }
-
-        await accessDataStream2(item.dataMarshal, item.id, dataNonce, signature);
-      } catch (e: any) {
-        console.error(e);
-        toast({
-          title: e.message,
-          status: "error",
-          isClosable: true,
-        });
-      }
-    };
-
-    if (isWebWallet && nftId && dataNonce && nftId === item.id && lastSignedMessageSession) {
-      processSignature();
-    }
-  }, [item.id, lastSignedMessageSession]);
-
   const showErrorToast = (title: string) => {
     toast({
       title,
@@ -345,79 +302,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onBurnNFTClose(); // close modal
   };
 
-  const fetchAccountSignature = async (_nftId: string, _dataNonce: string) => {
-    const signResult = {
-      signature: "",
-      addrInHex: "",
-      success: false,
-      exception: "",
-    };
-
-    const customError = labels.ERR_WALLET_SIG_GENERIC;
-
-    try {
-      if (isWebWallet) {
-        sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
-      }
-
-      const callbackRoute = `${window.location.href}/${_nftId}/${_dataNonce}`;
-      const signatureObj = await signMessage({
-        message: _dataNonce,
-        callbackRoute: isWebWallet ? callbackRoute : undefined,
-      });
-
-      // console.log("signatureObj", signatureObj);
-      if (signatureObj?.signature && signatureObj?.address) {
-        // XPortal App V2 / Ledger
-        signResult.signature = signatureObj.signature.toString("hex");
-        signResult.addrInHex = signatureObj.address.hex();
-        signResult.success = true;
-      } else {
-        signResult.exception = labels.ERR_WALLET_SIG_GEN_MALFORMED;
-      }
-    } catch (e: any) {
-      console.error(e);
-      signResult.success = false;
-      signResult.exception = e.toString();
-    }
-
-    if (signResult.signature === null || signResult.signature === "" || signResult.addrInHex === null || signResult.addrInHex === "") {
-      signResult.success = false;
-      signResult.exception = customError;
-    }
-
-    return signResult;
-  };
-
-  async function accessDataStream(dataMarshal: string, NFTId: string) {
-    onAccessProgressModalOpen();
-
-    try {
-      const res = await fetch(`${dataMarshal}/preaccess?chainId=E${routedChainID}`);
-      const data = await res.json();
-
-      if (data && data.nonce) {
-        setUnlockAccessProgress((prevProgress) => ({ ...prevProgress, s1: 1 }));
-        await sleep(1);
-
-        const signResult = await fetchAccountSignature(NFTId, data.nonce);
-        // console.log('signResult', signResult);
-        if (isWebWallet) return;
-
-        await accessDataStream2(dataMarshal, NFTId, data.nonce, signResult.signature);
-      } else {
-        if (data && data.success === false) {
-          setErrUnlockAccessGeneric(`${data.error.code}, ${data.error.message}`);
-        } else {
-          setErrUnlockAccessGeneric(labels.ERR_DATA_MARSHAL_GEN_ACCESS_FAIL);
-        }
-      }
-    } catch (e: any) {
-      setErrUnlockAccessGeneric(e.toString());
-    }
-  }
-
-  async function accessDataStream2(dataMarshal: string, _nftId: string, _dataNonce: string, signature: string) {
+  async function accessDataStream(_dataNonce: number) {
     try {
       onAccessProgressModalOpen();
 
@@ -429,24 +314,33 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       await sleep(3);
 
       // auto download the file without ever exposing the url
-      const link = document.createElement("a");
-      link.target = "_blank";
-      link.setAttribute("target", "_blank");
-      const addressInHex = address;
-      link.href = `${dataMarshal}/access?nonce=${_dataNonce}&NFTId=${_nftId}&signature=${signature}&chainId=E${routedChainID}&accessRequesterAddr=${addressInHex}`;
-      link.dispatchEvent(new MouseEvent("click"));
+      if (!(tokenLogin && tokenLogin.nativeAuthToken)) {
+        throw Error("No nativeAuth token");
+      }
+
+      DataNft.setNetworkConfig(network.id);
+      const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
+
+      const arg = {
+        mvxNativeAuthOrigins: [window.location.origin],
+        mvxNativeAuthMaxExpirySeconds: 3000,
+        fwdHeaderMapLookup: {
+          "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
+        },
+      };
+      const res = await dataNft.viewDataViaMVXNativeAuth(arg);
+      
+      if (!res.error) {
+        const object = window.URL.createObjectURL(new Blob([res.data], { type: res.contentType }));
+        window.open(object, "_blank");
+      } else {
+        throw Error(res.error);
+      }
 
       setUnlockAccessProgress((prevProgress) => ({
         ...prevProgress,
         s3: 1,
       }));
-
-      sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo");
-      if (isWebWallet) {
-        let url = location.pathname;
-        url = url.slice(0, findNthOccurrenceFromEnd(url, "/", 2)); // remove last 2 segments in the url - those are for WebWallet callback
-        navigate(url);
-      }
     } catch (e: any) {
       setErrUnlockAccessGeneric(e.toString());
     }
@@ -492,12 +386,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     setDataNftBurnAmount(valueAsNumber);
   };
 
-  const formatButtonNumber = (price: number, amount: number) => {
-    if (price > 0) {
-      if (price >= item.maxPayment) {
-        return item.maxPayment.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
+  const formatButtonNumber = (_price: number, _amount: number) => {
+    if (_price > 0) {
+      if (_price >= item.maxPayment) {
+        return item.maxPayment.toString() + " ITHEUM " + (_amount > 1 ? "each" : "");
       } else {
-        return price.toString() + " ITHEUM " + (amount > 1 ? "each" : "");
+        return _price.toString() + " ITHEUM " + (_amount > 1 ? "each" : "");
       }
     } else {
       return "Free";
@@ -649,7 +543,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   w="full"
                   isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
                   onClick={() => {
-                    accessDataStream(item.dataMarshal, item.id);
+                    accessDataStream(item.nonce);
                   }}>
                   View Data
                 </Button>
