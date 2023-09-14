@@ -331,8 +331,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
       
       if (!res.error) {
-        const object = window.URL.createObjectURL(new Blob([res.data], { type: res.contentType }));
-        window.open(object, "_blank");
+        const link = document.createElement("a");
+        link.target = "_blank";
+        link.download = `DataNFT-${_dataNonce}`;
+        link.href = window.URL.createObjectURL(new Blob([res.data], { type: res.contentType }));
+        link.click();
       } else {
         throw Error(res.error);
       }
