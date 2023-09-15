@@ -134,7 +134,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
 
-      // console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
 
@@ -162,7 +161,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
       }
 
-      // console.log("_offers", _offers);
       updateOffers(_offers);
 
       setNftMetadatasLoading(true);

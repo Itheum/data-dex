@@ -391,11 +391,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   // load deep link default if needed
   useEffect(() => {
     if (searchParams) {
-      // console.log("loadDrawer ", searchParams.get("loadDrawer"));
-      // console.log("skipPreview ", searchParams.get("skipPreview"));
-      // console.log("dm", searchParams.get("dm"));
-      // console.log("ds", searchParams.get("ds"));
-
       if (searchParams.get("loadDrawer") && searchParams.get("ds")) {
         getDataForSale(dataCATAccount?.programsAllocation.find((i: any) => i.program === "playstation-gamer-passport"));
         setMinRoyalties(0); // we need this here or else we get a -2 in the UI panel as the min royalty change is not firing (ONLY when searchParams are used)

@@ -153,7 +153,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
     }
   }, [offerId, hasPendingTransactions]);
-  // console.log(nftData);
   function getTokenDetails() {
     const apiLink = getApi(routedChainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
@@ -188,7 +187,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  // console.log(totalOffers);
   async function getTokenHistory(tokenIdArg: string) {
     try {
       const inputString = tokenIdArg;
@@ -255,8 +253,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const handleButtonClick = (offerArg: number, identifier: string) => {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
-
-  // console.log("routedChainID", routedChainID);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>

@@ -67,7 +67,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-  const backendUrl = backendApi(chainID);
+  const backendUrl = backendApi(routedChainID);
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -165,7 +165,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       };
 
       const requestBody = { supply: supply };
-      const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
+      const response = await fetch(`${backendApi(routedChainID)}/updateOffer/${index}`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(requestBody),
