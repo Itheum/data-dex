@@ -3,37 +3,37 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import coinTelegraph1 from "../../../assets/img/whitelist/coinTelegraph1.png";
 import coinTelegraph2 from "../../../assets/img/whitelist/coinTelegraph2.png";
 import coinTelegraph3 from "../../../assets/img/whitelist/coinTelegraph3.png";
-import coinTelegraph4 from "../../../assets/img/whitelist/coinTelegraph4.jpg";
+import coinTelegraph4 from "../../../assets/img/whitelist/cointelegraph4.png";
 import { FeaturedArticlesCards } from "./components/FeaturedArticlesCards";
 
 const cardContent = [
   {
     id: 1,
+    headerImage: coinTelegraph4,
+    title: "Cointelegraph • Sep 11, 2023",
+    description: "Itheum launches Data NFT technology on CanaryNet, redefining data ownership",
+    url: "https://cointelegraph.com/press-releases/itheum-launches-data-nft-technology-on-canarynet-redefining-data-ownership",
+  },
+  {
+    id: 2,
     headerImage: coinTelegraph1,
     title: "Cointelegraph • Aug 10, 2023",
     description: "How are Data NFTs helping build a decentralized data economy?",
     url: "https://cointelegraph.com/news/how-are-data-nfts-helping-build-a-decentralized-data-economy",
   },
   {
-    id: 2,
+    id: 3,
     headerImage: coinTelegraph2,
-    title: "Cointelegraph • Mar 28, 2023",
+    title: "Cointelegraph • Mar 28, 2023 ",
     description: "Itheum joins Cointelegraph Accelerator Program to democratize data ownership",
     url: "https://cointelegraph.com/news/itheum-joins-cointelegraph-accelerator-program-to-democratize-data-ownership",
   },
   {
-    id: 3,
+    id: 4,
     headerImage: coinTelegraph3,
     title: "Cointelegraph • Jan 11, 2022",
     description: 'MultiversX-based "open metaverse" data platform Itheum lands $1.5M seed round',
     url: "https://cointelegraph.com/press-releases/elrond-based-open-metaverse-data-platform-itheum-lands-15m-seed-round",
-  },
-  {
-    id: 4,
-    headerImage: coinTelegraph4,
-    title: "Cointelegraph • Mar 9, 2022",
-    description: "MultiverseX hosts Web3 data-brokerage platform Itheum to scale up its metaverse",
-    url: "https://cointelegraph.com/press-releases/elrond-hosts-web3-data-brokerage-platform-itheum-to-scale-up-its-metaverse",
   },
 ];
 
