@@ -54,7 +54,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
-  const marketContract = new DataNftMarketContract(chainID);
+  const marketContract = new DataNftMarketContract(routedChainID);
 
   const { tokenLogin, loginMethod } = useGetLoginInfo();
 
