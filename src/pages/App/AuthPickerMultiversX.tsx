@@ -17,15 +17,15 @@ import {
   WrapItem,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useLocation } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
+import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { getApi } from "libs/MultiversX/api";
 
 function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
@@ -80,7 +80,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
 
   const commonProps = {
     nativeAuth: {
-      apiAddress: `https://${getApi(chainID)}`,
+      apiAddress: `https://${getApi(routedChainId)}`,
       expirySeconds: 3000,
     },
     callbackRoute: pathname,
