@@ -155,8 +155,6 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
-  // console.log("menuItem", menuItem);
-
   let bodyMinHeightLg = "1000px";
 
   if (menuItem === MENU.GETWHITELISTED) {

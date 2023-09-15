@@ -41,13 +41,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import {
-  useGetAccountInfo,
-  useGetLoginInfo,
-  useGetNetworkConfig,
-  useGetPendingTransactions,
-  useGetSignedTransactions,
-} from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useGetSignedTransactions } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
@@ -74,7 +68,6 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
-
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -329,7 +322,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         },
       };
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
-      
+
       if (!res.error) {
         const link = document.createElement("a");
         link.target = "_blank";
@@ -836,18 +829,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 <HStack>
                   {(!unlockAccessProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
                   <Text>Initiating handshake with Data Marshal</Text>
-                </HStack>
-
-                <HStack>
-                  {(!unlockAccessProgress.s2 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                  <Stack>
-                    {["ledger", "walletconnectv2", "extra"].includes(loginMethod) ? (
-                      <Text>Please sign the message using xPortal or Ledger</Text>
-                    ) : (
-                      <Text>Please sign the message to complete handshake</Text>
-                    )}
-                    <Text fontSize="sm">Note: This will not use gas or submit any blockchain transactions</Text>
-                  </Stack>
                 </HStack>
 
                 <HStack>
