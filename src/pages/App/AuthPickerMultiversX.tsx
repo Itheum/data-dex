@@ -80,7 +80,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   const commonProps = {
     nativeAuth: {
       apiAddress: `https://${getApi(chainID)}`,
-      expirySeconds: 3600,
+      expirySeconds: 3000,
     },
     callbackRoute: pathname,
   };
