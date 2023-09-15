@@ -86,13 +86,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const toast = useToast();
-
   const navigate = useNavigate();
   const isWebWallet = loginMethod == "wallet";
-
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
-
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
@@ -113,14 +110,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [price, setPrice] = useState(10);
   const [priceError, setPriceError] = useState("");
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
-
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
-
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
-
   const backendUrl = backendApi(chainID);
-
   const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
 
   useEffect(() => {
@@ -190,8 +183,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         indexResponse = await axios.get(
           `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
         );
-        console.log(indexResponse.data);
-        console.log(indexResponse.data[0].status);
+
         if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {
           success = true;
           break;
@@ -292,7 +284,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
     mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
 
-    onBurnNFTClose(); // close modal
+    onBurnNFTClose();
   };
 
   async function accessDataStream(_dataNonce: number) {
@@ -308,7 +300,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       // auto download the file without ever exposing the url
       if (!(tokenLogin && tokenLogin.nativeAuthToken)) {
-        throw Error("No nativeAuth token");
+        throw Error(labels.NATIVE_AUTH_TOKEN_MISSING);
       }
 
       DataNft.setNetworkConfig(network.id);
