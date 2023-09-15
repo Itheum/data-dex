@@ -113,7 +113,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
-  const backendUrl = backendApi(chainID);
+  const backendUrl = backendApi(routedChainID);
   const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
 
   useEffect(() => {
@@ -181,7 +181,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       // Use a loop with a boolean condition
       while (!success) {
         indexResponse = await axios.get(
-          `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
+          `https://${getApi(routedChainID)}/accounts/${contractsForChain(routedChainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
         );
 
         if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {

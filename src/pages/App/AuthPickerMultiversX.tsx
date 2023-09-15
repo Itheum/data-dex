@@ -17,20 +17,21 @@ import {
   WrapItem,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useLocation } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { walletConnectV2ProjectId } from "libs/mxConstants";
-import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { getApi } from "libs/MultiversX/api";
+import { walletConnectV2ProjectId } from "libs/mxConstants";
+import { gtagGo, clearAppSessionsLaunchMode, sleep, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 
 function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
+  const { isLoggedIn } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
-
+  const routedChainId = routeChainIDBasedOnLoggedInStatus(isLoggedIn, chainID);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
@@ -79,7 +80,6 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
 
   const commonProps = {
     nativeAuth: {
-      apiAddress: `https://${getApi(chainID)}`,
       expirySeconds: 3000,
     },
     callbackRoute: pathname,
