@@ -36,7 +36,7 @@ import { Profile } from "../Profile/Profile";
 
 const mxLogout = logout;
 
-function App({ onLaunchMode }: { onLaunchMode: any }) {
+function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
@@ -173,7 +173,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
           boxShadow={containerShadow}
           zIndex={2}>
           {/* App Header */}
-          <AppHeader onLaunchMode={onLaunchMode} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+          <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
           {/* App Body */}
           <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
             <Routes>

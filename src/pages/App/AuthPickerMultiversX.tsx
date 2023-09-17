@@ -27,7 +27,7 @@ import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 
-function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
+function AuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
@@ -95,7 +95,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
             <ModalHeader mt={5}>
               Select a{" "}
               <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                {launchEnvironment}
+                {process.env.REACT_APP_ENV_NETWORK}
               </Badge>{" "}
               MultiversX Wallet
             </ModalHeader>

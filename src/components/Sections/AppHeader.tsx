@@ -127,7 +127,17 @@ const exploreRouterMenu = [
 
 const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
-const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
+const AppHeader = ({
+  onShowConnectWalletModal,
+  menuItem,
+  setMenuItem,
+  handleLogout,
+}: {
+  onShowConnectWalletModal?: any;
+  menuItem: number;
+  setMenuItem: any;
+  handleLogout: any;
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
@@ -139,6 +149,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
+
+  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
   const navigate = useNavigate();
 
@@ -406,7 +418,18 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 </Link>
               </>
             )}
-            {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
+            {onShowConnectWalletModal && !isMxLoggedIn && (
+              <Button
+                colorScheme="teal"
+                fontSize={{ base: "sm", md: "md" }}
+                size={{ base: "sm", lg: "lg" }}
+                onClick={() => {
+                  localStorage?.removeItem("itm-datacat-linked");
+                  onShowConnectWalletModal("mx");
+                }}>
+                {connectBtnTitle}
+              </Button>
+            )}
             Toggle Mode
             <Box display={{ base: "none", md: "block", xl: "block" }}>
               <IconButton
@@ -557,31 +580,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 };
 
 export default AppHeader;
-
-const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
-  const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
-
-  // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
-  // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);
-  // ... we need to fix this properly (i.e stop that useEffect being called)
-  localStorage?.removeItem("itm-datacat-linked");
-
-  // need to adjust title or it break mobile view
-  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
-
-  return (
-    <Button
-      colorScheme="teal"
-      fontSize={{ base: "sm", md: "md" }}
-      size={{ base: "sm", lg: "lg" }}
-      onClick={() => {
-        setShowMxEnvPicker(false);
-        onMxEnvPick("mx", process.env.REACT_APP_ENV_NETWORK);
-      }}>
-      {connectBtnTitle}
-    </Button>
-  );
-};
 
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   if (quickMenuItem.needToBeLoggedOut === undefined) {

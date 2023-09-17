@@ -45,31 +45,11 @@ export const routes: RouteType[] = [
   },
 ];
 
-function AppHarnessMx({ launchEnvironment, handleLaunchMode }: { launchEnvironment: any; handleLaunchMode: any }) {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { address: mxAddress } = useGetAccountInfo();
-  const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
-  const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
-  const [, setHubAccessToken] = useSessionStorage("itm-hub-access-token", null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  useEffect(() => {
-    if (searchParams.get("accessToken") || tokenLogin) {
-      setHubAccessToken(searchParams.get("accessToken"));
-      // if (window.location.pathname === "/" && isMxLoggedIn) {
-      //   navigate("/dashboard" + window.location.search);
-      // }
-    }
-  }, [mxAddress]);
-
-  if (isLoading) {
-    return <CustomLoader />;
-  }
-
+function AppHarnessMx({ handleShowConnectWalletModal }: { handleShowConnectWalletModal: any }) {
   return (
     <StoreProvider>
       <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
-        <AppMx onLaunchMode={handleLaunchMode} />
+        <AppMx onShowConnectWalletModal={handleShowConnectWalletModal} />
       </AuthenticatedRoutesWrapper>
     </StoreProvider>
   );

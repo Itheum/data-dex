@@ -12,23 +12,14 @@ import MxAppHarness from "./AppHarnessMultiversX";
 import AuthPickerMx from "./AuthPickerMultiversX";
 
 function Launcher() {
-  const [searchParams] = useSearchParams();
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
-  const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
-  const [hubAccessToken] = useSessionStorage("itm-hub-access-token", null);
-  const [launchEnvironment, setLaunchEnvironment] = useState(process.env.REACT_APP_ENV_NETWORK);
 
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
-  const handleLaunchMode = (option: any, environment: any) => {
+  const handleLaunchMode = (option: any) => {
     setLaunchMode(option);
     setLaunchModeSession(option);
-
-    if (environment) {
-      setLaunchEnvironment(environment);
-      setLaunchEnvSession(environment);
-    }
 
     // resetting all launch mode sessions here is nice an clean
     clearAppSessionsLaunchMode();
@@ -50,9 +41,9 @@ function Launcher() {
         <NotificationModal />
         <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-        {launchMode == "mx" && <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("no-auth", "devnet")} />}
+        {launchMode == "mx" && <AuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} />}
 
-        <MxAppHarness launchEnvironment={launchEnvironment} handleLaunchMode={handleLaunchMode} />
+        <MxAppHarness handleShowConnectWalletModal={handleLaunchMode} />
       </DappProvider>
 
       <TermsChangedNoticeModal />
