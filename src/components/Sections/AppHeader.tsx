@@ -27,13 +27,6 @@ import {
   MenuItem,
   MenuItemOption,
   MenuList,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Spinner,
   Stack,
   Text,
@@ -58,7 +51,7 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 
 const exploreRouterMenu = [
@@ -127,21 +120,10 @@ const exploreRouterMenu = [
 
 const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
-const AppHeader = ({
-  onShowConnectWalletModal,
-  menuItem,
-  setMenuItem,
-  handleLogout,
-}: {
-  onShowConnectWalletModal?: any;
-  menuItem: number;
-  setMenuItem: any;
-  handleLogout: any;
-}) => {
+const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
@@ -183,7 +165,7 @@ const AppHeader = ({
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -591,8 +573,6 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -612,7 +592,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

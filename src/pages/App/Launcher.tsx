@@ -1,15 +1,33 @@
 import React, { useState } from "react";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
+import { RouteType } from "@multiversx/sdk-dapp/types";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
-import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
-import { useSearchParams } from "react-router-dom";
+import { AuthenticatedRoutesWrapper, DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
 import { uxConfig } from "libs/config";
-import { useLocalStorage, useSessionStorage } from "libs/hooks";
+import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
 import { clearAppSessionsLaunchMode } from "libs/utils";
-import MxAppHarness from "./AppHarnessMultiversX";
-import AuthPickerMx from "./AuthPickerMultiversX";
+import { StoreProvider } from "store/StoreProvider";
+import AppMx from "./AppMultiversX";
+import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
+
+export const routes: RouteType[] = [
+  {
+    path: "dashboard",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: "tradedata",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: "datanfts/wallet",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+];
 
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
@@ -41,9 +59,13 @@ function Launcher() {
         <NotificationModal />
         <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-        {launchMode == "mx" && <AuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} />}
+        {launchMode == "mx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} />}
 
-        <MxAppHarness handleShowConnectWalletModal={handleLaunchMode} />
+        <StoreProvider>
+          <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
+            <AppMx onShowConnectWalletModal={handleLaunchMode} />
+          </AuthenticatedRoutesWrapper>
+        </StoreProvider>
       </DappProvider>
 
       <TermsChangedNoticeModal />

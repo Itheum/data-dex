@@ -197,22 +197,6 @@ export const getExplorerTrailBlazerURL = (chainID: string) => {
   return chainID === "1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
 };
 
-// utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
-// ... this is used only for "public" components and routes where the user has not connected their wallet
-export const routeChainIDBasedOnLoggedInStatus = (isMxLoggedIn: boolean, chainID: string) => {
-  let routedChainId;
-  if (!isMxLoggedIn && window.location.hostname === "datadex.itheum.io") {
-    routedChainId = "1";
-  } else {
-    if (chainID === undefined || chainID === "-1") {
-      routedChainId = "D";
-    } else {
-      routedChainId = chainID;
-    }
-  }
-  return routedChainId;
-};
-
 export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
   return !(chainID == "D" && !previewDataOnDevnetSession);
 };

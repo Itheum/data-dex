@@ -22,7 +22,7 @@ import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
 import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode, gtagGo, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
+import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
@@ -37,12 +37,11 @@ import { Profile } from "../Profile/Profile";
 const mxLogout = logout;
 
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
-  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
   const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
@@ -53,7 +52,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     dataNFTWallet: 0,
   });
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
   const { pathname } = useLocation();
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
@@ -78,13 +77,13 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   }, []);
 
   useEffect(() => {
-    if (!SUPPORTED_CHAINS.includes(routedChainID)) {
+    if (!SUPPORTED_CHAINS.includes(chainID)) {
       setAlertIsOpen(true);
     }
-    if (routedChainID === "D") {
+    if (chainID === "D") {
       linkOrRefreshDataDATAccount(true);
     }
-  }, [routedChainID]);
+  }, [chainID]);
 
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
@@ -173,7 +172,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
           boxShadow={containerShadow}
           zIndex={2}>
           {/* App Header */}
-          <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+          <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
           {/* App Body */}
           <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
             <Routes>
@@ -248,7 +247,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
               <AlertDialogBody>
                 Sorry the{" "}
                 <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                  {CHAINS[routedChainID as keyof typeof CHAINS]}
+                  {CHAINS[chainID as keyof typeof CHAINS]}
                 </Badge>{" "}
                 chain is currently not supported. We are working on it. You need to be on{" "}
                 {SUPPORTED_CHAINS.map((i) => (

@@ -22,12 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import {
-  useGetPendingTransactions,
-  useGetSignedTransactions,
-  useGetSuccessfulTransactions,
-  useTrackTransactionStatus,
-} from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetPendingTransactions, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -41,11 +36,10 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
-  routeChainIDBasedOnLoggedInStatus,
   shouldPreviewDataBeEnabled,
   backendApi,
 } from "libs/utils";
-import { useAccountStore, useMarketStore } from "store";
+import { useMarketStore } from "store";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -58,16 +52,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin, loginMethod } = useGetLoginInfo();
 
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const contract = new DataNftMarketContract(routedChainID);
+  const contract = new DataNftMarketContract(chainID);
 
   const isWebWallet = loginMethod === "wallet";
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
-  const backendUrl = backendApi(routedChainID);
+  const backendUrl = backendApi(chainID);
 
   const { isOpen: isDelistModalOpen, onOpen: onDelistModalOpen, onClose: onDelistModalClose } = useDisclosure();
   const { isOpen: isUpdatePriceModalOpen, onOpen: onUpdatePriceModalOpen, onClose: onUpdatePriceModalClose } = useDisclosure();
@@ -76,7 +68,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [delistAmountError, setDelistAmountError] = useState<string>("");
-  const itheumToken = contractsForChain(routedChainID).itheumToken;
+  const itheumToken = contractsForChain(chainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
   const [sessionId, setSessionId] = useState<string>("");
@@ -165,7 +157,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       };
 
       const requestBody = { supply: supply };
-      const response = await fetch(`${backendApi(routedChainID)}/updateOffer/${index}`, {
+      const response = await fetch(`${backendApi(chainID)}/updateOffer/${index}`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(requestBody),
@@ -270,18 +262,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip
-        colorScheme="teal"
-        hasArrow
-        label="View Data is disabled on devnet"
-        isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+          isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

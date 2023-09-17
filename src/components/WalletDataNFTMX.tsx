@@ -57,15 +57,7 @@ import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import {
-  backendApi,
-  convertToLocalString,
-  isValidNumericCharacter,
-  routeChainIDBasedOnLoggedInStatus,
-  shouldPreviewDataBeEnabled,
-  sleep,
-  transformDescription,
-} from "libs/utils";
+import { backendApi, convertToLocalString, isValidNumericCharacter, shouldPreviewDataBeEnabled, sleep, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
 
@@ -80,8 +72,7 @@ export type WalletDataNFTMxPropType = {
 
 export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const { chainID, network } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn, loginMethod, tokenLogin } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const { loginMethod, tokenLogin } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -98,8 +89,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
-  const mintContract = new DataNftMintContract(routedChainID);
-  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(chainID);
+  const marketContract = new DataNftMarketContract(chainID);
   const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
   const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
@@ -113,7 +104,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
   const maxListLimit = process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT) : 0;
   const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
-  const backendUrl = backendApi(routedChainID);
+  const backendUrl = backendApi(chainID);
   const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
 
   useEffect(() => {
@@ -181,7 +172,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       // Use a loop with a boolean condition
       while (!success) {
         indexResponse = await axios.get(
-          `https://${getApi(routedChainID)}/accounts/${contractsForChain(routedChainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
+          `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&withScResults=true&withLogs=true`
         );
 
         if (indexResponse.data[0].status === "success" && typeof indexResponse.data[0].pendingResults === "undefined") {
@@ -440,7 +431,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
@@ -524,12 +515,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 hasArrow
                 label="View Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     accessDataStream(item.nonce);
                   }}>
@@ -541,13 +532,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 colorScheme="teal"
                 hasArrow
                 label="Preview Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>
@@ -805,7 +796,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             nftData={selectedDataNft}
             marketContract={marketContract}
             sellerFee={item.sellerFee || 0}
-            offer={{ wanted_token_identifier: contractsForChain(routedChainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
+            offer={{ wanted_token_identifier: contractsForChain(chainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
             amount={amount}
             setAmount={setAmount}
           />

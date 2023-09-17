@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
-import { UseCasesCards } from "./components/UseCasesCards";
 import artists from "assets/img/whitelist/artists.png";
 import buildingButton from "assets/img/whitelist/buildingButton.svg";
 import buildings from "assets/img/whitelist/buildings.png";
@@ -8,6 +7,7 @@ import gamepad from "assets/img/whitelist/gamepad.png";
 import personButton from "assets/img/whitelist/personButtons.svg";
 import psButtons from "assets/img/whitelist/psButtons.svg";
 import { gtagGo } from "libs/utils";
+import { UseCasesCards } from "./components/UseCasesCards";
 
 const cardContent = [
   {
