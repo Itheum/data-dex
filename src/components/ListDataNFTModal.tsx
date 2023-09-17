@@ -25,13 +25,13 @@ import {
   useGetSignedTransactions,
   useTrackTransactionStatus,
 } from "@multiversx/sdk-dapp/hooks";
+import axios from "axios";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
-import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
-import { useMarketStore } from "store";
-import axios from "axios";
-import { getApi } from "libs/MultiversX/api";
 import { contractsForChain } from "libs/config";
+import { getApi } from "libs/MultiversX/api";
+import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { useMarketStore } from "store";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -46,6 +46,8 @@ export type ListModalProps = {
 
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn } = useGetLoginInfo();
+  const routedChainId = routeChainIDBasedOnLoggedInStatus(isLoggedIn, chainID);
   const { address } = useGetAccountInfo();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
@@ -63,7 +65,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
   const { tokenLogin, loginMethod } = useGetLoginInfo();
 
-  const backendUrl = backendApi(chainID);
+  const backendUrl = backendApi(routedChainId);
 
   const { colorMode } = useColorMode();
 
@@ -114,7 +116,9 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     owner = address
   ) {
     const indexResponse = await axios.get(
-      `https://${getApi(chainID)}/accounts/${contractsForChain(chainID).market}/transactions?hashes=${txHash}&status=success&withScResults=true&withLogs=true`
+      `https://${getApi(routedChainId)}/accounts/${
+        contractsForChain(routedChainId).market
+      }/transactions?hashes=${txHash}&status=success&withScResults=true&withLogs=true`
     );
 
     const results = indexResponse.data[0].results;

@@ -29,6 +29,7 @@ import {
   tokenDecimals,
   getTokenWantedRepresentation,
   backendApi,
+  routeChainIDBasedOnLoggedInStatus,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 
@@ -44,6 +45,8 @@ export interface ProcureAccessModalProps {
 
 export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId }: ProcureAccessModalProps) {
   const { chainID } = useGetNetworkConfig();
+  const { isLoggedIn } = useGetLoginInfo();
+  const routedChainID = routeChainIDBasedOnLoggedInStatus(isLoggedIn, chainID);
   const { address } = useGetAccountInfo();
   const toast = useToast();
 
@@ -51,13 +54,13 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
-  const marketContract = new DataNftMarketContract(chainID);
+  const marketContract = new DataNftMarketContract(routedChainID);
 
   const { tokenLogin, loginMethod } = useGetLoginInfo();
 
   const isWebWallet = loginMethod === "wallet";
 
-  const backendUrl = backendApi(chainID);
+  const backendUrl = backendApi(routedChainID);
 
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),

@@ -59,7 +59,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
 
       if (isApiUp) {
         const offers = await getRecentOffersFromBackendApi(routedChainID);
-        const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
+        const recentNonces = offers.map((nft: any) => ({ nonce: nft.offered_token_nonce }));
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
         const _latestOffers: DataNftCondensedView[] = [];
