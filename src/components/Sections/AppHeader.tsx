@@ -570,51 +570,16 @@ const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
   return (
-    <Popover
-      isOpen={showMxEnvPicker}
-      onOpen={() => setShowMxEnvPicker(true)}
-      onClose={() => setShowMxEnvPicker(false)}
-      closeOnBlur={true}
-      isLazy
-      lazyBehavior="keepMounted">
-      <HStack marginLeft={3}>
-        <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
-            {connectBtnTitle}
-          </Button>
-        </PopoverTrigger>
-      </HStack>
-
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader>
-          <Text fontSize="md">Please pick a MultiversX environment</Text>
-        </PopoverHeader>
-        <PopoverBody>
-          <Button
-            size="sm"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "mainnet");
-            }}>
-            {" "}
-            Mainnet
-          </Button>
-
-          <Button
-            size="sm"
-            ml="2"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "devnet");
-            }}>
-            {" "}
-            Devnet
-          </Button>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+    <Button
+      colorScheme="teal"
+      fontSize={{ base: "sm", md: "md" }}
+      size={{ base: "sm", lg: "lg" }}
+      onClick={() => {
+        setShowMxEnvPicker(false);
+        onMxEnvPick("mx", process.env.REACT_APP_ENV_NETWORK);
+      }}>
+      {connectBtnTitle}
+    </Button>
   );
 };
 
