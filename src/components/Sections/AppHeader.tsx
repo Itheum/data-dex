@@ -27,13 +27,6 @@ import {
   MenuItem,
   MenuItemOption,
   MenuList,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Spinner,
   Stack,
   Text,
@@ -58,7 +51,7 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 
 const exploreRouterMenu = [
@@ -127,11 +120,10 @@ const exploreRouterMenu = [
 
 const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
-const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
+const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, toggleColorMode } = useColorMode();
@@ -139,6 +131,8 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
+
+  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
   const navigate = useNavigate();
 
@@ -171,7 +165,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -406,7 +400,18 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 </Link>
               </>
             )}
-            {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
+            {onShowConnectWalletModal && !isMxLoggedIn && (
+              <Button
+                colorScheme="teal"
+                fontSize={{ base: "sm", md: "md" }}
+                size={{ base: "sm", lg: "lg" }}
+                onClick={() => {
+                  localStorage?.removeItem("itm-datacat-linked");
+                  onShowConnectWalletModal("mx");
+                }}>
+                {connectBtnTitle}
+              </Button>
+            )}
             Toggle Mode
             <Box display={{ base: "none", md: "block", xl: "block" }}>
               <IconButton
@@ -558,66 +563,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
 export default AppHeader;
 
-const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
-  const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
-
-  // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
-  // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);
-  // ... we need to fix this properly (i.e stop that useEffect being called)
-  localStorage?.removeItem("itm-datacat-linked");
-
-  // need to adjust title or it break mobile view
-  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
-
-  return (
-    <Popover
-      isOpen={showMxEnvPicker}
-      onOpen={() => setShowMxEnvPicker(true)}
-      onClose={() => setShowMxEnvPicker(false)}
-      closeOnBlur={true}
-      isLazy
-      lazyBehavior="keepMounted">
-      <HStack marginLeft={3}>
-        <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
-            {connectBtnTitle}
-          </Button>
-        </PopoverTrigger>
-      </HStack>
-
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader>
-          <Text fontSize="md">Please pick a MultiversX environment</Text>
-        </PopoverHeader>
-        <PopoverBody>
-          <Button
-            size="sm"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "mainnet");
-            }}>
-            {" "}
-            Mainnet
-          </Button>
-
-          <Button
-            size="sm"
-            ml="2"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "devnet");
-            }}>
-            {" "}
-            Devnet
-          </Button>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   if (quickMenuItem.needToBeLoggedOut === undefined) {
     return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
@@ -628,8 +573,6 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -649,7 +592,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>
