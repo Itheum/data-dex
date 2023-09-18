@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Text, Progress, Stack, Heading, Badge, Box } from "@chakra-ui/react";
-import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { labels } from "libs/language";
 import { sleep } from "libs/utils";
 

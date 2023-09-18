@@ -41,13 +41,11 @@ import AppMarketplace from "pages/Home/AppMarketplace";
 export default function HomeMultiversX({
   setMenuItem,
   dataCATAccount,
-  onRfMount,
   loadingDataCATAccount,
   onDataCATAccount,
 }: {
   setMenuItem: any;
   dataCATAccount: any;
-  onRfMount: any;
   loadingDataCATAccount: boolean;
   onDataCATAccount: any;
 }) {
