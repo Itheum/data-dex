@@ -29,7 +29,6 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useNavigate } from "react-router-dom";
 import AstarIcon from "assets/img/astar-icon.png";
 import ItheumIcon from "assets/img/logo-sml-d.png";
