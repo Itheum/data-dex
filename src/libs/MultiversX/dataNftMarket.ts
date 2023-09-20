@@ -22,7 +22,6 @@ import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
 import { uxConfig } from "libs/config";
 import { labels } from "libs/language";
-import { NetworkIdType } from "libs/types";
 import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType, OfferType } from "./types";
@@ -37,14 +36,10 @@ export class DataNftMarketContract {
 
   toast = useToast();
 
-  constructor(networkId: NetworkIdType) {
+  constructor(chainID: string) {
     this.timeout = uxConfig.mxAPITimeoutMs;
-    this.dataNftMarketContractAddress = contractsForChain(networkId).market;
-    this.chainID = "D";
-
-    if (networkId === "E1") {
-      this.chainID = "1";
-    }
+    this.dataNftMarketContractAddress = contractsForChain(chainID).market;
+    this.chainID = chainID;
 
     const json = JSON.parse(JSON.stringify(jsonData));
     const abiRegistry = AbiRegistry.create(json);
@@ -54,7 +49,7 @@ export class DataNftMarketContract {
       abi: abiRegistry,
     });
 
-    this.itheumToken = contractsForChain(networkId).itheumToken as unknown as string;
+    this.itheumToken = contractsForChain(chainID).itheumToken as unknown as string;
   }
 
   async viewNumberOfOffers() {
@@ -62,7 +57,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -85,7 +80,7 @@ export class DataNftMarketContract {
     }
   }
 
-  async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
+  async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string, callbackRoute?: string) {
     const data =
       new BigNumber(paymentAmount).comparedTo(0) > 0
         ? new ContractCallPayloadBuilder()
@@ -120,13 +115,22 @@ export class DataNftMarketContract {
         errorMessage: "Error occurred during accepting offer",
         successMessage: "Offer accepted successfully",
       },
-      redirectAfterSign: false,
+      redirectAfterSign: callbackRoute ? true : false,
+      callbackRoute: callbackRoute ?? window.location.pathname,
     });
 
     return { sessionId, error };
   }
 
-  async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: string, tokenId: string, nonce: number, amount: number, senderAddress: string) {
+  async sendAcceptOfferNftEsdtTransaction(
+    index: number,
+    paymentAmount: string,
+    tokenId: string,
+    nonce: number,
+    amount: number,
+    senderAddress: string,
+    callbackRoute?: string
+  ) {
     const offerEsdtTx = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder()
@@ -154,7 +158,8 @@ export class DataNftMarketContract {
         errorMessage: "Error occurred during accepting offer",
         successMessage: "Offer accepted successfully",
       },
-      redirectAfterSign: false,
+      redirectAfterSign: callbackRoute ? true : false,
+      callbackRoute: callbackRoute ?? window.location.pathname,
     });
 
     return { sessionId, error };
@@ -240,7 +245,7 @@ export class DataNftMarketContract {
       chainID: this.chainID,
     });
     await refreshAccount();
-    await sendTransactions({
+    const { sessionId, error } = await sendTransactions({
       transactions: addERewTx,
       transactionsDisplayInfo: {
         processingMessage: "Adding Data NFT to marketplace",
@@ -249,6 +254,8 @@ export class DataNftMarketContract {
       },
       redirectAfterSign: false,
     });
+
+    return { sessionId, error };
   }
 
   async delistDataNft(index: number, delistAmount: number, senderAddress: string) {
@@ -278,6 +285,7 @@ export class DataNftMarketContract {
         successMessage: "Offer de-listed successfully",
       },
       redirectAfterSign: false,
+      sessionInformation: "delist-tx",
     });
 
     return { sessionId, error };
@@ -288,7 +296,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -335,7 +343,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -381,7 +389,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -423,7 +431,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -465,7 +473,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -519,6 +527,7 @@ export class DataNftMarketContract {
         successMessage: "Fee updated successfully",
       },
       redirectAfterSign: false,
+      sessionInformation: "update-price-tx",
     });
 
     return { sessionId, error };
@@ -529,7 +538,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -561,7 +570,7 @@ export class DataNftMarketContract {
     const query = interaction.buildQuery();
 
     try {
-      const networkProvider = getNetworkProvider("", this.chainID);
+      const networkProvider = getNetworkProvider(this.chainID);
 
       const res = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();

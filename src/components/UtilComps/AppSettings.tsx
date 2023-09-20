@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Flex, Heading, Stack, FormControl, FormLabel, Switch, SimpleGrid } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getApiDataDex, getApiDataMarshal, getSentryProfile } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `${getSentryProfile()}`;
 
 export default function () {
-  const { chainMeta: _chainMeta } = useChainMeta();
-  const isPublicApi = getApi(_chainMeta?.networkId).includes("api.multiversx.com");
-  const isPublicNetworkProvider = getNetworkProviderCodification(_chainMeta?.networkId).includes(".multiversx.com");
-  const isApiNetworkProvider = getNetworkProvider(_chainMeta?.networkId) instanceof ApiNetworkProvider;
-  const [isLoading, setIsLoading] = useState(true);
+  const { chainID } = useGetNetworkConfig();
+  const isPublicApi = getApi(chainID).includes("api.multiversx.com");
+  const isPublicNetworkProvider = getNetworkProviderCodification(chainID).includes(".multiversx.com");
+  const isApiNetworkProvider = getNetworkProvider(chainID) instanceof ApiNetworkProvider;
   const [previewDataOnDevnetSession, setPreviewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [previewDataFlag, setPreviewDataFlag] = useState<boolean>(previewDataOnDevnetSession == "true");
-
-  useEffect(() => {
-    if (_chainMeta?.networkId) {
-      setIsLoading(false);
-    }
-  }, [_chainMeta]);
 
   useEffect(() => {
     if ((previewDataFlag && !previewDataOnDevnetSession) || (!previewDataFlag && !!previewDataOnDevnetSession)) {
@@ -34,7 +27,7 @@ export default function () {
   return (
     <Stack spacing={5}>
       <Flex align="top" gap={10}>
-        {(isLoading && <Text>Loading...</Text>) || (
+        {
           <Box maxW="sm" p="10" m="auto" borderRadius="lg" w="90%" maxWidth="initial">
             <Heading size="lg" mb="10">
               App Settings
@@ -62,6 +55,7 @@ export default function () {
                 <Text>REACT_APP_ENV_SENTRY_DSN : {maskOutputString(process.env.REACT_APP_ENV_SENTRY_DSN, 10, 5)}</Text>
                 <Text>REACT_APP_ENV_NFT_STORAGE_KEY : {maskOutputString(process.env.REACT_APP_ENV_NFT_STORAGE_KEY, 10, 10)}</Text>
                 <Text>REACT_APP_ENV_WALLETCONNECTV2_PROJECTID : {maskOutputString(process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID, 5, 5)}</Text>
+                <Text>REACT_APP_ENV_NETWORK : {process.env.REACT_APP_ENV_NETWORK}</Text>
                 <br />
                 <Text>REACT_APP_ENV_GATEWAY_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_DEVNET_KEY, 15, 10)}</Text>
                 <Text>REACT_APP_ENV_API_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_DEVNET_KEY, 5, 5)}</Text>
@@ -87,11 +81,11 @@ export default function () {
                 Dynamic Settings
               </Heading>
               <Box fontSize="sm">
-                <Text>MultiversX API being used : {getApi(_chainMeta?.networkId)}</Text>
-                <Text>MultiversX Gateway being used : {getNetworkProviderCodification(_chainMeta?.networkId)}</Text>
-                <Text>Web2 Data DEX API : {getApiDataDex(_chainMeta?.networkId)}</Text>
-                <Text>Web2 Data Marshal API : {getApiDataMarshal(_chainMeta?.networkId)}</Text>
-                <Text>Chain Meta Dump : {JSON.stringify(_chainMeta)}</Text>
+                <Text>MultiversX API being used : {getApi(chainID)}</Text>
+                <Text>MultiversX Gateway being used : {getNetworkProviderCodification(chainID)}</Text>
+                <Text>Web2 Data DEX API : {getApiDataDex(chainID)}</Text>
+                <Text>Web2 Data Marshal API : {getApiDataMarshal(chainID)}</Text>
+                <Text>Chain ID : {chainID}</Text>
               </Box>
             </Box>
 
@@ -106,7 +100,7 @@ export default function () {
               </Flex>
             </Box>
           </Box>
-        )}
+        }
       </Flex>
     </Stack>
   );

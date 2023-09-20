@@ -25,7 +25,7 @@ import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 
-function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
+function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
@@ -74,7 +74,9 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
   const commonProps = {
-    // nativeAuth: true, // optional
+    nativeAuth: {
+      expirySeconds: 3000,
+    },
     callbackRoute: pathname,
   };
 
@@ -84,14 +86,14 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
         <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
-            <ModalHeader>
+            <ModalCloseButton />
+            <ModalHeader mt={5}>
               Select a{" "}
               <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                {launchEnvironment}
+                {process.env.REACT_APP_ENV_NETWORK}
               </Badge>{" "}
               MultiversX Wallet
             </ModalHeader>
-            <ModalCloseButton />
             <ModalBody pb={6}>
               <Stack spacing="5">
                 <Box p="5px">
@@ -139,4 +141,4 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   );
 }
 
-export default AuthPickerMx;
+export default ModalAuthPickerMx;

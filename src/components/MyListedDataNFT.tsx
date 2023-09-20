@@ -28,9 +28,8 @@ import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "l
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals, networkIdBasedOnLoggedInStatus } from "libs/utils";
+import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals, shouldPreviewDataBeEnabled } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 
 type MyListedDataNFTProps = {
   offer: OfferType;
@@ -55,7 +54,6 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const {
     offer,
     offers,
-    nftImageLoading,
     nftMetadataLoading,
     setNftImageLoading,
     nftMetadata,
@@ -68,16 +66,11 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
     amountOfTokens,
     onUpdatePriceModalOpen,
     index,
-    children,
   } = props;
-  const { network } = useGetNetworkConfig();
+  const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const isMxLoggedIn = !!address;
-
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const networkId = networkIdBasedOnLoggedInStatus(isMxLoggedIn, _chainMeta.networkId);
-  const ChainExplorer = CHAIN_TX_VIEWER[networkId as keyof typeof CHAIN_TX_VIEWER];
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
@@ -89,7 +82,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <Image
-              src={`https://${getApi(networkId)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(chainID)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}
@@ -194,14 +187,14 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   colorScheme="teal"
                   hasArrow
                   label="Preview Data is disabled on devnet"
-                  isDisabled={!(networkId == "ED" && !previewDataOnDevnetSession)}>
+                  isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
                   <Button
                     mt="2"
                     size="sm"
                     colorScheme="teal"
                     height="7"
                     variant="outline"
-                    isDisabled={networkId == "ED" && !previewDataOnDevnetSession}
+                    isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
                     onClick={() => {
                       window.open(nftMetadata[index].dataPreview);
                     }}>

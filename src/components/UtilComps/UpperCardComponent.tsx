@@ -1,4 +1,5 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
+import React, { Dispatch, FC, SetStateAction } from "react";
+
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -18,16 +19,18 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import { motion } from "framer-motion";
 import moment from "moment/moment";
+import { MdOutlineInfo } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
 
 type UpperCardComponentProps = {
@@ -59,9 +62,10 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
 
   // Multiversx API
   const { address } = useGetAccountInfo();
-  const { chainMeta: _chainMeta } = useChainMeta() as any;
-  const ChainExplorer = CHAIN_TX_VIEWER[_chainMeta.networkId as keyof typeof CHAIN_TX_VIEWER];
+  const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
+  const navigate = useNavigate();
 
   const userData = useMintStore((state) => state.userData);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
@@ -257,17 +261,19 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 </PopoverContent>
               </Popover>
               <Flex display="flex" flexDirection="column" mt={1}>
-                <Box color="#8c8f92d0" fontSize="md">
-                  Creator: <ShortAddress address={nftMetadata.creator} fontSize="md" />
-                  <Link href={`${ChainExplorer}/accounts/${nftMetadata.creator}`} isExternal>
-                    <ExternalLinkIcon ml="5px" fontSize="sm" />
-                  </Link>
+                <Box color="#8c8f92d0" fontSize="md" display="flex">
+                  Creator:&nbsp;
+                  <Flex alignItems="center" onClick={() => navigate(`/profile/${nftMetadata.creator}`)}>
+                    <ShortAddress address={nftMetadata.creator} fontSize="md" tooltipLabel="Profile" />
+                    <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="sm" />
+                  </Flex>
                 </Box>
-                <Box color="#8c8f92d0" fontSize="md">
-                  Owner: <ShortAddress address={offer?.owner} fontSize="md" />
-                  <Link href={`${ChainExplorer}/accounts/${offer?.owner}`} isExternal>
-                    <ExternalLinkIcon ml="5px" fontSize="sm" />
-                  </Link>
+                <Box color="#8c8f92d0" fontSize="md" display="flex">
+                  Owner:&nbsp;
+                  <Flex onClick={() => navigate(`/profile/${offer?.owner}`)}>
+                    <ShortAddress address={offer?.owner} fontSize="md" tooltipLabel="Profile" />
+                    <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
+                  </Flex>
                 </Box>
                 <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="5rem">
                   {address && address == nftMetadata.creator && (

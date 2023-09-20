@@ -1,32 +1,23 @@
 import React, { useState } from "react";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks";
+import { RouteType } from "@multiversx/sdk-dapp/types";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
-import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
+import { AuthenticatedRoutesWrapper, DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
 import { uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
 import { clearAppSessionsLaunchMode } from "libs/utils";
-import MxAppHarness from "./AppHarnessMultiversX";
-import AuthPickerMx from "./AuthPickerMultiversX";
-
+import AppMx from "./AppMultiversX";
+import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
-  const [launchEnvSession, setLaunchEnvSession] = useLocalStorage("itm-launch-env", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
-  const { tokenLogin } = useGetLoginInfo();
-  const [launchEnvironment, setLaunchEnvironment] = useState(tokenLogin ? "mainnet" : launchEnvSession || "devnet");
 
   // hoisting launchModeControl here allows us to go multi-chain easier in future
   // ... have a look at git history on this component
-  const handleLaunchMode = (option: any, environment: any) => {
+  const handleLaunchMode = (option: any) => {
     setLaunchMode(option);
     setLaunchModeSession(option);
-
-    if (environment) {
-      setLaunchEnvironment(environment);
-      setLaunchEnvSession(environment);
-    }
 
     // resetting all launch mode sessions here is nice an clean
     clearAppSessionsLaunchMode();
@@ -35,7 +26,7 @@ function Launcher() {
   return (
     <>
       <DappProvider
-        environment={launchEnvironment}
+        environment={process.env.REACT_APP_ENV_NETWORK}
         customNetworkConfig={{
           name: "itheum-data-dex",
           apiTimeout: uxConfig.mxAPITimeoutMs,
@@ -48,9 +39,9 @@ function Launcher() {
         <NotificationModal />
         <SignTransactionsModals className="itheum-data-dex-elrond-modals" />
 
-        {launchMode == "mx" && <AuthPickerMx launchEnvironment={launchEnvironment} resetLaunchMode={() => handleLaunchMode("no-auth", "devnet")} />}
+        {launchMode == "mx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} />}
 
-        <MxAppHarness launchEnvironment={launchEnvironment} handleLaunchMode={handleLaunchMode} />
+        <AppMx onShowConnectWalletModal={handleLaunchMode} />
       </DappProvider>
 
       <TermsChangedNoticeModal />

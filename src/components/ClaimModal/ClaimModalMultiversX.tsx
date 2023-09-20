@@ -13,15 +13,17 @@ import {
   Button,
   Stack,
   useBreakpointValue,
+  useColorMode,
 } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { CHAIN_TOKEN_SYMBOL } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
-import { useChainMeta } from "store/ChainMetaContext";
 
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }: any) => {
   const { address: mxAddress } = useGetAccountInfo();
-  const { chainMeta: _chainMeta } = useChainMeta();
+  const { chainID } = useGetNetworkConfig();
+  const { colorMode } = useColorMode();
 
   const resetClaimState = () => {
     onClose();
@@ -40,7 +42,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
     <Modal size={modelSize} isOpen={isOpen} onClose={() => resetClaimState()} isCentered closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay backdropFilter="blur(10px)" />
 
-      <ModalContent h="300px" w="400px">
+      <ModalContent h="300px" w="400px" bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
         <ModalHeader>My Claimable {title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={5}>
@@ -50,7 +52,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
                 {tag1}:
               </Text>{" "}
               <Text fontSize="md">
-                {formatNumberRoundFloor(value1)} {CHAIN_TOKEN_SYMBOL(_chainMeta.networkId)}
+                {formatNumberRoundFloor(value1)} {CHAIN_TOKEN_SYMBOL(chainID)}
               </Text>
             </Stack>
             <Stack>

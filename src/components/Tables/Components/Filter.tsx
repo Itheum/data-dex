@@ -30,7 +30,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
       border: "1px solid",
       borderRadius: "12px",
       borderColor: "#FFFFFF40",
-      padding: "15px",
+      padding: "8px",
       marginTop: "0.4rem",
       fontSize: "16px",
       width: "170px",
