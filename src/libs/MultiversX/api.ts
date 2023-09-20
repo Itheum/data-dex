@@ -191,7 +191,6 @@ export const getNftsByIds = async (nftIds: string[], networkId: NetworkIdType): 
         }
       }
     }
-
     // check length of input and output match
     if (nftIds.length !== sorted.length) {
       console.error("getNftsByIds failed");

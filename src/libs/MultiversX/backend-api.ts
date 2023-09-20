@@ -55,7 +55,6 @@ export async function getOffersFromBackendApi(networkId: NetworkIdType, from: nu
     const { data } = await axios.get<OfferType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
-
     return data;
   } catch (error) {
     console.error(error);

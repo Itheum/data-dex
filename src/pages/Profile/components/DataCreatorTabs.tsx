@@ -328,7 +328,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                       offer={offer}
                       index={index}
                       marketFreezedNonces={marketFreezedNonces}
-                      openNftDetailsDrawer={openNftDetailsModal}>
+                      openNftDetailsDrawer={openNftDetailsModal}
+                      grouped={false}>
                       <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
                     </UpperCardComponent>
                   ))}

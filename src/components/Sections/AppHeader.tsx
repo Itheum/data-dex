@@ -411,7 +411,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
             </Heading>
             <DrawerCloseButton />
           </DrawerHeader>
-          <DrawerBody p={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+          <DrawerBody p={0} zIndex={"101"} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <Accordion allowMultiple>
               {exploreRouterMenu.map((menu) => (
                 <AccordionItem key={menu.sectionId}>

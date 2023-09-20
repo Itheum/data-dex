@@ -175,7 +175,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       // Extracting nonce
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
-
+      console.log("Colectie: ", identifier, nonceDec, nonceHex);
       const _offers = await getOffersByIdAndNoncesFromBackendApi(networkId, identifier, [nonceDec]);
       setTotalOffers(_offers);
       const price = Math.min(..._offers.map((offer: any) => offer.wanted_token_amount));
@@ -528,7 +528,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   <GridItem colSpan={2}>
                                     {tokenId && pathname?.includes(tokenId) ? (
                                       <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
-                                        <Button w="full" colorScheme="teal" variant="outline" size="sm">
+                                        <Button p="2" w="full" colorScheme="teal" variant="outline" size="sm">
                                           {window.innerWidth > 500 ? "View Offer" : "View"}
                                         </Button>
                                       </a>

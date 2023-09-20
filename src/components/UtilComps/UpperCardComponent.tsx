@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction, useRef } from "react";
+import React, { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -13,7 +13,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Portal,
   Skeleton,
   Stack,
   Text,
@@ -30,7 +29,6 @@ import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, p
 import { useMarketStore, useMintStore } from "store";
 import { useChainMeta } from "store/ChainMetaContext";
 import ShortAddress from "./ShortAddress";
-import { relative } from "path";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -40,6 +38,7 @@ type UpperCardComponentProps = {
   offer: OfferType;
   index: number;
   marketFreezedNonces: number[];
+  grouped: boolean;
   children?: React.ReactNode;
   openNftDetailsDrawer?: (e: number) => void;
 };
@@ -54,6 +53,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   offer,
   marketFreezedNonces,
   openNftDetailsDrawer,
+  grouped,
 }) => {
   const { colorMode } = useColorMode();
 
@@ -78,119 +78,118 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "780px" : "700px"}
-        mx="3 !important"
+        h={isMxLoggedIn ? (grouped ? "740px" : "780px") : "700px"}
+        mx="5 !important"
         borderWidth="0.5px"
         borderRadius="xl"
         borderColor="#00C79740"
         position="relative"
-        mb="1rem">
-        <Container justifyContent="center" position={"relative"}>
+        mb="1.5rem"
+        mt={grouped ? "1rem" : "0"}>
+        <Container justifyContent="center" mt={grouped ? "-12" : "0"} position={"relative"}>
           <Image
             position={"absolute"}
             src={imageUrl}
             alt={"item.dataPreview"}
             h={236}
             w={236}
-            zIndex={2}
-            mx={6}
+            zIndex={5}
             mt={6}
+            marginInlineStart={"0.2rem"}
             borderRadius="32px"
             onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
           />
-          <Image
-            mr={-8}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={236}
-            w={236}
-            zIndex={1}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => setNftImageLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-            style={{
-              transform: "rotate(-5deg)", // Rotate the image by -5 degrees
-            }}
-          />
-          <Image
-            ml={8}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={236}
-            w={236}
-            zIndex={1}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => setNftImageLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-            style={{
-              transform: "rotate(-10deg)", // Rotate the image by -5 degrees
-            }}
-          />
-          <Image
-            ml={8}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={236}
-            w={236}
-            zIndex={1}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => setNftImageLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-            style={{
-              transform: "rotate(5deg)", // Rotate the image by -5 degrees
-            }}
-          />
-          <Image
-            mr={-12}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={236}
-            w={236}
-            zIndex={0}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => setNftImageLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-            style={{
-              transform: "rotate(10deg)", // Rotate the image by -5 degrees
-            }}
-          />
-          <Image
-            ml={12}
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={236}
-            w={236}
-            zIndex={0}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => setNftImageLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-            style={{
-              transform: "rotate(10deg)", // Rotate the image by -5 degrees
-            }}
-          />
+          {grouped && (
+            <>
+              <Container
+                position={"absolute"}
+                ml={"6px"}
+                background={colorMode === "dark" ? "bgDark" : "bgWhite"}
+                h={250}
+                w={230}
+                zIndex={4}
+                mt={2}
+                borderRadius="48px"
+              />
+
+              <Image
+                ml={"42px"}
+                position={"absolute"}
+                src={imageUrl}
+                alt={"item.dataPreview"}
+                h={216}
+                w={216}
+                zIndex={1}
+                mt={8}
+                borderRadius="32px"
+                onLoad={() => setNftImageLoaded(true)}
+                onError={({ currentTarget }) => {
+                  currentTarget.src = DEFAULT_NFT_IMAGE;
+                }}
+                style={{
+                  transform: "rotate(8deg)",
+                }}
+              />
+              <Image
+                ml={"74px"}
+                position={"absolute"}
+                src={imageUrl}
+                alt={"item.dataPreview"}
+                h={200}
+                w={200}
+                zIndex={0}
+                mt={10}
+                borderRadius="32px"
+                onLoad={() => setNftImageLoaded(true)}
+                onError={({ currentTarget }) => {
+                  currentTarget.src = DEFAULT_NFT_IMAGE;
+                }}
+                style={{
+                  transform: "rotate(14deg)",
+                }}
+              />
+              <Image
+                ml={-4}
+                position={"absolute"}
+                src={imageUrl}
+                alt={"item.dataPreview"}
+                h={216}
+                w={216}
+                zIndex={1}
+                mt={8}
+                borderRadius="32px"
+                onLoad={() => setNftImageLoaded(true)}
+                onError={({ currentTarget }) => {
+                  currentTarget.src = DEFAULT_NFT_IMAGE;
+                }}
+                style={{
+                  transform: "rotate(-8deg)",
+                }}
+              />
+              <Image
+                ml={-8}
+                position={"absolute"}
+                src={imageUrl}
+                alt={"item.dataPreview"}
+                h={200}
+                w={200}
+                zIndex={0}
+                mt={10}
+                borderRadius="32px"
+                onLoad={() => setNftImageLoaded(true)}
+                onError={({ currentTarget }) => {
+                  currentTarget.src = DEFAULT_NFT_IMAGE;
+                }}
+                style={{
+                  transform: "rotate(-14deg)",
+                }}
+              />
+            </>
+          )}
+
           <motion.button
             style={{
               position: "absolute",
@@ -222,8 +221,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             </Text>
           </motion.button>
         </Container>
-
-        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} mt={"110%"} direction="column" justify="space-between">
+        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} mt={"100%"} direction="column" justify="space-between">
           {nftMetadata && (
             <>
               <Text fontSize="md" color="#929497">
@@ -326,7 +324,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             </>
           )}
         </Flex>
-
         <Box
           position="absolute"
           top="0"
