@@ -1,18 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Badge,
-  Box,
-  Button,
-  Container,
-  Flex,
-  useColorMode,
-} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Container, Flex, useColorMode } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { RouteType } from "@multiversx/sdk-dapp/types";
@@ -22,7 +9,7 @@ import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
-import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
+import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";

@@ -1,10 +1,11 @@
 import React from "react";
 import { Button, Text, Tooltip } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { EXPLORER_APP_SUPPORTED_NONCES, EXPLORER_APP_FOR_NONCE } from "libs/config";
 
 export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: number; w?: object; size?: any; fontSize?: any }) {
   const { chainID } = useGetNetworkConfig();
+  const { tokenLogin } = useGetLoginInfo();
 
   return (
     <>
@@ -26,7 +27,11 @@ export default function ExploreAppButton({ nonce, w, size, fontSize }: { nonce: 
               });
 
               if (appKey) {
-                window.open(EXPLORER_APP_FOR_NONCE[chainID][appKey])?.focus();
+                if (tokenLogin && tokenLogin.nativeAuthToken) {
+                  window.open(`${EXPLORER_APP_FOR_NONCE[chainID][appKey]}/?accessToken=${tokenLogin?.nativeAuthToken}`)?.focus();
+                } else {
+                  window.open(`${EXPLORER_APP_FOR_NONCE[chainID][appKey]}`)?.focus();
+                }
               }
             }}>
             <Text py={3} color="black" fontSize={fontSize ? fontSize : ""}>
