@@ -298,7 +298,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
 
       const arg = {
-        mvxNativeAuthOrigins: [window.location.origin],
+        mvxNativeAuthOrigins: nativeAuthOrigins(),
         mvxNativeAuthMaxExpirySeconds: 3000,
         fwdHeaderMapLookup: {
           "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,

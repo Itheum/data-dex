@@ -7,28 +7,8 @@ import { uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { walletConnectV2ProjectId, MX_TOAST_LIFETIME_IN_MS } from "libs/mxConstants";
 import { clearAppSessionsLaunchMode } from "libs/utils";
-import { StoreProvider } from "store/StoreProvider";
 import AppMx from "./AppMultiversX";
 import ModalAuthPickerMx from "./ModalAuthPickerMultiversX";
-
-export const routes: RouteType[] = [
-  {
-    path: "dashboard",
-    component: <></>,
-    authenticatedRoute: true,
-  },
-  {
-    path: "tradedata",
-    component: <></>,
-    authenticatedRoute: true,
-  },
-  {
-    path: "datanfts/wallet",
-    component: <></>,
-    authenticatedRoute: true,
-  },
-];
-
 function Launcher() {
   const [launchModeSession, setLaunchModeSession] = useLocalStorage("itm-launch-mode", null);
   const [launchMode, setLaunchMode] = useState(launchModeSession || "no-auth");
@@ -61,11 +41,7 @@ function Launcher() {
 
         {launchMode == "mx" && <ModalAuthPickerMx resetLaunchMode={() => handleLaunchMode("no-auth")} />}
 
-        <StoreProvider>
-          <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
-            <AppMx onShowConnectWalletModal={handleLaunchMode} />
-          </AuthenticatedRoutesWrapper>
-        </StoreProvider>
+        <AppMx onShowConnectWalletModal={handleLaunchMode} />
       </DappProvider>
 
       <TermsChangedNoticeModal />

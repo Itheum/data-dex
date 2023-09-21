@@ -525,9 +525,9 @@ export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<
 
 export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
   "D": {
-    "trailblazer": "https://stg.explorer.itheum.io/project-trailblazer",
-    "multiversxbubbles": "https://stg.explorer.itheum.io/multiversx-bubbles",
-    "multiversxinfographics": "https://stg.explorer.itheum.io/multiversx-infographics",
+    "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
+    "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
