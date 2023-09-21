@@ -57,7 +57,15 @@ import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { backendApi, convertToLocalString, isValidNumericCharacter, shouldPreviewDataBeEnabled, sleep, transformDescription } from "libs/utils";
+import {
+  backendApi,
+  convertToLocalString,
+  isValidNumericCharacter,
+  nativeAuthOrigins,
+  shouldPreviewDataBeEnabled,
+  sleep,
+  transformDescription,
+} from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
 
