@@ -3,6 +3,7 @@ import { Icon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Checkbox,
   CloseButton,
   Container,
   Flex,
@@ -21,6 +22,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Tooltip,
   useColorMode,
   useDisclosure,
   useToast,
@@ -39,17 +41,18 @@ import { NoDataHere } from "components/Sections/NoDataHere";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
+
 import { getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getCollectionNfts, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { createNftId, hexZero, sleep } from "libs/utils";
+import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { useChainMeta } from "store/ChainMetaContext";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { off } from "process";
+import { MdOutlineInfo } from "react-icons/md";
+import { DataNftCollection } from "./DataNftCollection";
+import BigNumber from "bignumber.js";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -116,7 +119,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       (async () => {
         console.log("FETCH");
         if (hasPendingTransactions) return;
-        if (!_chainMeta.networkId) return;
+        if (!chainID) return;
 
         // start loading offers
         updateLoadingOffers(true);
@@ -128,7 +131,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         const start = 0;
         if (isApiUp && isMarketplaceApiUp) {
           // console.log('Api Up');
-          _offers = await getOffersFromBackendApi(_chainMeta.networkId, start, publicMarketCount, undefined);
+          _offers = await getOffersFromBackendApi(chainID, start, publicMarketCount, undefined);
         } else {
           return;
           // console.log('Api Down');
@@ -165,7 +168,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         const nftIds = Array.from(_nonceOfferMap.entries())
           .slice(0, 20)
           .map(([nonce, offer]) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-        const _nfts = await getNftsByIds(nftIds, networkId);
+        const _nfts = await getNftsByIds(nftIds, chainID);
         const _metadatas: DataNftMetadataType[] = [];
         for (let i = 0; i < _nfts.length; i++) {
           _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
@@ -406,11 +409,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               </Flex>
 
               <Flex pr={{ lg: "10" }} gap={{ base: "5", lg: "20" }} ml={{ base: "1.7rem", xl: 0 }}>
-                <Button onClick={groupDataNfts} justifyContent="center" alignItems="center" mt={{ base: "3", lg: "5" }} colorScheme="teal">
+                {/* <Button onClick={groupDataNfts} justifyContent="center" alignItems="center" mt={{ base: "3", lg: "5" }} colorScheme="teal">
                   {!showGroupedDataNfts ? "Group" : "Ungroup"}
-                </Button>
+                </Button> */}
 
-                <CustomPagination pageCount={pageCount} pageIndex={pageIndex} pageSize={pageSize} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+                <Checkbox onChange={groupDataNfts} colorScheme={"teal"} onClick={groupDataNfts}>
+                  {" "}
+                  <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view data NFTs as collections">
+                    <HStack spacing="0px">
+                      <Text> Group by collection </Text>
+                      <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize={"lg"} />
+                    </HStack>
+                  </Tooltip>
+                </Checkbox>
+
+                <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
               </Flex>
             </TabList>
 
@@ -419,19 +432,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
                   <NoDataHere />
                 ) : (
-                  <SimpleGrid
-                    columns={{ sm: 1, md: 2, lg: 3, xl: 3, "2xl": 4 }}
-                    spacingY={4}
-                    gap={8}
-                    mx={{ base: 0, "2xl": "12 !important" }}
-                    mt="5 !important"
-                    justifyItems={"center"}>
+                  <SimpleGrid columns={2} spacingY={4} gap={8} mx={{ base: 0, "2xl": "12 !important" }} mt="5 !important" justifyItems={"center"}>
                     {!showGroupedDataNfts
                       ? offers.map((offer, index) => (
                           <UpperCardComponent
                             key={index}
                             nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                            imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                            imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
                             setNftImageLoaded={setOneNFTImgLoaded}
                             nftMetadata={nftMetadatas[index]}
                             offer={offer}
@@ -448,10 +455,24 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             console.log(index, offer, groupedMetadatas[index]);
 
                             return (
-                              <UpperCardComponent
+                              <DataNftCollection
                                 key={index}
                                 nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                                imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
+                                imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                                title={groupedMetadatas[index]?.title}
+                                description={groupedMetadatas[index]?.description}
+                                floorPrice={convertWeiToEsdt(
+                                  offer.wanted_token_amount as BigNumber.Value,
+                                  tokenDecimals(offer.wanted_token_identifier)
+                                ).toNumber()}
+                                listed={offer?.quantity}
+                                openNftDetailsDrawer={openNftDetailsModal}
+                                supply={groupedMetadatas[index]?.supply}></DataNftCollection>
+                            );
+                          })}
+                  </SimpleGrid>
+                )}
+                {/* imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
                                   offer?.offered_token_nonce
                                 )}/thumbnail`}
                                 setNftImageLoaded={setOneNFTImgLoaded}
@@ -462,11 +483,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                                 openNftDetailsDrawer={openNftDetailsModal}
                                 grouped={showGroupedDataNfts}>
                                 <MarketplaceLowerCard nftMetadata={groupedMetadatas[index]} offer={offer} />
-                              </UpperCardComponent>
-                            );
-                          })}
-                  </SimpleGrid>
-                )}
+                              </UpperCardComponent> */}
               </TabPanel>
               <TabPanel mt={2} width={"full"}>
                 {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (

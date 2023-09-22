@@ -125,7 +125,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
-  const { colorMode, setColorMode } = useColorMode();
+  const { colorMode, setColorMode, toggleColorMode } = useColorMode();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { pathname } = useLocation();
 
@@ -224,29 +224,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
               </Heading>
             </HStack>
           </Link>
-          {isMxLoggedIn ? (
-            <Box display={{ base: "block", md: "none" }}>
-              <IconButton
-                size="lg"
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
-              />
-            </Box>
-          ) : (
-            <Box display={{ base: "block", md: "none" }}>
-              <IconButton
-                size="md"
-                ml={12}
-                bgColor=""
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
-              />
-            </Box>
-          )}
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
@@ -415,6 +392,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             Toggle Mode
             <Menu>
               <MenuButton
+                marginRight={{ base: "10", md: "none" }}
                 as={IconButton}
                 aria-label="Options"
                 icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
