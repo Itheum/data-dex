@@ -128,10 +128,10 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
     if (mxLoginMethod === "wallet") {
       // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
-      mxLogout();
+      mxLogout(undefined, undefined, false);
     } else {
       // sending in / will reload the data dex after logout is done so it cleans up data dex state
-      mxLogout("/");
+      mxLogout("/", undefined, false);
     }
   };
 
