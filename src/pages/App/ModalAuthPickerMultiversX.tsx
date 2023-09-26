@@ -18,20 +18,19 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useLocation } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
-import { gtagGo, clearAppSessionsLaunchMode, sleep, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
 
-function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironment: any; resetLaunchMode: any }) {
+function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
-  const { isLoggedIn } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
-  const routedChainId = routeChainIDBasedOnLoggedInStatus(isLoggedIn, chainID);
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
@@ -78,9 +77,14 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
 
   const modelSize = useBreakpointValue({ base: "xs", md: "xl" });
 
+  const nativeAuthProps: NativeAuthConfigType = {
+    apiAddress: `https://${getApi(chainID)}`,
+    // origin: window.location.origin,
+    expirySeconds: 3000,
+  };
   const commonProps = {
     nativeAuth: {
-      expirySeconds: 3000,
+      ...nativeAuthProps,
     },
     callbackRoute: pathname,
   };
@@ -95,7 +99,7 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
             <ModalHeader mt={5}>
               Select a{" "}
               <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                {launchEnvironment}
+                {process.env.REACT_APP_ENV_NETWORK}
               </Badge>{" "}
               MultiversX Wallet
             </ModalHeader>
@@ -146,4 +150,4 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
   );
 }
 
-export default AuthPickerMx;
+export default ModalAuthPickerMx;
