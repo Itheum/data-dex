@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
+import { FeaturedArticlesCards } from "./components/FeaturedArticlesCards";
 import coinTelegraph1 from "../../../assets/img/whitelist/coinTelegraph1.png";
 import coinTelegraph2 from "../../../assets/img/whitelist/coinTelegraph2.png";
 import coinTelegraph3 from "../../../assets/img/whitelist/coinTelegraph3.png";
 import coinTelegraph4 from "../../../assets/img/whitelist/cointelegraph4.png";
-import { FeaturedArticlesCards } from "./components/FeaturedArticlesCards";
 
 const cardContent = [
   {

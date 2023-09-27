@@ -17,18 +17,12 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { motion } from "framer-motion";
 import moment from "moment/moment";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import {
-  convertToLocalString,
-  createNftId,
-  routeChainIDBasedOnLoggedInStatus,
-  transformDescription,
-} from "libs/utils";
+import { convertToLocalString, createNftId, transformDescription } from "libs/utils";
 
 const ProfileCard = ({
   index,
@@ -43,47 +37,29 @@ const ProfileCard = ({
   openNftDetailsDrawer,
   hasLoaded,
   setHasLoaded,
-} : {
-  index: number,
-  collection: string,
-  nonce: number,
-  tokenName: string,
-  title: string,
-  description: string,
-  supply: number,
-  royalties: number,
-  creationTime: Date,
-  openNftDetailsDrawer: any,
-  hasLoaded: boolean,
-  setHasLoaded: any,
+}: {
+  index: number;
+  collection: string;
+  nonce: number;
+  tokenName: string;
+  title: string;
+  description: string;
+  supply: number;
+  royalties: number;
+  creationTime: Date;
+  openNftDetailsDrawer: any;
+  hasLoaded: boolean;
+  setHasLoaded: any;
 }) => {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
 
   const nftId = createNftId(collection, nonce);
-  const imageUrl = collection ? `https://${getApi(routedChainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
+  const imageUrl = collection ? `https://${getApi(chainID)}/nfts/${nftId}/thumbnail` : DEFAULT_NFT_IMAGE;
 
   return (
-    <Skeleton
-      fitContent={true}
-      isLoaded={hasLoaded}
-      borderRadius="lg"
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-    >
-      <Box
-        w="275px"
-        h="30rem"
-        mx="3 !important"
-        borderWidth="0.5px"
-        borderRadius="xl"
-        borderColor="#00C79740"
-        position="relative"
-        mb="1rem"
-      >
+    <Skeleton fitContent={true} isLoaded={hasLoaded} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
+      <Box w="275px" h="30rem" mx="3 !important" borderWidth="0.5px" borderRadius="xl" borderColor="#00C79740" position="relative" mb="1rem">
         <Flex justifyContent="center">
           <Image
             src={imageUrl}
@@ -121,8 +97,7 @@ const ProfileCard = ({
               currentTarget.onerror = null; // prevents looping
             }}
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            transition={{ duration: 0.3 }}
-          >
+            transition={{ duration: 0.3 }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
               <Text as="p" mt={1} fontWeight="400" textColor="white">
                 Details
@@ -137,7 +112,7 @@ const ProfileCard = ({
               {tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
-          
+
           <Popover trigger="hover" placement="auto">
             <PopoverTrigger>
               <div>
@@ -184,7 +159,6 @@ const ProfileCard = ({
             </Flex>
           </Box>
         </Flex>
-
       </Box>
     </Skeleton>
   );
