@@ -14,16 +14,13 @@ import {
   Divider,
   useToast,
   useColorMode,
-  list,
-} from "@chakra-ui/react";
+ } from "@chakra-ui/react";
 import {
   useGetAccountInfo,
-  useGetAccountProvider,
-  useGetLoginInfo,
+   useGetLoginInfo,
   useGetNetworkConfig,
   useGetPendingTransactions,
-  useGetSignedTransactions,
-  useTrackTransactionStatus,
+   useTrackTransactionStatus,
 } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
