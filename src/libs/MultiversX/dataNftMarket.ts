@@ -82,7 +82,7 @@ export class DataNftMarketContract {
     }
   }
 
-  async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string) {
+  async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string, callbackRoute?: string) {
     const data =
       new BigNumber(paymentAmount).comparedTo(0) > 0
         ? new ContractCallPayloadBuilder()
@@ -117,13 +117,22 @@ export class DataNftMarketContract {
         errorMessage: "Error occurred during accepting offer",
         successMessage: "Offer accepted successfully",
       },
-      redirectAfterSign: false,
+      redirectAfterSign: callbackRoute ? true : false,
+      callbackRoute: callbackRoute ?? window.location.pathname,
     });
 
     return { sessionId, error };
   }
 
-  async sendAcceptOfferNftEsdtTransaction(index: number, paymentAmount: string, tokenId: string, nonce: number, amount: number, senderAddress: string) {
+  async sendAcceptOfferNftEsdtTransaction(
+    index: number,
+    paymentAmount: string,
+    tokenId: string,
+    nonce: number,
+    amount: number,
+    senderAddress: string,
+    callbackRoute?: string
+  ) {
     const offerEsdtTx = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder()
@@ -151,7 +160,8 @@ export class DataNftMarketContract {
         errorMessage: "Error occurred during accepting offer",
         successMessage: "Offer accepted successfully",
       },
-      redirectAfterSign: false,
+      redirectAfterSign: callbackRoute ? true : false,
+      callbackRoute: callbackRoute ?? window.location.pathname,
     });
 
     return { sessionId, error };
@@ -277,6 +287,7 @@ export class DataNftMarketContract {
         successMessage: "Offer de-listed successfully",
       },
       redirectAfterSign: false,
+      sessionInformation: "delist-tx",
     });
 
     return { sessionId, error };
@@ -518,6 +529,7 @@ export class DataNftMarketContract {
         successMessage: "Fee updated successfully",
       },
       redirectAfterSign: false,
+      sessionInformation: "update-price-tx",
     });
 
     return { sessionId, error };

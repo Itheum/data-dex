@@ -467,12 +467,12 @@ export default function HomeMultiversX({
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
         </Box>
 
-        <Box m="auto" pt="10" pb="10"  w={"100%"}>
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
           <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
             Data DEX 101 Guides
           </Heading>
 
-          <ExplainerArticles skipSpacing={true} />
+          <ExplainerArticles reduceGap={true} />
         </Box>
 
         <Box m="auto" pt="10" pb="6rem" w={"100%"}>

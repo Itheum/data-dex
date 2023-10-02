@@ -15,7 +15,7 @@ import {
   useToast,
   useColorMode,
 } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
@@ -31,7 +31,6 @@ import {
   backendApi,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
-import { set } from "react-hook-form";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
@@ -54,7 +53,9 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(chainID);
 
-  const { tokenLogin } = useGetLoginInfo();
+  const { tokenLogin, loginMethod } = useGetLoginInfo();
+
+  const isWebWallet = loginMethod === "wallet";
 
   const backendUrl = backendApi(chainID);
 
@@ -74,33 +75,34 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     transactionId: purchaseSessionId,
   });
 
+  const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
+
+  useEffect(() => {
+    if (!isWebWallet) return;
+    if (!hasSignedTransactions) return;
+
+    try {
+      const session = signedTransactionsArray[0][0];
+    } catch (e) {
+      sessionStorage.removeItem("web-wallet-tx");
+    }
+
+    const sessionInfo = sessionStorage.getItem("web-wallet-tx");
+    if (sessionInfo) {
+      const { type, index, amount } = JSON.parse(sessionInfo);
+      if (type == "purchase-tx") {
+        updateOfferOnBackend(index, amount);
+        sessionStorage.removeItem("web-wallet-tx");
+      }
+    }
+  }, [hasSignedTransactions]);
+
   useEffect(() => {
     setPurchaseTxStatus(trackPurchaseTxStatus.isPending ? true : false);
   }, [trackPurchaseTxStatus]);
 
   useEffect(() => {
-    async function updateOfferOnBackend() {
-      try {
-        const headers = {
-          Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
-          "Content-Type": "application/json",
-        };
-
-        const requestBody = { supply: amount };
-        const response = await fetch(`${backendUrl}/updateOffer/${offer.index}`, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(requestBody),
-        });
-
-        const data = await response.json();
-        console.log("Response:", data);
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    }
-
-    if (purchaseTxStatus) {
+    if (purchaseTxStatus && !isWebWallet) {
       updateOfferOnBackend();
     }
   }, [purchaseTxStatus]);
@@ -111,6 +113,28 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       setReadTermsChecked(false);
     }
   }, [isOpen]);
+
+  async function updateOfferOnBackend(index = offer.index, supply = amount) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
+        "Content-Type": "application/json",
+      };
+
+      const requestBody = { supply: supply };
+      const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log("Response:", response.ok);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
 
   const showErrorToast = (title: string) => {
     toast({
@@ -153,14 +177,23 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
     } else {
       if (offer.wanted_token_nonce === 0) {
+        //Check if we buy all quantity, use web wallet and are on that offer's details page and thus should use callback route
+        const isOnOfferPage = window.location.pathname.includes("/offer-");
+        const shouldUseCallbackRoute = isWebWallet && amount == offer.quantity && isOnOfferPage;
+        const callbackRoute = "/datanfts/wallet";
+
         const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
           offer.wanted_token_identifier,
           amount as never,
-          address
+          address,
+          shouldUseCallbackRoute ? callbackRoute : undefined
         );
         setPurchaseSessionId(sessionId);
+        if (isWebWallet) {
+          sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "purchase-tx", index: offer.index, amount: amount }));
+        }
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);
@@ -175,7 +208,9 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           address
         );
         setPurchaseSessionId(sessionId);
-
+        if (isWebWallet) {
+          sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "purchase-tx", index: offer.index, amount: amount }));
+        }
         // if offer is sold out by this transaction, close Drawer if opened
         if (setSessionId && amount == offer.quantity) {
           setSessionId(sessionId);

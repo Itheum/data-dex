@@ -84,7 +84,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const _userData = await mintContract.getUserDataOut(address, contractsForChain(routedChainID).itheumToken);
       updateUserData(_userData);
     })();
-  }, [address, hasPendingTransactions]);
+  }, [address, hasPendingTransactions, routedChainID]);
 
   const getItheumPrice = () => {
     (async () => {

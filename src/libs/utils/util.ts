@@ -84,7 +84,7 @@ export const clearAppSessionsLaunchMode = () => {
   localStorage?.removeItem("itm-launch-env");
   localStorage?.removeItem("itm-datacat-linked");
   sessionStorage.removeItem("persist:sdk-dapp-signedMessageInfo"); // clear signedSessions
-  sessionStorage.removeItem("itm-hub-access-token");
+  //sessionStorage.removeItem("itm-hub-access-token");
 };
 
 export const printPrice = (price: number, token: string): string => {
@@ -200,15 +200,17 @@ export const getExplorerTrailBlazerURL = (chainID: string) => {
 // utility to return mainnet if user is NOT logged in and they are on datadex.itheum.io
 // ... this is used only for "public" components and routes where the user has not connected their wallet
 export const routeChainIDBasedOnLoggedInStatus = (isMxLoggedIn: boolean, chainID: string) => {
+  let routedChainId;
   if (!isMxLoggedIn && window.location.hostname === "datadex.itheum.io") {
-    return "1";
+    routedChainId = "1";
   } else {
     if (chainID === undefined || chainID === "-1") {
-      return "D";
+      routedChainId = "D";
     } else {
-      return chainID;
+      routedChainId = chainID;
     }
   }
+  return routedChainId;
 };
 
 export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
