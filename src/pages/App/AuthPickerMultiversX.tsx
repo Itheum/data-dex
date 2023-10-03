@@ -120,6 +120,14 @@ function AuthPickerMx({ launchEnvironment, resetLaunchMode }: { launchEnvironmen
                         <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
 
+                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_CUSTOM_WEBWALLET)} className="auth_wrap">
+                        <WebWalletLoginButton
+                          loginButtonText={"Custom Web Wallet"}
+                          buttonClassName="auth_button"
+                          customWalletAddress="https://web2auth.com"
+                          {...commonProps}></WebWalletLoginButton>
+                      </WrapItem>
+
                       <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
                       </WrapItem>

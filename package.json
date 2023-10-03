@@ -10,7 +10,7 @@
     "@hookform/resolvers": "3.1.1",
     "@itheum/sdk-mx-data-nft": "0.0.6",
     "@multiversx/sdk-core": "12.6.0",
-    "@multiversx/sdk-dapp": "2.19.2",
+    "@multiversx/sdk-dapp": "2.22.1",
     "@multiversx/sdk-native-auth-client": "1.0.4",
     "@multiversx/sdk-network-providers": "1.5.0",
     "@sentry/react": "7.60.1",
@@ -87,6 +87,6 @@
     "typescript": "4.9.5"
   },
   "engines": {
-    "node": "18.15.0"
+    "node": "18.17.1"
   }
 }
