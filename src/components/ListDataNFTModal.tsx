@@ -14,24 +14,15 @@ import {
   Divider,
   useToast,
   useColorMode,
-  list,
 } from "@chakra-ui/react";
-import {
-  useGetAccountInfo,
-  useGetAccountProvider,
-  useGetLoginInfo,
-  useGetNetworkConfig,
-  useGetPendingTransactions,
-  useGetSignedTransactions,
-  useTrackTransactionStatus,
-} from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import axios from "axios";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
+import { contractsForChain } from "libs/config";
+import { getApi } from "libs/MultiversX/api";
 import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
 import { useMarketStore } from "store";
-import axios from "axios";
-import { getApi } from "libs/MultiversX/api";
-import { contractsForChain } from "libs/config";
 
 export type ListModalProps = {
   isOpen: boolean;

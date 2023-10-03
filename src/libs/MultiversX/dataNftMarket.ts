@@ -26,8 +26,6 @@ import jsonData from "./ABIs/data_market.abi.json";
 import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType, OfferType } from "./types";
 import { contractsForChain } from "../config";
-import { useGetAccountInfo, useGetLoginInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { backendApi } from "libs/utils";
 
 export class DataNftMarketContract {
   timeout: number;

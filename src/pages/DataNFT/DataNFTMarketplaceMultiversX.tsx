@@ -24,6 +24,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
@@ -42,10 +43,8 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { createNftId, hexZero, sleep } from "libs/utils";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -62,10 +61,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions, pendingTransactions } = useGetPendingTransactions();
 
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-
-  const mintContract = new DataNftMintContract(routedChainID);
-  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(chainID);
+  const marketContract = new DataNftMarketContract(chainID);
 
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const offers = useMarketStore((state) => state.offers);
@@ -115,8 +112,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       if (hasPendingTransactions) return;
 
       if (isApiUp) {
-        const publicCount = await getOffersCountFromBackendApi(routedChainID);
-        const listedCount = await getOffersCountFromBackendApi(routedChainID, address);
+        const publicCount = await getOffersCountFromBackendApi(chainID);
+        const listedCount = await getOffersCountFromBackendApi(chainID, address);
 
         setMyListedCount(listedCount);
         setPublicMarketCount(publicCount);
@@ -134,7 +131,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
       }
 
-      // console.log("_numberOfOffers", _numberOfOffers);
       const _pageCount = Math.max(1, Math.ceil(_numberOfOffers / pageSize));
       updatePageCount(_pageCount);
 
@@ -156,18 +152,17 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       const start = pageIndex * pageSize;
       if (isApiUp && isMarketplaceApiUp) {
         // console.log('Api Up');
-        _offers = await getOffersFromBackendApi(routedChainID, start, pageSize, tabState === 1 ? undefined : address);
+        _offers = await getOffersFromBackendApi(chainID, start, pageSize, tabState === 1 ? undefined : address);
       } else {
         // console.log('Api Down');
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
       }
 
-      // console.log("_offers", _offers);
       updateOffers(_offers);
 
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-      const _nfts = await getNftsByIds(nftIds, routedChainID);
+      const _nfts = await getNftsByIds(nftIds, chainID);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
@@ -195,7 +190,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     if (!pendingTransactions) return;
 
-    const networkProvider = getNetworkProvider(routedChainID);
+    const networkProvider = getNetworkProvider(chainID);
     const watcher = new TransactionWatcher(networkProvider);
     for (const [, value] of Object.entries(pendingTransactions)) {
       const stxs = (value as SignedTransactionsBodyType).transactions;
@@ -342,7 +337,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(routedChainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                          imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
                           setNftImageLoaded={setOneNFTImgLoaded}
                           nftMetadata={nftMetadatas[index]}
                           offer={offer}
@@ -370,7 +365,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(routedChainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                          imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
                           setNftImageLoaded={setOneNFTImgLoaded}
                           nftMetadata={nftMetadatas[index]}
                           offer={offer}

@@ -1,28 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Badge,
-  Box,
-  Button,
-  Container,
-  Flex,
-  useColorMode,
-} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Container, Flex, useColorMode } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { RouteType } from "@multiversx/sdk-dapp/types";
 import { logout } from "@multiversx/sdk-dapp/utils";
+import { AuthenticatedRoutesWrapper } from "@multiversx/sdk-dapp/wrappers";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
-import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
+import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { clearAppSessionsLaunchMode, gtagGo, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
+import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
 import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
@@ -31,20 +20,37 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
+import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
 
 const mxLogout = logout;
 
-function App({ onLaunchMode }: { onLaunchMode: any }) {
-  const [walletUsedSession, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+export const routes: RouteType[] = [
+  {
+    path: "dashboard",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: "tradedata",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: "datanfts/wallet",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+];
+
+function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
+  const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
-  const [isAlertOpen, setAlertIsOpen] = useState(false);
   const [rfKeys, setRfKeys] = useState({
     tools: 0,
     sellData: 0,
@@ -52,8 +58,7 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
     auth: 0,
     dataNFTWallet: 0,
   });
-  const cancelRef = useRef<HTMLButtonElement>(null);
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
   const { pathname } = useLocation();
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
@@ -78,13 +83,10 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
   }, []);
 
   useEffect(() => {
-    if (!SUPPORTED_CHAINS.includes(routedChainID)) {
-      setAlertIsOpen(true);
-    }
-    if (routedChainID === "D") {
+    if (chainID === "D") {
       linkOrRefreshDataDATAccount(true);
     }
-  }, [routedChainID]);
+  }, [chainID]);
 
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
@@ -126,10 +128,10 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
 
     if (mxLoginMethod === "wallet") {
       // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
-      mxLogout();
+      mxLogout(undefined, undefined, false);
     } else {
       // sending in / will reload the data dex after logout is done so it cleans up data dex state
-      mxLogout("/");
+      mxLogout("/", undefined, false);
     }
   };
 
@@ -155,8 +157,6 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
     containerShadow = "rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px";
   }
 
-  // console.log("menuItem", menuItem);
-
   let bodyMinHeightLg = "1000px";
 
   if (menuItem === MENU.GETWHITELISTED) {
@@ -166,109 +166,91 @@ function App({ onLaunchMode }: { onLaunchMode: any }) {
 
   return (
     <>
-      <Container maxW="97.5rem">
-        <Flex
-          bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
-          flexDirection="column"
-          justifyContent="space-between"
-          minH="100vh"
-          boxShadow={containerShadow}
-          zIndex={2}>
-          {/* App Header */}
-          <AppHeader onLaunchMode={onLaunchMode} menuItem={menuItem} setMenuItem={setMenuItem} handleLogout={handleLogout} />
-          {/* App Body */}
-          <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
+      {["1", "D"].includes(chainID) && (
+        <StoreProvider>
+          <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
+            <Container maxW="97.5rem">
+              <Flex
+                bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
+                flexDirection="column"
+                justifyContent="space-between"
+                minH="100vh"
+                boxShadow={containerShadow}
+                zIndex={2}>
+                {/* App Header */}
+                <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+                {/* App Body */}
+                <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
+                  <Routes>
+                    <Route path="/" element={<LandingPage />} />
 
-              <Route path="getwhitelisted" element={<Outlet />}>
-                <Route path="" element={<GetWhitelist />} />
-              </Route>
+                    <Route path="getwhitelisted" element={<Outlet />}>
+                      <Route path="" element={<GetWhitelist />} />
+                    </Route>
 
-              <Route path="guardrails" element={<Outlet />}>
-                <Route path="" element={<GuardRails />} />
-              </Route>
+                    <Route path="guardrails" element={<Outlet />}>
+                      <Route path="" element={<GuardRails />} />
+                    </Route>
 
-              <Route path="/profile" element={<Outlet />}>
-                <Route path=":profileAddress" element={<Profile tabState={1} />} />
-                <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
-                <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
-              </Route>
-              {/*{routing}*/}
+                    <Route path="/profile" element={<Outlet />}>
+                      <Route path=":profileAddress" element={<Profile tabState={1} />} />
+                      <Route path=":profileAddress/created" element={<Profile tabState={1} />} />
+                      <Route path=":profileAddress/listed" element={<Profile tabState={2} />} />
+                    </Route>
+                    {/*{routing}*/}
 
-              <Route
-                path="dashboard"
-                element={
-                  <HomeMultiversX
-                    key={rfKeys.tools}
-                    onRfMount={() => handleRfMount("tools")}
-                    setMenuItem={setMenuItem}
-                    dataCATAccount={dataCATAccount}
-                    loadingDataCATAccount={loadingDataCATAccount}
-                    onDataCATAccount={linkOrRefreshDataDATAccount}
-                  />
-                }
-              />
+                    <Route
+                      path="dashboard"
+                      element={
+                        <HomeMultiversX
+                          key={rfKeys.tools}
+                          setMenuItem={setMenuItem}
+                          dataCATAccount={dataCATAccount}
+                          loadingDataCATAccount={loadingDataCATAccount}
+                          onDataCATAccount={linkOrRefreshDataDATAccount}
+                        />
+                      }
+                    />
 
-              <Route
-                path="tradedata"
-                element={
-                  <MintDataMX key={rfKeys.sellData} setMenuItem={setMenuItem} dataCATAccount={dataCATAccount} onRfMount={() => handleRfMount("sellData")} />
-                }
-              />
+                    <Route
+                      path="tradedata"
+                      element={
+                        <MintDataMX
+                          key={rfKeys.sellData}
+                          setMenuItem={setMenuItem}
+                          dataCATAccount={dataCATAccount}
+                          onRfMount={() => handleRfMount("sellData")}
+                        />
+                      }
+                    />
 
-              <Route path="datanfts" element={<Outlet />}>
-                <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
-                <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
-                <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
-                <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
-                <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
-                <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
-                <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
-                <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
-                <Route path="marketplace" element={<Navigate to={"market"} />} />
-                <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
-                <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
-                <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
-                <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
-              </Route>
+                    <Route path="datanfts" element={<Outlet />}>
+                      <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
+                      <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
+                      <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
+                      <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
+                      <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
+                      <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
+                      <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
+                      <Route path="marketplace/:tokenId/:offerId?" element={<DataNFTDetails />} />
+                      <Route path="marketplace" element={<Navigate to={"market"} />} />
+                      <Route path="marketplace/market" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                      <Route path="marketplace/market/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={1} />} />
+                      <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                      <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
+                    </Route>
 
-              <Route path="settings" element={<AppSettings />} />
-            </Routes>
-          </Box>
+                    <Route path="settings" element={<AppSettings />} />
+                  </Routes>
+                </Box>
 
-          {/* App Footer */}
-          <AppFooter />
-        </Flex>
-
-        {/* Chain ENV not supported alert (useful only when EVM comes in) */}
-        <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={() => setAlertIsOpen(false)}>
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold"></AlertDialogHeader>
-
-              <AlertDialogBody>
-                Sorry the{" "}
-                <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                  {CHAINS[routedChainID as keyof typeof CHAINS]}
-                </Badge>{" "}
-                chain is currently not supported. We are working on it. You need to be on{" "}
-                {SUPPORTED_CHAINS.map((i) => (
-                  <Badge key={i} borderRadius="full" px="2" colorScheme="teal" mr="2">
-                    {CHAINS[i as keyof typeof CHAINS]}
-                  </Badge>
-                ))}
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={() => setAlertIsOpen(false)}>
-                  Close
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-      </Container>
+                {/* App Footer */}
+                <AppFooter />
+              </Flex>
+            </Container>
+          </AuthenticatedRoutesWrapper>
+        </StoreProvider>
+      )}
     </>
   );
 }
