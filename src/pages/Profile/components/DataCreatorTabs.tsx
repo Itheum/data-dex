@@ -23,7 +23,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
 import { BsClockHistory } from "react-icons/bs";
@@ -41,7 +40,7 @@ import { getNftsByIds } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
-import { backendApi, createNftId, routeChainIDBasedOnLoggedInStatus, sleep } from "../../../libs/utils";
+import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
 
@@ -51,11 +50,7 @@ interface PropsType {
 
 export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
-  // const itheumToken = contractsForChain(routedChainID).itheumToken;
-  const { address } = useGetAccountInfo();
   const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const { pageNumber, profileAddress } = useParams();
@@ -72,8 +67,8 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const pageSize = 8;
   const pageIndex = pageNumber ? Number(pageNumber) : 0;
 
-  const mintContract = new DataNftMintContract(routedChainID);
-  const marketContract = new DataNftMarketContract(routedChainID);
+  const mintContract = new DataNftMintContract(chainID);
+  const marketContract = new DataNftMarketContract(chainID);
 
   const [nftMetadatas, setNftMetadatas] = useState<DataNftMetadataType[]>([]);
   // const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
@@ -149,7 +144,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
           return _dataNfts;
         });
 
-        const backendApiRoute = backendApi(routedChainID);
+        const backendApiRoute = backendApi(chainID);
         const res = await axios.get(`${backendApiRoute}/data-nfts/${profileAddress}`);
         const _dataNfts: DataNftType[] = res.data ? res.data.map((data: any, index: number) => ({ ...data, index })) : [];
         setDataNft(_dataNfts);
@@ -200,7 +195,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       updatePageCount(_pageCount);
 
       if (isApiUp) {
-        const listedCount = await getOffersCountFromBackendApi(routedChainID, profileAddress);
+        const listedCount = await getOffersCountFromBackendApi(chainID, profileAddress);
         setMyListedCount(listedCount);
       }
       // if pageIndex is out of range
@@ -223,7 +218,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
 
       //
       const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-      const _nfts = await getNftsByIds(nftIds, routedChainID);
+      const _nfts = await getNftsByIds(nftIds, chainID);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
@@ -358,13 +353,11 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
         </TabPanels>
       </Tabs>
 
-      {
-        (tabState == 2 && offers.length > 0 && !isLoadingSecond) && (
-          <Flex justifyContent={{ base: "center", md: "center" }} py="5">
-            <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-          </Flex>
-        )
-      }
+      {tabState == 2 && offers.length > 0 && !isLoadingSecond && (
+        <Flex justifyContent={{ base: "center", md: "center" }} py="5">
+          <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+        </Flex>
+      )}
 
       {offerForDrawer && (
         <Modal onClose={onCloseListingDetails} isOpen={isOpenListingDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>

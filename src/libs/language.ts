@@ -25,6 +25,7 @@ export const labels = {
   "ERR_API_ISSUE_DATA_NFT_DETAILS": "Could not fetch Data NFT-FT details. (ER-22)",
   "ERR_API_ISSUE_DATA_NFT_OFFERS": "Could not fetch Data NFT-FT offers. (ER-23)",
   "ERR_MARKET_OFFER_NOT_FOUND": "Data NFT offer not found (ER-24)",
+  "NATIVE_AUTH_TOKEN_MISSING": "Your wallet did not produce a Native Auth token (ER-25)",
 
   "MINT_FORM_POPUP_INFO_DATA_STREAM":
     "The URL of the hosted data asset that you would like to trade. This URL should be publicly accessible behind a secure domain (one that starts with https://)",

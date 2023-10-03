@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import { Box, Flex, Text, useColorMode } from "@chakra-ui/react";
-import { TrendingDataCards } from "./components/TrendingDataCards";
 import bubbleImage from "assets/img/whitelist/BubbleImage.png";
 import infographicsImage from "assets/img/whitelist/InfographicsImage.png";
 import trailblazerImage from "assets/img/whitelist/TrailblazerImage.png";
+import { TrendingDataCards } from "./components/TrendingDataCards";
 
 const cardContent = [
   {
