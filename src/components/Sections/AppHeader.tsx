@@ -337,7 +337,9 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                            <Text as={"div"} color="teal.200" fontWeight={"bold"}>
+                              <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                            </Text>
                           </MenuItemOption>
 
                           <MenuDivider />
@@ -445,7 +447,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                         My Address Quick Copy
                       </Text>
                       <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                       </Text>
                       <hr />
                       <List>

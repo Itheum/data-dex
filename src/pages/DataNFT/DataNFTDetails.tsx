@@ -103,6 +103,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [sessionId, setSessionId] = useState<any>();
+  const [addressHasNft, setAddressHasNft] = useState<boolean>(false);
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
@@ -123,8 +124,27 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     },
   });
 
+  const getAddressTokenInformation = () => {
+    const apiLink = getApi(routedChainID);
+    const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
+
+    axios
+      .get(nftApiLink)
+      .then((res) => {
+        if (res.data.identifier == tokenId) {
+          setAddressHasNft(true);
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setAddressHasNft(false);
+        }
+      });
+  };
+
   useEffect(() => {
     getTokenDetails();
+    getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
   }, [hasPendingTransactions]);
 
@@ -503,7 +523,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               Fully Transferable License
                             </Text>
                           </Box>
-                          {address && address == offer?.owner && (
+                          {addressHasNft && (
                             <Box borderRadius="md" px="3" py="1.5" bgColor="#0ab8ff30">
                               <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
                                 You are the Owner
