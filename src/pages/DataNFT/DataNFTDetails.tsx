@@ -31,11 +31,13 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { FaStore } from "react-icons/fa";
+import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
+import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -54,10 +56,8 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { routeChainIDBasedOnLoggedInStatus, shouldPreviewDataBeEnabled } from "libs/utils/util";
+import { shouldPreviewDataBeEnabled } from "libs/utils/util";
 import { useMarketStore } from "store";
-import ExploreAppButton from "components/UtilComps/ExploreAppButton";
-import { MdOutlineInfo } from "react-icons/md";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -71,7 +71,6 @@ type DataNFTDetailsProps = {
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -93,8 +92,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
 
-  const chainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
-  const marketContract = new DataNftMarketContract(routedChainID);
+  const chainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
+  const marketContract = new DataNftMarketContract(chainID);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<OfferType | undefined>();
@@ -173,16 +172,15 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
     }
   }, [offerId, hasPendingTransactions]);
-  // console.log(nftData);
   function getTokenDetails() {
-    const apiLink = getApi(routedChainID);
+    const apiLink = getApi(chainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
 
     axios
       .get(nftApiLink)
       .then((res) => {
         const _nftData = res.data;
-        const attributes = new DataNftMintContract(routedChainID).decodeNftAttributes(_nftData);
+        const attributes = new DataNftMintContract(chainID).decodeNftAttributes(_nftData);
         _nftData.attributes = attributes;
         setNftData(_nftData);
         setIsLoadingDetails(false);
@@ -208,7 +206,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       });
   }
 
-  // console.log(totalOffers);
   async function getTokenHistory(tokenIdArg: string) {
     try {
       const inputString = tokenIdArg;
@@ -220,7 +217,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
 
-      const _offers = await getOffersByIdAndNoncesFromBackendApi(routedChainID, identifier, [nonceDec]);
+      const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       setTotalOffers(_offers);
       const price = Math.min(..._offers.map((offerArg: any) => offerArg.wanted_token_amount));
       if (price !== Infinity) {
@@ -275,8 +272,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const handleButtonClick = (offerArg: number, identifier: string) => {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
-
-  // console.log("routedChainID", routedChainID);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -416,12 +411,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           colorScheme="teal"
                           hasArrow
                           label="Preview Data is disabled on devnet"
-                          isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+                          isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             variant="outline"
-                            isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+                            isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>

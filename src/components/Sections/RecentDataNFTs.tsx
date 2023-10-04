@@ -10,7 +10,7 @@ import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
-import { convertWeiToEsdt, hexZero, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
+import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
 
@@ -38,28 +38,27 @@ for (let i = 0; i < 10; i++) {
 const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; headingSize?: string }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
-  const marketContract = new DataNftMarketContract(routedChainID);
-  const mintContract = new DataNftMintContract(routedChainID);
+  const marketContract = new DataNftMarketContract(chainID);
+  const mintContract = new DataNftMintContract(chainID);
 
   useEffect(() => {
     apiWrapper();
-  }, [routedChainID, marketRequirements]);
+  }, [marketRequirements]);
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(routedChainID === "1" ? "mainnet" : "devnet");
+    DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
 
     try {
-      const isApiUp = await getHealthCheckFromBackendApi(routedChainID);
+      const isApiUp = await getHealthCheckFromBackendApi(chainID);
 
       if (isApiUp) {
-        const offers = await getRecentOffersFromBackendApi(routedChainID);
-        const recentNonces: number[] = offers.map((nft: any) => nft.offered_token_nonce);
+        const offers = await getRecentOffersFromBackendApi(chainID);
+        const recentNonces = offers.map((nft: any) => ({ nonce: nft.offered_token_nonce }));
         const dataNfts: DataNft[] = await DataNft.createManyFromApi(recentNonces);
 
         const _latestOffers: DataNftCondensedView[] = [];
@@ -103,7 +102,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       const slicedOffers = offers.slice(0, 10);
       // get these offers metadata from the API
       const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
-      const dataNfts = await getNftsByIds(nftIds, routedChainID);
+      const dataNfts = await getNftsByIds(nftIds, chainID);
 
       // merge the offer data and meta data
       const _latestOffers: DataNftCondensedView[] = [];
