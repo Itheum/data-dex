@@ -188,7 +188,7 @@ export const getApiDataDex = (chainID: string) => {
 
 export const getApiDataMarshal = (chainID: string) => {
   const envKey = chainID === "1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
-  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
+  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/router/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
 
   return process.env[envKey] || defaultUrl;
 };
