@@ -658,8 +658,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   !!amountError ||
                   !!priceError ||
                   isMarketPaused ||
-                  marketRequirements?.maximum_payment_fees[0] === undefined ||
-                  marketRequirements?.maximum_payment_fees[0] === null
+                  marketRequirements.maximumPaymentFees[0] === undefined ||
+                  marketRequirements.maximumPaymentFees[0] === null
                 }
                 onClick={() => onListButtonClick(item)}>
                 <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

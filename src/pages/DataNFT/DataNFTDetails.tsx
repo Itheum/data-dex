@@ -124,7 +124,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   });
 
   const getAddressTokenInformation = () => {
-    const apiLink = getApi(routedChainID);
+    const apiLink = getApi(chainID);
     const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
 
     axios
@@ -661,7 +661,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements?.buyer_fee} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
             </Box>
           </VStack>
 
@@ -669,7 +669,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             <ProcureDataNFTModal
               isOpen={isProcureModalOpen}
               onClose={onProcureModalClose}
-              buyerFee={marketRequirements?.buyer_fee || 0}
+              buyerFee={marketRequirements.buyerTaxPercentage || 0}
               nftData={nftData.attributes}
               offer={offer}
               amount={amount}
