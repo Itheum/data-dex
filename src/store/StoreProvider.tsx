@@ -1,21 +1,16 @@
 import React, { PropsWithChildren, useEffect } from "react";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
   // ACCOUNT STORE
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
@@ -32,17 +27,17 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
 
-  const marketContract = new DataNftMarketContract(routedChainID);
-  const mintContract = new DataNftMintContract(routedChainID);
+  const marketContract = new DataNftMarketContract(chainID);
+  const mintContract = new DataNftMintContract(chainID);
 
   useEffect(() => {
     (async () => {
-      const _isApiUp = await getHealthCheckFromBackendApi(routedChainID);
+      const _isApiUp = await getHealthCheckFromBackendApi(chainID);
       updateIsApiUp(_isApiUp);
     })();
 
     (async () => {
-      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(routedChainID);
+      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(chainID);
       updateIsMarketplaceApiUp(_isMarketplaceApiUp);
     })();
   }, [isApiUp]);
@@ -68,23 +63,23 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       const _isMarketPaused = await marketContract.getIsPaused();
       updateIsMarketPaused(_isMarketPaused);
     })();
-  }, [routedChainID]);
+  }, [chainID]);
 
   useEffect(() => {
     if (!address) return;
     if (hasPendingTransactions) return;
 
     (async () => {
-      const _token = await getAccountTokenFromApi(address, contractsForChain(routedChainID).itheumToken, routedChainID);
+      const _token = await getAccountTokenFromApi(address, contractsForChain(chainID).itheumToken, chainID);
       const balance = _token ? convertWeiToEsdt(_token.balance, _token.decimals).toNumber() : 0;
       updateItheumBalance(balance);
     })();
 
     (async () => {
-      const _userData = await mintContract.getUserDataOut(address, contractsForChain(routedChainID).itheumToken);
+      const _userData = await mintContract.getUserDataOut(address, contractsForChain(chainID).itheumToken);
       updateUserData(_userData);
     })();
-  }, [address, hasPendingTransactions, routedChainID]);
+  }, [address, hasPendingTransactions]);
 
   const getItheumPrice = () => {
     (async () => {

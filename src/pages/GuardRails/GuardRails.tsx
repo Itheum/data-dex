@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
-import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
@@ -9,7 +9,7 @@ import ShortAddress from "../../components/UtilComps/ShortAddress";
 import { contractsForChain, historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "../../libs/utils";
+import { convertWeiToEsdt } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
 
 export const GuardRails: React.FC = () => {
@@ -24,9 +24,7 @@ export const GuardRails: React.FC = () => {
   const userData = useMintStore((state) => state.userData);
 
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
+  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   const historyGuardrails = historicGuardrails;
 
@@ -46,7 +44,7 @@ export const GuardRails: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -59,7 +57,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -72,7 +70,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -85,8 +83,8 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
+      const networkProvider = getNetworkProvider(chainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -96,7 +94,7 @@ export const GuardRails: React.FC = () => {
         setAntiSpamTax(convertWeiToEsdt(value).toNumber());
       }
     })();
-  }, [routedChainID]);
+  }, []);
 
   useEffect(() => {
     (async () => {

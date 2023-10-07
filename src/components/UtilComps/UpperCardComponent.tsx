@@ -27,15 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import {
-  convertToLocalString,
-  convertWeiToEsdt,
-  getTokenWantedRepresentation,
-  printPrice,
-  routeChainIDBasedOnLoggedInStatus,
-  tokenDecimals,
-  transformDescription,
-} from "libs/utils";
+import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
 
@@ -68,8 +60,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const navigate = useNavigate();
 
   const userData = useMintStore((state) => state.userData);
