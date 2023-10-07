@@ -683,6 +683,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     }
 
     const res = await validateBaseInput();
+
     if (res) {
       setErrDataNFTStreamGeneric(null);
       dataNFTDataStreamAdvertise();
@@ -707,15 +708,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
-      body: JSON.stringify({ dataNFTStreamUrl }),
+      body: JSON.stringify({
+        dataNFTStreamUrl,
+        dataCreatorERDAddress: mxAddress,
+      }),
     };
 
     try {
-      const res = await fetch(`${getApiDataMarshal(chainID)}/generate`, requestOptions);
+      const res = await fetch(`${getApiDataMarshal(chainID)}/generate_V2`, requestOptions);
       const data = await res.json();
 
       if (data && data.encryptedMessage && data.messageHash) {
-        // setSellerData(data.encryptedMessage); // the data URL is the seller data in this case
         setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s1: 1 }));
 
         buildUniqueImage({
