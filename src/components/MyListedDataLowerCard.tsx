@@ -81,6 +81,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     if (!hasSignedTransactions) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const session = signedTransactionsArray[0][0];
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");
@@ -132,7 +133,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         "Content-Type": "application/json",
       };
 
-      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 200)) / 10000;
+      const price = newPrice + (newPrice * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
 
       const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
       const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
@@ -182,7 +183,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const fee =
     marketRequirements && offer
       ? convertWeiToEsdt(
-          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyer_fee as number)),
+          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyerTaxPercentage as number)),
           tokenDecimals(offer.wanted_token_identifier)
         ).toNumber()
       : 0;
@@ -302,7 +303,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyerTaxPercentage),
                   tokenDecimals(offer.wanted_token_identifier)
                 ).toNumber()
               );

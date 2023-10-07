@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
+
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { contractsForChain } from "libs/config";
@@ -99,7 +100,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     wanted_token_identifier = offer.wanted_token_identifier,
     wanted_token_nonce = offer.wanted_token_nonce,
     wanted_token_amount = Number(
-      (Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements?.buyer_fee ?? 200)) / 10000) * Number(10 ** 18)
+      (Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000) * Number(10 ** 18)
     ).toString(),
     quantity = amount * 1,
     owner = address
@@ -197,7 +198,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
     const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
     if (isWebWallet) {
-      const price = Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements?.buyer_fee ?? 200)) / 10000;
+      const price = Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
       sessionStorage.setItem(
         "web-wallet-tx",
         JSON.stringify({

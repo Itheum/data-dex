@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
+import { WarningTwoIcon, SunIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionItem,
@@ -38,10 +38,9 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { FaStore, FaUserCheck } from "react-icons/fa";
+import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
-import { TbSunset2 } from "react-icons/tb";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
 import logoSmlL from "assets/img/logo-icon-b.png";
@@ -126,7 +125,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -224,7 +223,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
               </Heading>
             </HStack>
           </Link>
-          {isMxLoggedIn ? (
+          {/* {isMxLoggedIn ? (
             <Box display={{ base: "block", md: "none" }}>
               <IconButton
                 size="lg"
@@ -246,7 +245,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 onClick={toggleColorMode}
               />
             </Box>
-          )}
+          )} */}
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
@@ -331,7 +330,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                            <Text as={"div"} color="teal.200" fontWeight={"bold"}>
+                              <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                            </Text>
                           </MenuItemOption>
 
                           <MenuDivider />
@@ -413,17 +414,26 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
               </Button>
             )}
             Toggle Mode
-            <Box display={{ base: "none", md: "block", xl: "block" }}>
-              <IconButton
-                size={{ md: "md", xl: "lg", "2xl": "lg" }}
-                px="2 !important"
-                mr={{ md: "1", xl: "0" }}
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
+            <Menu>
+              <MenuButton
+                marginRight={{ base: "10", md: "none" }}
+                as={IconButton}
+                aria-label="Options"
+                icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
+                variant="solid"
               />
-            </Box>
+              <MenuList>
+                <MenuItem icon={<SunIcon />} command="⌘N" onClick={() => setColorMode("light")}>
+                  Light
+                </MenuItem>
+                <MenuItem icon={<MdDarkMode />} command="⌘⇧N" onClick={() => setColorMode("dark")}>
+                  Dark
+                </MenuItem>
+                <MenuItem icon={<FaLaptop />} command="⌘O" onClick={() => setColorMode("system")}>
+                  System
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </HStack>
         </Flex>
       </Flex>
@@ -444,13 +454,13 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             <Accordion allowMultiple>
               {exploreRouterMenu.map((menu) => (
                 <AccordionItem key={menu.sectionId}>
-                  {({ isExpanded }) => (
+                  {() => (
                     <>
                       <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
                         My Address Quick Copy
                       </Text>
                       <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                       </Text>
                       <hr />
                       <List>

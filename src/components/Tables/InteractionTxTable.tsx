@@ -82,7 +82,7 @@ export default function InteractionTxTable(props: { address: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!contractsForChain(chainID).dataNftMint || !contractsForChain(chainID).market) return;
+      if (!props.address || !contractsForChain(chainID).dataNftMint || !contractsForChain(chainID).market) return;
       const interactions = await getInteractionTransactions(props.address, contractsForChain(chainID).dataNftMint, contractsForChain(chainID).market, chainID);
       if ("error" in interactions) {
         toast({
