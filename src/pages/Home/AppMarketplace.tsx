@@ -29,7 +29,6 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useNavigate } from "react-router-dom";
 import AstarIcon from "assets/img/astar-icon.png";
 import ItheumIcon from "assets/img/logo-sml-d.png";
@@ -42,7 +41,6 @@ import imgProgWfh from "assets/img/prog-wfh.png";
 import zedgeLogo from "assets/img/zedge-logo.png";
 import { progInfoMeta } from "libs/config";
 import { sleep } from "libs/utils/util";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 
 type MarshalFeatures = {
   [index: string]: any;
@@ -69,8 +67,6 @@ type Props = {
 
 export default function AppMarketplace(props: Props) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const [learnMoreProd, setLearnMoreProg] = useState<keyof typeof progInfoMeta>("rhc");
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const { colorMode } = useColorMode();
@@ -202,7 +198,7 @@ export default function AppMarketplace(props: Props) {
               <Button size="sm" mt="3" mr="3" colorScheme="teal" variant="outline" onClick={() => handleLearnMoreProg("gdc")}>
                 Learn More
               </Button>
-              {routedChainID === "D" && (
+              {chainID === "D" && (
                 <Button size="sm" mt="3" colorScheme="teal" onClick={() => handleJoinPS4Passport()}>
                   Join Now
                 </Button>

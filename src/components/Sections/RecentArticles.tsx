@@ -3,13 +3,13 @@ import { Box, Heading, Text, Link, Card, CardBody, Stack, Flex } from "@chakra-u
 
 const RecentArticles = () => {
   return (
-    <Flex flexWrap="wrap" gap={5}>
+    <Flex flexWrap="wrap" gap={5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
         date="25 Jul, 2023"
-        title="The Itheum Trailblazer Competition is Live"
-        description="Get ready to embark on an adventure into understanding the power of Data NFTs"
-        link="https://medium.com/itheum-newsletter/itheums-first-data-nft-distribution-has-commenced-the-journey-into-the-trailblazer-begins-8e3567a2d1d0"
-        imgLink="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*NbncSWqY8Kx518Ee3H4SMQ.jpeg"
+        title="Itheum launches Data NFT technology on CanaryNet"
+        description="With this significant milestone, the time has come to re-define data ownership"
+        link="https://cointelegraph.com/press-releases/itheum-launches-data-nft-technology-on-canarynet-redefining-data-ownership"
+        imgLink="https://images.cointelegraph.com/images/1434_aHR0cHM6Ly9zMy5jb2ludGVsZWdyYXBoLmNvbS9zdG9yYWdlL3VwbG9hZHMvdmlldy8yMzQwMTg1MzQ5Njk5M2U0ZmY5OGU0NTUwMTE0N2I3Yy5qcGc=.jpg"
       />
 
       <ArticleCard
@@ -41,7 +41,7 @@ const RecentArticles = () => {
 
 function ArticleCard({ date, title, description, link, imgLink }: { date: string; title: string; description: string; link: string; imgLink: string }) {
   return (
-    <Card variant="outline" backgroundColor="none" border="none" w="393px">
+    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", xl: "290px", "2xl": "315px" }}>
       <CardBody>
         <Link href={link} isExternal>
           <Box
@@ -51,8 +51,8 @@ function ArticleCard({ date, title, description, link, imgLink }: { date: string
             backgroundImage={imgLink}
             backgroundSize="cover"
             backgroundRepeat="no-repeat"
-            h="195px"
-            w="393px"></Box>
+            h={{ base: "140px", xl: "160px", "2xl": "160px" }}
+            w={{ base: "235px", xl: "265px", "2xl": "290px" }}></Box>
         </Link>
         <Stack mt="6" spacing="2">
           <Text fontSize="sm">{date}</Text>

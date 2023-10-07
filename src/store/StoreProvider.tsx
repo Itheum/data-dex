@@ -1,24 +1,18 @@
 import React, { PropsWithChildren, useEffect } from "react";
+import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import { useSearchParams } from "react-router-dom";
-import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
+import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi, getMarketRequirements } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils/util";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const [ searchParams ] = useSearchParams();
-
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
+  const [searchParams] = useSearchParams();
 
   // ACCOUNT STORE
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
@@ -35,9 +29,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
-
-  const marketContract = new DataNftMarketContract(routedChainID);
-  const mintContract = new DataNftMintContract(routedChainID);
+  const marketContractSDK = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
+  const mintContract = new DataNftMintContract(chainID);
 
   useEffect(() => {
     const accessToken = searchParams.get("accessToken");
@@ -46,27 +39,35 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     (async () => {
-      const _isApiUp = await getHealthCheckFromBackendApi(routedChainID);
+      const _isApiUp = await getHealthCheckFromBackendApi(chainID);
       updateIsApiUp(_isApiUp);
     })();
 
     (async () => {
-      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(routedChainID);
+      const _isMarketplaceApiUp = await getMarketplaceHealthCheckFromBackendApi(chainID);
       updateIsMarketplaceApiUp(_isMarketplaceApiUp);
     })();
   }, [isApiUp]);
 
   useEffect(() => {
     (async () => {
-      const _marketRequirements = await marketContract.viewRequirements();
-      updateMarketRequirements(_marketRequirements);
+      let _marketRequirements: MarketplaceRequirements | undefined;
+      _marketRequirements = await getMarketRequirements(chainID);
+      if (_marketRequirements) {
+        updateMarketRequirements(_marketRequirements);
+      } else {
+        _marketRequirements = await marketContractSDK.viewRequirements();
+        updateMarketRequirements(_marketRequirements);
+      }
+
+      // const _marketRequirements = await marketContract.viewRequirements();
 
       const _maxPaymentFeeMap: Record<string, number> = {};
       if (_marketRequirements) {
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
+        for (let i = 0; i < _marketRequirements.acceptedPayments.length; i++) {
+          _maxPaymentFeeMap[_marketRequirements.acceptedPayments[i]] = convertWeiToEsdt(
+            _marketRequirements.maximumPaymentFees[i],
+            tokenDecimals(_marketRequirements.acceptedPayments[i])
           ).toNumber();
         }
       }
@@ -74,26 +75,26 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
 
     (async () => {
-      const _isMarketPaused = await marketContract.getIsPaused();
+      const _isMarketPaused = await marketContractSDK.viewContractPauseState();
       updateIsMarketPaused(_isMarketPaused);
     })();
-  }, [routedChainID]);
+  }, [chainID]);
 
   useEffect(() => {
     if (!address) return;
     if (hasPendingTransactions) return;
 
     (async () => {
-      const _token = await getAccountTokenFromApi(address, contractsForChain(routedChainID).itheumToken, routedChainID);
+      const _token = await getAccountTokenFromApi(address, contractsForChain(chainID).itheumToken, chainID);
       const balance = _token ? convertWeiToEsdt(_token.balance, _token.decimals).toNumber() : 0;
       updateItheumBalance(balance);
     })();
 
     (async () => {
-      const _userData = await mintContract.getUserDataOut(address, contractsForChain(routedChainID).itheumToken);
+      const _userData = await mintContract.getUserDataOut(address, contractsForChain(chainID).itheumToken);
       updateUserData(_userData);
     })();
-  }, [address, hasPendingTransactions, routedChainID]);
+  }, [address, hasPendingTransactions]);
 
   const getItheumPrice = () => {
     (async () => {

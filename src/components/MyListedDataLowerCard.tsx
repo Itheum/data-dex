@@ -22,12 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import {
-  useGetPendingTransactions,
-  useGetSignedTransactions,
-  useGetSuccessfulTransactions,
-  useTrackTransactionStatus,
-} from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetPendingTransactions, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
@@ -41,11 +36,10 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
-  routeChainIDBasedOnLoggedInStatus,
   shouldPreviewDataBeEnabled,
   backendApi,
 } from "libs/utils";
-import { useAccountStore, useMarketStore } from "store";
+import { useMarketStore } from "store";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -58,9 +52,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { tokenLogin, loginMethod } = useGetLoginInfo();
 
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const contract = new DataNftMarketContract(routedChainID);
+  const contract = new DataNftMarketContract(chainID);
 
   const isWebWallet = loginMethod === "wallet";
 
@@ -76,7 +68,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const [newListingPrice, setNewListingPrice] = useState<number>(0);
   const [newListingPriceError, setNewListingPriceError] = useState<string>("");
   const [delistAmountError, setDelistAmountError] = useState<string>("");
-  const itheumToken = contractsForChain(routedChainID).itheumToken;
+  const itheumToken = contractsForChain(chainID).itheumToken;
   const toast = useToast();
   const { address } = useGetAccountInfo();
   const [sessionId, setSessionId] = useState<string>("");
@@ -89,6 +81,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     if (!hasSignedTransactions) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const session = signedTransactionsArray[0][0];
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");
@@ -140,7 +133,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         "Content-Type": "application/json",
       };
 
-      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 0)) / 10000;
+      const price = newPrice + (newPrice * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
 
       const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
       const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
@@ -190,7 +183,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const fee =
     marketRequirements && offer
       ? convertWeiToEsdt(
-          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyer_fee as number)),
+          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyerTaxPercentage as number)),
           tokenDecimals(offer.wanted_token_identifier)
         ).toNumber()
       : 0;
@@ -270,18 +263,14 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip
-        colorScheme="teal"
-        hasArrow
-        label="View Data is disabled on devnet"
-        isDisabled={shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}>
+      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(routedChainID, previewDataOnDevnetSession)}
+          isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
@@ -314,7 +303,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyerTaxPercentage),
                   tokenDecimals(offer.wanted_token_identifier)
                 ).toNumber()
               );

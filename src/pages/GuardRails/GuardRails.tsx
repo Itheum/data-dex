@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { ResultsParser } from "@multiversx/sdk-core/out";
-import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
@@ -9,7 +9,7 @@ import ShortAddress from "../../components/UtilComps/ShortAddress";
 import { contractsForChain, historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { getNetworkProvider } from "../../libs/MultiversX/api";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, routeChainIDBasedOnLoggedInStatus } from "../../libs/utils";
+import { convertWeiToEsdt } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
 
 export const GuardRails: React.FC = () => {
@@ -24,9 +24,7 @@ export const GuardRails: React.FC = () => {
   const userData = useMintStore((state) => state.userData);
 
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
+  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   const historyGuardrails = historicGuardrails;
 
@@ -46,7 +44,7 @@ export const GuardRails: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -59,7 +57,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -72,7 +70,7 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -85,8 +83,8 @@ export const GuardRails: React.FC = () => {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
+      const networkProvider = getNetworkProvider(chainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -96,7 +94,7 @@ export const GuardRails: React.FC = () => {
         setAntiSpamTax(convertWeiToEsdt(value).toNumber());
       }
     })();
-  }, [routedChainID]);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -130,7 +128,7 @@ export const GuardRails: React.FC = () => {
               Buyer fee:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {marketRequirements?.buyer_fee ? `${(marketRequirements?.buyer_fee / 100).toFixed(2)} %` : "-"}
+                  {marketRequirements.buyerTaxPercentage ? `${(marketRequirements.buyerTaxPercentage / 100).toFixed(2)} %` : "-"}
                 </Text>
               </Badge>
             </Text>
@@ -138,7 +136,7 @@ export const GuardRails: React.FC = () => {
               Seller fee:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {marketRequirements?.seller_fee ? `${(marketRequirements.seller_fee / 100).toFixed(2)} %` : "-"}
+                  {marketRequirements.sellerTaxPercentage ? `${(marketRequirements.sellerTaxPercentage / 100).toFixed(2)} %` : "-"}
                 </Text>
               </Badge>
             </Text>
@@ -146,7 +144,7 @@ export const GuardRails: React.FC = () => {
               Maximum payment fees:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {marketRequirements?.maximum_payment_fees ? (marketRequirements.maximum_payment_fees as unknown as number) / Math.pow(10, 18) : "-"}
+                  {marketRequirements.maximumPaymentFees ? (marketRequirements.maximumPaymentFees as unknown as number) / Math.pow(10, 18) : "-"}
                 </Text>
               </Badge>
             </Text>
@@ -175,6 +173,14 @@ export const GuardRails: React.FC = () => {
               </Badge>
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+              Transaction limitation:&nbsp;
+              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
+                  {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT : "-"}
+                </Text>
+              </Badge>
+            </Text>
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Max Data NFT supply:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
@@ -194,7 +200,7 @@ export const GuardRails: React.FC = () => {
               Accepted payments:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {marketRequirements?.accepted_payments ?? "-"}
+                  {marketRequirements.acceptedPayments ?? "-"}
                 </Text>
               </Badge>
             </Text>
@@ -202,7 +208,7 @@ export const GuardRails: React.FC = () => {
               Accepted tokens:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {marketRequirements?.accepted_tokens ?? "-"}
+                  {marketRequirements.acceptedTokens ?? "-"}
                 </Text>
               </Badge>
             </Text>
@@ -270,6 +276,14 @@ export const GuardRails: React.FC = () => {
               <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
                   {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
+                </Text>
+              </Badge>
+            </Text> 
+            <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
+              Transaction limitation:&nbsp;
+              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
+                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
+                  {upcomingGuardRails?.transaction_limitation ? upcomingGuardRails?.transaction_limitation : "-"}
                 </Text>
               </Badge>
             </Text>

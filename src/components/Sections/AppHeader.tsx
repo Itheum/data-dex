@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
+import React, { useState } from "react";
+import { WarningTwoIcon, SunIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionItem,
@@ -27,16 +27,10 @@ import {
   MenuItem,
   MenuItemOption,
   MenuList,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Spinner,
   Stack,
   Text,
+  useBreakpointValue,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -44,10 +38,9 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { AiFillHome } from "react-icons/ai";
-import { FaStore, FaUserCheck } from "react-icons/fa";
+import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
-import { TbSunset2 } from "react-icons/tb";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
 import logoSmlL from "assets/img/logo-icon-b.png";
@@ -57,7 +50,7 @@ import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
-import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 
 const exploreRouterMenu = [
@@ -113,8 +106,8 @@ const exploreRouterMenu = [
       {
         menuEnum: MENU.GETWHITELISTED,
         path: "/getwhitelisted",
-        label: "Get whitelisted to mint Data NFTs",
-        shortLbl: "Get whitelisted to mint Data NFTs",
+        label: "Get Whitelisted to Mint Data NFTs",
+        shortLbl: "Get Whitelisted to Mint Data NFTs",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
@@ -126,18 +119,19 @@ const exploreRouterMenu = [
 
 const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
-const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLaunchMode?: any; menuItem: number; setMenuItem: any; handleLogout: any }) => {
+const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
+
+  const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
   const navigate = useNavigate();
 
@@ -170,7 +164,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
     return styleProps;
   };
 
-  const chainFriendlyName = CHAINS[routedChainID as keyof typeof CHAINS];
+  const chainFriendlyName = CHAINS[chainID as keyof typeof CHAINS];
 
   const handleGuardrails = () => {
     navigate("/guardrails");
@@ -229,7 +223,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
               </Heading>
             </HStack>
           </Link>
-          {isMxLoggedIn ? (
+          {/* {isMxLoggedIn ? (
             <Box display={{ base: "block", md: "none" }}>
               <IconButton
                 size="lg"
@@ -251,7 +245,7 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 onClick={toggleColorMode}
               />
             </Box>
-          )}
+          )} */}
         </HStack>
         <Flex backgroundColor="none">
           <HStack alignItems={"center"} spacing={2}>
@@ -336,7 +330,9 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
                         <MenuGroup title="My Address Quick Copy">
                           <MenuItemOption closeOnSelect={false} backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                            <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                            <Text as={"div"} color="teal.200" fontWeight={"bold"}>
+                              <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                            </Text>
                           </MenuItemOption>
 
                           <MenuDivider />
@@ -405,19 +401,39 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
                 </Link>
               </>
             )}
-            {onLaunchMode && !isMxLoggedIn && <PopupChainSelectorForWallet onMxEnvPick={onLaunchMode} />}
+            {onShowConnectWalletModal && !isMxLoggedIn && (
+              <Button
+                colorScheme="teal"
+                fontSize={{ base: "sm", md: "md" }}
+                size={{ base: "sm", lg: "lg" }}
+                onClick={() => {
+                  localStorage?.removeItem("itm-datacat-linked");
+                  onShowConnectWalletModal("mx");
+                }}>
+                {connectBtnTitle}
+              </Button>
+            )}
             Toggle Mode
-            <Box display={{ base: "none", md: "block", xl: "block" }}>
-              <IconButton
-                size={{ md: "md", xl: "lg", "2xl": "lg" }}
-                px="2 !important"
-                mr={{ md: "1", xl: "0" }}
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
+            <Menu>
+              <MenuButton
+                marginRight={{ base: "10", md: "none" }}
+                as={IconButton}
+                aria-label="Options"
+                icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
+                variant="solid"
               />
-            </Box>
+              <MenuList>
+                <MenuItem icon={<SunIcon />} command="⌘N" onClick={() => setColorMode("light")}>
+                  Light
+                </MenuItem>
+                <MenuItem icon={<MdDarkMode />} command="⌘⇧N" onClick={() => setColorMode("dark")}>
+                  Dark
+                </MenuItem>
+                <MenuItem icon={<FaLaptop />} command="⌘O" onClick={() => setColorMode("system")}>
+                  System
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </HStack>
         </Flex>
       </Flex>
@@ -438,13 +454,13 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
             <Accordion allowMultiple>
               {exploreRouterMenu.map((menu) => (
                 <AccordionItem key={menu.sectionId}>
-                  {({ isExpanded }) => (
+                  {() => (
                     <>
                       <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
                         My Address Quick Copy
                       </Text>
                       <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" />
+                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                       </Text>
                       <hr />
                       <List>
@@ -557,63 +573,6 @@ const AppHeader = ({ onLaunchMode, menuItem, setMenuItem, handleLogout }: { onLa
 
 export default AppHeader;
 
-const PopupChainSelectorForWallet = ({ onMxEnvPick }: { onMxEnvPick: any }) => {
-  const [showMxEnvPicker, setShowMxEnvPicker] = useState(false);
-
-  // TODO: this is a workaround to remove itm-datacat-linked again as it seems to get reset to 1
-  // ... if the user logs in as the userEffect in AppMultiversx gets called and resets linkOrRefreshDataDATAccount(true);
-  // ... we need to fix this properly (i.e stop that useEffect being called)
-  localStorage?.removeItem("itm-datacat-linked");
-
-  return (
-    <Popover
-      isOpen={showMxEnvPicker}
-      onOpen={() => setShowMxEnvPicker(true)}
-      onClose={() => setShowMxEnvPicker(false)}
-      closeOnBlur={true}
-      isLazy
-      lazyBehavior="keepMounted">
-      <HStack marginLeft={3}>
-        <PopoverTrigger>
-          <Button colorScheme="teal" fontSize={{ base: "sm", md: "md" }} size={{ base: "sm", lg: "lg" }}>
-            Connect MultiversX Wallet
-          </Button>
-        </PopoverTrigger>
-      </HStack>
-
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader>
-          <Text fontSize="md">Please pick a MultiversX environment</Text>
-        </PopoverHeader>
-        <PopoverBody>
-          <Button
-            size="sm"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "mainnet");
-            }}>
-            {" "}
-            Mainnet
-          </Button>
-
-          <Button
-            size="sm"
-            ml="2"
-            onClick={() => {
-              setShowMxEnvPicker(false);
-              onMxEnvPick("mx", "devnet");
-            }}>
-            {" "}
-            Devnet
-          </Button>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
 function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
   if (quickMenuItem.needToBeLoggedOut === undefined) {
     return quickMenuItem.needToBeLoggedIn ? (isMxLoggedIn ? "inline" : "none") : "inline";
@@ -624,8 +583,6 @@ function shouldDisplayQuickMenuItem(quickMenuItem: any, isMxLoggedIn: boolean) {
 
 function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
 
   return (
@@ -645,7 +602,7 @@ function ItheumTokenBalanceBadge({ displayParams }: { displayParams: any }) {
         <WarningTwoIcon />
       ) : (
         <>
-          {CHAIN_TOKEN_SYMBOL(routedChainID)} {formatNumberRoundFloor(itheumBalance)}
+          {CHAIN_TOKEN_SYMBOL(chainID)} {formatNumberRoundFloor(itheumBalance)}
         </>
       )}
     </Box>

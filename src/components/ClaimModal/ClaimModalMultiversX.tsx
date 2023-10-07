@@ -16,16 +16,14 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { CHAIN_TOKEN_SYMBOL } from "libs/config";
-import { formatNumberRoundFloor, routeChainIDBasedOnLoggedInStatus } from "libs/utils";
+import { formatNumberRoundFloor } from "libs/utils";
 
 const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimType, mxClaimsContract }: any) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { colorMode } = useColorMode();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
   const resetClaimState = () => {
     onClose();
@@ -54,7 +52,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
                 {tag1}:
               </Text>{" "}
               <Text fontSize="md">
-                {formatNumberRoundFloor(value1)} {CHAIN_TOKEN_SYMBOL(routedChainID)}
+                {formatNumberRoundFloor(value1)} {CHAIN_TOKEN_SYMBOL(chainID)}
               </Text>
             </Stack>
             <Stack>

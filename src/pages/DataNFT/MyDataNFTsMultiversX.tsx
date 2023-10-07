@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
@@ -37,16 +37,13 @@ import { contractsForChain } from "libs/config";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const itheumToken = contractsForChain(routedChainID).itheumToken;
+  const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
 
@@ -104,7 +101,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(routedChainID).dataNFTFTTicker, routedChainID);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(chainID).dataNFTFTTicker, chainID);
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
@@ -187,7 +184,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
                     </Text>
-                    <Text fontSize="sm" px={2} color="whiteAlpha.800">
+                    <Text fontSize="sm" px={2} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                       {tab.pieces}
                     </Text>
                   </Flex>
@@ -210,7 +207,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       isProfile={false}
                       {...item}
@@ -237,7 +234,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       isProfile={false}
                       {...item}
@@ -254,7 +251,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
           </TabPanels>
         </Tabs>
       </Stack>
@@ -262,7 +258,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         <>
           <Modal onClose={closeDetailsView} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
-            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}  overflowY="scroll" h="90%">
+            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"} overflowY="scroll" h="90%">
               <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <HStack spacing="5">
                   <CloseButton size="lg" onClick={closeDetailsView} />

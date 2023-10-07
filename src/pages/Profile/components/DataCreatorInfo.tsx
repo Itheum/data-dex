@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Heading, Link } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useParams } from "react-router-dom";
 import { getAccountDetailFromApi } from "libs/MultiversX/api";
-import { routeChainIDBasedOnLoggedInStatus } from "libs/utils";
 import { CHAIN_TX_VIEWER } from "../../../libs/config";
 
 function processHerotag(value: string): string {
@@ -14,9 +12,7 @@ function processHerotag(value: string): string {
 
 export const DataCreatorInfo: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
-  const ChainExplorer = CHAIN_TX_VIEWER[routedChainID as keyof typeof CHAIN_TX_VIEWER];
+  const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const { profileAddress } = useParams();
 
   const [herotag, setHerotag] = useState<string>("");

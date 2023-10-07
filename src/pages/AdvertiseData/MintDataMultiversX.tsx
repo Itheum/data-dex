@@ -56,8 +56,8 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ResultsParser } from "@multiversx/sdk-core";
-import { useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -67,7 +67,7 @@ import { MENU, contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { getNetworkProvider } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, routeChainIDBasedOnLoggedInStatus, sleep } from "libs/utils";
+import { convertWeiToEsdt, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "libs/utils";
 import { useAccountStore, useMintStore } from "store";
 
 const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string }) => {
@@ -116,16 +116,16 @@ const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string
 };
 
 function makeRequest(url: string): Promise<{ statusCode: number; isError: boolean }> {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url);
-    xhr.onload = function (e) {
+    xhr.onload = function () {
       resolve({
         statusCode: this.status,
         isError: false,
       });
     };
-    xhr.onerror = function (e) {
+    xhr.onerror = function () {
       resolve({
         statusCode: this.status,
         isError: true,
@@ -171,10 +171,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const { address: mxAddress } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const routedChainID = routeChainIDBasedOnLoggedInStatus(isMxLoggedIn, chainID);
 
   const toast = useToast();
 
@@ -228,7 +225,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   const [mintSessionId, setMintSessionId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const mxDataNftMintContract = new DataNftMintContract(routedChainID);
+  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   // React hook form + yup integration
   // Declaring a validation schema for the form with the validation needed
@@ -318,7 +315,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   // query settings from Data NFT Minter SC
   useEffect(() => {
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -331,7 +328,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -344,7 +341,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
+      const networkProvider = getNetworkProvider(chainID);
       const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
@@ -357,8 +354,8 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     })();
 
     (async () => {
-      const networkProvider = getNetworkProvider(routedChainID);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(routedChainID).itheumToken]);
+      const networkProvider = getNetworkProvider(chainID);
+      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken]);
       const query = interaction.check().buildQuery();
       const queryResponse = await networkProvider.queryContract(query);
       const endpointDefinition = interaction.getEndpoint();
@@ -374,7 +371,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   useEffect(() => {
     onChangeDataNFTStreamUrl("");
     onChangeDataNFTStreamPreviewUrl("");
-    onChangeDataNFTMarshalService(getApiDataMarshal(routedChainID));
+    onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
     onChangeDataNFTImageGenService();
     onChangeDataNFTTokenName("");
     onChangeDatasetTitle("");
@@ -391,11 +388,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   // load deep link default if needed
   useEffect(() => {
     if (searchParams) {
-      // console.log("loadDrawer ", searchParams.get("loadDrawer"));
-      // console.log("skipPreview ", searchParams.get("skipPreview"));
-      // console.log("dm", searchParams.get("dm"));
-      // console.log("ds", searchParams.get("ds"));
-
       if (searchParams.get("loadDrawer") && searchParams.get("ds")) {
         getDataForSale(dataCATAccount?.programsAllocation.find((i: any) => i.program === "playstation-gamer-passport"));
         setMinRoyalties(0); // we need this here or else we get a -2 in the UI panel as the min royalty change is not firing (ONLY when searchParams are used)
@@ -421,7 +413,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
       error = "Length of Data Stream URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+      checkUrlReturns200(trimmedValue).then(({ message }) => {
         setDataNFTStreamUrlStatus(message);
       });
     }
@@ -444,7 +436,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
       error = "Length of Data Preview URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+      checkUrlReturns200(trimmedValue).then(({ message }) => {
         setDataNFTStreamPreviewUrlStatus(message);
       });
     }
@@ -457,7 +449,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${getApiDataMarshal(routedChainID)}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataMarshal(chainID)}/health-check`).then(({ isSuccess }) => {
       setDataNFTMarshalServiceStatus(!isSuccess);
     });
 
@@ -466,7 +458,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${getApiDataDex(routedChainID)}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataDex(chainID)}/health-check`).then(({ isSuccess }) => {
       setDataNFTImgGenService(isSuccess);
     });
   };
@@ -597,14 +589,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   // E: validation logic
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxFail = (foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxCancelled = (foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxSuccess = async (foo: any) => {
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
     await sleep(3);
@@ -716,7 +711,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     };
 
     try {
-      const res = await fetch(`${getApiDataMarshal(routedChainID)}/generate`, requestOptions);
+      const res = await fetch(`${getApiDataMarshal(chainID)}/generate`, requestOptions);
       const data = await res.json();
 
       if (data && data.encryptedMessage && data.messageHash) {
@@ -772,7 +767,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);
-    const newNFTImg = `${getApiDataDex(routedChainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
+    const newNFTImg = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
 
@@ -830,7 +825,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
       title: datasetTitle,
       description: datasetDescription,
       sender: mxAddress,
-      itheumToken: contractsForChain(routedChainID).itheumToken,
+      itheumToken: contractsForChain(chainID).itheumToken,
       antiSpamTax: antiSpamTax,
     });
     if (error) {
@@ -1083,7 +1078,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <Input
                               mt="1 !important"
                               placeholder="e.g. https://mydomain.com/my_hosted_file.json"
@@ -1111,7 +1106,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <Input
                               mt="1 !important"
                               placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
@@ -1166,7 +1161,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <Controller
                         control={control}
-                        render={({ field: { value, onChange } }) => (
+                        render={({ field: { onChange } }) => (
                           <Input
                             mt="1 !important"
                             placeholder="Between 3 and 20 alphanumeric characters only"
@@ -1192,7 +1187,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <Controller
                         control={control}
-                        render={({ field: { value, onChange } }) => (
+                        render={({ field: { onChange } }) => (
                           <Input
                             mt="1 !important"
                             placeholder="Between 10 and 60 alphanumeric characters only"
@@ -1220,7 +1215,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <Controller
                         control={control}
-                        render={({ field: { value, onChange } }) => (
+                        render={({ field: { onChange } }) => (
                           <Textarea
                             mt="1 !important"
                             h={"70%"}
@@ -1247,7 +1242,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <NumberInput
                               mt="3 !important"
                               size="md"
@@ -1317,7 +1312,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         {/* This Royalties input control DOES NOT allow for fractional royalties, only round number that increment by 5. e.g. 3% */}
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <NumberInput
                               mt="3 !important"
                               size="md"

@@ -445,6 +445,8 @@ export const historicGuardrails = [
     maximum_royalties_newPrice: null,
     time_between_mints_oldPrice: null,
     time_between_mints_newPrice: null,
+    transaction_limitation_old: null,
+    transaction_limitation_new: null,
     max_data_nft_supply: null,
     antiSpam_tax_oldPrice: null,
     antiSpam_tax_newPrice: null,
@@ -465,6 +467,8 @@ export const historicGuardrails = [
     maximum_royalties_newPrice: null,
     time_between_mints_oldPrice: null,
     time_between_mints_newPrice: null,
+    transaction_limitation_old: null,
+    transaction_limitation_new: null,
     max_data_nft_supply: null,
     antiSpam_tax_oldPrice: null,
     antiSpam_tax_newPrice: null,
@@ -485,6 +489,8 @@ export const historicGuardrails = [
   //   maximum_royalties_newPrice: "90",
   //   time_between_mints_oldPrice: "20",
   //   time_between_mints_newPrice: "20",
+  //   transaction_limitation_old: 2,
+  //   transaction_limitation_new: 2,
   //   max_data_nft_supply: "3000",
   //   antiSpam_tax_oldPrice: "10",
   //   antiSpam_tax_newPrice: "10",
@@ -500,6 +506,7 @@ export const upcomingGuardRails = {
   minimum_royalties: null,
   maximum_royalties: null,
   time_between_mints: null,
+  transaction_limitation: null,
   max_data_nft_supply: null,
   antiSpam_tax: null,
   accepted_payments: null,
@@ -525,9 +532,9 @@ export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<
 
 export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
   "D": {
-    "trailblazer": "https://stg.explorer.itheum.io/project-trailblazer",
-    "multiversxbubbles": "https://stg.explorer.itheum.io/multiversx-bubbles",
-    "multiversxinfographics": "https://stg.explorer.itheum.io/multiversx-infographics",
+    "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
+    "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
+    "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
