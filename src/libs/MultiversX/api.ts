@@ -1,3 +1,4 @@
+import { AccountType } from "@multiversx/sdk-dapp/types";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
@@ -201,8 +202,8 @@ export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<N
 };
 
 export const getAccountTokenFromApi = async (address: string, tokenId: string, chainID: string): Promise<TokenType | undefined> => {
-  const api = getApi(chainID);
   try {
+    const api = getApi(chainID);
     const url = `https://${api}/accounts/${address}/tokens/${tokenId}`;
     const { data } = await axios.get<TokenType>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
@@ -223,6 +224,21 @@ export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
     });
 
     return data.price;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
+export const getAccountDetailFromApi = async (address: string, chainID: string): Promise<AccountType | undefined> => {
+  try {
+    const api = getApi(chainID);
+    const url = `https://${api}/accounts/${address}`;
+    const { data } = await axios.get<AccountType>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+
+    return data;
   } catch (error) {
     console.error(error);
     return undefined;

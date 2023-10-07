@@ -1,20 +1,22 @@
 import React, { PropsWithChildren, useEffect } from "react";
+import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useSearchParams } from "react-router-dom";
 import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi, getMarketRequirements } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
+  const [searchParams] = useSearchParams();
 
   // ACCOUNT STORE
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
+  const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
 
   // MARKET STORE
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
@@ -29,6 +31,11 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateUserData = useMintStore((state) => state.updateUserData);
   const marketContractSDK = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
   const mintContract = new DataNftMintContract(chainID);
+
+  useEffect(() => {
+    const accessToken = searchParams.get("accessToken");
+    updateAccessToken(accessToken ?? "");
+  }, [address]);
 
   useEffect(() => {
     (async () => {
