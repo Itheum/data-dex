@@ -89,6 +89,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const isWebWallet = loginMethod == "wallet";
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
@@ -651,7 +653,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
                 variant="outline"
-                isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
+                isDisabled={
+                  hasPendingTransactions ||
+                  !!amountError ||
+                  !!priceError ||
+                  isMarketPaused ||
+                  marketRequirements.maximumPaymentFees[0] === undefined ||
+                  marketRequirements.maximumPaymentFees[0] === null
+                }
                 onClick={() => onListButtonClick(item)}>
                 <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}

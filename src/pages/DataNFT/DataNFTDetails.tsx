@@ -102,6 +102,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [sessionId, setSessionId] = useState<any>();
+  const [addressHasNft, setAddressHasNft] = useState<boolean>(false);
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
@@ -122,8 +123,27 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     },
   });
 
+  const getAddressTokenInformation = () => {
+    const apiLink = getApi(chainID);
+    const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
+
+    axios
+      .get(nftApiLink)
+      .then((res) => {
+        if (res.data.identifier == tokenId) {
+          setAddressHasNft(true);
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setAddressHasNft(false);
+        }
+      });
+  };
+
   useEffect(() => {
     getTokenDetails();
+    getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
   }, [hasPendingTransactions]);
 
@@ -492,11 +512,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Text fontSize={"16px"} px="28px" py="14px" noOfLines={6} h="inherit">
                           {transformDescription(nftData.attributes?.description)}
                         </Text>
-                        <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
-                          <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
-                            Fully Transferable License
-                          </Text>
-                        </Box>
+                        <Flex flexDirection="row" gap={3}>
+                          <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
+                            <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                              Fully Transferable License
+                            </Text>
+                          </Box>
+                          {addressHasNft && (
+                            <Box borderRadius="md" px="3" py="1.5" bgColor="#0ab8ff30">
+                              <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
+                                You are the Owner
+                              </Text>
+                            </Box>
+                          )}
+                        </Flex>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
                             Creator:&nbsp;
@@ -632,7 +661,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
             <Box width={"100%"}>
-              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements?.buyer_fee} />
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
             </Box>
           </VStack>
 
@@ -640,7 +669,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             <ProcureDataNFTModal
               isOpen={isProcureModalOpen}
               onClose={onProcureModalClose}
-              buyerFee={marketRequirements?.buyer_fee || 0}
+              buyerFee={marketRequirements.buyerTaxPercentage || 0}
               nftData={nftData.attributes}
               offer={offer}
               amount={amount}
