@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { RouteType } from "@multiversx/sdk-dapp/types";
 import { TransactionsToastList, SignTransactionsModals, NotificationModal } from "@multiversx/sdk-dapp/UI";
-import { AuthenticatedRoutesWrapper, DappProvider } from "@multiversx/sdk-dapp/wrappers";
+import { DappProvider } from "@multiversx/sdk-dapp/wrappers";
 import { TermsChangedNoticeModal } from "components/TermsChangedNoticeModal";
 import { uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
