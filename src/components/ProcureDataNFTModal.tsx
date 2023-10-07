@@ -82,6 +82,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     if (!hasSignedTransactions) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const session = signedTransactionsArray[0][0];
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");

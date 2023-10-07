@@ -45,7 +45,7 @@ export const getNftLink = (chainID: string, nftId: string) => {
 export const checkBalance = async (token: string, address: string, chainID: string): Promise<{ balance: any }> => {
   const api = getApi(chainID);
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     axios
       .get(`https://${api}/accounts/${address}/tokens/${token}`, {
         timeout: uxConfig.mxAPITimeoutMs,

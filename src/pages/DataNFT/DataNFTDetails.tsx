@@ -580,18 +580,18 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <>
                             {!offer ? (
                               <>
-                                {totalOffers.length === 1
-                                  ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offer:`
+                                {totalOffers.length === 2
+                                  ? `One offer:`
                                   : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
-                                  ? "Offers:"
+                                  ? "No other offers"
                                   : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
                               </>
                             ) : (
                               <>
-                                {totalOffers.length === 1
-                                  ? `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offer:`
+                                {totalOffers.length === 2 /// 2 here because we are always going to have the current offer and the other one
+                                  ? `One other offer:`
                                   : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
-                                  ? "Other offers:"
+                                  ? "No other offers"
                                   : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
                               </>
                             )}
