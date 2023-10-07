@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { WarningTwoIcon, SunIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -125,7 +125,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
-  const { colorMode, setColorMode, toggleColorMode } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
   const { pathname } = useLocation();
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
@@ -452,7 +452,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             <Accordion allowMultiple>
               {exploreRouterMenu.map((menu) => (
                 <AccordionItem key={menu.sectionId}>
-                  {({ isExpanded }) => (
+                  {() => (
                     <>
                       <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
                         My Address Quick Copy
