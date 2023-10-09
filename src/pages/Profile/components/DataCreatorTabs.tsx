@@ -275,7 +275,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                   <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                     {tab.tabName}
                   </Text>
-                  <Text fontSize="sm" px={2} color="whiteAlpha.800">
+                  <Text fontSize="sm" px={2} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                     {tab.pieces ?? ""}
                   </Text>
                 </Flex>
