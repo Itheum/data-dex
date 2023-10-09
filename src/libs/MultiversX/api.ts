@@ -154,10 +154,10 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string | undefined, chainID: string): Promise<NftType[]> => {
+export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<NftType[]> => {
   const api = getApi(chainID);
   try {
-    const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
+    const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTickers.join()}&withSupply=true`;
     const { data } = await axios.get<NftType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });

@@ -23,7 +23,7 @@ export function contractsForChain(chainID: string): ContractsType {
         faucet: faucetContractAddress_Mx_Devnet,
         market: dataNftMarketContractAddress_Mx_Devnet,
         dataNftMint: dataNftMintContractAddress_Mx_Devnet,
-        dataNFTFTTicker: dataNFTFTTicker_Mx_Devnet,
+        dataNFTFTTickers: [dataNFTFTTicker_Mx_Devnet],
       };
     }
     case "1": {
@@ -33,7 +33,7 @@ export function contractsForChain(chainID: string): ContractsType {
         faucet: faucetContractAddress_Mx_Mainnet,
         market: dataNftMarketContractAddress_Mx_Mainnet,
         dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
-        dataNFTFTTicker: dataNFTFTTicker_Mx_Mainnet,
+        dataNFTFTTickers: [dataNFTFTTicker_Mx_Mainnet],
       };
     }
   }
