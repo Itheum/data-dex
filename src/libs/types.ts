@@ -4,5 +4,5 @@ export interface ContractsType {
   faucet: string;
   market: string;
   dataNftMint: string;
-  dataNFTFTTicker: string;
+  dataNFTFTTickers: string[];
 }

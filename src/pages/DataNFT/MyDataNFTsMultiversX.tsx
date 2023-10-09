@@ -101,7 +101,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(chainID).dataNFTFTTicker, chainID);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(chainID).dataNFTFTTickers, chainID);
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
