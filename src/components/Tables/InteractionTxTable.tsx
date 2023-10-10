@@ -82,8 +82,13 @@ export default function InteractionTxTable(props: { address: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!props.address || !contractsForChain(chainID).dataNftMint || !contractsForChain(chainID).market) return;
-      const interactions = await getInteractionTransactions(props.address, contractsForChain(chainID).dataNftMint, contractsForChain(chainID).market, chainID);
+      if (!props.address || !contractsForChain(chainID).dataNftTokens[0].contract || !contractsForChain(chainID).market) return;
+      const interactions = await getInteractionTransactions(
+        props.address,
+        contractsForChain(chainID).dataNftTokens[0].contract,
+        contractsForChain(chainID).market,
+        chainID
+      );
       if ("error" in interactions) {
         toast({
           title: "ER4: Could not get your recent transactions from the MultiversX blockchain.",

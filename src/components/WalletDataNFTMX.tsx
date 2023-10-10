@@ -283,7 +283,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       return;
     }
 
-    mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+    mintContract.sendBurnTransaction(
+      address,
+      selectedDataNft.collection,
+      selectedDataNft.nonce,
+      dataNftBurnAmount,
+      contractsForChain(chainID).dataNftTokens.find((t) => t.id === selectedDataNft.collection)?.contract
+    );
 
     onBurnNFTClose();
   };

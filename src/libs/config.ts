@@ -22,8 +22,16 @@ export function contractsForChain(chainID: string): ContractsType {
         claims: claimsContractAddress_Mx_Devnet,
         faucet: faucetContractAddress_Mx_Devnet,
         market: dataNftMarketContractAddress_Mx_Devnet,
-        dataNftMint: dataNftMintContractAddress_Mx_Devnet,
-        dataNFTFTTickers: [dataNFTFTTicker_Mx_Devnet],
+        dataNftTokens: [
+          {
+            id: dataNFTFTTicker_Mx_Devnet,
+            contract: dataNftMintContractAddress_Mx_Devnet,
+          },
+          {
+            id: "DATALT2-39ee0c",
+            contract: "erd1qqqqqqqqqqqqqpgqfjymlln86mydp7z76w2z4pjl793xp84g8ypsesxa2c",
+          },
+        ],
       };
     }
     case "1": {
@@ -32,8 +40,12 @@ export function contractsForChain(chainID: string): ContractsType {
         claims: claimsContractAddress_Mx_Mainnet,
         faucet: faucetContractAddress_Mx_Mainnet,
         market: dataNftMarketContractAddress_Mx_Mainnet,
-        dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
-        dataNFTFTTickers: [dataNFTFTTicker_Mx_Mainnet],
+        dataNftTokens: [
+          {
+            id: dataNFTFTTicker_Mx_Mainnet,
+            contract: dataNftMintContractAddress_Mx_Mainnet,
+          },
+        ],
       };
     }
   }

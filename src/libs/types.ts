@@ -3,6 +3,10 @@ export interface ContractsType {
   claims: string;
   faucet: string;
   market: string;
-  dataNftMint: string;
-  dataNFTFTTickers: string[];
+  dataNftTokens: DataNFTToken[];
+}
+
+export interface DataNFTToken {
+  id: string;
+  contract: string;
 }
