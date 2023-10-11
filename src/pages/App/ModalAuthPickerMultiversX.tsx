@@ -34,7 +34,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
-  const [, setAppVersion] = useLocalStorage("app-version", null);
+  const [, setLocalStorageAppVersion] = useLocalStorage("app-version", null);
   const { pathname } = useLocation();
   const isLoggedIn = useGetIsLoggedIn();
   const { appVersion } = useAccountStore();
@@ -95,7 +95,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
 
   useEffect(() => {
     if (isLoggedIn) {
-      setAppVersion(appVersion);
+      setLocalStorageAppVersion(appVersion);
     }
   }, [appVersion, isLoggedIn]);
   return (

@@ -141,13 +141,16 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
       mxLogout("/", undefined, false);
     }
   };
+  console.log(isMxLoggedIn);
+  console.log(appVersion);
+  console.log(localStorageAppVersion);
 
   useEffect(() => {
     if (isMxLoggedIn && appVersion !== localStorageAppVersion) {
       localStorage.setItem("app-version", appVersion ?? "");
       handleLogout();
     }
-  }, [appVersion]);
+  }, [localStorageAppVersion, isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
