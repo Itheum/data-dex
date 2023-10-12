@@ -101,7 +101,11 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   ];
 
   const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(address, contractsForChain(chainID).dataNFTFTTicker, chainID);
+    const onChainNfts = await getNftsOfACollectionForAnAddress(
+      address,
+      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
+      chainID
+    );
 
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
@@ -184,7 +188,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
                     </Text>
-                    <Text fontSize="sm" px={2} color="whiteAlpha.800">
+                    <Text fontSize="sm" px={2} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                       {tab.pieces}
                     </Text>
                   </Flex>
@@ -207,7 +211,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       isProfile={false}
                       {...item}
@@ -234,7 +238,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
-                      sellerFee={marketRequirements ? marketRequirements.seller_fee : 0}
+                      sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
                       openNftDetailsDrawer={openNftDetailsDrawer}
                       isProfile={false}
                       {...item}
@@ -251,7 +255,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
           </TabPanels>
         </Tabs>
       </Stack>

@@ -1,8 +1,9 @@
 import React, { PropsWithChildren, useEffect } from "react";
+import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi } from "libs/MultiversX";
+import { useSearchParams } from "react-router-dom";
+import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi, getMarketRequirements } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
@@ -11,9 +12,11 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { chainID } = useGetNetworkConfig();
+  const [searchParams] = useSearchParams();
 
   // ACCOUNT STORE
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
+  const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
 
   // MARKET STORE
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
@@ -26,9 +29,13 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
-
-  const marketContract = new DataNftMarketContract(chainID);
+  const marketContractSDK = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
   const mintContract = new DataNftMintContract(chainID);
+
+  useEffect(() => {
+    const accessToken = searchParams.get("accessToken");
+    updateAccessToken(accessToken ?? "");
+  }, [address]);
 
   useEffect(() => {
     (async () => {
@@ -44,15 +51,23 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     (async () => {
-      const _marketRequirements = await marketContract.viewRequirements();
-      updateMarketRequirements(_marketRequirements);
+      let _marketRequirements: MarketplaceRequirements | undefined;
+      _marketRequirements = await getMarketRequirements(chainID);
+      if (_marketRequirements) {
+        updateMarketRequirements(_marketRequirements);
+      } else {
+        _marketRequirements = await marketContractSDK.viewRequirements();
+        updateMarketRequirements(_marketRequirements);
+      }
+
+      // const _marketRequirements = await marketContract.viewRequirements();
 
       const _maxPaymentFeeMap: Record<string, number> = {};
       if (_marketRequirements) {
-        for (let i = 0; i < _marketRequirements.accepted_payments.length; i++) {
-          _maxPaymentFeeMap[_marketRequirements.accepted_payments[i]] = convertWeiToEsdt(
-            _marketRequirements.maximum_payment_fees[i],
-            tokenDecimals(_marketRequirements.accepted_payments[i])
+        for (let i = 0; i < _marketRequirements.acceptedPayments.length; i++) {
+          _maxPaymentFeeMap[_marketRequirements.acceptedPayments[i]] = convertWeiToEsdt(
+            _marketRequirements.maximumPaymentFees[i],
+            tokenDecimals(_marketRequirements.acceptedPayments[i])
           ).toNumber();
         }
       }
@@ -60,7 +75,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
 
     (async () => {
-      const _isMarketPaused = await marketContract.getIsPaused();
+      const _isMarketPaused = await marketContractSDK.viewContractPauseState();
       updateIsMarketPaused(_isMarketPaused);
     })();
   }, [chainID]);

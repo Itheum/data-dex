@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Flex, Heading, Image, Text, Center, useColorMode } from "@chakra-ui/react";
+import { Box, Center, Flex, Heading, Image, Text, useColorMode } from "@chakra-ui/react";
 import imgHeroDataNFTs from "assets/img/landing/hero-data-nfts.png";
 import imgHeroMetaverseMask from "assets/img/landing/hero-metaverse-mask.png";
 import ExplainerArticles from "components/Sections/ExplainerArticles";

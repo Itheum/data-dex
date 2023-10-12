@@ -80,9 +80,12 @@ export default function HomeMultiversX({
           setIsMxFaucetDisabled(true);
 
           // after 2 min wait we reenable the button on the UI automatically
-          setTimeout(() => {
-            setIsMxFaucetDisabled(false);
-          }, lastUsedTime + 120 * 60 * 1000 + 1000 - timeNow);
+          setTimeout(
+            () => {
+              setIsMxFaucetDisabled(false);
+            },
+            lastUsedTime + 120 * 60 * 1000 + 1000 - timeNow
+          );
         } else {
           setIsMxFaucetDisabled(false);
         }
@@ -381,7 +384,9 @@ export default function HomeMultiversX({
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="70px" onClick={onRewardsOpen}>
                           {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[0]))}</Text>
+                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis" overflow="auto">
+                              {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[0]))}
+                            </Text>
                           ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
                             <Spinner size="xs" />
                           ) : (
@@ -399,7 +404,9 @@ export default function HomeMultiversX({
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(1)} colorScheme="teal" variant="outline" w="70px" onClick={onAirdropsOpen}>
                           {claimsBalances.claimBalanceValues[1] !== "-1" && claimsBalances.claimBalanceValues[1] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[1]))}</Text>
+                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis" overflow="auto">
+                              {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[1]))}
+                            </Text>
                           ) : claimsBalances.claimBalanceValues[1] !== "-2" ? (
                             <Spinner size="xs" />
                           ) : (
@@ -417,7 +424,9 @@ export default function HomeMultiversX({
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="70px" onClick={onRoyaltiesOpen}>
                           {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"}>{formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[3]))}</Text>
+                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis" overflow="auto">
+                              {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[3]))}
+                            </Text>
                           ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
                             <Spinner size="xs" />
                           ) : (
@@ -437,7 +446,7 @@ export default function HomeMultiversX({
                           <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                             <Button isDisabled={shouldClaimButtonBeDisabled(2)} colorScheme="teal" variant="outline" w="70px" onClick={onAllocationsOpen}>
                               {claimsBalances.claimBalanceValues[2] !== "-1" && claimsBalances.claimBalanceValues[2] !== "-2" ? (
-                                <Text color={colorMode === "dark" ? "white" : "black"}>
+                                <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis" overflow="auto">
                                   {formatNumberRoundFloor(Number(claimsBalances.claimBalanceValues[2]))}
                                 </Text>
                               ) : claimsBalances.claimBalanceValues[2] !== "-2" ? (

@@ -2,6 +2,7 @@ import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
 import { OfferType } from "./types";
+import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -100,4 +101,15 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   });
 
   return data;
+}
+
+export async function getMarketRequirements(chainID: string): Promise<MarketplaceRequirements | undefined> {
+  try {
+    const url = `${backendApi(chainID)}/marketplace-requirements`;
+    const { data } = await axios.get<MarketplaceRequirements>(url);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 }

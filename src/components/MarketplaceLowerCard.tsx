@@ -139,7 +139,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
         <ProcureDataNFTModal
           isOpen={isProcureModalOpen}
           onClose={onProcureModalClose}
-          buyerFee={marketRequirements?.buyer_fee || 0}
+          buyerFee={marketRequirements.buyerTaxPercentage || 0}
           nftData={nftMetadata}
           offer={offer}
           amount={amount}

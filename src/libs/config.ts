@@ -22,8 +22,16 @@ export function contractsForChain(chainID: string): ContractsType {
         claims: claimsContractAddress_Mx_Devnet,
         faucet: faucetContractAddress_Mx_Devnet,
         market: dataNftMarketContractAddress_Mx_Devnet,
-        dataNftMint: dataNftMintContractAddress_Mx_Devnet,
-        dataNFTFTTicker: dataNFTFTTicker_Mx_Devnet,
+        dataNftTokens: [
+          {
+            id: dataNFTFTTicker_Mx_Devnet,
+            contract: dataNftMintContractAddress_Mx_Devnet,
+          },
+          {
+            id: "DATALT2-39ee0c",
+            contract: "erd1qqqqqqqqqqqqqpgqfjymlln86mydp7z76w2z4pjl793xp84g8ypsesxa2c",
+          },
+        ],
       };
     }
     case "1": {
@@ -32,8 +40,12 @@ export function contractsForChain(chainID: string): ContractsType {
         claims: claimsContractAddress_Mx_Mainnet,
         faucet: faucetContractAddress_Mx_Mainnet,
         market: dataNftMarketContractAddress_Mx_Mainnet,
-        dataNftMint: dataNftMintContractAddress_Mx_Mainnet,
-        dataNFTFTTicker: dataNFTFTTicker_Mx_Mainnet,
+        dataNftTokens: [
+          {
+            id: dataNFTFTTicker_Mx_Mainnet,
+            contract: dataNftMintContractAddress_Mx_Mainnet,
+          },
+        ],
       };
     }
   }
@@ -445,6 +457,8 @@ export const historicGuardrails = [
     maximum_royalties_newPrice: null,
     time_between_mints_oldPrice: null,
     time_between_mints_newPrice: null,
+    transaction_limitation_old: null,
+    transaction_limitation_new: null,
     max_data_nft_supply: null,
     antiSpam_tax_oldPrice: null,
     antiSpam_tax_newPrice: null,
@@ -465,6 +479,8 @@ export const historicGuardrails = [
     maximum_royalties_newPrice: null,
     time_between_mints_oldPrice: null,
     time_between_mints_newPrice: null,
+    transaction_limitation_old: null,
+    transaction_limitation_new: null,
     max_data_nft_supply: null,
     antiSpam_tax_oldPrice: null,
     antiSpam_tax_newPrice: null,
@@ -485,6 +501,8 @@ export const historicGuardrails = [
   //   maximum_royalties_newPrice: "90",
   //   time_between_mints_oldPrice: "20",
   //   time_between_mints_newPrice: "20",
+  //   transaction_limitation_old: 2,
+  //   transaction_limitation_new: 2,
   //   max_data_nft_supply: "3000",
   //   antiSpam_tax_oldPrice: "10",
   //   antiSpam_tax_newPrice: "10",
@@ -500,6 +518,7 @@ export const upcomingGuardRails = {
   minimum_royalties: null,
   maximum_royalties: null,
   time_between_mints: null,
+  transaction_limitation: null,
   max_data_nft_supply: null,
   antiSpam_tax: null,
   accepted_payments: null,

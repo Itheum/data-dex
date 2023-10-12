@@ -246,7 +246,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                                 new BigNumber(offers[index].wanted_token_amount)
                                   .multipliedBy(amountOfTokens[index])
                                   .multipliedBy(10000)
-                                  .div(10000 + marketRequirements.buyer_fee),
+                                  .div(10000 + marketRequirements.buyerTaxPercentage),
                                 tokenDecimals(offers[index].wanted_token_identifier)
                               ).toNumber()
                             );
