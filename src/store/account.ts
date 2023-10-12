@@ -3,11 +3,13 @@ import { create } from "zustand";
 type State = {
   itheumBalance: number;
   accessToken: string;
+  appVersion: string | undefined;
 };
 
 type Action = {
   updateItheumBalance: (itheumBalance: State["itheumBalance"]) => void;
   updateAccessToken: (accessToken: State["accessToken"]) => void;
+  updateAppVersion: (newAppVersion: State["appVersion"]) => void;
 };
 
 export const useAccountStore = create<State & Action>((set) => ({
@@ -15,4 +17,6 @@ export const useAccountStore = create<State & Action>((set) => ({
   updateItheumBalance: (value: number) => set(() => ({ itheumBalance: value })),
   accessToken: "",
   updateAccessToken: (value: string) => set(() => ({ accessToken: value })),
+  appVersion: process.env.REACT_APP_VERSION,
+  updateAppVersion: (newAppVersion) => set({ appVersion: newAppVersion }),
 }));

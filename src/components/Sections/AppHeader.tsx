@@ -388,7 +388,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                   <IconButton
                     display={{ base: "none", md: "inline-flex" }}
                     size={{ md: "md", xl: "lg", "2xl": "lg" }}
-                    px="2 !important"
+                    p="2 !important"
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
                     aria-label={"Back to home"}
@@ -419,17 +419,29 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 marginRight={{ base: "10", md: "none" }}
                 as={IconButton}
                 aria-label="Options"
+                size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                p="2 !important"
+                color="teal.200"
                 icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
                 variant="solid"
               />
-              <MenuList>
-                <MenuItem icon={<SunIcon />} command="⌘N" onClick={() => setColorMode("light")}>
+              <MenuList backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                <MenuItem
+                  icon={<SunIcon color="teal.200" />}
+                  onClick={() => setColorMode("light")}
+                  backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                   Light
                 </MenuItem>
-                <MenuItem icon={<MdDarkMode />} command="⌘⇧N" onClick={() => setColorMode("dark")}>
+                <MenuItem
+                  icon={<MdDarkMode color="#00C797" />}
+                  onClick={() => setColorMode("dark")}
+                  backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                   Dark
                 </MenuItem>
-                <MenuItem icon={<FaLaptop />} command="⌘O" onClick={() => setColorMode("system")}>
+                <MenuItem
+                  icon={<FaLaptop color="#00C797" />}
+                  onClick={() => setColorMode("system")}
+                  backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                   System
                 </MenuItem>
               </MenuList>
