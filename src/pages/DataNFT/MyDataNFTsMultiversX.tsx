@@ -131,8 +131,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           feeInTokens: 100, // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
           creator: decodedAttributes["creator"].toString(), // initial creator of NFT
           creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
-          supply: nft.supply ? Number(nft.supply) : 0,
-          balance: Number(nft.balance),
+          supply: nft.supply ? Number(nft.supply) : 1,
+          balance: nft.balance !== undefined ? Number(nft.balance) : 1,
           description: decodedAttributes["description"].toString(),
           title: decodedAttributes["title"].toString(),
           royalties: nft.royalties / 100,

@@ -247,6 +247,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     }
   }
 
+  console.log(nftData);
   function isLoadingNftData() {
     return isLoadingDetails || isLoadingPrice;
   }
@@ -456,7 +457,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                     <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
                       {!!nftData && (
                         <>
-                          <Text>{`Total supply: ${nftData.supply}`}</Text>
+                          <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
                           <Text>
                             {`Royalty: `}
                             {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
