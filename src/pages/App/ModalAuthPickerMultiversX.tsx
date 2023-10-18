@@ -17,7 +17,7 @@ import {
   WrapItem,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetIsLoggedIn, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
@@ -27,13 +27,17 @@ import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
+import { useAccountStore } from "../../store";
 
 function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
+  const [, setLocalStorageAppVersion] = useLocalStorage("app-version", null);
   const { pathname } = useLocation();
+  const isLoggedIn = useGetIsLoggedIn();
+  const { appVersion } = useAccountStore();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -89,6 +93,11 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
     callbackRoute: pathname,
   };
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      setLocalStorageAppVersion(appVersion);
+    }
+  }, [appVersion, isLoggedIn]);
   return (
     <>
       {!mxAddress && (

@@ -33,7 +33,7 @@ export class DataNftMintContract {
 
   constructor(chainID: string) {
     this.timeout = uxConfig.mxAPITimeoutMs;
-    this.dataNftMintContractAddress = contractsForChain(chainID).dataNftMint || "";
+    this.dataNftMintContractAddress = contractsForChain(chainID).dataNftTokens[0].contract || "";
     this.chainID = chainID;
 
     const json = JSON.parse(JSON.stringify(jsonData));
@@ -59,6 +59,7 @@ export class DataNftMintContract {
     sender,
     itheumToken,
     antiSpamTax,
+    contractAddress = this.dataNftMintContractAddress,
   }: {
     name: string;
     media: string;
@@ -73,6 +74,7 @@ export class DataNftMintContract {
     sender: string;
     itheumToken: string;
     antiSpamTax: number;
+    contractAddress?: string;
   }) {
     let data;
     if (antiSpamTax > 0) {
@@ -110,7 +112,7 @@ export class DataNftMintContract {
     const mintTransaction = new Transaction({
       data,
       sender: new Address(sender),
-      receiver: new Address(this.dataNftMintContractAddress),
+      receiver: new Address(contractAddress),
       gasLimit: 60000000,
       chainID: this.chainID,
     });
@@ -129,7 +131,7 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number) {
+  async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number, contractAddress: string = this.dataNftMintContractAddress) {
     const tx = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder()
@@ -137,7 +139,7 @@ export class DataNftMintContract {
         .addArg(new TokenIdentifierValue(collection)) //what token id to send
         .addArg(new U64Value(nonce)) //what token nonce to send
         .addArg(new BigUIntValue(quantity)) //how many tokens to send
-        .addArg(new AddressValue(new Address(this.dataNftMintContractAddress))) //address to send to
+        .addArg(new AddressValue(new Address(contractAddress))) //address to send to
         .addArg(new StringValue("burn")) //what method to call on the contract
         .build(),
       receiver: new Address(sender),
@@ -214,7 +216,7 @@ export class DataNftMintContract {
       tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
       creator: decodedAttributes["creator"].toString(), // initial creator of NFT
       creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
-      supply: nft.supply ? Number(nft.supply) : 0,
+      supply: nft.supply ? Number(nft.supply) : 1,
       description: decodedAttributes["description"].toString(),
       title: decodedAttributes["title"].toString(),
       royalties: nft.royalties ? nft.royalties / 100 : 0,

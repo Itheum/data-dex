@@ -116,16 +116,16 @@ const InputLabelWithPopover = ({ children, tkey }: { children: any; tkey: string
 };
 
 function makeRequest(url: string): Promise<{ statusCode: number; isError: boolean }> {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url);
-    xhr.onload = function (e) {
+    xhr.onload = function () {
       resolve({
         statusCode: this.status,
         isError: false,
       });
     };
-    xhr.onerror = function (e) {
+    xhr.onerror = function () {
       resolve({
         statusCode: this.status,
         isError: true,
@@ -413,7 +413,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
       error = "Length of Data Stream URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+      checkUrlReturns200(trimmedValue).then(({ message }) => {
         setDataNFTStreamUrlStatus(message);
       });
     }
@@ -436,7 +436,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
       error = "Length of Data Preview URL cannot exceed 1000";
     } else {
       // temp disable until we work out a better way to do it without CORS errors on 3rd party hosts
-      checkUrlReturns200(trimmedValue).then(({ isSuccess, message }) => {
+      checkUrlReturns200(trimmedValue).then(({ message }) => {
         setDataNFTStreamPreviewUrlStatus(message);
       });
     }
@@ -449,7 +449,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const trimmedValue = value.trim();
 
     // Itheum Data Marshal Service Check
-    checkUrlReturns200(`${getApiDataMarshal(chainID)}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataMarshal(chainID)}/health-check`).then(({ isSuccess }) => {
       setDataNFTMarshalServiceStatus(!isSuccess);
     });
 
@@ -458,7 +458,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
   const onChangeDataNFTImageGenService = () => {
     // Itheum Image Gen Service Check (Data DEX API health check)
-    checkUrlReturns200(`${getApiDataDex(chainID)}/health-check`).then(({ isSuccess, message }) => {
+    checkUrlReturns200(`${getApiDataDex(chainID)}/health-check`).then(({ isSuccess }) => {
       setDataNFTImgGenService(isSuccess);
     });
   };
@@ -589,14 +589,17 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
   // E: validation logic
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxFail = (foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxCancelled = (foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxSuccess = async (foo: any) => {
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
     await sleep(3);
@@ -1078,7 +1081,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <Input
                               mt="1 !important"
                               placeholder="e.g. https://mydomain.com/my_hosted_file.json"
@@ -1106,7 +1109,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <Input
                               mt="1 !important"
                               placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
@@ -1161,7 +1164,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <Controller
                         control={control}
-                        render={({ field: { value, onChange } }) => (
+                        render={({ field: { onChange } }) => (
                           <Input
                             mt="1 !important"
                             placeholder="Between 3 and 20 alphanumeric characters only"
@@ -1187,7 +1190,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <Controller
                         control={control}
-                        render={({ field: { value, onChange } }) => (
+                        render={({ field: { onChange } }) => (
                           <Input
                             mt="1 !important"
                             placeholder="Between 10 and 60 alphanumeric characters only"
@@ -1215,7 +1218,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                       <Controller
                         control={control}
-                        render={({ field: { value, onChange } }) => (
+                        render={({ field: { onChange } }) => (
                           <Textarea
                             mt="1 !important"
                             h={"70%"}
@@ -1242,7 +1245,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
 
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <NumberInput
                               mt="3 !important"
                               size="md"
@@ -1312,7 +1315,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         {/* This Royalties input control DOES NOT allow for fractional royalties, only round number that increment by 5. e.g. 3% */}
                         <Controller
                           control={control}
-                          render={({ field: { value, onChange } }) => (
+                          render={({ field: { onChange } }) => (
                             <NumberInput
                               mt="3 !important"
                               size="md"
