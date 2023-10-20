@@ -23,7 +23,6 @@ import LandingPage from "pages/LandingPage";
 import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
-import { useAccountStore } from "../../store";
 
 const mxLogout = logout;
 
@@ -48,9 +47,9 @@ export const routes: RouteType[] = [
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
-  const [localStorageAppVersion] = useLocalStorage("app-version", null);
+  // const [localStorageAppVersion] = useLocalStorage("app-version", null);
   const { address: mxAddress } = useGetAccountInfo();
-  const { appVersion } = useAccountStore();
+  // const { appVersion } = useAccountStore();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
@@ -142,12 +141,15 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   };
 
-  useEffect(() => {
-    if (isMxLoggedIn && appVersion !== localStorageAppVersion) {
-      localStorage.setItem("app-version", appVersion ?? "");
-      handleLogout();
-    }
-  }, [localStorageAppVersion, isMxLoggedIn]);
+  // useEffect(() => {
+  //   console.log(appVersion);
+  //   if (isMxLoggedIn && appVersion !== localStorageAppVersion) {
+  //     localStorage.setItem("app-version", appVersion ?? "");
+  //     if (localStorageAppVersion !== null) {
+  //       handleLogout();
+  //     }
+  //   }
+  // }, [localStorageAppVersion, isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
