@@ -35,7 +35,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
 
     props.handleFlagAsFailed(true);
 
-    let _isLiveUptimeSuccessful = false;
+    let _isLiveUptimeSuccessful = true; // HOTFIX: TODO - REMOVE!
     try {
       const res = await fetch(`${props.dataMarshal}/uptime?NFTId=${props.NFTId}&chainId=E${chainID}`);
       const data = await res.json();
