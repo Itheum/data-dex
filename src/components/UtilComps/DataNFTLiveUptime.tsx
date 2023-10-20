@@ -66,6 +66,7 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
       setLiveUptimeFAILMsg(labels.ERR_PROCURE_UPTIME_CHECK_DOWN);
     }
 
+    setLiveUptimeFAILMsg(null); //  // HOTFIX: TODO - REMOVE!
     setLiveUptimeCheckInProgress(false);
     props.setIsLiveUptimeSuccessful(_isLiveUptimeSuccessful);
   }
