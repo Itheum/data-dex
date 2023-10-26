@@ -114,7 +114,7 @@ export default function TokenTxTable(props: TokenTableProps) {
 function getHistory(responses: any[], tokenId?: string) {
   DataNftOnNetwork.ids = [];
   DataNftOnNetwork.token_identifier = tokenId;
-  DataNftOnNetwork.addOfferIndex = 0;
+  DataNftOnNetwork.addOfferIndex = 1;
   const transactionsWithId: DataNftOnNetwork[] = [];
 
   responses.forEach((response: any) => {
@@ -125,9 +125,11 @@ function getHistory(responses: any[], tokenId?: string) {
         return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
       }
     });
+
     const filteredTransactions = transactions.filter((data: DataNftOnNetwork) => {
       return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
     });
+
     transactionsWithId.push(...filteredTransactions);
   });
   return transactionsWithId;
