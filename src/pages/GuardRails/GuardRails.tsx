@@ -206,11 +206,17 @@ export const GuardRails: React.FC = () => {
             </Text>
             <Text as="div" py={2} pl={7} fontSize="lg">
               Accepted tokens:&nbsp;
-              <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
-                <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {marketRequirements.acceptedTokens ?? "-"}
-                </Text>
-              </Badge>
+              <Box maxH={"7rem"} overflow="auto" p={2} mx={2}>
+                {marketRequirements.acceptedTokens
+                  ? marketRequirements.acceptedTokens.map((token, index) => (
+                      <Badge key={index} backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
+                        <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
+                          {token}
+                        </Text>
+                      </Badge>
+                    ))
+                  : "-"}
+              </Box>
             </Text>
           </Stack>
         </Box>
@@ -278,7 +284,7 @@ export const GuardRails: React.FC = () => {
                   {upcomingGuardRails?.time_between_mints ? upcomingGuardRails?.time_between_mints : "-"}
                 </Text>
               </Badge>
-            </Text> 
+            </Text>
             <Text as="div" py={2} pl={7} fontSize="lg" borderBottom="1px solid" borderColor="#00C7971A">
               Transaction limitation:&nbsp;
               <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
