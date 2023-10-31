@@ -23,6 +23,7 @@ import LandingPage from "pages/LandingPage";
 import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
+import { Enterprise } from "../Enterprise/Enterprise";
 
 const mxLogout = logout;
 
@@ -94,6 +95,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   }, [chainID]);
 
+  // console.log(appVersion);
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
     async function mxSessionInit() {
@@ -239,6 +241,8 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                         />
                       }
                     />
+
+                    <Route path="enterprise" element={<Enterprise />} />
 
                     <Route path="datanfts" element={<Outlet />}>
                       <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
