@@ -20,6 +20,7 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
+import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
@@ -47,9 +48,9 @@ export const routes: RouteType[] = [
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
-  // const [localStorageAppVersion] = useLocalStorage("app-version", null);
+  const [localStorageAppVersion, setLocalStorageAppVersion] = useLocalStorage("app-version", undefined);
   const { address: mxAddress } = useGetAccountInfo();
-  // const { appVersion } = useAccountStore();
+  const { appVersion } = useAccountStore();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
@@ -68,9 +69,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
-  // const handleLogoutSessionUpdate = () => {
-  //   logout(`${window.location.origin}`, undefined, false);
-  // };
+  const handleLogoutSessionUpdate = () => {
+    logout(`${window.location.origin}`, undefined, false);
+  };
 
   useEffect(() => {
     if (path) {
@@ -141,15 +142,22 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(appVersion);
-  //   if (isMxLoggedIn && appVersion !== localStorageAppVersion) {
-  //     localStorage.setItem("app-version", appVersion ?? "");
-  //     if (localStorageAppVersion !== null) {
-  //       handleLogout();
-  //     }
-  //   }
-  // }, [localStorageAppVersion, isMxLoggedIn]);
+  useEffect(() => {
+    const handleAppVersioningLogin = async () => {
+      console.log(appVersion, localStorageAppVersion);
+      const currentLocalStorageVersion = localStorageAppVersion;
+      if (appVersion !== localStorageAppVersion) {
+        if (isMxLoggedIn) {
+          setLocalStorageAppVersion(appVersion);
+          if (currentLocalStorageVersion !== undefined) {
+            await sleep(0.1);
+            handleLogoutSessionUpdate();
+          }
+        }
+      }
+    };
+    handleAppVersioningLogin();
+  }, [localStorageAppVersion, isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
