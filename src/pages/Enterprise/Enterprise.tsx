@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Badge, Box, Button, Checkbox, Flex, Text } from "@chakra-ui/react";
-import { Factory } from "@itheum/sdk-mx-enterprise/out";
+import React, { Suspense, useEffect, useState } from "react";
+import { Box, Button, Checkbox, CircularProgress, Flex, Link, Text } from "@chakra-ui/react";
+import { DeployedContract, Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import ShortAddress from "../../components/UtilComps/ShortAddress";
+import { useWindowSize } from "../../libs/utils/UseWindowSize";
+import { CHAIN_TX_VIEWER } from "../../libs/config";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export const Enterprise: React.FC = () => {
   const [isAddressWhitelisted, setAddressWhitelisted] = useState<boolean>(false);
@@ -12,17 +17,28 @@ export const Enterprise: React.FC = () => {
   const [factoryTreasuryAddress, setFactoryTreasuryAddress] = useState<IAddress>(new Address());
   const [claimsContractAddress, setClaimsContractAddress] = useState<IAddress>(new Address());
   const [claimsTokenIdentifier, setClaimsTokenIdentifier] = useState<string>("");
-  // const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
+  const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
 
+  const [minterVersion, setMinterVersion] = useState<string>("");
+
+  const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const factory = new Factory("devnet");
+  const windowSize = useWindowSize();
   // const factoryAddress = factory.getContractAddress();
   // const dataNftMinter = new NftMinter(process.env.REACT_APP_ENV_NETWORK ?? "", factoryAddress);
-  // console.log(dataNftMinter);
-  // console.log(factoryTreasuryAddress?.toString());
+  console.log(hasPendingTransactions);
 
-  // console.log(whitelistedAddress);
+  console.log(minterVersion);
+
+  const deployNewMinter = async (senderAddress: IAddress, version: string) => {
+    console.log(factory.deployContract(senderAddress, version));
+    await sendTransactions({
+      transactions: [factory.deployContract(senderAddress, version)],
+    });
+  };
 
   useEffect(() => {
     (async () => {
@@ -33,7 +49,7 @@ export const Enterprise: React.FC = () => {
       const factoryAddress = await factory.viewTreasuryAddress();
       const claimAddress = await factory.viewClaimsContractAddress();
       const claimToken = await factory.viewClaimsTokenIdentifier();
-      // const contractAddress = await factory.viewAddressContracts(new Address(address));
+      const contractAddress = await factory.viewAddressContracts(new Address(address));
 
       setAddressWhitelisted(whitelistedAddress);
       setWhitelistNeeded(whitelistNeeded);
@@ -42,10 +58,12 @@ export const Enterprise: React.FC = () => {
       setFactoryTreasuryAddress(factoryAddress);
       setClaimsContractAddress(claimAddress);
       setClaimsTokenIdentifier(claimToken);
-      // setViewAddressContracts(contractAddress);
+      setViewAddressContracts(contractAddress);
+      // console.log(isAddressWhitelisted);
       // console.log(whitelistNeeded);
     })();
-  }, []);
+  }, [hasPendingTransactions]);
+
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} gap={8}>
       <Box>
@@ -56,17 +74,25 @@ export const Enterprise: React.FC = () => {
           Management Dashboard
         </Text>
       </Box>
-
       <Flex pt={3}>
-        {isAddressWhitelisted && isWhitelistNeeded ? (
-          <Flex flexDirection="row" justifyItems="center" alignItems="center">
-            <Box rounded="full" bgColor="green" h={3} w={3}></Box>
-            <Text>You are whitelisted to use Itheum Enterprise</Text>
-          </Flex>
+        {isWhitelistNeeded ? (
+          <>
+            {isAddressWhitelisted ? (
+              <Flex flexDirection="row" justifyItems="center" alignItems="center">
+                <Box rounded="full" bgColor="green" h={3} w={3}></Box>
+                <Text>&nbsp;You are whitelisted to use Itheum Enterprise</Text>
+              </Flex>
+            ) : (
+              <Flex flexDirection="row" justifyItems="center" alignItems="center">
+                <Box rounded="full" bgColor="red" h={3} w={3}></Box>
+                <Text>&nbsp;You are NOT whitelisted yet. Get Whitelisted today (should go to a landing page)</Text>
+              </Flex>
+            )}
+          </>
         ) : (
           <Flex flexDirection="row" justifyItems="center" alignItems="center">
-            <Box rounded="full" bgColor="red" h={3} w={3}></Box>
-            <Text>&nbsp;You are NOT whitelisted yet. Get Whitelisted today (should go to a landing page) {isWhitelistNeeded}</Text>
+            <Box rounded="full" bgColor="green" h={3} w={3}></Box>
+            <Text>&nbsp;You are whitelisted to use Itheum Enterprise</Text>
           </Flex>
         )}
       </Flex>
@@ -74,21 +100,47 @@ export const Enterprise: React.FC = () => {
         <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
           Enterprise Factory Settings:
         </Text>
-        <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
-        <Text fontSize="lg">Protocol Treasury: {factoryTreasuryAddress?.toString()}</Text>
-        <Text fontSize="lg">Claims Contract: {claimsContractAddress?.toString()}</Text>
-        <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
+        <Suspense fallback={<CircularProgress isIndeterminate color="green.300" />}>
+          <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
+          <Text fontSize="lg">
+            Protocol Treasury: {factoryTreasuryAddress?.toString()}&nbsp;
+            <Link
+              href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${factoryTreasuryAddress?.toString()}`}
+              isExternal
+              textColor="teal.200">
+              <ExternalLinkIcon />
+            </Link>
+          </Text>
+          <Text fontSize="lg">
+            Claims Contract: {claimsContractAddress?.toString()}&nbsp;
+            <Link
+              href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${claimsContractAddress?.toString()}`}
+              isExternal
+              textColor="teal.200">
+              <ExternalLinkIcon />
+            </Link>
+          </Text>
+          <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
+        </Suspense>
       </Box>
       <Flex flexDirection={{ base: "column", md: "row" }} gap={4}>
-        <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
+        <Text fontSize="2xl" fontFamily="Clash-Bold">
           Available Data NFT Minter software versions:
         </Text>
-        <Flex flexDirection={"row"} alignItems="center" gap={4}>
+        <Flex flexDirection={"row"} alignItems="center" justifyContent={{ base: "center", md: "start" }} gap={4}>
           {factoryVersions.map((version, index) => {
             return (
-              <Badge key={index} px={3} py={1.5} _hover={{ cursor: "pointer" }}>
-                {version}
-              </Badge>
+              <Box key={index}>
+                {minterVersion === version ? (
+                  <Button onClick={() => setMinterVersion(version)} size="sm" colorScheme="teal">
+                    {version}
+                  </Button>
+                ) : (
+                  <Button onClick={() => setMinterVersion(version)} size="sm" colorScheme="teal" variant="outline">
+                    {version}
+                  </Button>
+                )}
+              </Box>
             );
           })}
         </Flex>
@@ -97,16 +149,20 @@ export const Enterprise: React.FC = () => {
         <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
           Your Enterprise Data NFT Minters
         </Text>
-        {/*{viewAddressContracts.map((contractAddress, index) => {*/}
-        {/*  return (*/}
-        {/*    <Badge key={index} px={3} py={1.5} _hover={{ cursor: "pointer" }}>*/}
-        {/*      <Flex>*/}
-        {/*        <Text>{contractAddress.version}</Text>*/}
-        {/*        <Text>{contractAddress.address}</Text>*/}
-        {/*      </Flex>*/}
-        {/*    </Badge>*/}
-        {/*  );*/}
-        {/*})}*/}
+        <Flex flexDirection={"row"} flexWrap="wrap" gap={4} justifyContent="space-between" wordBreak="break-word">
+          {viewAddressContracts.map((contractAddress, index) => {
+            return (
+              <Box key={index}>
+                <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline">
+                  <Flex flexDirection="column" gap={1.5}>
+                    <Text textAlign="left">v{contractAddress.version}</Text>
+                    <Text textAlign="left">{windowSize.width <= 650 ? <ShortAddress address={address} fontSize="md" /> : contractAddress.address}</Text>
+                  </Flex>
+                </Button>
+              </Box>
+            );
+          })}
+        </Flex>
       </Box>
       <Box as="div" flexDirection="column" justifyItems="center" alignItems="center">
         <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
@@ -126,7 +182,15 @@ export const Enterprise: React.FC = () => {
               I have read all terms and agree to them
             </Checkbox>
           </Flex>
-          <Button colorScheme="teal">Deplay new Minter</Button>
+          <Box>
+            <Button
+              colorScheme="teal"
+              onClick={() => deployNewMinter(new Address(address), minterVersion)}
+              isDisabled={!readTermsChecked}
+              size={{ base: "sm", md: "lg" }}>
+              Deploy new Minter
+            </Button>
+          </Box>
         </Flex>
       </Box>
     </Flex>

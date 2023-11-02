@@ -66,7 +66,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
-  console.log(chainID);
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
@@ -193,7 +192,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                 bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
                 flexDirection="column"
                 justifyContent="space-between"
-                minH="100vh"
+                minH="100svh"
                 boxShadow={containerShadow}
                 zIndex={2}>
                 {/* App Header */}
