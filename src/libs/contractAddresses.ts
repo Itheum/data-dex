@@ -29,12 +29,12 @@ const contracts = {
   },
   mx: {
     devnet: {
-      itheumTokenContractAddress: "ITHEUM-a61317",
-      dataNFTFTTicker: "DATANFTFT4-3ba099",
-      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqd8vswwygp8sgmm6rd2x4rfgxjvv4fa93fsxsks7y6q",
-      faucetContractAddress: "erd1qqqqqqqqqqqqqpgqggj9d0fcvmuyatkgxvgd2akxsuv2h83t7yqs0n5wuf",
-      dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgqpd9qxrq5a03jrneafmlmckmlj5zgdj55fsxsqa7jsm",
-      dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqrwtl03qdxjv2e52ta5ry4rg0z7l95neqfsxsp4y4xh",
+      itheumTokenContractAddress: "ITHEUM-fce905",
+      dataNFTFTTicker: "DATANFTFT-e0b917",
+      claimsContractAddress: "erd1qqqqqqqqqqqqqpgqwu6qz3skzzdnmvnkknjngvrprpt4fwzffsxsr8ecca",
+      faucetContractAddress: "erd1qqqqqqqqqqqqqpgq860z22azzx59c8xytll8jgkz5t8kk89c7yqsy2z0p3",
+      dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgq7thwlde9hvc5ty7lx2j3l9tvy3wgkwu7fsxsvz9rat",
+      dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqlhewm06p4c9qhq32p239hs45dvry948tfsxshx3e0l",
     },
     mainnet: {
       itheumTokenContractAddress: "ITHEUM-df6f26",
