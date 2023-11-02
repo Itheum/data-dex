@@ -149,7 +149,9 @@ export const Enterprise: React.FC = () => {
                 <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline">
                   <Flex flexDirection="column" gap={1.5}>
                     <Text textAlign="left">v{contractAddress.version}</Text>
-                    <Text textAlign="left">{windowSize.width <= 650 ? <ShortAddress address={address} fontSize="md" /> : contractAddress.address}</Text>
+                    <Text textAlign="left">
+                      {windowSize.width <= 650 ? <ShortAddress address={contractAddress.address} fontSize="md" /> : contractAddress.address}
+                    </Text>
                   </Flex>
                 </Button>
               </Box>
