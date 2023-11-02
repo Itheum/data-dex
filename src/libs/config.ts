@@ -531,9 +531,10 @@ export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
 export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
   "D": {
-    "trailblazer": [407, 423],
-    "multiversxbubbles": [416],
-    "multiversxinfographics": [480],
+    "trailblazer": [1],
+    "multiversxbubbles": [],
+    "multiversxinfographics": [3],
+    "nftunes": [2],
   },
   "1": {
     "trailblazer": [1],
