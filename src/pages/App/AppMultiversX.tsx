@@ -66,6 +66,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [loggedInActiveMxWallet, setLoggedInActiveMxWallet] = useState("");
   const [dataCATAccount, setDataCATAccount] = useState<any>(null);
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
+  console.log(chainID);
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 

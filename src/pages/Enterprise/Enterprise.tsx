@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Box, Button, Checkbox, Flex, Text } from "@chakra-ui/react";
-import { DeployedContract, Factory } from "@itheum/sdk-mx-enterprise/out";
+import { Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 
@@ -12,7 +12,7 @@ export const Enterprise: React.FC = () => {
   const [factoryTreasuryAddress, setFactoryTreasuryAddress] = useState<IAddress>(new Address());
   const [claimsContractAddress, setClaimsContractAddress] = useState<IAddress>(new Address());
   const [claimsTokenIdentifier, setClaimsTokenIdentifier] = useState<string>("");
-  const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
+  // const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
 
   const { address } = useGetAccountInfo();
@@ -33,7 +33,7 @@ export const Enterprise: React.FC = () => {
       const factoryAddress = await factory.viewTreasuryAddress();
       const claimAddress = await factory.viewClaimsContractAddress();
       const claimToken = await factory.viewClaimsTokenIdentifier();
-      const contractAddress = await factory.viewAddressContracts(new Address(address));
+      // const contractAddress = await factory.viewAddressContracts(new Address(address));
 
       setAddressWhitelisted(whitelistedAddress);
       setWhitelistNeeded(whitelistNeeded);
@@ -42,7 +42,8 @@ export const Enterprise: React.FC = () => {
       setFactoryTreasuryAddress(factoryAddress);
       setClaimsContractAddress(claimAddress);
       setClaimsTokenIdentifier(claimToken);
-      setViewAddressContracts(contractAddress);
+      // setViewAddressContracts(contractAddress);
+      // console.log(whitelistNeeded);
     })();
   }, []);
   return (
@@ -65,7 +66,7 @@ export const Enterprise: React.FC = () => {
         ) : (
           <Flex flexDirection="row" justifyItems="center" alignItems="center">
             <Box rounded="full" bgColor="red" h={3} w={3}></Box>
-            <Text>&nbsp;You are NOT whitelisted yet. Get Whitelisted today (should go to a landing page)</Text>
+            <Text>&nbsp;You are NOT whitelisted yet. Get Whitelisted today (should go to a landing page) {isWhitelistNeeded}</Text>
           </Flex>
         )}
       </Flex>
@@ -96,16 +97,16 @@ export const Enterprise: React.FC = () => {
         <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
           Your Enterprise Data NFT Minters
         </Text>
-        {viewAddressContracts.map((contractAddress, index) => {
-          return (
-            <Badge key={index} px={3} py={1.5} _hover={{ cursor: "pointer" }}>
-              <Flex>
-                <Text>{contractAddress.version}</Text>
-                <Text>{contractAddress.address}</Text>
-              </Flex>
-            </Badge>
-          );
-        })}
+        {/*{viewAddressContracts.map((contractAddress, index) => {*/}
+        {/*  return (*/}
+        {/*    <Badge key={index} px={3} py={1.5} _hover={{ cursor: "pointer" }}>*/}
+        {/*      <Flex>*/}
+        {/*        <Text>{contractAddress.version}</Text>*/}
+        {/*        <Text>{contractAddress.address}</Text>*/}
+        {/*      </Flex>*/}
+        {/*    </Badge>*/}
+        {/*  );*/}
+        {/*})}*/}
       </Box>
       <Box as="div" flexDirection="column" justifyItems="center" alignItems="center">
         <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
