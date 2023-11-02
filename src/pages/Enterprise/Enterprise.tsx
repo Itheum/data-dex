@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect, useState } from "react";
-import { Box, Button, Checkbox, CircularProgress, Flex, Link, Text } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Checkbox, Flex, Link, Text } from "@chakra-ui/react";
 import { DeployedContract, Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
@@ -29,9 +29,6 @@ export const Enterprise: React.FC = () => {
   const windowSize = useWindowSize();
   // const factoryAddress = factory.getContractAddress();
   // const dataNftMinter = new NftMinter(process.env.REACT_APP_ENV_NETWORK ?? "", factoryAddress);
-  console.log(hasPendingTransactions);
-
-  console.log(minterVersion);
 
   const deployNewMinter = async (senderAddress: IAddress, version: string) => {
     console.log(factory.deployContract(senderAddress, version));
@@ -59,8 +56,6 @@ export const Enterprise: React.FC = () => {
       setClaimsContractAddress(claimAddress);
       setClaimsTokenIdentifier(claimToken);
       setViewAddressContracts(contractAddress);
-      // console.log(isAddressWhitelisted);
-      // console.log(whitelistNeeded);
     })();
   }, [hasPendingTransactions]);
 
@@ -100,28 +95,26 @@ export const Enterprise: React.FC = () => {
         <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
           Enterprise Factory Settings:
         </Text>
-        <Suspense fallback={<CircularProgress isIndeterminate color="green.300" />}>
-          <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
-          <Text fontSize="lg">
-            Protocol Treasury: {factoryTreasuryAddress?.toString()}&nbsp;
-            <Link
-              href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${factoryTreasuryAddress?.toString()}`}
-              isExternal
-              textColor="teal.200">
-              <ExternalLinkIcon />
-            </Link>
-          </Text>
-          <Text fontSize="lg">
-            Claims Contract: {claimsContractAddress?.toString()}&nbsp;
-            <Link
-              href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${claimsContractAddress?.toString()}`}
-              isExternal
-              textColor="teal.200">
-              <ExternalLinkIcon />
-            </Link>
-          </Text>
-          <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
-        </Suspense>
+        <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
+        <Text fontSize="lg">
+          Protocol Treasury: {factoryTreasuryAddress?.toString()}&nbsp;
+          <Link
+            href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${factoryTreasuryAddress?.toString()}`}
+            isExternal
+            textColor="teal.200">
+            <ExternalLinkIcon />
+          </Link>
+        </Text>
+        <Text fontSize="lg">
+          Claims Contract: {claimsContractAddress?.toString()}&nbsp;
+          <Link
+            href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${claimsContractAddress?.toString()}`}
+            isExternal
+            textColor="teal.200">
+            <ExternalLinkIcon />
+          </Link>
+        </Text>
+        <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
       </Box>
       <Flex flexDirection={{ base: "column", md: "row" }} gap={4}>
         <Text fontSize="2xl" fontFamily="Clash-Bold">
@@ -186,7 +179,7 @@ export const Enterprise: React.FC = () => {
             <Button
               colorScheme="teal"
               onClick={() => deployNewMinter(new Address(address), minterVersion)}
-              isDisabled={!readTermsChecked}
+              isDisabled={!readTermsChecked || minterVersion === ""}
               size={{ base: "sm", md: "lg" }}>
               Deploy new Minter
             </Button>
