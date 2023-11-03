@@ -21,22 +21,22 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
-import { useAccountStore } from "store";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
-  const [, setLocalStorageAppVersion] = useLocalStorage("app-version", undefined);
-  const { appVersion } = useAccountStore();
+  const appVersion = process.env.REACT_APP_VERSION;
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -44,7 +44,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
 
       await sleep(1);
       if (window !== undefined) {
-        window.location.replace("/");
+        navigate("/");
       }
     }
 
@@ -114,7 +114,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XPORTALAPP);
-                          setLocalStorageAppVersion(appVersion);
+                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WalletConnectLoginButton
@@ -127,7 +127,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_DEFI);
-                          setLocalStorageAppVersion(appVersion);
+                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <ExtensionLoginButton loginButtonText={"DeFi Wallet"} buttonClassName="auth_button" {...commonProps}></ExtensionLoginButton>
@@ -136,7 +136,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_WEBWALLET);
-                          setLocalStorageAppVersion(appVersion);
+                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
@@ -145,7 +145,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_LEDGER);
-                          setLocalStorageAppVersion(appVersion);
+                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>

@@ -48,7 +48,6 @@ export const routes: RouteType[] = [
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
-  const [localStorageAppVersion, setLocalStorageAppVersion] = useLocalStorage("app-version", undefined);
   const { address: mxAddress } = useGetAccountInfo();
   const { appVersion } = useAccountStore();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
@@ -69,9 +68,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
 
-  const handleLogoutSessionUpdate = () => {
-    logout(`${window.location.origin}`, undefined, false);
-  };
+  // const handleLogoutSessionUpdate = () => {
+  //   logout(`${window.location.origin}`, undefined, false);
+  // };
 
   useEffect(() => {
     if (path) {
@@ -132,7 +131,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     // resetAppContexts();
 
     gtagGo("auth", "logout", "el");
-
     if (mxLoginMethod === "wallet") {
       // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
       mxLogout(undefined, undefined, false);
@@ -144,20 +142,20 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   useEffect(() => {
     const handleAppVersioningLogin = async () => {
+      await sleep(0.5);
+      const localStorageAppVersion = localStorage.getItem("app-version");
       console.log(appVersion, localStorageAppVersion);
       const currentLocalStorageVersion = localStorageAppVersion;
       if (appVersion !== localStorageAppVersion) {
         if (isMxLoggedIn) {
-          setLocalStorageAppVersion(appVersion);
-          if (currentLocalStorageVersion !== undefined) {
-            await sleep(0.1);
-            handleLogoutSessionUpdate();
+          if (currentLocalStorageVersion !== null) {
+            handleLogout();
           }
         }
       }
     };
     handleAppVersioningLogin();
-  }, [localStorageAppVersion, isMxLoggedIn]);
+  }, [isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
