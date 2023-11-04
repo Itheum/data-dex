@@ -74,7 +74,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wanted_token_amount as BigNumber.Value, tokenDecimals(offer.wanted_token_identifier)).toNumber() : 0;
 
-  const isMobile = window.innerWidth <= 768;
+  const isMobile = window.innerWidth <= 480;
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
@@ -99,8 +99,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
-            onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
-            // onClick={{ sm: () => openNftDetailsDrawer && openNftDetailsDrawer(index), md: undefined }}
           />
           <motion.button
             style={{
@@ -124,8 +122,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping
             }}
-            //fontSize={{ md: "sm", "2xl": "md" }}
-
             whileInView={
               isMobile
                 ? {
@@ -136,8 +132,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 : undefined
             }
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            // whileTap={{ scale: 2, opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            transition={isMobile ? { duration: 1 } : { duration: 0.3 }}>
+            transition={isMobile ? { duration: 1.2 } : { duration: 0.3 }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
               <Text as="p" mt={1} fontWeight="400" textColor="white">
                 Details
