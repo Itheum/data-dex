@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.1.1",
@@ -8,9 +8,9 @@
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@hookform/resolvers": "3.3.1",
-    "@itheum/sdk-mx-data-nft": "2.1.5",
-    "@multiversx/sdk-core": "12.9.0",
-    "@multiversx/sdk-dapp": "2.22.1",
+    "@itheum/sdk-mx-data-nft": "2.2.0",
+    "@multiversx/sdk-core": "12.12.0",
+    "@multiversx/sdk-dapp": "2.23.0",
     "@multiversx/sdk-native-auth-client": "1.0.5",
     "@multiversx/sdk-network-providers": "2.0.0",
     "@sentry/react": "7.72.0",
@@ -37,10 +37,10 @@
     "zustand": "4.4.1"
   },
   "scripts": {
-    "start": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts start",
-    "build": "REACT_APP_VERSION=$(node -pe 'require(\"./package.json\").version') react-scripts build",
-    "winStart": "set \"REACT_APP_VERSION=$(node -pe \"require('./package.json').version\")\" && react-scripts start",
-    "winBuild": "set \"REACT_APP_VERSION=$(node -pe \"require('./package.json').version\")\" && react-scripts build",
+    "start": "REACT_APP_VERSION=$npm_package_version react-scripts start",
+    "build": "REACT_APP_VERSION=$npm_package_version react-scripts build",
+    "winStart": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts start",
+    "winBuild": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-flat": "npx http-server -o /flat",
@@ -65,13 +65,13 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@types/node": "18.18.0",
     "@types/react": "18.2.23",
     "@types/react-dom": "18.2.8",
     "@types/react-router-dom": "5.3.3",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
+    "cross-env": "^7.0.3",
     "eslint": "8.50.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-config-react-app": "7.0.1",
