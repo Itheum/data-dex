@@ -28,11 +28,7 @@ export const LaunchNftMinter: React.FC = () => {
     taxTokenIdentifier: Yup.string(),
   });
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<LaunchNftMinterType>({
+  const { handleSubmit } = useForm<LaunchNftMinterType>({
     defaultValues: {
       senderAddress: new Address(),
       collectionName: "",
@@ -42,9 +38,9 @@ export const LaunchNftMinter: React.FC = () => {
       claimsAddress: new Address(),
       taxTokenAmount: 0,
       taxTokenIdentifier: "",
-    }, // declaring default values for inputs not necessary to declare
-    mode: "onChange", // mode stay for when the validation should be applied
-    resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
+    },
+    mode: "onChange",
+    resolver: yupResolver(validationSchema),
   });
 
   const onSubmit = (data: LaunchNftMinterType) => {
