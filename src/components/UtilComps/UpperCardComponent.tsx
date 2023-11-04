@@ -122,8 +122,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               currentTarget.onerror = null; // prevents looping
             }}
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            whileTap={{ scale: 2, opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            transition={{ duration: 0.3 }}>
+            whileTap={{ scale: 2, opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
               <Text as="p" mt={1} fontWeight="400" textColor="white">
                 Details
