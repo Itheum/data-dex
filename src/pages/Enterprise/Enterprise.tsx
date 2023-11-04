@@ -20,7 +20,7 @@ export const Enterprise: React.FC = () => {
   const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
 
-  const [minterVersion, setMinterVersion] = useState<string>("");
+  const [minterVersion, setMinterVersion] = useState<string>("1.0.0");
 
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
@@ -170,7 +170,7 @@ export const Enterprise: React.FC = () => {
               variant="outline"
               size={{ base: "sm", md: "md" }}
               fontSize={{ base: "sm", md: "lg" }}
-              onClick={() => window.open("https://itheum.com/legal/termsofuse")}>
+              onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse#enterprise")}>
               Read Terms of Use
             </Button>
             <Checkbox size="sm" pt={3} isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
