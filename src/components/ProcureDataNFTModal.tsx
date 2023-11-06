@@ -224,6 +224,13 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     onClose();
   };
 
+  console.log(
+    !readTermsChecked,
+    liveUptimeFAIL,
+    new BigNumber(offer.wanted_token_amount).multipliedBy(amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0,
+    !isLiveUptimeSuccessful
+  );
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
