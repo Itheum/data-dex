@@ -779,7 +779,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     try {
       // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
-
+      console.log(process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "");
       const nftstorage = new NFTStorage({
         token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
       });
@@ -1421,7 +1421,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                   </Flex>
                 </form>
               </Stack>
-              <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false}>
+              <Modal isOpen={isProgressModalOpen} onClose={closeProgressModal} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false}>
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>Data NFT Minting Progress</ModalHeader>

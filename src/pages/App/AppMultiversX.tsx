@@ -142,7 +142,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   useEffect(() => {
     const handleAppVersioningLogin = async () => {
-      await sleep(0.5);
+      await sleep(1);
       const localStorageAppVersion = localStorage.getItem("app-version");
       console.log(appVersion, localStorageAppVersion);
       const currentLocalStorageVersion = localStorageAppVersion;
