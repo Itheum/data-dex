@@ -203,7 +203,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   {address && address == offer?.owner && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                        You are the Owner
+                        You are Owner
                       </Text>
                     </Box>
                   )}
