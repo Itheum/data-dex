@@ -10,7 +10,8 @@ import { CHAIN_TX_VIEWER } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataTable } from "./Components/DataTable";
-import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { backendApi } from "libs/utils";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainID } = useGetNetworkConfig();
@@ -87,17 +88,78 @@ export default function TokenTxTable(props: TokenTableProps) {
   );
 
   useEffect(() => {
-    const apiUrl = getApi(chainID);
+    async function getInteractions() {
+      const api = backendApi(chainID);
 
-    Promise.all([
-      axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
-      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&size=10000&order=asc`),
-    ]).then((responses) => {
-      const mergedTransactions = getHistory(responses, props.tokenId);
-      const history = buildHistory(mergedTransactions, props.buyer_fee);
-      setData(history);
-      setLoadingData(false);
-    });
+      const response = await axios.get(`${api}/interactions/${props.tokenId}`);
+
+      const interactions = response.data;
+
+      const data: TransactionInTable[] = [];
+
+      for (const interaction of interactions) {
+        switch (interaction.method) {
+          case "addOffer":
+            data.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.price} ${interaction.priceTokenIdentifier}`,
+            });
+            break;
+          case "acceptOffer":
+            data.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.seller,
+              to: interaction.buyer,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.price} ${interaction.priceTokenIdentifier}`,
+            });
+
+            break;
+
+          case "cancelOffer":
+            data.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.tokenIdentifier}`,
+            });
+
+            break;
+
+          case "changeOfferPrice":
+            data.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.price} ${interaction.priceTokenIdentifier}`,
+            });
+            break;
+          default:
+            data.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.tokenIdentifier}`,
+            });
+            break;
+        }
+      }
+      setData(data);
+    }
+
+    getInteractions();
+    setLoadingData(false);
   }, []);
 
   return (
@@ -109,28 +171,4 @@ export default function TokenTxTable(props: TokenTableProps) {
       )) || <DataTable columns={columns} data={data} />}
     </>
   );
-}
-
-function getHistory(responses: any[], tokenId?: string) {
-  DataNftOnNetwork.ids = [];
-  DataNftOnNetwork.token_identifier = tokenId;
-  DataNftOnNetwork.addOfferIndex = 1;
-  const transactionsWithId: DataNftOnNetwork[] = [];
-
-  responses.forEach((response: any) => {
-    const txs = response.data;
-    const transactions = txs.map((tx: any) => {
-      if (["burn", "addOffer", "acceptOffer", "cancelOffer", "changeOfferPrice"].includes(tx.function)) {
-        const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
-        return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
-      }
-    });
-
-    const filteredTransactions = transactions.filter((data: DataNftOnNetwork) => {
-      return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
-    });
-
-    transactionsWithId.push(...filteredTransactions);
-  });
-  return transactionsWithId;
 }
