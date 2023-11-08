@@ -113,8 +113,8 @@ export default function TokenTxTable(props: TokenTableProps) {
             data.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
-              from: interaction.seller,
-              to: interaction.buyer,
+              from: interaction.from,
+              to: interaction.to,
               method: interaction.method,
               value: `${interaction.quantity} x ${interaction.price} ${interaction.priceTokenIdentifier}`,
             });
