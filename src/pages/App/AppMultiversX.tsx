@@ -24,6 +24,7 @@ import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
+import { Enterprise } from "../Enterprise/Enterprise";
 
 const mxLogout = logout;
 
@@ -94,6 +95,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   }, [chainID]);
 
+  // console.log(appVersion);
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
     async function mxSessionInit() {
@@ -190,19 +192,19 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     <>
       {["1", "D"].includes(chainID) && (
         <StoreProvider>
-          <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
-            <Container maxW="97.5rem">
-              <Flex
-                bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
-                flexDirection="column"
-                justifyContent="space-between"
-                minH="100vh"
-                boxShadow={containerShadow}
-                zIndex={2}>
-                {/* App Header */}
-                <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
-                {/* App Body */}
-                <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
+          <Container maxW="97.5rem">
+            <Flex
+              bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
+              flexDirection="column"
+              justifyContent="space-between"
+              minH="100svh"
+              boxShadow={containerShadow}
+              zIndex={2}>
+              {/* App Header */}
+              <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+              {/* App Body */}
+              <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
+                <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
 
@@ -245,6 +247,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                         />
                       }
                     />
+                    {isMxLoggedIn ? <Route path="enterprise" element={<Enterprise />} /> : <Route path="enterprise" element={<Navigate to={"/"} />} />}
 
                     <Route path="datanfts" element={<Outlet />}>
                       <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
@@ -264,13 +267,13 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
-                </Box>
+                </AuthenticatedRoutesWrapper>
+              </Box>
 
-                {/* App Footer */}
-                <AppFooter />
-              </Flex>
-            </Container>
-          </AuthenticatedRoutesWrapper>
+              {/* App Footer */}
+              <AppFooter />
+            </Flex>
+          </Container>
         </StoreProvider>
       )}
     </>
