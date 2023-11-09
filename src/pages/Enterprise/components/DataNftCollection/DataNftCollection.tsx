@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
-import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { LiveSettings } from "./LiveSettings";
+import { TransferControl } from "./TransferControl";
+import { WhitelistControl } from "./WhitelistControl";
+import { UpdateOtherSettings } from "./UpdateOtherSettings";
 
 type DataNftCollectionProps = {
   nftMinter: NftMinter;
@@ -29,11 +32,14 @@ export const DataNftCollection: React.FC<DataNftCollectionProps> = (props) => {
 
   return (
     <Box>
-      <Text fontSize="2xl" fontFamily="Clash-Bold" py={3}>
+      <Text fontSize="2rem" fontFamily="Clash-Medium" py={3}>
         Your Data NFT Collection
       </Text>
-      <Flex flexDirection="row">
+      <Flex flexDirection="column" gap={5}>
         <LiveSettings nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+        <TransferControl nftMinter={nftMinter} />
+        <WhitelistControl nftMinter={nftMinter} />
+        <UpdateOtherSettings nftMinter={nftMinter} />
       </Flex>
     </Box>
   );

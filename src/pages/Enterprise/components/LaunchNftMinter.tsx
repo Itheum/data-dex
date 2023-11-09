@@ -52,7 +52,6 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
       tokenTicker: "",
       mintLimit: 0,
       requireMintTax: isRequiredMintTax,
-      claimsAddress: new Address(),
       taxTokenAmount: 0,
       taxTokenIdentifier: "",
     },
@@ -61,6 +60,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
   });
 
   const onSubmit = async (data: LaunchNftMinterFormType) => {
+    console.log(data);
     const txWhenRequireMintIsFalse = nftMinter.initializeContract(
       data.senderAddress,
       data.collectionName,
@@ -96,7 +96,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
 
   return (
     <Box>
-      <Text fontSize="2xl" fontFamily="Clash-Bold" py={3}>
+      <Text fontSize="2rem" fontFamily="Clash-Medium" py={3}>
         Launch Your Data NFT Collection
       </Text>
       <Flex flexDirection="row">

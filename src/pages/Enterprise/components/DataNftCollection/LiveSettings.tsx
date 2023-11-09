@@ -1,11 +1,12 @@
 import React from "react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
-import { TranslateBoolean } from "../../../libs/utils";
-import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
+import { TranslateBoolean } from "../../../../libs/utils";
 
 type LiveSettingsProps = {
   nftMinter: NftMinter;
@@ -15,6 +16,7 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
   const { nftMinter, viewContractConfig } = props;
 
   const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
 
   const unPauseContract = async (senderAddress: IAddress) => {
     await sendTransactions({
@@ -29,8 +31,8 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
 
   return (
     <Box as="div" flexDirection="column">
-      <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
-        Live Settings
+      <Text fontSize="1.5rem" fontFamily="Clash-Bold" pb={2} color="teal.200">
+        Live Settings:
       </Text>
       <Flex flexDirection="column" justifyItems="start" alignItems="start" gap={0.5}>
         <Text>Token Identifier: {viewContractConfig.tokenIdentifier}</Text>
@@ -47,25 +49,29 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
 
         <Flex flexDirection="row" gap={5}>
           <Flex flexDirection="column" pt={3}>
-            <IconButton
-              aria-label="Pause contract"
-              icon={<AiFillPlayCircle size="lg" color="#00C797" />}
+            <Button
+              aria-label="UnPause contract"
+              isLoading={hasPendingTransactions}
+              loadingText="Loading"
               variant="ghost"
               size="lg"
               isDisabled={!viewContractConfig.isContractPaused}
-              onClick={() => unPauseContract(new Address(address))}
-            />
+              onClick={() => unPauseContract(new Address(address))}>
+              <AiFillPlayCircle size="lg" color="#00C797" />
+            </Button>
             <Text>UnPause Minter</Text>
           </Flex>
           <Flex flexDirection="column" pt={3}>
-            <IconButton
+            <Button
               aria-label="Pause contract"
-              icon={<AiFillPauseCircle size="lg" color="#00C797" />}
+              isLoading={hasPendingTransactions}
+              loadingText="Loading"
               variant="ghost"
               size="lg"
               isDisabled={viewContractConfig.isContractPaused}
-              onClick={() => pauseContract(new Address(address))}
-            />
+              onClick={() => pauseContract(new Address(address))}>
+              <AiFillPauseCircle size="lg" color="#00C797" />
+            </Button>
             <Text>Pause Minter</Text>
           </Flex>
         </Flex>

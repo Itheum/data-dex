@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { LaunchNftMinter } from "./LaunchNftMinter";
-import { useParams } from "react-router-dom";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { DataNftCollection } from "./DataNftCollection";
+import { useParams } from "react-router-dom";
+import { DataNftCollection } from "./DataNftCollection/DataNftCollection";
+import { LaunchNftMinter } from "./LaunchNftMinter";
 
 export const MinterDashboard: React.FC = () => {
   const [viewContractConfig, setViewContractConfig] = useState<ContractConfiguration>();
@@ -51,7 +51,9 @@ export const MinterDashboard: React.FC = () => {
         </Text>
       </Box>
       {viewContractConfig?.tokenIdentifier ? (
-        <DataNftCollection nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+        <>
+          <DataNftCollection nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+        </>
       ) : (
         <LaunchNftMinter nftMinter={nftMinter} />
       )}
