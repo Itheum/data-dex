@@ -17,27 +17,26 @@ import {
   WrapItem,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useGetIsLoggedIn, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
 import { gtagGo, clearAppSessionsLaunchMode, sleep } from "libs/utils";
-import { useAccountStore } from "../../store";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
-  const [, setLocalStorageAppVersion] = useLocalStorage("app-version", null);
   const { pathname } = useLocation();
-  const isLoggedIn = useGetIsLoggedIn();
-  const { appVersion } = useAccountStore();
+  const appVersion = process.env.REACT_APP_VERSION;
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -45,7 +44,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
 
       await sleep(1);
       if (window !== undefined) {
-        window.location.replace("/");
+        navigate("/");
       }
     }
 
@@ -93,14 +92,9 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
     callbackRoute: pathname,
   };
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      setLocalStorageAppVersion(appVersion);
-    }
-  }, [appVersion, isLoggedIn]);
   return (
     <>
-      {!mxAddress && (
+      {!mxAddress && isProgressModalOpen && (
         <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
           <ModalContent>
@@ -117,7 +111,12 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                 <Box p="5px">
                   <Stack>
                     <Wrap spacing="20px" justify="space-between" padding="10px">
-                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_XPORTALAPP)} className="auth_wrap">
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.MX_XPORTALAPP);
+                          localStorage.setItem("app-version", appVersion || "");
+                        }}
+                        className="auth_wrap">
                         <WalletConnectLoginButton
                           loginButtonText={"xPortal App"}
                           buttonClassName="auth_button"
@@ -125,15 +124,30 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                           {...(walletConnectV2ProjectId ? { isWalletConnectV2: true } : {})}></WalletConnectLoginButton>
                       </WrapItem>
 
-                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_DEFI)} className="auth_wrap">
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.MX_DEFI);
+                          localStorage.setItem("app-version", appVersion || "");
+                        }}
+                        className="auth_wrap">
                         <ExtensionLoginButton loginButtonText={"DeFi Wallet"} buttonClassName="auth_button" {...commonProps}></ExtensionLoginButton>
                       </WrapItem>
 
-                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_WEBWALLET)} className="auth_wrap">
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.MX_WEBWALLET);
+                          localStorage.setItem("app-version", appVersion || "");
+                        }}
+                        className="auth_wrap">
                         <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
 
-                      <WrapItem onClick={() => goMxLogin(WALLETS.MX_LEDGER)} className="auth_wrap">
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.MX_LEDGER);
+                          localStorage.setItem("app-version", appVersion || "");
+                        }}
+                        className="auth_wrap">
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
                       </WrapItem>
                     </Wrap>

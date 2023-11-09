@@ -1,8 +1,8 @@
+import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
 import { OfferType } from "./types";
-import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
