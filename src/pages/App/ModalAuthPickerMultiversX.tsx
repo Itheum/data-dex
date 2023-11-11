@@ -83,7 +83,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const nativeAuthProps: NativeAuthConfigType = {
     apiAddress: `https://${getApi(chainID)}`,
     // origin: window.location.origin,
-    expirySeconds: 3000,
+    expirySeconds: 3600,
   };
   const commonProps = {
     nativeAuth: {
