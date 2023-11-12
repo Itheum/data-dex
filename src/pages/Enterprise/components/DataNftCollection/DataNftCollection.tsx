@@ -8,6 +8,8 @@ import { LiveSettings } from "./LiveSettings";
 import { TransferControl } from "./TransferControl";
 import { WhitelistControl } from "./WhitelistControl";
 import { UpdateOtherSettings } from "./UpdateOtherSettings";
+import { ClaimRoyalties } from "./ClaimRoyalties";
+import { MintDataNft } from "./MintDataNft";
 
 type DataNftCollectionProps = {
   nftMinter: NftMinter;
@@ -40,6 +42,8 @@ export const DataNftCollection: React.FC<DataNftCollectionProps> = (props) => {
         <TransferControl nftMinter={nftMinter} />
         <WhitelistControl nftMinter={nftMinter} />
         <UpdateOtherSettings nftMinter={nftMinter} />
+        <ClaimRoyalties nftMinter={nftMinter} claimAddress={viewContractConfig.claimsAddress} />
+        <MintDataNft nftMinter={nftMinter} />
       </Flex>
     </Box>
   );

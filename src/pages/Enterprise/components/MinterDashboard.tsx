@@ -14,14 +14,13 @@ export const MinterDashboard: React.FC = () => {
   const { minterAddress } = useParams();
 
   const nftMinter = new NftMinter("devnet", new Address(minterAddress));
-  // const { colorMode } = useColorMode();
 
   useEffect(() => {
     (async () => {
       try {
         const getContractConfig = await nftMinter.viewContractConfiguration();
         setViewContractConfig(getContractConfig);
-        console.log(getContractConfig);
+        // console.log(getContractConfig);
       } catch (error) {
         setViewContractConfig({
           tokenIdentifier: "",
