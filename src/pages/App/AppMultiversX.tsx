@@ -25,6 +25,7 @@ import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
 import { Enterprise } from "../Enterprise/Enterprise";
+import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 
 const mxLogout = logout;
 
@@ -247,7 +248,14 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                         />
                       }
                     />
-                    {isMxLoggedIn ? <Route path="enterprise" element={<Enterprise />} /> : <Route path="enterprise" element={<Navigate to={"/"} />} />}
+                    {isMxLoggedIn ? (
+                      <Route path="enterprise" element={<Outlet />}>
+                        <Route path="" element={<Enterprise />} />
+                        <Route path=":minterAddress" element={<MinterDashboard />} />
+                      </Route>
+                    ) : (
+                      <Route path="enterprise" element={<Navigate to={"/"} />} />
+                    )}
 
                     <Route path="datanfts" element={<Outlet />}>
                       <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />

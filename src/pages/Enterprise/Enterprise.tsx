@@ -8,6 +8,7 @@ import ShortAddress from "../../components/UtilComps/ShortAddress";
 import { useWindowSize } from "../../libs/utils/UseWindowSize";
 import { CHAIN_TX_VIEWER } from "../../libs/config";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 export const Enterprise: React.FC = () => {
   const [isAddressWhitelisted, setAddressWhitelisted] = useState<boolean>(false);
@@ -22,16 +23,15 @@ export const Enterprise: React.FC = () => {
 
   const [minterVersion, setMinterVersion] = useState<string>("1.0.0");
 
+  const navigate = useNavigate();
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const factory = new Factory("devnet");
   const windowSize = useWindowSize();
-  // const factoryAddress = factory.getContractAddress();
-  // const dataNftMinter = new NftMinter(process.env.REACT_APP_ENV_NETWORK ?? "", factoryAddress);
 
   const deployNewMinter = async (senderAddress: IAddress, version: string) => {
-    console.log(factory.deployContract(senderAddress, version));
+    console.log(factory);
     await sendTransactions({
       transactions: [factory.deployContract(senderAddress, version)],
     });
@@ -47,6 +47,7 @@ export const Enterprise: React.FC = () => {
       const claimAddress = await factory.viewClaimsContractAddress();
       const claimToken = await factory.viewClaimsTokenIdentifier();
       const contractAddress = await factory.viewAddressContracts(new Address(address));
+      const factoryContractAddress1 = await factory.getContractAddress();
 
       setAddressWhitelisted(whitelistedAddress);
       setWhitelistNeeded(whitelistNeeded);
@@ -56,6 +57,7 @@ export const Enterprise: React.FC = () => {
       setClaimsContractAddress(claimAddress);
       setClaimsTokenIdentifier(claimToken);
       setViewAddressContracts(contractAddress);
+      console.log(factoryContractAddress1.bech32());
     })();
   }, [hasPendingTransactions]);
 
@@ -146,7 +148,7 @@ export const Enterprise: React.FC = () => {
           {viewAddressContracts.map((contractAddress, index) => {
             return (
               <Box key={index}>
-                <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline">
+                <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline" onClick={() => navigate(`${contractAddress.address}`)}>
                   <Flex flexDirection="column" gap={1.5}>
                     <Text textAlign="left">v{contractAddress.version}</Text>
                     <Text textAlign="left">
