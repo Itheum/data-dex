@@ -247,7 +247,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     }
   }
 
-  console.log(nftData);
   function isLoadingNftData() {
     return isLoadingDetails || isLoadingPrice;
   }
@@ -510,19 +509,38 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         Description
                       </Heading>
                       <Flex flexDirection="column" h="18.6rem" justifyContent="space-between">
-                        <Text fontSize={"16px"} px="28px" py="14px" noOfLines={6} h="inherit">
+                        <Text fontSize={"16px"} px="28px" py="14px" h="inherit" overflow={"auto"} scrollBehavior="auto" mb={2}>
                           {transformDescription(nftData.attributes?.description)}
                         </Text>
                         <Flex flexDirection="row" gap={3}>
-                          <Box borderRadius="md" py="1.5" bgColor="#E2AEEA30" w="11rem" ml="28px" textAlign="center">
-                            <Text fontSize={{ base: "xs", "2xl": "sm" }} fontWeight="semibold" color="#E2AEEA">
+                          <Box
+                            borderRadius="md"
+                            px="3"
+                            py="1.5"
+                            bgColor="#E2AEEA30"
+                            w="11rem"
+                            ml="28px"
+                            textAlign="center"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center">
+                            <Text fontSize={"sm"} fontWeight="semibold" color="#E2AEEA">
                               Fully Transferable License
                             </Text>
                           </Box>
                           {addressHasNft && (
-                            <Box borderRadius="md" px="3" py="1.5" bgColor="#0ab8ff30">
+                            <Box
+                              mr="28px"
+                              borderRadius="md"
+                              px="1.5"
+                              py="1.5"
+                              bgColor="#0ab8ff30"
+                              textAlign="center"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center">
                               <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                                You are the Owner
+                                You are Owner
                               </Text>
                             </Box>
                           )}
