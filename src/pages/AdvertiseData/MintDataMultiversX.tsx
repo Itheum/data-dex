@@ -779,7 +779,6 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     try {
       // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
-      console.log(process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "");
       const nftstorage = new NFTStorage({
         token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
       });
