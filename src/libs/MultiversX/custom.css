@@ -16,80 +16,88 @@
 }
 
 @font-face {
-  font-family: 'Satoshi-Light';
-  src: url(../../assets/fonts/Satoshi-Light.woff2) format('woff2'),
-  url(../../assets/fonts/Satoshi-Light.woff) format('woff'),
-  url(../../assets/fonts/Satoshi-Light.ttf) format('truetype');
+  font-family: "Satoshi-Light";
+  src:
+    url(../../assets/fonts/Satoshi-Light.woff2) format("woff2"),
+    url(../../assets/fonts/Satoshi-Light.woff) format("woff"),
+    url(../../assets/fonts/Satoshi-Light.ttf) format("truetype");
   font-weight: 300;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Satoshi-Regular';
-  src: url(../../assets/fonts/Satoshi-Regular.woff2) format('woff2'),
-  url(../../assets/fonts/Satoshi-Regular.woff) format('woff'),
-  url(../../assets/fonts/Satoshi-Regular.ttf) format('truetype');
+  font-family: "Satoshi-Regular";
+  src:
+    url(../../assets/fonts/Satoshi-Regular.woff2) format("woff2"),
+    url(../../assets/fonts/Satoshi-Regular.woff) format("woff"),
+    url(../../assets/fonts/Satoshi-Regular.ttf) format("truetype");
   font-weight: 400;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Satoshi-Medium';
-  src: url(../../assets/fonts/Satoshi-Medium.woff2) format('woff2'),
-  url(../../assets/fonts/Satoshi-Medium.woff) format('woff'),
-  url(../../assets/fonts/Satoshi-Medium.ttf) format('truetype');
+  font-family: "Satoshi-Medium";
+  src:
+    url(../../assets/fonts/Satoshi-Medium.woff2) format("woff2"),
+    url(../../assets/fonts/Satoshi-Medium.woff) format("woff"),
+    url(../../assets/fonts/Satoshi-Medium.ttf) format("truetype");
   font-weight: 500;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Satoshi-Bold';
-  src: url(../../assets/fonts/Satoshi-Bold.woff2) format('woff2'),
-  url(../../assets/fonts/Satoshi-Bold.woff) format('woff'),
-  url(../../assets/fonts/Satoshi-Bold.ttf) format('truetype');
+  font-family: "Satoshi-Bold";
+  src:
+    url(../../assets/fonts/Satoshi-Bold.woff2) format("woff2"),
+    url(../../assets/fonts/Satoshi-Bold.woff) format("woff"),
+    url(../../assets/fonts/Satoshi-Bold.ttf) format("truetype");
   font-weight: 700;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Clash-Light';
-  src: url(../../assets/fonts/ClashDisplay-Light.woff2) format('woff2'),
-  url(../../assets/fonts/ClashDisplay-Light.woff) format('woff'),
-  url(../../assets/fonts/ClashDisplay-Light.ttf) format('truetype');
+  font-family: "Clash-Light";
+  src:
+    url(../../assets/fonts/ClashDisplay-Light.woff2) format("woff2"),
+    url(../../assets/fonts/ClashDisplay-Light.woff) format("woff"),
+    url(../../assets/fonts/ClashDisplay-Light.ttf) format("truetype");
   font-weight: 300;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Clash-Regular';
-  src: url(../../assets/fonts/ClashDisplay-Regular.woff2) format('woff2'),
-  url(../../assets/fonts/ClashDisplay-Regular.woff) format('woff'),
-  url(../../assets/fonts/ClashDisplay-Regular.ttf) format('truetype');
+  font-family: "Clash-Regular";
+  src:
+    url(../../assets/fonts/ClashDisplay-Regular.woff2) format("woff2"),
+    url(../../assets/fonts/ClashDisplay-Regular.woff) format("woff"),
+    url(../../assets/fonts/ClashDisplay-Regular.ttf) format("truetype");
   font-weight: 400;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Clash-Medium';
-  src: url(../../assets/fonts/ClashDisplay-Medium.woff2) format('woff2'),
-  url(../../assets/fonts/ClashDisplay-Medium.woff) format('woff'),
-  url(../../assets/fonts/ClashDisplay-Medium.ttf) format('truetype');
+  font-family: "Clash-Medium";
+  src:
+    url(../../assets/fonts/ClashDisplay-Medium.woff2) format("woff2"),
+    url(../../assets/fonts/ClashDisplay-Medium.woff) format("woff"),
+    url(../../assets/fonts/ClashDisplay-Medium.ttf) format("truetype");
   font-weight: 500;
   font-display: swap;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Clash-Bold';
-  src: url(../../assets/fonts/ClashDisplay-Bold.woff2) format('woff2'),
-  url(../../assets/fonts/ClashDisplay-Bold.woff) format('woff'),
-  url(../../assets/fonts/ClashDisplay-Bold.ttf) format('truetype');
+  font-family: "Clash-Bold";
+  src:
+    url(../../assets/fonts/ClashDisplay-Bold.woff2) format("woff2"),
+    url(../../assets/fonts/ClashDisplay-Bold.woff) format("woff"),
+    url(../../assets/fonts/ClashDisplay-Bold.ttf) format("truetype");
   font-weight: 700;
   font-display: swap;
   font-style: normal;
@@ -228,12 +236,14 @@ body {
   color: var(--chakra-colors-chakra-body-text) !important;
 }
 
-.chakra-ui-dark .dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
+.chakra-ui-dark
+  .dapp-core-component__walletConnectLoginContainerStyles__xPortal-login-container
   .dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-dialog-content {
   background: var(--chakra-colors-gray-700) !important;
 }
 
-.chakra-ui-dark .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
+.chakra-ui-dark
+  .dapp-core-component__dappModalStyles__dappModalCloseButton.dapp-core-component__main__btn.dapp-core-component__main__btn-light.dapp-core-component__walletConnectLoginContainerStyles__xPortal-modal-close-button {
   background: var(--chakra-colors-gray-700) !important;
   color: var(--chakra-colors-chakra-body-text) !important;
 }
@@ -354,4 +364,6 @@ body {
 .dapp-core-component__dappModalStyles__dappModalContent.dapp-modal-dialog-content {
   margin-top: 0px !important;
   margin-bottom: 4rem !important;
+  overflow-y: scroll !important;
+  max-height: 100% !important;
 }

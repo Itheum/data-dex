@@ -20,6 +20,7 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
+import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
@@ -49,9 +50,8 @@ export const routes: RouteType[] = [
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
-  // const [localStorageAppVersion] = useLocalStorage("app-version", null);
   const { address: mxAddress } = useGetAccountInfo();
-  // const { appVersion } = useAccountStore();
+  const { appVersion } = useAccountStore();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
@@ -134,7 +134,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     // resetAppContexts();
 
     gtagGo("auth", "logout", "el");
-
     if (mxLoginMethod === "wallet") {
       // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
       mxLogout(undefined, undefined, false);
@@ -144,15 +143,22 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(appVersion);
-  //   if (isMxLoggedIn && appVersion !== localStorageAppVersion) {
-  //     localStorage.setItem("app-version", appVersion ?? "");
-  //     if (localStorageAppVersion !== null) {
-  //       handleLogout();
-  //     }
-  //   }
-  // }, [localStorageAppVersion, isMxLoggedIn]);
+  useEffect(() => {
+    const handleAppVersioningLogin = async () => {
+      await sleep(1);
+      const localStorageAppVersion = localStorage.getItem("app-version");
+      console.log(appVersion, localStorageAppVersion);
+      const currentLocalStorageVersion = localStorageAppVersion;
+      if (appVersion !== localStorageAppVersion) {
+        if (isMxLoggedIn) {
+          if (currentLocalStorageVersion !== null) {
+            handleLogout();
+          }
+        }
+      }
+    };
+    handleAppVersioningLogin();
+  }, [isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
