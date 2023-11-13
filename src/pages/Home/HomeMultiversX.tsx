@@ -385,7 +385,7 @@ export default function HomeMultiversX({
                         <Button isDisabled={shouldClaimButtonBeDisabled(0)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRewardsOpen}>
                           {claimsBalances.claimBalanceValues[0] !== "-1" && claimsBalances.claimBalanceValues[0] !== "-2" ? (
                             <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
-                              {formatNumberToShort(1234567)}
+                              {formatNumberToShort(Number(claimsBalances.claimBalanceValues[0]))}
                             </Text>
                           ) : claimsBalances.claimBalanceValues[0] !== "-2" ? (
                             <Spinner size="xs" />
