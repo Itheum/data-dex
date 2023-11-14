@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Image, Input, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Image, Input, Text, Tooltip, useToast } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
+import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
@@ -18,9 +18,11 @@ type TransferControlFormType = {
 
 type TransferControlProps = {
   nftMinter: NftMinter;
+  viewContractConfig: ContractConfiguration;
 };
 export const TransferControl: React.FC<TransferControlProps> = (props) => {
-  const { nftMinter } = props;
+  const { nftMinter, viewContractConfig } = props;
+  const toast = useToast();
 
   const [viewTransferRoles, setViewTransferRoles] = useState<Array<string>>([]);
 
@@ -31,6 +33,21 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
   const validationSchema = Yup.object().shape({
     addressToSetRoleForTransfer: Yup.string().required("You have to enter the address to allow!"),
   });
+  const setRoles = async (senderAddress: IAddress) => {
+    if (viewContractConfig?.tokenIdentifier !== "" && viewContractConfig?.rolesAreSet === false) {
+      await sendTransactions({
+        transactions: [nftMinter.setLocalRoles(senderAddress)],
+      });
+    } else {
+      toast({
+        title: "Roles already set",
+        description: "Base role for collection already set.",
+        status: "warning",
+        isClosable: true,
+        duration: 20000,
+      });
+    }
+  };
 
   const {
     register,
@@ -96,8 +113,15 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
       <Text fontSize="1.5rem" fontFamily="Clash-Bold" color="teal.200">
         Transfer Control:
       </Text>
-      <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
+      <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" pb={3}>
         Use these settings to control the “soulbound” nature of your tokens
+      </Text>
+      <Button onClick={() => setRoles(new Address(address))} colorScheme="teal" isLoading={hasPendingTransactions} loadingText="Loading">
+        Make collection Non-Transferable
+      </Button>
+
+      <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" py={1}>
+        * Set the “base roles” for the minter to make NFTs non-transferable
       </Text>
 
       <Flex flexDirection="column" justifyItems="start" alignItems="start" gap={3}>
