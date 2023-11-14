@@ -1,6 +1,6 @@
+import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { create } from "zustand";
 import { OfferType } from "libs/MultiversX/types";
-import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 
 type State = {
   itheumPrice: number;
