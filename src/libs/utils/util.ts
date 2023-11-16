@@ -225,7 +225,7 @@ export const ITHEUM_DATADEX_STG_URL = "https://stg.datadex.itheum.io";
 export const ITHEUM_DATADEX_TEST_URL = "https://test.datadex.itheum.io";
 
 export const nativeAuthOrigins = () => {
-  return [ITHEUM_EXPLORER_PROD_URL, ITHEUM_EXPLORER_STG_URL, ITHEUM_EXPLORER_TEST_URL, window.location.hostname];
+  return [ITHEUM_EXPLORER_PROD_URL, ITHEUM_EXPLORER_STG_URL, ITHEUM_EXPLORER_TEST_URL, window.location.origin];
 };
 
 export const TranslateBoolean = (value: boolean): string => {
