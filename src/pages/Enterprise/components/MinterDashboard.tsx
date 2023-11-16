@@ -17,6 +17,8 @@ export const MinterDashboard: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      // const getMinterRequirements = await nftMinter.viewMinterRequirements(new Address(address));
+      // setViewMinterRequirements(getMinterRequirements);
       try {
         const getContractConfig = await nftMinter.viewContractConfiguration();
         setViewContractConfig(getContractConfig);
@@ -34,6 +36,7 @@ export const MinterDashboard: React.FC = () => {
           rolesAreSet: false,
           claimsAddress: "",
           administratorAddress: "",
+          taxToken: "",
         });
       }
     })();

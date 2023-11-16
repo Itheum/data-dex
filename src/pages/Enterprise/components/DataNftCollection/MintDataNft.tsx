@@ -15,7 +15,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -42,13 +42,14 @@ type MintDataNftFormType = {
 
 type MintDataNftProps = {
   nftMinter: NftMinter;
+  viewContractConfig: ContractConfiguration;
 };
 export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
-  const { nftMinter } = props;
+  const { nftMinter, viewContractConfig } = props;
 
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-
+  console.log(viewContractConfig);
   const validationSchema = Yup.object().shape({
     senderAddress: Yup.mixed<IAddress>().required(),
     tokenName: Yup.string()
@@ -126,7 +127,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
       </Text>
       <Text size="1rem" pb={5} opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Ideally, you will use an automated script to mint large number of Data NFTs using a sequential index. But, you can also use the below form to mint
-        single Data NFTs, on-demand. This will be useful primarily in test collections
+        single Data NFTs, on-demand. This will be useful primarily in test collections {viewContractConfig.tokenIdentifier}
       </Text>
 
       <Flex flexDirection="row">

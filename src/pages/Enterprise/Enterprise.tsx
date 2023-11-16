@@ -21,7 +21,7 @@ export const Enterprise: React.FC = () => {
   const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
 
-  const [minterVersion, setMinterVersion] = useState<string>("1.0.0");
+  const [minterVersion, setMinterVersion] = useState<string>("2.0.0");
 
   const navigate = useNavigate();
   const { chainID } = useGetNetworkConfig();
@@ -57,7 +57,7 @@ export const Enterprise: React.FC = () => {
       setClaimsContractAddress(claimAddress);
       setClaimsTokenIdentifier(claimToken);
       setViewAddressContracts(contractAddress);
-      console.log(factoryContractAddress1.bech32());
+      // console.log(contractAddress);
     })();
   }, [hasPendingTransactions]);
 
@@ -145,20 +145,22 @@ export const Enterprise: React.FC = () => {
           Your Enterprise Data NFT Minters
         </Text>
         <Flex flexDirection={"row"} flexWrap="wrap" gap={4} justifyContent="space-between" wordBreak="break-word">
-          {viewAddressContracts.map((contractAddress, index) => {
-            return (
-              <Box key={index}>
-                <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline" onClick={() => navigate(`${contractAddress.address}`)}>
-                  <Flex flexDirection="column" gap={1.5}>
-                    <Text textAlign="left">v{contractAddress.version}</Text>
-                    <Text textAlign="left">
-                      {windowSize.width <= 650 ? <ShortAddress address={contractAddress.address} fontSize="md" /> : contractAddress.address}
-                    </Text>
-                  </Flex>
-                </Button>
-              </Box>
-            );
-          })}
+          {viewAddressContracts
+            .map((contractAddress, index) => {
+              return (
+                <Box key={index}>
+                  <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline" onClick={() => navigate(`${contractAddress.address}`)}>
+                    <Flex flexDirection="column" gap={1.5}>
+                      <Text textAlign="left">v{contractAddress.version}</Text>
+                      <Text textAlign="left">
+                        {windowSize.width <= 650 ? <ShortAddress address={contractAddress.address} fontSize="md" /> : contractAddress.address}
+                      </Text>
+                    </Flex>
+                  </Button>
+                </Box>
+              );
+            })
+            .reverse()}
         </Flex>
       </Box>
       <Box as="div" flexDirection="column" justifyItems="center" alignItems="center">
