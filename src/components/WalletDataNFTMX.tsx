@@ -212,7 +212,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         const indexFound = addOfferEvent.topics[1];
         const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
-
         const headers = {
           Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
           "Content-Type": "application/json",
@@ -312,7 +311,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       DataNft.setNetworkConfig(network.id);
       const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
-
+      console.log(nativeAuthOrigins(), tokenLogin.nativeAuthToken, window.location.hostname);
       const arg = {
         mvxNativeAuthOrigins: nativeAuthOrigins(),
         mvxNativeAuthMaxExpirySeconds: 3600,
