@@ -161,6 +161,7 @@ export const tokenDecimals = (token_identifier: string) => {
     token_identifier === "RIDE-7d18e9" ||
     token_identifier === "UTK-2f80e9" ||
     token_identifier === "ITHEUM-df6f26" ||
+    token_identifier === "ITHEUM-fce905" ||
     token_identifier === "ITHEUM-a61317" ||
     token_identifier === "BHAT-c1fde3" ||
     token_identifier === "CRT-52decf" ||
@@ -225,4 +226,8 @@ export const ITHEUM_DATADEX_TEST_URL = "https://test.datadex.itheum.io";
 
 export const nativeAuthOrigins = () => {
   return [ITHEUM_EXPLORER_PROD_URL, ITHEUM_EXPLORER_STG_URL, ITHEUM_EXPLORER_TEST_URL, window.location.origin];
+};
+
+export const TranslateBoolean = (value: boolean): string => {
+  return value === true ? "True" : "False";
 };

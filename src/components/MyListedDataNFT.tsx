@@ -151,7 +151,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
 
                     {address && address == offer.owner && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are the Owner</Text>
+                        <Text>You are Owner</Text>
                       </Badge>
                     )}
 
