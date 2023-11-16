@@ -549,6 +549,7 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
+    "nftunes": "https://test.explorer.itheum.io/nftunes",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
