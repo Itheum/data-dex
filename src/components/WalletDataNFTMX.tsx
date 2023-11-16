@@ -60,6 +60,7 @@ import { DataNftType } from "libs/MultiversX/types";
 import {
   backendApi,
   convertToLocalString,
+  decodeNativeAuthToken,
   isValidNumericCharacter,
   nativeAuthOrigins,
   shouldPreviewDataBeEnabled,
@@ -68,6 +69,7 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
+import { NativeAuthServer } from "@multiversx/sdk-native-auth-server";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -212,7 +214,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         const indexFound = addOfferEvent.topics[1];
         const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
-
         const headers = {
           Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
           "Content-Type": "application/json",
@@ -312,9 +313,9 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       DataNft.setNetworkConfig(network.id);
       const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
-
+      console.log(tokenLogin.nativeAuthToken, decodeNativeAuthToken(tokenLogin.nativeAuthToken));
       const arg = {
-        mvxNativeAuthOrigins: nativeAuthOrigins(),
+        mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken).origin],
         mvxNativeAuthMaxExpirySeconds: 3600,
         fwdHeaderMapLookup: {
           "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
