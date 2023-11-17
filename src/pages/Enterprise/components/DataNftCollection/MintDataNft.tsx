@@ -17,15 +17,12 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { isValidNumericCharacter } from "../../../../libs/utils";
-import { useMintStore } from "../../../../store";
 import BigNumber from "bignumber.js";
-import { getTokenDecimalsRequest } from "../../../../libs/MultiversX/api";
 
 type MintDataNftFormType = {
   senderAddress: IAddress;
@@ -52,8 +49,6 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   const [antiSpamTaxAmount, setAntiSpamTaxAmount] = useState<number>(0);
 
   const { address } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
-  const { chainID } = useGetNetworkConfig();
 
   useEffect(() => {
     (async () => {

@@ -5,13 +5,10 @@ import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import axios from "axios";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { getApi, getTokenDecimalsRequest } from "../../../libs/MultiversX/api";
-import { useMintStore } from "../../../store";
-import { sleep } from "../../../libs/utils";
+import { getTokenDecimalsRequest } from "../../../libs/MultiversX/api";
 
 type LaunchNftMinterFormType = {
   senderAddress: IAddress;
@@ -30,7 +27,6 @@ type LaunchNftMinterProps = {
 
 export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
   const { nftMinter } = props;
-  const { tokenDecimals, updateTokenDecimals } = useMintStore();
 
   const [isRequiredMintTax, setIsRequiredMintTax] = useState<boolean>(false);
 
@@ -83,7 +79,6 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
     } else {
       try {
         const tokenRequest = await getTokenDecimalsRequest(formData.taxTokenIdentifier, chainID);
-        updateTokenDecimals(tokenRequest);
 
         const txWhenRequireMintIsTrue = nftMinter.initializeContract(
           formData.senderAddress,
