@@ -18,7 +18,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const getAddressToken = async () => {
     const url = `https://api.multiversx.com/accounts/${minterAddress}/tokens?size=10000`;
     const { data } = await axios.get(url);
-    console.log(data);
+    // console.log(data);
     setAddressToken(data);
   };
 

@@ -34,6 +34,7 @@ export const MinterDashboard: React.FC = () => {
           rolesAreSet: false,
           claimsAddress: "",
           administratorAddress: "",
+          taxToken: "",
         });
       }
     })();
