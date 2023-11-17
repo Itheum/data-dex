@@ -3,10 +3,15 @@ import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import axios from "axios";
+import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
+import { getApi, getTokenDecimalsRequest } from "../../../libs/MultiversX/api";
+import { useMintStore } from "../../../store";
+import { sleep } from "../../../libs/utils";
 
 type LaunchNftMinterFormType = {
   senderAddress: IAddress;
@@ -25,10 +30,12 @@ type LaunchNftMinterProps = {
 
 export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
   const { nftMinter } = props;
+  const { tokenDecimals, updateTokenDecimals } = useMintStore();
 
   const [isRequiredMintTax, setIsRequiredMintTax] = useState<boolean>(false);
 
   const { address } = useGetAccountInfo();
+  const { chainID } = useGetNetworkConfig();
 
   const validationSchema = Yup.object().shape({
     senderAddress: Yup.mixed<IAddress>().required(),
@@ -52,45 +59,55 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
       tokenTicker: "",
       mintLimit: 0,
       requireMintTax: isRequiredMintTax,
-      taxTokenAmount: 0,
       taxTokenIdentifier: "",
     },
     mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = async (data: LaunchNftMinterFormType) => {
-    console.log(data);
-    const txWhenRequireMintIsFalse = nftMinter.initializeContract(
-      data.senderAddress,
-      data.collectionName,
-      data.tokenTicker,
-      data.mintLimit,
-      data.requireMintTax,
-      data.claimsAddress
-    );
-    const txWhenRequireMintIsTrue = nftMinter.initializeContract(
-      data.senderAddress,
-      data.collectionName,
-      data.tokenTicker,
-      data.mintLimit,
-      data.requireMintTax,
-      data.claimsAddress,
-      {
-        taxTokenIdentifier: data.taxTokenIdentifier ?? "",
-        taxTokenAmount: data.taxTokenAmount ?? 0,
-      }
-    );
-    txWhenRequireMintIsFalse.setGasLimit(100000000);
-    txWhenRequireMintIsTrue.setGasLimit(100000000);
-    if (!data.requireMintTax) {
+  const onSubmit = async (formData: LaunchNftMinterFormType) => {
+    console.log(formData);
+    if (!formData.requireMintTax) {
+      const txWhenRequireMintIsFalse = nftMinter.initializeContract(
+        formData.senderAddress,
+        formData.collectionName,
+        formData.tokenTicker,
+        formData.mintLimit,
+        formData.requireMintTax,
+        formData.claimsAddress
+      );
+      txWhenRequireMintIsFalse.setGasLimit(100000000);
       await sendTransactions({
         transactions: [txWhenRequireMintIsFalse],
       });
     } else {
-      await sendTransactions({
-        transactions: [txWhenRequireMintIsTrue],
-      });
+      try {
+        const tokenRequest = await getTokenDecimalsRequest(formData.taxTokenIdentifier, chainID);
+        updateTokenDecimals(tokenRequest);
+
+        const txWhenRequireMintIsTrue = nftMinter.initializeContract(
+          formData.senderAddress,
+          formData.collectionName,
+          formData.tokenTicker,
+          formData.mintLimit,
+          formData.requireMintTax,
+          formData.claimsAddress,
+          {
+            taxTokenIdentifier: formData.taxTokenIdentifier ?? "",
+            taxTokenAmount: formData.taxTokenAmount
+              ? BigNumber(formData.taxTokenAmount)
+                  .multipliedBy(10 ** tokenRequest)
+                  .toNumber()
+              : 0,
+          }
+        );
+        txWhenRequireMintIsTrue.setGasLimit(100000000);
+        await sendTransactions({
+          transactions: [txWhenRequireMintIsTrue],
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

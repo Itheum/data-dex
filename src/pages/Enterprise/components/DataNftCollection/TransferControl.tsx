@@ -34,7 +34,7 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
     addressToSetRoleForTransfer: Yup.string().required("You have to enter the address to allow!"),
   });
   const setRoles = async (senderAddress: IAddress) => {
-    if (viewContractConfig?.tokenIdentifier !== "" && viewContractConfig?.rolesAreSet === false) {
+    if (!viewContractConfig.rolesAreSet) {
       await sendTransactions({
         transactions: [nftMinter.setLocalRoles(senderAddress)],
       });
