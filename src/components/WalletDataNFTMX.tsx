@@ -313,7 +313,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
       DataNft.setNetworkConfig(network.id);
       const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
-      console.log(tokenLogin.nativeAuthToken, decodeNativeAuthToken(tokenLogin.nativeAuthToken));
       const arg = {
         mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken).origin],
         mvxNativeAuthMaxExpirySeconds: 3600,

@@ -244,3 +244,15 @@ export const getAccountDetailFromApi = async (address: string, chainID: string):
     return undefined;
   }
 };
+
+export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefined, chainID: string) => {
+  const tokenIdentifierUrl = `https://${getApi(chainID)}/tokens/${tokenIdentifier}`;
+  try {
+    const { data } = await axios.get(tokenIdentifierUrl);
+    if (tokenIdentifier !== undefined) {
+      return data.decimals;
+    }
+  } catch (error) {
+    console.log("Error finding token!");
+  }
+};

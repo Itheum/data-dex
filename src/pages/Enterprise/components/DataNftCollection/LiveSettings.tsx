@@ -17,7 +17,7 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
 
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-
+  // console.log(viewContractConfig);
   const unPauseContract = async (senderAddress: IAddress) => {
     await sendTransactions({
       transactions: [nftMinter.unpauseContract(senderAddress)],
@@ -38,8 +38,8 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
         <Text>Token Identifier: {viewContractConfig.tokenIdentifier}</Text>
         <Text>Minted Tokens: {viewContractConfig.mintedTokens}</Text>
         <Text>Is Tax Required: {TranslateBoolean(viewContractConfig.isTaxRequired)}</Text>
-        <Text>Maximum Royalties: {viewContractConfig.maxRoyalties}</Text>
-        <Text>Minimum Royalties: {viewContractConfig.minRoyalties}</Text>
+        <Text>Maximum Royalties: {viewContractConfig.maxRoyalties / 100}%</Text>
+        <Text>Minimum Royalties: {viewContractConfig.minRoyalties}%</Text>
         <Text>Mint Time Limit: {viewContractConfig.mintTimeLimit}</Text>
         <Text>Is Whitelist Enabled: {TranslateBoolean(viewContractConfig.isWhitelistEnabled)}</Text>
         <Text>Is Contract Pause: {TranslateBoolean(viewContractConfig.isContractPaused)}</Text>
