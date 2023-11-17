@@ -53,7 +53,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   useEffect(() => {
     (async () => {
       const mintRequirements = await nftMinter.viewMinterRequirements(new Address(address), antiSpamTaxToken);
-      console.log(mintRequirements);
+      // console.log(mintRequirements);
       setAntiSpamTaxAmount(mintRequirements.antiSpamTaxValue);
     })();
   }, []);
