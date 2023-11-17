@@ -30,7 +30,7 @@ export const DataNftCollection: React.FC<DataNftCollectionProps> = (props) => {
         <WhitelistControl nftMinter={nftMinter} />
         <UpdateOtherSettings nftMinter={nftMinter} />
         <ClaimRoyalties nftMinter={nftMinter} claimAddress={viewContractConfig.claimsAddress} />
-        <MintDataNft nftMinter={nftMinter} />
+        <MintDataNft nftMinter={nftMinter} antiSpamTaxToken={viewContractConfig.taxToken} />
       </Flex>
     </Box>
   );
