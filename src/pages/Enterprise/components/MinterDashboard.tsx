@@ -14,7 +14,7 @@ export const MinterDashboard: React.FC = () => {
   const { minterAddress } = useParams();
 
   const nftMinter = new NftMinter("devnet", new Address(minterAddress));
-
+  // console.log(viewContractConfig?.tokenIdentifier);
   useEffect(() => {
     (async () => {
       // const getMinterRequirements = await nftMinter.viewMinterRequirements(new Address(address));
