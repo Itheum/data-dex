@@ -28,8 +28,8 @@ export function contractsForChain(chainID: string): ContractsType {
             contract: dataNftMintContractAddress_Mx_Devnet,
           },
           {
-            id: "DATALT2-39ee0c",
-            contract: "erd1qqqqqqqqqqqqqpgqfjymlln86mydp7z76w2z4pjl793xp84g8ypsesxa2c",
+            id: "BIGBANG-6b34db",
+            contract: "erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m",
           },
         ],
       };
@@ -531,9 +531,10 @@ export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
 export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
   "D": {
-    "trailblazer": [407, 423],
-    "multiversxbubbles": [416],
-    "multiversxinfographics": [480],
+    "trailblazer": [1],
+    "multiversxbubbles": [],
+    "multiversxinfographics": [3],
+    "nftunes": [2],
   },
   "1": {
     "trailblazer": [1],
@@ -548,6 +549,7 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
+    "nftunes": "https://test.explorer.itheum.io/nftunes",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
