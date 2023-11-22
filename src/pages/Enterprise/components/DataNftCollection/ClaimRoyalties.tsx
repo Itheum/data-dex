@@ -3,6 +3,8 @@ import { Box, Button, Text } from "@chakra-ui/react";
 import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { getApi } from "../../../../libs/MultiversX/api";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 
 type ClaimRoyaltiesProps = {
   nftMinter: NftMinter;
@@ -11,12 +13,13 @@ type ClaimRoyaltiesProps = {
 
 export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const { nftMinter, claimAddress } = props;
+  const { chainID } = useGetNetworkConfig();
   const [viewAddressToken, setAddressToken] = useState<Array<Record<any, any>>>([{}]);
 
   const { minterAddress } = useParams();
 
   const getAddressToken = async () => {
-    const url = `https://api.multiversx.com/accounts/${minterAddress}/tokens?size=10000`;
+    const url = `https://${getApi(chainID)}/accounts/${minterAddress}/tokens?size=10000`;
     const { data } = await axios.get(url);
     console.log(data);
     setAddressToken(data);

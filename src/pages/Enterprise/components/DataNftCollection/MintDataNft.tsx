@@ -49,7 +49,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
 
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  console.log(viewContractConfig);
+  // console.log(viewContractConfig);
   const validationSchema = Yup.object().shape({
     senderAddress: Yup.mixed<IAddress>().required(),
     tokenName: Yup.string()
@@ -335,7 +335,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
               </FormControl>
             </Flex>
           </Flex>
-          <Button type="submit" colorScheme="teal" size={{ base: "sm", md: "lg" }} mb={5}>
+          <Button type="submit" colorScheme="teal" size={{ base: "sm", md: "lg" }}>
             Mint
           </Button>
         </form>
