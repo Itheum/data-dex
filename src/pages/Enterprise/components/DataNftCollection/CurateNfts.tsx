@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
 import { ContractConfiguration, DataNft, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { getApi } from "../../../../libs/MultiversX/api";
+import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
 import axios from "axios";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
@@ -124,13 +124,15 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
           return (
             <Box key={index}>
               <Image src={dataNfts.url} boxSize="8.5rem" rounded="xl" />
-              <Flex flexDirection="row" justifyContent="start" alignItems="center" gap={1.5} pb={2}>
-                <Text fontSize="sm" py={1} pl={1}>
-                  View on Explore
-                </Text>
-                <FaArrowRightLong size={12} />
-              </Flex>
-              <Flex flexDirection="row" gap={2} mb={2}>
+              <a href={`https://${getExplorer(chainID)}/nfts/${dataNfts.identifier}`} target="_blank" rel="noreferrer">
+                <Flex flexDirection="row" justifyContent="start" alignItems="center" gap={1.5} _hover={{ color: "aquamarine" }}>
+                  <Text fontSize="sm" py={1} pl={1}>
+                    View on Explore
+                  </Text>
+                  <FaArrowRightLong size={12} />
+                </Flex>
+              </a>
+              <Flex flexDirection="row" gap={2} my={2}>
                 {addressFrozenNonces.includes(dataNfts.nonce) ? (
                   <Flex flexDirection="row" gap={5}>
                     <Button
