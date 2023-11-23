@@ -166,7 +166,6 @@ type TradeDataFormType = {
   numberOfCopiesForm: number;
   royaltiesForm: number;
 };
-
 export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: { onRfMount: any; dataCATAccount: any; setMenuItem: any }) {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
@@ -615,7 +614,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     if (dataCATProgram?.program) {
       selObj = {
         ...dataCATAccount.programsAllocation.find((i: any) => i.program === dataCATProgram.program),
-        ...dataCATAccount._lookups.programs[dataCATProgram.program],
+        ...dataCATAccount.programsAllocation.programs[dataCATProgram.program],
       };
 
       setCurrDataCATSellObj(selObj);
@@ -704,7 +703,8 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const myHeaders = new Headers();
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
-
+    // eslint-disable-next-line no-debugger
+    debugger;
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -933,7 +933,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
               {dataCATAccount.programsAllocation.map((item: any) => (
                 <Box key={item.program} maxW="22.4rem" borderWidth="1px" overflow="hidden" border=".1rem solid transparent" backgroundColor="none">
                   <Image
-                    src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${dataCATAccount._lookups.programs[item.program].img}.png`}
+                    src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${item.additionalInformation.img}.png`}
                     alt=""
                     height="13.375rem"
                     width={{ base: "auto", md: "355px" }}
@@ -949,7 +949,7 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
                         New
                       </Badge>
                       <Box ml="2" fontWeight="semibold" fontFamily="Clash-Medium" fontSize="2xl" noOfLines={1}>
-                        {dataCATAccount._lookups.programs[item.program].programName}
+                        {item.additionalInformation?.programName}
                       </Box>
                     </Box>
                     <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item)}>

@@ -26,6 +26,7 @@ import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
+import { TradeData } from "../AdvertiseData/TradeData";
 
 const mxLogout = logout;
 
@@ -124,10 +125,10 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   }, [mxAddress]);
 
   // utility that will reload a component and reset it's state
-  const handleRfMount = (key: string) => {
-    const reRf = { ...rfKeys, [key]: Date.now() };
-    setRfKeys(reRf);
-  };
+  // const handleRfMount = (key: string) => {
+  //   const reRf = { ...rfKeys, [key]: Date.now() };
+  //   setRfKeys(reRf);
+  // };
 
   const handleLogout = () => {
     clearAppSessionsLaunchMode();
@@ -237,17 +238,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       }
                     />
 
-                    <Route
-                      path="tradedata"
-                      element={
-                        <MintDataMX
-                          key={rfKeys.sellData}
-                          setMenuItem={setMenuItem}
-                          dataCATAccount={dataCATAccount}
-                          onRfMount={() => handleRfMount("sellData")}
-                        />
-                      }
-                    />
+                    <Route path="tradedata" element={<TradeData />} />
                     {isMxLoggedIn ? (
                       <Route path="enterprise" element={<Outlet />}>
                         <Route path="" element={<Enterprise />} />

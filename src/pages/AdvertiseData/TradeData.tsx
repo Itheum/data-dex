@@ -1,0 +1,95 @@
+import React, { useEffect, useState } from "react";
+import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
+import { dataCATDemoUserData } from "../../libs/config";
+import { useSearchParams } from "react-router-dom";
+import { TradeForm } from "./components/TradeForm";
+
+export const TradeData: React.FC = () => {
+  const [dataCATAcccount, setDataCATAcount] = useState<Record<any, any>>();
+  const [dataCATCard, setDataCATCard] = useState<Record<any, any>>();
+  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState<string>("");
+  const { colorMode } = useColorMode();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    setDataCATAcount(dataCATDemoUserData);
+    setDataCATCard(dataCATDemoUserData.programsAllocation);
+  }, []);
+
+  const getDataForSale = async (dataCATProgram: any) => {
+    const dataCATStreamUrl = dataCATCard?.additionalInformation?.dataStreamURL;
+    const dataCATStreamPreviewUrl = dataCATCard?.additionalInformation?.dataPreviewURL;
+
+    if (searchParams.get("ds")) {
+      setDataNFTStreamUrl(decodeURIComponent(searchParams.get("ds") || ""));
+    } else {
+      setDataNFTStreamUrl(dataCATStreamUrl);
+    }
+  };
+
+  return (
+    <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+      <Heading size="xl" fontFamily="Clash-Medium">
+        Trade Data
+      </Heading>
+      <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
+        Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
+      </Heading>
+
+      <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
+        <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
+          <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
+
+          <Box p="6">
+            <Box display="flex" alignItems="baseline">
+              <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
+                Any Data Stream as Data NFT-FT
+              </Box>
+            </Box>
+            <Button mt="3" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => <TradeForm isOpen={true} />}>
+              <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
+            </Button>
+          </Box>
+        </Box>
+      </Wrap>
+
+      {dataCATAcccount?.programsAllocation?.length > 0 && (
+        <>
+          <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">
+            Supported Data CAT Programs
+          </Heading>
+          <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
+            {dataCATAcccount?.programsAllocation.map((item: any) => (
+              <Box key={item.program} maxW="22.4rem" borderWidth="1px" overflow="hidden" border=".1rem solid transparent" backgroundColor="none">
+                <Image
+                  src={`https://itheum-static.s3-ap-southeast-2.amazonaws.com/dex-${item.additionalInformation?.img}.png`}
+                  alt=""
+                  height="13.375rem"
+                  width={{ base: "auto", md: "355px" }}
+                  border="1px solid transparent"
+                  borderColor="#00C797"
+                  borderRadius="16px"
+                />
+
+                <Box paddingTop="6" paddingBottom="2">
+                  <Box display="flex" alignItems="center">
+                    <Badge borderRadius="sm" px="2" py="0.08rem" colorScheme="teal">
+                      {" "}
+                      New
+                    </Badge>
+                    <Box ml="2" fontWeight="semibold" fontFamily="Clash-Medium" fontSize="2xl" noOfLines={1}>
+                      {item.additionalInformation?.programName}
+                    </Box>
+                  </Box>
+                  <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item)}>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Trade Program Data</Text>
+                  </Button>
+                </Box>
+              </Box>
+            ))}
+          </Wrap>
+        </>
+      )}
+    </Stack>
+  );
+};

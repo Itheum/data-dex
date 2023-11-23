@@ -307,7 +307,7 @@ export default function HomeMultiversX({
                           {dataCATAccount.programsAllocation.map((item: any) => (
                             <Stack direction="row" key={item.program}>
                               <Badge borderRadius="full" px="2" colorScheme="teal">
-                                {dataCATAccount._lookups.programs[item.program].programName}
+                                {dataCATAccount.additionalInformation?.programName}
                               </Badge>
                             </Stack>
                           ))}
