@@ -3,9 +3,10 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DataNftCollection } from "./DataNftCollection/DataNftCollection";
 import { LaunchNftMinter } from "./LaunchNftMinter";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 
 export const MinterDashboard: React.FC = () => {
   const [viewContractConfig, setViewContractConfig] = useState<ContractConfiguration>();
@@ -14,7 +15,7 @@ export const MinterDashboard: React.FC = () => {
   const { minterAddress } = useParams();
 
   const nftMinter = new NftMinter("devnet", new Address(minterAddress));
-  // console.log(viewContractConfig?.tokenIdentifier);
+  // console.log(viewContractConfig);
   useEffect(() => {
     (async () => {
       // const getMinterRequirements = await nftMinter.viewMinterRequirements(new Address(address));
