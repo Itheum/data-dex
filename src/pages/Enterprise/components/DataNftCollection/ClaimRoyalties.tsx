@@ -4,7 +4,11 @@ import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { getApi } from "../../../../libs/MultiversX/api";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { ClaimsContract } from "../../../../libs/MultiversX/claims";
+import { Factory } from "@itheum/sdk-mx-enterprise/out";
+import { Address } from "@multiversx/sdk-core/out";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
 
 type ClaimRoyaltiesProps = {
   nftMinter: NftMinter;
@@ -14,24 +18,33 @@ type ClaimRoyaltiesProps = {
 export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const { nftMinter, claimAddress } = props;
   const { chainID } = useGetNetworkConfig();
+  const { address } = useGetAccountInfo();
+  const mxClaimsContract = new ClaimsContract(chainID);
+  const factory = new Factory("devnet");
   const [viewAddressToken, setAddressToken] = useState<Array<Record<any, any>>>([{}]);
+  const [amountToClaim, setAmountToClaim] = useState<Array<any>>([{}]);
+  const [factoryClaimToken, setFactoryClaimToken] = useState<string>("");
 
   const { minterAddress } = useParams();
 
   const getAddressToken = async () => {
     const url = `https://${getApi(chainID)}/accounts/${minterAddress}/tokens?size=10000`;
     const { data } = await axios.get(url);
-    console.log(data);
+    const claimsDatadex = await mxClaimsContract.getClaims(minterAddress ?? "");
+    const getFactoryClaimToken = await factory.viewClaimsTokenIdentifier();
+
     setAddressToken(data);
+    setAmountToClaim(claimsDatadex?.data ?? []);
+    setFactoryClaimToken(getFactoryClaimToken);
   };
 
-  // const claimRoyalties = async (tokenIdentifier: string, nonce?: number) => {
-  //   const tx = nftMinter.removeWhitelist(new Address(address), [addressToRemove]);
-  //   tx.setGasLimit(100000000);
-  //   await sendTransactions({
-  //     transactions: [tx],
-  //   });
-  // };
+  const claimRoyalties = async () => {
+    const tx = nftMinter.claimRoyalties(new Address(address), factoryClaimToken);
+    tx.setGasLimit(100000000);
+    await sendTransactions({
+      transactions: [tx],
+    });
+  };
 
   useEffect(() => {
     getAddressToken();
@@ -51,6 +64,15 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
             {token.name} {token.type}
           </Button>
         );
+      })}
+      {amountToClaim.map((token, index) => {
+        if (token.amount !== 0) {
+          return (
+            <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties()}>
+              {token.amount / 10 ** 18}&nbsp;{factoryClaimToken.split("-")[0]}
+            </Button>
+          );
+        }
       })}
     </Box>
   );
