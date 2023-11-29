@@ -17,7 +17,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -46,10 +46,20 @@ type MintDataNftProps = {
 };
 export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   const { nftMinter, viewContractConfig } = props;
+  const [antiSpamTaxAmount, setAntiSpamTaxAmount] = useState<number>(0);
 
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   // console.log(viewContractConfig);
+
+  useEffect(() => {
+    (async () => {
+      const mintRequirements = await nftMinter.viewMinterRequirements(new Address(address), viewContractConfig.taxToken);
+      // console.log(mintRequirements);
+      setAntiSpamTaxAmount(mintRequirements.antiSpamTaxValue);
+    })();
+  }, []);
+
   const validationSchema = Yup.object().shape({
     senderAddress: Yup.mixed<IAddress>().required(),
     tokenName: Yup.string()
@@ -63,7 +73,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
     royalties: Yup.number()
       .required("Royalties are required")
       .min(0, "Royalties should be between 0 and 50")
-      .max(50, "Royalalties should be between 0 and 50")
+      .max(50, "Royalties should be between 0 and 50")
       .typeError("Royalties must be a number"),
     datasetTitle: Yup.string()
       .required("Dataset title is required")
@@ -94,7 +104,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   });
 
   const onClickMint = async (data: MintDataNftFormType) => {
-    if (antiSpamTaxToken === "") {
+    if (viewContractConfig.taxToken === "") {
       const txWhenNoRequiredMintTax = await nftMinter.mint(
         new Address(address),
         data.tokenName,
@@ -129,7 +139,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
         data.datasetDescription,
         {
           antiSpamTax: BigNumber(antiSpamTaxAmount).toNumber(),
-          antiSpamTokenIdentifier: antiSpamTaxToken,
+          antiSpamTokenIdentifier: viewContractConfig.taxToken,
           imageUrl: data.imageUrl,
           nftStorageToken: data.nftStorageToken,
           traitsUrl: data.traitsUrl,
