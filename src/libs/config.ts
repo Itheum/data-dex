@@ -28,8 +28,8 @@ export function contractsForChain(chainID: string): ContractsType {
             contract: dataNftMintContractAddress_Mx_Devnet,
           },
           {
-            id: "DATALT2-39ee0c",
-            contract: "erd1qqqqqqqqqqqqqpgqfjymlln86mydp7z76w2z4pjl793xp84g8ypsesxa2c",
+            id: "BIGBANG-6b34db",
+            contract: "erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m",
           },
         ],
       };
@@ -549,6 +549,7 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
+    "nftunes": "https://test.explorer.itheum.io/nftunes",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",

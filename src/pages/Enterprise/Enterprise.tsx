@@ -31,7 +31,7 @@ export const Enterprise: React.FC = () => {
   const windowSize = useWindowSize();
 
   const deployNewMinter = async (senderAddress: IAddress, version: string) => {
-    console.log(factory);
+    // console.log(factory);
     await sendTransactions({
       transactions: [factory.deployContract(senderAddress, version)],
     });
@@ -57,7 +57,6 @@ export const Enterprise: React.FC = () => {
       setClaimsContractAddress(claimAddress);
       setClaimsTokenIdentifier(claimToken);
       setViewAddressContracts(contractAddress);
-      // console.log(contractAddress);
     })();
   }, [hasPendingTransactions]);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -18,11 +18,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { isValidNumericCharacter } from "../../../../libs/utils";
+import BigNumber from "bignumber.js";
 
 type MintDataNftFormType = {
   senderAddress: IAddress;
@@ -94,28 +94,50 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   });
 
   const onClickMint = async (data: MintDataNftFormType) => {
-    console.log(data);
-    const tx = await nftMinter.mint(
-      new Address(address),
-      data.tokenName,
-      data.dataMarshallUrl,
-      data.dataStreamUrl,
-      data.dataPreviewUrl,
-      data.royalties * 100,
-      data.datasetTitle,
-      data.datasetDescription,
-      {
-        antiSpamTax: data.antiSpamTax,
-        antiSpamTokenIdentifier: data.antiSpamTokenIdentifier,
-        imageUrl: data.imageUrl,
-        nftStorageToken: data.nftStorageToken,
-        traitsUrl: data.traitsUrl,
-      }
-    );
-    tx.setGasLimit(100000000);
-    if (tx) {
+    if (antiSpamTaxToken === "") {
+      const txWhenNoRequiredMintTax = await nftMinter.mint(
+        new Address(address),
+        data.tokenName,
+        data.dataMarshallUrl,
+        data.dataStreamUrl,
+        data.dataPreviewUrl,
+        data.royalties * 100,
+        data.datasetTitle,
+        data.datasetDescription,
+        {
+          antiSpamTax: data.antiSpamTax,
+          antiSpamTokenIdentifier: data.antiSpamTokenIdentifier,
+          imageUrl: data.imageUrl,
+          nftStorageToken: data.nftStorageToken,
+          traitsUrl: data.traitsUrl,
+        }
+      );
+
+      txWhenNoRequiredMintTax.setGasLimit(100000000);
       await sendTransactions({
-        transactions: [tx],
+        transactions: [txWhenNoRequiredMintTax],
+      });
+    } else {
+      const txWhenRequiredMintTax = await nftMinter.mint(
+        new Address(address),
+        data.tokenName,
+        data.dataMarshallUrl,
+        data.dataStreamUrl,
+        data.dataPreviewUrl,
+        data.royalties * 100,
+        data.datasetTitle,
+        data.datasetDescription,
+        {
+          antiSpamTax: BigNumber(antiSpamTaxAmount).toNumber(),
+          antiSpamTokenIdentifier: antiSpamTaxToken,
+          imageUrl: data.imageUrl,
+          nftStorageToken: data.nftStorageToken,
+          traitsUrl: data.traitsUrl,
+        }
+      );
+      txWhenRequiredMintTax.setGasLimit(100000000);
+      await sendTransactions({
+        transactions: [txWhenRequiredMintTax],
       });
     }
   };

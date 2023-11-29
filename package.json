@@ -13,6 +13,7 @@
     "@multiversx/sdk-core": "12.13.0",
     "@multiversx/sdk-dapp": "2.23.0",
     "@multiversx/sdk-native-auth-client": "1.0.5",
+    "@multiversx/sdk-native-auth-server": "1.0.10",
     "@multiversx/sdk-network-providers": "2.1.0",
     "@sentry/react": "7.80.0",
     "@tanstack/match-sorter-utils": "8.8.4",
