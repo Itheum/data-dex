@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { LiveSettings } from "./LiveSettings";
-import { TransferControl } from "./TransferControl";
-import { WhitelistControl } from "./WhitelistControl";
-import { UpdateOtherSettings } from "./UpdateOtherSettings";
-import { ClaimRoyalties } from "./ClaimRoyalties";
-import { MintDataNft } from "./MintDataNft";
-import { CurateNfts } from "./CurateNfts";
-import { useNavigate } from "react-router-dom";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useNavigate } from "react-router-dom";
+import { ClaimRoyalties } from "./ClaimRoyalties";
+import { CurateNfts } from "./CurateNfts";
+import { LiveSettings } from "./LiveSettings";
+import { MintDataNft } from "./MintDataNft";
+import { TransferControl } from "./TransferControl";
+import { UpdateOtherSettings } from "./UpdateOtherSettings";
+import { WhitelistControl } from "./WhitelistControl";
 
 type DataNftCollectionProps = {
   nftMinter: NftMinter;
