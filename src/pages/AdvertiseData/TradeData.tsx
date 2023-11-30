@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
 import { dataCATDemoUserData } from "../../libs/config";
 import { useSearchParams } from "react-router-dom";
-import { TradeForm } from "./components/TradeForm";
+import { TradeFormModal } from "./components/TradeFormModal";
 
 export const TradeData: React.FC = () => {
   const [dataCATAcccount, setDataCATAcount] = useState<Record<any, any>>();
   const [dataCATCard, setDataCATCard] = useState<Record<any, any>>();
   const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState<string>("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const { colorMode } = useColorMode();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -35,7 +36,6 @@ export const TradeData: React.FC = () => {
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
       </Heading>
-
       <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
         <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
           <Image src="https://itheum-static.s3.ap-southeast-2.amazonaws.com/data-stream.png" alt="" rounded="lg" />
@@ -46,13 +46,19 @@ export const TradeData: React.FC = () => {
                 Any Data Stream as Data NFT-FT
               </Box>
             </Box>
-            <Button mt="3" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => <TradeForm isOpen={true} />}>
+            <Button
+              mt="3"
+              colorScheme="teal"
+              variant="outline"
+              borderRadius="xl"
+              onClick={() => {
+                setIsDrawerOpen(!isDrawerOpen);
+              }}>
               <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
             </Button>
           </Box>
         </Box>
       </Wrap>
-
       {dataCATAcccount?.programsAllocation?.length > 0 && (
         <>
           <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">
@@ -90,6 +96,7 @@ export const TradeData: React.FC = () => {
           </Wrap>
         </>
       )}
+      <TradeFormModal isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} />;
     </Stack>
   );
 };
