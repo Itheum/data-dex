@@ -160,7 +160,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                         <WebWalletLoginButton
                           loginButtonText={"Google (xAlias)"}
                           buttonClassName="auth_button"
-                          customWalletAddress="https://xalias.com"
+                          customWalletAddress={process.env.REACT_APP_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
                     </Wrap>
