@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -33,40 +33,61 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const { minterAddress } = useParams();
 
   const getAddressToken = async () => {
+    // request for minter tokens and egld balance
     const urlForExternalToken = `https://${getApi(chainID)}/accounts/${minterAddress}/tokens?size=10000`;
-    const { data } = await axios.get(urlForExternalToken);
+    const egldAccountBalance = `https://${getApi(chainID)}/accounts/${minterAddress}`;
+    const { data: externalTokenData } = await axios.get(urlForExternalToken);
+    const { data: egldBalance } = await axios.get(egldAccountBalance);
+    // request for claims portal
     const getClaimsDatadex = await mxClaimsContract.getClaims(minterAddress ?? "");
 
-    setAddressToken(data);
+    setAddressToken(externalTokenData);
 
+    // setting the data from claims portal into claim object + adding egld balance
     if (getClaimsDatadex.data !== undefined) {
       const ithRoyaltiesFromDataDex: number = getClaimsDatadex?.data[3].amount;
-      const ithRoyaltiesOutsideDataDex = viewAddressToken.filter((item: any) => {
-        if (item.identifier === (chainID === "D" ? tokenContractAddress_Mx_Devnet : tokenContractAddress_Mx_Mainnet)) {
-          return item.amount;
-        }
+      const ithRoyaltiesOutsideDataDex = viewAddressToken.find((item: Record<any, any>) => {
+        return item.identifier === (chainID === "D" ? tokenContractAddress_Mx_Devnet : tokenContractAddress_Mx_Mainnet);
       });
-      const totalIthRoyaltiesToClaim: number = 0;
+      const ithRoyaltiesOutsideDataDexAmount: number = ithRoyaltiesOutsideDataDex?.amount;
 
-      console.log(typeof ithRoyaltiesOutsideDataDex);
-      // if(ithRoyaltiesOutsideDataDex.tokenIdenfier)
-
-      setClaimObject(
-        claimObject.map(() => {
-          if (chainID === "D") {
-            return {
-              tokenIdentifier: tokenContractAddress_Mx_Devnet,
-              amount: ithRoyaltiesFromDataDex,
-            };
-          } else {
-            return {
-              tokenIdentifier: tokenContractAddress_Mx_Mainnet,
-              amount: ithRoyaltiesFromDataDex,
-            };
-          }
-        })
-      );
+      if (chainID === "D") {
+        setClaimObject([
+          {
+            tokenIdentifier: tokenContractAddress_Mx_Devnet,
+            amount: ithRoyaltiesOutsideDataDexAmount !== undefined ? ithRoyaltiesFromDataDex + ithRoyaltiesOutsideDataDexAmount : ithRoyaltiesFromDataDex,
+          },
+          {
+            tokenIdentifier: "xEGLD",
+            amount: Number(egldBalance.balance),
+          },
+        ]);
+      } else {
+        setClaimObject([
+          {
+            tokenIdentifier: tokenContractAddress_Mx_Mainnet,
+            amount: ithRoyaltiesOutsideDataDexAmount !== undefined ? ithRoyaltiesFromDataDex + ithRoyaltiesOutsideDataDexAmount : ithRoyaltiesFromDataDex,
+          },
+          {
+            tokenIdentifier: "xEGLD",
+            amount: Number(egldBalance.balance),
+          },
+        ]);
+      }
     }
+
+    // adding to the claimObject the external tokens other than ith and egld
+    return viewAddressToken.map((item) => {
+      if (item) {
+        setClaimObject([
+          ...claimObject,
+          {
+            tokenIdentifier: item.identifier,
+            amount: Number(item.balance),
+          },
+        ]);
+      }
+    });
   };
 
   const claimRoyalties = async (tokenIdentifierToClaim: string) => {
@@ -89,28 +110,15 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
       <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Claims your royalties below. Note that once your click to claim they will go into your claimsAddress of {claimAddress}
       </Text>
-      {claimObject.map((token, index) => {
-        return (
-          <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties(token.tokenIdentifier)} isDisabled={token.amount === 0} mt={1}>
-            {token.amount} {token.tokenIdentifier?.split("-")[0]}
-          </Button>
-        );
-      })}
-      {/*{amountToClaim.map((token, index) => {*/}
-      {/*  if (token.amount !== 0) {*/}
-      {/*    return (*/}
-      {/*      <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties()}>*/}
-      {/*        {token.amount / 10 ** 18}&nbsp;{factoryClaimToken.split("-")[0]}*/}
-      {/*      </Button>*/}
-      {/*    );*/}
-      {/*  } else {*/}
-      {/*    return (*/}
-      {/*      <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties()}>*/}
-      {/*        0&nbsp;{factoryClaimToken.split("-")[0]}*/}
-      {/*      </Button>*/}
-      {/*    );*/}
-      {/*  }*/}
-      {/*})}*/}
+      <Flex gap={3}>
+        {claimObject.map((token, index) => {
+          return (
+            <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties(token.tokenIdentifier)} isDisabled={token.amount === 0} mt={1}>
+              {token.amount} {token.tokenIdentifier?.split("-")[0]}
+            </Button>
+          );
+        })}
+      </Flex>
     </Box>
   );
 };
