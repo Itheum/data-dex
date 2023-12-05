@@ -100,7 +100,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
 
   useEffect(() => {
     getAddressToken();
-  }, []);
+  }, [claimObject]);
 
   return (
     <Box as="div" flexDirection="column">
@@ -111,13 +111,14 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
         Claims your royalties below. Note that once your click to claim they will go into your claimsAddress of {claimAddress}
       </Text>
       <Flex gap={3}>
-        {claimObject.map((token, index) => {
-          return (
-            <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties(token.tokenIdentifier)} isDisabled={token.amount === 0} mt={1}>
-              {token.amount} {token.tokenIdentifier?.split("-")[0]}
-            </Button>
-          );
-        })}
+        {claimObject &&
+          claimObject.map((token, index) => {
+            return (
+              <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties(token.tokenIdentifier)} isDisabled={token.amount === 0} mt={1}>
+                {token.amount} {token.tokenIdentifier?.split("-")[0]}
+              </Button>
+            );
+          })}
       </Flex>
     </Box>
   );
