@@ -9,6 +9,7 @@ import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { Address } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 
 type CurateNftsProp = {
   nftMinter: NftMinter;
@@ -23,6 +24,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   const [paginationSizeNft, setPaginationSizeNft] = useState<number>(10);
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const tokenIdentifier = viewContractConfig.tokenIdentifier;
 
   DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
@@ -32,7 +34,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     const url = `https://${apiLink}/collections/${tokenIdentifier}/nfts?from=${paginationFromNft}&size=${paginationSizeNft}&withOwner=true`;
     const { data } = await axios.get(url);
     setCreateDataNfts(data);
-    // console.log(data);
+    console.log(data);
   };
   // console.log(createDataNfts);
   const freezeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
@@ -57,16 +59,22 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     });
   };
 
+  const frozenNoncesAddresses = async () => {
+    const viewAddressFrozenNonces = await nftMinter.viewAddressFrozenNonces(new Address(address));
+    // console.log(viewAddressFrozenNonces);
+    setAddressFrozenNonces(viewAddressFrozenNonces);
+  };
+
   useEffect(() => {
     getCreatedDataNftsFromAPI();
-
+    frozenNoncesAddresses();
     // console.log(createDataNfts);
-    (async () => {
-      const viewAddressFrozenNonces = await nftMinter.viewAddressFrozenNonces(new Address(address));
-      // console.log(viewAddressFrozenNonces);
-      setAddressFrozenNonces(viewAddressFrozenNonces);
-    })();
   }, []);
+
+  useEffect(() => {
+    frozenNoncesAddresses();
+  }, [hasPendingTransactions]);
+
   useEffect(() => {
     getCreatedDataNftsFromAPI();
     // console.log(paginationFromNft);

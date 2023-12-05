@@ -100,7 +100,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
 
   useEffect(() => {
     getAddressToken();
-  }, [claimObject]);
+  }, [claimObject.length]);
 
   return (
     <Box as="div" flexDirection="column">
@@ -115,7 +115,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
           claimObject.map((token, index) => {
             return (
               <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties(token.tokenIdentifier)} isDisabled={token.amount === 0} mt={1}>
-                {token.amount} {token.tokenIdentifier?.split("-")[0]}
+                {token.amount / 10 ** 18} {token.tokenIdentifier?.split("-")[0]}
               </Button>
             );
           })}
