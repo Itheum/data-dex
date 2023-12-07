@@ -703,14 +703,13 @@ export default function MintDataMX({ onRfMount, dataCATAccount, setMenuItem }: {
     const myHeaders = new Headers();
     myHeaders.append("cache-control", "no-cache");
     myHeaders.append("Content-Type", "application/json");
-    // eslint-disable-next-line no-debugger
-    debugger;
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: JSON.stringify({
         dataNFTStreamUrl,
         dataCreatorERDAddress: mxAddress,
+        dataNFTMarshalServiceStatus,
       }),
     };
 

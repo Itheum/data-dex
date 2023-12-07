@@ -292,7 +292,7 @@ export const getTypedValueFromContract = async (chainID: string, methodForContra
   const endpointDefinition = methodForContractCall.getEndpoint();
   const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
   if (firstValue) {
-    return firstValue.valueOf().toNumber() / 100;
+    return firstValue.valueOf().toNumber();
   } else {
     return -1;
   }
