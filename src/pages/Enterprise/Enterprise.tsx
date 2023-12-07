@@ -9,6 +9,7 @@ import { useWindowSize } from "../../libs/utils/UseWindowSize";
 import { CHAIN_TX_VIEWER } from "../../libs/config";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import { gtagGo } from "../../libs/utils";
 
 export const Enterprise: React.FC = () => {
   const [isAddressWhitelisted, setAddressWhitelisted] = useState<boolean>(false);
@@ -62,135 +63,226 @@ export const Enterprise: React.FC = () => {
 
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} gap={8}>
-      <Box>
-        <Text fontSize="36px" fontFamily="Clash-Medium" mt="10">
-          Itheum Enterprise
-        </Text>
-        <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
-          Management Dashboard
-        </Text>
-      </Box>
-      <Flex pt={3}>
-        {isWhitelistNeeded ? (
-          <>
-            {isAddressWhitelisted ? (
-              <Flex flexDirection="row" justifyItems="center" alignItems="center">
-                <Box rounded="full" bgColor="green" h={3} w={3}></Box>
-                <Text>&nbsp;You are whitelisted to use Itheum Enterprise</Text>
-              </Flex>
+      <Box border="1px solid" borderColor="#00C79740" rounded="3xl" px={10} py={20} mt={5} bg="#1b1b1b50">
+        <Flex justifyContent="space-between" alignItems="center" px={10}>
+          <Flex flexDirection="column" justifyContent="center">
+            <Text fontSize="3.1rem" fontFamily="Clash-Medium">
+              Itheum Enterprise
+            </Text>
+            <Text fontSize="1.75rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" mt="-3">
+              Management Dashboard
+            </Text>
+          </Flex>
+          <Flex>
+            {isWhitelistNeeded ? (
+              <>
+                {isAddressWhitelisted ? (
+                  <Flex flexDirection="column" justifyItems="center" alignItems="start">
+                    <Flex justifyItems="start" alignItems="center">
+                      <Text fontSize="1.15rem" color="gray">
+                        Whitelist Status:&nbsp;
+                      </Text>
+                      <Text>Active&nbsp;</Text>
+                      <Box rounded="full" bgColor="teal.200" h={2} w={2} mt={1}></Box>
+                    </Flex>
+                    <Text fontSize="0.85rem" color="teal.200" fontFamily="Satoshi-Regular">
+                      Congratulations, you are whitelisted!
+                    </Text>
+                    <Button
+                      as={Link}
+                      variant="solid"
+                      colorScheme="teal"
+                      px={5}
+                      py={6}
+                      rounded="lg"
+                      isDisabled
+                      mt={4}
+                      onClick={() => {
+                        gtagGo("gwl", "join", "hero");
+                      }}
+                      href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
+                      isExternal>
+                      Get Whitelisted Today
+                    </Button>
+                  </Flex>
+                ) : (
+                  <Flex flexDirection="column" justifyItems="center" alignItems="start">
+                    <Flex justifyItems="start" alignItems="center">
+                      <Text fontSize="1.15rem" color="gray">
+                        Whitelist Status:&nbsp;
+                      </Text>
+                      <Text>Not Active&nbsp;</Text>
+                      <Box rounded="full" bgColor="#B86350" h={2} w={2} mt={1}></Box>
+                    </Flex>
+                    <Text fontSize="0.85rem" color="#B86350" fontFamily="Satoshi-Regular">
+                      Oops, You are not yet Whitelisted!
+                    </Text>
+                    <Button
+                      as={Link}
+                      variant="solid"
+                      colorScheme="teal"
+                      px={5}
+                      py={6}
+                      rounded="lg"
+                      mt={4}
+                      onClick={() => {
+                        gtagGo("gwl", "join", "hero");
+                      }}
+                      href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
+                      isExternal>
+                      Get Whitelisted Today
+                    </Button>
+                  </Flex>
+                )}
+              </>
             ) : (
-              <Flex flexDirection="row" justifyItems="center" alignItems="center">
-                <Box rounded="full" bgColor="red" h={3} w={3}></Box>
-                <Text>&nbsp;You are NOT whitelisted yet. Get Whitelisted today (should go to a landing page)</Text>
+              <Flex flexDirection="column" justifyItems="center" alignItems="start">
+                <Flex justifyItems="start" alignItems="center">
+                  <Text fontSize="1.15rem" color="gray">
+                    Whitelist Status:&nbsp;
+                  </Text>
+                  <Text>Active&nbsp;</Text>
+                  <Box rounded="full" bgColor="teal.200" h={2} w={2} mt={1}></Box>
+                </Flex>
+                <Text fontSize="0.85rem" color="teal.200" fontFamily="Satoshi-Regular">
+                  Congratulations, you are whitelisted!
+                </Text>
+                <Button
+                  as={Link}
+                  variant="solid"
+                  colorScheme="teal"
+                  px={5}
+                  py={6}
+                  rounded="lg"
+                  isDisabled
+                  mt={4}
+                  onClick={() => {
+                    gtagGo("gwl", "join", "hero");
+                  }}
+                  href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
+                  isExternal>
+                  Get Whitelisted Today
+                </Button>
               </Flex>
             )}
-          </>
-        ) : (
-          <Flex flexDirection="row" justifyItems="center" alignItems="center">
-            <Box rounded="full" bgColor="green" h={3} w={3}></Box>
-            <Text>&nbsp;You are whitelisted to use Itheum Enterprise</Text>
           </Flex>
-        )}
-      </Flex>
-      <Box as="div" flexDirection="column">
-        <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
-          Enterprise Factory Settings:
-        </Text>
-        <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
-        <Text fontSize="lg">
-          Protocol Treasury: {factoryTreasuryAddress?.toString()}&nbsp;
-          <Link
-            href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${factoryTreasuryAddress?.toString()}`}
-            isExternal
-            textColor="teal.200">
-            <ExternalLinkIcon />
-          </Link>
-        </Text>
-        <Text fontSize="lg">
-          Claims Contract: {claimsContractAddress?.toString()}&nbsp;
-          <Link
-            href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${claimsContractAddress?.toString()}`}
-            isExternal
-            textColor="teal.200">
-            <ExternalLinkIcon />
-          </Link>
-        </Text>
-        <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
-      </Box>
-      <Flex flexDirection={{ base: "column", md: "row" }} gap={4}>
-        <Text fontSize="2xl" fontFamily="Clash-Bold">
-          Available Data NFT Minter software versions:
-        </Text>
-        <Flex flexDirection={"row"} alignItems="center" justifyContent={{ base: "center", md: "start" }} gap={4}>
-          {factoryVersions.map((version, index) => {
-            return (
-              <Box key={index}>
-                {minterVersion === version ? (
-                  <Button onClick={() => setMinterVersion(version)} size="sm" colorScheme="teal">
-                    {version}
-                  </Button>
-                ) : (
-                  <Button onClick={() => setMinterVersion(version)} size="sm" colorScheme="teal" variant="outline">
-                    {version}
-                  </Button>
-                )}
-              </Box>
-            );
-          })}
-        </Flex>
-      </Flex>
-      <Box as="div" flexDirection="column">
-        <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
-          Your Enterprise Data NFT Minters
-        </Text>
-        <Flex flexDirection={"row"} flexWrap="wrap" gap={4} justifyContent="space-between" wordBreak="break-word">
-          {viewAddressContracts
-            .map((contractAddress, index) => {
-              return (
-                <Box key={index}>
-                  <Button px={3} py={1.5} size="lg" w="auto" colorScheme="teal" variant="outline" onClick={() => navigate(`${contractAddress.address}`)}>
-                    <Flex flexDirection="column" gap={1.5}>
-                      <Text textAlign="left">v{contractAddress.version}</Text>
-                      <Text textAlign="left">
-                        {windowSize.width <= 650 ? <ShortAddress address={contractAddress.address} fontSize="md" /> : contractAddress.address}
-                      </Text>
-                    </Flex>
-                  </Button>
-                </Box>
-              );
-            })
-            .reverse()}
         </Flex>
       </Box>
-      <Box as="div" flexDirection="column" justifyItems="center" alignItems="center">
-        <Text fontSize="2xl" fontFamily="Clash-Bold" pb={2}>
-          Ready to deploy a new minter?
-        </Text>
-        <Flex flexDirection="row" alignItems="center" justifyContent="space-between" gap={4}>
-          <Flex mt="4 !important" flexDirection="column">
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size={{ base: "sm", md: "md" }}
-              fontSize={{ base: "sm", md: "lg" }}
-              onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse#enterprise")}>
-              Read Terms of Use
-            </Button>
-            <Checkbox size="sm" pt={3} isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
-              I have read all terms and agree to them
-            </Checkbox>
-          </Flex>
-          <Box>
-            <Button
-              colorScheme="teal"
-              onClick={() => deployNewMinter(new Address(address), minterVersion)}
-              isDisabled={!readTermsChecked || minterVersion === ""}
-              size={{ base: "sm", md: "lg" }}>
-              Deploy new Minter
-            </Button>
+      <Flex alignItems="center" gap="5">
+        <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w="35%">
+          <Box bgColor="#00C7970D" roundedTop="3xl">
+            <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+              Enterprise Factory Settings:
+            </Text>
+          </Box>
+          <Box px={10} py={4} bg="#1b1b1b50" roundedBottom="3xl">
+            <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
+            <Text fontSize="lg">
+              Protocol Treasury: <ShortAddress address={factoryTreasuryAddress?.toString()} fontSize="md" />
+              <Link
+                href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${factoryTreasuryAddress?.toString()}`}
+                isExternal
+                textColor="teal.200">
+                <ExternalLinkIcon />
+              </Link>
+            </Text>
+            <Text fontSize="lg">
+              Claims Contract: <ShortAddress address={claimsContractAddress?.toString()} fontSize="md" />
+              <Link
+                href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/accounts/${claimsContractAddress?.toString()}`}
+                isExternal
+                textColor="teal.200">
+                <ExternalLinkIcon />
+              </Link>
+            </Text>
+            <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
           </Box>
         </Flex>
-      </Box>
+
+        <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w="65%">
+          <Box bgColor="#00C7970D" roundedTop="3xl">
+            <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+              Data NFT Minter
+            </Text>
+          </Box>
+          <Flex justifyContent="space-between" alignItems="center" px={10} bg="#1b1b1b50">
+            <Text fontSize="1rem" fontFamily="Satoshi-Regular" pr={3} py={4}>
+              Select your desired Data NFT Minter Software version:
+            </Text>
+            <Flex alignItems="center" gap={3}>
+              {factoryVersions.map((version, index) => {
+                return (
+                  <Box key={index}>
+                    {minterVersion === version ? (
+                      <Button onClick={() => setMinterVersion(version)} size="sm" colorScheme="teal">
+                        Version {version}
+                      </Button>
+                    ) : (
+                      <Button onClick={() => setMinterVersion(version)} size="sm" colorScheme="teal" variant="outline">
+                        Version {version}
+                      </Button>
+                    )}
+                  </Box>
+                );
+              })}
+            </Flex>
+          </Flex>
+          <Flex flexDirection="column" gap={4} alignItems="start" px={10} bg="#1b1b1b50">
+            <Text fontSize="1rem" fontFamily="Satoshi-Regular" pr={3} py={4} whiteSpace="nowrap">
+              Previously selected Data NFT Minter:
+            </Text>
+            <Flex flexDirection={"row"} gap={4} justifyContent="space-between" alignItems="center" wordBreak="break-word" w="full" overflowX="scroll">
+              {viewAddressContracts.length > 0 ? (
+                viewAddressContracts
+                  .map((contractAddress, index) => {
+                    return (
+                      <Box key={index}>
+                        <Button
+                          mb={4}
+                          px={3}
+                          py={1.5}
+                          size="lg"
+                          w="auto"
+                          colorScheme="teal"
+                          variant="outline"
+                          onClick={() => navigate(`${contractAddress.address}`)}>
+                          <Flex flexDirection="row" gap={1.5}>
+                            <Text textAlign="left" color="white">
+                              Version{contractAddress.version}
+                            </Text>
+                            (<ShortAddress address={contractAddress.address} fontSize="sm" />)
+                          </Flex>
+                        </Button>
+                      </Box>
+                    );
+                  })
+                  .reverse()
+              ) : (
+                <Text color="#B86350">*No data yet</Text>
+              )}
+            </Flex>
+          </Flex>
+          <Flex justifyContent="space-between" alignItems="center" px={10} bg="#1b1b1b50" pt={7} roundedBottom="3xl" pb={4}>
+            <Flex mt="4 !important" flexDirection="column">
+              <Checkbox size="sm" pt={3} isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
+                I have read and agree to the&nbsp;
+                <a target="_blank" href="https://itheum.com/legal/datadex/termsofuse#enterprise" rel="noreferrer" style={{ color: "#00C797" }}>
+                  terms of use
+                </a>
+              </Checkbox>
+            </Flex>
+            <Box>
+              <Button
+                colorScheme="teal"
+                onClick={() => deployNewMinter(new Address(address), minterVersion)}
+                isDisabled={!readTermsChecked || minterVersion === ""}
+                size={{ base: "sm", md: "lg" }}>
+                Deploy new Minter
+              </Button>
+            </Box>
+          </Flex>
+        </Flex>
+      </Flex>
     </Flex>
   );
 };

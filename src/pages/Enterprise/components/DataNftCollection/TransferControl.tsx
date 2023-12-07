@@ -88,12 +88,13 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
   const quickAdd = (marketplace: string) => {
     const dataDexDevnet = "erd1qqqqqqqqqqqqqpgqlhewm06p4c9qhq32p239hs45dvry948tfsxshx3e0l";
     const dataDexMainnet = "erd1qqqqqqqqqqqqqpgqay2r64l9nhhvmaqw4qanywfd0954w2m3c77qm7drxc";
+    const xoxnoDevnet = "erd1qqqqqqqqqqqqqpgql0dnz6n5hpuw8cptlt00khd0nn4ja8eadsfq2xrqw4";
     const xoxnoMainnet = "erd1qqqqqqqqqqqqqpgq6wegs2xkypfpync8mn2sa5cmpqjlvrhwz5nqgepyg8";
     if (chainID === "D") {
       if (marketplace === "dataDex") {
         setTransferRole(dataDexDevnet);
       } else {
-        alert("No address found for xoxno devnet.");
+        setTransferRole(xoxnoDevnet);
       }
     } else {
       if (marketplace === "dataDex") {
