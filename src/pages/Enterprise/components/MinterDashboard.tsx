@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { DataNftCollection } from "./DataNftCollection/DataNftCollection";
 import { LaunchNftMinter } from "./LaunchNftMinter";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import ShortAddress from "../../../components/UtilComps/ShortAddress";
 
 export const MinterDashboard: React.FC = () => {
   const [viewContractConfig, setViewContractConfig] = useState<ContractConfiguration>();
@@ -45,13 +46,20 @@ export const MinterDashboard: React.FC = () => {
 
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} gap={8}>
-      <Box>
-        <Text fontSize="36px" fontFamily="Clash-Medium" mt="10">
-          Itheum Enterprise - Minter Dashboard
-        </Text>
-        <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
-          Minter address: {minterAddress}
-        </Text>
+      <Box border="1px solid" borderColor="#00C79740" rounded="3xl" px={10} py={20} mt={5} bg="#1b1b1b50">
+        <Flex justifyContent="space-between" alignItems="center" px={10} h="full">
+          <Flex flexDirection="column" justifyContent="center">
+            <Text fontSize="3.1rem" fontFamily="Clash-Medium">
+              Itheum Enterprise
+            </Text>
+            <Text fontSize="1.75rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" mt="-3">
+              Minter Dashboard
+            </Text>
+          </Flex>
+          <Text opacity=".7" fontFamily="Satoshi-Regular" fontWeight="light" fontSize="2xl">
+            Minter address: <ShortAddress address={minterAddress} fontSize="2xl" />
+          </Text>
+        </Flex>
       </Box>
       {viewContractConfig?.tokenIdentifier ? (
         <>
