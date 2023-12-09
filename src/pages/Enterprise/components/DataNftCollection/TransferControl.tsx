@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Image, Input, Text, Tooltip, useToast } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, FormControl, FormErrorMessage, FormLabel, IconButton, Image, Input, Text, Tooltip, useToast } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
@@ -11,6 +11,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import * as Yup from "yup";
 import dataDexLogo from "assets/img/enterprise/dataDexLogo.png";
 import xoxnoLogo from "assets/img/enterprise/xoxnoLogo.png";
+import ShortAddress from "../../../../components/UtilComps/ShortAddress";
 
 type TransferControlFormType = {
   addressToSetRoleForTransfer: string;
@@ -111,17 +112,17 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
 
   return (
     <Box as="div" flexDirection="column">
-      <Text fontSize="1.5rem" fontFamily="Clash-Bold" color="teal.200">
+      <Text fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200">
         Transfer Control:
       </Text>
-      <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" pb={3}>
-        Use these settings to control the “soulbound” nature of your tokens
+      <Text fontSize="1rem" opacity=".7" fontFamily="Satoshi-Regular" py={1}>
+        Make Collection Transferable
       </Text>
       <Button onClick={() => setRoles(new Address(address))} colorScheme="teal" isLoading={hasPendingTransactions} loadingText="Loading">
-        Make collection Non-Transferable
+        Enable
       </Button>
 
-      <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" py={1}>
+      <Text fontSize="0.85rem" opacity=".7" fontFamily="Satoshi-Regular" py={1}>
         * Set the “base roles” for the minter to make NFTs non-transferable
       </Text>
 
@@ -134,37 +135,51 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
           {viewTransferRoles.map((role, index) => {
             return (
               <Flex key={index} justifyContent="center" alignItems="center">
-                <Box background="transparent" border="1px solid" borderColor="teal.200" rounded="lg" roundedEnd="0px">
-                  <Text color="teal.200" p={2}>
-                    {role}
-                  </Text>
-                </Box>
-                <Tooltip label="Exclude address" aria-label="Exclude address">
-                  <Button size="md" variant="outline" color="red.200" borderColor="red.200" roundedStart="0px" ml="2px" onClick={() => unsetTransferRole(role)}>
-                    <AiOutlineClose />
-                  </Button>
-                </Tooltip>
+                <ButtonGroup size="sm" isAttached variant="outline" colorScheme="teal">
+                  <Box border="1px solid" borderColor="teal.200" rounded="lg" roundedRight="0px">
+                    <Text color="teal.200" px={2} cursor="default" pt={0.5}>
+                      <ShortAddress address={role} fontSize="lg" />
+                    </Text>
+                  </Box>
+
+                  <Tooltip label="Exclude address" aria-label="Exclude address">
+                    <IconButton
+                      aria-label="Exclude Address"
+                      icon={<AiOutlineClose />}
+                      roundedLeft="0"
+                      bgColor="#00C7970D"
+                      onClick={() => unsetTransferRole(role)}
+                    />
+                  </Tooltip>
+                </ButtonGroup>
               </Flex>
             );
           })}
+          {viewTransferRoles.length === 0 && (
+            <Text color="#B86350" fontSize="md">
+              *No addresses yet
+            </Text>
+          )}
         </Flex>
 
-        <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={5} fontSize="xl">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.addressToSetRoleForTransfer} id="addressToSetRoleForTransfer" isRequired minH={"6.25rem"}>
+        <Flex pt={2} fontSize="xl" w="full">
+          <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+            <FormControl isInvalid={!!errors.addressToSetRoleForTransfer} id="addressToSetRoleForTransfer" isRequired minH={"6rem"}>
               <FormLabel fontWeight="bold" fontSize="md">
                 Allow Address to Transfer:
               </FormLabel>
-              <Input mt="1 !important" {...register("addressToSetRoleForTransfer", { required: "Address is required!" })} />
+              <Flex flexDirection="row" alignItems="center" gap={2}>
+                <Input {...register("addressToSetRoleForTransfer", { required: "Address is required!" })} w="80%" placeholder="Enter Address" />
+                <Button type="submit" variant="outline" colorScheme="teal" isLoading={hasPendingTransactions} loadingText="Loading">
+                  Allow
+                </Button>
+              </Flex>
               <FormErrorMessage>{errors?.addressToSetRoleForTransfer?.message}</FormErrorMessage>
             </FormControl>
-            <Button type="submit" colorScheme="teal" isLoading={hasPendingTransactions} loadingText="Loading">
-              Allow
-            </Button>
           </form>
         </Flex>
 
-        <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={5} fontSize="xl" justifyContent="center" alignItems="center">
+        <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pb={5} fontSize="xl" justifyContent="center" alignItems="center">
           <Text fontSize="xl" fontFamily="Clash-Medium">
             Quick Add
           </Text>

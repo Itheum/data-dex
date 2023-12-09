@@ -31,14 +31,22 @@ export const DataNftCollection: React.FC<DataNftCollectionProps> = (props) => {
 
   return (
     <Box>
-      <Text fontSize="2rem" fontFamily="Clash-Medium" py={3}>
-        Your Data NFT Collection
-      </Text>
       <Flex flexDirection="column" gap={5}>
-        <LiveSettings nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
-        <TransferControl nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
-        <WhitelistControl nftMinter={nftMinter} />
-        <UpdateOtherSettings nftMinter={nftMinter} />
+        <Flex gap="5">
+          <LiveSettings nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+          <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w="67%">
+            <Box bgColor="#00C7970D" roundedTop="3xl">
+              <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+                Settings
+              </Text>
+            </Box>
+            <Box px={10} py={4} bg="#1b1b1b50" roundedBottom="3xl" h="32rem" overflowY="scroll">
+              <TransferControl nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+              <WhitelistControl nftMinter={nftMinter} />
+              <UpdateOtherSettings nftMinter={nftMinter} claimAddress={viewContractConfig.claimsAddress} />
+            </Box>
+          </Flex>
+        </Flex>
         <ClaimRoyalties nftMinter={nftMinter} claimAddress={viewContractConfig.claimsAddress} />
         <MintDataNft nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
         <CurateNfts nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
