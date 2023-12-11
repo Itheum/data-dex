@@ -69,7 +69,6 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
-import { NativeAuthServer } from "@multiversx/sdk-native-auth-server";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
