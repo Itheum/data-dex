@@ -32,9 +32,9 @@ export const DataNftCollection: React.FC<DataNftCollectionProps> = (props) => {
   return (
     <Box>
       <Flex flexDirection="column" gap={5}>
-        <Flex gap="5">
+        <Flex gap="5" flexDirection={{ base: "column", xl: "row" }}>
           <LiveSettings nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
-          <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w="67%">
+          <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "67%" }}>
             <Box bgColor="#00C7970D" roundedTop="3xl">
               <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
                 Settings
@@ -47,8 +47,10 @@ export const DataNftCollection: React.FC<DataNftCollectionProps> = (props) => {
             </Box>
           </Flex>
         </Flex>
-        <ClaimRoyalties nftMinter={nftMinter} claimAddress={viewContractConfig.claimsAddress} />
-        <MintDataNft nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+        <Flex gap="5" flexDirection={{ base: "column", xl: "row" }}>
+          <ClaimRoyalties nftMinter={nftMinter} claimAddress={viewContractConfig.claimsAddress} />
+          <MintDataNft nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
+        </Flex>
         <CurateNfts nftMinter={nftMinter} viewContractConfig={viewContractConfig} />
       </Flex>
     </Box>

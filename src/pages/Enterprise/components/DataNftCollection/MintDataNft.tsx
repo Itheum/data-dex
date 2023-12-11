@@ -153,19 +153,23 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   };
 
   return (
-    <Box as="div" flexDirection="column">
-      <Text fontSize="1.5rem" fontFamily="Clash-Bold" color="teal.200">
-        Mint On-Demand Data NFTs
-      </Text>
-      <Text size="1rem" pb={5} opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
-        Ideally, you will use an automated script to mint large number of Data NFTs using a sequential index. But, you can also use the below form to mint
-        single Data NFTs, on-demand. This will be useful primarily in test collections {viewContractConfig.tokenIdentifier}
-      </Text>
+    <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "66%" }}>
+      <Box bgColor="#00C7970D" roundedTop="3xl">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+          Mint On-Demand Data NFTs
+        </Text>
+      </Box>
+      {/*<Text size="1rem" pb={5} opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">*/}
+      {/*  Ideally, you will use an automated script to mint large number of Data NFTs using a sequential index. But, you can also use the below form to mint*/}
+      {/*  single Data NFTs, on-demand. This will be useful primarily in test collections {viewContractConfig.tokenIdentifier}*/}
+      {/*</Text>*/}
 
-      <Flex flexDirection="row">
-        <form onSubmit={handleSubmit(onClickMint)}>
-          <Flex gap={6} flexDirection={{ base: "column", xl: "row" }}>
-            <Flex flexDirection="column" minW="18.1rem">
+      <Flex flexDirection="row" w="full" h="20rem" overflowY="scroll">
+        <form
+          onSubmit={handleSubmit(onClickMint)}
+          style={{ paddingInlineStart: "2.5rem", paddingInlineEnd: "2.5rem", paddingTop: "1rem", paddingBottom: "1rem", width: "100%" }}>
+          <Flex flexDirection={"column"}>
+            <Flex flexDirection="row" minW="18.1rem" gap={3}>
               <FormControl isInvalid={!!errors.tokenName} isRequired minH={"6.25rem"}>
                 <FormLabel fontWeight="bold" fontSize="md">
                   Token Name
@@ -186,6 +190,72 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
                 />
                 <FormErrorMessage>{errors?.tokenName?.message}</FormErrorMessage>
               </FormControl>
+              <FormControl isInvalid={!!errors.datasetTitle} isRequired minH={"6.25rem"}>
+                <FormLabel fontWeight="bold" fontSize="md">
+                  Token Title
+                </FormLabel>
+
+                <Controller
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <Input
+                      mt="1 !important"
+                      id="datasetTitle"
+                      onChange={(event) => {
+                        onChange(event.target.value);
+                      }}
+                    />
+                  )}
+                  name={"datasetTitle"}
+                />
+                <FormErrorMessage>{errors?.datasetTitle?.message}</FormErrorMessage>
+              </FormControl>
+            </Flex>
+            <Flex flexDirection="row" minW="18.1rem" gap={3}>
+              <FormControl isInvalid={!!errors.datasetDescription} isRequired minH={"6.25rem"}>
+                <FormLabel fontWeight="bold" fontSize="md">
+                  Token Description
+                </FormLabel>
+
+                <Controller
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <Input
+                      mt="1 !important"
+                      id="datasetDescription"
+                      onChange={(event) => {
+                        onChange(event.target.value);
+                      }}
+                    />
+                  )}
+                  name={"datasetDescription"}
+                />
+                <FormErrorMessage>{errors?.datasetDescription?.message}</FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.dataMarshallUrl} isRequired minH={"6.25rem"}>
+                <FormLabel fontWeight="bold" fontSize="md">
+                  Data Marshal
+                </FormLabel>
+
+                <Controller
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <Input
+                      mt="1 !important"
+                      id="dataMarshallUrl"
+                      value="https://api.itheumcloud-stg.com/datamarshalapi/router/v1"
+                      disabled
+                      onChange={(event) => {
+                        onChange(event.target.value);
+                      }}
+                    />
+                  )}
+                  name={"dataMarshallUrl"}
+                />
+                <FormErrorMessage>{errors?.dataMarshallUrl?.message}</FormErrorMessage>
+              </FormControl>
+            </Flex>
+            <Flex flexDirection="row" minW="18.1rem" gap={3}>
               <FormControl isInvalid={!!errors.dataStreamUrl} isRequired minH={"6.25rem"}>
                 <FormLabel fontWeight="bold" fontSize="md">
                   Data Stream URL
@@ -227,104 +297,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
                 <FormErrorMessage>{errors?.dataPreviewUrl?.message}</FormErrorMessage>
               </FormControl>
             </Flex>
-            <Flex flexDirection="column" minW="18.1rem">
-              <FormControl isInvalid={!!errors.dataMarshallUrl} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Data Marshal
-                </FormLabel>
-
-                <Controller
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <Input
-                      mt="1 !important"
-                      id="dataMarshallUrl"
-                      value="https://api.itheumcloud-stg.com/datamarshalapi/router/v1"
-                      disabled
-                      onChange={(event) => {
-                        onChange(event.target.value);
-                      }}
-                    />
-                  )}
-                  name={"dataMarshallUrl"}
-                />
-                <FormErrorMessage>{errors?.dataMarshallUrl?.message}</FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.royalties} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Royalty
-                </FormLabel>
-
-                <Controller
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <NumberInput
-                      mt="1 !important"
-                      size="md"
-                      id="royalties"
-                      maxW={24}
-                      step={1}
-                      minW="18.1rem"
-                      defaultValue={0}
-                      min={0}
-                      max={50}
-                      isValidCharacter={isValidNumericCharacter}
-                      onChange={(valueAsString: string) => {
-                        onChange(valueAsString);
-                      }}>
-                      <NumberInputField />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  )}
-                  name={"royalties"}
-                />
-                <FormErrorMessage>{errors?.royalties?.message}</FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.datasetTitle} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Token Title
-                </FormLabel>
-
-                <Controller
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <Input
-                      mt="1 !important"
-                      id="datasetTitle"
-                      onChange={(event) => {
-                        onChange(event.target.value);
-                      }}
-                    />
-                  )}
-                  name={"datasetTitle"}
-                />
-                <FormErrorMessage>{errors?.datasetTitle?.message}</FormErrorMessage>
-              </FormControl>
-            </Flex>
-            <Flex flexDirection="column" minW="18.1rem">
-              <FormControl isInvalid={!!errors.datasetDescription} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Token Description
-                </FormLabel>
-
-                <Controller
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <Input
-                      mt="1 !important"
-                      id="datasetDescription"
-                      onChange={(event) => {
-                        onChange(event.target.value);
-                      }}
-                    />
-                  )}
-                  name={"datasetDescription"}
-                />
-                <FormErrorMessage>{errors?.datasetDescription?.message}</FormErrorMessage>
-              </FormControl>
+            <Flex flexDirection="row" minW="18.1rem" gap={3}>
               <FormControl isInvalid={!!errors.imageUrl} minH={"6.25rem"}>
                 <FormLabel fontWeight="bold" fontSize="md">
                   Image URL
@@ -366,9 +339,44 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
                 <FormErrorMessage>{errors?.traitsUrl?.message}</FormErrorMessage>
               </FormControl>
             </Flex>
+            <Flex flexDirection="row" minW="18.1rem">
+              <FormControl isInvalid={!!errors.royalties} isRequired minH={"6.25rem"}>
+                <FormLabel fontWeight="bold" fontSize="md">
+                  Royalty
+                </FormLabel>
+
+                <Controller
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <NumberInput
+                      mt="1 !important"
+                      size="md"
+                      id="royalties"
+                      maxW={24}
+                      step={1}
+                      minW="18.1rem"
+                      defaultValue={0}
+                      min={0}
+                      max={50}
+                      isValidCharacter={isValidNumericCharacter}
+                      onChange={(valueAsString: string) => {
+                        onChange(valueAsString);
+                      }}>
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  )}
+                  name={"royalties"}
+                />
+                <FormErrorMessage>{errors?.royalties?.message}</FormErrorMessage>
+              </FormControl>
+            </Flex>
           </Flex>
-          <Button type="submit" colorScheme="teal" size={{ base: "sm", md: "lg" }}>
-            Mint
+          <Button type="submit" colorScheme="teal" size={{ base: "sm", md: "lg" }} mb={3}>
+            Click here to mint
           </Button>
         </form>
       </Flex>

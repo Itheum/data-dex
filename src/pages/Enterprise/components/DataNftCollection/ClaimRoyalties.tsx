@@ -103,20 +103,37 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   }, [claimObject.length]);
 
   return (
-    <Box as="div" flexDirection="column">
-      <Text fontSize="1.5rem" fontFamily="Clash-Bold" color="teal.200">
-        Claim your Royalties!
-      </Text>
-      <Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
-        Claims your royalties below. Note that once your click to claim they will go into your claimsAddress of {claimAddress}
-      </Text>
-      <Flex gap={3}>
+    <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "33%" }}>
+      <Box bgColor="#00C7970D" roundedTop="3xl">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+          Royalty Claim
+        </Text>
+      </Box>
+      {/*<Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">*/}
+      {/*  Claims your royalties below. Note that once your click to claim they will go into your claimsAddress of {claimAddress}*/}
+      {/*</Text>*/}
+      <Flex flexDirection="column" gap={3}>
         {claimObject &&
           claimObject.map((token, index) => {
             return (
-              <Button colorScheme="teal" size="lg" key={index} onClick={() => claimRoyalties(token.tokenIdentifier)} isDisabled={token.amount === 0} mt={1}>
-                {token.amount / 10 ** 18} {token.tokenIdentifier?.split("-")[0]}
-              </Button>
+              <Flex key={index} px={10} py={4} flexDirection="row" justifyContent="space-between" alignItems="start" gap={1}>
+                <Flex flexDirection="column">
+                  <Text fontSize="lg">{token.tokenIdentifier?.split("-")[0]}</Text>
+                  <Text fontSize="0.85rem" opacity=".6" fontFamily="Satoshi-Regular">
+                    Available now
+                  </Text>
+                  <Text fontSize="2xl">{token.amount / 10 ** 18}</Text>
+                </Flex>
+                <Button
+                  colorScheme="teal"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => claimRoyalties(token.tokenIdentifier)}
+                  isDisabled={token.amount === 0}
+                  mt={1}>
+                  Claim token
+                </Button>
+              </Flex>
             );
           })}
       </Flex>

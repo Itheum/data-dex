@@ -31,7 +31,7 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
   };
 
   return (
-    <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w="33%">
+    <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "33%" }}>
       <Box bgColor="#00C7970D" roundedTop="3xl">
         <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
           Live Settings:
