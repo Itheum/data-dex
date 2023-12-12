@@ -182,7 +182,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "15rem" }} justifyContent="space-around">
+        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "10rem" }} justifyContent="space-around">
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"

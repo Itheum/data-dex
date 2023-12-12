@@ -530,13 +530,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="View Data is disabled on devnet"
+                label="View Data is disabled on devnet or xPortal login"
                 isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={loginMethod === "walletconnectv2" || !shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
                   onClick={() => {
                     accessDataStream(item.nonce);
                   }}>
