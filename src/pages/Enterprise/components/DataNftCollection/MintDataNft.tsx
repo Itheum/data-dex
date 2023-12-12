@@ -23,6 +23,8 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { isValidNumericCharacter } from "../../../../libs/utils";
 import BigNumber from "bignumber.js";
+import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { MdInfo } from "react-icons/md";
 
 type MintDataNftFormType = {
   senderAddress: IAddress;
@@ -154,11 +156,14 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
 
   return (
     <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "66%" }}>
-      <Box bgColor="#00C7970D" roundedTop="3xl">
-        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+      <Flex bgColor="#00C7970D" roundedTop="3xl" alignItems="center">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" pl={10} pr={2} py={4}>
           Mint On-Demand Data NFTs
         </Text>
-      </Box>
+        <ImageTooltip description="Ideally, you will use an automated script to mint large number of Data NFTs using a sequential index. But, you can also use the below form to mint single Data NFTs, on-demand. This  will be useful primarily in test collections.">
+          <MdInfo />
+        </ImageTooltip>
+      </Flex>
       {/*<Text size="1rem" pb={5} opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">*/}
       {/*  Ideally, you will use an automated script to mint large number of Data NFTs using a sequential index. But, you can also use the below form to mint*/}
       {/*  single Data NFTs, on-demand. This will be useful primarily in test collections {viewContractConfig.tokenIdentifier}*/}

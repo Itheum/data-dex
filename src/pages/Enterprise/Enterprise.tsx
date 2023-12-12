@@ -168,14 +168,14 @@ export const Enterprise: React.FC = () => {
           </Flex>
         </Flex>
       </Box>
-      <Flex alignItems="center" gap="5">
-        <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w="35%">
-          <Box bgColor="#00C7970D" roundedTop="3xl">
+      <Flex flexDirection={{ base: "column", xl: "row" }} gap="5">
+        <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "35%" }}>
+          <Flex bgColor="#00C7970D" roundedTop="3xl">
             <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
               Enterprise Factory Settings:
             </Text>
-          </Box>
-          <Box px={10} py={4} bg="#1b1b1b50" roundedBottom="3xl">
+          </Flex>
+          <Flex flexDirection="column" px={10} py={4} bg="#1b1b1b50" roundedBottom="3xl" gap={3} h={{ base: "72%", "2xl": "82%" }}>
             <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
             <Text fontSize="lg">
               Protocol Treasury: <ShortAddress address={factoryTreasuryAddress?.toString()} fontSize="md" />
@@ -196,10 +196,10 @@ export const Enterprise: React.FC = () => {
               </Link>
             </Text>
             <Text fontSize="lg">Claims Token: {claimsTokenIdentifier}</Text>
-          </Box>
-        </Flex>
+          </Flex>
+        </Box>
 
-        <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w="65%">
+        <Flex flexDirection="column" border="0.01rem solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "65%" }}>
           <Box bgColor="#00C7970D" roundedTop="3xl">
             <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
               Data NFT Minter

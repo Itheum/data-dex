@@ -10,6 +10,8 @@ import { Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { tokenContractAddress_Mx_Devnet, tokenContractAddress_Mx_Mainnet } from "libs/contractAddresses";
+import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { MdInfo } from "react-icons/md";
 
 type ClaimRoyaltiesProps = {
   nftMinter: NftMinter;
@@ -104,14 +106,14 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
 
   return (
     <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "33%" }}>
-      <Box bgColor="#00C7970D" roundedTop="3xl">
-        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+      <Flex bgColor="#00C7970D" roundedTop="3xl" alignItems="center">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" pl={10} pr={2} py={4}>
           Royalty Claim
         </Text>
-      </Box>
-      {/*<Text size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">*/}
-      {/*  Claims your royalties below. Note that once your click to claim they will go into your claimsAddress of {claimAddress}*/}
-      {/*</Text>*/}
+        <ImageTooltip description={`Claims your royalties below. Note that once your click to claim they will go into your claimsAddress of ${claimAddress}`}>
+          <MdInfo />
+        </ImageTooltip>
+      </Flex>
       <Flex flexDirection="column" gap={3}>
         {claimObject &&
           claimObject.map((token, index) => {

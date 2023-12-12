@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
 import { ContractConfiguration, DataNft, NftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import axios from "axios";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
-import { Address } from "@multiversx/sdk-core/out";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import { MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { useMarketStore } from "../../../../store";
-import { CustomPagination } from "../../../../components/CustomPagination";
+import { MdInfo, MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
+import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
+import { ImageTooltip } from "../../../../components/ImageTooltip";
 
 type CurateNftsProp = {
   nftMinter: NftMinter;
@@ -23,27 +22,32 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   const [createDataNfts, setCreateDataNfts] = useState<Array<NftType>>([]);
   const [addressFrozenNonces, setAddressFrozenNonces] = useState<Array<number>>([]);
   const [paginationFromNft, setPaginationFromNft] = useState<number>(0);
-  const [paginationSizeNft, setPaginationSizeNft] = useState<number>(100);
+  const [paginationSizeNft, setPaginationSizeNft] = useState<number>(4);
+  const [nftCount, setNftCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [hasRequestLoaded, setHasRequestLoaded] = useState<boolean>(false);
+
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const tokenIdentifier = viewContractConfig.tokenIdentifier;
 
-  const itemsPerPage = 1;
-
-  const startIndex = (paginationFromNft - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = createDataNfts.slice(startIndex, endIndex);
+  const pageCount = Math.ceil(nftCount / paginationSizeNft);
+  // console.log(pageCount);
 
   DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
   // console.log(createDataNfts);
   const getCreatedDataNftsFromAPI = async () => {
+    setHasRequestLoaded(false);
     const apiLink = getApi(chainID);
-    const url = `https://${apiLink}/collections/${tokenIdentifier}/nfts?from=${paginationFromNft}&size=${paginationSizeNft}&withOwner=true`;
-    const { data } = await axios.get(url);
-    setCreateDataNfts(data);
+    const url = `https://${apiLink}/collections/${tokenIdentifier}/nfts?from=${paginationFromNft}&size=${paginationSizeNft}&withOwner=true&sort=nonce`;
+    const urlForNftCount = `https://${apiLink}/collections/${tokenIdentifier}/nfts/count`;
+    const { data: paginatedNfts } = await axios.get(url);
+    const { data: nftsCount } = await axios.get(urlForNftCount);
+    setCreateDataNfts(paginatedNfts);
+    setNftCount(nftsCount);
+    setHasRequestLoaded(true);
   };
-  console.log(createDataNfts.length);
   const freezeDataNft = async (creator: string, nonce: number, owner: string | undefined) => {
     const tx = await nftMinter.freezeSingleNFT(new Address(address), nonce, new Address(owner));
     tx.setGasLimit(100000000);
@@ -78,27 +82,20 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   }, [paginationFromNft]);
 
   useEffect(() => {
-    getCreatedDataNftsFromAPI();
-    frozenNoncesAddresses();
-    // console.log(createDataNfts);
-  }, []);
-
-  useEffect(() => {
     frozenNoncesAddresses();
   }, [hasPendingTransactions]);
-
-  const handlePageChange = (fromNumber: number) => {
-    setPaginationFromNft(fromNumber);
-  };
 
   // console.log(addressFrozenNonces);
   return (
     <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "100%" }} mb={4}>
-      <Box bgColor="#00C7970D" roundedTop="3xl">
-        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+      <Flex bgColor="#00C7970D" roundedTop="3xl" alignItems="center">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" pl={10} pr={2} py={4}>
           Curate Your Data NFTs
         </Text>
-      </Box>
+        <ImageTooltip description="Ideally, you will use an automated script to mint large number of Data NFTs using a sequential index. But, you can also use the below form to mint single Data NFTs, on-demand. This  will be useful primarily in test collections.">
+          <MdInfo />
+        </ImageTooltip>
+      </Flex>
       <Flex flexDirection="column" px={10} py={4}>
         <Flex flexDirection="row" justifyItems="center" alignItems="center" gap={4}>
           <Text>You have {createDataNfts.length} Data NFT tokens in your collection</Text>
@@ -107,37 +104,41 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
           <Button size="lg" colorScheme="teal" onClick={() => getCreatedDataNftsFromAPI()}>
             Refresh
           </Button>
-          <Flex>
-            {/*<CustomPagination pageCount={pageCount} pageIndex={} gotoPage={} disabled={} />*/}
+          <Flex justifyContent="center" alignItems="center">
             <Button
               colorScheme="teal"
               alignItems="center"
               justifyContent="center"
               size="sm"
-              isDisabled={paginationFromNft <= 0}
+              px={0}
+              isDisabled={paginationFromNft <= 0 || !hasRequestLoaded}
               onClick={() => {
                 if (paginationFromNft >= paginationSizeNft) {
                   setPaginationFromNft(paginationFromNft - paginationSizeNft);
-                  getCreatedDataNftsFromAPI();
+                  setCurrentPage(currentPage - 1);
                 } else {
                   setPaginationFromNft(0);
                 }
               }}>
               <MdNavigateBefore size="1.5rem" />
             </Button>
+            <Text px={2}>
+              Page {currentPage} of {pageCount}
+            </Text>
             <Button
               colorScheme="teal"
               alignItems="center"
               justifyContent="center"
               size="sm"
-              isDisabled={createDataNfts.length < 1}
+              px={0}
+              isDisabled={nftCount < 1 || pageCount === 1 || !hasRequestLoaded}
               onClick={() => {
                 // if (paginationFromNft) {
-                handlePageChange(paginationFromNft + 1);
-                getCreatedDataNftsFromAPI();
+                setPaginationFromNft(paginationFromNft + paginationSizeNft);
+                setCurrentPage(currentPage + 1);
                 // console.log(paginationFromNft);
                 // } else {
-                //   return console.log(createDataNfts.length);
+                //   return;
                 // }
               }}>
               <MdOutlineNavigateNext size="1.5rem" />
@@ -149,18 +150,17 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
             return (
               <Box key={index} position="relative" border="1px solid" borderColor="#00C79740" rounded="xl" px="1.5rem" py="1.5rem" bgColor="#0F0F0F">
                 {addressFrozenNonces.includes(dataNfts.nonce) && (
-                  <Box position="absolute" boxSize="14.9rem" bgColor="#06060680" backdropFilter="blur(1px)" zIndex="10">
+                  <Box position="absolute" boxSize="14.9rem" bgColor="#06060680" backdropFilter="blur(4px)" zIndex="10">
                     <Text position="absolute" left="33%" top="45%" px={5} py={1} bgColor="#FF439D">
                       Frozen
                     </Text>
                   </Box>
                 )}
                 <Image src={dataNfts.url} boxSize="14.9rem" rounded="xl" />
+                <Text>{dataNfts.name}</Text>
                 <a href={`https://${getExplorer(chainID)}/nfts/${dataNfts.identifier}`} target="_blank" rel="noreferrer">
                   <Flex flexDirection="row" justifyContent="start" alignItems="center" pt={2} gap={1.5} _hover={{ color: "aquamarine" }}>
-                    <Text fontSize="sm" pl={1}>
-                      View on Explore
-                    </Text>
+                    <Text fontSize="sm">View on Explore</Text>
                     <FaArrowRightLong size={12} />
                   </Flex>
                 </a>
