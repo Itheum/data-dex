@@ -65,6 +65,7 @@ import {
   shouldPreviewDataBeEnabled,
   sleep,
   transformDescription,
+  viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -528,13 +529,13 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="View Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                label={viewDataDisabledMessage(loginMethod)}
+                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                   onClick={() => {
                     accessDataStream(item.nonce);
                   }}>
@@ -545,14 +546,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="Preview Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                label={viewDataDisabledMessage(loginMethod)}
+                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>
