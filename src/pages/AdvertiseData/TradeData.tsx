@@ -1,32 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
-import { dataCATDemoUserData } from "../../libs/config";
 import { useSearchParams } from "react-router-dom";
 import { TradeFormModal } from "./components/TradeFormModal";
+import { dataCATDemoUserData } from "../../libs/config";
 
 export const TradeData: React.FC = () => {
-  const [dataCATAcccount, setDataCATAcount] = useState<Record<any, any>>();
-  const [dataCATCard, setDataCATCard] = useState<Record<any, any>>();
-  const [dataNFTStreamUrl, setDataNFTStreamUrl] = useState<string>("");
+  const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [prefilledData, setPrefilledData] = useState(null);
   const { colorMode } = useColorMode();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    setDataCATAcount(dataCATDemoUserData);
-    setDataCATCard(dataCATDemoUserData.programsAllocation);
-  }, []);
-
-  const getDataForSale = async (dataCATProgram: any) => {
-    const dataCATStreamUrl = dataCATCard?.additionalInformation?.dataStreamURL;
-    const dataCATStreamPreviewUrl = dataCATCard?.additionalInformation?.dataPreviewURL;
-
-    if (searchParams.get("ds")) {
-      setDataNFTStreamUrl(decodeURIComponent(searchParams.get("ds") || ""));
-    } else {
-      setDataNFTStreamUrl(dataCATStreamUrl);
-    }
-  };
 
   return (
     <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
@@ -53,6 +35,7 @@ export const TradeData: React.FC = () => {
               borderRadius="xl"
               onClick={() => {
                 setIsDrawerOpen(!isDrawerOpen);
+                setPrefilledData(null);
               }}>
               <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
             </Button>
@@ -87,7 +70,15 @@ export const TradeData: React.FC = () => {
                       {item.additionalInformation?.programName}
                     </Box>
                   </Box>
-                  <Button mt="2" colorScheme="teal" variant="outline" borderRadius="xl" onClick={() => getDataForSale(item)}>
+                  <Button
+                    mt="2"
+                    colorScheme="teal"
+                    variant="outline"
+                    borderRadius="xl"
+                    onClick={() => {
+                      setIsDrawerOpen(!isDrawerOpen);
+                      setPrefilledData(item);
+                    }}>
                     <Text color={colorMode === "dark" ? "white" : "black"}>Trade Program Data</Text>
                   </Button>
                 </Box>
@@ -96,7 +87,7 @@ export const TradeData: React.FC = () => {
           </Wrap>
         </>
       )}
-      <TradeFormModal isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} />;
+      <TradeFormModal isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} dataToPrefill={prefilledData} />;
     </Stack>
   );
 };

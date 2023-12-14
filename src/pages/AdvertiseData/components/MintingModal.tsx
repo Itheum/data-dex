@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
   Alert,
   AlertDescription,
@@ -21,7 +22,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 
 type MintingModalProps = {

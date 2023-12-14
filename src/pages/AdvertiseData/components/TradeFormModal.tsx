@@ -16,20 +16,21 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { contractsForChain } from "../../../libs/config";
-import { useMintStore } from "../../../store";
-import { labels } from "../../../libs/language";
 import { TradeForm } from "./TradeForm";
+import { contractsForChain } from "../../../libs/config";
+import { labels } from "../../../libs/language";
+import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
+import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
+import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  dataToPrefill: any;
 };
 export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
-  const { isOpen, setIsOpen } = props;
+  const { isOpen, setIsOpen, dataToPrefill } = props;
   const { colorMode } = useColorMode();
 
   const { chainID } = useGetNetworkConfig();
@@ -125,13 +126,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
-      console.group();
-      console.log(getMinRoyalty);
-      console.log(getMaxRoyalty);
-      console.log(getMaxSupply);
-      console.log(getAntiSpamTax);
-      console.log(dataNFTMarshalServiceStatus);
-      console.groupEnd();
       setMinRoyalties(getMinRoyalty);
       setMaxRoyalties(getMaxRoyalty);
       setMaxSupply(getMaxSupply);
@@ -219,6 +213,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             minRoyalties={minRoyalties / 100}
             antiSpamTax={antiSpamTax}
             userData={userData}
+            dataToPrefill={dataToPrefill}
           />
         </DrawerBody>
       </DrawerContent>

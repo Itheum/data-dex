@@ -35,7 +35,7 @@ import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponen
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
-import { formatNumberRoundFloor, formatNumberToShort } from "libs/utils";
+import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 
 export default function HomeMultiversX({

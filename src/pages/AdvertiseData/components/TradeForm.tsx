@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
-import * as Yup from "yup";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -23,17 +21,19 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
-import { labels } from "../../../libs/language";
-import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { contractsForChain, MENU } from "../../../libs/config";
-import { useAccountStore } from "../../../store";
-import { UserDataType } from "../../../libs/MultiversX/types";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { File, NFTStorage } from "nft.storage";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
+import { Controller, useForm } from "react-hook-form";
+import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
+import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
+import { contractsForChain, MENU } from "../../../libs/config";
+import { labels } from "../../../libs/language";
+import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
+import { UserDataType } from "../../../libs/MultiversX/types";
+import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
+import { useAccountStore } from "../../../store";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -54,13 +54,13 @@ type TradeFormProps = {
   antiSpamTax: number;
   dataNFTMarshalServiceStatus: boolean;
   userData: UserDataType | undefined;
+  dataToPrefill: any;
 };
 
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
-  const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData } = props;
+  const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill } = props;
 
-  const [currDataCATSellObj, setCurrDataCATSellObj] = useState<any>(null);
-  const [dataNFTStreamPreviewUrl, setDataNFTStreamPreviewUrl] = useState("");
+  const [currDataCATSellObj, setCurrDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);
   const [isMintingModalOpen, setIsMintingModalOpen] = useState<boolean>(false);
@@ -152,21 +152,27 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     formState: { errors },
     handleSubmit,
     getValues,
+    setValue,
   } = useForm<TradeDataFormType>({
     defaultValues: {
-      dataStreamUrlForm: "",
-      dataPreviewUrlForm: "",
-      tokenNameForm: "",
-      datasetTitleForm: "",
-      datasetDescriptionForm: "",
+      dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
+      dataPreviewUrlForm: dataToPrefill?.additionalInformation.dataPreviewURL ?? "",
+      tokenNameForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "").substring(0, 15) ?? "",
+      datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
+      datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
   });
-
   const dataNFTStreamUrl: string = getValues("dataStreamUrlForm");
+  const dataNFTPreviewUrl: string = getValues("dataPreviewUrlForm");
+  const dataNFTTokenName: string = getValues("tokenNameForm");
+  const datasetTitle: string = getValues("datasetTitleForm");
+  const datasetDescription: string = getValues("datasetDescriptionForm");
+  const dataNFTCopies: number = getValues("numberOfCopiesForm");
+  const dataNFTRoyalties: number = getValues("royaltiesForm");
 
   const closeProgressModal = () => {
     if (mintingSuccessful) {
@@ -196,7 +202,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }, []);
 
   function validateBaseInput() {
-    if (!dataNFTStreamUrl.includes("https://") || !dataNFTStreamPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
+    if (!dataNFTStreamUrl.includes("https://") || !dataNFTPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS,
         status: "error",
@@ -233,12 +239,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       error = "Data Stream URL must start with 'https://'";
     } else if (trimmedValue.includes(" ")) {
       error = "Data Stream URL cannot contain spaces";
-    } else if (dataNFTStreamPreviewUrl === trimmedValue) {
+    } else if (dataNFTPreviewUrl === trimmedValue) {
       error = "Data Stream URL cannot be same as the Data Stream Preview URL";
     } else if (trimmedValue.length > 1000) {
       error = "Length of Data Stream URL cannot exceed 1000";
     }
-    // setDataNFTStreamUrl(trimmedValue);
+    setValue("dataStreamUrlForm", trimmedValue);
   };
 
   const onChangeDataNFTStreamPreviewUrl = (value: string) => {
@@ -255,7 +261,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       error = "Length of Data Preview URL cannot exceed 1000";
     }
 
-    setDataNFTStreamPreviewUrl(trimmedValue);
+    // setDataNFTStreamPreviewUrl(trimmedValue);
   };
 
   const onChangeDataNFTTokenName = (value: string) => {
@@ -369,7 +375,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       metadataAttributes.push(trait);
     }
 
-    metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTStreamPreviewUrl });
+    metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTPreviewUrl });
     metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
     metadata.attributes = metadataAttributes;
 
@@ -401,7 +407,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       metadata: metadataOnIpfsUrl,
       data_marshal: dataNFTMarshalService,
       data_stream: dataNFTStreamUrlEncrypted,
-      data_preview: dataNFTStreamPreviewUrl,
+      data_preview: dataNFTPreviewUrl,
       royalties: Math.ceil(getValues("royaltiesForm") * 100),
       amount: getValues("numberOfCopiesForm"),
       title: getValues("datasetTitleForm"),
@@ -527,12 +533,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   mt="1 !important"
                   placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                   id="dataStreamUrlForm"
-                  // isDisabled={!!currDataCATSellObj}
-                  // value={dataNFTStreamUrl}
+                  isDisabled={!!currDataCATSellObj}
+                  value={dataNFTStreamUrl}
                   onChange={(event) => {
                     onChange(event.target.value);
                     onChangeDataNFTStreamUrl(event.currentTarget.value);
-                    // validateDataStreamUrl(event.currentTarget.value);
                   }}
                 />
               )}
@@ -556,7 +561,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                   id="dataPreviewUrlForm"
                   isDisabled={!!currDataCATSellObj}
-                  value={dataNFTStreamPreviewUrl}
+                  value={dataNFTPreviewUrl}
                   onChange={(event) => {
                     onChange(event.target.value);
                     onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
@@ -569,7 +574,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
 
             {currDataCATSellObj && (
-              <Link fontSize="sm" href={dataNFTStreamPreviewUrl} isExternal>
+              <Link fontSize="sm" href={dataNFTPreviewUrl} isExternal>
                 View Preview Data <ExternalLinkIcon mx="2px" />
               </Link>
             )}
@@ -610,7 +615,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 mt="1 !important"
                 placeholder="Between 3 and 20 alphanumeric characters only"
                 id="tokenNameForm"
-                // value={dataNFTTokenName}
+                value={dataNFTTokenName}
                 onChange={(event) => {
                   onChange(event.target.value);
                   onChangeDataNFTTokenName(event.currentTarget.value);
@@ -636,7 +641,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 mt="1 !important"
                 placeholder="Between 10 and 60 alphanumeric characters only"
                 id="datasetTitleForm"
-                // value={datasetTitle}
+                value={datasetTitle}
                 onChange={(event) => {
                   onChange(event.target.value);
                   onChangeDatasetTitle(event.currentTarget.value);
@@ -665,7 +670,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 h={"70%"}
                 placeholder="Between 10 and 400 characters only. URL allowed."
                 id={"datasetDescriptionForm"}
-                // value={datasetDescription}
+                value={datasetDescription}
                 onChange={(event) => {
                   onChange(event.target.value);
                   onChangeDatasetDescription(event.currentTarget.value);
@@ -695,7 +700,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   step={1}
                   defaultValue={1}
                   min={1}
-                  // value={dataNFTCopies}
+                  value={dataNFTCopies}
                   max={maxSupply > 0 ? maxSupply : 1}
                   isValidCharacter={isValidNumericCharacter}
                   onChange={(valueAsString: string) => {
@@ -734,7 +739,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   id="royaltiesForm"
                   maxW={24}
                   step={1}
-                  // defaultValue={minRoyalties}
+                  defaultValue={dataNFTRoyalties}
                   min={minRoyalties > 0 ? minRoyalties : 0}
                   max={maxRoyalties > 0 ? maxRoyalties : 0}
                   isValidCharacter={isValidNumericCharacter}
