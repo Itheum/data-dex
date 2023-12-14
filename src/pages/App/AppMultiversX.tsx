@@ -12,7 +12,6 @@ import AppSettings from "components/UtilComps/AppSettings";
 import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
-import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
@@ -22,11 +21,11 @@ import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
+import { TradeData } from "../AdvertiseData/TradeData";
+import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
+import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
-import { Enterprise } from "../Enterprise/Enterprise";
-import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
-import { TradeData } from "../AdvertiseData/TradeData";
 
 const mxLogout = logout;
 
@@ -56,7 +55,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
-  const [rfKeys, setRfKeys] = useState({
+  const [rfKeys] = useState({
     tools: 0,
     sellData: 0,
     buyData: 0,

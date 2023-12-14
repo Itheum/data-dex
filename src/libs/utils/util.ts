@@ -1,9 +1,9 @@
+import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
 import { getNetworkProvider } from "../MultiversX/api";
-import { Interaction, ResultsParser, TypedValue } from "@multiversx/sdk-core/out";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);

@@ -10,7 +10,7 @@ type ClaimRoyaltiesProps = {
 };
 
 export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
-  const { nftMinter, claimAddress } = props;
+  const { claimAddress } = props;
   const [viewAddressToken, setAddressToken] = useState<Array<Record<any, any>>>([{}]);
 
   const { minterAddress } = useParams();
@@ -18,17 +18,8 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const getAddressToken = async () => {
     const url = `https://api.multiversx.com/accounts/${minterAddress}/tokens?size=10000`;
     const { data } = await axios.get(url);
-    // console.log(data);
     setAddressToken(data);
   };
-
-  // const claimRoyalties = async (tokenIdentifier: string, nonce?: number) => {
-  //   const tx = nftMinter.removeWhitelist(new Address(address), [addressToRemove]);
-  //   tx.setGasLimit(100000000);
-  //   await sendTransactions({
-  //     transactions: [tx],
-  //   });
-  // };
 
   useEffect(() => {
     getAddressToken();

@@ -40,7 +40,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [maxSupply, setMaxSupply] = useState<number>(-1);
   const [antiSpamTax, setAntiSpamTax] = useState<number>(-1);
   const [dataNFTMarshalServiceStatus, setDataNFTMarshalServiceStatus] = useState<boolean>(false);
-  const [dataNFTMarshalService, setDataNFTMarshalService] = useState<string>("");
+  const [, setDataNFTMarshalService] = useState<string>("");
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const userData = useMintStore((state) => state.userData);
@@ -49,10 +49,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   const onClose = () => {
     setIsOpen(false);
-  };
-
-  const onOpen = () => {
-    setIsOpen(true);
   };
 
   function makeRequest(url: string): Promise<{ statusCode: number; isError: boolean }> {

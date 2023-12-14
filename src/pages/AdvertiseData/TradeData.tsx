@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
-import { useSearchParams } from "react-router-dom";
 import { TradeFormModal } from "./components/TradeFormModal";
 import { dataCATDemoUserData } from "../../libs/config";
 

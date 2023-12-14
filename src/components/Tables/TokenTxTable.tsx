@@ -2,22 +2,18 @@ import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Link, Spinner, Flex } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER } from "libs/config";
-import { getApi } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
+import { backendApi } from "libs/utils";
 import { DataTable } from "./Components/DataTable";
 import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
-import { backendApi } from "libs/utils";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainID } = useGetNetworkConfig();
   const [data, setData] = useState<TransactionInTable[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
-  const marketContract = new DataNftMarketContract(chainID);
   const linkIconStyle = { display: "flex" };
 
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
@@ -95,12 +91,12 @@ export default function TokenTxTable(props: TokenTableProps) {
 
       const interactions = response.data;
 
-      const data: TransactionInTable[] = [];
+      const dataTemp: TransactionInTable[] = [];
 
       for (const interaction of interactions) {
         switch (interaction.method) {
           case "addOffer":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -110,7 +106,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             });
             break;
           case "acceptOffer":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -122,7 +118,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             break;
 
           case "cancelOffer":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -134,7 +130,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             break;
 
           case "changeOfferPrice":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -144,7 +140,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             });
             break;
           default:
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -155,7 +151,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             break;
         }
       }
-      setData(data);
+      setData(dataTemp);
     }
 
     getInteractions();

@@ -19,10 +19,10 @@ import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { isValidNumericCharacter } from "../../../../libs/utils";
-import BigNumber from "bignumber.js";
 
 type MintDataNftFormType = {
   senderAddress: IAddress;

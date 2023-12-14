@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -60,7 +60,7 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill } = props;
 
-  const [currDataCATSellObj, setCurrDataCATSellObj] = useState<any>(dataToPrefill ?? null);
+  const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);
   const [isMintingModalOpen, setIsMintingModalOpen] = useState<boolean>(false);
@@ -152,7 +152,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     formState: { errors },
     handleSubmit,
     getValues,
-    setValue,
   } = useForm<TradeDataFormType>({
     defaultValues: {
       dataStreamUrlForm: dataToPrefill?.additionalInformation.dataStreamURL ?? "",
@@ -197,10 +196,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     // setSearchParams(); // clear any deep link search params
   };
 
-  useEffect(() => {
-    // onChangeDataNFTStreamUrl("");
-  }, []);
-
   function validateBaseInput() {
     if (!dataNFTStreamUrl.includes("https://") || !dataNFTPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
       toast({
@@ -215,102 +210,20 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   }
 
-  const mintTxFail = (foo: any) => {
+  const mintTxFail = (_foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const mintTxCancelled = (foo: any) => {
+  const mintTxCancelled = (_foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT was cancelled"));
   };
 
-  const mintTxSuccess = async (foo: any) => {
+  const mintTxSuccess = async (_foo: any) => {
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s4: 1 }));
     await sleep(3);
 
     setMintingSuccessful(true);
-  };
-
-  const onChangeDataNFTStreamUrl = (value: string) => {
-    const trimmedValue = value.trim();
-    let error = "";
-
-    if (!trimmedValue.startsWith("https://")) {
-      error = "Data Stream URL must start with 'https://'";
-    } else if (trimmedValue.includes(" ")) {
-      error = "Data Stream URL cannot contain spaces";
-    } else if (dataNFTPreviewUrl === trimmedValue) {
-      error = "Data Stream URL cannot be same as the Data Stream Preview URL";
-    } else if (trimmedValue.length > 1000) {
-      error = "Length of Data Stream URL cannot exceed 1000";
-    }
-    setValue("dataStreamUrlForm", trimmedValue);
-  };
-
-  const onChangeDataNFTStreamPreviewUrl = (value: string) => {
-    const trimmedValue = value.trim();
-    let error = "";
-
-    if (!trimmedValue.startsWith("https://")) {
-      error = "Data Preview URL must start with 'https://'";
-    } else if (trimmedValue.includes(" ")) {
-      error = "Data Preview URL cannot contain spaces";
-    } else if (dataNFTStreamUrl === trimmedValue) {
-      error = "Data Preview URL cannot be same as the Data Stream URL";
-    } else if (trimmedValue.length > 1000) {
-      error = "Length of Data Preview URL cannot exceed 1000";
-    }
-
-    // setDataNFTStreamPreviewUrl(trimmedValue);
-  };
-
-  const onChangeDataNFTTokenName = (value: string) => {
-    const trimmedValue = value.trim();
-    let error = "";
-
-    if (trimmedValue.length < 3 || trimmedValue.length > 20) {
-      error = "Length of Token Name must be between 3 and 20 characters";
-    } else if (!trimmedValue.match(/^[0-9a-zA-Z]+$/)) {
-      error = "Token Name can only contain alphanumeric characters";
-    }
-  };
-
-  const onChangeDatasetTitle = (value: string) => {
-    let error = "";
-
-    if (value.length < 10 || value.length > 60) {
-      error = "Length of Dataset Title must be between 10 and 60 characters";
-    } else if (!value.match(/^[0-9a-zA-Z\s]+$/)) {
-      error = "Dataset Title can only contain alphanumeric characters";
-    }
-  };
-
-  const onChangeDatasetDescription = (value: string) => {
-    let error = "";
-
-    if (value.length < 10 || value.length > 400) {
-      error = "Length of Dataset Description must be between 10 and 400 characters";
-    }
-  };
-
-  const handleChangeDataNftCopies = (value: number) => {
-    let error = "";
-    if (value < 1) {
-      error = "Number of copies cannot be negative";
-    } else if (maxSupply >= 0 && value > maxSupply) {
-      error = `Number of copies cannot exceed ${maxSupply}`;
-    }
-  };
-
-  const handleChangeDataNftRoyalties = (value: number) => {
-    let error = "";
-    if (value < 0) {
-      error = "Royalties cannot be negative";
-    } else if (minRoyalties >= 0 && value < minRoyalties) {
-      error = `Royalties cannot be lower than ${minRoyalties}`;
-    } else if (maxRoyalties >= 0 && value > maxRoyalties) {
-      error = `Royalties cannot be higher than ${maxRoyalties}`;
-    }
   };
 
   const dataNFTDataStreamAdvertise = async () => {
@@ -520,25 +433,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         <Flex flexDirection="row" gap="7">
           <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
-            {/*<InputLabelWithPopover tkey="data-stream-url">*/}
             <FormLabel fontWeight="bold" fontSize="md">
               Data Stream URL
             </FormLabel>
-            {/*</InputLabelWithPopover>*/}
 
             <Controller
               control={control}
-              render={({ field: { onChange } }) => (
+              render={() => (
                 <Input
                   mt="1 !important"
                   placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                   id="dataStreamUrlForm"
                   isDisabled={!!currDataCATSellObj}
                   defaultValue={dataNFTStreamUrl}
-                  onChange={(event) => {
-                    onChange(event.target.value);
-                    onChangeDataNFTStreamUrl(event.currentTarget.value);
-                  }}
                 />
               )}
               name={"dataStreamUrlForm"}
@@ -547,26 +454,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </FormControl>
 
           <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
-            {/*<InputLabelWithPopover tkey="data-preview-url">*/}
             <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
               Data Preview URL
             </FormLabel>
-            {/*</InputLabelWithPopover>*/}
 
             <Controller
               control={control}
-              render={({ field: { onChange } }) => (
+              render={() => (
                 <Input
                   mt="1 !important"
                   placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                   id="dataPreviewUrlForm"
                   isDisabled={!!currDataCATSellObj}
                   defaultValue={dataNFTPreviewUrl}
-                  onChange={(event) => {
-                    onChange(event.target.value);
-                    onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
-                    // validateDataPreviewUrl(event.currentTarget.value);
-                  }}
                 />
               )}
               name="dataPreviewUrlForm"
@@ -581,11 +481,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </FormControl>
         </Flex>
 
-        {/*<InputLabelWithPopover tkey="data-marshal-url">*/}
         <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
           Data Marshal Url
         </Text>
-        {/*</InputLabelWithPopover>*/}
 
         <Input mt="1 !important" value={dataNFTMarshalService} disabled />
 
@@ -602,25 +500,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       <Flex flexDirection="row" gap="7" mt={2}>
         <FormControl isInvalid={!!errors.tokenNameForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
-          {/*<InputLabelWithPopover tkey="token-name">*/}
           <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
             Token Name (Short Title)
           </FormLabel>
-          {/*</InputLabelWithPopover>*/}
 
           <Controller
             control={control}
-            render={({ field: { onChange } }) => (
-              <Input
-                mt="1 !important"
-                placeholder="Between 3 and 20 alphanumeric characters only"
-                id="tokenNameForm"
-                defaultValue={dataNFTTokenName}
-                onChange={(event) => {
-                  onChange(event.target.value);
-                  onChangeDataNFTTokenName(event.currentTarget.value);
-                }}
-              />
+            render={() => (
+              <Input mt="1 !important" placeholder="Between 3 and 20 alphanumeric characters only" id="tokenNameForm" defaultValue={dataNFTTokenName} />
             )}
             name={"tokenNameForm"}
           />
@@ -628,25 +515,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </FormControl>
 
         <FormControl isInvalid={!!errors.datasetTitleForm} isRequired minH={"6.25rem"}>
-          {/*<InputLabelWithPopover tkey="dataset-title">*/}
           <FormLabel fontWeight="bold" fontSize="md">
             Dataset Title
           </FormLabel>
-          {/*</InputLabelWithPopover>*/}
 
           <Controller
             control={control}
-            render={({ field: { onChange } }) => (
-              <Input
-                mt="1 !important"
-                placeholder="Between 10 and 60 alphanumeric characters only"
-                id="datasetTitleForm"
-                defaultValue={datasetTitle}
-                onChange={(event) => {
-                  onChange(event.target.value);
-                  onChangeDatasetTitle(event.currentTarget.value);
-                }}
-              />
+            render={() => (
+              <Input mt="1 !important" placeholder="Between 10 and 60 alphanumeric characters only" id="datasetTitleForm" defaultValue={datasetTitle} />
             )}
             name="datasetTitleForm"
           />
@@ -656,25 +532,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       <Flex flexDirection="row" gap={7}>
         <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxW={"48%"}>
-          {/*<InputLabelWithPopover tkey="dataset-description">*/}
           <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }} noOfLines={1}>
             Dataset Description
           </FormLabel>
-          {/*</InputLabelWithPopover>*/}
 
           <Controller
             control={control}
-            render={({ field: { onChange } }) => (
+            render={() => (
               <Textarea
                 mt="1 !important"
                 h={"70%"}
                 placeholder="Between 10 and 400 characters only. URL allowed."
                 id={"datasetDescriptionForm"}
                 defaultValue={datasetDescription}
-                onChange={(event) => {
-                  onChange(event.target.value);
-                  onChangeDatasetDescription(event.currentTarget.value);
-                }}
               />
             )}
             name="datasetDescriptionForm"
@@ -683,29 +553,23 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </FormControl>
         <Box display="flex" flexDirection="column">
           <FormControl isInvalid={!!errors.numberOfCopiesForm} minH={{ base: "9.75rem", md: "8.25rem" }}>
-            {/*<InputLabelWithPopover tkey="number-of-copies">*/}
             <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
               Number of copies
             </Text>
-            {/*</InputLabelWithPopover>*/}
 
             <Controller
               control={control}
-              render={({ field: { onChange } }) => (
+              render={() => (
                 <NumberInput
                   mt="3 !important"
                   size="md"
                   id="numberOfCopiesForm"
                   maxW={24}
                   step={1}
-                  defaultValue={1}
+                  defaultValue={dataNFTCopies}
                   min={1}
                   max={maxSupply > 0 ? maxSupply : 1}
-                  isValidCharacter={isValidNumericCharacter}
-                  onChange={(valueAsString: string) => {
-                    onChange(valueAsString);
-                    handleChangeDataNftCopies(Number(valueAsString));
-                  }}>
+                  isValidCharacter={isValidNumericCharacter}>
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
@@ -722,16 +586,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </FormControl>
 
           <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
-            {/*<InputLabelWithPopover tkey="royalties">*/}
             <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
               Royalties
             </Text>
-            {/*</InputLabelWithPopover>*/}
 
-            {/* This Royalties input control DOES NOT allow for fractional royalties, only round number that increment by 5. e.g. 3% */}
             <Controller
               control={control}
-              render={({ field: { onChange } }) => (
+              render={() => (
                 <NumberInput
                   mt="3 !important"
                   size="md"
@@ -741,11 +602,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   defaultValue={dataNFTRoyalties}
                   min={minRoyalties > 0 ? minRoyalties : 0}
                   max={maxRoyalties > 0 ? maxRoyalties : 0}
-                  isValidCharacter={isValidNumericCharacter}
-                  onChange={(valueAsString: string) => {
-                    onChange(valueAsString);
-                    // handleChangeDataNftRoyalties(Number(valueAsString));
-                  }}>
+                  isValidCharacter={isValidNumericCharacter}>
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
