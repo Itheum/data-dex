@@ -38,6 +38,7 @@ import {
   tokenDecimals,
   shouldPreviewDataBeEnabled,
   backendApi,
+  viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -263,14 +264,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+      <Tooltip
+        colorScheme="teal"
+        hasArrow
+        label={viewDataDisabledMessage(loginMethod)}
+        isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+          isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

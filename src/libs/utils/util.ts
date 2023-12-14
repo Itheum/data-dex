@@ -198,8 +198,13 @@ export const getExplorerTrailBlazerURL = (chainID: string) => {
   return chainID === "1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
 };
 
-export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
-  return !(chainID == "D" && !previewDataOnDevnetSession);
+export const shouldPreviewDataBeEnabled = (chainID: string, loginMethod: string, previewDataOnDevnetSession: any) => {
+  return !((chainID == "D" && !previewDataOnDevnetSession) || loginMethod !== "extra");
+};
+
+export const viewDataDisabledMessage = (loginMethod: string) => {
+  if (loginMethod === "extra") return VIEW_DATA_DISABLED_HUB_MESSAGE;
+  else return VIEW_DATA_DISABLED_DEVNET_MESSAGE;
 };
 
 export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
@@ -282,3 +287,6 @@ export const decodeNativeAuthToken = (accessToken: string) => {
 
   return result;
 };
+
+export const VIEW_DATA_DISABLED_DEVNET_MESSAGE = "View Data is disabled on Devnet Data Dex";
+export const VIEW_DATA_DISABLED_HUB_MESSAGE = "View Data is disabled on Data Dex when logged in through the xPortal Hub";
