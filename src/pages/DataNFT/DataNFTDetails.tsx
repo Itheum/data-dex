@@ -675,17 +675,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Stack>
             </Box>
           </Flex>
-          {isApiUp && (
-            <VStack alignItems={"flex-start"}>
-              <Heading size="lg" fontFamily="Clash-Medium" mt="30px" marginBottom={2}>
-                Data NFT Activity
-              </Heading>
 
-              <Box width={"100%"}>
-                <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
-              </Box>
-            </VStack>
-          )}
+          <VStack alignItems={"flex-start"}>
+            <Heading size="lg" fontFamily="Clash-Medium" mt="30px" marginBottom={2}>
+              Data NFT Activity
+            </Heading>
+
+            <Box width={"100%"}>
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
+            </Box>
+          </VStack>
 
           {nftData && offer && (
             <ProcureDataNFTModal
