@@ -534,7 +534,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                   id="dataStreamUrlForm"
                   isDisabled={!!currDataCATSellObj}
-                  value={dataNFTStreamUrl}
+                  defaultValue={dataNFTStreamUrl}
                   onChange={(event) => {
                     onChange(event.target.value);
                     onChangeDataNFTStreamUrl(event.currentTarget.value);
@@ -561,7 +561,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                   id="dataPreviewUrlForm"
                   isDisabled={!!currDataCATSellObj}
-                  value={dataNFTPreviewUrl}
+                  defaultValue={dataNFTPreviewUrl}
                   onChange={(event) => {
                     onChange(event.target.value);
                     onChangeDataNFTStreamPreviewUrl(event.currentTarget.value);
@@ -615,7 +615,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 mt="1 !important"
                 placeholder="Between 3 and 20 alphanumeric characters only"
                 id="tokenNameForm"
-                value={dataNFTTokenName}
+                defaultValue={dataNFTTokenName}
                 onChange={(event) => {
                   onChange(event.target.value);
                   onChangeDataNFTTokenName(event.currentTarget.value);
@@ -641,7 +641,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 mt="1 !important"
                 placeholder="Between 10 and 60 alphanumeric characters only"
                 id="datasetTitleForm"
-                value={datasetTitle}
+                defaultValue={datasetTitle}
                 onChange={(event) => {
                   onChange(event.target.value);
                   onChangeDatasetTitle(event.currentTarget.value);
@@ -670,7 +670,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 h={"70%"}
                 placeholder="Between 10 and 400 characters only. URL allowed."
                 id={"datasetDescriptionForm"}
-                value={datasetDescription}
+                defaultValue={datasetDescription}
                 onChange={(event) => {
                   onChange(event.target.value);
                   onChangeDatasetDescription(event.currentTarget.value);
@@ -700,7 +700,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   step={1}
                   defaultValue={1}
                   min={1}
-                  value={dataNFTCopies}
                   max={maxSupply > 0 ? maxSupply : 1}
                   isValidCharacter={isValidNumericCharacter}
                   onChange={(valueAsString: string) => {
