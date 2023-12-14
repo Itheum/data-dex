@@ -107,18 +107,18 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
   };
 
   return (
-    <Box>
-      <Text fontSize="2rem" fontFamily="Clash-Medium" py={3}>
-        Launch Your Data NFT Collection
-      </Text>
-      <Flex flexDirection="row">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex gap={6}>
-            <Flex flexDirection="column">
+    <Box border="1px solid" borderColor="#00C79740" rounded="3xl">
+      <Box bgColor="#00C7970D" roundedTop="3xl">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+          Launch Your Data NFT Collection
+        </Text>
+      </Box>
+      <Flex flexDirection="row" px={10} py={4} bg="#1b1b1b50" roundedBottom="3xl">
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+          <Flex gap={6} w="full">
+            <Flex flexDirection="column" w="33%">
               <FormControl isInvalid={!!errors.collectionName} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Collection Name
-                </FormLabel>
+                <FormLabel fontSize="lg">Collection Name</FormLabel>
 
                 <Controller
                   control={control}
@@ -126,6 +126,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
                     <Input
                       mt="1 !important"
                       id="collectionName"
+                      w="full"
                       onChange={(event) => {
                         onChange(event.target.value);
                       }}
@@ -136,9 +137,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
                 <FormErrorMessage>{errors?.collectionName?.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={!!errors.tokenTicker} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Token Ticker
-                </FormLabel>
+                <FormLabel fontSize="lg">Token Ticker</FormLabel>
 
                 <Controller
                   control={control}
@@ -155,34 +154,32 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
                 />
                 <FormErrorMessage>{errors?.tokenTicker?.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={!!errors.requireMintTax} minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Require mint tax
-                </FormLabel>
-
-                <Controller
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <Checkbox
-                      colorScheme="teal"
-                      mt="1 !important"
-                      id="requireMintTax"
-                      isChecked={isRequiredMintTax}
-                      onChange={(event) => {
-                        onChange(event.target.checked);
-                        setIsRequiredMintTax(!isRequiredMintTax);
-                      }}></Checkbox>
-                  )}
-                  name={"requireMintTax"}
-                />
+              <FormControl isInvalid={!!errors.requireMintTax}>
+                <Flex alignItems="center" gap={2}>
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange } }) => (
+                      <Checkbox
+                        colorScheme="teal"
+                        id="requireMintTax"
+                        isChecked={isRequiredMintTax}
+                        onChange={(event) => {
+                          onChange(event.target.checked);
+                          setIsRequiredMintTax(!isRequiredMintTax);
+                        }}></Checkbox>
+                    )}
+                    name={"requireMintTax"}
+                  />
+                  <FormLabel fontSize="lg" m={0}>
+                    Require mint tax
+                  </FormLabel>
+                </Flex>
                 <FormErrorMessage>{errors?.requireMintTax?.message}</FormErrorMessage>
               </FormControl>
             </Flex>
-            <Flex flexDirection="column">
+            <Flex flexDirection="column" w="33%">
               <FormControl isInvalid={!!errors.mintLimit} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Time between mints
-                </FormLabel>
+                <FormLabel fontSize="lg">Time between mints</FormLabel>
 
                 <Controller
                   control={control}
@@ -200,9 +197,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
                 <FormErrorMessage>{errors?.mintLimit?.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={!!errors.claimsAddress} isRequired minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Claim Address
-                </FormLabel>
+                <FormLabel fontSize="lg">Claim Address</FormLabel>
 
                 <Controller
                   control={control}
@@ -220,12 +215,9 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
                 <FormErrorMessage>{errors?.claimsAddress?.message}</FormErrorMessage>
               </FormControl>
             </Flex>
-
-            <Flex flexDirection="column">
+            <Flex flexDirection="column" w="33%">
               <FormControl isInvalid={!!errors.taxTokenAmount} isRequired={isRequiredMintTax} minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Tax token amount
-                </FormLabel>
+                <FormLabel fontSize="lg">Tax token amount</FormLabel>
 
                 <Controller
                   control={control}
@@ -244,9 +236,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
                 <FormErrorMessage>{errors?.taxTokenAmount?.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={!!errors.taxTokenIdentifier} isRequired={isRequiredMintTax} minH={"6.25rem"}>
-                <FormLabel fontWeight="bold" fontSize="md">
-                  Tax token identifier
-                </FormLabel>
+                <FormLabel fontSize="lg">Tax token identifier</FormLabel>
 
                 <Controller
                   control={control}
@@ -266,7 +256,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
               </FormControl>
             </Flex>
           </Flex>
-          <Button type="submit" colorScheme="teal" size={{ base: "sm", md: "lg" }}>
+          <Button type="submit" colorScheme="teal" size={{ base: "sm", md: "lg" }} mt={3}>
             Launch
           </Button>
         </form>

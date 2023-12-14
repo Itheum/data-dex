@@ -8,17 +8,18 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-
+import ShortAddress from "../../../../components/UtilComps/ShortAddress";
 type UpdateOtherSettingsFormType = {
   addressToClaim: string;
 };
 
 type UpdateOtherSettingsProps = {
   nftMinter: NftMinter;
+  claimAddress: string;
 };
 
 export const UpdateOtherSettings: React.FC<UpdateOtherSettingsProps> = (props) => {
-  const { nftMinter } = props;
+  const { nftMinter, claimAddress } = props;
 
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
@@ -53,29 +54,30 @@ export const UpdateOtherSettings: React.FC<UpdateOtherSettingsProps> = (props) =
 
   return (
     <Box as="div" flexDirection="column">
-      <Text fontSize="1.5rem" fontFamily="Clash-Bold" color="teal.200">
-        Update Other Settings:
-      </Text>
-
-      <Text size="1rem" opacity=".7" fontWeight="light">
-        * Change the address that can get the royalties.
+      <Text fontSize="1.5rem" fontFamily="Clash-Medium" color="teal.200">
+        Royalty Settings:
       </Text>
 
       <Flex flexDirection="column" justifyItems="start" alignItems="start" gap={3}>
-        <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={5} fontSize="xl">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.addressToClaim} id="addressToSetRoleForTransfer" isRequired minH={"6.25rem"}>
+        <Flex flexDirection={{ base: "column", md: "row" }} gap={4} pt={2} w="full">
+          <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+            <FormControl isInvalid={!!errors.addressToClaim} id="addressToSetRoleForTransfer" isRequired minH={"6rem"}>
               <FormLabel fontWeight="bold" fontSize="md">
                 Change Claims Address:
               </FormLabel>
-              <Input mt="1 !important" {...register("addressToClaim", { required: "Address is required!" })} />
+              <Flex flexDirection="row" alignItems="center" gap={2}>
+                <Input mt="1 !important" {...register("addressToClaim", { required: "Address is required!" })} w="80%" placeholder="Enter Address" />
+                <Button type="submit" variant="outline" colorScheme="teal" isLoading={hasPendingTransactions} loadingText="Loading">
+                  Change
+                </Button>
+              </Flex>
               <FormErrorMessage>{errors?.addressToClaim?.message}</FormErrorMessage>
             </FormControl>
-            <Button type="submit" colorScheme="teal" isLoading={hasPendingTransactions} loadingText="Loading">
-              Change
-            </Button>
           </form>
         </Flex>
+        <Text fontSize="0.85rem" opacity=".7" fontFamily="Satoshi-Regular">
+          *Note that once you click claim, they will go to your claim address of <ShortAddress address={claimAddress} fontSize="md" />
+        </Text>
       </Flex>
     </Box>
   );
