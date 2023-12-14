@@ -45,6 +45,11 @@ export const routes: RouteType[] = [
     component: <></>,
     authenticatedRoute: true,
   },
+  {
+    path: "profile",
+    component: <></>,
+    authenticatedRoute: true,
+  },
 ];
 
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
