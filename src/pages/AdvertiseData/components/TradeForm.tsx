@@ -180,20 +180,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         status: "success",
         isClosable: true,
       });
-
-      // onCloseDrawerTradeStream();
-
-      // remount the component (quick way to rest all state to pristine)
-      // onRfMount();
     }
 
     setIsMintingModalOpen(false);
 
-    // re-initialize modal status
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
     setDataNFTImg("");
-    // setSearchParams(); // clear any deep link search params
   };
 
   function validateBaseInput() {
@@ -439,13 +432,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Controller
               control={control}
-              render={() => (
+              render={({ field: { onChange } }) => (
                 <Input
                   mt="1 !important"
                   placeholder="e.g. https://mydomain.com/my_hosted_file.json"
                   id="dataStreamUrlForm"
                   isDisabled={!!currDataCATSellObj}
                   defaultValue={dataNFTStreamUrl}
+                  onChange={(event) => onChange(event.target.value)}
                 />
               )}
               name={"dataStreamUrlForm"}
@@ -460,13 +454,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Controller
               control={control}
-              render={() => (
+              render={({ field: { onChange } }) => (
                 <Input
                   mt="1 !important"
                   placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
                   id="dataPreviewUrlForm"
                   isDisabled={!!currDataCATSellObj}
                   defaultValue={dataNFTPreviewUrl}
+                  onChange={(event) => onChange(event.target.value)}
                 />
               )}
               name="dataPreviewUrlForm"
@@ -506,8 +501,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
           <Controller
             control={control}
-            render={() => (
-              <Input mt="1 !important" placeholder="Between 3 and 20 alphanumeric characters only" id="tokenNameForm" defaultValue={dataNFTTokenName} />
+            render={({ field: { onChange } }) => (
+              <Input
+                mt="1 !important"
+                placeholder="Between 3 and 20 alphanumeric characters only"
+                id="tokenNameForm"
+                defaultValue={dataNFTTokenName}
+                onChange={(event) => onChange(event.target.value)}
+              />
             )}
             name={"tokenNameForm"}
           />
@@ -521,8 +522,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
           <Controller
             control={control}
-            render={() => (
-              <Input mt="1 !important" placeholder="Between 10 and 60 alphanumeric characters only" id="datasetTitleForm" defaultValue={datasetTitle} />
+            render={({ field: { onChange } }) => (
+              <Input
+                mt="1 !important"
+                placeholder="Between 10 and 60 alphanumeric characters only"
+                id="datasetTitleForm"
+                defaultValue={datasetTitle}
+                onChange={(event) => onChange(event.target.value)}
+              />
             )}
             name="datasetTitleForm"
           />
@@ -538,13 +545,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
           <Controller
             control={control}
-            render={() => (
+            render={({ field: { onChange } }) => (
               <Textarea
                 mt="1 !important"
                 h={"70%"}
                 placeholder="Between 10 and 400 characters only. URL allowed."
                 id={"datasetDescriptionForm"}
                 defaultValue={datasetDescription}
+                onChange={(event) => onChange(event.target.value)}
               />
             )}
             name="datasetDescriptionForm"
@@ -559,7 +567,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Controller
               control={control}
-              render={() => (
+              render={({ field: { onChange } }) => (
                 <NumberInput
                   mt="3 !important"
                   size="md"
@@ -569,7 +577,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   defaultValue={dataNFTCopies}
                   min={1}
                   max={maxSupply > 0 ? maxSupply : 1}
-                  isValidCharacter={isValidNumericCharacter}>
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={(event) => onChange(event)}>
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
@@ -592,7 +601,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <Controller
               control={control}
-              render={() => (
+              render={({ field: { onChange } }) => (
                 <NumberInput
                   mt="3 !important"
                   size="md"
@@ -602,7 +611,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   defaultValue={dataNFTRoyalties}
                   min={minRoyalties > 0 ? minRoyalties : 0}
                   max={maxRoyalties > 0 ? maxRoyalties : 0}
-                  isValidCharacter={isValidNumericCharacter}>
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={(event) => onChange(event)}>
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
