@@ -4,7 +4,7 @@ import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { getApi } from "../../../../libs/MultiversX/api";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { ClaimsContract } from "../../../../libs/MultiversX/claims";
 import { Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address } from "@multiversx/sdk-core/out";
@@ -18,17 +18,12 @@ type ClaimRoyaltiesProps = {
   claimAddress: string;
 };
 
-type claimRoyaltiesType = {
-  tokenIdentifier: string;
-  amount: number;
-};
-
 export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
   const { nftMinter, claimAddress } = props;
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const mxClaimsContract = new ClaimsContract(chainID);
-  const factory = new Factory("devnet");
   const [viewAddressToken, setAddressToken] = useState<Array<Record<any, any>>>([{}]);
   const [claimObject, setClaimObject] = useState<Array<Record<any, any>>>([{}]);
 
@@ -42,7 +37,6 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
     const { data: egldBalance } = await axios.get(egldAccountBalance);
     // request for claims portal
     const getClaimsDatadex = await mxClaimsContract.getClaims(minterAddress ?? "");
-
     setAddressToken(externalTokenData);
 
     // setting the data from claims portal into claim object + adding egld balance
@@ -60,7 +54,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
             amount: ithRoyaltiesOutsideDataDexAmount !== undefined ? ithRoyaltiesFromDataDex + ithRoyaltiesOutsideDataDexAmount : ithRoyaltiesFromDataDex,
           },
           {
-            tokenIdentifier: "xEGLD",
+            tokenIdentifier: "EGLD",
             amount: Number(egldBalance.balance),
           },
         ]);
@@ -71,7 +65,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
             amount: ithRoyaltiesOutsideDataDexAmount !== undefined ? ithRoyaltiesFromDataDex + ithRoyaltiesOutsideDataDexAmount : ithRoyaltiesFromDataDex,
           },
           {
-            tokenIdentifier: "xEGLD",
+            tokenIdentifier: "EGLD",
             amount: Number(egldBalance.balance),
           },
         ]);
@@ -102,7 +96,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
 
   useEffect(() => {
     getAddressToken();
-  }, [claimObject.length]);
+  }, [claimObject.length, hasPendingTransactions]);
 
   return (
     <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "33%" }}>
@@ -124,14 +118,14 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
                   <Text fontSize="0.85rem" opacity=".6" fontFamily="Satoshi-Regular">
                     Available now
                   </Text>
-                  <Text fontSize="2xl">{token.amount / 10 ** 18}</Text>
+                  <Text fontSize="2xl">{Number(token.amount / 10 ** 18).toFixed(3)}</Text>
                 </Flex>
                 <Button
                   colorScheme="teal"
                   variant="outline"
                   size="lg"
                   onClick={() => claimRoyalties(token.tokenIdentifier)}
-                  isDisabled={token.amount === 0}
+                  isDisabled={token.amount === 0 || claimAddress !== address}
                   mt={1}>
                   Claim token
                 </Button>
