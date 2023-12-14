@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import { getApi } from "../../../../libs/MultiversX/api";
-import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
-import { ClaimsContract } from "../../../../libs/MultiversX/claims";
-import { Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address } from "@multiversx/sdk-core/out";
+import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import axios from "axios";
+import { MdInfo } from "react-icons/md";
+import { useParams } from "react-router-dom";
 import { tokenContractAddress_Mx_Devnet, tokenContractAddress_Mx_Mainnet } from "libs/contractAddresses";
 import { ImageTooltip } from "../../../../components/ImageTooltip";
-import { MdInfo } from "react-icons/md";
+import { getApi } from "../../../../libs/MultiversX/api";
+import { ClaimsContract } from "../../../../libs/MultiversX/claims";
 
 type ClaimRoyaltiesProps = {
   nftMinter: NftMinter;

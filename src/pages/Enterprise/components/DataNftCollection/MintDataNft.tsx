@@ -17,14 +17,14 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import { Controller, useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { isValidNumericCharacter } from "../../../../libs/utils";
 import BigNumber from "bignumber.js";
-import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { Controller, useForm } from "react-hook-form";
 import { MdInfo } from "react-icons/md";
+import * as Yup from "yup";
+import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { isValidNumericCharacter } from "../../../../libs/utils";
 
 type MintDataNftFormType = {
   senderAddress: IAddress;
@@ -51,8 +51,6 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
   const [antiSpamTaxAmount, setAntiSpamTaxAmount] = useState<number>(0);
 
   const { address } = useGetAccountInfo();
-  const { hasPendingTransactions } = useGetPendingTransactions();
-  // console.log(viewContractConfig);
 
   useEffect(() => {
     (async () => {

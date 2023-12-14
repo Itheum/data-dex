@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Button, Checkbox, Flex, Link, Text } from "@chakra-ui/react";
 import { DeployedContract, Factory } from "@itheum/sdk-mx-enterprise/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { useWindowSize } from "../../libs/utils/UseWindowSize";
-import { CHAIN_TX_VIEWER } from "../../libs/config";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
-import { gtagGo } from "../../libs/utils";
+import { gtagGo } from "libs/utils";
+import ShortAddress from "../../components/UtilComps/ShortAddress";
+import { CHAIN_TX_VIEWER } from "../../libs/config";
 
 export const Enterprise: React.FC = () => {
   const [isAddressWhitelisted, setAddressWhitelisted] = useState<boolean>(false);
@@ -29,7 +28,6 @@ export const Enterprise: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const factory = new Factory("devnet");
-  const windowSize = useWindowSize();
 
   const deployNewMinter = async (senderAddress: IAddress, version: string) => {
     // console.log(factory);
@@ -48,7 +46,6 @@ export const Enterprise: React.FC = () => {
       const claimAddress = await factory.viewClaimsContractAddress();
       const claimToken = await factory.viewClaimsTokenIdentifier();
       const contractAddress = await factory.viewAddressContracts(new Address(address));
-      const factoryContractAddress1 = await factory.getContractAddress();
 
       setAddressWhitelisted(whitelistedAddress);
       setWhitelistNeeded(whitelistNeeded);

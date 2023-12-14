@@ -302,16 +302,6 @@ export const dataCATDemoUserData = {
   "firstName": "DexDemo",
   "programsAllocation": [
     {
-      "program": "custom-gamer-activity",
-      "group": "custom",
-      "userId": "custom-x",
-      "status": "stop",
-      "shortId": "1",
-      "type": "1",
-      "fromTs": 1528448026784,
-      "toTs": 1535951753305,
-    },
-    {
       "program": "playstation-gamer-passport",
       "group": "custom",
       "userId": "custom-x",
@@ -320,64 +310,7 @@ export const dataCATDemoUserData = {
       "type": "1",
       "fromTs": 1528448026784,
       "toTs": 1535951753305,
-    },
-    {
-      "program": "70dc6bd0-59b0-11e8-8d54-2d562f6cba54", // red heart challenge
-      "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
-      "status": "complete",
-      "shortId": "1",
-      "type": "3",
-      "fromTs": 1543835363643,
-      "toTs": 1546073965694,
-    },
-    {
-      "program": "48d7b020-eab0-11ea-a466-0334ff0e8bf2", // okpulse
-      "userId": "d879d170-e5a8-11ea-8fbc-3f6bc955eff0",
-      "status": "active",
-      "shortId": "104",
-      "type": "3",
-      "fromTs": 1598786220915,
-      "toTs": 1623154409311,
-    },
-    {
-      "program": "ef62c220-50e1-11e7-9bd2-2f33680a66b6", // blood pressure tracker
-      "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
-      "status": "stop",
-      "shortId": "1",
-      "type": "1",
-      "fromTs": 1497520172549,
-      "toTs": 1536402897123,
-    },
-    {
-      "program": "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42", // hypertension insights intense
-      "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
-      "status": "stop",
-      "shortId": "1",
-      "type": "1",
-      "fromTs": 1504262112978,
-      "toTs": 1535607089747,
-    },
-    {
-      "program": "476ab840-1cb7-11e9-84fe-e935b365220a",
-      "userId": "351e6600-0d32-11e7-a1fc-2beae8f58872",
-      "status": "active",
-      "shortId": "1",
-      "type": "1",
-      "fromTs": 1548043292188,
-      "toTs": 1623154409311,
-    },
-  ],
-  "_lookups": {
-    "programs": {
-      "custom-gamer-activity": {
-        "programName": "Gamer Passport Activity",
-        "dataStreamURL": "https://itheumapi.com/readingsStream/db5e2d6c-d90a-11ec-9d64-0242ac120002/02f2d3f0-cbaa-11ec-864d-c9ca0d926d97",
-        "dataPreviewURL": "https://itheum-static.s3.ap-southeast-2.amazonaws.com/gamer-passport-activity-dashboard-preview.png",
-        "img": "gamer-passport-data",
-        "description":
-          "A bulk dataset of over 44099 data points collected from the Polygon, BSC and Elrond Blockchains and Discord Social Channels for over 81 Gamers playing the Wonderhero, Cyball and Knights of Cathena web3 games.",
-      },
-      "playstation-gamer-passport": {
+      additionalInformation: {
         "programName": "Sony Playstation Data Passport",
         "dataStreamURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport.json",
         "dataPreviewURL": "https://api.itheumcloud-stg.com/hosteddataassets/playstation_gamer_1_data_passport_preview.json",
@@ -385,41 +318,8 @@ export const dataCATDemoUserData = {
         "description":
           "Unlock a live dataset of a Sony Playstation gamer's platform, preferences, active titles played, trophies, playtime, and achievements. All sourced direct from the gamer!",
       },
-      "bc9ce3e0-8f00-11e7-b1ff-9fef83fc8a42": {
-        "programName": "Hypertension Insights Intense",
-        "img": "hii",
-        "description":
-          'This Intense program aims to produce some blood pressure insights for our patient base. These insights can then be used to test some Hypothesis relating to the “Dangers of Morning Blood Pressure”, "Unusual trends in Arm to Arm BP difference" as well is the treatment plan a Patient on really controlling their Blood Pressure. \n\nAt the end of the Program the Patent will receive a report.',
-        "duration": "2_weeks",
-      },
-      "476ab840-1cb7-11e9-84fe-e935b365220a": {
-        "programName": "Blood Pressure OnDemand",
-        "img": "bpo",
-        "description": "A program for users to log and check blood pressure as they feel.",
-        "duration": "ongoing",
-      },
-      "70dc6bd0-59b0-11e8-8d54-2d562f6cba54": {
-        "programName": "Red Heart Challenge",
-        "img": "rhc",
-        "description": "A 3 week challenge to generate some Heart Health insights by collecting Blood Pressure readings, Stress Readings etc",
-        "duration": "3_weeks",
-      },
-      "ef62c220-50e1-11e7-9bd2-2f33680a66b6": {
-        "programName": "Blood Pressure Tracker",
-        "img": "bpt",
-        "description":
-          "Hypertension is defined as a systolic blood pressure of 140 mm Hg or more, or a diastolic blood pressure of 90 mm Hg or more, or taking antihypertensive medication. It is estimated that 1 in 3 people globally supper from Hypertension.\n\nThis Program is to help anyone living with Hypertension or Mild Hypertension to better manger their condition with proactive monitoring and tracking.",
-        "duration": "ongoing",
-      },
-      "48d7b020-eab0-11ea-a466-0334ff0e8bf2": {
-        "programName": "OkPulse",
-        "img": "okpulse",
-        "description":
-          "We would like to understand how we can best support you as you work remotely. This program provides us with a living pulse on your motivation, productivity, engagement levels and general health and wellbeing.",
-        "duration": "ongoing",
-      },
     },
-  },
+  ],
 };
 
 export const styleStrings = {
