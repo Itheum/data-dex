@@ -199,7 +199,7 @@ export const getExplorerTrailBlazerURL = (chainID: string) => {
 };
 
 export const shouldPreviewDataBeEnabled = (chainID: string, loginMethod: string, previewDataOnDevnetSession: any) => {
-  return !((chainID == "D" && !previewDataOnDevnetSession) || loginMethod !== "extra");
+  return !((chainID == "D" && !previewDataOnDevnetSession) || loginMethod === "extra");
 };
 
 export const viewDataDisabledMessage = (loginMethod: string) => {
