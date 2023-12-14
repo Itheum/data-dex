@@ -159,6 +159,7 @@ export const WALLETS = {
   MX_DEFI: "el_defi",
   MX_WEBWALLET: "el_webwallet",
   MX_LEDGER: "el_ledger",
+  MX_CUSTOM_WEBWALLET: "el_custom_webwallet",
 };
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
