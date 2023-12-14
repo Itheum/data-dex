@@ -1,10 +1,5 @@
-import { StringValue } from "@multiversx/sdk-core/out";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
-import { TransactionDecoder, TransactionMetadataTransfer } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn, SortingFn, sortingFns } from "@tanstack/react-table";
-import BigNumber from "bignumber.js";
-import { convertWeiToEsdt } from "libs/utils";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {

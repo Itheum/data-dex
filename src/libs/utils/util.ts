@@ -1,7 +1,9 @@
+import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
+import { getNetworkProvider } from "../MultiversX/api";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -265,7 +267,7 @@ export const decodeNativeAuthToken = (accessToken: string) => {
   try {
     parsedExtraInfo = JSON.parse(decodeValue(extraInfo));
   } catch {
-    throw new Error("Extra Info INvalid");
+    throw new Error("Extra Info Invalid");
   }
 
   const parsedOrigin = decodeValue(origin);
@@ -288,5 +290,20 @@ export const decodeNativeAuthToken = (accessToken: string) => {
   return result;
 };
 
+<<<<<<< HEAD
 export const VIEW_DATA_DISABLED_DEVNET_MESSAGE = "View Data is disabled on Devnet Data Dex";
 export const VIEW_DATA_DISABLED_HUB_MESSAGE = "View Data is disabled on Data Dex when logged in through the xPortal Hub";
+=======
+export const getTypedValueFromContract = async (chainID: string, methodForContractCall: Interaction) => {
+  const networkProvider = getNetworkProvider(chainID);
+  const query = methodForContractCall.check().buildQuery();
+  const queryResponse = await networkProvider.queryContract(query);
+  const endpointDefinition = methodForContractCall.getEndpoint();
+  const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+  if (firstValue) {
+    return firstValue.valueOf().toNumber();
+  } else {
+    return -1;
+  }
+};
+>>>>>>> milestone-1.9.0

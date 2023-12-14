@@ -216,11 +216,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
+    const { sessionId: sessionIdTemp } = await contract.delistDataNft(offer.index, delistAmount, address);
     if (isWebWallet) {
       sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "delist-tx", index: offer.index, amount: delistAmount }));
     }
-    setSessionId(sessionId);
+    setSessionId(sessionIdTemp);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -247,7 +247,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    const { sessionId } = await contract.updateOfferPrice(
+    const { sessionId: sessionIdTemp } = await contract.updateOfferPrice(
       offer.index,
       convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
       address
@@ -255,7 +255,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     if (isWebWallet) {
       sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "update-price-tx", index: offer.index, price: newListingPrice }));
     }
-    setUpdatePriceSessionId(sessionId);
+    setUpdatePriceSessionId(sessionIdTemp);
 
     // a small delay for visual effect
     await sleep(0.5);

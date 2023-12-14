@@ -7,6 +7,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import { TranslateBoolean } from "../../../../libs/utils";
+import ShortAddress from "../../../../components/UtilComps/ShortAddress";
 
 type LiveSettingsProps = {
   nftMinter: NftMinter;
@@ -30,11 +31,13 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
   };
 
   return (
-    <Box as="div" flexDirection="column">
-      <Text fontSize="1.5rem" fontFamily="Clash-Bold" pb={2} color="teal.200">
-        Live Settings:
-      </Text>
-      <Flex flexDirection="column" justifyItems="start" alignItems="start" gap={0.5}>
+    <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "33%" }}>
+      <Box bgColor="#00C7970D" roundedTop="3xl">
+        <Text fontSize="1.5rem" fontFamily="Clash-Medium" px={10} py={4}>
+          Live Settings:
+        </Text>
+      </Box>
+      <Flex px={10} py={4} flexDirection="column" justifyItems="start" alignItems="start" gap={3} bgColor="#1b1b1b50">
         <Text>Token Identifier: {viewContractConfig.tokenIdentifier}</Text>
         <Text>Minted Tokens: {viewContractConfig.mintedTokens}</Text>
         <Text>Is Tax Required: {TranslateBoolean(viewContractConfig.isTaxRequired)}</Text>
@@ -44,36 +47,39 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
         <Text>Is Whitelist Enabled: {TranslateBoolean(viewContractConfig.isWhitelistEnabled)}</Text>
         <Text>Is Contract Pause: {TranslateBoolean(viewContractConfig.isContractPaused)}</Text>
         <Text>Roles Are Set: {TranslateBoolean(viewContractConfig.rolesAreSet)}</Text>
-        <Text>Claims Address: {viewContractConfig.claimsAddress}</Text>
-        <Text>Administrator Address: {viewContractConfig.administratorAddress}</Text>
-
-        <Flex flexDirection="row" gap={5}>
-          <Flex flexDirection="column" pt={3}>
-            <Button
-              aria-label="UnPause contract"
-              isLoading={hasPendingTransactions}
-              loadingText="Loading"
-              variant="ghost"
-              size="lg"
-              isDisabled={!viewContractConfig.isContractPaused}
-              onClick={() => unPauseContract(new Address(address))}>
-              <AiFillPlayCircle size="lg" color="#00C797" />
-            </Button>
-            <Text>UnPause Minter</Text>
-          </Flex>
-          <Flex flexDirection="column" pt={3}>
-            <Button
-              aria-label="Pause contract"
-              isLoading={hasPendingTransactions}
-              loadingText="Loading"
-              variant="ghost"
-              size="lg"
-              isDisabled={viewContractConfig.isContractPaused}
-              onClick={() => pauseContract(new Address(address))}>
-              <AiFillPauseCircle size="lg" color="#00C797" />
-            </Button>
-            <Text>Pause Minter</Text>
-          </Flex>
+        <Text>
+          Claims Address: <ShortAddress address={viewContractConfig.claimsAddress} fontSize="lg" />
+        </Text>
+        <Text>
+          Administrator Address: <ShortAddress address={viewContractConfig.administratorAddress} fontSize="lg" />
+        </Text>
+      </Flex>
+      <Flex flexDirection="row" gap={5} px={10} py={4} bgColor="#00C7970D" roundedBottom="3xl" justifyContent="center">
+        <Flex flexDirection="column">
+          <Button
+            aria-label="UnPause contract"
+            isLoading={hasPendingTransactions}
+            loadingText="Loading"
+            variant="ghost"
+            size="md"
+            isDisabled={!viewContractConfig.isContractPaused}
+            onClick={() => unPauseContract(new Address(address))}>
+            <AiFillPlayCircle size="lg" color="#00C797" />
+          </Button>
+          <Text>Unpause Minter</Text>
+        </Flex>
+        <Flex flexDirection="column">
+          <Button
+            aria-label="Pause contract"
+            isLoading={hasPendingTransactions}
+            loadingText="Loading"
+            variant="ghost"
+            size="md"
+            isDisabled={viewContractConfig.isContractPaused}
+            onClick={() => pauseContract(new Address(address))}>
+            <AiFillPauseCircle size="lg" color="#00C797" />
+          </Button>
+          <Text>Pause Minter</Text>
         </Flex>
       </Flex>
     </Box>

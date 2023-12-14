@@ -841,17 +841,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   <Text>Verifying data access rights to unlock Data Stream</Text>
                 </HStack>
 
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && (
-                  <Stack border="solid .04rem" padding={3} borderRadius={5}>
-                    <Text fontSize="sm" lineHeight={1.7}>
-                      <InfoIcon boxSize={5} mr={1} />
-                      Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select{" "}
-                      <b>Always allow pop-ups</b> and then close this and click on <b>View Data</b> again.
-                    </Text>
-                    <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
-                  </Stack>
-                )}
-
                 {errUnlockAccessGeneric && (
                   <Alert status="error">
                     <Stack>
