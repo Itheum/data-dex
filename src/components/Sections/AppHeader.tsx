@@ -413,13 +413,12 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 {connectBtnTitle}
               </Button>
             )}
-            Toggle Mode
+
             <Menu>
               <MenuButton
-                marginRight={{ base: "10", md: "none" }}
                 as={IconButton}
                 aria-label="Options"
-                size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                size={{ base: "sm", lg: "lg" }}
                 p="2 !important"
                 color="teal.200"
                 icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}

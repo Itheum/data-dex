@@ -2,16 +2,15 @@ import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Link, Spinner, Flex, Badge, Tooltip } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { DataTable } from "./Components/DataTable";
-import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 import { backendApi } from "libs/utils";
 import { useMarketStore } from "store";
+import { DataTable } from "./Components/DataTable";
+import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainID } = useGetNetworkConfig();
@@ -92,10 +91,10 @@ export default function TokenTxTable(props: TokenTableProps) {
       const response = await axios.get(`https://${getApi(chainID)}/nfts/${props.tokenId}/transactions?size=50&status=success`);
       const interactions = response.data;
 
-      const data: TransactionInTable[] = [];
+      const dataTemp: TransactionInTable[] = [];
 
       for (const interaction of interactions) {
-        data.push({
+        dataTemp.push({
           hash: interaction.txHash,
           timestamp: interaction.timestamp,
           from: interaction.sender,
@@ -104,7 +103,7 @@ export default function TokenTxTable(props: TokenTableProps) {
           value: `${interaction?.action.arguments?.transfers[0].value} x ${interaction?.action.arguments?.transfers[0].identifier}`,
         });
       }
-      setData(data);
+      setData(dataTemp);
     }
 
     async function getBackendInteractions() {
@@ -114,12 +113,12 @@ export default function TokenTxTable(props: TokenTableProps) {
 
       const interactions = response.data;
 
-      const data: TransactionInTable[] = [];
+      const dataTemp: TransactionInTable[] = [];
 
       for (const interaction of interactions) {
         switch (interaction.method) {
           case "addOffer":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -129,7 +128,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             });
             break;
           case "acceptOffer":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -141,7 +140,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             break;
 
           case "cancelOffer":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -153,7 +152,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             break;
 
           case "changeOfferPrice":
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -163,7 +162,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             });
             break;
           default:
-            data.push({
+            dataTemp.push({
               hash: interaction.txHash,
               timestamp: interaction.timestamp,
               from: interaction.from,
@@ -174,7 +173,7 @@ export default function TokenTxTable(props: TokenTableProps) {
             break;
         }
       }
-      setData(data);
+      setData(dataTemp);
     }
     if (isApiUp) {
       getBackendInteractions();
