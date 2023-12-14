@@ -62,7 +62,6 @@ import {
   convertToLocalString,
   decodeNativeAuthToken,
   isValidNumericCharacter,
-  nativeAuthOrigins,
   shouldPreviewDataBeEnabled,
   sleep,
   transformDescription,

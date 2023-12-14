@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Text, Tooltip } from "@chakra-ui/react";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { NftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import * as Yup from "yup";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { AiOutlineClose } from "react-icons/ai";
-import { Address } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { useForm } from "react-hook-form";
+import { AiOutlineClose } from "react-icons/ai";
+import * as Yup from "yup";
 
 type WhitelistControlProps = {
   nftMinter: NftMinter;
