@@ -38,6 +38,7 @@ import {
   tokenDecimals,
   shouldPreviewDataBeEnabled,
   backendApi,
+  viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -215,11 +216,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
+    const { sessionId: sessionIdTemp } = await contract.delistDataNft(offer.index, delistAmount, address);
     if (isWebWallet) {
       sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "delist-tx", index: offer.index, amount: delistAmount }));
     }
-    setSessionId(sessionId);
+    setSessionId(sessionIdTemp);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -246,7 +247,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    const { sessionId } = await contract.updateOfferPrice(
+    const { sessionId: sessionIdTemp } = await contract.updateOfferPrice(
       offer.index,
       convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
       address
@@ -254,7 +255,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     if (isWebWallet) {
       sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "update-price-tx", index: offer.index, price: newListingPrice }));
     }
-    setUpdatePriceSessionId(sessionId);
+    setUpdatePriceSessionId(sessionIdTemp);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -263,14 +264,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+      <Tooltip
+        colorScheme="teal"
+        hasArrow
+        label={viewDataDisabledMessage(loginMethod)}
+        isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+          isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>

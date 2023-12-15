@@ -110,7 +110,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
               <Stack spacing="5">
                 <Box p="5px">
                   <Stack>
-                    <Wrap spacing="20px" justify="space-between" padding="10px">
+                    <Wrap spacing="20px" justify="space-around" padding="10px">
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XPORTALAPP);
@@ -150,6 +150,19 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                         className="auth_wrap">
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
                       </WrapItem> */}
+
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.MX_LEDGER);
+                          localStorage.setItem("app-version", appVersion || "");
+                        }}
+                        className="auth_wrap">
+                        <WebWalletLoginButton
+                          loginButtonText={"Google (xAlias)"}
+                          buttonClassName="auth_button"
+                          customWalletAddress={process.env.REACT_APP_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
+                          {...commonProps}></WebWalletLoginButton>
+                      </WrapItem>
                     </Wrap>
                   </Stack>
                 </Box>
