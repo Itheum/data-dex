@@ -290,10 +290,9 @@ export const decodeNativeAuthToken = (accessToken: string) => {
   return result;
 };
 
-<<<<<<< HEAD
 export const VIEW_DATA_DISABLED_DEVNET_MESSAGE = "View Data is disabled on Devnet Data Dex";
 export const VIEW_DATA_DISABLED_HUB_MESSAGE = "View Data is disabled on Data Dex when logged in through the xPortal Hub";
-=======
+
 export const getTypedValueFromContract = async (chainID: string, methodForContractCall: Interaction) => {
   const networkProvider = getNetworkProvider(chainID);
   const query = methodForContractCall.check().buildQuery();
@@ -306,4 +305,3 @@ export const getTypedValueFromContract = async (chainID: string, methodForContra
     return -1;
   }
 };
->>>>>>> milestone-1.9.0

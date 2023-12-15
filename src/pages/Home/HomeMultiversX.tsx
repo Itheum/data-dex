@@ -424,7 +424,7 @@ export default function HomeMultiversX({
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRoyaltiesOpen}>
                           {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis" overflow="auto">
+                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
                               {formatNumberToShort(Number(claimsBalances.claimBalanceValues[3]))}
                             </Text>
                           ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
