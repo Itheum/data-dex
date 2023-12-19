@@ -35,6 +35,10 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "BETATOK-5b7317",
             contract: "erd1qqqqqqqqqqqqqpgqjk0cxzm79qzced5sevmnn6swgp3jjch88ypsfd068q",
           },
+          {
+            id: "COLNAMA-539838",
+            contract: "erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd",
+          },
         ],
       };
     }
