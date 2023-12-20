@@ -89,11 +89,7 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
           formData.claimsAddress,
           {
             taxTokenIdentifier: formData.taxTokenIdentifier ?? "",
-            taxTokenAmount: formData.taxTokenAmount
-              ? BigNumber(formData.taxTokenAmount)
-                  .multipliedBy(10 ** tokenRequest)
-                  .toNumber()
-              : 0,
+            taxTokenAmount: formData.taxTokenAmount ? new BigNumber(formData.taxTokenAmount).multipliedBy(10 ** tokenRequest).toNumber() : 0,
           }
         );
         txWhenRequireMintIsTrue.setGasLimit(100000000);
