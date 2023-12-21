@@ -7,17 +7,29 @@ export const formatNumberRoundFloor = (num: number, decimals = 2) => {
 
 export const formatNumberToShort = (number: number) => {
   if (number < 1000) {
-    return number.toString();
+    return formatToHundreds(number);
   } else if (number < 1000000) {
-    const thousands = Math.floor(number / 1000);
-    const remainder = number % 1000;
-    return `${thousands},${remainder !== 0 ? remainder : ""}`;
+    return formatToThousands(number);
   } else {
-    const millions = Math.floor(number / 1000000);
-    const thousands = Math.floor((number % 1000000) / 1000);
-    const remainder = number % 1000;
-    return `${millions},${thousands !== 0 ? `${thousands}` : ""},${remainder !== 0 ? remainder : ""}`;
+    return formatToMillions(number);
   }
+};
+
+const formatToHundreds = (number: number) => {
+  return (Math.floor(number * 100) / 100).toString();
+};
+
+const formatToThousands = (number: number) => {
+  const thousands = Math.floor(number / 1000);
+  const remainder = Math.floor((number % 1000) * 100) / 100;
+  return `${thousands},${remainder !== 0 ? remainder : ""}`;
+};
+
+const formatToMillions = (number: number) => {
+  const millions = Math.floor(number / 1000000);
+  const thousands = Math.floor((number % 1000000) / 1000);
+  const remainder = Math.floor((number % 1000) * 100) / 100;
+  return `${millions},${thousands !== 0 ? `${thousands}` : ""},${remainder !== 0 ? remainder : ""}`;
 };
 //
 const BIG_NUMBER_ROUNDING_MODE = BigNumber.ROUND_FLOOR;
