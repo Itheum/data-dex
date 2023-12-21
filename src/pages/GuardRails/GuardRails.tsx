@@ -244,14 +244,7 @@ export const GuardRails: React.FC = () => {
               value={upcomingGuardRails?.accepted_payments ? upcomingGuardRails?.accepted_payments : "-"}
               badgeColor={colorMode === "dark" ? 1 : 2}
             />
-            <Text as="div" py={2} pl={7} fontSize="lg">
-              Accepted tokens:&nbsp;
-              <Badge backgroundColor={colorMode === "dark" ? "#FFFFFF26" : "#0F0F0F20"} fontSize="0.8em" m={1} borderRadius="md">
-                <Text as="p" px={3} py={1.5} textColor="white" fontSize="md" fontWeight="500">
-                  {upcomingGuardRails?.accepted_tokens ? upcomingGuardRails?.accepted_tokens : "-"}
-                </Text>
-              </Badge>
-            </Text>
+
             <GuardRailSection title="Accepted tokens" acceptedTokens={upcomingGuardRails.accepted_tokens} badgeColor={colorMode === "dark" ? 1 : 2} />
           </Stack>
         </Box>
