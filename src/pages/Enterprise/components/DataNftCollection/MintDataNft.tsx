@@ -138,7 +138,7 @@ export const MintDataNft: React.FC<MintDataNftProps> = (props) => {
         data.datasetTitle,
         data.datasetDescription,
         {
-          antiSpamTax: BigNumber(antiSpamTaxAmount).toNumber(),
+          antiSpamTax: new BigNumber(antiSpamTaxAmount).toNumber(),
           antiSpamTokenIdentifier: viewContractConfig.taxToken,
           imageUrl: data.imageUrl,
           nftStorageToken: data.nftStorageToken,
