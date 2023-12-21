@@ -1,19 +1,19 @@
 {
   "buildInfo": {
     "rustc": {
-      "version": "1.66.0-nightly",
-      "commitHash": "b8c35ca26b191bb9a9ac669a4b3f4d3d52d97fb1",
-      "commitDate": "2022-10-15",
+      "version": "1.71.0-nightly",
+      "commitHash": "a2b1646c597329d0a25efa3889b66650f65de1de",
+      "commitDate": "2023-05-25",
       "channel": "Nightly",
-      "short": "rustc 1.66.0-nightly (b8c35ca26 2022-10-15)"
+      "short": "rustc 1.71.0-nightly (a2b1646c5 2023-05-25)"
     },
     "contractCrate": {
       "name": "datanftmint",
-      "version": "1.0.0"
+      "version": "2.0.0"
     },
     "framework": {
       "name": "multiversx-sc",
-      "version": "0.39.7"
+      "version": "0.45.1"
     }
   },
   "name": "DataNftMint",
@@ -245,6 +245,37 @@
       "outputs": []
     },
     {
+      "name": "setWithdrawalAddress",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "withdrawal_address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "withdraw",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "name": "getTokenId",
       "mutability": "readonly",
       "inputs": [],
@@ -256,6 +287,16 @@
     },
     {
       "name": "getTreasuryAddress",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "getWithdrawalAddress",
       "mutability": "readonly",
       "inputs": [],
       "outputs": [
@@ -845,8 +886,39 @@
           "indexed": true
         }
       ]
+    },
+    {
+      "identifier": "setWithdrawalAddress",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "withdrawTokens",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        },
+        {
+          "name": "token",
+          "type": "EgldOrEsdtTokenIdentifier",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "BigUint",
+          "indexed": true
+        }
+      ]
     }
   ],
+  "esdtAttributes": [],
   "hasCallback": true,
   "types": {
     "DataNftAttributes": {
