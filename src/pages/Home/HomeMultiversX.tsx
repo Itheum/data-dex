@@ -35,7 +35,7 @@ import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponen
 import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { FaucetContract } from "libs/MultiversX/faucet";
-import { formatNumberRoundFloor, formatNumberToShort } from "libs/utils";
+import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 
 export default function HomeMultiversX({
@@ -307,7 +307,7 @@ export default function HomeMultiversX({
                           {dataCATAccount.programsAllocation.map((item: any) => (
                             <Stack direction="row" key={item.program}>
                               <Badge borderRadius="full" px="2" colorScheme="teal">
-                                {dataCATAccount._lookups.programs[item.program].programName}
+                                {dataCATAccount.additionalInformation?.programName}
                               </Badge>
                             </Stack>
                           ))}
@@ -424,7 +424,7 @@ export default function HomeMultiversX({
                       <Tooltip colorScheme="teal" hasArrow label="The claims contract is currently paused" isDisabled={!claimContractPauseValue}>
                         <Button isDisabled={shouldClaimButtonBeDisabled(3)} colorScheme="teal" variant="outline" w="6.1rem" onClick={onRoyaltiesOpen}>
                           {claimsBalances.claimBalanceValues[3] !== "-1" && claimsBalances.claimBalanceValues[3] !== "-2" ? (
-                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis" overflow="auto">
+                            <Text color={colorMode === "dark" ? "white" : "black"} textOverflow="ellipsis">
                               {formatNumberToShort(Number(claimsBalances.claimBalanceValues[3]))}
                             </Text>
                           ) : claimsBalances.claimBalanceValues[3] !== "-2" ? (
