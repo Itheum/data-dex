@@ -56,7 +56,7 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { shouldPreviewDataBeEnabled } from "libs/utils/util";
+import { shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils/util";
 import { useMarketStore } from "store";
 
 type DataNFTDetailsProps = {
@@ -70,7 +70,7 @@ type DataNFTDetailsProps = {
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { loginMethod, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -256,8 +256,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return esdtPrice > 0
       ? `Unlock for: ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-      ? "Unlock for: FREE"
-      : "Not Listed";
+        ? "Unlock for: FREE"
+        : "Not Listed";
   }
 
   function getOfferPrice(price: number) {
@@ -265,8 +265,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return esdtPrice > 0
       ? `• ${esdtPrice} ITHEUM ` + (esdtPrice ? `(~${convertToLocalString(esdtPrice * itheumPrice, 2)} USD)` : "")
       : esdtPrice === 0
-      ? "Unlock for: FREE"
-      : "Not Listed";
+        ? "Unlock for: FREE"
+        : "Not Listed";
   }
 
   const handleButtonClick = (offerArg: number, identifier: string) => {
@@ -410,13 +410,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Tooltip
                           colorScheme="teal"
                           hasArrow
-                          label="Preview Data is disabled on devnet"
-                          isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                          label={viewDataDisabledMessage(loginMethod)}
+                          isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
                             variant="outline"
-                            isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                            isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                             onClick={() => {
                               window.open(nftData.attributes.dataPreview);
                             }}>
@@ -602,16 +602,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 {totalOffers.length === 2
                                   ? `One offer:`
                                   : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
-                                  ? "No other offers"
-                                  : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
+                                    ? "No other offers"
+                                    : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} Offers:`}
                               </>
                             ) : (
                               <>
                                 {totalOffers.length === 2 /// 2 here because we are always going to have the current offer and the other one
                                   ? `One other offer:`
                                   : totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length === 0
-                                  ? "No other offers"
-                                  : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
+                                    ? "No other offers"
+                                    : `${totalOffers.filter((to: any) => (offerId ? to.index !== Number(offerId) : to.index)).length} other offers:`}
                               </>
                             )}
                           </>
@@ -675,17 +675,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Stack>
             </Box>
           </Flex>
-          {isApiUp && (
-            <VStack alignItems={"flex-start"}>
-              <Heading size="lg" fontFamily="Clash-Medium" mt="30px" marginBottom={2}>
-                Data NFT Activity
-              </Heading>
 
-              <Box width={"100%"}>
-                <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
-              </Box>
-            </VStack>
-          )}
+          <VStack alignItems={"flex-start"}>
+            <Heading size="lg" fontFamily="Clash-Medium" mt="30px" marginBottom={2}>
+              Data NFT Activity
+            </Heading>
+
+            <Box width={"100%"}>
+              <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
+            </Box>
+          </VStack>
 
           {nftData && offer && (
             <ProcureDataNFTModal
