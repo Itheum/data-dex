@@ -34,7 +34,7 @@ const ExplainerArticles = ({ reduceGap }: { reduceGap?: boolean }) => {
 
 function ArticleCard({ imgTitle, title, link }: { imgTitle: string; title: string; link: string }) {
   return (
-    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", xl: "290px", "2xl": "315px" }}>
+    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", lg: "390px", xl: "290px", "2xl": "315px" }}>
       <CardBody>
         <Box>
           <Link href={link} isExternal>
