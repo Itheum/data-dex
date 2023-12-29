@@ -159,7 +159,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
               <CardBody>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`} as={ReactRouterLink}>
-                    <Image src={item.nftImgUrl} alt="Green double couch with wooden legs" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
+                    <Image src={item.nftImgUrl} alt="Data NFT Image" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
                   </Link>
                 </Skeleton>
                 <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

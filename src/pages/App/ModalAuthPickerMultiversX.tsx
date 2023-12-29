@@ -142,18 +142,18 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                         <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
 
-                      {/* <WrapItem
+                      <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_LEDGER);
                           localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
-                      </WrapItem> */}
+                      </WrapItem>
 
                       <WrapItem
                         onClick={() => {
-                          goMxLogin(WALLETS.MX_LEDGER);
+                          goMxLogin(WALLETS.MX_XALIAS);
                           localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
