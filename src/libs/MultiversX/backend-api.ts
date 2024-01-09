@@ -18,11 +18,14 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   }
 }
 
-export async function getFavoritesFromBackendApi(chainId: string): Promise<Favorite[]> {
+export async function getFavoritesFromBackendApi(chainId: string, bearerToken: string): Promise<Favorite[]> {
   try {
     const url = `${backendApi(chainId)}/favorites`;
     const { data } = await axios.get<Favorite[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
     });
     return data;
   } catch (error) {
@@ -31,7 +34,7 @@ export async function getFavoritesFromBackendApi(chainId: string): Promise<Favor
   }
 }
 
-export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: string): Promise<Favorite> {
+export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: string, bearerToken: string): Promise<Favorite> {
   try {
     const url = `${backendApi(chainID)}/addFavorite`;
     const { data } = await axios.post<Favorite>(
@@ -41,6 +44,9 @@ export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: 
       },
       {
         timeout: uxConfig.mxAPITimeoutMs,
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
       }
     );
     return data;
@@ -50,7 +56,7 @@ export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: 
   }
 }
 
-export async function removeFavoriteFromBackendApi(chainID: string, id: string): Promise<Favorite> {
+export async function removeFavoriteFromBackendApi(chainID: string, id: string, bearerToken: string): Promise<Favorite> {
   try {
     const url = `${backendApi(chainID)}/removeFavorite`;
     const { data } = await axios.post<Favorite>(
@@ -60,6 +66,9 @@ export async function removeFavoriteFromBackendApi(chainID: string, id: string):
       },
       {
         timeout: uxConfig.mxAPITimeoutMs,
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
       }
     );
     return data;
