@@ -681,9 +681,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
 
-            <Box width={"100%"}>
+            <Flex width={"100%"} overflowX="scroll">
               <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
-            </Box>
+            </Flex>
           </VStack>
 
           {nftData && offer && (
