@@ -2,7 +2,7 @@ import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
-import { OfferType } from "./types";
+import { Favorite, OfferType, TrendingNft } from "./types";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -15,6 +15,70 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   } catch (error) {
     console.error(error);
     return false;
+  }
+}
+
+export async function getFavoritesFromBackendApi(chainId: string): Promise<Favorite[]> {
+  try {
+    const url = `${backendApi(chainId)}/favorites`;
+    const { data } = await axios.get<Favorite[]>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: string): Promise<Favorite> {
+  try {
+    const url = `${backendApi(chainID)}/addFavorite`;
+    const { data } = await axios.post<Favorite>(
+      url,
+      {
+        identifier: tokenIdentifier,
+      },
+      {
+        timeout: uxConfig.mxAPITimeoutMs,
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {} as Favorite;
+  }
+}
+
+export async function removeFavoriteFromBackendApi(chainID: string, id: string): Promise<Favorite> {
+  try {
+    const url = `${backendApi(chainID)}/removeFavorite`;
+    const { data } = await axios.post<Favorite>(
+      url,
+      {
+        id: id,
+      },
+      {
+        timeout: uxConfig.mxAPITimeoutMs,
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {} as Favorite;
+  }
+}
+
+export async function getTrendingFromBackendApi(chainID: string): Promise<TrendingNft[]> {
+  try {
+    const url = `${backendApi(chainID)}/trending`;
+    const { data } = await axios.get<TrendingNft[]>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }
 

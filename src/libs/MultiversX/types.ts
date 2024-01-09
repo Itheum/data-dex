@@ -60,6 +60,19 @@ export interface OfferType {
   quantity: number;
 }
 
+export interface Favorite {
+  id: string;
+  address: string;
+  tokenIdentifier: string;
+  timestamp: number;
+}
+
+export interface TrendingNft {
+  uuid: string;
+  tokenIdentifier: string;
+  rating: number;
+}
+
 export interface DataNftType {
   index: number;
   id: string;
