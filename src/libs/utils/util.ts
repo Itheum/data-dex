@@ -1,7 +1,9 @@
+import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
+import { getNetworkProvider } from "../MultiversX/api";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -161,6 +163,7 @@ export const tokenDecimals = (token_identifier: string) => {
     token_identifier === "RIDE-7d18e9" ||
     token_identifier === "UTK-2f80e9" ||
     token_identifier === "ITHEUM-df6f26" ||
+    token_identifier === "ITHEUM-fce905" ||
     token_identifier === "ITHEUM-a61317" ||
     token_identifier === "BHAT-c1fde3" ||
     token_identifier === "CRT-52decf" ||
@@ -188,7 +191,7 @@ export const getApiDataDex = (chainID: string) => {
 
 export const getApiDataMarshal = (chainID: string) => {
   const envKey = chainID === "1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
-  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/achilles/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/achilles/v1";
+  const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/router/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
 
   return process.env[envKey] || defaultUrl;
 };
@@ -197,8 +200,13 @@ export const getExplorerTrailBlazerURL = (chainID: string) => {
   return chainID === "1" ? "https://explorer.itheum.io/project-trailblazer" : "https://stg.explorer.itheum.io/project-trailblazer";
 };
 
-export const shouldPreviewDataBeEnabled = (chainID: string, previewDataOnDevnetSession: any) => {
-  return !(chainID == "D" && !previewDataOnDevnetSession);
+export const shouldPreviewDataBeEnabled = (chainID: string, loginMethod: string, previewDataOnDevnetSession: any) => {
+  return !((chainID == "D" && !previewDataOnDevnetSession) || loginMethod === "extra");
+};
+
+export const viewDataDisabledMessage = (loginMethod: string) => {
+  if (loginMethod === "extra") return VIEW_DATA_DISABLED_HUB_MESSAGE;
+  else return VIEW_DATA_DISABLED_DEVNET_MESSAGE;
 };
 
 export function findNthOccurrenceFromEnd(string: string, char: string, n: number) {
@@ -215,3 +223,85 @@ export function findNthOccurrenceFromEnd(string: string, char: string, n: number
   // Subtract the found index from the length of the string - 1 (because string index starts from 0)
   return string.length - 1 - index;
 }
+
+export const ITHEUM_EXPLORER_PROD_URL = "https://explorer.itheum.io";
+export const ITHEUM_EXPLORER_STG_URL = "https://stg.explorer.itheum.io";
+export const ITHEUM_EXPLORER_TEST_URL = "https://test.explorer.itheum.io";
+export const ITHEUM_DATADEX_PROD_URL = "https://datadex.itheum.io";
+export const ITHEUM_DATADEX_STG_URL = "https://stg.datadex.itheum.io";
+export const ITHEUM_DATADEX_TEST_URL = "https://test.datadex.itheum.io";
+
+export const nativeAuthOrigins = () => {
+  return [ITHEUM_EXPLORER_PROD_URL, ITHEUM_EXPLORER_STG_URL, ITHEUM_EXPLORER_TEST_URL, window.location.origin];
+};
+
+export const TranslateBoolean = (value: boolean): string => {
+  return value === true ? "True" : "False";
+};
+
+const unescape = (str: string) => {
+  return str.replace(/-/g, "+").replace(/_/g, "/");
+};
+
+const decodeValue = (str: string) => {
+  return Buffer.from(unescape(str), "base64").toString("utf8");
+};
+
+export const decodeNativeAuthToken = (accessToken: string) => {
+  const tokenComponents = accessToken.split(".");
+  if (tokenComponents.length !== 3) {
+    throw new Error("Native Auth Token has invalid length");
+  }
+
+  const [address, body, signature] = accessToken.split(".");
+  const parsedAddress = decodeValue(address);
+  const parsedBody = decodeValue(body);
+  const bodyComponents = parsedBody.split(".");
+  if (bodyComponents.length !== 4) {
+    throw new Error("Native Auth Token Body has invalid length");
+  }
+
+  const [origin, blockHash, ttl, extraInfo] = bodyComponents;
+
+  let parsedExtraInfo;
+  try {
+    parsedExtraInfo = JSON.parse(decodeValue(extraInfo));
+  } catch {
+    throw new Error("Extra Info Invalid");
+  }
+
+  const parsedOrigin = decodeValue(origin);
+
+  const result = {
+    ttl: Number(ttl),
+    origin: parsedOrigin,
+    address: parsedAddress,
+    extraInfo: parsedExtraInfo,
+    signature,
+    blockHash,
+    body: parsedBody,
+  };
+
+  // if empty object, delete extraInfo ('e30' = encoded '{}')
+  if (extraInfo === "e30") {
+    delete result.extraInfo;
+  }
+
+  return result;
+};
+
+export const VIEW_DATA_DISABLED_DEVNET_MESSAGE = "View Data is disabled on Devnet Data Dex";
+export const VIEW_DATA_DISABLED_HUB_MESSAGE = "View Data is disabled on Data Dex when logged in through the xPortal Hub";
+
+export const getTypedValueFromContract = async (chainID: string, methodForContractCall: Interaction) => {
+  const networkProvider = getNetworkProvider(chainID);
+  const query = methodForContractCall.check().buildQuery();
+  const queryResponse = await networkProvider.queryContract(query);
+  const endpointDefinition = methodForContractCall.getEndpoint();
+  const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
+  if (firstValue) {
+    return firstValue.valueOf().toNumber();
+  } else {
+    return -1;
+  }
+};

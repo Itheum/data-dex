@@ -47,6 +47,13 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
 
           props.handleFlagAsFailed(false);
           _isLiveUptimeSuccessful = true;
+        } else if (data.response_code === 403) {
+          setLiveUptimeOKMsg(
+            `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, which indicates that it is available but protected via authentication.`
+          );
+
+          props.handleFlagAsFailed(false);
+          _isLiveUptimeSuccessful = true;
         } else {
           setLiveUptimeFAILMsg(
             `The live check of the Data Steam is returning an HTTP Status code ${data.response_code}, this means the Data Creator did not maintain the Data Stream that's wrapped within this Data NFT. Do not proceed with the transaction.`
@@ -56,11 +63,13 @@ const DataNFTLiveUptime = (props: DataNFTLiveUptimeProps) => {
         setLiveUptimeFAILMsg(labels.ERR_PROCURE_UPTIME_CHECK_DOWN);
       }
     } catch (e) {
-      setLiveUptimeFAILMsg(labels.ERR_PROCURE_UPTIME_CHECK_DOWN);
+      props.handleFlagAsFailed(false);
+      _isLiveUptimeSuccessful = true;
+      setLiveUptimeFAILMsg(labels.ERR_PROCURE_UPTIME_CHECK_DOWN_NON_HTTP);
+    } finally {
+      setLiveUptimeCheckInProgress(false);
+      props.setIsLiveUptimeSuccessful(_isLiveUptimeSuccessful);
     }
-
-    setLiveUptimeCheckInProgress(false);
-    props.setIsLiveUptimeSuccessful(_isLiveUptimeSuccessful);
   }
 
   return (

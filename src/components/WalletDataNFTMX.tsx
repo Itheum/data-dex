@@ -57,7 +57,16 @@ import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
-import { backendApi, convertToLocalString, isValidNumericCharacter, shouldPreviewDataBeEnabled, sleep, transformDescription } from "libs/utils";
+import {
+  backendApi,
+  convertToLocalString,
+  decodeNativeAuthToken,
+  isValidNumericCharacter,
+  shouldPreviewDataBeEnabled,
+  sleep,
+  transformDescription,
+  viewDataDisabledMessage,
+} from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
 
@@ -81,6 +90,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const isWebWallet = loginMethod == "wallet";
   const userData = useMintStore((state) => state.userData);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
+  const marketRequirements = useMarketStore((state) => state.marketRequirements);
+
   const { isOpen: isAccessProgressModalOpen, onOpen: onAccessProgressModalOpen, onClose: onAccessProgressModalClose } = useDisclosure();
   const [unlockAccessProgress, setUnlockAccessProgress] = useState({
     s1: 0,
@@ -202,7 +213,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         const indexFound = addOfferEvent.topics[1];
         const index = parseInt(Buffer.from(indexFound, "base64").toString("hex"), 16);
-
         const headers = {
           Authorization: `Bearer ${tokenLogin?.nativeAuthToken}`,
           "Content-Type": "application/json",
@@ -273,12 +283,18 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       return;
     }
 
-    mintContract.sendBurnTransaction(address, selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
+    mintContract.sendBurnTransaction(
+      address,
+      selectedDataNft.collection,
+      selectedDataNft.nonce,
+      dataNftBurnAmount,
+      contractsForChain(chainID).dataNftTokens.find((t) => t.id === selectedDataNft.collection)?.contract
+    );
 
     onBurnNFTClose();
   };
 
-  async function accessDataStream(_dataNonce: number) {
+  async function accessDataStream(tokenIdentifier: string, nonce: number) {
     try {
       onAccessProgressModalOpen();
 
@@ -295,11 +311,10 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       }
 
       DataNft.setNetworkConfig(network.id);
-      const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
-
+      const dataNft = await DataNft.createFromApi({ tokenIdentifier, nonce });
       const arg = {
-        mvxNativeAuthOrigins: [window.location.origin],
-        mvxNativeAuthMaxExpirySeconds: 3000,
+        mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken).origin],
+        mvxNativeAuthMaxExpirySeconds: 3600,
         fwdHeaderMapLookup: {
           "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
         },
@@ -309,7 +324,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       if (!res.error) {
         const link = document.createElement("a");
         link.target = "_blank";
-        link.download = `DataNFT-${_dataNonce}`;
+        link.download = `DataNFT-${nonce}`;
         link.href = window.URL.createObjectURL(new Blob([res.data], { type: res.contentType }));
         link.click();
       } else {
@@ -514,15 +529,15 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="View Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                label={viewDataDisabledMessage(loginMethod)}
+                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                   onClick={() => {
-                    accessDataStream(item.nonce);
+                    accessDataStream(item.collection, item.nonce);
                   }}>
                   View Data
                 </Button>
@@ -531,14 +546,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="Preview Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                label={viewDataDisabledMessage(loginMethod)}
+                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>
@@ -643,7 +658,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 display={item.isProfile === true ? "none" : "flex"}
                 colorScheme="teal"
                 variant="outline"
-                isDisabled={hasPendingTransactions || !!amountError || !!priceError || isMarketPaused}
+                isDisabled={
+                  hasPendingTransactions ||
+                  !!amountError ||
+                  !!priceError ||
+                  isMarketPaused ||
+                  marketRequirements.maximumPaymentFees[0] === undefined ||
+                  marketRequirements.maximumPaymentFees[0] === null
+                }
                 onClick={() => onListButtonClick(item)}>
                 <Text py={3} color={colorMode === "dark" ? "white" : "black"} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   List {amount} NFT{amount > 1 && "s"} for {formatButtonNumber(price, amount)}
@@ -818,17 +840,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                   {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
                   <Text>Verifying data access rights to unlock Data Stream</Text>
                 </HStack>
-
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && (
-                  <Stack border="solid .04rem" padding={3} borderRadius={5}>
-                    <Text fontSize="sm" lineHeight={1.7}>
-                      <InfoIcon boxSize={5} mr={1} />
-                      Popups are needed for the Data Marshal to give you access to Data Streams. If your browser is prompting you to allow popups, please select{" "}
-                      <b>Always allow pop-ups</b> and then close this and click on <b>View Data</b> again.
-                    </Text>
-                    <Image boxSize="250px" height="auto" m=".5rem auto 0 auto !important" src={imgGuidePopup} borderRadius={10} />
-                  </Stack>
-                )}
 
                 {errUnlockAccessGeneric && (
                   <Alert status="error">

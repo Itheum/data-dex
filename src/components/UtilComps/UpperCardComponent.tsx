@@ -78,6 +78,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wanted_token_amount as BigNumber.Value, tokenDecimals(offer.wanted_token_identifier)).toNumber() : 0;
 
+  const isMobile = window.innerWidth <= 480;
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
@@ -216,8 +217,17 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping
             }}
+            whileInView={
+              isMobile
+                ? {
+                    opacity: 1,
+                    backdropFilter: "blur(1px)",
+                    backgroundColor: "#1b1b1ba0",
+                  }
+                : undefined
+            }
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            transition={{ duration: 0.3 }}>
+            transition={isMobile ? { duration: 1.2 } : { duration: 0.3 }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
               <Text as="p" mt={1} fontWeight="400" textColor="white">
                 Details
@@ -287,7 +297,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   {address && address == offer?.owner && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                        You are the Owner
+                        You are Owner
                       </Text>
                     </Box>
                   )}

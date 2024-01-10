@@ -1,18 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Badge,
-  Box,
-  Button,
-  Container,
-  Flex,
-  useColorMode,
-} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Container, Flex, useColorMode } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { RouteType } from "@multiversx/sdk-dapp/types";
@@ -22,10 +9,9 @@ import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import AppFooter from "components/Sections/AppFooter";
 import AppHeader from "components/Sections/AppHeader";
 import AppSettings from "components/UtilComps/AppSettings";
-import { CHAINS, consoleNotice, dataCATDemoUserData, MENU, PATHS, SUPPORTED_CHAINS } from "libs/config";
+import { consoleNotice, dataCATDemoUserData, MENU, PATHS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { clearAppSessionsLaunchMode, gtagGo, sleep } from "libs/utils";
-import MintDataMX from "pages/AdvertiseData/MintDataMultiversX";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
@@ -33,7 +19,11 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
+import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
+import { TradeData } from "../AdvertiseData/TradeData";
+import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
+import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
 
@@ -55,16 +45,22 @@ export const routes: RouteType[] = [
     component: <></>,
     authenticatedRoute: true,
   },
+  {
+    path: "profile",
+    component: <></>,
+    authenticatedRoute: true,
+  },
 ];
 
 function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
+  const { appVersion } = useAccountStore();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
-  const [rfKeys, setRfKeys] = useState({
+  const [rfKeys] = useState({
     tools: 0,
     sellData: 0,
     buyData: 0,
@@ -78,6 +74,10 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
+
+  // const handleLogoutSessionUpdate = () => {
+  //   logout(`${window.location.origin}`, undefined, false);
+  // };
 
   useEffect(() => {
     if (path) {
@@ -101,6 +101,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   }, [chainID]);
 
+  // console.log(appVersion);
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
     async function mxSessionInit() {
@@ -128,25 +129,41 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   }, [mxAddress]);
 
   // utility that will reload a component and reset it's state
-  const handleRfMount = (key: string) => {
-    const reRf = { ...rfKeys, [key]: Date.now() };
-    setRfKeys(reRf);
-  };
+  // const handleRfMount = (key: string) => {
+  //   const reRf = { ...rfKeys, [key]: Date.now() };
+  //   setRfKeys(reRf);
+  // };
 
   const handleLogout = () => {
     clearAppSessionsLaunchMode();
     // resetAppContexts();
 
     gtagGo("auth", "logout", "el");
-
     if (mxLoginMethod === "wallet") {
       // if it's web wallet, we should not send redirect url of /, if you do redirects to web wallet and does not come back to data dex
-      mxLogout();
+      mxLogout(undefined, undefined, false);
     } else {
       // sending in / will reload the data dex after logout is done so it cleans up data dex state
-      mxLogout("/");
+      mxLogout("/", undefined, false);
     }
   };
+
+  useEffect(() => {
+    const handleAppVersioningLogin = async () => {
+      await sleep(1);
+      const localStorageAppVersion = localStorage.getItem("app-version");
+      console.log(appVersion, localStorageAppVersion);
+      const currentLocalStorageVersion = localStorageAppVersion;
+      if (appVersion !== localStorageAppVersion) {
+        if (isMxLoggedIn) {
+          if (currentLocalStorageVersion !== null) {
+            handleLogout();
+          }
+        }
+      }
+    };
+    handleAppVersioningLogin();
+  }, [isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);
@@ -181,19 +198,19 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     <>
       {["1", "D"].includes(chainID) && (
         <StoreProvider>
-          <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
-            <Container maxW="97.5rem">
-              <Flex
-                bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
-                flexDirection="column"
-                justifyContent="space-between"
-                minH="100vh"
-                boxShadow={containerShadow}
-                zIndex={2}>
-                {/* App Header */}
-                <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
-                {/* App Body */}
-                <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
+          <Container maxW="97.5rem">
+            <Flex
+              bgColor={colorMode === "dark" ? "bgDark" : "bgWhite"}
+              flexDirection="column"
+              justifyContent="space-between"
+              minH="100svh"
+              boxShadow={containerShadow}
+              zIndex={2}>
+              {/* App Header */}
+              <AppHeader onShowConnectWalletModal={onShowConnectWalletModal} setMenuItem={setMenuItem} handleLogout={handleLogout} />
+              {/* App Body */}
+              <Box flexGrow={1} minH={{ base: "auto", lg: bodyMinHeightLg }}>
+                <AuthenticatedRoutesWrapper routes={routes} unlockRoute={"/"}>
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
 
@@ -225,17 +242,15 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       }
                     />
 
-                    <Route
-                      path="tradedata"
-                      element={
-                        <MintDataMX
-                          key={rfKeys.sellData}
-                          setMenuItem={setMenuItem}
-                          dataCATAccount={dataCATAccount}
-                          onRfMount={() => handleRfMount("sellData")}
-                        />
-                      }
-                    />
+                    <Route path="tradedata" element={<TradeData />} />
+                    {isMxLoggedIn ? (
+                      <Route path="enterprise" element={<Outlet />}>
+                        <Route path="" element={<Enterprise />} />
+                        <Route path=":minterAddress" element={<MinterDashboard />} />
+                      </Route>
+                    ) : (
+                      <Route path="enterprise" element={<Navigate to={"/"} />} />
+                    )}
 
                     <Route path="datanfts" element={<Outlet />}>
                       <Route path="" element={<DataNFTs setMenuItem={setMenuItem} />} />
@@ -255,13 +270,13 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
-                </Box>
+                </AuthenticatedRoutesWrapper>
+              </Box>
 
-                {/* App Footer */}
-                <AppFooter />
-              </Flex>
-            </Container>
-          </AuthenticatedRoutesWrapper>
+              {/* App Footer */}
+              <AppFooter />
+            </Flex>
+          </Container>
         </StoreProvider>
       )}
     </>

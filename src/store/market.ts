@@ -1,9 +1,10 @@
+import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { create } from "zustand";
-import { MarketplaceRequirementsType, OfferType } from "libs/MultiversX/types";
+import { OfferType } from "libs/MultiversX/types";
 
 type State = {
   itheumPrice: number;
-  marketRequirements: MarketplaceRequirementsType | undefined;
+  marketRequirements: MarketplaceRequirements;
   maxPaymentFeeMap: Record<string, number>;
   isMarketPaused: boolean;
 
@@ -29,11 +30,19 @@ type Action = {
 
 export const useMarketStore = create<State & Action>((set) => ({
   itheumPrice: 0,
-  marketRequirements: undefined,
+  marketRequirements: {
+    "acceptedTokens": ["DATANFTFT4-3ba099", "INSP-a65b3b", "DATALT1-4e6fb5"],
+    "acceptedPayments": ["ITHEUM-a61317"],
+    "maximumPaymentFees": ["10000000000000000000000"],
+    "buyerTaxPercentage": 200,
+    "sellerTaxPercentage": 200,
+    "buyerTaxPercentageDiscount": 0,
+    "sellerTaxPercentageDiscount": 0,
+  },
   maxPaymentFeeMap: {},
   isMarketPaused: false,
   updateItheumPrice: (value: number) => set((state) => ({ ...state, itheumPrice: value })),
-  updateMarketRequirements: (value: MarketplaceRequirementsType | undefined) => set((state) => ({ ...state, marketRequirements: value })),
+  updateMarketRequirements: (value: MarketplaceRequirements | undefined) => set((state) => ({ ...state, marketRequirements: value })),
   updateMaxPaymentFeeMap: (value: Record<string, number>) => set((state) => ({ ...state, maxPaymentFeeMap: value })),
   updateIsMarketPaused: (value: boolean) => set((state) => ({ ...state, isMarketPaused: value })),
 

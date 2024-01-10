@@ -369,7 +369,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                       <Text fontSize="lg" fontWeight="medium" w="max-content" color={colorMode === "dark" ? "white" : "black"}>
                         Public Marketplace
                       </Text>
-                      <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                      <Text fontSize="sm" px={1} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                         {publicMarketCount > 0 && publicMarketCount}
                       </Text>
                     </ConditionalRender>
@@ -399,7 +399,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                           My Listed Data NFT(s)
                         </Text>
-                        <Text fontSize="sm" px={1} color="whiteAlpha.800">
+                        <Text fontSize="sm" px={1} color={colorMode == "dark" ? "whiteAlpha.800" : "blackAlpha.800"}>
                           {myListedCount > 0 && myListedCount}
                         </Text>
                       </ConditionalRender>

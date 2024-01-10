@@ -38,6 +38,7 @@ import {
   tokenDecimals,
   shouldPreviewDataBeEnabled,
   backendApi,
+  viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -81,6 +82,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     if (!hasSignedTransactions) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const session = signedTransactionsArray[0][0];
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");
@@ -132,7 +134,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
         "Content-Type": "application/json",
       };
 
-      const price = newPrice + (newPrice * (marketRequirements?.buyer_fee ?? 200)) / 10000;
+      const price = newPrice + (newPrice * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
 
       const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
       const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
@@ -182,7 +184,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const fee =
     marketRequirements && offer
       ? convertWeiToEsdt(
-          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyer_fee as number)),
+          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyerTaxPercentage as number)),
           tokenDecimals(offer.wanted_token_identifier)
         ).toNumber()
       : 0;
@@ -214,11 +216,11 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    const { sessionId } = await contract.delistDataNft(offer.index, delistAmount, address);
+    const { sessionId: sessionIdTemp } = await contract.delistDataNft(offer.index, delistAmount, address);
     if (isWebWallet) {
       sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "delist-tx", index: offer.index, amount: delistAmount }));
     }
-    setSessionId(sessionId);
+    setSessionId(sessionIdTemp);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -245,7 +247,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
       }
     }
 
-    const { sessionId } = await contract.updateOfferPrice(
+    const { sessionId: sessionIdTemp } = await contract.updateOfferPrice(
       offer.index,
       convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
       address
@@ -253,7 +255,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
     if (isWebWallet) {
       sessionStorage.setItem("web-wallet-tx", JSON.stringify({ type: "update-price-tx", index: offer.index, price: newListingPrice }));
     }
-    setUpdatePriceSessionId(sessionId);
+    setUpdatePriceSessionId(sessionIdTemp);
 
     // a small delay for visual effect
     await sleep(0.5);
@@ -262,14 +264,18 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip colorScheme="teal" hasArrow label="View Data is disabled on devnet" isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+      <Tooltip
+        colorScheme="teal"
+        hasArrow
+        label={viewDataDisabledMessage(loginMethod)}
+        isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
         <Button
           my="3"
           size="sm"
           colorScheme="teal"
           variant="outline"
           _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+          isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
           onClick={() => {
             window.open(nftMetadata.dataPreview);
           }}>
@@ -302,7 +308,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyer_fee),
+                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyerTaxPercentage),
                   tokenDecimals(offer.wanted_token_identifier)
                 ).toNumber()
               );

@@ -36,7 +36,7 @@ export default function ShortAddress({
           {`${internalAddress.substring(0, 6)}...${internalAddress.slice(-4)}`}
         </Text>
       ) : (
-        <Text ml={marginLeftSet} as={"span"} fontSize={fontSize} style={{ cursor: "pointer" }}>
+        <Text ml={marginLeftSet} as={"span"} fontSize={fontSize}>
           {`${internalAddress.substring(0, 6)}...${internalAddress.slice(-4)}`}
         </Text>
       )}

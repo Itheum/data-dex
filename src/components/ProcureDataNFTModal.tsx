@@ -82,6 +82,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
     if (!hasSignedTransactions) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const session = signedTransactionsArray[0][0];
     } catch (e) {
       sessionStorage.removeItem("web-wallet-tx");
@@ -89,9 +90,9 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
     const sessionInfo = sessionStorage.getItem("web-wallet-tx");
     if (sessionInfo) {
-      const { type, index, amount } = JSON.parse(sessionInfo);
+      const { type, index, amount: amountt } = JSON.parse(sessionInfo);
       if (type == "purchase-tx") {
-        updateOfferOnBackend(index, amount);
+        updateOfferOnBackend(index, amountt);
         sessionStorage.removeItem("web-wallet-tx");
       }
     }

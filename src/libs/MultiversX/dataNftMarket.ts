@@ -102,7 +102,7 @@ export class DataNftMarketContract {
       data,
       receiver: new Address(this.dataNftMarketContractAddress),
       sender: new Address(sender),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       chainID: this.chainID,
     });
 
@@ -145,7 +145,7 @@ export class DataNftMarketContract {
         .build(),
       receiver: new Address(senderAddress),
       sender: new Address(senderAddress),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       chainID: this.chainID,
     });
 
@@ -174,7 +174,7 @@ export class DataNftMarketContract {
         .addArg(new BigUIntValue(amount))
         .build(),
       receiver: new Address(this.dataNftMarketContractAddress),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       sender: new Address(senderAddress),
       chainID: this.chainID,
     });
@@ -203,7 +203,7 @@ export class DataNftMarketContract {
         .addArg(new BooleanValue(true))
         .build(),
       receiver: new Address(this.dataNftMarketContractAddress),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       sender: new Address(senderAddress),
       chainID: this.chainID,
     });
@@ -241,7 +241,7 @@ export class DataNftMarketContract {
         .build(),
       receiver: new Address(addressOfSender),
       sender: new Address(addressOfSender),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       chainID: this.chainID,
     });
     await refreshAccount();
@@ -270,7 +270,7 @@ export class DataNftMarketContract {
       value: "0",
       data,
       receiver: new Address(this.dataNftMarketContractAddress),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       sender: new Address(senderAddress),
       chainID: this.chainID,
     });
@@ -512,7 +512,7 @@ export class DataNftMarketContract {
       value: "0",
       data,
       receiver: new Address(this.dataNftMarketContractAddress),
-      gasLimit: 12000000,
+      gasLimit: 20000000,
       sender: new Address(senderAddress),
       chainID: this.chainID,
     });

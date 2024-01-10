@@ -1,23 +1,23 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { HStack, Link, Spinner, Flex } from "@chakra-ui/react";
+import { HStack, Link, Spinner, Flex, Badge, Tooltip } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { TransactionOnNetwork } from "@multiversx/sdk-network-providers/out";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
+import { backendApi } from "libs/utils";
+import { useMarketStore } from "store";
 import { DataTable } from "./Components/DataTable";
-import { buildHistory, DataNftOnNetwork, timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
+import { timeSince, TokenTableProps, TransactionInTable } from "./Components/tableUtils";
 
 export default function TokenTxTable(props: TokenTableProps) {
   const { chainID } = useGetNetworkConfig();
   const [data, setData] = useState<TransactionInTable[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
-  const marketContract = new DataNftMarketContract(chainID);
   const linkIconStyle = { display: "flex" };
+  const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const columns = useMemo<ColumnDef<TransactionInTable, any>[]>(
     () => [
@@ -87,48 +87,125 @@ export default function TokenTxTable(props: TokenTableProps) {
   );
 
   useEffect(() => {
-    const apiUrl = getApi(chainID);
+    async function getInteractions() {
+      const response = await axios.get(`https://${getApi(chainID)}/nfts/${props.tokenId}/transactions?size=50&status=success`);
+      const interactions = response.data;
 
-    Promise.all([
-      axios.get(`https://${apiUrl}/transactions?token=${props.tokenId}&status=success&size=1000&function=burn&order=asc`),
-      axios.get(`https://${apiUrl}/accounts/${marketContract.dataNftMarketContractAddress}/transactions?status=success&size=10000&order=asc`),
-    ]).then((responses) => {
-      const mergedTransactions = getHistory(responses, props.tokenId);
-      const history = buildHistory(mergedTransactions, props.buyer_fee);
-      setData(history);
-      setLoadingData(false);
-    });
-  }, []);
+      const dataTemp: TransactionInTable[] = [];
+
+      for (const interaction of interactions) {
+        dataTemp.push({
+          hash: interaction.txHash,
+          timestamp: interaction.timestamp,
+          from: interaction.sender,
+          to: interaction.receiver,
+          method: interaction.function,
+          value: `${interaction?.action.arguments?.transfers[0].value} x ${interaction?.action.arguments?.transfers[0].identifier}`,
+        });
+      }
+      setData(dataTemp);
+    }
+
+    async function getBackendInteractions() {
+      const api = backendApi(chainID);
+
+      const response = await axios.get(`${api}/interactions/${props.tokenId}`);
+
+      const interactions = response.data;
+
+      const dataTemp: TransactionInTable[] = [];
+
+      for (const interaction of interactions) {
+        switch (interaction.method) {
+          case "addOffer":
+            dataTemp.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.price} ${interaction.priceTokenIdentifier}`,
+            });
+            break;
+          case "acceptOffer":
+            dataTemp.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.price} ${interaction.priceTokenIdentifier}`,
+            });
+
+            break;
+
+          case "cancelOffer":
+            dataTemp.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.tokenIdentifier}`,
+            });
+
+            break;
+
+          case "changeOfferPrice":
+            dataTemp.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.price} ${interaction.priceTokenIdentifier}`,
+            });
+            break;
+          default:
+            dataTemp.push({
+              hash: interaction.txHash,
+              timestamp: interaction.timestamp,
+              from: interaction.from,
+              to: interaction.to,
+              method: interaction.method,
+              value: `${interaction.quantity} x ${interaction.tokenIdentifier}`,
+            });
+            break;
+        }
+      }
+      setData(dataTemp);
+    }
+    if (isApiUp) {
+      getBackendInteractions();
+    } else {
+      getInteractions();
+    }
+    setLoadingData(false);
+  }, [isApiUp]);
 
   return (
     <>
-      {(loadingData && (
+      {loadingData ? (
         <Flex padding="5px" minH="100px" mb="10px" alignItems="center" justifyContent="center">
           <Spinner speed="0.64s" color="teal.200" />
         </Flex>
-      )) || <DataTable columns={columns} data={data} />}
+      ) : (
+        <Flex direction="column" alignItems="center" justifyContent="center">
+          <DataTable columns={columns} data={data} />
+          {!isApiUp && (
+            <Tooltip
+              label="The backend is currently unavailable and full activity details are not displayed. Please try again later."
+              hasArrow
+              textAlign="center"
+              borderRadius="12px"
+              p="2">
+              <Badge borderRadius="full" px="2" py="2" mb="4" colorScheme="red" cursor="pointer">
+                Backend is unavailable at the moment
+              </Badge>
+            </Tooltip>
+          )}
+        </Flex>
+      )}
     </>
   );
-}
-
-function getHistory(responses: any[], tokenId?: string) {
-  DataNftOnNetwork.ids = [];
-  DataNftOnNetwork.token_identifier = tokenId;
-  DataNftOnNetwork.addOfferIndex = 0;
-  const transactionsWithId: DataNftOnNetwork[] = [];
-
-  responses.forEach((response: any) => {
-    const txs = response.data;
-    const transactions = txs.map((tx: any) => {
-      if (["burn", "addOffer", "acceptOffer", "cancelOffer", "changeOfferPrice"].includes(tx.function)) {
-        const transaction = TransactionOnNetwork.fromProxyHttpResponse(tx.txHash, tx);
-        return DataNftOnNetwork.fromTransactionOnNetwork(transaction);
-      }
-    });
-    const filteredTransactions = transactions.filter((data: DataNftOnNetwork) => {
-      return data?.transfers[0]?.properties?.identifier === tokenId || DataNftOnNetwork.ids.includes(parseInt(data?.methodArgs[0], 16));
-    });
-    transactionsWithId.push(...filteredTransactions);
-  });
-  return transactionsWithId;
 }

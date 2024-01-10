@@ -1,3 +1,4 @@
+import { AccountType } from "@multiversx/sdk-dapp/types";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
@@ -31,58 +32,6 @@ export const getNetworkProviderCodification = (chainID: string) => {
 
 export const getExplorer = (chainID: string) => {
   return chainID === "1" ? "explorer.multiversx.com" : "devnet-explorer.multiversx.com";
-};
-
-export const getTransactionLink = (chainID: string, txHash: string) => {
-  return `https://${getExplorer(chainID)}/transactions/${txHash}`;
-};
-
-export const getNftLink = (chainID: string, nftId: string) => {
-  return `https://${getExplorer(chainID)}/nfts/${nftId}`;
-};
-
-// check token balance on Mx
-export const checkBalance = async (token: string, address: string, chainID: string): Promise<{ balance: any }> => {
-  const api = getApi(chainID);
-
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`https://${api}/accounts/${address}/tokens/${token}`, {
-        timeout: uxConfig.mxAPITimeoutMs,
-      })
-      .then((resp) => {
-        resolve({ balance: resp.data.balance });
-      })
-      .catch((error) => {
-        if (error) {
-          console.error(error);
-
-          if (error.response) {
-            if (error.response.status === 404 || error.response.status === 500) {
-              resolve({ balance: 0 }); // no ITHEUM => 404, nonce account 0 => 500
-            } else {
-              resolve({ balance: undefined });
-            }
-          } else {
-            resolve({ balance: undefined });
-          }
-        }
-      });
-  });
-};
-
-//get collection nfts
-export const getCollectionNfts = async (identifier: string, chainID: string) => {
-  const api = getApi(chainID);
-  const collectionNfts = axios
-    .get(`https://${api}/collections/${identifier}/nfts?size=10000`)
-    .then((response) => response.data)
-    .catch((error) => {
-      if (error) {
-        console.error(error);
-      }
-    });
-  return collectionNfts;
 };
 
 export const getClaimTransactions = async (address: string, chainID: string) => {
@@ -153,10 +102,10 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address: string, collectionTicker: string | undefined, chainID: string): Promise<NftType[]> => {
+export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<NftType[]> => {
   const api = getApi(chainID);
   try {
-    const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTicker}&withSupply=true`;
+    const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTickers.join()}&withSupply=true`;
     const { data } = await axios.get<NftType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
@@ -200,8 +149,8 @@ export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<N
 };
 
 export const getAccountTokenFromApi = async (address: string, tokenId: string, chainID: string): Promise<TokenType | undefined> => {
-  const api = getApi(chainID);
   try {
+    const api = getApi(chainID);
     const url = `https://${api}/accounts/${address}/tokens/${tokenId}`;
     const { data } = await axios.get<TokenType>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
@@ -225,5 +174,32 @@ export const getItheumPriceFromApi = async (): Promise<number | undefined> => {
   } catch (error) {
     console.error(error);
     return undefined;
+  }
+};
+
+export const getAccountDetailFromApi = async (address: string, chainID: string): Promise<AccountType | undefined> => {
+  try {
+    const api = getApi(chainID);
+    const url = `https://${api}/accounts/${address}`;
+    const { data } = await axios.get<AccountType>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
+export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefined, chainID: string) => {
+  const tokenIdentifierUrl = `https://${getApi(chainID)}/tokens/${tokenIdentifier}`;
+  try {
+    const { data } = await axios.get(tokenIdentifierUrl);
+    if (tokenIdentifier !== undefined) {
+      return data.decimals;
+    }
+  } catch (error) {
+    console.log("Error finding token!");
   }
 };
