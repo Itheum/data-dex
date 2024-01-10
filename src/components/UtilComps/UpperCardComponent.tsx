@@ -41,7 +41,6 @@ type UpperCardComponentProps = {
   offer: OfferType;
   index: number;
   marketFreezedNonces: number[];
-  grouped: boolean;
   children?: React.ReactNode;
   openNftDetailsDrawer?: (e: number) => void;
 };
@@ -56,7 +55,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   offer,
   marketFreezedNonces,
   openNftDetailsDrawer,
-  grouped,
 }) => {
   const { colorMode } = useColorMode();
 
@@ -83,15 +81,14 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? (grouped ? "740px" : "780px") : "700px"}
+        h={isMxLoggedIn ? "780px" : "700px"}
         mx="5 !important"
         borderWidth="0.5px"
         borderRadius="xl"
         borderColor="#00C79740"
         position="relative"
-        mb="1.5rem"
-        mt={grouped ? "1rem" : "0"}>
-        <Container justifyContent="center" mt={grouped ? "-12" : "0"} position={"relative"}>
+        mb="1.5rem">
+        <Container justifyContent="center" mt={"0"} position={"relative"}>
           <Image
             position={"absolute"}
             src={imageUrl}
@@ -107,7 +104,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
           />
-          {grouped && (
+          {/* {grouped && (
             <>
               <Container
                 position={"absolute"}
@@ -193,7 +190,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 }}
               />
             </>
-          )}
+          )} */}
 
           <motion.button
             style={{

@@ -43,7 +43,7 @@ import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
 
 import { getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
-import { getApi, getCollectionNfts, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
+import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
@@ -99,6 +99,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   const [nonceOfferMap, setNonceOfferMap] = useState<Map<number, OfferType>>(new Map<number, OfferType>()); // a dictionary-> nonce => dataNft (lowest price)
   const [groupedMetadatas, setGroupedMetadatas] = useState<DataNftMetadataType[]>([]);
+
   const [currentPageGroupedOffers, setCurrentPageGroupedOffers] = useState<OfferType[]>([]);
 
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
@@ -114,30 +115,22 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   });
 
   const groupDataNfts = () => {
-    console.log(showGroupedDataNfts);
     if (!showGroupedDataNfts) {
       (async () => {
-        console.log("FETCH");
         if (hasPendingTransactions) return;
         if (!chainID) return;
 
         // start loading offers
         updateLoadingOffers(true);
-        //const theCollections: any = await getCollectionNfts("DATANFTFT4-3ba099", _chainMeta.networkId);
-        //console.log("COLLECTIONS ", theCollections);
-        //console.log(theCollections[0]);
+
         ///TODO CHECK IF COLLECTIONS AND MAP IS THE SAME
         let _offers: OfferType[] = [];
         const start = 0;
         if (isApiUp && isMarketplaceApiUp) {
-          // console.log('Api Up');
           _offers = await getOffersFromBackendApi(chainID, start, publicMarketCount, undefined);
         } else {
           return;
-          // console.log('Api Down');
-          //_offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
         }
-        console.log(_offers.length);
         /// populate the map with the best choice(price-wise) from each nonce
         const _nonceOfferMap = new Map<number, OfferType>();
         _offers.forEach((offer) => {
@@ -145,40 +138,35 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             const previousOffer = _nonceOfferMap.get(offer.offered_token_nonce);
 
             if (previousOffer?.wanted_token_amount && parseFloat(offer.wanted_token_amount) < parseFloat(previousOffer?.wanted_token_amount)) {
-              // console.log("CHANGED");
-              // console.log(parseFloat(offer.wanted_token_amount));
-              // console.log(previousOffer.wanted_token_amount);
               if (offer.wanted_token_amount) _nonceOfferMap.set(offer.offered_token_nonce, offer);
             }
           } else {
             _nonceOfferMap.set(offer.offered_token_nonce, offer);
           }
         });
-        if (_nonceOfferMap !== undefined) {
-          Array.from(_nonceOfferMap.entries())
-            .slice(0, 20)
-            .map(([nonce, offer]) => {
-              console.log(nonce, offer);
-            });
-        }
+        // if (_nonceOfferMap !== undefined) {
+        //   Array.from(_nonceOfferMap.entries())
+        //     .slice(0, 20)
+        //     .map(([nonce, offer]) => {
+        //         console.log(nonce, offer);
+        //     });
+        // }
         setNonceOfferMap(_nonceOfferMap);
-        //make pagination
+
+        //TODO make pagination
+
         ///get nftMetadatas for the grouped offers
         setNftMetadatasLoading(true);
-        const nftIds = Array.from(_nonceOfferMap.entries())
-          .slice(0, 20)
-          .map(([nonce, offer]) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
+        const nftIds = Array.from(_nonceOfferMap.entries()).map(([nonce, offer]) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
         const _nfts = await getNftsByIds(nftIds, chainID);
         const _metadatas: DataNftMetadataType[] = [];
         for (let i = 0; i < _nfts.length; i++) {
           _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
         }
-        console.log("META GROUP", _metadatas);
         setGroupedMetadatas(_metadatas);
-        setCurrentPageGroupedOffers(Array.from(_nonceOfferMap.values()).slice(0, 20));
+        setCurrentPageGroupedOffers(Array.from(_nonceOfferMap.values()));
 
         setNftMetadatasLoading(false);
-        ///console.log("KEYS ", nonceOfferMap.keys());
 
         updateLoadingOffers(false);
       })();
@@ -304,10 +292,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     matches[1] == "acceptOffer"
                       ? "Purchase transaction failed"
                       : matches[1] == "cancelOffer"
-                      ? "De-List transaction failed"
-                      : matches[1] == "changeOfferPrice"
-                      ? "Update price transaction failed"
-                      : "Transaction failed";
+                        ? "De-List transaction failed"
+                        : matches[1] == "changeOfferPrice"
+                          ? "Update price transaction failed"
+                          : "Transaction failed";
                   const description = matches[matches.length - 1];
 
                   toast({
@@ -382,6 +370,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   fontSize={{ base: "sm", md: "md" }}
                   onClick={() => {
                     if (hasPendingTransactions) return;
+                    setShowGroupedDataNfts(false);
                     navigate("/datanfts/marketplace/my");
                   }}>
                   {isMxLoggedIn && (
@@ -412,18 +401,19 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 {/* <Button onClick={groupDataNfts} justifyContent="center" alignItems="center" mt={{ base: "3", lg: "5" }} colorScheme="teal">
                   {!showGroupedDataNfts ? "Group" : "Ungroup"}
                 </Button> */}
-
-                <Checkbox onChange={groupDataNfts} colorScheme={"teal"} onClick={groupDataNfts}>
-                  {" "}
-                  <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view data NFTs as collections">
-                    <HStack spacing="0px">
-                      <Text> Group by collection </Text>
-                      <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize={"lg"} />
-                    </HStack>
-                  </Tooltip>
-                </Checkbox>
-
-                <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+                {!window.location.href.includes("my") && (
+                  <Checkbox onChange={groupDataNfts} colorScheme={"teal"} onClick={groupDataNfts}>
+                    <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view data NFTs as collections">
+                      <HStack spacing="10px" width={"100%"}>
+                        <Text> Group by collection </Text>
+                        <MdOutlineInfo height={"20px"} width={"20px"} color={"teal"} fontSize={"xl"} />
+                      </HStack>
+                    </Tooltip>
+                  </Checkbox>
+                )}
+                {!showGroupedDataNfts && (
+                  <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+                )}
               </Flex>
             </TabList>
 
@@ -432,7 +422,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
                   <NoDataHere />
                 ) : (
-                  <SimpleGrid columns={2} spacingY={4} gap={8} mx={{ base: 0, "2xl": "12 !important" }} mt="5 !important" justifyItems={"center"}>
+                  <SimpleGrid
+                    columns={showGroupedDataNfts ? { sm: 1, lg: 2 } : { sm: 1, md: 2, lg: 3, xl: 4 }}
+                    spacingY={4}
+                    gap={8}
+                    mx={{ base: 0, "2xl": "12 !important" }}
+                    mt="5 !important"
+                    justifyItems={"center"}>
                     {!showGroupedDataNfts
                       ? offers.map((offer, index) => (
                           <UpperCardComponent
@@ -444,46 +440,31 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             offer={offer}
                             index={index}
                             marketFreezedNonces={marketFreezedNonces}
-                            openNftDetailsDrawer={openNftDetailsModal}
-                            grouped={showGroupedDataNfts}>
+                            openNftDetailsDrawer={openNftDetailsModal}>
                             <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
                           </UpperCardComponent>
                         ))
-                      : Array.from(nonceOfferMap.entries())
-                          .slice(0, 24)
-                          .map(([nonce, offer], index) => {
-                            console.log(index, offer, groupedMetadatas[index]);
-
-                            return (
-                              <DataNftCollection
-                                key={index}
-                                nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                                imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
-                                title={groupedMetadatas[index]?.title}
-                                description={groupedMetadatas[index]?.description}
-                                floorPrice={convertWeiToEsdt(
-                                  offer.wanted_token_amount as BigNumber.Value,
-                                  tokenDecimals(offer.wanted_token_identifier)
-                                ).toNumber()}
-                                listed={offer?.quantity}
-                                openNftDetailsDrawer={openNftDetailsModal}
-                                supply={groupedMetadatas[index]?.supply}></DataNftCollection>
-                            );
-                          })}
+                      : Array.from(nonceOfferMap.entries()).map(([nonce, offer], index) => {
+                          return (
+                            <DataNftCollection
+                              key={index}
+                              index={index}
+                              nftImageLoading={oneNFTImgLoaded && !loadingOffers}
+                              imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                              title={groupedMetadatas[index]?.title}
+                              description={groupedMetadatas[index]?.description}
+                              floorPrice={convertWeiToEsdt(
+                                offer.wanted_token_amount as BigNumber.Value,
+                                tokenDecimals(offer.wanted_token_identifier)
+                              ).toNumber()}
+                              listed={offer?.quantity}
+                              openNftDetailsDrawer={openNftDetailsModal}
+                              supply={groupedMetadatas[index]?.supply}
+                              dataPreview={groupedMetadatas[index]?.dataPreview}></DataNftCollection>
+                          );
+                        })}
                   </SimpleGrid>
                 )}
-                {/* imageUrl={`https://${getApi(networkId)}/nfts/${offer?.offered_token_identifier}-${hexZero(
-                                  offer?.offered_token_nonce
-                                )}/thumbnail`}
-                                setNftImageLoaded={setOneNFTImgLoaded}
-                                nftMetadata={groupedMetadatas[index]}
-                                offer={offer}
-                                index={index}
-                                marketFreezedNonces={marketFreezedNonces}
-                                openNftDetailsDrawer={openNftDetailsModal}
-                                grouped={showGroupedDataNfts}>
-                                <MarketplaceLowerCard nftMetadata={groupedMetadatas[index]} offer={offer} />
-                              </UpperCardComponent> */}
               </TabPanel>
               <TabPanel mt={2} width={"full"}>
                 {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
@@ -506,7 +487,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           offer={offer}
                           index={index}
                           marketFreezedNonces={marketFreezedNonces}
-                          grouped={false}
                           openNftDetailsDrawer={openNftDetailsModal}>
                           <MyListedDataLowerCard offer={offer} nftMetadata={nftMetadatas[index]} />
                         </UpperCardComponent>
@@ -518,7 +498,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Tabs>
           {
             /* show bottom pagination only if offers exist */
-            offers.length > 0 && (
+            offers.length > 0 && !showGroupedDataNfts && (
               <Flex justifyContent={{ base: "center", md: "center" }} py="5">
                 <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
               </Flex>
