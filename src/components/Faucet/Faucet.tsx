@@ -1,42 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  SimpleGrid,
-  Spacer,
-  Spinner,
-  Stack,
-  Text,
-  Tooltip,
-  useBreakpointValue,
-  useColorMode,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import React from "react";
+import { useEffect, useState } from "react";
+import { Box, Button, Heading, Spacer, Stack, Text, useColorMode } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
-import myNFMe from "assets/img/my-nfme.png";
-import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
-import ExplainerArticles from "components/Sections/ExplainerArticles";
-import RecentDataNFTs from "components/Sections/RecentDataNFTs";
-import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
-import { ClaimsContract } from "libs/MultiversX/claims";
+import { CHAIN_TOKEN_SYMBOL } from "libs/config";
 import { FaucetContract } from "libs/MultiversX/faucet";
-import { formatNumberToShort } from "libs/utils";
-import AppMarketplace from "pages/Home/AppMarketplace";
 
 const Faucet = ({ tileBoxW, tileBoxH }: any) => {
   const { chainID } = useGetNetworkConfig();

@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Badge,
   Box,
   Button,
-  CloseButton,
   Flex,
   HStack,
   Image,
   Link,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -32,7 +26,6 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Skeleton,
-  Spinner,
   Stack,
   Text,
   Tooltip,
@@ -47,7 +40,6 @@ import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import imgGuidePopup from "assets/img/guide-unblock-popups.png";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
@@ -68,8 +60,8 @@ import {
   viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
-import ListDataNFTModal from "../ListDataNFTModal";
 import AccessDataStreamModal from "./AccessDatastreamModal";
+import ListDataNFTModal from "../ListDataNFTModal";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;

@@ -29,15 +29,14 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import myNFMe from "assets/img/my-nfme.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
+import Faucet from "components/Faucet/Faucet";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
+import { CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
-import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
-import Faucet from "components/Faucet/Faucet";
 
 export default function HomeMultiversX({
   setMenuItem,
