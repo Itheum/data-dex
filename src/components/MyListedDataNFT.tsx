@@ -19,7 +19,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
@@ -28,7 +28,15 @@ import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "l
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals, shouldPreviewDataBeEnabled } from "libs/utils";
+import {
+  convertWeiToEsdt,
+  convertToLocalString,
+  getTokenWantedRepresentation,
+  hexZero,
+  tokenDecimals,
+  shouldPreviewDataBeEnabled,
+  viewDataDisabledMessage,
+} from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 
 type MyListedDataNFTProps = {
@@ -70,6 +78,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
+  const { loginMethod } = useGetLoginInfo();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
@@ -186,15 +195,15 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                 <Tooltip
                   colorScheme="teal"
                   hasArrow
-                  label="Preview Data is disabled on devnet"
-                  isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                  label={viewDataDisabledMessage(loginMethod)}
+                  isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                   <Button
                     mt="2"
                     size="sm"
                     colorScheme="teal"
                     height="7"
                     variant="outline"
-                    isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                    isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                     onClick={() => {
                       window.open(nftMetadata[index].dataPreview);
                     }}>

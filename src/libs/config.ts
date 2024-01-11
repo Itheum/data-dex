@@ -31,6 +31,14 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "BIGBANG-6b34db",
             contract: "erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m",
           },
+          {
+            id: "BETATOK-5b7317",
+            contract: "erd1qqqqqqqqqqqqqpgqjk0cxzm79qzced5sevmnn6swgp3jjch88ypsfd068q",
+          },
+          {
+            id: "COLNAMA-539838",
+            contract: "erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd",
+          },
         ],
       };
     }
@@ -159,7 +167,7 @@ export const WALLETS = {
   MX_DEFI: "el_defi",
   MX_WEBWALLET: "el_webwallet",
   MX_LEDGER: "el_ledger",
-  MX_CUSTOM_WEBWALLET: "el_custom_webwallet",
+  MX_XALIAS: "el_xalias",
 };
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n

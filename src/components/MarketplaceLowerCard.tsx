@@ -22,7 +22,7 @@ import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { isValidNumericCharacter, shouldPreviewDataBeEnabled } from "libs/utils";
+import { isValidNumericCharacter, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
 import { useMarketStore } from "store";
 
 type MarketplaceLowerCardProps = {
@@ -32,7 +32,7 @@ type MarketplaceLowerCardProps = {
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { loginMethod, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -51,8 +51,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
         <Tooltip
           colorScheme="teal"
           hasArrow
-          label="Preview Data is disabled on devnet"
-          isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+          label={viewDataDisabledMessage(loginMethod)}
+          isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
           <Button
             my="3"
             size="sm"
@@ -60,7 +60,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
             colorScheme="teal"
             variant="outline"
             _disabled={{ opacity: 0.2 }}
-            isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+            isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
             onClick={() => {
               window.open(nftMetadata.dataPreview);
             }}>

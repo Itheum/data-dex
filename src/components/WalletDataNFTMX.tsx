@@ -65,6 +65,7 @@ import {
   shouldPreviewDataBeEnabled,
   sleep,
   transformDescription,
+  viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
@@ -293,7 +294,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onBurnNFTClose();
   };
 
-  async function accessDataStream(_dataNonce: number) {
+  async function accessDataStream(tokenIdentifier: string, nonce: number) {
     try {
       onAccessProgressModalOpen();
 
@@ -310,7 +311,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       }
 
       DataNft.setNetworkConfig(network.id);
-      const dataNft = await DataNft.createFromApi({ nonce: _dataNonce });
+      const dataNft = await DataNft.createFromApi({ tokenIdentifier, nonce });
       const arg = {
         mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken).origin],
         mvxNativeAuthMaxExpirySeconds: 3600,
@@ -323,7 +324,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       if (!res.error) {
         const link = document.createElement("a");
         link.target = "_blank";
-        link.download = `DataNFT-${_dataNonce}`;
+        link.download = `DataNFT-${nonce}`;
         link.href = window.URL.createObjectURL(new Blob([res.data], { type: res.contentType }));
         link.click();
       } else {
@@ -528,15 +529,15 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="View Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                label={viewDataDisabledMessage(loginMethod)}
+                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                   onClick={() => {
-                    accessDataStream(item.nonce);
+                    accessDataStream(item.collection, item.nonce);
                   }}>
                   View Data
                 </Button>
@@ -545,14 +546,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <Tooltip
                 colorScheme="teal"
                 hasArrow
-                label="Preview Data is disabled on devnet"
-                isDisabled={shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}>
+                label={viewDataDisabledMessage(loginMethod)}
+                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
                 <Button
                   size="sm"
                   colorScheme="teal"
                   w="full"
                   variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, previewDataOnDevnetSession)}
+                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
                   onClick={() => {
                     window.open(item.dataPreview);
                   }}>

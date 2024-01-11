@@ -153,7 +153,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
 
                       <WrapItem
                         onClick={() => {
-                          goMxLogin(WALLETS.MX_LEDGER);
+                          goMxLogin(WALLETS.MX_XALIAS);
                           localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
