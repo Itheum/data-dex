@@ -24,6 +24,7 @@ import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { isValidNumericCharacter, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
 import { useMarketStore } from "store";
+import PreviewDataButton from "./PreviewDataButton";
 
 type MarketplaceLowerCardProps = {
   offer: OfferType;
@@ -44,31 +45,10 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const isMyNft = offer.owner === address;
   const maxBuyLimit = process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? Number(process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
-  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   return (
     <>
       <HStack justifyContent="stretch">
-        <Tooltip
-          colorScheme="teal"
-          hasArrow
-          label={viewDataDisabledMessage(loginMethod)}
-          isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-          <Button
-            my="3"
-            size="sm"
-            w="full"
-            colorScheme="teal"
-            variant="outline"
-            _disabled={{ opacity: 0.2 }}
-            isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-            onClick={() => {
-              window.open(nftMetadata.dataPreview);
-            }}>
-            <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-              Preview Data
-            </Text>
-          </Button>
-        </Tooltip>
+        <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
         <ExploreAppButton nonce={offer.offered_token_nonce} />
       </HStack>

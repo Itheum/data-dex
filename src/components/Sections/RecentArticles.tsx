@@ -41,7 +41,7 @@ const RecentArticles = () => {
 
 function ArticleCard({ date, title, description, link, imgLink }: { date: string; title: string; description: string; link: string; imgLink: string }) {
   return (
-    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", xl: "290px", "2xl": "315px" }}>
+    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", lg: "390px", xl: "290px", "2xl": "315px" }}>
       <CardBody>
         <Link href={link} isExternal>
           <Box
