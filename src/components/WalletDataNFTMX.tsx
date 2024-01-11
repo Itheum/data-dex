@@ -70,6 +70,7 @@ import {
 import { useMarketStore, useMintStore } from "store";
 import ListDataNFTModal from "./ListDataNFTModal";
 import FrozenOverlay from "./FrozenOverlay";
+import PreviewDataButton from "./PreviewDataButton";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -544,25 +545,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label={viewDataDisabledMessage(loginMethod)}
-                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                <Button
-                  size="sm"
-                  colorScheme="teal"
-                  w="full"
-                  variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                  onClick={() => {
-                    window.open(item.dataPreview);
-                  }}>
-                  <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                    Preview Data
-                  </Text>
-                </Button>
-              </Tooltip>
+              <PreviewDataButton previewDataURL={item.dataPreview} />
             </HStack>
 
             <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

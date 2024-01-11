@@ -39,6 +39,7 @@ import {
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
+import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataNFTProps = {
   offer: OfferType;
@@ -193,24 +194,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   </Text>
                 </Box>
 
-                <Tooltip
-                  colorScheme="teal"
-                  hasArrow
-                  label={viewDataDisabledMessage(loginMethod)}
-                  isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                  <Button
-                    mt="2"
-                    size="sm"
-                    colorScheme="teal"
-                    height="7"
-                    variant="outline"
-                    isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                    onClick={() => {
-                      window.open(nftMetadata[index].dataPreview);
-                    }}>
-                    Preview Data
-                  </Button>
-                </Tooltip>
+                <PreviewDataButton previewDataURL={nftMetadata[index].dataPreview} />
 
                 {address && (
                   <>

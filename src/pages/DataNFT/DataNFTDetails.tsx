@@ -58,6 +58,7 @@ import {
 } from "libs/utils";
 import { shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils/util";
 import { useMarketStore } from "store";
+import PreviewDataButton from "components/PreviewDataButton";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -407,24 +408,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         </Tooltip>
 
-                        <Tooltip
-                          colorScheme="teal"
-                          hasArrow
-                          label={viewDataDisabledMessage(loginMethod)}
-                          isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                          <Button
-                            size={{ base: "sm", md: "md", xl: "lg" }}
-                            colorScheme="teal"
-                            variant="outline"
-                            isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                            onClick={() => {
-                              window.open(nftData.attributes.dataPreview);
-                            }}>
-                            <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
-                              Preview Data
-                            </Text>
-                          </Button>
-                        </Tooltip>
+                        <PreviewDataButton
+                          previewDataURL={nftData.attributes.dataPreview}
+                          buttonSize={{ base: "sm", md: "md", xl: "lg" }}
+                          buttonWidth="unset"
+                        />
                         <ExploreAppButton
                           nonce={nftData.nonce}
                           size={{ base: "sm", md: "md", xl: "lg" }}

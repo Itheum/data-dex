@@ -35,6 +35,7 @@ import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import FrozenOverlay from "components/FrozenOverlay";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
@@ -57,7 +58,7 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
-import FrozenOverlay from "components/FrozenOverlay";
+import PreviewDataButton from "components/PreviewDataButton";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -465,25 +466,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label={viewDataDisabledMessage(loginMethod)}
-                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                <Button
-                  size="sm"
-                  colorScheme="teal"
-                  w="full"
-                  variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                  onClick={() => {
-                    window.open(item.dataPreview);
-                  }}>
-                  <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                    Preview Data
-                  </Text>
-                </Button>
-              </Tooltip>
+              <PreviewDataButton previewDataURL={item.dataPreview} />
             </HStack>
 
             <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
