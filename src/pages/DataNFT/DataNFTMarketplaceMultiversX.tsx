@@ -78,6 +78,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
   const updateLoadingOffers = useMarketStore((state) => state.updateLoadingOffers);
+
   // pagination
   const pageCount = useMarketStore((state) => state.pageCount);
   const updatePageCount = useMarketStore((state) => state.updatePageCount);
@@ -123,7 +124,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         // start loading offers
         updateLoadingOffers(true);
 
-        ///TODO CHECK IF COLLECTIONS AND MAP IS THE SAME
         let _offers: OfferType[] = [];
         const start = 0;
         if (isApiUp && isMarketplaceApiUp) {
@@ -144,16 +144,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             _nonceOfferMap.set(offer.offered_token_nonce, offer);
           }
         });
-        // if (_nonceOfferMap !== undefined) {
-        //   Array.from(_nonceOfferMap.entries())
-        //     .slice(0, 20)
-        //     .map(([nonce, offer]) => {
-        //         console.log(nonce, offer);
-        //     });
-        // }
-        setNonceOfferMap(_nonceOfferMap);
 
-        //TODO make pagination
+        setNonceOfferMap(_nonceOfferMap);
 
         ///get nftMetadatas for the grouped offers
         setNftMetadatasLoading(true);
@@ -226,10 +218,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       let _offers: OfferType[] = [];
       const start = pageIndex * pageSize;
       if (isApiUp && isMarketplaceApiUp) {
-        // console.log('Api Up');
         _offers = await getOffersFromBackendApi(chainID, start, pageSize, tabState === 1 ? undefined : address);
       } else {
-        // console.log('Api Down');
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
       }
 
@@ -316,9 +306,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
   }, [pendingTransactions]);
 
-  //todo pagination,
-  // refresh the page when somebody buys something (Haspending transaction)
-
   return (
     <>
       <Stack>
@@ -398,15 +385,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               </Flex>
 
               <Flex pr={{ lg: "10" }} gap={{ base: "5", lg: "20" }} ml={{ base: "1.7rem", xl: 0 }}>
-                {/* <Button onClick={groupDataNfts} justifyContent="center" alignItems="center" mt={{ base: "3", lg: "5" }} colorScheme="teal">
-                  {!showGroupedDataNfts ? "Group" : "Ungroup"}
-                </Button> */}
                 {!window.location.href.includes("my") && (
                   <Checkbox onChange={groupDataNfts} colorScheme={"teal"} onClick={groupDataNfts}>
                     <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view data NFTs as collections">
                       <HStack spacing="10px" width={"100%"}>
                         <Text> Group by collection </Text>
-                        <MdOutlineInfo height={"20px"} width={"20px"} color={"teal"} fontSize={"xl"} />
+                        <Stack>
+                          <MdOutlineInfo color={"teal"} />
+                        </Stack>
                       </HStack>
                     </Tooltip>
                   </Checkbox>
