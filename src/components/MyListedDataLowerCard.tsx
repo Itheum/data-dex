@@ -41,6 +41,7 @@ import {
   viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore } from "store";
+import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataLowerCardProps = {
   offer: OfferType;
@@ -264,26 +265,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
   return (
     <>
-      <Tooltip
-        colorScheme="teal"
-        hasArrow
-        label={viewDataDisabledMessage(loginMethod)}
-        isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-        <Button
-          my="3"
-          size="sm"
-          colorScheme="teal"
-          variant="outline"
-          _disabled={{ opacity: 0.2 }}
-          isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-          onClick={() => {
-            window.open(nftMetadata.dataPreview);
-          }}>
-          <Text py={3} color={colorMode === "dark" ? "bgWhite" : "bgDark"}>
-            Preview Data
-          </Text>
-        </Button>
-      </Tooltip>
+      <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
       <Flex justifyContent="space-between" mt="2" gap="2">
         <Button

@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
-import WalletDataNFTMX from "components/WalletDataNFTMX";
+import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";

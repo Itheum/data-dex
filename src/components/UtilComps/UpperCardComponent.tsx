@@ -30,6 +30,7 @@ import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
+import FrozenOverlay from "components/FrozenOverlay";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -247,19 +248,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
           )}
         </Flex>
 
-        <Box
-          position="absolute"
-          top="0"
-          bottom="0"
-          left="0"
-          right="0"
-          height="100%"
-          width="100%"
-          backgroundColor="blackAlpha.700"
-          backdropFilter="auto"
-          backdropBlur="4px"
-          rounded="lg"
-          visibility={
+        <FrozenOverlay
+          isVisible={
             marketFreezedNonces &&
             offer &&
             userData &&
@@ -267,16 +257,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               (userData.frozenNonces &&
                 offer &&
                 (userData.frozenNonces.includes(offer.offered_token_nonce) || marketFreezedNonces.includes(offer.offered_token_nonce))))
-              ? "visible"
-              : "collapse"
-          }>
-          <Box fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
-            - FROZEN -{" "}
-            <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
-              Data NFT is under investigation by the DAO as there was a complaint received against it
-            </Text>
-          </Box>
-        </Box>
+          }
+        />
       </Box>
     </Skeleton>
   );

@@ -1,24 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircleIcon, ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Badge,
   Box,
   Button,
-  CloseButton,
   Flex,
   HStack,
   Image,
   Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -32,7 +21,6 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Skeleton,
-  Spinner,
   Stack,
   Text,
   Tooltip,
@@ -47,7 +35,7 @@ import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import imgGuidePopup from "assets/img/guide-unblock-popups.png";
+import FrozenOverlay from "components/FrozenOverlay";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
@@ -55,7 +43,6 @@ import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftType } from "libs/MultiversX/types";
 import {
   backendApi,
@@ -68,7 +55,10 @@ import {
   viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
-import ListDataNFTModal from "./ListDataNFTModal";
+import AccessDataStreamModal from "./AccessDatastreamModal";
+import BurnDataNFTModal from "./BurnDataNFTModal";
+import ListDataNFTModal from "../ListDataNFTModal";
+import PreviewDataButton from "components/PreviewDataButton";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -99,11 +89,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     s3: 0,
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
-  const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
-  const mintContract = new DataNftMintContract(chainID);
   const marketContract = new DataNftMarketContract(chainID);
-  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(1);
-  const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
   const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
@@ -246,54 +232,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     }
   }
 
-  const showErrorToast = (title: string) => {
-    toast({
-      title,
-      status: "error",
-      isClosable: true,
-    });
-  };
-
-  const onBurn = () => {
-    const errorMessages = {
-      noWalletConn: labels.ERR_BURN_NO_WALLET_CONN,
-      noNFTSelected: labels.ERR_BURN_NO_NFT_SELECTED,
-    };
-
-    const conditions = [
-      {
-        condition: !address,
-        errorMessage: errorMessages.noWalletConn,
-      },
-      {
-        condition: !selectedDataNft,
-        errorMessage: errorMessages.noNFTSelected,
-      },
-    ];
-
-    const shouldReturn = conditions.some(({ condition, errorMessage }) => {
-      if (condition) {
-        showErrorToast(errorMessage);
-        return true;
-      }
-      return false;
-    });
-
-    if (shouldReturn || !selectedDataNft) {
-      return;
-    }
-
-    mintContract.sendBurnTransaction(
-      address,
-      selectedDataNft.collection,
-      selectedDataNft.nonce,
-      dataNftBurnAmount,
-      contractsForChain(chainID).dataNftTokens.find((t) => t.id === selectedDataNft.collection)?.contract
-    );
-
-    onBurnNFTClose();
-  };
-
   async function accessDataStream(tokenIdentifier: string, nonce: number) {
     try {
       onAccessProgressModalOpen();
@@ -348,8 +286,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   const onBurnButtonClick = (nft: DataNftType) => {
     setSelectedDataNft(nft);
-    setDataNftBurnAmount(Number(nft.balance));
-    setBurnNFTModalState(1);
     onBurnNFTOpen();
   };
 
@@ -365,19 +301,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       setSelectedDataNft(nft);
       onListNFTOpen();
     }
-  };
-
-  const onChangeDataNftBurnAmount = (valueAsString: string) => {
-    let error = "";
-    const valueAsNumber = Number(valueAsString);
-    if (valueAsNumber < 1) {
-      error = "Burn amount cannot be zero or negative";
-    } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
-      error = "Data NFT balance exceeded";
-    }
-
-    setDataNftBurnAmountError(error);
-    setDataNftBurnAmount(valueAsNumber);
   };
 
   const formatButtonNumber = (_price: number, _amount: number) => {
@@ -543,25 +466,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 </Button>
               </Tooltip>
 
-              <Tooltip
-                colorScheme="teal"
-                hasArrow
-                label={viewDataDisabledMessage(loginMethod)}
-                isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
-                <Button
-                  size="sm"
-                  colorScheme="teal"
-                  w="full"
-                  variant="outline"
-                  isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-                  onClick={() => {
-                    window.open(item.dataPreview);
-                  }}>
-                  <Text py={3} color={colorMode === "dark" ? "white" : "black"}>
-                    Preview Data
-                  </Text>
-                </Button>
-              </Tooltip>
+              <PreviewDataButton previewDataURL={item.dataPreview} />
             </HStack>
 
             <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>
@@ -675,142 +580,8 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           </Box>
         </Flex>
 
-        <Box
-          position="absolute"
-          top="0"
-          bottom="0"
-          left="0"
-          right="0"
-          height="100%"
-          width="100%"
-          backgroundColor="blackAlpha.800"
-          rounded="lg"
-          visibility={
-            userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(item?.nonce))) ? "visible" : "collapse"
-          }
-          backdropFilter="auto"
-          backdropBlur="6px">
-          <Box fontSize="24px" fontWeight="500" lineHeight="38px" position="absolute" top="45%" textAlign="center" textColor="teal.200" px="2">
-            - FROZEN -{" "}
-            <Text fontSize="16px" fontWeight="400" textColor="white" lineHeight="25px" px={3}>
-              Data NFT is under investigation by the DAO as there was a complaint received against it
-            </Text>
-          </Box>
-        </Box>
-        {selectedDataNft && (
-          <Modal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} closeOnEsc={false} closeOnOverlayClick={false}>
-            <ModalOverlay backdropFilter="blur(10px)" />
-            <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-              {burnNFTModalState === 1 ? (
-                <>
-                  <ModalHeader>Burn Supply from my Data NFT</ModalHeader>
-                  <ModalBody pb={6}>
-                    <HStack spacing="5" alignItems="center">
-                      <Box flex="1.1">
-                        <Stack>
-                          <Image src={selectedDataNft.nftImgUrl} h={100} w={100} borderRadius="md" m="auto" />
-                          <Text px="15px" py="5px" borderRadius="md" fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" textAlign="center">
-                            {selectedDataNft.tokenName}
-                          </Text>
-                        </Stack>
-                      </Box>
-                      <Box flex="1.9" alignContent="center">
-                        <Text color="orange.300" fontSize="sm">
-                          You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
-                          {selectedDataNft.balance} Data NFTs and remove them from your wallet.
-                          {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                            ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} ${
-                              selectedDataNft.supply - selectedDataNft.balance > 1 ? "are" : "is"
-                            } not under your ownership.`}
-                        </Text>
-                      </Box>
-                    </HStack>
-
-                    <Text fontSize="md" mt="4">
-                      Please note that Data NFTs not listed in the Data NFT marketplace are &quot;NOT public&quot; and are &quot;Private&quot; to only you so no
-                      one can see or access them. So only burn Data NFTs if you are sure you want to destroy your Data NFTs for good. Once burned you will not
-                      be able to recover them again.
-                    </Text>
-
-                    <HStack mt="8">
-                      <Text fontSize="md">How many do you want to burn?</Text>
-                      <NumberInput
-                        ml="3px"
-                        size="sm"
-                        maxW="24"
-                        step={1}
-                        defaultValue={selectedDataNft.balance}
-                        min={1}
-                        max={selectedDataNft.balance}
-                        isValidCharacter={isValidNumericCharacter}
-                        value={dataNftBurnAmount}
-                        onChange={onChangeDataNftBurnAmount}
-                        keepWithinRange={true}>
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    </HStack>
-                    {dataNftBurnAmountError && (
-                      <Text ml="215px" color="red.400" fontSize="xs" mt="1 !important">
-                        {dataNftBurnAmountError}
-                      </Text>
-                    )}
-
-                    <Flex justifyContent="end" mt="8 !important">
-                      <Button
-                        colorScheme="teal"
-                        size="sm"
-                        mx="3"
-                        onClick={() => setBurnNFTModalState(2)}
-                        isDisabled={!!dataNftBurnAmountError || hasPendingTransactions}>
-                        I want to Burn my {dataNftBurnAmount} Data NFTs
-                      </Button>
-                      <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
-                        Cancel
-                      </Button>
-                    </Flex>
-                  </ModalBody>
-                </>
-              ) : (
-                <>
-                  <ModalHeader>Are you sure?</ModalHeader>
-                  <ModalBody pb={6}>
-                    <Flex>
-                      <Text fontWeight="bold" fontSize="md" px="1">
-                        Data NFT Title: &nbsp;
-                      </Text>
-                      <Text fontWeight="bold" fontSize="md" backgroundColor="blackAlpha.300" px="1">
-                        {selectedDataNft.title}
-                      </Text>
-                    </Flex>
-                    <Flex mt="1">
-                      <Text fontWeight="bold" fontSize="md" px="1">
-                        Burn Amount: &nbsp;&nbsp;
-                      </Text>
-                      <Text fontSize="sm" backgroundColor="blackAlpha.300" px="1">
-                        {dataNftBurnAmount}
-                      </Text>
-                    </Flex>
-                    <Text fontSize="md" mt="2">
-                      Are you sure you want to proceed with burning the Data NFTs? You cannot undo this action.
-                    </Text>
-                    <Flex justifyContent="end" mt="6 !important">
-                      <Button colorScheme="teal" size="sm" mx="3" onClick={onBurn} isDisabled={hasPendingTransactions}>
-                        Proceed
-                      </Button>
-                      <Button colorScheme="teal" size="sm" variant="outline" onClick={onBurnNFTClose}>
-                        Cancel
-                      </Button>
-                    </Flex>
-                  </ModalBody>
-                </>
-              )}
-            </ModalContent>
-          </Modal>
-        )}
+        <FrozenOverlay isVisible={userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(item?.nonce)))} />
+        {selectedDataNft && <BurnDataNFTModal isOpen={isBurnNFTOpen} onClose={onBurnNFTClose} selectedDataNft={selectedDataNft} />}
         {selectedDataNft && (
           <ListDataNFTModal
             isOpen={isListNFTOpen}
@@ -824,44 +595,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           />
         )}
 
-        <Modal isOpen={isAccessProgressModalOpen} onClose={cleanupAccessDataStreamProcess} closeOnEsc={false} closeOnOverlayClick={false}>
-          <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
-            <ModalHeader>Data Access Unlock Progress</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <Stack spacing={5}>
-                <HStack>
-                  {(!unlockAccessProgress.s1 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                  <Text>Initiating handshake with Data Marshal</Text>
-                </HStack>
-
-                <HStack>
-                  {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
-                  <Text>Verifying data access rights to unlock Data Stream</Text>
-                </HStack>
-
-                {errUnlockAccessGeneric && (
-                  <Alert status="error">
-                    <Stack>
-                      <AlertTitle fontSize="md">
-                        <AlertIcon mb={2} />
-                        Process Error
-                      </AlertTitle>
-                      {errUnlockAccessGeneric && <AlertDescription fontSize="md">{errUnlockAccessGeneric}</AlertDescription>}
-                      <CloseButton position="absolute" right="8px" top="8px" onClick={cleanupAccessDataStreamProcess} />
-                    </Stack>
-                  </Alert>
-                )}
-                {unlockAccessProgress.s1 && unlockAccessProgress.s2 && unlockAccessProgress.s3 && (
-                  <Button colorScheme="teal" variant="outline" onClick={cleanupAccessDataStreamProcess}>
-                    Close & Return
-                  </Button>
-                )}
-              </Stack>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+        <AccessDataStreamModal
+          isOpen={isAccessProgressModalOpen}
+          onClose={cleanupAccessDataStreamProcess}
+          unlockAccessProgress={unlockAccessProgress}
+          errorMessage={errUnlockAccessGeneric}
+        />
       </Box>
     </Skeleton>
   );

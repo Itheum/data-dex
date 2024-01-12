@@ -29,12 +29,12 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import myNFMe from "assets/img/my-nfme.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
+import Faucet from "components/Faucet/Faucet";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
 import RecentDataNFTs from "components/Sections/RecentDataNFTs";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
-import { CHAIN_TOKEN_SYMBOL, CLAIM_TYPES, MENU, uxConfig } from "libs/config";
+import { CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
-import { FaucetContract } from "libs/MultiversX/faucet";
 import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
@@ -58,7 +58,6 @@ export default function HomeMultiversX({
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
 
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
-  const [isMxFaucetDisabled, setIsMxFaucetDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
     claimBalanceValues: ["-1", "-1", "-1", "-1"], // -1 is loading, -2 is error
     claimBalanceDates: [0, 0, 0, 0],
@@ -66,40 +65,7 @@ export default function HomeMultiversX({
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
 
   const navigate = useNavigate();
-  const mxFaucetContract = new FaucetContract(chainID);
   const mxClaimsContract = new ClaimsContract(chainID);
-
-  // S: Faucet
-  useEffect(() => {
-    // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
-    // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (chainID === "D" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
-      mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
-        const timeNow = new Date().getTime();
-
-        if (lastUsedTime + 120000 > timeNow) {
-          setIsMxFaucetDisabled(true);
-
-          // after 2 min wait we reenable the button on the UI automatically
-          setTimeout(
-            () => {
-              setIsMxFaucetDisabled(false);
-            },
-            lastUsedTime + 120 * 60 * 1000 + 1000 - timeNow
-          );
-        } else {
-          setIsMxFaucetDisabled(false);
-        }
-      });
-    }
-  }, [mxAddress, hasPendingTransactions]);
-
-  const handleOnChainFaucet = async () => {
-    if (mxAddress) {
-      mxFaucetContract.sendActivateFaucetTransaction(mxAddress);
-    }
-  };
-  // E: Faucet
 
   // S: Claims
   useEffect(() => {
@@ -163,12 +129,8 @@ export default function HomeMultiversX({
     if (hasPendingTransactions) {
       // block user trying to do other claims or on-chain tx until current one completes
       setIsOnChainInteractionDisabled(true);
-
-      // user just triggered a faucet tx, so we prevent them from clicking ui again until tx is complete
-      setIsMxFaucetDisabled(true);
     } else {
       // mxClaimsBalancesUpdate(); // get latest claims balances from on-chain as well
-
       setIsOnChainInteractionDisabled(false); // unlock, and let them do other on-chain tx work
     }
   }, [hasPendingTransactions]);
@@ -249,7 +211,7 @@ export default function HomeMultiversX({
   };
   // E: claims related logic
 
-  const tileBoxMdW = "310px";
+  const tileBoxW = "310px";
   const tileBoxH = "360px";
   const claimsStackMinW = "220px";
   const heroGridMargin = useBreakpointValue({ base: "auto", md: "initial" });
@@ -260,7 +222,7 @@ export default function HomeMultiversX({
         <Box m={heroGridMargin} pt="20" pb="10" w={"100%"}>
           <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
             <ChainSupportedComponent feature={MENU.DATACAT}>
-              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+              <Box w={[tileBoxW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
                   {!dataCATAccount && (
                     <Heading size="md" fontFamily="Clash-Medium" pb={2}>
@@ -334,28 +296,10 @@ export default function HomeMultiversX({
             </ChainSupportedComponent>
 
             <ChainSupportedComponent feature={MENU.FAUCET}>
-              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
-                  <Heading size="md" fontFamily="Clash-Medium" pb={2}>
-                    {CHAIN_TOKEN_SYMBOL(chainID)} Faucet
-                  </Heading>
-                  <Stack h={tileBoxH} w={"full"}>
-                    <Text textAlign={{ base: "center", xl: "left" }} fontSize="md" color="#929497" pb={5}>
-                      Get some free {CHAIN_TOKEN_SYMBOL(chainID)} tokens to try DEX features
-                    </Text>
-
-                    <Spacer />
-                    {/*<Box h={{ base: 40, md: 40, xl: 40 }}></Box>*/}
-
-                    <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-                      <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(chainID)}</Text>
-                    </Button>
-                  </Stack>
-                </Stack>
-              </Box>
+              <Faucet tileBoxW={tileBoxW} tileBoxH={tileBoxH}></Faucet>
             </ChainSupportedComponent>
 
-            <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+            <Box w={[tileBoxW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
                 <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                   NFMe ID Avatar
@@ -373,7 +317,7 @@ export default function HomeMultiversX({
             </Box>
 
             <ChainSupportedComponent feature={MENU.CLAIMS}>
-              <Box w={[tileBoxMdW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+              <Box w={[tileBoxW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={"430px"} minW={claimsStackMinW}>
                   <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
                     My Claims
