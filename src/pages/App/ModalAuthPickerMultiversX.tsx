@@ -35,7 +35,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
-  const appVersion = process.env.REACT_APP_VERSION;
+  const appVersion = import.meta.env.VITE_VERSION;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,7 +102,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
             <ModalHeader mt={5}>
               Select a{" "}
               <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                {process.env.REACT_APP_ENV_NETWORK}
+                {import.meta.env.VITE_ENV_NETWORK}
               </Badge>{" "}
               MultiversX Wallet
             </ModalHeader>
@@ -160,7 +160,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                         <WebWalletLoginButton
                           loginButtonText={"Google (xAlias)"}
                           buttonClassName="auth_button"
-                          customWalletAddress={process.env.REACT_APP_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
+                          customWalletAddress={import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
                     </Wrap>
