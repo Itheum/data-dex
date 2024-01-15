@@ -56,7 +56,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [walletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const [dataCatLinkedSession, setDataCatLinkedSession] = useLocalStorage("itm-datacat-linked", null);
   const { address: mxAddress } = useGetAccountInfo();
-  const { appVersion } = useAccountStore();
   const { isLoggedIn: isMxLoggedIn, loginMethod: mxLoginMethod } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [menuItem, setMenuItem] = useState(MENU.LANDING);
@@ -74,10 +73,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
   const [loadingDataCATAccount, setLoadingDataCATAccount] = useState(true);
 
   let path = pathname?.split("/")[pathname?.split("/")?.length - 1]; // handling Route Path
-
-  // const handleLogoutSessionUpdate = () => {
-  //   logout(`${window.location.origin}`, undefined, false);
-  // };
 
   useEffect(() => {
     if (path) {
@@ -101,7 +96,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   }, [chainID]);
 
-  // console.log(appVersion);
   useEffect(() => {
     // Mx authenticated for 1st time or is a reload.
     async function mxSessionInit() {
@@ -128,12 +122,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
     }
   }, [mxAddress]);
 
-  // utility that will reload a component and reset it's state
-  // const handleRfMount = (key: string) => {
-  //   const reRf = { ...rfKeys, [key]: Date.now() };
-  //   setRfKeys(reRf);
-  // };
-
   const handleLogout = () => {
     clearAppSessionsLaunchMode();
     // resetAppContexts();
@@ -147,23 +135,6 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
       mxLogout("/", undefined, false);
     }
   };
-
-  useEffect(() => {
-    const handleAppVersioningLogin = async () => {
-      await sleep(1);
-      const localStorageAppVersion = localStorage.getItem("app-version");
-      console.log(appVersion, localStorageAppVersion);
-      const currentLocalStorageVersion = localStorageAppVersion;
-      if (appVersion !== localStorageAppVersion) {
-        if (isMxLoggedIn) {
-          if (currentLocalStorageVersion !== null) {
-            handleLogout();
-          }
-        }
-      }
-    };
-    handleAppVersioningLogin();
-  }, [isMxLoggedIn]);
 
   const linkOrRefreshDataDATAccount = async (setExplicit?: boolean | undefined) => {
     setLoadingDataCATAccount(true);

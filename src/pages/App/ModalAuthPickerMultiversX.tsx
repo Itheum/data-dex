@@ -35,7 +35,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
-  const appVersion = import.meta.env.VITE_VERSION;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -114,7 +113,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XPORTALAPP);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WalletConnectLoginButton
@@ -127,7 +125,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_DEFI);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <ExtensionLoginButton loginButtonText={"DeFi Wallet"} buttonClassName="auth_button" {...commonProps}></ExtensionLoginButton>
@@ -136,7 +133,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_WEBWALLET);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
@@ -145,7 +141,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_LEDGER);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
@@ -154,7 +149,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XALIAS);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WebWalletLoginButton

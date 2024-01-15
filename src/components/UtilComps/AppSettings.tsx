@@ -7,7 +7,7 @@ import { useLocalStorage } from "libs/hooks";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getApiDataDex, getApiDataMarshal, getSentryProfile } from "libs/utils";
 
-const dataDexVersion = import.meta.env.VITE_VERSION ? `v${import.meta.env.VITE_VERSION}` : "version number unknown";
+const dataDexVersion = import.meta.env.VITE_APP_VERSION ? `v${import.meta.env.VITE_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `${getSentryProfile()}`;
 
 export default function () {
