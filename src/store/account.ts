@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import packageJson from "../../package.json";
 
 type State = {
   itheumBalance: number;
@@ -17,6 +18,6 @@ export const useAccountStore = create<State & Action>((set) => ({
   updateItheumBalance: (value: number) => set(() => ({ itheumBalance: value })),
   accessToken: "",
   updateAccessToken: (value: string) => set(() => ({ accessToken: value })),
-  appVersion: import.meta.env.VITE_VERSION,
+  appVersion: JSON.stringify(packageJson.version),
   updateAppVersion: (newAppVersion) => set({ appVersion: newAppVersion }),
 }));

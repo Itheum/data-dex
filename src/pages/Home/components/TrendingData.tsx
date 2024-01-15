@@ -82,13 +82,7 @@ export const TrendingData: React.FC = () => {
                       {trendingDataNft.title}
                     </Heading>
                     <Text fontSize="lg"> Rating : {trendingDataNft.rating.toFixed(2)} </Text>
-                    <Favourite
-                      chainID={chainID}
-                      tokenIdentifier={trendingDataNft.tokenIdentifier}
-                      bearerToken={
-                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNTBmMGNmOGNjZTUwOTQwN2QyM2ViMzljZTA1MmY1NTgyNTE4MmIzM2VkZTE2OWZkMDlkNmYxNzhjZGYwZmUzNy43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVek1qZzRNakY5.a29652c954674195912af1436883742bc70870fe63e5bcdc3228226fd1bb5f6ff01e7f515d061ba243b5eaa98cf0d2fc72604751c847ec6b7a70556359e76e0d"
-                      }
-                    />
+                    <Favourite chainID={chainID} tokenIdentifier={trendingDataNft.tokenIdentifier} bearerToken={tokenLogin?.nativeAuthToken} />
                   </Stack>
                 </Skeleton>
               </CardBody>
