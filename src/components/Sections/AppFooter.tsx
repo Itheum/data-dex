@@ -6,7 +6,7 @@ import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getSentryProfile } from "libs/utils";
 
-const dataDexVersion = import.meta.env.VITE_VERSION ? `v${import.meta.env.VITE_VERSION}` : "version number unknown";
+const dataDexVersion = import.meta.env.VITE_APP_VERSION ?? "version number unknown";
 const nonProdEnv = `env:${getSentryProfile()}`;
 
 export default function () {

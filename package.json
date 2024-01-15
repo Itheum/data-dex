@@ -34,9 +34,9 @@
     "zustand": "4.4.7"
   },
   "scripts": {
-    "start": "cross-env VITE_VERSION=$npm_package_version vite dev",
-    "build": "cross-env VITE_VERSION=$npm_package_version tsc & vite build",
-    "serve": "cross-env VITE_VERSION=$npm_package_version tsc & vite preview",
+    "start": "vite dev",
+    "build": "tsc & vite build",
+    "serve": "tsc & vite preview",
     "test": "vitest",
     "predeploy": "npm run build",
     "lint": "eslint --ext js,ts,tsx src",
@@ -68,7 +68,6 @@
     "@vitejs/plugin-basic-ssl": "1.0.2",
     "@vitejs/plugin-react": "4.2.1",
     "@vitest/coverage-v8": "1.2.0",
-    "cross-env": "7.0.3",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-react-app": "7.0.1",
