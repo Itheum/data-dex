@@ -8,7 +8,7 @@ function convertDateToDays(time: Date): number {
 }
 
 function PrintNoticeList() {
-  const listString = process.env.REACT_APP_TERMS_CHANGED_NOTICE_SECTIONS_CHANGED;
+  const listString = import.meta.env.VITE_TERMS_CHANGED_NOTICE_SECTIONS_CHANGED;
   const listItems: string[] = listString ? listString.split(",").filter((row) => !!row) : [];
   return <UnorderedList mb="3">{listItems.length > 0 && listItems.map((row, index) => <ListItem key={index}>{row}</ListItem>)}</UnorderedList>;
 }
@@ -18,8 +18,8 @@ export function TermsChangedNoticeModal() {
   const [noticeTimeString, setNoticeTimeString] = useLocalStorage("terms-changed-notice-timestamp", NONE);
 
   useEffect(() => {
-    const startTimeString = process.env.REACT_APP_TERMS_CHANGED_NOTICE_START_TIMESTAMP;
-    const endTimeString = process.env.REACT_APP_TERMS_CHANGED_NOTICE_END_TIMESTAMP;
+    const startTimeString = import.meta.env.VITE_TERMS_CHANGED_NOTICE_START_TIMESTAMP;
+    const endTimeString = import.meta.env.VITE_TERMS_CHANGED_NOTICE_END_TIMESTAMP;
 
     if (startTimeString && endTimeString) {
       try {
@@ -43,7 +43,7 @@ export function TermsChangedNoticeModal() {
   }, [noticeTimeString]);
 
   function onContinue() {
-    const endTimeString = process.env.REACT_APP_TERMS_CHANGED_NOTICE_END_TIMESTAMP;
+    const endTimeString = import.meta.env.VITE_TERMS_CHANGED_NOTICE_END_TIMESTAMP;
     setNoticeTimeString(endTimeString);
     onClose();
   }

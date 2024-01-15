@@ -348,7 +348,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
       const nftstorage = new NFTStorage({
-        token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
+        token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
       });
 
       res = await nftstorage.storeDirectory([image, traits]);

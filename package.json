@@ -17,7 +17,6 @@
     "@sentry/react": "7.88.0",
     "@tanstack/match-sorter-utils": "8.8.4",
     "@tanstack/react-table": "8.10.7",
-    "@testing-library/jest-dom": "6.1.5",
     "@testing-library/react": "14.1.2",
     "@testing-library/user-event": "14.5.1",
     "axios": "1.6.2",
@@ -38,15 +37,12 @@
     "zustand": "4.4.7"
   },
   "scripts": {
-    "start": "REACT_APP_VERSION=$npm_package_version react-app-rewired start",
-    "build": "REACT_APP_VERSION=$npm_package_version react-app-rewired build",
-    "winStart": "cross-env REACT_APP_VERSION=$npm_package_version react-app-rewired start",
-    "winBuild": "cross-env REACT_APP_VERSION=$npm_package_version react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject",
-    "start-flat": "npx http-server -o /flat",
+    "start": "cross-env VITE_VERSION=$npm_package_version vite dev",
+    "build": "cross-env VITE_VERSION=$npm_package_version tsc & vite build",
+    "serve": "cross-env VITE_VERSION=$npm_package_version tsc & vite preview",
+    "test": "vitest",
     "predeploy": "npm run build",
-    "lint": "eslint src --ext .js,.ts,.tsx",
+    "lint": "eslint --ext js,ts,tsx src",
     "format": "prettier --write . && npm run lint -- --fix"
   },
   "repository": {
@@ -73,6 +69,9 @@
     "@types/react-router-dom": "5.3.3",
     "@typescript-eslint/eslint-plugin": "6.14.0",
     "@typescript-eslint/parser": "6.14.0",
+    "@vitejs/plugin-basic-ssl": "1.0.2",
+    "@vitejs/plugin-react": "4.2.1",
+    "@vitest/coverage-v8": "1.2.0",
     "cross-env": "7.0.3",
     "eslint": "8.55.0",
     "eslint-config-prettier": "9.1.0",
@@ -84,11 +83,18 @@
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "jsdom": "^23.2.0",
     "prettier": "3.1.1",
-    "react-app-rewired": "2.2.1",
     "react-error-overlay": "6.0.11",
-    "react-scripts": "5.0.1",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "vite": "5.0.11",
+    "vite-plugin-node-polyfills": "0.19.0",
+    "vite-plugin-svgr": "4.2.0",
+    "vite-tsconfig-paths": "4.2.3",
+    "vitest": "1.2.0"
+  },
+  "resolutions": {
+    "**/*/nth-check": "2.0.1"
   },
   "engines": {
     "node": "18.19.0"
