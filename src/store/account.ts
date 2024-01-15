@@ -17,6 +17,6 @@ export const useAccountStore = create<State & Action>((set) => ({
   updateItheumBalance: (value: number) => set(() => ({ itheumBalance: value })),
   accessToken: "",
   updateAccessToken: (value: string) => set(() => ({ accessToken: value })),
-  appVersion: process.env.REACT_APP_VERSION,
+  appVersion: import.meta.env.VITE_VERSION,
   updateAppVersion: (newAppVersion) => set({ appVersion: newAppVersion }),
 }));
