@@ -32,7 +32,7 @@ export const backendApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_BACKEND_MAINNET_API" : "VITE_ENV_BACKEND_API";
   const defaultUrl = chainID === "1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
 
-  return import.meta[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const gtagGo = (category: string, action: any, label: any, value?: any) => {
@@ -186,14 +186,14 @@ export const getApiDataDex = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_DATADEX_MAINNET_API" : "VITE_ENV_DATADEX_DEVNET_API";
   const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
 
-  return import.meta[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const getApiDataMarshal = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_DATAMARSHAL_MAINNET_API" : "VITE_ENV_DATAMARSHAL_DEVNET_API";
   const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/router/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
 
-  return import.meta[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const getExplorerTrailBlazerURL = (chainID: string) => {

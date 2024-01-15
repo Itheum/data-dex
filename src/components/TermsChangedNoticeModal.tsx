@@ -9,7 +9,7 @@ function convertDateToDays(time: Date): number {
 
 function PrintNoticeList() {
   const listString = import.meta.env.VITE_TERMS_CHANGED_NOTICE_SECTIONS_CHANGED;
-  const listItems: string[] = listString ? listString.split(",").filter((row) => !!row) : [];
+  const listItems: string[] = listString ? listString.split(",").filter((row: any) => !!row) : [];
   return <UnorderedList mb="3">{listItems.length > 0 && listItems.map((row, index) => <ListItem key={index}>{row}</ListItem>)}</UnorderedList>;
 }
 

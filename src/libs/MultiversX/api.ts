@@ -8,14 +8,14 @@ export const getApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
   const defaultUrl = chainID === "1" ? "api.multiversx.com" : "devnet-api.multiversx.com";
 
-  return import.meta[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const getNetworkProvider = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_GATEWAY_MAINNET_KEY" : "VITE_ENV_GATEWAY_DEVNET_KEY";
   const defaultUrl = chainID === "1" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
 
-  const envValue = import.meta[envKey];
+  const envValue = import.meta.env[envKey];
   const isApi = envValue && envValue.includes("api");
   return isApi ? new ApiNetworkProvider(envValue, { timeout: 10000 }) : new ProxyNetworkProvider(envValue || defaultUrl, { timeout: 10000 });
 };
@@ -24,7 +24,7 @@ export const getNetworkProviderCodification = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_GATEWAY_MAINNET_KEY" : "VITE_ENV_GATEWAY_DEVNET_KEY";
   const defaultUrl = chainID === "1" ? "https://gateway.multiversx.com" : "https://devnet-gateway.multiversx.com";
 
-  const envValue = import.meta[envKey];
+  const envValue = import.meta.env[envKey];
   const isApi = envValue && envValue.includes("api");
 
   return isApi ? envValue : envValue || defaultUrl;
