@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { Box, Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack } from "@chakra-ui/react";
+import { Box, Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { FaRegStar } from "react-icons/fa";
+import { Favourite } from "../../../components/Favourite/Favourite";
 
 type TrendingDataCreationNftsType = {
   nonce: number;
@@ -19,6 +21,7 @@ export const TrendingData: React.FC = () => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>([]);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
+  const { tokenLogin } = useGetLoginInfo();
 
   const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
@@ -29,25 +32,24 @@ export const TrendingData: React.FC = () => {
       const _trendingData: Array<TrendingDataCreationNftsType> = [];
       setLoadedOffers(true);
 
-      console.log(getTrendingData);
       getTrendingData.forEach((parseTrendingData) => {
         const splitedString = parseTrendingData.tokenIdentifier.split("-");
         const nonce = parseInt(splitedString[2], 16);
         const tokenIdentifier = splitedString[0] + "-" + splitedString[1];
-        // console.log(tokenIdentifier, nonce);
         _trendingData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_trendingData);
-      console.log(dataNfts);
-      const trending = dataNfts.map((dataNft) => {
-        const ratingNfts = getTrendingData.find((nft) => dataNft.tokenIdentifier === nft.tokenIdentifier);
+      // console.log(dataNfts);
+      const trending = getTrendingData.map((dataNft) => {
+        // console.log(dataNft);
+        const ratingNfts = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);
         if (ratingNfts) {
-          return { ...dataNft, rating: ratingNfts.rating };
+          return { ...ratingNfts, rating: dataNft.rating };
         }
       });
-      console.log(trending);
+      // console.log(trending);
 
-      // setTrendingDataNfts(trending);
+      setTrendingDataNfts(trending as TrendingDataNftsType[]);
     })();
     setLoadedOffers(false);
   }, []);
@@ -79,7 +81,14 @@ export const TrendingData: React.FC = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {trendingDataNft.title}
                     </Heading>
-                    {/*<Text fontSize="md"> Supply Available : {trendingDataNft.supply} </Text>*/}
+                    <Text fontSize="lg"> Rating : {trendingDataNft.rating.toFixed(2)} </Text>
+                    <Favourite
+                      chainID={chainID}
+                      tokenIdentifier={trendingDataNft.tokenIdentifier}
+                      bearerToken={
+                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNTBmMGNmOGNjZTUwOTQwN2QyM2ViMzljZTA1MmY1NTgyNTE4MmIzM2VkZTE2OWZkMDlkNmYxNzhjZGYwZmUzNy43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVek1qZzRNakY5.a29652c954674195912af1436883742bc70870fe63e5bcdc3228226fd1bb5f6ff01e7f515d061ba243b5eaa98cf0d2fc72604751c847ec6b7a70556359e76e0d"
+                      }
+                    />
                   </Stack>
                 </Skeleton>
               </CardBody>

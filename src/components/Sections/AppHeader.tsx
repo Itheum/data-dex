@@ -213,10 +213,18 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             }}>
             <HStack>
               <Image w="45px" ml={{ base: 0, md: 5 }} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading display={{ base: "flex", md: "flex", xl: "flex" }} fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">
-                Itheum&nbsp;
-                <Text fontWeight="700">Data DEX</Text>
-              </Heading>
+              <Flex flexDirection="column" onClick={onClose}>
+                <Heading fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">
+                  Itheum
+                </Heading>
+                <Heading fontSize={{ base: "sm", xl: "lg" }} fontFamily="Clash-Medium" fontWeight="400" color="teal.200" onClick={onClose}>
+                  Data DEX
+                </Heading>
+              </Flex>
+              {/*<Heading display={{ base: "flex", md: "flex", xl: "flex" }} fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">*/}
+              {/*  Itheum&nbsp;*/}
+              {/*  <Text fontWeight="700">Data DEX</Text>*/}
+              {/*</Heading>*/}
             </HStack>
           </Link>
         </HStack>
