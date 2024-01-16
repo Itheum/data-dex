@@ -18,10 +18,10 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   }
 }
 
-export async function getFavoritesFromBackendApi(chainId: string, bearerToken: string): Promise<Favorite[]> {
+export async function getFavoritesFromBackendApi(chainId: string, bearerToken: string): Promise<Array<string>> {
   try {
     const url = `${backendApi(chainId)}/favorites`;
-    const { data } = await axios.get<Favorite[]>(url, {
+    const { data } = await axios.get<Array<string>>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
       headers: {
         Authorization: `Bearer ${bearerToken}`,
@@ -56,13 +56,13 @@ export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: 
   }
 }
 
-export async function removeFavoriteFromBackendApi(chainID: string, id: string, bearerToken: string): Promise<Favorite> {
+export async function removeFavoriteFromBackendApi(chainID: string, tokenIdentifier: string, bearerToken: string): Promise<Favorite> {
   try {
     const url = `${backendApi(chainID)}/removeFavorite`;
     const { data } = await axios.post<Favorite>(
       url,
       {
-        id: id,
+        tokenIdentifier: tokenIdentifier,
       },
       {
         timeout: uxConfig.mxAPITimeoutMs,

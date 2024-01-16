@@ -242,7 +242,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       }
                     />
 
-                    <Route path="tradedata" element={<TradeData />} />
+                    <Route path="mintdata" element={<TradeData />} />
                     {isMxLoggedIn ? (
                       <Route path="enterprise" element={<Outlet />}>
                         <Route path="" element={<Enterprise />} />

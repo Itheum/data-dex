@@ -78,9 +78,9 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.SELL,
-        path: "/tradedata",
-        label: "Trade Data",
-        shortLbl: "Trade",
+        path: "/mintdata",
+        label: "Mint Data",
+        shortLbl: "Mint",
         Icon: RiExchangeFill,
         needToBeLoggedIn: true,
         isHidden: false,

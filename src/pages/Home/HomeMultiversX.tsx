@@ -416,7 +416,6 @@ export default function HomeMultiversX({
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
         </Box>
-        da
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <TrendingData />
         </Box>

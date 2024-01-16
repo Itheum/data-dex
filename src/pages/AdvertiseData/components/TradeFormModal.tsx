@@ -142,7 +142,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               }}
             />
             <Heading as="h4" fontFamily="Clash-Medium" size="lg">
-              Trade a Data Stream as a Data NFT-FT
+              Mint a Data Stream as a Data NFT-FT
             </Heading>
           </HStack>
         </DrawerHeader>

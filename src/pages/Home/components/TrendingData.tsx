@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { getTrendingFromBackendApi } from "../../../libs/MultiversX";
+import { getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Box, Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { FaRegStar } from "react-icons/fa";
 import { Favourite } from "../../../components/Favourite/Favourite";
 
 type TrendingDataCreationNftsType = {
@@ -20,6 +19,7 @@ export const TrendingData: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>([]);
+  const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();
 
@@ -48,11 +48,32 @@ export const TrendingData: React.FC = () => {
         }
       });
       // console.log(trending);
-
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
+      if (tokenLogin?.nativeAuthToken) {
+        const bearerToken =
+          "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNWY1ZDZkZWIwYWZmNGVhYjBjY2Q5MzNlOTNhYzI4YzdmZjBhZTA3MDFmZmY5ZjQ4OGU0NGIyY2Q0NjgyZDAyMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1UTXdOamQ5.16d67174d5ffcec3130a420f4b8b5c93505a74ccbc48d87fd93f88759ba4d37911ae92d8a1f7231cae9552fe633193c0c7a8827465b8b781085bc618f692bc08";
+        const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+        console.log(getFavourites);
+        setFavouriteItems(getFavourites);
+      }
     })();
     setLoadedOffers(false);
   }, []);
+
+  const getFavourite = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const bearerToken =
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNWY1ZDZkZWIwYWZmNGVhYjBjY2Q5MzNlOTNhYzI4YzdmZjBhZTA3MDFmZmY5ZjQ4OGU0NGIyY2Q0NjgyZDAyMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1UTXdOamQ5.16d67174d5ffcec3130a420f4b8b5c93505a74ccbc48d87fd93f88759ba4d37911ae92d8a1f7231cae9552fe633193c0c7a8827465b8b781085bc618f692bc08";
+      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+      console.log(getFavourites);
+      setFavouriteItems(getFavourites);
+    }
+  };
+
+  useEffect(() => {
+    getFavourite();
+  }, [favouriteItems.length]);
+
   console.log(trendingDataNfts);
   return (
     <Box>
@@ -81,8 +102,16 @@ export const TrendingData: React.FC = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium">
                       {trendingDataNft.title}
                     </Heading>
-                    <Text fontSize="lg"> Rating : {trendingDataNft.rating.toFixed(2)} </Text>
-                    <Favourite chainID={chainID} tokenIdentifier={trendingDataNft.tokenIdentifier} bearerToken={tokenLogin?.nativeAuthToken} />
+                    <Text fontSize="lg"> Trending score : {trendingDataNft.rating.toFixed(2)} </Text>
+                    <Favourite
+                      chainID={chainID}
+                      tokenIdentifier={trendingDataNft.tokenIdentifier}
+                      bearerToken={
+                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNWY1ZDZkZWIwYWZmNGVhYjBjY2Q5MzNlOTNhYzI4YzdmZjBhZTA3MDFmZmY5ZjQ4OGU0NGIyY2Q0NjgyZDAyMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1UTXdOamQ5.16d67174d5ffcec3130a420f4b8b5c93505a74ccbc48d87fd93f88759ba4d37911ae92d8a1f7231cae9552fe633193c0c7a8827465b8b781085bc618f692bc08"
+                      }
+                      favouriteItems={favouriteItems}
+                      getFavourites={getFavourite}
+                    />
                   </Stack>
                 </Skeleton>
               </CardBody>
