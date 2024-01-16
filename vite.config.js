@@ -4,11 +4,10 @@ import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import svgrPlugin from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
-import packageJson from "./package.json";
 
 export default defineConfig({
   define: {
-    "import.meta.env.VITE_VERSION": JSON.stringify(packageJson.version),
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(process.env.npm_package_version),
   },
   server: {
     port: Number(process.env.PORT) || 3000,
