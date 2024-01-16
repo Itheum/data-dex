@@ -49,13 +49,6 @@ export const TrendingData: React.FC = () => {
       });
       // console.log(trending);
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
-      if (tokenLogin?.nativeAuthToken) {
-        const bearerToken =
-          "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNWY1ZDZkZWIwYWZmNGVhYjBjY2Q5MzNlOTNhYzI4YzdmZjBhZTA3MDFmZmY5ZjQ4OGU0NGIyY2Q0NjgyZDAyMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1UTXdOamQ5.16d67174d5ffcec3130a420f4b8b5c93505a74ccbc48d87fd93f88759ba4d37911ae92d8a1f7231cae9552fe633193c0c7a8827465b8b781085bc618f692bc08";
-        const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-        console.log(getFavourites);
-        setFavouriteItems(getFavourites);
-      }
     })();
     setLoadedOffers(false);
   }, []);
@@ -63,9 +56,9 @@ export const TrendingData: React.FC = () => {
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken =
-        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNWY1ZDZkZWIwYWZmNGVhYjBjY2Q5MzNlOTNhYzI4YzdmZjBhZTA3MDFmZmY5ZjQ4OGU0NGIyY2Q0NjgyZDAyMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1UTXdOamQ5.16d67174d5ffcec3130a420f4b8b5c93505a74ccbc48d87fd93f88759ba4d37911ae92d8a1f7231cae9552fe633193c0c7a8827465b8b781085bc618f692bc08";
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNDFjMzk0YmVmMDBlMDA1NzMwMGVmOTgyMGEyOTFkNjRjMzFjMjhiODQ3NDlkZGZmNTg4N2E2ZGY4ZTBmMzI1Mi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qUTFNalo5.a0cf820e3f32e1031838ecd2641dd469d0cf6a6f3e14d7ced974c214f6ceeafc9f8ed937f1d35f03192b916ecb4690e08a9ee68c51fe32ae6483e20dbe7a8808";
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      console.log(getFavourites);
+      // console.log(getFavourites);
       setFavouriteItems(getFavourites);
     }
   };
@@ -74,7 +67,7 @@ export const TrendingData: React.FC = () => {
     getFavourite();
   }, [favouriteItems.length]);
 
-  console.log(trendingDataNfts);
+  // console.log(trendingDataNfts);
   return (
     <Box>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
@@ -107,7 +100,7 @@ export const TrendingData: React.FC = () => {
                       chainID={chainID}
                       tokenIdentifier={trendingDataNft.tokenIdentifier}
                       bearerToken={
-                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNWY1ZDZkZWIwYWZmNGVhYjBjY2Q5MzNlOTNhYzI4YzdmZjBhZTA3MDFmZmY5ZjQ4OGU0NGIyY2Q0NjgyZDAyMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1UTXdOamQ5.16d67174d5ffcec3130a420f4b8b5c93505a74ccbc48d87fd93f88759ba4d37911ae92d8a1f7231cae9552fe633193c0c7a8827465b8b781085bc618f692bc08"
+                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNDFjMzk0YmVmMDBlMDA1NzMwMGVmOTgyMGEyOTFkNjRjMzFjMjhiODQ3NDlkZGZmNTg4N2E2ZGY4ZTBmMzI1Mi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qUTFNalo5.a0cf820e3f32e1031838ecd2641dd469d0cf6a6f3e14d7ced974c214f6ceeafc9f8ed937f1d35f03192b916ecb4690e08a9ee68c51fe32ae6483e20dbe7a8808"
                       }
                       favouriteItems={favouriteItems}
                       getFavourites={getFavourite}

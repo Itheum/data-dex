@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
@@ -39,6 +39,8 @@ import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
+import { getFavoritesFromBackendApi } from "../../libs/MultiversX";
+import { FavoriteCards } from "./components/FavoriteCards";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -59,7 +61,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     return _dataNfts;
   });
   const purchasedDataNfts: DataNftType[] = dataNfts.filter((item) => item.creator != address);
-
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
@@ -67,7 +68,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   const onChangeTab = useThrottle((newTabState: number) => {
-    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : ""}`);
+    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : ""}`);
   }, /* delay: */ 500);
 
   const walletTabs = [
@@ -86,7 +87,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     {
       tabName: "Favorite",
       icon: MdFavoriteBorder,
-      isDisabled: true,
+      isDisabled: false,
     },
     {
       tabName: "Activity",
@@ -251,7 +252,15 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Flex>
               )}
             </TabPanel>
-            <TabPanel>Nothing here yet...</TabPanel>
+            <TabPanel mt={2} width={"full"}>
+              {tabState === 3 && dataNfts.length > 0 ? (
+                <FavoriteCards dataNfts={dataNfts} />
+              ) : (
+                <Flex onClick={getOnChainNFTs}>
+                  <NoDataHere />
+                </Flex>
+              )}
+            </TabPanel>
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>

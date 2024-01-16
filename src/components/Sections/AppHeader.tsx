@@ -107,7 +107,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.GETWHITELISTED,
         path: "/getwhitelisted",
         label: "Get Whitelisted to Mint Data NFTs",
-        shortLbl: "Get Whitelisted to Mint Data NFTs",
+        shortLbl: "Get Whitelisted",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
