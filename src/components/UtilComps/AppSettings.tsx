@@ -7,7 +7,7 @@ import { useLocalStorage } from "libs/hooks";
 import { getApi, getNetworkProvider, getNetworkProviderCodification } from "libs/MultiversX/api";
 import { getApiDataDex, getApiDataMarshal, getSentryProfile } from "libs/utils";
 
-const dataDexVersion = process.env.REACT_APP_VERSION ? `v${process.env.REACT_APP_VERSION}` : "version number unknown";
+const dataDexVersion = import.meta.env.VITE_APP_VERSION ? `v${import.meta.env.VITE_APP_VERSION}` : "version number unknown";
 const nonProdEnv = `${getSentryProfile()}`;
 
 export default function () {
@@ -52,27 +52,27 @@ export default function () {
                 Env Vars
               </Heading>
               <Box fontSize="sm">
-                <Text>REACT_APP_ENV_SENTRY_DSN : {maskOutputString(process.env.REACT_APP_ENV_SENTRY_DSN, 10, 5)}</Text>
-                <Text>REACT_APP_ENV_NFT_STORAGE_KEY : {maskOutputString(process.env.REACT_APP_ENV_NFT_STORAGE_KEY, 10, 10)}</Text>
-                <Text>REACT_APP_ENV_WALLETCONNECTV2_PROJECTID : {maskOutputString(process.env.REACT_APP_ENV_WALLETCONNECTV2_PROJECTID, 5, 5)}</Text>
-                <Text>REACT_APP_ENV_NETWORK : {process.env.REACT_APP_ENV_NETWORK}</Text>
+                <Text>VITE_ENV_SENTRY_DSN : {maskOutputString(import.meta.env.VITE_ENV_SENTRY_DSN, 10, 5)}</Text>
+                <Text>VITE_ENV_NFT_STORAGE_KEY : {maskOutputString(import.meta.env.VITE_ENV_NFT_STORAGE_KEY, 10, 10)}</Text>
+                <Text>VITE_ENV_WALLETCONNECTV2_PROJECTID : {maskOutputString(import.meta.env.VITE_ENV_WALLETCONNECTV2_PROJECTID, 5, 5)}</Text>
+                <Text>VITE_ENV_NETWORK : {import.meta.env.VITE_ENV_NETWORK}</Text>
                 <br />
-                <Text>REACT_APP_ENV_GATEWAY_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_DEVNET_KEY, 15, 10)}</Text>
-                <Text>REACT_APP_ENV_API_DEVNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_DEVNET_KEY, 5, 5)}</Text>
-                <Text>REACT_APP_ENV_DATADEX_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_DEVNET_API, 26, 5)}</Text>
-                <Text>REACT_APP_ENV_DATAMARSHAL_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_DEVNET_API, 26, 5)}</Text>
+                <Text>VITE_ENV_GATEWAY_DEVNET_KEY : {maskOutputString(import.meta.env.VITE_ENV_GATEWAY_DEVNET_KEY, 15, 10)}</Text>
+                <Text>VITE_ENV_API_DEVNET_KEY : {maskOutputString(import.meta.env.VITE_ENV_API_DEVNET_KEY, 5, 5)}</Text>
+                <Text>VITE_ENV_DATADEX_DEVNET_API : {maskOutputString(import.meta.env.VITE_ENV_DATADEX_DEVNET_API, 26, 5)}</Text>
+                <Text>VITE_ENV_DATAMARSHAL_DEVNET_API : {maskOutputString(import.meta.env.VITE_ENV_DATAMARSHAL_DEVNET_API, 26, 5)}</Text>
                 <br />
-                <Text>REACT_APP_ENV_GATEWAY_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_GATEWAY_MAINNET_KEY, 10, 10)}</Text>
-                <Text>REACT_APP_ENV_API_MAINNET_KEY : {maskOutputString(process.env.REACT_APP_ENV_API_MAINNET_KEY, 5, 5)}</Text>
-                <Text>REACT_APP_ENV_DATADEX_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATADEX_MAINNET_API, 26, 5)}</Text>
-                <Text>REACT_APP_ENV_DATAMARSHAL_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_DATAMARSHAL_MAINNET_API, 26, 5)}</Text>
+                <Text>VITE_ENV_GATEWAY_MAINNET_KEY : {maskOutputString(import.meta.env.VITE_ENV_GATEWAY_MAINNET_KEY, 10, 10)}</Text>
+                <Text>VITE_ENV_API_MAINNET_KEY : {maskOutputString(import.meta.env.VITE_ENV_API_MAINNET_KEY, 5, 5)}</Text>
+                <Text>VITE_ENV_DATADEX_MAINNET_API : {maskOutputString(import.meta.env.VITE_ENV_DATADEX_MAINNET_API, 26, 5)}</Text>
+                <Text>VITE_ENV_DATAMARSHAL_MAINNET_API : {maskOutputString(import.meta.env.VITE_ENV_DATAMARSHAL_MAINNET_API, 26, 5)}</Text>
                 <br />
-                <Text>REACT_APP_MAX_BUY_LIMIT_PER_SFT : {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT}</Text>
-                <Text>REACT_APP_MAX_LIST_LIMIT_PER_SFT : {process.env.REACT_APP_MAX_LIST_LIMIT_PER_SFT}</Text>
-                <Text>REACT_APP_ENV_BACKEND_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_API, 10, 10)}</Text>
-                <Text>REACT_APP_ENV_BACKEND_DEVNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_DEVNET_API, 26, 5)}</Text>
-                <Text>REACT_APP_ENV_BACKEND_MAINNET_API : {maskOutputString(process.env.REACT_APP_ENV_BACKEND_MAINNET_API, 26, 5)}</Text>
-                <Text>REACT_APP_LOADING_DELAY_SECONDS : {process.env.REACT_APP_LOADING_DELAY_SECONDS}</Text>
+                <Text>VITE_MAX_BUY_LIMIT_PER_SFT : {import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT}</Text>
+                <Text>VITE_MAX_LIST_LIMIT_PER_SFT : {import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT}</Text>
+                <Text>VITE_ENV_BACKEND_API : {maskOutputString(import.meta.env.VITE_ENV_BACKEND_API, 10, 10)}</Text>
+                <Text>VITE_ENV_BACKEND_DEVNET_API : {maskOutputString(import.meta.env.VITE_ENV_BACKEND_DEVNET_API, 26, 5)}</Text>
+                <Text>VITE_ENV_BACKEND_MAINNET_API : {maskOutputString(import.meta.env.VITE_ENV_BACKEND_MAINNET_API, 26, 5)}</Text>
+                <Text>VITE_LOADING_DELAY_SECONDS : {import.meta.env.VITE_LOADING_DELAY_SECONDS}</Text>
               </Box>
             </Box>
 
