@@ -368,7 +368,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <Link as={ReactRouterLink} to={"/"}>
                   <IconButton
                     display={{ base: "none", md: "inline-flex" }}
-                    size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                    size={{ md: "md", xl: "md", "2xl": "lg" }}
                     p="2 !important"
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
@@ -404,7 +404,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <MenuButton
                   as={IconButton}
                   aria-label="Options"
-                  size={{ base: "sm", lg: "lg" }}
+                  size={{ md: "md", xl: "md", "2xl": "lg" }}
                   p="2 !important"
                   color="teal.200"
                   icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}

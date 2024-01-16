@@ -3,7 +3,7 @@ import { getFavoritesFromBackendApi } from "../../../libs/MultiversX";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { Box, Card, CardBody, Flex, Heading, Image, Link, SimpleGrid, Skeleton, Stack } from "@chakra-ui/react";
+import { Box, Card, CardBody, Flex, Heading, Image, Link, Text, Skeleton, Stack } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 
@@ -69,7 +69,7 @@ export const FavoriteCards: React.FC = () => {
               border=".01rem solid transparent"
               borderColor="#00C79740"
               borderRadius="0.75rem">
-              <CardBody mb={7}>
+              <CardBody mb={9}>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${dataNft.tokenIdentifier}`} as={ReactRouterLink}>
                     <Image src={dataNft.nftImgUrl} alt="Data NFT Image" borderRadius="lg" boxSize={{ base: "250px", md: "200px" }} />
@@ -80,9 +80,9 @@ export const FavoriteCards: React.FC = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium" pt={2}>
                       {dataNft.title}
                     </Heading>
-                    <Heading size="sm" noOfLines={2} color="gray" fontFamily="Satoshi-Regular">
+                    <Text fontSize="md" noOfLines={2} color="gray">
                       {dataNft.description}
-                    </Heading>
+                    </Text>
                     <Favourite
                       chainID={chainID}
                       tokenIdentifier={dataNft.tokenIdentifier}
