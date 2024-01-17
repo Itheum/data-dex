@@ -55,8 +55,7 @@ export const TrendingData: React.FC = () => {
 
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
-      const bearerToken =
-        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
+      const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites);
       setFavouriteItems(getFavourites);
@@ -99,9 +98,7 @@ export const TrendingData: React.FC = () => {
                     <Favourite
                       chainID={chainID}
                       tokenIdentifier={trendingDataNft.tokenIdentifier}
-                      bearerToken={
-                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a"
-                      }
+                      bearerToken={tokenLogin?.nativeAuthToken}
                       favouriteItems={favouriteItems}
                       getFavourites={getFavourite}
                     />

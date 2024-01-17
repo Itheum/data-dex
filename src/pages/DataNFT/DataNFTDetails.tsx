@@ -56,7 +56,6 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils/util";
 import { useMarketStore } from "store";
 import PreviewDataButton from "components/PreviewDataButton";
 import { Favourite } from "../../components/Favourite/Favourite";
@@ -116,8 +115,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
-      const bearerToken =
-        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
+      const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites);
       setFavouriteItems(getFavourites);
@@ -336,9 +334,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         <Favourite
                           chainID={chainID}
                           tokenIdentifier={nftData.identifier}
-                          bearerToken={
-                            "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuZjUxMTI5OGEyMjZjYWUwOGZmYjk2ZDJhMzI1MjZiNTE2ZjM2MjU2MjVkODQ5YTM0ODE4OTQ1YjZjNTc5ZTQyYi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVMU1ESXlOVFY5.e659752238f48e740f8fbfa2f69894c462f764f55eebc162e48eb209b61f1176cee5cb44f612ae01e9905a9f12597f7f2fac84d86278aa65685423b7f1021c0c"
-                          }
+                          bearerToken={tokenLogin?.nativeAuthToken}
                           favouriteItems={favouriteItems}
                           getFavourites={getFavourite}
                         />
