@@ -24,22 +24,24 @@ export const FavoriteCards: React.FC = () => {
   useEffect(() => {
     (async () => {
       DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
-      const bearerToken = tokenLogin?.nativeAuthToken;
-      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
-      setFavouriteItems(getFavourites);
-      const _favoriteData: Array<FavoriteDataCreationNftsType> = [];
-      setLoadedOffers(true);
+      if (tokenLogin?.nativeAuthToken) {
+        const bearerToken = tokenLogin.nativeAuthToken;
+        const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+        // console.log(getFavourites);
+        setFavouriteItems(getFavourites);
+        const _favoriteData: Array<FavoriteDataCreationNftsType> = [];
+        setLoadedOffers(true);
 
-      getFavourites.forEach((parseTrendingData) => {
-        const splitedString = parseTrendingData.split("-");
-        const nonce = parseInt(splitedString[2], 16);
-        const tokenIdentifier = splitedString[0] + "-" + splitedString[1];
-        _favoriteData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
-      });
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(_favoriteData);
-      console.log(dataNfts);
-      setDataNfts(dataNfts);
+        getFavourites.forEach((parseTrendingData) => {
+          const splitedString = parseTrendingData.split("-");
+          const nonce = parseInt(splitedString[2], 16);
+          const tokenIdentifier = splitedString[0] + "-" + splitedString[1];
+          _favoriteData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
+        });
+        const dataNfts: DataNft[] = await DataNft.createManyFromApi(_favoriteData);
+        console.log(dataNfts);
+        setDataNfts(dataNfts);
+      }
     })();
     setLoadedOffers(false);
   }, [favouriteItems.length]);

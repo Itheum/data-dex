@@ -39,7 +39,6 @@ import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { getFavoritesFromBackendApi } from "../../libs/MultiversX";
 import { FavoriteCards } from "./components/FavoriteCards";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
