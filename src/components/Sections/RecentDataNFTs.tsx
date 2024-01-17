@@ -5,7 +5,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
 import { Link as ReactRouterLink } from "react-router-dom";
-import { getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
+import { getFavoritesFromBackendApi, getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
@@ -13,6 +13,7 @@ import { DataNftCondensedView } from "libs/MultiversX/types";
 import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
+import { Favourite } from "../Favourite/Favourite";
 
 const latestOffersSkeleton: DataNftCondensedView[] = [];
 
@@ -40,7 +41,9 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   const { chainID } = useGetNetworkConfig();
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
-
+  const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
+  const { tokenLogin } = useGetLoginInfo();
+  console.log(latestOffers);
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const marketContract = new DataNftMarketContract(chainID);
@@ -48,7 +51,18 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
 
   useEffect(() => {
     apiWrapper();
+    getFavourite();
   }, [marketRequirements]);
+
+  const getFavourite = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const bearerToken =
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
+      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+      // console.log(getFavourites);
+      setFavouriteItems(getFavourites);
+    }
+  };
 
   const apiWrapper = async () => {
     DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
@@ -156,7 +170,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
         {latestOffers.map((item: DataNftCondensedView, idx: number) => {
           return (
             <Card key={idx} maxW="sm" variant="outline" backgroundColor="none" border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
-              <CardBody>
+              <CardBody pb={10}>
                 <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                   <Link to={`/datanfts/marketplace/${item.data_nft_id}/offer-${item.offer_index}`} as={ReactRouterLink}>
                     <Image src={item.nftImgUrl} alt="Data NFT Image" borderRadius="lg" h={{ base: "250px", md: "200px" }} />
@@ -169,6 +183,15 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                     </Heading>
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>
                     <Text fontSize="sm">Unlock for {item.feePerSFT === 0 ? "Free" : `${item.feePerSFT} ITHEUM/NFT`}</Text>
+                    <Favourite
+                      chainID={chainID}
+                      tokenIdentifier={item.data_nft_id}
+                      bearerToken={
+                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a"
+                      }
+                      favouriteItems={favouriteItems}
+                      getFavourites={getFavourite}
+                    />
                   </Stack>
                 </Skeleton>
               </CardBody>

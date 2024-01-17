@@ -56,7 +56,7 @@ export const TrendingData: React.FC = () => {
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken =
-        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNDFjMzk0YmVmMDBlMDA1NzMwMGVmOTgyMGEyOTFkNjRjMzFjMjhiODQ3NDlkZGZmNTg4N2E2ZGY4ZTBmMzI1Mi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qUTFNalo5.a0cf820e3f32e1031838ecd2641dd469d0cf6a6f3e14d7ced974c214f6ceeafc9f8ed937f1d35f03192b916ecb4690e08a9ee68c51fe32ae6483e20dbe7a8808";
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites);
       setFavouriteItems(getFavourites);
@@ -100,7 +100,7 @@ export const TrendingData: React.FC = () => {
                       chainID={chainID}
                       tokenIdentifier={trendingDataNft.tokenIdentifier}
                       bearerToken={
-                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNDFjMzk0YmVmMDBlMDA1NzMwMGVmOTgyMGEyOTFkNjRjMzFjMjhiODQ3NDlkZGZmNTg4N2E2ZGY4ZTBmMzI1Mi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qUTFNalo5.a0cf820e3f32e1031838ecd2641dd469d0cf6a6f3e14d7ced974c214f6ceeafc9f8ed937f1d35f03192b916ecb4690e08a9ee68c51fe32ae6483e20dbe7a8808"
+                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a"
                       }
                       favouriteItems={favouriteItems}
                       getFavourites={getFavourite}

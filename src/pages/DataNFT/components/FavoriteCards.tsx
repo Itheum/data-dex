@@ -25,7 +25,7 @@ export const FavoriteCards: React.FC = () => {
     (async () => {
       DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
       const bearerToken =
-        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNDFjMzk0YmVmMDBlMDA1NzMwMGVmOTgyMGEyOTFkNjRjMzFjMjhiODQ3NDlkZGZmNTg4N2E2ZGY4ZTBmMzI1Mi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qUTFNalo5.a0cf820e3f32e1031838ecd2641dd469d0cf6a6f3e14d7ced974c214f6ceeafc9f8ed937f1d35f03192b916ecb4690e08a9ee68c51fe32ae6483e20dbe7a8808";
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites);
       setFavouriteItems(getFavourites);
@@ -48,7 +48,7 @@ export const FavoriteCards: React.FC = () => {
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken =
-        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuYTYwZjQ1MGZmNGYzYzNlMDBlODI5NmIxY2NhYTczZjI0NGM0OWM5N2Y2NDcyMjAyYWVkZTBiMjA0NmEyNmIzMi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qQTRNVEI5.6b2138f624bd53eed793ecd8c9a6b7d8b7bb4b85873de8415e9bf1135fd4e82a97c5325774d3b7ff7f92b2052728e580df1103fb193f9751efb22a30ad4b9909";
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites);
       setFavouriteItems(getFavourites);
@@ -58,12 +58,12 @@ export const FavoriteCards: React.FC = () => {
   console.log(dataNfts);
   return (
     <Box>
-      <Flex flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"} gap={4}>
+      <Flex flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"} gap={7} ml={16}>
         {dataNfts.map((dataNft, index) => {
           return (
             <Card
               key={index}
-              maxW={"xs"}
+              w={"xs"}
               variant="outline"
               backgroundColor="none"
               border=".01rem solid transparent"
@@ -80,14 +80,14 @@ export const FavoriteCards: React.FC = () => {
                     <Heading size="md" noOfLines={1} fontFamily="Clash-Medium" pt={2}>
                       {dataNft.title}
                     </Heading>
-                    <Text fontSize="md" noOfLines={2} color="gray">
+                    <Text fontSize="md" noOfLines={2} h="2.6rem" color="gray">
                       {dataNft.description}
                     </Text>
                     <Favourite
                       chainID={chainID}
                       tokenIdentifier={dataNft.tokenIdentifier}
                       bearerToken={
-                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuNDFjMzk0YmVmMDBlMDA1NzMwMGVmOTgyMGEyOTFkNjRjMzFjMjhiODQ3NDlkZGZmNTg4N2E2ZGY4ZTBmMzI1Mi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME1qUTFNalo5.a0cf820e3f32e1031838ecd2641dd469d0cf6a6f3e14d7ced974c214f6ceeafc9f8ed937f1d35f03192b916ecb4690e08a9ee68c51fe32ae6483e20dbe7a8808"
+                        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a"
                       }
                       favouriteItems={favouriteItems}
                       getFavourites={getFavourite}
