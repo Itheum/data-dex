@@ -2,10 +2,8 @@ import React, { FC, useEffect, useState } from "react";
 import { Icon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
   Checkbox,
   CloseButton,
-  Container,
   Flex,
   Heading,
   HStack,
@@ -42,11 +40,11 @@ import ConditionalRender from "components/UtilComps/ApiWrapper";
 import UpperCardComponent from "components/UtilComps/UpperCardComponent";
 import useThrottle from "components/UtilComps/UseThrottle";
 
-import { getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
+import { getOfersAsCollectionFromBackendApi, getOffersCountFromBackendApi, getOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftCollectionType, DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
@@ -96,12 +94,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
-  const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(false);
-
-  const [nonceOfferMap, setNonceOfferMap] = useState<Map<number, OfferType>>(new Map<number, OfferType>()); // a dictionary-> nonce => dataNft (lowest price)
-  const [groupedMetadatas, setGroupedMetadatas] = useState<DataNftMetadataType[]>([]);
-
-  const [currentPageGroupedOffers, setCurrentPageGroupedOffers] = useState<OfferType[]>([]);
+  const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
+  console.log("SHOW", showGroupedDataNfts);
+  const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
 
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
@@ -116,55 +111,21 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   });
 
   const groupDataNfts = () => {
-    if (!showGroupedDataNfts) {
-      (async () => {
-        if (hasPendingTransactions) return;
-        if (!chainID) return;
+    if (groupedOffers.length > 0) return;
+    (async () => {
+      if (hasPendingTransactions) return;
+      if (!chainID) return;
 
-        // start loading offers
-        updateLoadingOffers(true);
+      // start loading offers
+      updateLoadingOffers(true);
 
-        let _offers: OfferType[] = [];
-        const start = 0;
-        if (isApiUp && isMarketplaceApiUp) {
-          _offers = await getOffersFromBackendApi(chainID, start, publicMarketCount, undefined);
-        } else {
-          return;
-        }
-        /// populate the map with the best choice(price-wise) from each nonce
-        const _nonceOfferMap = new Map<number, OfferType>();
-        _offers.forEach((offer) => {
-          if (_nonceOfferMap.has(offer.offered_token_nonce)) {
-            const previousOffer = _nonceOfferMap.get(offer.offered_token_nonce);
+      let _offers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
 
-            if (previousOffer?.wanted_token_amount && parseFloat(offer.wanted_token_amount) < parseFloat(previousOffer?.wanted_token_amount)) {
-              if (offer.wanted_token_amount) _nonceOfferMap.set(offer.offered_token_nonce, offer);
-            }
-          } else {
-            _nonceOfferMap.set(offer.offered_token_nonce, offer);
-          }
-        });
+      _offers = _offers.filter((offer) => offer.minOffer && offer.minOffer !== null);
+      setGroupedOffers(_offers);
 
-        setNonceOfferMap(_nonceOfferMap);
-
-        ///get nftMetadatas for the grouped offers
-        setNftMetadatasLoading(true);
-        const nftIds = Array.from(_nonceOfferMap.entries()).map(([nonce, offer]) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
-        const _nfts = await getNftsByIds(nftIds, chainID);
-        const _metadatas: DataNftMetadataType[] = [];
-        for (let i = 0; i < _nfts.length; i++) {
-          _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
-        }
-        setGroupedMetadatas(_metadatas);
-        setCurrentPageGroupedOffers(Array.from(_nonceOfferMap.values()));
-
-        setNftMetadatasLoading(false);
-
-        updateLoadingOffers(false);
-      })();
-    }
-
-    setShowGroupedDataNfts(!showGroupedDataNfts);
+      updateLoadingOffers(false);
+    })();
   };
 
   useEffect(() => {
@@ -175,13 +136,18 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, []);
 
   useEffect(() => {
+    if (showGroupedDataNfts) {
+      groupDataNfts();
+    }
+  }, [showGroupedDataNfts]);
+
+  useEffect(() => {
     (async () => {
       if (hasPendingTransactions) return;
 
       if (isApiUp) {
         const publicCount = await getOffersCountFromBackendApi(chainID);
         const listedCount = await getOffersCountFromBackendApi(chainID, address);
-
         setMyListedCount(listedCount);
         setPublicMarketCount(publicCount);
       }
@@ -241,9 +207,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     })();
   }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
-  function openNftDetailsModal(index: number) {
-    if (showGroupedDataNfts) setOfferForDrawer(currentPageGroupedOffers[index]);
-    else setOfferForDrawer(offers[index]);
+  async function openNftDetailsModal(index: number) {
+    if (showGroupedDataNfts) {
+      setOfferForDrawer(groupedOffers[index].minOffer);
+    } else {
+      setOfferForDrawer(offers[index]);
+    }
     onOpenDataNftDetails();
   }
 
@@ -306,6 +275,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     }
   }, [pendingTransactions]);
 
+  console.log("Offers", offers);
+
   return (
     <>
       <Stack>
@@ -357,7 +328,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                   fontSize={{ base: "sm", md: "md" }}
                   onClick={() => {
                     if (hasPendingTransactions) return;
-                    setShowGroupedDataNfts(false);
+
                     navigate("/datanfts/marketplace/my");
                   }}>
                   {isMxLoggedIn && (
@@ -386,10 +357,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
               <Flex pr={{ lg: "10" }} gap={{ base: "5", lg: "20" }} ml={{ base: "1.7rem", xl: 0 }}>
                 {!window.location.href.includes("my") && (
-                  <Checkbox onChange={groupDataNfts} colorScheme={"teal"} onClick={groupDataNfts}>
-                    <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view data NFTs as collections">
+                  <Checkbox isChecked={!showGroupedDataNfts} onChange={() => setShowGroupedDataNfts(!showGroupedDataNfts)} colorScheme={"teal"}>
+                    <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view all data NFTs ">
                       <HStack spacing="10px" width={"100%"}>
-                        <Text> Group by collection </Text>
+                        <Text align="center"> Show all offers </Text>
                         <Stack>
                           <MdOutlineInfo color={"teal"} />
                         </Stack>
@@ -397,9 +368,14 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     </Tooltip>
                   </Checkbox>
                 )}
-                {!showGroupedDataNfts && (
-                  <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
-                )}
+                {
+                  <CustomPagination
+                    pageCount={showGroupedDataNfts ? 1 : pageCount}
+                    pageIndex={showGroupedDataNfts ? 0 : pageIndex}
+                    gotoPage={onGotoPage}
+                    disabled={hasPendingTransactions}
+                  />
+                }
               </Flex>
             </TabList>
 
@@ -430,23 +406,24 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
                           </UpperCardComponent>
                         ))
-                      : Array.from(nonceOfferMap.entries()).map(([nonce, offer], index) => {
+                      : Array.from(groupedOffers.entries()).map(([nonce, offer], index) => {
                           return (
                             <DataNftCollection
                               key={index}
                               index={index}
                               nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                              imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
-                              title={groupedMetadatas[index]?.title}
-                              description={groupedMetadatas[index]?.description}
+                              imageUrl={offer.nftImgUrl}
+                              title={offer.title}
+                              description={offer.description}
                               floorPrice={convertWeiToEsdt(
-                                offer.wanted_token_amount as BigNumber.Value,
-                                tokenDecimals(offer.wanted_token_identifier)
+                                offer.minOffer.wanted_token_amount as BigNumber.Value,
+                                tokenDecimals(offer.minOffer.wanted_token_identifier)
                               ).toNumber()}
-                              listed={offer?.quantity}
+                              listed={offer.minOffer?.quantity}
                               openNftDetailsDrawer={openNftDetailsModal}
-                              supply={groupedMetadatas[index]?.supply}
-                              dataPreview={groupedMetadatas[index]?.dataPreview}></DataNftCollection>
+                              supply={offer?.supply}
+                              dataPreview={offer?.dataPreview}
+                            />
                           );
                         })}
                   </SimpleGrid>
@@ -486,7 +463,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             /* show bottom pagination only if offers exist */
             offers.length > 0 && !showGroupedDataNfts && (
               <Flex justifyContent={{ base: "center", md: "center" }} py="5">
-                <CustomPagination pageCount={pageCount} pageIndex={pageIndex} gotoPage={onGotoPage} disabled={hasPendingTransactions} />
+                <CustomPagination
+                  pageCount={showGroupedDataNfts ? 1 : pageCount}
+                  pageIndex={showGroupedDataNfts ? 0 : pageIndex}
+                  gotoPage={onGotoPage}
+                  disabled={hasPendingTransactions}
+                />
               </Flex>
             )
           }

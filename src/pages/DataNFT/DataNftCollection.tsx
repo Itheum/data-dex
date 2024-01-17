@@ -47,6 +47,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
       alignItems={"start"}
       justifyContent={"center"}
       marginLeft={{ base: "-140px", sm: "0px" }}
+      marginBottom={{ base: "-100px", sm: "-80px", md: "-60px", xl: "0px" }}
       marginTop={{ base: "-100px", md: "0px" }}>
       <HStack
         borderRadius="12px"
@@ -59,24 +60,24 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
         height={"450px"}
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
-          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="28px" color="#FFFFFF">
+          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="28px">
             {title}
           </Text>
           <Stack overflow={"hidden"} w={"100%"} h={"25%"}>
-            <Text overflow="hidden" textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" color="#FFFFFF" maxWidth="100%">
+            <Text overflow="hidden" textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
               {description}
             </Text>
           </Stack>
 
           <HStack>
-            <Text opacity=".7" fontFamily="Satoshi-Regular" color="#FFFFFF" maxWidth="100%">
+            <Text opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
               Total supply: {supply}
             </Text>
-            <Text ml={"1rem"} opacity=".7" fontFamily="Satoshi-Regular" color="#FFFFFF" maxWidth="100%">
+            <Text ml={"1rem"} opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
               Listed: {listed}
             </Text>
           </HStack>
-          <Text opacity="1" fontFamily="Satoshi-Regular" color="#FFFFFF" maxWidth="100%">
+          <Text opacity="1" fontFamily="Satoshi-Regular" maxWidth="100%">
             Floor price: {floorPrice} ITHEUM {floorPrice && itheumPrice ? `(~${convertToLocalString(floorPrice * itheumPrice, 2)} USD)` : ""}
           </Text>
           <Stack padding="8px" borderRadius="8px" direction="row" justify="center" align="center" spacing="10px" background="rgba(226, 174, 234, 0.1)">
@@ -108,11 +109,10 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
               borderTopWidth="1px"
               borderBottomWidth="1px"
               isDisabled={!shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}
-              _disabled={{ opacity: 0.2 }}
               onClick={() => {
                 window.open(dataPreview);
               }}>
-              <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#00C797" textAlign="center">
+              <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" textAlign="center">
                 Preview Data
               </Text>
             </Button>
@@ -128,7 +128,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             mt={"-0.5rem"}
             zIndex={11}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -143,7 +142,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={10}
             mt={"-1rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -158,7 +156,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={9}
             mt={"-1.5rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -173,7 +170,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={8}
             mt={"-2rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -188,7 +184,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={7}
             mt={"-2.5rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -203,7 +198,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={6}
             mt={"-3.0rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -218,7 +212,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={5}
             mt={"-3.5rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -233,7 +226,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={4}
             mt={"-4rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -248,7 +240,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={3}
             mt={"-4.5rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
@@ -263,58 +254,10 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             zIndex={3}
             mt={"-5rem"}
             borderRadius="32px"
-            // onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
               currentTarget.src = DEFAULT_NFT_IMAGE;
             }}
           />
-
-          {/* <Box opacity="0.3">
-            <Box>
-              <Stack width="236px" height="236px" borderStartWidth="2.95px" borderEndWidth="2.95px" borderTopWidth="2.95px" borderBottomWidth="2.95px" />
-            </Box>
-            <Box>
-              <Stack width="236px" height="236px">
-                <Stack
-                  borderRadius="31.47px"
-                  width="182.9px"
-                  height="182.9px"
-                  background="rgba(8, 18, 53, 0.01)"
-                  boxShadow="0px 8.85px 31.47px 0px rgba(255, 0, 203, 0.5)"
-                />
-              </Stack>
-            </Box>
-            <Box>
-              <Stack width="236px" height="236px">
-                <Stack
-                  borderRadius="31.47px"
-                  borderColor="#FF9FCD"
-                  borderStartWidth="2.95px"
-                  borderEndWidth="2.95px"
-                  borderTopWidth="2.95px"
-                  borderBottomWidth="2.95px"
-                  width="182.9px"
-                  height="182.9px"
-                  background="#FF439D"
-                />
-              </Stack>
-            </Box>
-            <Box>
-              <Stack width="236px" height="236px">
-                <Box width="153.4px" height="153.4px" />
-              </Stack>
-            </Box>
-            <Box>
-              <Stack width="236px" height="236px">
-                <Box width="182.9px" height="182.9px" />
-              </Stack>
-            </Box>
-            <Box>
-              <Stack width="70.8px" height="70.8px">
-                <Stack width="52.12px" height="52.12px" />
-              </Stack>
-            </Box>
-          </Box>  */}
         </VStack>
       </HStack>
     </Skeleton>
