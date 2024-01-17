@@ -42,7 +42,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
+import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
@@ -59,6 +59,7 @@ import {
 import { shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils/util";
 import { useMarketStore } from "store";
 import PreviewDataButton from "components/PreviewDataButton";
+import { Favourite } from "../../components/Favourite/Favourite";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -71,7 +72,7 @@ type DataNFTDetailsProps = {
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { chainID } = useGetNetworkConfig();
-  const { loginMethod, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { tokenLogin, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -108,9 +109,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
 
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+
+  const getFavourite = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const bearerToken =
+        "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuOGFiMWUyNjk1OWFjOGJhNWNiNWQwOTlmM2RlMWRlZDY0MzhjMTgwMDlmNGFiMzlkZDcwZTUxYTY3MTg5NDU2Ny43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVME9UVTFPVEo5.dbde070ded2abfe9f31d51e3af5f0c28d8eb0f1f1b63d2f75d0e139b38140d231fa5710765eafe136723e754fb6000f16d822b22c48f5306c78b208404b93c0a";
+      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+      // console.log(getFavourites);
+      setFavouriteItems(getFavourites);
+    }
+  };
 
   useTrackTransactionStatus({
     transactionId: sessionId,
@@ -146,6 +158,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     getTokenDetails();
     getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
+    getFavourite();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
@@ -315,11 +328,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
-                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
+                      <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
                         <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
                           {nftData.identifier}
                           <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
+                        <Favourite
+                          chainID={chainID}
+                          tokenIdentifier={nftData.identifier}
+                          bearerToken={
+                            "ZXJkMTdlZzQzcjN4dmVudWMweWF5YXVocWYwNjZsdW01MnBobnl0dncwdG52eTY3N3VwN2NhZXNlN2d2M2c.YUhSMGNITTZMeTkxZEdsc2N5NXRkV3gwYVhabGNuTjRMbU52YlEuZjUxMTI5OGEyMjZjYWUwOGZmYjk2ZDJhMzI1MjZiNTE2ZjM2MjU2MjVkODQ5YTM0ODE4OTQ1YjZjNTc5ZTQyYi43MjAwLmV5SjBhVzFsYzNSaGJYQWlPakUzTURVMU1ESXlOVFY5.e659752238f48e740f8fbfa2f69894c462f764f55eebc162e48eb209b61f1176cee5cb44f612ae01e9905a9f12597f7f2fac84d86278aa65685423b7f1021c0c"
+                          }
+                          favouriteItems={favouriteItems}
+                          getFavourites={getFavourite}
+                        />
                       </Box>
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
