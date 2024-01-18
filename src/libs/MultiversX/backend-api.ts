@@ -2,7 +2,7 @@ import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
-import { DataNftCollectionType, OfferType } from "./types";
+import { DataNftCollectionType, Favorite, OfferType, TrendingNft } from "./types";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -15,6 +15,79 @@ export async function getHealthCheckFromBackendApi(chainID: string): Promise<boo
   } catch (error) {
     console.error(error);
     return false;
+  }
+}
+
+export async function getFavoritesFromBackendApi(chainId: string, bearerToken: string): Promise<Array<string>> {
+  try {
+    const url = `${backendApi(chainId)}/favorites`;
+    const { data } = await axios.get<Array<string>>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function addFavoriteToBackendApi(chainID: string, tokenIdentifier: string, bearerToken: string): Promise<Favorite> {
+  try {
+    const url = `${backendApi(chainID)}/addFavorite`;
+    const { data } = await axios.post<Favorite>(
+      url,
+      {
+        identifier: tokenIdentifier,
+      },
+      {
+        timeout: uxConfig.mxAPITimeoutMs,
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {} as Favorite;
+  }
+}
+
+export async function removeFavoriteFromBackendApi(chainID: string, tokenIdentifier: string, bearerToken: string): Promise<Favorite> {
+  try {
+    const url = `${backendApi(chainID)}/removeFavorite`;
+    const { data } = await axios.post<Favorite>(
+      url,
+      {
+        tokenIdentifier: tokenIdentifier,
+      },
+      {
+        timeout: uxConfig.mxAPITimeoutMs,
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {} as Favorite;
+  }
+}
+
+export async function getTrendingFromBackendApi(chainID: string): Promise<TrendingNft[]> {
+  try {
+    const url = `${backendApi(chainID)}/trending`;
+    const { data } = await axios.get<TrendingNft[]>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }
 

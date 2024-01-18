@@ -37,6 +37,7 @@ import { CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/AppMarketplace";
+import { TrendingData } from "./components/TrendingData";
 
 export default function HomeMultiversX({
   setMenuItem,
@@ -412,11 +413,12 @@ export default function HomeMultiversX({
             </ChainSupportedComponent>
           </SimpleGrid>
         </Box>
-
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <RecentDataNFTs headingText="Recent Data NFTs" headingSize="lg" />
         </Box>
-
+        <Box m="auto" pt="10" pb="10" w={"100%"}>
+          <TrendingData />
+        </Box>
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
             Data DEX 101 Guides
@@ -424,7 +426,6 @@ export default function HomeMultiversX({
 
           <ExplainerArticles reduceGap={true} />
         </Box>
-
         <Box m="auto" pt="10" pb="6rem" w={"100%"}>
           <AppMarketplace setMenuItem={setMenuItem} />
         </Box>
