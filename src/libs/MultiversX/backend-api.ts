@@ -2,7 +2,7 @@ import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
-import { Favorite, OfferType, TrendingNft } from "./types";
+import { DataNftCollectionType, Favorite, OfferType, TrendingNft } from "./types";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -128,7 +128,20 @@ export async function getOffersFromBackendApi(chainID: string, from: number, siz
     const { data } = await axios.get<OfferType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
 
+export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNftCollectionType[]> {
+  try {
+    let url = `${backendApi(chainID)}/data-nfts`;
+
+    const { data } = await axios.get<DataNftCollectionType[]>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
     return data;
   } catch (error) {
     console.error(error);

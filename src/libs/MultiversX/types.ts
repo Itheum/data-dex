@@ -1,3 +1,5 @@
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
+
 export type RecordStringNumberType = Record<string, number>;
 export type RecordStringStringType = Record<string, string>;
 
@@ -58,6 +60,23 @@ export interface OfferType {
   wanted_token_nonce: number;
   wanted_token_amount: string;
   quantity: number;
+}
+export interface DataNftCollectionType {
+  tokenIdentifier: string;
+  nftImgUrl: string;
+  dataPreview: string;
+  dataStream: string;
+  tokenName: string;
+  creator: string;
+  creationTime: string;
+  supply: number;
+  quantity: number;
+  description: string;
+  title: string;
+  royalties: string;
+  nonce: number;
+  collection: string;
+  minOffer: OfferType;
 }
 
 export interface Favorite {

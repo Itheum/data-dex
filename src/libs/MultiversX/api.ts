@@ -135,7 +135,6 @@ export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<N
         }
       }
     }
-
     // check length of input and output match
     if (nftIds.length !== sorted.length) {
       console.error("getNftsByIds failed");

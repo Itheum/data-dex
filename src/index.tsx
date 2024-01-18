@@ -33,7 +33,8 @@ const breakpoints = {
 const theme = extendTheme({
   breakpoints,
   config: {
-    initialColorMode: "dark",
+    initialColorMode: "system",
+    useSystemColorMode: true,
   },
   fontSizes: {
     xs: "0.65rem",
