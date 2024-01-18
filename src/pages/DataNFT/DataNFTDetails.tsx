@@ -42,7 +42,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
-import { getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
+import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
@@ -56,9 +56,9 @@ import {
   tokenDecimals,
   transformDescription,
 } from "libs/utils";
-import { shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils/util";
 import { useMarketStore } from "store";
 import PreviewDataButton from "components/PreviewDataButton";
+import { Favourite } from "../../components/Favourite/Favourite";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -71,7 +71,7 @@ type DataNFTDetailsProps = {
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { chainID } = useGetNetworkConfig();
-  const { loginMethod, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { tokenLogin, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -108,9 +108,19 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
+  const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
 
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+
+  const getFavourite = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const bearerToken = tokenLogin?.nativeAuthToken;
+      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+      // console.log(getFavourites);
+      setFavouriteItems(getFavourites);
+    }
+  };
 
   useTrackTransactionStatus({
     transactionId: sessionId,
@@ -146,6 +156,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     getTokenDetails();
     getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
+    getFavourite();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
@@ -315,11 +326,18 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
-                      <Box color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
+                      <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
                         <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
                           {nftData.identifier}
                           <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
+                        <Favourite
+                          chainID={chainID}
+                          tokenIdentifier={nftData.identifier}
+                          bearerToken={tokenLogin?.nativeAuthToken}
+                          favouriteItems={favouriteItems}
+                          getFavourites={getFavourite}
+                        />
                       </Box>
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
@@ -669,9 +687,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               Data NFT Activity
             </Heading>
 
-            <Box width={"100%"}>
+            <Flex width={"100%"} overflowX="scroll">
               <TokenTxTable page={1} tokenId={tokenId} offerId={offerId} buyer_fee={marketRequirements.buyerTaxPercentage} />
-            </Box>
+            </Flex>
           </VStack>
 
           {nftData && offer && (

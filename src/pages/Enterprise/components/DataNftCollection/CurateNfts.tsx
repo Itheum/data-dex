@@ -70,11 +70,11 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     });
   };
 
-  const frozenNoncesAddresses = async () => {
-    const viewAddressFrozenNonces = await nftMinter.viewFrozenNonces();
-    // console.log(viewAddressFrozenNonces);
-    setAddressFrozenNonces(viewAddressFrozenNonces);
-  };
+  // const frozenNoncesAddresses = async () => {
+  //   // const viewAddressFrozenNonces = await nftMinter.viewAddressFrozenNonces(new Address(address));
+  //   // console.log(viewAddressFrozenNonces);
+  //   // setAddressFrozenNonces(viewAddressFrozenNonces);
+  // };
 
   useEffect(() => {
     getCreatedDataNftsFromAPI();
@@ -82,7 +82,11 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   }, [paginationFromNft]);
 
   useEffect(() => {
-    frozenNoncesAddresses();
+    (async () => {
+      const viewAddressFrozenNonces = await nftMinter.viewFrozenNonces();
+      console.log(viewAddressFrozenNonces);
+      setAddressFrozenNonces(viewAddressFrozenNonces);
+    })();
   }, [hasPendingTransactions]);
 
   // console.log(addressFrozenNonces);
@@ -150,7 +154,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
             return (
               <Box key={index} position="relative" border="1px solid" borderColor="#00C79740" rounded="xl" px="1.5rem" py="1.5rem" bgColor="#0F0F0F">
                 {addressFrozenNonces.includes(dataNfts.nonce) && (
-                  <Box position="absolute" boxSize="14.9rem" bgColor="#06060680" backdropFilter="blur(4px)" zIndex="10">
+                  <Box position="absolute" boxSize={{ base: "auto", sm: "14.9rem" }} bgColor="#06060680" backdropFilter="blur(4px)" zIndex="10">
                     <Text position="absolute" left="33%" top="45%" px={5} py={1} bgColor="#FF439D">
                       Frozen
                     </Text>
@@ -170,7 +174,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
                       <Button
                         variant="outline"
                         borderColor="teal.200"
-                        rounded="xl"
+                        rounded="lg"
                         w="50%"
                         onClick={() => unFreezeDataNft(dataNfts.creator, dataNfts.nonce, dataNfts.owner)}>
                         UnFreeze
@@ -178,7 +182,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
                       <Button
                         borderColor="#FF439D"
                         variant="outline"
-                        rounded="xl"
+                        rounded="lg"
                         w="50%"
                         onClick={() => wipeDataNft(dataNfts.creator, dataNfts.nonce, dataNfts.owner)}>
                         Wipe
@@ -189,7 +193,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
                       variant="outline"
                       borderColor="teal.200"
                       rounded="lg"
-                      size="sm"
+                      size="md"
                       px={8}
                       onClick={() => freezeDataNft(dataNfts.creator, dataNfts.nonce, dataNfts.owner)}>
                       Freeze
