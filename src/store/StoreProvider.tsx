@@ -2,21 +2,31 @@ import React, { PropsWithChildren, useEffect } from "react";
 import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useSearchParams } from "react-router-dom";
-import { contractsForChain, getHealthCheckFromBackendApi, getMarketplaceHealthCheckFromBackendApi, getMarketRequirements } from "libs/MultiversX";
+import {
+  contractsForChain,
+  getFavoritesFromBackendApi,
+  getHealthCheckFromBackendApi,
+  getMarketplaceHealthCheckFromBackendApi,
+  getMarketRequirements,
+} from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { tokenLogin } = useGetLoginInfo();
   const { chainID } = useGetNetworkConfig();
   const [searchParams] = useSearchParams();
 
   // ACCOUNT STORE
+  const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
+  const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
   // MARKET STORE
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
@@ -102,6 +112,19 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       updateItheumPrice(_itheumPrice);
     })();
   };
+
+  const getFavourite = async () => {
+    if (tokenLogin?.nativeAuthToken) {
+      const bearerToken = tokenLogin?.nativeAuthToken;
+      const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
+      updateFavoriteNfts(getFavourites);
+    }
+  };
+
+  useEffect(() => {
+    getFavourite();
+  }, [favoriteNfts.length]);
+
   useEffect(() => {
     getItheumPrice();
     const interval = setInterval(() => {

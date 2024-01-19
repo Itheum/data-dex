@@ -176,7 +176,7 @@ export const GuardRails: React.FC = () => {
               Transaction limitation:&nbsp;
               <Badge backgroundColor="#00C79726" fontSize="0.8em" m={1} borderRadius="md">
                 <Text as="p" px={3} py={1.5} textColor="teal.200" fontSize="md" fontWeight="500">
-                  {process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT ? process.env.REACT_APP_MAX_BUY_LIMIT_PER_SFT : "-"}
+                  {import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT : "-"}
                 </Text>
               </Badge>
             </Text>
