@@ -58,7 +58,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      console.log(getFavourites, "FAVO");
+      // console.log(getFavourites, "FAVO");
       setFavouriteItems(getFavourites);
     }
   };
@@ -183,7 +183,6 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                     <Text fontSize="md">Supply Available : {item.quantity}</Text>
                     <Text fontSize="sm">Unlock for {item.feePerSFT === 0 ? "Free" : `${item.feePerSFT} ITHEUM/NFT`}</Text>
                     <Favourite
-                      key={idx}
                       chainID={chainID}
                       tokenIdentifier={item.data_nft_id}
                       bearerToken={tokenLogin?.nativeAuthToken}
