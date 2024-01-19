@@ -53,6 +53,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     (async () => {
       let _marketRequirements: MarketplaceRequirements | undefined;
       _marketRequirements = await getMarketRequirements(chainID);
+      console.log(_marketRequirements);
       if (_marketRequirements) {
         updateMarketRequirements(_marketRequirements);
       } else {
