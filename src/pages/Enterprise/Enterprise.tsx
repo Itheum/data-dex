@@ -21,7 +21,7 @@ export const Enterprise: React.FC = () => {
   const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
 
-  const [minterVersion, setMinterVersion] = useState<string>("2.0.0");
+  const [minterVersion, setMinterVersion] = useState<string>("3.0.0");
 
   const navigate = useNavigate();
   const { chainID } = useGetNetworkConfig();

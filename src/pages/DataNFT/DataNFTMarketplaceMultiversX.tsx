@@ -95,7 +95,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
-  console.log("SHOW", showGroupedDataNfts);
   const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
 
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
@@ -109,16 +108,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       setPageIndex(newPageIndex);
     }
   });
-
   const groupDataNfts = () => {
-    if (groupedOffers.length > 0) return;
     (async () => {
-      if (hasPendingTransactions) return;
       if (!chainID) return;
 
       // start loading offers
       updateLoadingOffers(true);
-
       let _offers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
 
       _offers = _offers.filter((offer) => offer.minOffer && offer.minOffer !== null);
@@ -136,10 +131,11 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, []);
 
   useEffect(() => {
+    if (hasPendingTransactions) return;
     if (showGroupedDataNfts) {
       groupDataNfts();
     }
-  }, [showGroupedDataNfts]);
+  }, [showGroupedDataNfts, hasWebWalletTx, hasPendingTransactions]);
 
   useEffect(() => {
     (async () => {
@@ -274,8 +270,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       }
     }
   }, [pendingTransactions]);
-
-  console.log("Offers", offers);
 
   return (
     <>

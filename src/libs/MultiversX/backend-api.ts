@@ -62,7 +62,7 @@ export async function removeFavoriteFromBackendApi(chainID: string, tokenIdentif
     const { data } = await axios.post<Favorite>(
       url,
       {
-        tokenIdentifier: tokenIdentifier,
+        identifier: tokenIdentifier,
       },
       {
         timeout: uxConfig.mxAPITimeoutMs,
