@@ -29,10 +29,10 @@ export const buyOnOpenSea = (txNFTId: string, dnftContract: string, chainID: str
 };
 
 export const backendApi = (chainID: string) => {
-  const envKey = chainID === "1" ? "REACT_APP_ENV_BACKEND_MAINNET_API" : "REACT_APP_ENV_BACKEND_API";
+  const envKey = chainID === "1" ? "VITE_ENV_BACKEND_MAINNET_API" : "VITE_ENV_BACKEND_API";
   const defaultUrl = chainID === "1" ? "https://production-itheum-api.up.railway.app" : "https://staging-itheum-api.up.railway.app";
 
-  return process.env[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const gtagGo = (category: string, action: any, label: any, value?: any) => {
@@ -102,8 +102,8 @@ export const getSentryProfile = () => {
   let profile = "unknown";
 
   // this will handle production, dev and feature cicd build
-  if (process.env.REACT_APP_ENV_SENTRY_PROFILE) {
-    profile = process.env.REACT_APP_ENV_SENTRY_PROFILE;
+  if (import.meta.env.VITE_ENV_SENTRY_PROFILE) {
+    profile = import.meta.env.VITE_ENV_SENTRY_PROFILE;
   }
 
   // we cannot set ENV for our cicd stg build, so we do this manually
@@ -183,17 +183,17 @@ export const tokenDecimals = (token_identifier: string) => {
 };
 
 export const getApiDataDex = (chainID: string) => {
-  const envKey = chainID === "1" ? "REACT_APP_ENV_DATADEX_MAINNET_API" : "REACT_APP_ENV_DATADEX_DEVNET_API";
+  const envKey = chainID === "1" ? "VITE_ENV_DATADEX_MAINNET_API" : "VITE_ENV_DATADEX_DEVNET_API";
   const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datadexapi" : "https://api.itheumcloud-stg.com/datadexapi";
 
-  return process.env[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const getApiDataMarshal = (chainID: string) => {
-  const envKey = chainID === "1" ? "REACT_APP_ENV_DATAMARSHAL_MAINNET_API" : "REACT_APP_ENV_DATAMARSHAL_DEVNET_API";
+  const envKey = chainID === "1" ? "VITE_ENV_DATAMARSHAL_MAINNET_API" : "VITE_ENV_DATAMARSHAL_DEVNET_API";
   const defaultUrl = chainID === "1" ? "https://api.itheumcloud.com/datamarshalapi/router/v1" : "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
 
-  return process.env[envKey] || defaultUrl;
+  return import.meta.env[envKey] || defaultUrl;
 };
 
 export const getExplorerTrailBlazerURL = (chainID: string) => {

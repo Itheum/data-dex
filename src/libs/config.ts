@@ -39,6 +39,10 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "COLNAMA-539838",
             contract: "erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd",
           },
+          {
+            id: "ALPHADATA-b3f6d0",
+            contract: "erd1qqqqqqqqqqqqqpgqcaqv55lrfjuvspgrhezvqrag4gq3qdxu8ypsx9f0ar",
+          },
         ],
       };
     }

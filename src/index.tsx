@@ -3,14 +3,14 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import * as Sentry from "@sentry/react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
+import "libs/MultiversX/custom.css";
 import { getSentryProfile } from "libs/utils";
 import Launcher from "pages/App/Launcher";
 import reportWebVitals from "./reportWebVitals";
-import "libs/MultiversX/custom.css";
 
-if (process.env.NODE_ENV === "production") {
+if (import.meta.env.NODE_ENV === "production") {
   Sentry.init({
-    dsn: process.env.REACT_APP_ENV_SENTRY_DSN,
+    dsn: import.meta.env.VITE_ENV_SENTRY_DSN,
 
     // this is so we can use the environments filter in sentry to filter staging production vs actual production
     environment: getSentryProfile(),
@@ -33,7 +33,8 @@ const breakpoints = {
 const theme = extendTheme({
   breakpoints,
   config: {
-    initialColorMode: "dark",
+    initialColorMode: "system",
+    useSystemColorMode: true,
   },
   fontSizes: {
     xs: "0.65rem",
