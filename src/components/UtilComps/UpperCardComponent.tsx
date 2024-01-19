@@ -1,7 +1,9 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
+
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Container,
   Flex,
   Image,
   Link,
@@ -81,20 +83,22 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
       <Box
         w="275px"
         h={isMxLoggedIn ? "780px" : "700px"}
-        mx="3 !important"
+        mx="5 !important"
         borderWidth="0.5px"
         borderRadius="xl"
         borderColor="#00C79740"
         position="relative"
-        mb="1rem">
-        <Flex justifyContent="center">
+        mb="1.5rem">
+        <Container justifyContent="center" mt={"0"} position={"relative"}>
           <Image
+            position={"absolute"}
             src={imageUrl}
             alt={"item.dataPreview"}
             h={236}
             w={236}
-            mx={6}
+            zIndex={5}
             mt={6}
+            marginInlineStart={"0.2rem"}
             borderRadius="32px"
             onLoad={() => setNftImageLoaded(true)}
             onError={({ currentTarget }) => {
@@ -104,7 +108,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
           <motion.button
             style={{
               position: "absolute",
-              zIndex: "1",
+              zIndex: "10",
               top: "0",
               bottom: "0",
               right: "0",
@@ -140,9 +144,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               </Text>
             </Text>
           </motion.button>
-        </Flex>
-
-        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
+        </Container>
+        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} mt={"100%"} direction="column" justify="space-between">
           {nftMetadata && (
             <>
               <Text fontSize="md" color="#929497">

@@ -12,7 +12,7 @@ export const TradeData: React.FC = () => {
   return (
     <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading size="xl" fontFamily="Clash-Medium">
-        Trade Data
+        Mint Data
       </Heading>
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace

@@ -102,7 +102,7 @@ export function DataTable<Data extends object>({ data, columns }: DataTableProps
           <ArrowRightIcon mx={3} />
         </Button>
       </Flex>
-      <div style={{ maxHeight: "100%", overflowX: "scroll" }}>
+      <div style={{ maxHeight: "100%", maxWidth: "100%", overflowX: "scroll" }}>
         <Table border="1px solid" borderRadius="lg" borderColor="#00C79740" my="6" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
           <Thead style={styles.th}>
             {table.getHeaderGroups().map((headerGroup) => (

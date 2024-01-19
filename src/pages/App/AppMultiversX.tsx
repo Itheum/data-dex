@@ -36,7 +36,7 @@ export const routes: RouteType[] = [
     authenticatedRoute: true,
   },
   {
-    path: "tradedata",
+    path: "mintdata",
     component: <></>,
     authenticatedRoute: true,
   },
@@ -213,7 +213,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       }
                     />
 
-                    <Route path="tradedata" element={<TradeData />} />
+                    <Route path="mintdata" element={<TradeData />} />
                     {isMxLoggedIn ? (
                       <Route path="enterprise" element={<Outlet />}>
                         <Route path="" element={<Enterprise />} />
@@ -228,6 +228,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="wallet" element={<MyDataNFTsMx tabState={1} />} />
                       <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
+                      <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
                       <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                       <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
