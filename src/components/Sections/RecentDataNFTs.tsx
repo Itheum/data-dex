@@ -11,7 +11,7 @@ import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCondensedView } from "libs/MultiversX/types";
 import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
-import { useMarketStore } from "store";
+import { useAccountStore, useMarketStore } from "store";
 import { NoDataHere } from "./NoDataHere";
 import { Favourite } from "../Favourite/Favourite";
 
@@ -41,25 +41,33 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   const { chainID } = useGetNetworkConfig();
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<DataNftCondensedView[]>(latestOffersSkeleton);
-  const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const { tokenLogin } = useGetLoginInfo();
   // console.log(latestOffers);
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
+  const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
+  const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
   const marketContract = new DataNftMarketContract(chainID);
   const mintContract = new DataNftMintContract(chainID);
 
   useEffect(() => {
     apiWrapper();
-    getFavourite();
   }, [marketRequirements]);
+
+  useEffect(() => {
+    if (isMxLoggedIn) {
+      getFavourite();
+    } else {
+      updateFavoriteNfts([]);
+    }
+  }, [favoriteNfts.length]);
 
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites, "FAVO");
-      setFavouriteItems(getFavourites);
+      updateFavoriteNfts(getFavourites);
     }
   };
 
@@ -186,7 +194,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
                       chainID={chainID}
                       tokenIdentifier={item.data_nft_id}
                       bearerToken={tokenLogin?.nativeAuthToken}
-                      favouriteItems={favouriteItems}
+                      favouriteItems={favoriteNfts}
                       getFavourites={getFavourite}
                     />
                   </Stack>
