@@ -21,6 +21,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -37,7 +38,6 @@ import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { FavoriteCards } from "./components/FavoriteCards";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -47,7 +47,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const navigate = useNavigate();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-  // const userData = useMintStore((state) => state.userData);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
 
   const [dataNfts, setDataNfts] = useState<Array<DataNft>>([]);
@@ -92,15 +91,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     // },
   ];
 
-  // const getOnChainNFTs = async () => {
-  //
-  //     setDataNfts(_dataNfts);
-  //   } else {
-  //     // await sleep(4);
-  //     setDataNfts([]);
-  //   }
-  // };
-
   const getOnChainNFTs = async () => {
     const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
       address,
@@ -114,7 +104,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();
-      console.log(_dataNfts);
+
       setDataNfts(_dataNfts);
     })();
     setOneNFTImgLoaded(false);

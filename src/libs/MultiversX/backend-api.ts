@@ -137,7 +137,7 @@ export async function getOffersFromBackendApi(chainID: string, from: number, siz
 
 export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNftCollectionType[]> {
   try {
-    let url = `${backendApi(chainID)}/data-nfts`;
+    const url = `${backendApi(chainID)}/data-nfts`;
 
     const { data } = await axios.get<DataNftCollectionType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
