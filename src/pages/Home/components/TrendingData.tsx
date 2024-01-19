@@ -6,6 +6,7 @@ import { Box, Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack,
 import { Link as ReactRouterLink } from "react-router-dom";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Favourite } from "../../../components/Favourite/Favourite";
+import { useAccountStore } from "../../../store";
 
 type TrendingDataCreationNftsType = {
   nonce: number;
@@ -19,9 +20,11 @@ export const TrendingData: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const [trendingDataNfts, setTrendingDataNfts] = useState<Array<TrendingDataNftsType>>([]);
-  const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const { tokenLogin } = useGetLoginInfo();
+
+  const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
+  const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
   const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
 
@@ -58,13 +61,13 @@ export const TrendingData: React.FC = () => {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
       // console.log(getFavourites);
-      setFavouriteItems(getFavourites);
+      updateFavoriteNfts(getFavourites);
     }
   };
 
   useEffect(() => {
     getFavourite();
-  }, [favouriteItems.length]);
+  }, [favoriteNfts.length]);
 
   // console.log(trendingDataNfts);
   return (
@@ -99,7 +102,7 @@ export const TrendingData: React.FC = () => {
                       chainID={chainID}
                       tokenIdentifier={trendingDataNft.tokenIdentifier}
                       bearerToken={tokenLogin?.nativeAuthToken}
-                      favouriteItems={favouriteItems}
+                      favouriteItems={favoriteNfts}
                       getFavourites={getFavourite}
                     />
                   </Stack>
