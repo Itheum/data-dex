@@ -364,8 +364,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 )}
                 {
                   <CustomPagination
-                    pageCount={showGroupedDataNfts ? 1 : pageCount}
-                    pageIndex={showGroupedDataNfts ? 0 : pageIndex}
+                    pageCount={showGroupedDataNfts && tabState === 1 ? 1 : pageCount}
+                    pageIndex={showGroupedDataNfts && tabState === 1 ? 0 : pageIndex}
                     gotoPage={onGotoPage}
                     disabled={hasPendingTransactions}
                   />
@@ -458,8 +458,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
             offers.length > 0 && !showGroupedDataNfts && (
               <Flex justifyContent={{ base: "center", md: "center" }} py="5">
                 <CustomPagination
-                  pageCount={showGroupedDataNfts ? 1 : pageCount}
-                  pageIndex={showGroupedDataNfts ? 0 : pageIndex}
+                  pageCount={showGroupedDataNfts && tabState === 1 ? 1 : pageCount}
+                  pageIndex={showGroupedDataNfts && tabState === 1 ? 0 : pageIndex}
                   gotoPage={onGotoPage}
                   disabled={hasPendingTransactions}
                 />
