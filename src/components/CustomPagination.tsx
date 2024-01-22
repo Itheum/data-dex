@@ -25,7 +25,7 @@ export const CustomPagination: FC<PropsType> = ({ pageCount, pageIndex, gotoPage
   };
 
   return (
-    <Flex justifyContent="center" alignItems="center" mt={{ base: 0, lg: "5" }} gap={3}>
+    <Flex justifyContent="center" alignItems="center" gap={3}>
       <Flex>
         <Tooltip label="First Page">
           <IconButton

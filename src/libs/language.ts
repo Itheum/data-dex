@@ -39,4 +39,6 @@ export const labels = {
   "MINT_FORM_POPUP_INFO_DESC": "A description of your data asset",
   "MINT_FORM_POPUP_INFO_SUPPLY": 'The total "supply" you would like to mint (i.e. individual copies of your data access license)',
   "MINT_FORM_POPUP_INFO_ROYALTY": 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace',
+  "ADD_FAVORITE_FAILS": "Could not add to favorites. (ER-27)",
+  "REMOVE_FAVORITE_FAILS": "Could not remove from favorites. (ER-28)",
 };

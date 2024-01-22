@@ -78,9 +78,9 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.SELL,
-        path: "/tradedata",
-        label: "Trade Data",
-        shortLbl: "Trade",
+        path: "/mintdata",
+        label: "Mint Data",
+        shortLbl: "Mint",
         Icon: RiExchangeFill,
         needToBeLoggedIn: true,
         isHidden: false,
@@ -107,7 +107,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.GETWHITELISTED,
         path: "/getwhitelisted",
         label: "Get Whitelisted to Mint Data NFTs",
-        shortLbl: "Get Whitelisted to Mint Data NFTs",
+        shortLbl: "Get Whitelisted",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
@@ -213,10 +213,18 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             }}>
             <HStack>
               <Image w="45px" ml={{ base: 0, md: 5 }} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading display={{ base: "flex", md: "flex", xl: "flex" }} fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">
-                Itheum&nbsp;
-                <Text fontWeight="700">Data DEX</Text>
-              </Heading>
+              <Flex flexDirection="column" onClick={onClose}>
+                <Heading fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">
+                  Itheum
+                </Heading>
+                <Heading fontSize={{ base: "sm", xl: "lg" }} fontFamily="Clash-Medium" fontWeight="400" color="teal.200" onClick={onClose}>
+                  Data DEX
+                </Heading>
+              </Flex>
+              {/*<Heading display={{ base: "flex", md: "flex", xl: "flex" }} fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">*/}
+              {/*  Itheum&nbsp;*/}
+              {/*  <Text fontWeight="700">Data DEX</Text>*/}
+              {/*</Heading>*/}
             </HStack>
           </Link>
         </HStack>
@@ -360,7 +368,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <Link as={ReactRouterLink} to={"/"}>
                   <IconButton
                     display={{ base: "none", md: "inline-flex" }}
-                    size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                    size={{ md: "md", xl: "md", "2xl": "lg" }}
                     p="2 !important"
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
@@ -396,7 +404,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <MenuButton
                   as={IconButton}
                   aria-label="Options"
-                  size={{ base: "sm", lg: "lg" }}
+                  size={{ md: "md", xl: "md", "2xl": "lg" }}
                   p="2 !important"
                   color="teal.200"
                   icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
