@@ -81,7 +81,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
 
-  const dataNFTMarshalService: string = "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
+  const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   // React hook form + yup integration
