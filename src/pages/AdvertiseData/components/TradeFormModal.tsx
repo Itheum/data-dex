@@ -72,18 +72,25 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   }
 
   const checkUrlReturns200 = async (url: string) => {
-    const { statusCode, isError } = await makeRequest(url);
-
+    let statusCodeF, isErrorF;
     let isSuccess = false;
     let message = "";
-    if (isError) {
-      message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-    } else if (statusCode === 200) {
+    if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
+      isErrorF = false;
       isSuccess = true;
-    } else if (statusCode === 404) {
-      message = "Data Stream URL is not reachable (Status Code 404 received)";
     } else {
-      message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
+      const { statusCode, isError } = await makeRequest(url);
+      statusCodeF = statusCode;
+      isErrorF = isError;
+      if (isErrorF) {
+        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
+      } else if (statusCodeF === 200) {
+        isSuccess = true;
+      } else if (statusCodeF === 404) {
+        message = "Data Stream URL is not reachable (Status Code 404 received)";
+      } else {
+        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
+      }
     }
 
     return {

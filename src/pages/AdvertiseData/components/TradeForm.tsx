@@ -190,11 +190,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   function validateBaseInput() {
-    if (
-      !(dataNFTStreamUrl.includes("https://") || dataNFTStreamUrl.includes("http://")) ||
-      !(dataNFTPreviewUrl.includes("https://") || dataNFTPreviewUrl.includes("http://")) ||
-      !dataNFTMarshalService.includes("https://")
-    ) {
+    if (!dataNFTStreamUrl.includes("https://") || !dataNFTPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS,
         status: "error",
@@ -207,6 +203,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxFail = (_foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
