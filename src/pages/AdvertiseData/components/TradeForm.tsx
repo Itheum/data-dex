@@ -691,7 +691,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
-          <Button mt="5" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit}>
+          <Button
+            mt="5"
+            colorScheme="teal"
+            isLoading={isMintingModalOpen}
+            onClick={dataNFTSellSubmit}
+            isDisabled={!userData?.userWhitelistedForMint && userData?.contractWhitelistEnabled}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>
