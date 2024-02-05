@@ -163,7 +163,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     setNftForDrawer(undefined);
   }
 
-  console.log(dataNfts.length);
   return (
     <>
       <Stack>
