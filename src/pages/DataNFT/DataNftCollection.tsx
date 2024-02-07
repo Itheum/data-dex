@@ -94,7 +94,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             width="70%"
             height="12%">
             <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
-              View data NFT Collection
+              View Data NFT Collection
             </Text>
           </Button>
           <Tooltip label={viewDataDisabledMessage(loginMethod)} isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
@@ -118,7 +118,13 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             </Button>
           </Tooltip>
         </VStack>
-        <VStack position={"relative"} mt={"40%"} height={"100%"} width={"40%"}>
+        <VStack
+          cursor={"pointer"}
+          position={"relative"}
+          my={"40%"}
+          height={"40%"}
+          width={"40%"}
+          onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}>
           <Image
             position={"absolute"}
             src={imageUrl}
