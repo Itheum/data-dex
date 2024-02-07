@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip } from "@chakra-ui/react";
+import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip, Box, useColorMode } from "@chakra-ui/react";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { useMarketStore } from "store";
 import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
@@ -37,6 +37,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const { chainID } = useGetNetworkConfig();
   const { loginMethod } = useGetLoginInfo();
+  const { colorMode } = useColorMode();
   return (
     <Skeleton
       transform={{ base: "scale(0.5) ", sm: "scale(0.6)", md: "scale(0.75)", xl: "scale(1)" }}
@@ -60,12 +61,20 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
         height={"450px"}
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
-          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="28px">
+          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="24px">
             {title}
           </Text>
-          <Stack overflow={"hidden"} w={"100%"} h={"25%"}>
-            <Text overflow="hidden" textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
+          <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
+            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="95%" pb="0.6rem">
               {description}
+              <Box
+                position="absolute"
+                bgGradient={colorMode === "dark" ? "linear(to-t, black, transparent)" : "linear(to-t, white, transparent)"}
+                h="7%"
+                w="50%"
+                top="30%"
+                zIndex="10"
+              />
             </Text>
           </Stack>
 
