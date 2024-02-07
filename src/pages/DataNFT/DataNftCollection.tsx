@@ -1,11 +1,11 @@
 import React, { FC } from "react";
 import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip } from "@chakra-ui/react";
-import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { useMarketStore } from "store";
-import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
-import { useLocalStorage } from "libs/hooks";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
+import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
+import { useMarketStore } from "store";
 
 type DataNftCollectionComponentProps = {
   index: number;

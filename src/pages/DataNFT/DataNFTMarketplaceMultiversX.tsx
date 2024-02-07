@@ -30,8 +30,10 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
+import BigNumber from "bignumber.js";
 import { FaBrush, FaStore } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { MdOutlineInfo } from "react-icons/md";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
@@ -48,9 +50,7 @@ import { DataNftCollectionType, DataNftMetadataType, OfferType } from "libs/Mult
 import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { MdOutlineInfo } from "react-icons/md";
 import { DataNftCollection } from "./DataNftCollection";
-import BigNumber from "bignumber.js";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -212,8 +212,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     onOpenDataNftDetails();
   }
 
+  const [searchParams, setSearchParams] = useSearchParams();
   function closeDetailsView() {
     onCloseDataNftDetails();
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      setSearchParams(searchParams);
+    }
     setOfferForDrawer(undefined);
   }
 
