@@ -85,7 +85,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     } else {
       message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
     }
-
+    isSuccess = true;
+    message = "";
     return {
       isSuccess,
       message,
