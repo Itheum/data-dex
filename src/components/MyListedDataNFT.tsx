@@ -27,7 +27,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import {
   convertWeiToEsdt,
   convertToLocalString,
@@ -40,9 +40,10 @@ import {
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
 import PreviewDataButton from "./PreviewDataButton";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type MyListedDataNFTProps = {
-  offer: OfferType;
+  offer: Offer;
   offers: Record<any, any>;
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
@@ -93,7 +94,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <Image
-              src={`https://${getApi(chainID)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(chainID)}/nfts/${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}
@@ -188,8 +189,8 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   <Text>
                     Unlock from: {` `}
                     {printPrice(
-                      convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                      getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                      convertWeiToEsdt(offer.wantedTokenAmount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+                      getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
                     )}
                   </Text>
                 </Box>
@@ -259,7 +260,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
           </Flex>
 
           <FrozenOverlay
-            isVisible={userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(offer?.offered_token_nonce)))}
+            isVisible={userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(offer?.offeredTokenNonce)))}
           />
         </Box>
       </Flex>

@@ -39,28 +39,17 @@ export interface DataNftCondensedView {
 }
 
 export interface MarketplaceRequirementsType {
-  accepted_tokens: string[];
-  accepted_payments: string[];
-  maximum_payment_fees: string[];
-  discount_fee_percentage_buyer: number;
-  discount_fee_percentage_seller: number;
-  percentage_cut_from_buyer: number;
-  percentage_cut_from_seller: number;
-  buyer_fee: number;
-  seller_fee: number;
+  acceptedTokens: string[];
+  acceptedPayments: string[];
+  maximumPaymentFees: string[];
+  buyerTaxPercentageDiscount: number;
+  sellerTaxPercentageDiscount: number;
+  buyerTaxPercentage: number;
+  sellerTaxPercentage: number;
+  buyerFee: number;
+  sellerFee: number;
 }
 
-export interface OfferType {
-  index: number;
-  owner: string;
-  offered_token_identifier: string;
-  offered_token_nonce: number;
-  offered_token_amount: string;
-  wanted_token_identifier: string;
-  wanted_token_nonce: number;
-  wanted_token_amount: string;
-  quantity: number;
-}
 export interface DataNftCollectionType {
   tokenIdentifier: string;
   nftImgUrl: string;
@@ -76,7 +65,7 @@ export interface DataNftCollectionType {
   royalties: string;
   nonce: number;
   collection: string;
-  minOffer: OfferType;
+  minOffer: Offer;
 }
 
 export interface Favorite {

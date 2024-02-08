@@ -122,28 +122,28 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       const offers = await marketContract.viewOffers(startIndex, stopIndex);
       const slicedOffers = offers.slice(0, 10);
       // get these offers metadata from the API
-      const nftIds = slicedOffers.map((offer) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}`);
+      const nftIds = slicedOffers.map((offer) => `${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}`);
       const dataNfts = await getNftsByIds(nftIds, chainID);
 
       // merge the offer data and meta data
       const _latestOffers: DataNftCondensedView[] = [];
 
       slicedOffers.forEach((offer, idx) => {
-        const _nft = dataNfts.find((nft) => `${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}` === nft.identifier);
+        const _nft = dataNfts.find((nft) => `${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}` === nft.identifier);
 
         if (_nft !== undefined) {
           const _nftMetaData = mintContract.decodeNftAttributes(_nft, idx);
 
-          const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wanted_token_amount)).toNumber();
+          const tokenAmount = convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount)).toNumber();
 
           _latestOffers.push({
             data_nft_id: _nftMetaData.id,
-            offered_token_identifier: offer.offered_token_identifier,
-            offered_token_nonce: offer.offered_token_nonce,
+            offered_token_identifier: offer.offeredTokenIdentifier,
+            offered_token_nonce: offer.offeredTokenNonce,
             offer_index: offer.index,
-            offered_token_amount: offer.offered_token_amount,
+            offered_token_amount: offer.offeredTokenAmount,
             quantity: offer.quantity,
-            wanted_token_amount: offer.wanted_token_amount,
+            wanted_token_amount: offer.wantedTokenAmount,
             creator: _nftMetaData.creator,
             tokenName: _nftMetaData.tokenName,
             title: _nftMetaData.title,

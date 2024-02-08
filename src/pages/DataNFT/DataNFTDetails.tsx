@@ -47,7 +47,6 @@ import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { OfferType } from "libs/MultiversX/types";
 import {
   convertToLocalString,
   convertWeiToEsdt,
@@ -59,6 +58,7 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -97,7 +97,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketContract = new DataNftMarketContract(chainID);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
-  const [offer, setOffer] = useState<OfferType | undefined>();
+  const [offer, setOffer] = useState<Offer | undefined>();
   const [totalOffers, setTotalOffers] = useState<Record<any, any>>({});
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
@@ -373,7 +373,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                         <Text fontSize={{ base: "18px", md: "22px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
                           {!offer && getListingText(priceFromApi)}
-                          {offer && getListingText(Number(offer.wanted_token_amount))}
+                          {offer && getListingText(Number(offer.wantedTokenAmount))}
                         </Text>
                         {showConnectWallet && (
                           <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -484,13 +484,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             {marketRequirements && offer ? (
                               <>
                                 {printPrice(
-                                  convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                                  getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                                  convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+                                  getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
                                 )}{" "}
                                 {itheumPrice &&
-                                convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
+                                convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() > 0
                                   ? `(~${convertToLocalString(
-                                      convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() *
+                                      convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() *
                                         itheumPrice,
                                       2
                                     )} USD)`

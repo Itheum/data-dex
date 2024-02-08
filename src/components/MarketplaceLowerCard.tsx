@@ -21,13 +21,14 @@ import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import { isValidNumericCharacter, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type MarketplaceLowerCardProps = {
-  offer: OfferType;
+  offer: Offer;
   nftMetadata: DataNftMetadataType;
 };
 
@@ -50,7 +51,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
       <HStack justifyContent="stretch">
         <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
-        <ExploreAppButton nonce={offer.offered_token_nonce} />
+        <ExploreAppButton nonce={offer.offeredTokenNonce} />
       </HStack>
 
       {!isMyNft ? (
