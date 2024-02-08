@@ -96,6 +96,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
   const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
@@ -212,11 +213,18 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     onOpenDataNftDetails();
   }
 
-  const [searchParams, setSearchParams] = useSearchParams();
   function closeDetailsView() {
     onCloseDataNftDetails();
+    let didAlterParams = false;
     if (searchParams.has("tokenId")) {
       searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
       setSearchParams(searchParams);
     }
     setOfferForDrawer(undefined);
@@ -275,6 +283,16 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       }
     }
   }, [pendingTransactions]);
+
+  useEffect(() => {
+    if (searchParams.has("tokenId") && searchParams.has("offerId")) {
+      const tokenId = searchParams.get("tokenId");
+      const index = offers.findIndex((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce) === tokenId);
+      if (index !== -1) {
+        openNftDetailsModal(index);
+      }
+    }
+  }, [offers]);
 
   return (
     <>
