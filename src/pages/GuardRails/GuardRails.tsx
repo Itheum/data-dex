@@ -125,7 +125,7 @@ export const GuardRails: React.FC = () => {
             Active Guardrails
           </Text>
           <Stack textAlign="start">
-            <GuardRailSection
+             <GuardRailSection
               value={marketRequirements.buyerTaxPercentage ? `${(marketRequirements.buyerTaxPercentage / 100).toFixed(2)} %` : "-"}
               title={"Buyer fee"}
               badgeColor={0}
@@ -166,6 +166,7 @@ export const GuardRails: React.FC = () => {
             <GuardRailSection value={marketRequirements.acceptedPayments ?? "-"} title={"Accepted payments"} badgeColor={0} />
 
             <GuardRailSection acceptedTokens={marketRequirements.acceptedTokens} title={"Accepted tokens"} badgeColor={0} />
+ 
           </Stack>
         </Box>
         <GuardRailsCards items={historyGuardrails} title="Historic Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />

@@ -81,7 +81,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
 
-  const dataNFTMarshalService: string = "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
+  const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   // React hook form + yup integration
@@ -348,7 +348,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       // catch IPFS error
       const { image, traits } = await createFileFromUrl(newNFTImg);
       const nftstorage = new NFTStorage({
-        token: process.env.REACT_APP_ENV_NFT_STORAGE_KEY || "",
+        token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
       });
 
       res = await nftstorage.storeDirectory([image, traits]);
@@ -691,7 +691,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
-          <Button mt="5" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit}>
+          <Button
+            mt="5"
+            colorScheme="teal"
+            isLoading={isMintingModalOpen}
+            onClick={dataNFTSellSubmit}
+            isDisabled={!userData?.userWhitelistedForMint && userData?.contractWhitelistEnabled}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>

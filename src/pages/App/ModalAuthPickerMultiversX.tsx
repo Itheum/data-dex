@@ -35,7 +35,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const { isOpen: isProgressModalOpen, onOpen: onProgressModalOpen, onClose: onProgressModalClose } = useDisclosure();
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
-  const appVersion = process.env.REACT_APP_VERSION;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,7 +101,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
             <ModalHeader mt={5}>
               Select a{" "}
               <Badge mb="1" mr="1" ml="1" variant="outline" fontSize="0.8em" colorScheme="teal">
-                {process.env.REACT_APP_ENV_NETWORK}
+                {import.meta.env.VITE_ENV_NETWORK}
               </Badge>{" "}
               MultiversX Wallet
             </ModalHeader>
@@ -114,7 +113,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_XPORTALAPP);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WalletConnectLoginButton
@@ -127,7 +125,6 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_DEFI);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <ExtensionLoginButton loginButtonText={"DeFi Wallet"} buttonClassName="auth_button" {...commonProps}></ExtensionLoginButton>
@@ -136,31 +133,28 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_WEBWALLET);
-                          localStorage.setItem("app-version", appVersion || "");
                         }}
                         className="auth_wrap">
                         <WebWalletLoginButton loginButtonText={"Web Wallet"} buttonClassName="auth_button" {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
 
-                      {/* <WrapItem
-                        onClick={() => {
-                          goMxLogin(WALLETS.MX_LEDGER);
-                          localStorage.setItem("app-version", appVersion || "");
-                        }}
-                        className="auth_wrap">
-                        <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
-                      </WrapItem> */}
-
                       <WrapItem
                         onClick={() => {
                           goMxLogin(WALLETS.MX_LEDGER);
-                          localStorage.setItem("app-version", appVersion || "");
+                        }}
+                        className="auth_wrap">
+                        <LedgerLoginButton loginButtonText={"Ledger"} buttonClassName="auth_button" {...commonProps}></LedgerLoginButton>
+                      </WrapItem>
+
+                      <WrapItem
+                        onClick={() => {
+                          goMxLogin(WALLETS.MX_XALIAS);
                         }}
                         className="auth_wrap">
                         <WebWalletLoginButton
                           loginButtonText={"Google (xAlias)"}
                           buttonClassName="auth_button"
-                          customWalletAddress={process.env.REACT_APP_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
+                          customWalletAddress={import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
                     </Wrap>

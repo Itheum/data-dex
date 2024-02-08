@@ -2,18 +2,22 @@ import React, { useState } from "react";
 import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
 import { TradeFormModal } from "./components/TradeFormModal";
 import { dataCATDemoUserData } from "../../libs/config";
-import ProgramCard from "./components/ProgramCard";
+ import ProgramCard from "./components/ProgramCard";
+ 
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+ 
 
 export const TradeData: React.FC = () => {
   const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [prefilledData, setPrefilledData] = useState(null);
   const { colorMode } = useColorMode();
+  const { chainID } = useGetNetworkConfig();
 
   return (
     <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading size="xl" fontFamily="Clash-Medium">
-        Trade Data
+        Mint Data
       </Heading>
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
@@ -42,13 +46,13 @@ export const TradeData: React.FC = () => {
           </Box>
         </Box>
       </Wrap>
-      {dataCATAcccount?.programsAllocation?.length > 0 && (
+      {dataCATAcccount?.programsAllocation?.filter((program: any) => program.chainID === chainID).length > 0 && (
         <>
           <Heading size="lg" fontFamily="Clash-Medium" marginTop="6rem !important">
             Supported Data CAT Programs
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
-            {dataCATAcccount?.programsAllocation.map((item: any) => (
+             {dataCATAcccount?.programsAllocation.map((item: any) => (
               <ProgramCard
                 key={item.program}
                 item={item}
@@ -58,6 +62,7 @@ export const TradeData: React.FC = () => {
                 isNew={true}
               />
             ))}
+ 
           </Wrap>
         </>
       )}

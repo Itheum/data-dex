@@ -25,7 +25,7 @@ function Launcher() {
   return (
     <>
       <DappProvider
-        environment={process.env.REACT_APP_ENV_NETWORK}
+        environment={import.meta.env.VITE_ENV_NETWORK}
         customNetworkConfig={{
           name: "itheum-data-dex",
           apiTimeout: uxConfig.mxAPITimeoutMs,

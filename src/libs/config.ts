@@ -39,6 +39,10 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "COLNAMA-539838",
             contract: "erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd",
           },
+          {
+            id: "ALPHADATA-b3f6d0",
+            contract: "erd1qqqqqqqqqqqqqpgqcaqv55lrfjuvspgrhezvqrag4gq3qdxu8ypsx9f0ar",
+          },
         ],
       };
     }
@@ -167,7 +171,7 @@ export const WALLETS = {
   MX_DEFI: "el_defi",
   MX_WEBWALLET: "el_webwallet",
   MX_LEDGER: "el_ledger",
-  MX_CUSTOM_WEBWALLET: "el_custom_webwallet",
+  MX_XALIAS: "el_xalias",
 };
 
 export const consoleNotice = `DATA DEX NOTES --------------------------\n
@@ -314,6 +318,7 @@ export const dataCATDemoUserData = {
       "group": "custom",
       "userId": "custom-x",
       "status": "stop",
+      "chainID": "D",
       "shortId": "1",
       "type": "1",
       "fromTs": 1528448026784,

@@ -78,9 +78,9 @@ const exploreRouterMenu = [
       },
       {
         menuEnum: MENU.SELL,
-        path: "/tradedata",
-        label: "Trade Data",
-        shortLbl: "Trade",
+        path: "/mintdata",
+        label: "Mint Data",
+        shortLbl: "Mint",
         Icon: RiExchangeFill,
         needToBeLoggedIn: true,
         isHidden: false,
@@ -107,7 +107,7 @@ const exploreRouterMenu = [
         menuEnum: MENU.GETWHITELISTED,
         path: "/getwhitelisted",
         label: "Get Whitelisted to Mint Data NFTs",
-        shortLbl: "Get Whitelisted to Mint Data NFTs",
+        shortLbl: "Get Whitelisted",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
@@ -182,11 +182,12 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
         borderBottom="solid .1rem"
         borderColor="teal.200"
         paddingY="5">
-        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "10rem" }} justifyContent="space-around">
+        <HStack alignItems={"center"} backgroundColor="none" width={{ base: "full", md: "14.5rem" }} justifyContent={{ base: "initial", md: "space-around" }}>
           {isMxLoggedIn && (
             <IconButton
               fontSize="2rem"
-              variant={"ghost"}
+              variant="ghost"
+              mx="1rem"
               icon={
                 <MdMenu
                   style={{
@@ -195,7 +196,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 />
               }
               display={{
-                xl: "none",
+                md: "none",
               }}
               textColor="teal.200"
               aria-label={"Open Menu"}
@@ -212,42 +213,22 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
             }}>
             <HStack>
               <Image w="45px" ml={{ base: 0, md: 5 }} src={colorMode === "light" ? logoSmlL : logoSmlD} alt="Itheum Data DEX" />
-              <Heading
-                display={{ base: "flex", md: "flex", xl: "flex" }}
-                fontSize={{ base: "md", xl: "xl" }}
-                fontFamily="Clash-Medium"
-                fontWeight="400"
-                lineHeight="16.29px">
-                Data&nbsp;
-                <Text fontWeight="700">DEX</Text>
-              </Heading>
+              <Flex flexDirection="column" onClick={onClose}>
+                <Heading fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">
+                  Itheum
+                </Heading>
+                <Heading fontSize={{ base: "sm", xl: "lg" }} fontFamily="Clash-Medium" fontWeight="400" color="teal.200" onClick={onClose}>
+                  Data DEX
+                </Heading>
+              </Flex>
+              {/*<Heading display={{ base: "flex", md: "flex", xl: "flex" }} fontSize={{ base: "md", xl: "xl" }} fontFamily="Clash-Medium" fontWeight="400">*/}
+              {/*  Itheum&nbsp;*/}
+              {/*  <Text fontWeight="700">Data DEX</Text>*/}
+              {/*</Heading>*/}
             </HStack>
           </Link>
-          {/* {isMxLoggedIn ? (
-            <Box display={{ base: "block", md: "none" }}>
-              <IconButton
-                size="lg"
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
-              />
-            </Box>
-          ) : (
-            <Box display={{ base: "block", md: "none" }}>
-              <IconButton
-                size="md"
-                ml={12}
-                bgColor=""
-                icon={colorMode === "light" ? <MdDarkMode fontSize={"1.4rem"} /> : <TbSunset2 fontSize={"1.4rem"} />}
-                aria-label="Change Color Theme"
-                color="teal.200"
-                onClick={toggleColorMode}
-              />
-            </Box>
-          )} */}
         </HStack>
-        <Flex backgroundColor="none">
+        <Flex backgroundColor="none" mr={{ base: "1rem" }}>
           <HStack alignItems={"center"} spacing={2}>
             <HStack display={{ base: "none", md: "none", xl: "block", "2xl": "block" }}>
               {exploreRouterMenu[0].sectionItems.map((quickMenuItem) => {
@@ -387,7 +368,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <Link as={ReactRouterLink} to={"/"}>
                   <IconButton
                     display={{ base: "none", md: "inline-flex" }}
-                    size={{ md: "md", xl: "lg", "2xl": "lg" }}
+                    size={{ md: "md", xl: "md", "2xl": "lg" }}
                     p="2 !important"
                     color="teal.200"
                     icon={<AiFillHome fontSize={"1.4rem"} />}
@@ -414,37 +395,43 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
               </Button>
             )}
 
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                size={{ base: "sm", lg: "lg" }}
-                p="2 !important"
-                color="teal.200"
-                icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
-                variant="solid"
-              />
-              <MenuList backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <MenuItem
-                  icon={<SunIcon color="teal.200" />}
-                  onClick={() => setColorMode("light")}
-                  backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                  Light
-                </MenuItem>
-                <MenuItem
-                  icon={<MdDarkMode color="#00C797" />}
-                  onClick={() => setColorMode("dark")}
-                  backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                  Dark
-                </MenuItem>
-                <MenuItem
-                  icon={<FaLaptop color="#00C797" />}
-                  onClick={() => setColorMode("system")}
-                  backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                  System
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            <Box
+              display={{
+                base: isMxLoggedIn ? "block" : "none",
+                md: "block",
+              }}>
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label="Options"
+                  size={{ md: "md", xl: "md", "2xl": "lg" }}
+                  p="2 !important"
+                  color="teal.200"
+                  icon={colorMode === "light" ? <SunIcon fontSize={"1.4rem"} /> : <MdDarkMode fontSize={"1.4rem"} />}
+                  variant="solid"
+                />
+                <MenuList backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                  <MenuItem
+                    icon={<SunIcon color="teal.200" />}
+                    onClick={() => setColorMode("light")}
+                    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                    Light
+                  </MenuItem>
+                  <MenuItem
+                    icon={<MdDarkMode color="#00C797" />}
+                    onClick={() => setColorMode("dark")}
+                    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                    Dark
+                  </MenuItem>
+                  <MenuItem
+                    icon={<FaLaptop color="#00C797" />}
+                    onClick={() => setColorMode("system")}
+                    backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                    System
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
           </HStack>
         </Flex>
       </Flex>
