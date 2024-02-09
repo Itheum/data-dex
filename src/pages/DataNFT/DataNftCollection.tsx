@@ -65,14 +65,14 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             {title}
           </Text>
           <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
-            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="95%" pb="0.6rem">
+            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%" pb="0.6rem">
               {description}
               <Box
                 position="absolute"
                 bgGradient={colorMode === "dark" ? "linear(to-t, black, transparent)" : "linear(to-t, white, transparent)"}
-                h="7%"
+                h="4%"
                 w="50%"
-                top="30%"
+                top="33%"
                 zIndex="10"
               />
             </Text>

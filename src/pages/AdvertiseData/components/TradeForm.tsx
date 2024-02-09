@@ -149,7 +149,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     getValues,
   } = useForm<TradeDataFormType>({
@@ -691,7 +691,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
-          <Button mt="5" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit}>
+          <Button mt="5" colorScheme="teal" isLoading={isMintingModalOpen} isDisabled={!isValid} onClick={dataNFTSellSubmit}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>
