@@ -203,6 +203,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxFail = (_foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
