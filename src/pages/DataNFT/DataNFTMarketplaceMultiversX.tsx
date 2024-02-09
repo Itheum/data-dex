@@ -30,8 +30,10 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { SignedTransactionsBodyType } from "@multiversx/sdk-dapp/types";
+import BigNumber from "bignumber.js";
 import { FaBrush, FaStore } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { MdOutlineInfo } from "react-icons/md";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CustomPagination } from "components/CustomPagination";
 import MarketplaceLowerCard from "components/MarketplaceLowerCard";
 import MyListedDataLowerCard from "components/MyListedDataLowerCard";
@@ -48,9 +50,7 @@ import { DataNftCollectionType, DataNftMetadataType, OfferType } from "libs/Mult
 import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { MdOutlineInfo } from "react-icons/md";
 import { DataNftCollection } from "./DataNftCollection";
-import BigNumber from "bignumber.js";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -96,7 +96,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
   const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
   const setPageIndex = (newPageIndex: number) => {
@@ -214,6 +214,18 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   function closeDetailsView() {
     onCloseDataNftDetails();
+    let didAlterParams = false;
+    if (searchParams.has("tokenId")) {
+      searchParams.delete("tokenId");
+      didAlterParams = true;
+    }
+    if (searchParams.has("offerId")) {
+      searchParams.delete("offerId");
+      didAlterParams = true;
+    }
+    if (didAlterParams) {
+      setSearchParams(searchParams);
+    }
     setOfferForDrawer(undefined);
   }
 
@@ -270,6 +282,19 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       }
     }
   }, [pendingTransactions]);
+
+  useEffect(() => {
+    if (searchParams.has("tokenId") && searchParams.has("offerId")) {
+      const tokenId = searchParams.get("tokenId");
+      const offerId = searchParams.get("offerId");
+      searchParams.delete("tokenId");
+      searchParams.delete("offerId");
+      setSearchParams(searchParams);
+      sleep(0.5).then(() => {
+        navigate(`/datanfts/marketplace/${tokenId}/offer-${offerId}`);
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -497,7 +522,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       </Stack>
       {offerForDrawer && (
         <>
-          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
             <ModalContent overflowY="scroll" h="90%">
               <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>

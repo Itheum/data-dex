@@ -26,13 +26,13 @@ import { motion } from "framer-motion";
 import moment from "moment/moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import FrozenOverlay from "components/FrozenOverlay";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
-import FrozenOverlay from "components/FrozenOverlay";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
