@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { Box, HStack, Link, Spinner, useToast } from "@chakra-ui/react";
+import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TransactionDecoder } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { ColumnDef } from "@tanstack/react-table";
-import axios, { all } from "axios";
+import axios from "axios";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, contractsForChain, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { convertWeiToEsdt } from "libs/utils";
+import { useMarketStore } from "store";
 import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
-import { useMarketStore } from "store";
-import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 
 export default function InteractionTxTable(props: { address: string }) {
   const { chainID } = useGetNetworkConfig();

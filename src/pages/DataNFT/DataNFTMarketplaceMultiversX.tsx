@@ -97,7 +97,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
   const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
-
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
   const setPageIndex = (newPageIndex: number) => {
@@ -287,7 +286,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     if (searchParams.has("tokenId") && searchParams.has("offerId")) {
       const tokenId = searchParams.get("tokenId");
-      const index = offers.findIndex((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce) === tokenId);
+      const index = groupedOffers.findIndex((offer) => offer.tokenIdentifier === tokenId);
       if (index !== -1) {
         openNftDetailsModal(index);
       }
@@ -520,7 +519,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       </Stack>
       {offerForDrawer && (
         <>
-          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
             <ModalContent overflowY="scroll" h="90%">
               <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>

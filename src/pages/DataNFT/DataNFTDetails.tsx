@@ -288,6 +288,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
     if (tokenId && offerId) {
+      console.log(offerId);
       setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
     }
   }, []);
