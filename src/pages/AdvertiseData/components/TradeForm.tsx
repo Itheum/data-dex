@@ -697,7 +697,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             colorScheme="teal"
             isLoading={isMintingModalOpen}
             onClick={dataNFTSellSubmit}
-            isDisabled={!userData?.userWhitelistedForMint && userData?.contractWhitelistEnabled}>
+            isDisabled={!isValid || !readTermsChecked || !readAntiSpamFeeChecked}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>
