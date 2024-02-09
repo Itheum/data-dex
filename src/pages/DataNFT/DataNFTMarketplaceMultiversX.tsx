@@ -286,12 +286,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     if (searchParams.has("tokenId") && searchParams.has("offerId")) {
       const tokenId = searchParams.get("tokenId");
-      const index = groupedOffers.findIndex((offer) => offer.tokenIdentifier === tokenId);
-      if (index !== -1) {
-        openNftDetailsModal(index);
-      }
+      const offerId = searchParams.get("offerId");
+      searchParams.delete("tokenId");
+      searchParams.delete("offerId");
+      setSearchParams(searchParams);
+      sleep(0.5).then(() => {
+        navigate(`/datanfts/marketplace/${tokenId}/offer-${offerId}`);
+      });
     }
-  }, [offers]);
+  }, []);
 
   return (
     <>

@@ -287,8 +287,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
-    if (tokenId && offerId) {
-      console.log(offerId);
+    if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
       setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
     }
   }, []);
