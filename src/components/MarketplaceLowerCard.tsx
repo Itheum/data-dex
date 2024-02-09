@@ -9,20 +9,15 @@ import {
   NumberInputStepper,
   Text,
   useDisclosure,
-  useColorMode,
   Flex,
   Box,
-  Tooltip,
 } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
-import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
-import { isValidNumericCharacter, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
+import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
 
@@ -32,9 +27,7 @@ type MarketplaceLowerCardProps = {
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { chainID } = useGetNetworkConfig();
-  const { loginMethod, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const { colorMode } = useColorMode();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);

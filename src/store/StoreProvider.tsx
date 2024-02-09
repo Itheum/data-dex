@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useEffect } from "react";
 import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useSearchParams } from "react-router-dom";
 import {
   contractsForChain,
@@ -13,7 +14,6 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();

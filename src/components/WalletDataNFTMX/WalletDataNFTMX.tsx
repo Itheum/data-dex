@@ -36,6 +36,7 @@ import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
@@ -58,7 +59,6 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
-import PreviewDataButton from "components/PreviewDataButton";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
