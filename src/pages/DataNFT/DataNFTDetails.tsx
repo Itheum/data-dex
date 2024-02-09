@@ -33,6 +33,7 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import TokenTxTable from "components/Tables/TokenTxTable";
@@ -57,7 +58,6 @@ import {
   transformDescription,
 } from "libs/utils";
 import { useMarketStore } from "store";
-import PreviewDataButton from "components/PreviewDataButton";
 import { Favourite } from "../../components/Favourite/Favourite";
 
 type DataNFTDetailsProps = {
@@ -135,21 +135,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   });
 
   const getAddressTokenInformation = () => {
-    const apiLink = getApi(chainID);
-    const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
-
-    axios
-      .get(nftApiLink)
-      .then((res) => {
-        if (res.data.identifier == tokenId) {
-          setAddressHasNft(true);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          setAddressHasNft(false);
-        }
-      });
+    if (isMxLoggedIn) {
+      const apiLink = getApi(chainID);
+      const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
+      axios
+        .get(nftApiLink)
+        .then((res) => {
+          if (res.data.identifier == tokenId) {
+            setAddressHasNft(true);
+          }
+        })
+        .catch((err) => {
+          if (err) {
+            setAddressHasNft(false);
+          }
+        });
+    }
   };
 
   useEffect(() => {
