@@ -61,11 +61,13 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
         height={"450px"}
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
-          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="24px">
-            {title}
-          </Text>
+          <Tooltip label={title}>
+            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" noOfLines={1}>
+              {title}
+            </Text>
+          </Tooltip>
           <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
-            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%" pb="0.6rem">
+            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="96%" pb="0.6rem">
               {description}
               <Box
                 position="absolute"
