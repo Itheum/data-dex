@@ -32,7 +32,7 @@ import BigNumber from "bignumber.js";
 import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
@@ -285,6 +285,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const handleButtonClick = (offerArg: number, identifier: string) => {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
+      setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
+    }
+  }, []);
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>

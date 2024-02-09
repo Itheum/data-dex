@@ -1,11 +1,11 @@
 import React, { FC } from "react";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
 import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip, Box, useColorMode } from "@chakra-ui/react";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { useMarketStore } from "store";
 import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
-import { useLocalStorage } from "libs/hooks";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
-import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useMarketStore } from "store";
 
 type DataNftCollectionComponentProps = {
   index: number;
@@ -105,7 +105,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             width="70%"
             height="12%">
             <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
-              View data NFT Collection
+              View Data NFT Collection
             </Text>
           </Button>
           <Tooltip label={viewDataDisabledMessage(loginMethod)} isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
@@ -129,7 +129,13 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             </Button>
           </Tooltip>
         </VStack>
-        <VStack position={"relative"} mt={"40%"} height={"100%"} width={"40%"}>
+        <VStack
+          cursor={"pointer"}
+          position={"relative"}
+          my={"40%"}
+          height={"40%"}
+          width={"40%"}
+          onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}>
           <Image
             position={"absolute"}
             src={imageUrl}
