@@ -4,6 +4,8 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
+  Button,
   CloseButton,
   Drawer,
   DrawerBody,
@@ -23,6 +25,7 @@ import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
 import { useMintStore } from "../../../store";
+import { useNavigate } from "react-router-dom";
 
 type TradeFormProps = {
   isOpen: boolean;
@@ -34,6 +37,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const { colorMode } = useColorMode();
 
   const { chainID } = useGetNetworkConfig();
+
+  const navigate = useNavigate();
 
   const [minRoyalties, setMinRoyalties] = useState<number>(-1);
   const [maxRoyalties, setMaxRoyalties] = useState<number>(-1);
@@ -72,20 +77,28 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   }
 
   const checkUrlReturns200 = async (url: string) => {
-    const { statusCode, isError } = await makeRequest(url);
-
+    let statusCodeF, isErrorF;
     let isSuccess = false;
     let message = "";
-    if (isError) {
-      message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-    } else if (statusCode === 200) {
+    if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
+      isErrorF = false;
       isSuccess = true;
-    } else if (statusCode === 404) {
-      message = "Data Stream URL is not reachable (Status Code 404 received)";
     } else {
-      message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
+      const { statusCode, isError } = await makeRequest(url);
+      statusCodeF = statusCode;
+      isErrorF = isError;
+      if (isErrorF) {
+        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
+      } else if (statusCodeF === 200) {
+        isSuccess = true;
+      } else if (statusCodeF === 404) {
+        message = "Data Stream URL is not reachable (Status Code 404 received)";
+      } else {
+        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
+      }
     }
-
+    isSuccess = true;
+    message = "";
     return {
       isSuccess,
       message,
@@ -212,6 +225,39 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             dataToPrefill={dataToPrefill}
           />
         </DrawerBody>
+        <Box
+          position="absolute"
+          top="5rem"
+          bottom="0"
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}
+          left="0"
+          right="0"
+          height="100%"
+          width="100%"
+          backgroundColor="blackAlpha.800"
+          rounded="lg"
+          visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
+          borderTop="solid .1rem"
+          borderColor="teal.200">
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
+            - You are not whitelisted -
+          </Text>
+          <Button
+            variant="solid"
+            colorScheme="teal"
+            px={7}
+            py={6}
+            rounded="lg"
+            mt={7}
+            onClick={() => {
+              navigate("/getwhitelisted");
+            }}>
+            Find out how you can get whitelisted
+          </Button>
+        </Box>
       </DrawerContent>
     </Drawer>
   );

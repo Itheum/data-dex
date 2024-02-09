@@ -81,7 +81,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
 
-  const dataNFTMarshalService: string = "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
+  const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   // React hook form + yup integration
@@ -203,6 +203,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxFail = (_foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
@@ -691,7 +692,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
-          <Button mt="5" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit}>
+          <Button
+            mt="5"
+            colorScheme="teal"
+            isLoading={isMintingModalOpen}
+            onClick={dataNFTSellSubmit}
+            isDisabled={!userData?.userWhitelistedForMint && userData?.contractWhitelistEnabled}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>
