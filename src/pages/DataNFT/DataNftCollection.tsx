@@ -1,8 +1,8 @@
 import React, { FC } from "react";
-import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip } from "@chakra-ui/react";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
+import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip, Box, useColorMode } from "@chakra-ui/react";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
 import { useMarketStore } from "store";
@@ -37,6 +37,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const { chainID } = useGetNetworkConfig();
   const { loginMethod } = useGetLoginInfo();
+  const { colorMode } = useColorMode();
   return (
     <Skeleton
       transform={{ base: "scale(0.5) ", sm: "scale(0.6)", md: "scale(0.75)", xl: "scale(1)" }}
@@ -60,12 +61,22 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
         height={"450px"}
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
-          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="28px">
-            {title}
-          </Text>
-          <Stack overflow={"hidden"} w={"100%"} h={"25%"}>
-            <Text overflow="hidden" textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
+          <Tooltip label={title}>
+            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" noOfLines={1}>
+              {title}
+            </Text>
+          </Tooltip>
+          <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
+            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="96%" pb="0.6rem">
               {description}
+              <Box
+                position="absolute"
+                bgGradient={colorMode === "dark" ? "linear(to-t, black, transparent)" : "linear(to-t, white, transparent)"}
+                h="4%"
+                w="50%"
+                top="33%"
+                zIndex="10"
+              />
             </Text>
           </Stack>
 

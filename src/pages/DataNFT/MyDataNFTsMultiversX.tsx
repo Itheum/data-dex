@@ -252,7 +252,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               )}
             </TabPanel>
             <TabPanel mt={2} width={"full"}>
-              {tabState === 3 && dataNfts.length > 0 ? (
+              {tabState === 3 ? (
                 <FavoriteCards />
               ) : (
                 <Flex onClick={getOnChainNFTs}>

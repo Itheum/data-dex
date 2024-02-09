@@ -135,21 +135,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   });
 
   const getAddressTokenInformation = () => {
-    const apiLink = getApi(chainID);
-    const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
-
-    axios
-      .get(nftApiLink)
-      .then((res) => {
-        if (res.data.identifier == tokenId) {
-          setAddressHasNft(true);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          setAddressHasNft(false);
-        }
-      });
+    if (isMxLoggedIn) {
+      const apiLink = getApi(chainID);
+      const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
+      axios
+        .get(nftApiLink)
+        .then((res) => {
+          if (res.data.identifier == tokenId) {
+            setAddressHasNft(true);
+          }
+        })
+        .catch((err) => {
+          if (err) {
+            setAddressHasNft(false);
+          }
+        });
+    }
   };
 
   useEffect(() => {
