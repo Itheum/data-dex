@@ -318,6 +318,7 @@ export const dataCATDemoUserData = {
       "group": "custom",
       "userId": "custom-x",
       "status": "stop",
+      "chainID": "D",
       "shortId": "1",
       "type": "1",
       "fromTs": 1528448026784,
