@@ -6,7 +6,6 @@ export const formatNumberRoundFloor = (num: number, decimals = 2) => {
 };
 
 export const formatNumberToShort = (number: number) => {
-  console.log(formatToMillions(13000000));
   if (number < 1000) {
     return formatToHundreds(number);
   } else if (number < 1000000) {
