@@ -22,14 +22,17 @@ const formatToHundreds = (number: number) => {
 const formatToThousands = (number: number) => {
   const thousands = Math.floor(number / 1000);
   const remainder = Math.floor((number % 1000) * 100) / 100;
-  return `${thousands},${remainder !== 0 ? remainder : ""}`;
+  const paddedRemainder = remainder < 10 ? `00${remainder}` : remainder < 100 ? `0${remainder}` : remainder;
+  return `${thousands},${paddedRemainder}`;
 };
 
 const formatToMillions = (number: number) => {
   const millions = Math.floor(number / 1000000);
   const thousands = Math.floor((number % 1000000) / 1000);
+  const paddedThousands = thousands < 10 ? `00${thousands}` : thousands < 100 ? `0${thousands}` : thousands;
   const remainder = Math.floor((number % 1000) * 100) / 100;
-  return `${millions},${thousands !== 0 ? `${thousands}` : ""},${remainder !== 0 ? remainder : ""}`;
+  const paddedRemainder = remainder < 10 ? `00${remainder}` : remainder < 100 ? `0${remainder}` : remainder;
+  return `${millions},${paddedThousands},${paddedRemainder}`;
 };
 //
 const BIG_NUMBER_ROUNDING_MODE = BigNumber.ROUND_FLOOR;
