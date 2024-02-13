@@ -50,7 +50,7 @@ import { DataNftCollectionType, DataNftMetadataType, OfferType } from "libs/Mult
 import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
-import { DataNftCollection } from "./DataNftCollection";
+import { DataNftCollectionCard } from "./DataNftCollection";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -324,7 +324,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     if (hasPendingTransactions) return;
                     navigate("/datanfts/marketplace/market");
                   }}>
-                  <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3}>
+                  <Flex ml={{ base: "0", md: "4.7rem" }} alignItems="center" py={3}>
                     <Icon as={FaStore} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                     <ConditionalRender
                       fallback={
@@ -355,7 +355,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     navigate("/datanfts/marketplace/my");
                   }}>
                   {isMxLoggedIn && (
-                    <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3}>
+                    <Flex ml={{ base: "0", md: "4.7rem" }} alignItems="center" py={3}>
                       <Icon as={FaBrush} size="0.95rem" mx={2} textColor={colorMode === "dark" ? "white" : "black"} />
                       <ConditionalRender
                         fallback={
@@ -381,7 +381,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               <Flex
                 pr={{ lg: "10" }}
                 gap={{ base: "5", lg: "20" }}
-                ml={{ base: "1.7rem", xl: 0 }}
                 flexDirection={{ base: "column", md: "row" }}
                 alignItems={"center"}
                 justifyContent={"center"}>
@@ -439,7 +438,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         ))
                       : Array.from(groupedOffers.entries()).map(([nonce, offer], index) => {
                           return (
-                            <DataNftCollection
+                            <DataNftCollectionCard
                               key={index}
                               index={index}
                               nftImageLoading={oneNFTImgLoaded && !loadingOffers}
