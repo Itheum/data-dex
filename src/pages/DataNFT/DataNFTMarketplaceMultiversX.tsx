@@ -308,8 +308,12 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
         <Box position="relative">
           <Tabs pt={10} index={tabState - 1}>
-            <TabList justifyContent={{ base: "start", lg: "space-between" }} overflowX={{ base: "scroll", md: "scroll", lg: "unset" }} overflowY="hidden">
-              <Flex>
+            <TabList
+              alignItems={{ base: "center", md: "start" }}
+              justifyContent={{ base: "center", lg: "space-between" }}
+              overflowX={{ base: "scroll", md: "scroll", lg: "unset" }}
+              flexDirection={{ base: "column", md: "row" }}>
+              <Flex flexDirection={{ base: "column", md: "row" }}>
                 <Tab
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
                   flexDirection="row"
@@ -374,19 +378,27 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 </Tab>
               </Flex>
 
-              <Flex pr={{ lg: "10" }} gap={{ base: "5", lg: "20" }} ml={{ base: "1.7rem", xl: 0 }}>
-                {!window.location.href.includes("my") && (
-                  <Checkbox isChecked={!showGroupedDataNfts} onChange={() => setShowGroupedDataNfts(!showGroupedDataNfts)} colorScheme={"teal"}>
-                    <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view all data NFTs ">
-                      <HStack spacing="10px" width={"100%"}>
-                        <Text align="center"> Show all offers </Text>
-                        <Stack>
-                          <MdOutlineInfo color={"teal"} />
-                        </Stack>
-                      </HStack>
-                    </Tooltip>
-                  </Checkbox>
-                )}
+              <Flex
+                pr={{ lg: "10" }}
+                gap={{ base: "5", lg: "20" }}
+                ml={{ base: "1.7rem", xl: 0 }}
+                flexDirection={{ base: "column", md: "row" }}
+                alignItems={"center"}
+                justifyContent={"center"}>
+                <Flex height={{ base: "20px", md: "100%" }}>
+                  {!window.location.href.includes("my") && (
+                    <Checkbox isChecked={!showGroupedDataNfts} onChange={() => setShowGroupedDataNfts(!showGroupedDataNfts)} colorScheme={"teal"}>
+                      <Tooltip colorScheme="teal" hasArrow label="Toggle this button to view all data NFTs ">
+                        <HStack spacing="10px" width={"100%"}>
+                          <Text align="center"> Show all offers </Text>
+                          <Stack>
+                            <MdOutlineInfo color={"teal"} />
+                          </Stack>
+                        </HStack>
+                      </Tooltip>
+                    </Checkbox>
+                  )}
+                </Flex>
                 {
                   <CustomPagination
                     pageCount={showGroupedDataNfts && tabState === 1 ? 1 : pageCount}
