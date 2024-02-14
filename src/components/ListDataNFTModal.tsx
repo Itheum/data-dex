@@ -14,6 +14,8 @@ import {
   Divider,
   useToast,
   useColorMode,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
@@ -22,8 +24,10 @@ import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { contractsForChain } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi } from "libs/utils";
+import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi, convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
+import { getOffersByIdAndNoncesFromBackendApi } from "../libs/MultiversX";
+import { labels } from "../libs/language";
 
 export type ListModalProps = {
   isOpen: boolean;
@@ -39,6 +43,7 @@ export type ListModalProps = {
 export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, offer, marketContract, amount, setAmount }: ListModalProps) {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
 
   const toast = useToast();
@@ -53,6 +58,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
+  const [priceFromApi, setPriceFromApi] = useState<number>(-1);
   const { tokenLogin, loginMethod } = useGetLoginInfo();
 
   const backendUrl = backendApi(chainID);
@@ -224,6 +230,49 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
     onClose();
   };
 
+  async function getTokenHistory(tokenIdArg: string) {
+    try {
+      const inputString = tokenIdArg;
+
+      // Extracting identifier
+      const identifier = inputString?.split("-").slice(0, 2).join("-");
+
+      // Extracting nonce
+      const nonceHex = inputString?.split("-")[2];
+      const nonceDec = parseInt(nonceHex, 16);
+
+      const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
+      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wanted_token_amount));
+      if (price !== Infinity) {
+        setPriceFromApi(price);
+      } else {
+        setPriceFromApi(-1);
+      }
+    } catch (err) {
+      if ((err as any).response.status === 404) {
+        toast({
+          title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+          description: (err as Error).message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: labels.ERR_API_ISSUE_DATA_NFT_OFFERS,
+          description: (err as Error).message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    }
+  }
+
+  useEffect(() => {
+    getTokenHistory(nftData.id);
+  }, [hasPendingTransactions]);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
@@ -251,6 +300,16 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
               </Box>
             </HStack>
 
+            {convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wanted_token_amount) > 0 && (
+              <Alert status="warning" rounded="lg" mt={3} fontSize="md">
+                <AlertIcon />
+                You want to list for {offer && Number(offer.wanted_token_amount)} ITHEUM which is lower by&nbsp;
+                {(((convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wanted_token_amount)) * 100) / convertWeiToEsdt(priceFromApi).toNumber()).toFixed(
+                  2
+                )}
+                % than the current lowest price ({convertWeiToEsdt(priceFromApi).toNumber()} ITHEUM).
+              </Alert>
+            )}
             <Box>
               <Flex fontSize="md" mt="2">
                 <Box w="140px">How many</Box>
