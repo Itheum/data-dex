@@ -34,6 +34,7 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
 import { useAccountStore } from "../../../store";
+import { date } from "yup";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -44,6 +45,9 @@ type TradeDataFormType = {
   datasetDescriptionForm: string;
   numberOfCopiesForm: number;
   royaltiesForm: number;
+  bondingAmount: number;
+  bondingPeriod: number;
+  withdrawOn: string;
 };
 
 type TradeFormProps = {
@@ -63,6 +67,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);
+  const [readLivelinessBonding, setReadLivelinessBonding] = useState<boolean>(false);
   const [isMintingModalOpen, setIsMintingModalOpen] = useState<boolean>(false);
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
   const [mintingSuccessful, setMintingSuccessful] = useState<boolean>(false);
@@ -144,7 +149,21 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(0, "Minimum value of royalties is 0%.")
       .max(maxRoyalties, `Maximum value of royalties is ${maxRoyalties}`)
       .required("Royalties is required"),
+
+    bondingAmount: Yup.number()
+      .typeError("Bonding amount must be a number.")
+      .min(10, "Minimum value of bonding amount is 10 ITHEUM.")
+      .required("Bond Deposit is required"),
+    bondingPeriod: Yup.number()
+      .typeError("Bonding period must be a number.")
+      .min(3, "Minimum value of bonding period is 3 months.")
+      .required("Bonding Period is required"),
+    withdrawOn: Yup.string().required("Withdraw On is required"),
   });
+
+  // Creating a date 3 months from now
+  const dateNow = new Date();
+  const withdrawDate = dateNow.setMonth(dateNow.getMonth() + 3);
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
@@ -161,6 +180,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
+      bondingAmount: 10,
+      bondingPeriod: 3,
+      withdrawOn: new Date(withdrawDate).toLocaleString(),
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
@@ -172,6 +194,9 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const datasetDescription: string = getValues("datasetDescriptionForm");
   const dataNFTCopies: number = getValues("numberOfCopiesForm");
   const dataNFTRoyalties: number = getValues("royaltiesForm");
+  const bondingAmount: number = getValues("bondingAmount");
+  const bondingPeriod: number = getValues("bondingPeriod");
+  const withdrawOn: string = getValues("withdrawOn");
 
   const closeProgressModal = () => {
     if (mintingSuccessful) {
@@ -629,6 +654,88 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
           </FormControl>
         </Box>
+      </Flex>
+
+      <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+        Liveliness Bonding
+      </Text>
+
+      <Flex flexDirection="row" gap="7" mt={2}>
+        <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
+          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+            Bonding Amount
+          </Text>
+
+          <Controller
+            control={control}
+            render={({ field: { onChange } }) => (
+              <NumberInput
+                mt="3 !important"
+                size="md"
+                id="bondingAmount"
+                maxW={24}
+                step={1}
+                defaultValue={bondingAmount}
+                min={10}
+                max={maxRoyalties > 0 ? maxRoyalties : 0}
+                isValidCharacter={isValidNumericCharacter}
+                onChange={(event) => onChange(event)}>
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            )}
+            name="bondingAmount"
+          />
+          <Text color="gray.400" fontSize="sm" mt={"1"}>
+            Min: 10 ITHEUM
+          </Text>
+          <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
+          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+            Bonding Period
+          </Text>
+          <Controller
+            control={control}
+            render={({ field: { onChange } }) => (
+              <NumberInput
+                mt="3 !important"
+                size="md"
+                id="bondingPeriod"
+                maxW={24}
+                step={1}
+                defaultValue={bondingPeriod}
+                isDisabled
+                min={3}
+                isValidCharacter={isValidNumericCharacter}
+                onChange={(event) => onChange(event)}>
+                <NumberInputField />
+              </NumberInput>
+            )}
+            name="bondingAmount"
+          />
+          <Text color="gray.400" fontSize="sm" mt={"1"}>
+            Min: 3 months
+          </Text>
+          <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.withdrawOn} maxW={"48%"}>
+          <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }} noOfLines={1}>
+            Dataset Description
+          </FormLabel>
+
+          <Controller
+            control={control}
+            render={({ field: { onChange } }) => <Input mt="1 !important" id={"withdrawOn"} defaultValue={withdrawOn} isDisabled />}
+            name="datasetDescriptionForm"
+          />
+          <FormErrorMessage>{errors?.withdrawOn?.message}</FormErrorMessage>
+        </FormControl>
       </Flex>
 
       <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important">
