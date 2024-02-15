@@ -449,12 +449,14 @@ export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<
     "multiversxbubbles": [],
     "multiversxinfographics": [3],
     "nftunes": [2],
+    "timecapsule": [57],
   },
   "1": {
     "trailblazer": [1],
     "multiversxbubbles": [2],
     "multiversxinfographics": [3],
     "nftunes": [4],
+    "timecapsule": [5],
   },
 };
 
@@ -464,11 +466,13 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://test.explorer.itheum.io/nftunes",
+    "timecapsule": "https://test.explorer.itheum.io/timecapsule",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://explorer.itheum.io/nftunes",
+    "timecapsule": "https://explorer.itheum.io/timecapsule",
   },
 };
