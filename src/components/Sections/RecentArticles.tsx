@@ -5,19 +5,19 @@ const RecentArticles = () => {
   return (
     <Flex flexWrap="wrap" gap={5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
+        date="1 Feb, 2024"
+        title="Data Ownership Redefined: An Introduction to Itheum"
+        description="It’s time to reverse it and give the power back to people through emerging data NFT technology"
+        link="https://cointelegraph.com/sponsored/itheum-data-ownership-redefined"
+        imgLink="https://cointelegraph.com/sponsored/itheum-data-ownership-redefined-demo/wp-content/uploads/2023/12/photo-2-1.png"
+      />
+
+      <ArticleCard
         date="25 Jul, 2023"
         title="Itheum launches Data NFT technology on CanaryNet"
         description="With this significant milestone, the time has come to re-define data ownership"
         link="https://cointelegraph.com/press-releases/itheum-launches-data-nft-technology-on-canarynet-redefining-data-ownership"
         imgLink="https://images.cointelegraph.com/images/1434_aHR0cHM6Ly9zMy5jb2ludGVsZWdyYXBoLmNvbS9zdG9yYWdlL3VwbG9hZHMvdmlldy8yMzQwMTg1MzQ5Njk5M2U0ZmY5OGU0NTUwMTE0N2I3Yy5qcGc=.jpg"
-      />
-
-      <ArticleCard
-        date="6 Jul, 2023"
-        title="Unlocking Benefits for the Itheum Community"
-        description="The Trailblazer Data NFT unites and rewards Web3 communities like never before"
-        link="https://medium.com/itheum-newsletter/a-new-world-of-opportunities-unlocking-benefits-for-the-itheum-community-with-the-trailblazer-58737af13c98"
-        imgLink="https://miro.medium.com/v2/resize:fit:1400/0*iWMPkFxk_pg59zlK"
       />
 
       <ArticleCard

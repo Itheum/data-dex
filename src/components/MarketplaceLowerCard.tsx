@@ -31,13 +31,13 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
+
   return (
     <>
       <HStack justifyContent="stretch">
@@ -48,11 +48,11 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
 
       {!isMyNft ? (
         isMxLoggedIn && (
-          <HStack>
+          <HStack mt={2}>
             <Flex flexDirection="row">
               <Box>
                 <Text fontSize="md" mb="1">
-                  Amount{" "}
+                  Quantity{" "}
                 </Text>
                 <NumberInput
                   size="md"
@@ -93,7 +93,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                 onClick={() => {
                   onProcureModalOpen();
                 }}>
-                Purchase Data
+                Buy Data NFT
               </Button>
             </Flex>
           </HStack>

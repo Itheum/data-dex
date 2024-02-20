@@ -303,7 +303,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           Data NFT Marketplace
         </Heading>
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
+          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer data traders
         </Heading>
 
         <Box position="relative">

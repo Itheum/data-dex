@@ -144,13 +144,13 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
                     {address && address == nftMetadata[index].creator && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are the Creator</Text>
+                        <Text>You Created this</Text>
                       </Badge>
                     )}
 
                     {address && address == offer.owner && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are Owner</Text>
+                        <Text>You Own this</Text>
                       </Badge>
                     )}
 
@@ -174,7 +174,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               <>
                 <Box fontSize="xs" mt="2">
                   <Text>
-                    Unlock from: {` `}
+                    Get from: {` `}
                     {printPrice(
                       convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
                       getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)

@@ -80,7 +80,15 @@ export class DataNftMarketContract {
     }
   }
 
-  async sendAcceptOfferEsdtTransaction(index: number, paymentAmount: string, tokenId: string, amount: number, sender: string, callbackRoute?: string) {
+  async sendAcceptOfferEsdtTransaction(
+    index: number,
+    paymentAmount: string,
+    tokenId: string,
+    amount: number,
+    sender: string,
+    callbackRoute?: string,
+    showCustomMintMsg?: boolean
+  ) {
     const data =
       new BigNumber(paymentAmount).comparedTo(0) > 0
         ? new ContractCallPayloadBuilder()
@@ -108,12 +116,14 @@ export class DataNftMarketContract {
 
     await refreshAccount();
 
+    const actionMsg = showCustomMintMsg ? "Minting Data NFT" : "Accepting offer";
+
     const { sessionId, error } = await sendTransactions({
       transactions: offerEsdtTx,
       transactionsDisplayInfo: {
-        processingMessage: "Accepting offer",
-        errorMessage: "Error occurred during accepting offer",
-        successMessage: "Offer accepted successfully",
+        processingMessage: actionMsg,
+        errorMessage: `${actionMsg} failed :(`,
+        successMessage: `${actionMsg} successful!`,
       },
       redirectAfterSign: callbackRoute ? true : false,
       callbackRoute: callbackRoute ?? window.location.pathname,
@@ -129,7 +139,8 @@ export class DataNftMarketContract {
     nonce: number,
     amount: number,
     senderAddress: string,
-    callbackRoute?: string
+    callbackRoute?: string,
+    showCustomMintMsg?: boolean
   ) {
     const offerEsdtTx = new Transaction({
       value: 0,
@@ -151,12 +162,14 @@ export class DataNftMarketContract {
 
     await refreshAccount();
 
+    const actionMsg = showCustomMintMsg ? "Minting Data NFT" : "Accepting offer";
+
     const { sessionId, error } = await sendTransactions({
       transactions: offerEsdtTx,
       transactionsDisplayInfo: {
-        processingMessage: "Accepting offer",
-        errorMessage: "Error occurred during accepting offer",
-        successMessage: "Offer accepted successfully",
+        processingMessage: actionMsg,
+        errorMessage: `${actionMsg} failed :(`,
+        successMessage: `${actionMsg} successful!`,
       },
       redirectAfterSign: callbackRoute ? true : false,
       callbackRoute: callbackRoute ?? window.location.pathname,
@@ -165,7 +178,7 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async sendAcceptOfferEgldTransaction(index: number, paymentAmount: string, amount: number, senderAddress: string) {
+  async sendAcceptOfferEgldTransaction(index: number, paymentAmount: string, amount: number, senderAddress: string, showCustomMintMsg?: boolean) {
     const offerEgldTx = new Transaction({
       value: paymentAmount,
       data: new ContractCallPayloadBuilder()
@@ -181,12 +194,14 @@ export class DataNftMarketContract {
 
     await refreshAccount();
 
+    const actionMsg = showCustomMintMsg ? "Minting Data NFT" : "Accepting Offer";
+
     const { sessionId, error } = await sendTransactions({
       transactions: offerEgldTx,
       transactionsDisplayInfo: {
-        processingMessage: "Accepting offer",
-        errorMessage: "Error occurred during accepting offer",
-        successMessage: "Offer accepted successfully",
+        processingMessage: actionMsg,
+        errorMessage: `${actionMsg} failed :(`,
+        successMessage: `${actionMsg} successful!`,
       },
       redirectAfterSign: false,
     });
@@ -214,7 +229,7 @@ export class DataNftMarketContract {
       transactions: cancelTx,
       transactionsDisplayInfo: {
         processingMessage: "Cancelling offer",
-        errorMessage: "Error occurred during offer cancellation",
+        errorMessage: "Cancelling offer failed :(",
         successMessage: "Offer cancelled successfully",
       },
       redirectAfterSign: false,
@@ -249,7 +264,7 @@ export class DataNftMarketContract {
       transactions: addERewTx,
       transactionsDisplayInfo: {
         processingMessage: "Adding Data NFT to marketplace",
-        errorMessage: "Error occurred",
+        errorMessage: "Adding Data NFT to marketplace failed :(",
         successMessage: "Data NFT added to marketplace",
       },
       redirectAfterSign: false,
@@ -280,8 +295,8 @@ export class DataNftMarketContract {
     const { sessionId, error } = await sendTransactions({
       transactions: tx,
       transactionsDisplayInfo: {
-        processingMessage: "De-Listing offer",
-        errorMessage: "Error occurred during de-listing offer",
+        processingMessage: "De-listing offer",
+        errorMessage: "De-listing offer failed :(",
         successMessage: "Offer de-listed successfully",
       },
       redirectAfterSign: false,
@@ -523,7 +538,7 @@ export class DataNftMarketContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "Updating price",
-        errorMessage: "Error occurred during updating price",
+        errorMessage: "Updating price failed :(",
         successMessage: "Fee updated successfully",
       },
       redirectAfterSign: false,
