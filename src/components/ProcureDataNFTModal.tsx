@@ -29,6 +29,7 @@ import {
   tokenDecimals,
   getTokenWantedRepresentation,
   backendApi,
+  getApiDataMarshal,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 
@@ -341,7 +342,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
             </Box>
 
             <DataNFTLiveUptime
-              dataMarshal={nftData.dataMarshal}
+              dataMarshal={getApiDataMarshal(chainID)}
               NFTId={nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
