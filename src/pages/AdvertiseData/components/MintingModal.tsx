@@ -47,7 +47,7 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Data NFT Minting Progress</ModalHeader>
+        <ModalHeader>Data NFT Collection Minting Progress</ModalHeader>
         {!!errDataNFTStreamGeneric && <ModalCloseButton />}
         <ModalBody pb={6}>
           <Stack spacing={5}>
