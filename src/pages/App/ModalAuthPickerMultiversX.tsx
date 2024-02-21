@@ -85,9 +85,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
     expirySeconds: 3600,
   };
   const commonProps = {
-    nativeAuth: {
-      ...nativeAuthProps,
-    },
+    nativeAuth: true,
     callbackRoute: pathname,
   };
 
