@@ -161,7 +161,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                 </Flex>
 
                 <Box display="flex" justifyContent="flex-start" mt="2">
-                  <Text fontSize="xs">{`Creation time:   ${moment(nftMetadata[index].creationTime).format(uxConfig.dateStr)}`}aaaa</Text>
+                  <Text fontSize="xs">{`Creation time:   ${moment(nftMetadata[index].creationTime).format(uxConfig.dateStr)}`}</Text>
                 </Box>
 
                 <Box color="gray.600" fontSize="sm">

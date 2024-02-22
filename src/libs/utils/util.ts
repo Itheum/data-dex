@@ -305,3 +305,7 @@ export const getTypedValueFromContract = async (chainID: string, methodForContra
     return -1;
   }
 };
+
+export const getLivelinessScore = (days: number) => {
+  return (100 / 90) * days;
+};
