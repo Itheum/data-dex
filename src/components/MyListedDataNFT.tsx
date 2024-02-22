@@ -34,7 +34,7 @@ import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataNFTProps = {
   offer: Offer;
-  offers: Record<any, any>;
+  offers: Record<any, Offer>;
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
@@ -226,11 +226,11 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                           if (marketRequirements) {
                             setNewListingPrice(
                               convertWeiToEsdt(
-                                new BigNumber(offers[index].wanted_token_amount)
+                                new BigNumber(offers[index].wantedTokenAmount)
                                   .multipliedBy(amountOfTokens[index])
                                   .multipliedBy(10000)
                                   .div(10000 + marketRequirements.buyerTaxPercentage),
-                                tokenDecimals(offers[index].wanted_token_identifier)
+                                tokenDecimals(offers[index].wantedTokenIdentifier)
                               ).toNumber()
                             );
                           } else {

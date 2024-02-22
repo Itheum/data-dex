@@ -15,7 +15,7 @@ import {
   useToast,
   useColorMode,
 } from "@chakra-ui/react";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
 
@@ -23,6 +23,7 @@ import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { contractsForChain } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
+import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi, getApiDataMarshal } from "libs/utils";
 import { useMarketStore } from "store";
 
@@ -31,8 +32,8 @@ export type ListModalProps = {
   onClose: () => void;
   sellerFee: number;
   nftData: any;
-  offer: any;
-  marketContract: any;
+  offer: Partial<Offer>;
+  marketContract: DataNftMarketContract;
   amount: number;
   setAmount: (amount: number) => void;
 };
@@ -42,14 +43,14 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const { address } = useGetAccountInfo();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const toast = useToast();
-  const fullPrice = amount * offer.wanted_token_amount;
+  const fullPrice = amount * Number(offer.wantedTokenAmount);
   const priceWithSellerFee = fullPrice - (fullPrice * sellerFee) / 10000;
   const priceWithSellerFeeAndRoyalties = priceWithSellerFee - priceWithSellerFee * nftData.royalties;
   const feePrice =
     address !== nftData.creator
-      ? printPrice(priceWithSellerFeeAndRoyalties, getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce))
-      : printPrice(priceWithSellerFee, getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce));
-  const fee = offer.wanted_token_amount;
+      ? printPrice(priceWithSellerFeeAndRoyalties, getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0))
+      : printPrice(priceWithSellerFee, getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0));
+  const fee = offer.wantedTokenAmount;
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
@@ -92,15 +93,15 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
   async function addOfferBackend(
     txHash = listTxHash,
-    offered_token_identifier = nftData.collection,
-    offered_token_nonce = nftData.nonce,
-    offered_token_amount = 1,
+    offeredTokenIdentifier = nftData.collection,
+    offeredTokenNonce = nftData.nonce,
+    offeredTokenAmount = 1,
     title = nftData.title,
     description = nftData.description,
-    wanted_token_identifier = offer.wanted_token_identifier,
-    wanted_token_nonce = offer.wanted_token_nonce,
-    wanted_token_amount = Number(
-      (Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000) * Number(10 ** 18)
+    wantedTokenIdentifier = offer.wantedTokenIdentifier,
+    wantedTokenNonce = offer.wantedTokenNonce,
+    wantedTokenAmount = Number(
+      (Number(offer.wantedTokenAmount) + (Number(offer.wantedTokenAmount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000) * Number(10 ** 18)
     ).toString(),
     quantity = amount * 1,
     owner = address
@@ -135,17 +136,17 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       };
 
       const requestBody = {
-        index: index,
-        offered_token_identifier: offered_token_identifier,
-        offered_token_nonce: offered_token_nonce,
-        offered_token_amount: offered_token_amount,
-        title: title,
-        description: description,
-        wanted_token_identifier: wanted_token_identifier,
-        wanted_token_nonce: wanted_token_nonce,
-        wanted_token_amount: wanted_token_amount,
-        quantity: quantity,
-        owner: owner,
+        index,
+        offeredTokenIdentifier,
+        offeredTokenNonce,
+        offeredTokenAmount,
+        title,
+        description,
+        wantedTokenIdentifier,
+        wantedTokenNonce,
+        wantedTokenAmount,
+        quantity,
+        owner,
       };
 
       const response = await fetch(`${backendUrl}/addOffer`, {
@@ -196,21 +197,21 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       }
     }
 
-    const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wanted_token_amount, address);
+    const { sessionId } = await marketContract.addToMarket(nftData.collection, nftData.nonce, amount, offer.wantedTokenAmount ?? 0, address);
     if (isWebWallet) {
-      const price = Number(offer.wanted_token_amount) + (Number(offer.wanted_token_amount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
+      const price = Number(offer.wantedTokenAmount) + (Number(offer.wantedTokenAmount) * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
       sessionStorage.setItem(
         "web-wallet-tx",
         JSON.stringify({
           type: "add-offer-tx",
-          offered_token_identifier: nftData.collection,
-          offered_token_nonce: nftData.nonce,
-          offered_token_amount: 1,
+          offeredTokenIdentifier: nftData.collection,
+          offeredTokenNonce: nftData.nonce,
+          offeredTokenAmount: 1,
           title: nftData.title,
           description: nftData.description,
-          wanted_token_identifier: offer.wanted_token_identifier,
-          wanted_token_nonce: offer.wanted_token_nonce,
-          wanted_token_amount: Number(price * Number(10 ** 18)).toString(),
+          wantedTokenIdentifier: offer.wantedTokenIdentifier,
+          wantedTokenNonce: offer.wantedTokenNonce,
+          wantedTokenAmount: Number(price * Number(10 ** 18)).toString(),
           quantity: amount * 1,
           owner: address,
         })
@@ -263,8 +264,8 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                     <>
                       {": "}
                       {printPrice(
-                        new BigNumber(offer.wanted_token_amount).toNumber(),
-                        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                        new BigNumber(offer.wantedTokenAmount ?? 0).toNumber(),
+                        getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0)
                       )}
                     </>
                   ) : (
@@ -277,10 +278,10 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                 <Box w="140px">Seller Tax (per NFT)</Box>
                 <Box>
                   :{" "}
-                  {`${sellerFee / 100}% (${new BigNumber(offer.wanted_token_amount)
+                  {`${sellerFee / 100}% (${new BigNumber(offer.wantedTokenAmount ?? 0)
                     .multipliedBy(sellerFee)
                     .div(10000)
-                    .toNumber()} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
+                    .toNumber()} ${getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0)})`}
                 </Box>
               </Flex>
 
@@ -290,8 +291,8 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                   <Box>
                     :{" "}
                     {`${convertToLocalString(nftData.royalties * 100)}% (${convertToLocalString(
-                      new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties)
-                    )} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`}
+                      new BigNumber(offer.wantedTokenAmount ?? 0).multipliedBy((1 - sellerFee / 10000) * nftData.royalties)
+                    )} ${getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0)})`}
                   </Box>
                 </Flex>
               )}
@@ -302,7 +303,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                   {": "}
                   {
                     <>
-                      {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice * amount, 2)} USD)` : ""}
+                      {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(Number(fee) * itheumPrice * amount, 2)} USD)` : ""}
                     </>
                   }
                 </Box>
@@ -312,20 +313,20 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
                 <Box>
                   {
                     <>
-                      {new BigNumber(offer.wanted_token_amount).comparedTo(0) <= 0 ? (
+                      {new BigNumber(offer.wantedTokenAmount ?? 0).comparedTo(0) <= 0 ? (
                         ""
                       ) : (
                         <>
-                          {" " + convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy(amount)) + " "}
-                          {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          {" " + convertToLocalString(new BigNumber(offer.wantedTokenAmount ?? 0).multipliedBy(amount)) + " "}
+                          {getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0)}
                           {" - "}
-                          {convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy(amount).multipliedBy(sellerFee).div(10000))}
-                          {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          {convertToLocalString(new BigNumber(offer.wantedTokenAmount ?? 0).multipliedBy(amount).multipliedBy(sellerFee).div(10000))}
+                          {" " + getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0)}
                           {address != nftData.creator && (
                             <>
                               {" - "}
-                              {convertToLocalString(new BigNumber(offer.wanted_token_amount).multipliedBy((1 - sellerFee / 10000) * nftData.royalties))}
-                              {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                              {convertToLocalString(new BigNumber(offer.wantedTokenAmount ?? 0).multipliedBy((1 - sellerFee / 10000) * nftData.royalties))}
+                              {" " + getTokenWantedRepresentation(offer.wantedTokenIdentifier ?? "", offer.wantedTokenNonce ?? 0)}
                             </>
                           )}
                         </>

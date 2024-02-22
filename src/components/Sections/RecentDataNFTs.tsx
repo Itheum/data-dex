@@ -8,7 +8,6 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { getFavoritesFromBackendApi, getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { RecentDataNFTType } from "libs/types";
 import { convertWeiToEsdt, hexZero, sleep } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
@@ -43,13 +42,12 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   const [loadedOffers, setLoadedOffers] = useState<boolean>(false);
   const [latestOffers, setLatestOffers] = useState<RecentDataNFTType[]>(latestOffersSkeleton);
   const { tokenLogin } = useGetLoginInfo();
-  // console.log(latestOffers);
+
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const favoriteNfts = useAccountStore((state) => state.favoriteNfts);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
 
   const marketContract = new DataNftMarketContract(chainID);
-  const mintContract = new DataNftMintContract(chainID);
 
   useEffect(() => {
     apiWrapper();
@@ -67,7 +65,6 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites, "FAVO");
       updateFavoriteNfts(getFavourites);
     }
   };
@@ -164,7 +161,6 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   if (isMxLoggedIn) {
     skeletonHeight = { base: "240px", md: "170px", "2xl": "190px" };
   }
-  console.log(latestOffers, "latestOffers");
   return (
     <>
       <Heading as="h4" fontFamily="Clash-Medium" fontWeight="semibold" size={(headingSize as any) || "lg"} mb="5" textAlign={["center", "initial"]}>

@@ -126,7 +126,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
+      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.contract.getContractAddress().bech32());
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, []);
@@ -155,7 +155,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = await marketContract.viewNumberOfOffers();
+        _numberOfOffers = (await marketContract.viewNumberOfOffers()) ?? 0;
       } else {
         // offers of User
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);

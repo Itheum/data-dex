@@ -48,6 +48,7 @@ export class DataNftMarketContract {
     } else {
       offerEsdtTx = this.contract.acceptOfferWithNoPayment(new Address(sender), index, amount);
     }
+    offerEsdtTx.setGasLimit(20000000);
 
     await refreshAccount();
 

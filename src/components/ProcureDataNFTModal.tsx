@@ -168,7 +168,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
     const paymentAmount = new BigNumber(offer.wantedTokenAmount).multipliedBy(amount);
 
-    if (offer.wanted_token_identifier == "EGLD") {
+    if (offer.wantedTokenIdentifier == "EGLD") {
       marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address, showCustomMintMsg);
     } else {
       if (offer.wantedTokenNonce === 0) {
@@ -195,12 +195,11 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           setSessionId(sessionId);
         }
       } else {
-        const { sessionId } = await marketContract.sendAcceptOfferNftEsdtTransaction(
+        const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
           offer.wantedTokenIdentifier,
-          offer.wantedTokenNonce,
-          amount as never,
+          amount,
           address,
           "",
           showCustomMintMsg

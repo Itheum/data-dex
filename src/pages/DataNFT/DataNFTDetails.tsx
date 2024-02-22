@@ -25,6 +25,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -40,8 +41,7 @@ import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
-import { useLocalStorage } from "libs/hooks";
+import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
@@ -58,7 +58,6 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -107,7 +106,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
-  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
@@ -232,7 +230,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       setTotalOffers(_offers);
-      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wanted_token_amount));
+      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {
         setPriceFromApi(price);
       } else {
@@ -671,7 +669,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   .map((to: any, index: number) => (
                                     <Fragment key={index}>
                                       <GridItem flexDirection="column" colSpan={2} fontSize="sm">
-                                        {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
+                                        {marketRequirements && getOfferPrice(Number(to.wantedTokenAmount))}
                                       </GridItem>
                                       <GridItem flexDirection="column" colSpan={1} fontSize="sm">
                                         {to.quantity}
