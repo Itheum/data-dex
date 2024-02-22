@@ -12,17 +12,18 @@ import {
   Flex,
   Box,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
 
 type MarketplaceLowerCardProps = {
-  offer: OfferType;
+  offer: Offer;
   nftMetadata: DataNftMetadataType;
 };
 
@@ -31,28 +32,28 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
+
   return (
     <>
       <HStack justifyContent="stretch">
         <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
-        <ExploreAppButton nonce={offer.offered_token_nonce} />
+        <ExploreAppButton nonce={offer.offeredTokenNonce} />
       </HStack>
 
       {!isMyNft ? (
         isMxLoggedIn && (
-          <HStack>
+          <HStack mt={2}>
             <Flex flexDirection="row">
               <Box>
                 <Text fontSize="md" mb="1">
-                  Amount{" "}
+                  Quantity{" "}
                 </Text>
                 <NumberInput
                   size="md"
@@ -93,7 +94,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                 onClick={() => {
                   onProcureModalOpen();
                 }}>
-                Purchase Data
+                Buy Data NFT
               </Button>
             </Flex>
           </HStack>
