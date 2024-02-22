@@ -241,40 +241,15 @@ export class DataNftMarketContract {
     }
   }
 
-  //TODO: change to SDK
   async viewOffers(startIndex: number, stopIndex: number): Promise<Offer[]> {
-    // this will spread out a new array from startIndex to stopIndex e.g. startIndex=0, stopIndex=5 : you get [1,2,3,4,5]
-    const indexRange = Array.from({ length: stopIndex - startIndex }, (_, i) => new U64Value(startIndex + 1 + i));
-
-    const interaction = this.contract.methodsExplicit.viewOffers(indexRange);
-    const query = interaction.buildQuery();
-
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
-
-      const res = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (!firstValue || !returnCode.isSuccess()) {
-        console.error(returnMessage);
-        return [];
+      const indexRange = [];
+      for (let i = startIndex; i < stopIndex; i++) {
+        indexRange.push(i + 1);
       }
+      const offers = this.contract.viewOffers(indexRange);
 
-      const values = firstValue.valueOf();
-      const decoded = values.map((value: any) => ({
-        index: value.offer_id.toNumber(),
-        owner: value.owner.toString(),
-        offered_token_identifier: value.offered_token_identifier.toString(),
-        offered_token_nonce: value.offered_token_nonce.toNumber(),
-        offered_token_amount: value.offered_token_amount.toFixed(),
-        wanted_token_identifier: value.wanted_token_identifier.toString(),
-        wanted_token_nonce: value.wanted_token_nonce.toNumber(),
-        wanted_token_amount: value.wanted_token_amount.toFixed(),
-        quantity: value.quantity.toNumber(),
-      }));
-
-      return decoded;
+      return offers;
     } catch (e) {
       console.error(e);
       this.toast({
@@ -287,36 +262,11 @@ export class DataNftMarketContract {
     }
   }
 
-  //TODO: add user address when SDK supports it
   async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<Offer[]> {
-    const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex);
-
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, userAddress);
 
-      const res = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (!firstValue || !returnCode.isSuccess()) {
-        console.error(returnMessage);
-        return [];
-      }
-
-      const values = firstValue.valueOf();
-      const decoded = values.map((value: any) => ({
-        index: value.offer_id.toNumber(),
-        owner: value.owner.toString(),
-        offered_token_identifier: value.offered_token_identifier.toString(),
-        offered_token_nonce: value.offered_token_nonce.toNumber(),
-        offered_token_amount: value.offered_token_amount.toFixed(),
-        wanted_token_identifier: value.wanted_token_identifier.toString(),
-        wanted_token_nonce: value.wanted_token_nonce.toNumber(),
-        wanted_token_amount: value.wanted_token_amount.toFixed(),
-        quantity: value.quantity.toNumber(),
-      }));
-
-      return decoded;
+      return pagedOffers;
     } catch (e) {
       console.error(e);
       this.toast({
@@ -329,37 +279,10 @@ export class DataNftMarketContract {
     }
   }
 
-  //TODO: change this to SDK when it supports it
   async viewOffer(index: number): Promise<Offer | undefined> {
-    const interaction = this.contract.methodsExplicit.viewOffer([new U64Value(index)]);
-    const query = interaction.buildQuery();
-
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
-
-      const res = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (!firstValue || !returnCode.isSuccess()) {
-        console.error(returnMessage);
-        return undefined;
-      }
-
-      const value = firstValue.valueOf();
-      const decoded = {
-        index: value.offer_id.toNumber(),
-        owner: value.owner.toString(),
-        offered_token_identifier: value.offered_token_identifier.toString(),
-        offered_token_nonce: value.offered_token_nonce.toNumber(),
-        offered_token_amount: value.offered_token_amount.toFixed(),
-        wanted_token_identifier: value.wanted_token_identifier.toString(),
-        wanted_token_nonce: value.wanted_token_nonce.toNumber(),
-        wanted_token_amount: value.wanted_token_amount.toFixed(),
-        quantity: value.quantity.toNumber(),
-      };
-
-      return decoded;
+      const offer = this.contract.viewOffer(index);
+      return offer;
     } catch (e) {
       console.error(e);
       this.toast({
