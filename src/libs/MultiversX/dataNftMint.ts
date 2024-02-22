@@ -122,9 +122,9 @@ export class DataNftMintContract {
     const { sessionId, error } = await sendTransactions({
       transactions: mintTransaction,
       transactionsDisplayInfo: {
-        processingMessage: "Minting Data NFT",
-        errorMessage: "Data NFT minting error",
-        successMessage: "Data NFT minted successfully",
+        processingMessage: "Minting Data NFT Collection",
+        errorMessage: "Collection minting failed :(",
+        successMessage: "Collection minted successfully!",
       },
       redirectAfterSign: false,
     });
@@ -152,7 +152,7 @@ export class DataNftMintContract {
       transactions: tx,
       transactionsDisplayInfo: {
         processingMessage: "Burning Data NFT",
-        errorMessage: "Error occurred during burning NFT",
+        errorMessage: "Burning Data NFT failed :(",
         successMessage: "Data NFT burnt",
       },
       redirectAfterSign: false,

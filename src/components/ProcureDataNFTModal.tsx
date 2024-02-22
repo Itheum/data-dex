@@ -29,6 +29,7 @@ import {
   tokenDecimals,
   getTokenWantedRepresentation,
   backendApi,
+  getApiDataMarshal,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
@@ -41,25 +42,20 @@ export interface ProcureAccessModalProps {
   offer: Offer;
   amount: number;
   setSessionId?: (e: any) => void;
+  showCustomMintMsg?: boolean;
 }
 
-export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId }: ProcureAccessModalProps) {
+export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId, showCustomMintMsg }: ProcureAccessModalProps) {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-
   const { colorMode } = useColorMode();
-
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(chainID);
-
   const { tokenLogin, loginMethod } = useGetLoginInfo();
-
   const isWebWallet = loginMethod === "wallet";
-
   const backendUrl = backendApi(chainID);
-
   const feePrice = printPrice(
     convertWeiToEsdt(Number(offer.wantedTokenAmount) * amount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
     getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
@@ -68,14 +64,11 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
-
   const [purchaseSessionId, setPurchaseSessionId] = useState<string>("");
   const [purchaseTxStatus, setPurchaseTxStatus] = useState<boolean>(false);
-
   const trackPurchaseTxStatus = useTrackTransactionStatus({
     transactionId: purchaseSessionId,
   });
-
   const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
 
   useEffect(() => {
@@ -175,8 +168,8 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
     const paymentAmount = new BigNumber(offer.wantedTokenAmount).multipliedBy(amount);
 
-    if (offer.wantedTokenIdentifier == "EGLD") {
-      marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
+    if (offer.wanted_token_identifier == "EGLD") {
+      marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address, showCustomMintMsg);
     } else {
       if (offer.wantedTokenNonce === 0) {
         //Check if we buy all quantity, use web wallet and are on that offer's details page and thus should use callback route
@@ -190,7 +183,8 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           offer.wantedTokenIdentifier,
           amount as never,
           address,
-          shouldUseCallbackRoute ? callbackRoute : undefined
+          shouldUseCallbackRoute ? callbackRoute : undefined,
+          showCustomMintMsg
         );
         setPurchaseSessionId(sessionId);
         if (isWebWallet) {
@@ -207,7 +201,9 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           offer.wantedTokenIdentifier,
           offer.wantedTokenNonce,
           amount as never,
-          address
+          address,
+          "",
+          showCustomMintMsg
         );
         setPurchaseSessionId(sessionId);
         if (isWebWallet) {
@@ -233,7 +229,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
-                <Text fontSize="lg">Procure Access to Data NFTs</Text>
+                <Text fontSize="lg">{showCustomMintMsg ? "Mint Data NFTs" : "Procure Access to Data NFTs"}</Text>
                 <Flex mt="1">
                   <Text
                     px="15px"
@@ -347,7 +343,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
             </Box>
 
             <DataNFTLiveUptime
-              dataMarshal={nftData.dataMarshal}
+              dataMarshal={getApiDataMarshal(chainID)}
               NFTId={nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}

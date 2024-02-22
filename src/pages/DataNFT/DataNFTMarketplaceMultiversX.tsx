@@ -98,7 +98,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [showGroupedDataNfts, setShowGroupedDataNfts] = useState(true);
   const [groupedOffers, setGroupedOffers] = useState<DataNftCollectionType[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
-
   const hasWebWalletTx = sessionStorage.getItem("web-wallet-tx");
 
   const setPageIndex = (newPageIndex: number) => {
@@ -288,12 +287,15 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   useEffect(() => {
     if (searchParams.has("tokenId") && searchParams.has("offerId")) {
       const tokenId = searchParams.get("tokenId");
-      const index = offers.findIndex((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce) === tokenId);
-      if (index !== -1) {
-        openNftDetailsModal(index);
-      }
+      const offerId = searchParams.get("offerId");
+      searchParams.delete("tokenId");
+      searchParams.delete("offerId");
+      setSearchParams(searchParams);
+      sleep(0.5).then(() => {
+        navigate(`/datanfts/marketplace/${tokenId}/offer-${offerId}`);
+      });
     }
-  }, [offers]);
+  }, []);
 
   return (
     <>
@@ -302,7 +304,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           Data NFT Marketplace
         </Heading>
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
+          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer data traders
         </Heading>
 
         <Box position="relative">
@@ -521,7 +523,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       </Stack>
       {offerForDrawer && (
         <>
-          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={true}>
+          <Modal onClose={onCloseDataNftDetails} isOpen={isOpenDataNftDetails} size="6xl" closeOnEsc={false} closeOnOverlayClick={false}>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(15px)" />
             <ModalContent overflowY="scroll" h="90%">
               <ModalHeader paddingBottom={0} bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>

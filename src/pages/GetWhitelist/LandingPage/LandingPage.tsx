@@ -42,8 +42,8 @@ export const LandingPage: React.FC = () => {
               It’s time to own and trade your data.
             </Text>
             <Text fontSize="lg" fontWeight="400" lineHeight="25px" my={4}>
-              Whether you’re a data creator, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the value of
-              your data. Transform your unique datasets into a new asset class by minting your very own Data NFTs.
+              Whether you’re a data creator, musician, researcher, content creator, analyst, gamer, or a pioneering project - you have the power to redefine the
+              value of your data. Transform your unique datasets into a new asset class by minting your very own Data NFTs.
             </Text>
             <Text fontSize="lg" fontWeight="400" lineHeight="25px">
               Don’t just be a part of the change, lead it.

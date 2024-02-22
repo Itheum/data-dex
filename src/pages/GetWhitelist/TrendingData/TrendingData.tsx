@@ -3,11 +3,20 @@ import { Box, Flex, Text, useColorMode } from "@chakra-ui/react";
 import bubbleImage from "assets/img/whitelist/BubbleImage.png";
 import infographicsImage from "assets/img/whitelist/InfographicsImage.png";
 import trailblazerImage from "assets/img/whitelist/TrailblazerImage.png";
+import nftunesImage from "assets/img/whitelist/NFTuneApp.png";
+import timecapsuleImage from "assets/img/whitelist/TimeCapsuleApp.png";
 import { TrendingDataCards } from "./components/TrendingDataCards";
 
 const cardContent = [
   {
     id: 1,
+    headerImage: nftunesImage,
+    title: "NF-Tunes",
+    description: "Empowering Indie musicians to engage with a fresh fan community and discover alternative avenues for music distribution",
+    url: "https://explorer.itheum.io/nftunes",
+  },
+  {
+    id: 2,
     headerImage: infographicsImage,
     title: "MultiversX Infographics",
     description:
@@ -15,7 +24,7 @@ const cardContent = [
     url: "https://explorer.itheum.io/multiversx-infographics",
   },
   {
-    id: 2,
+    id: 3,
     headerImage: bubbleImage,
     title: "MultiversX ESDT Bubbles",
     description:
@@ -23,11 +32,18 @@ const cardContent = [
     url: "https://explorer.itheum.io/multiversx-bubbles",
   },
   {
-    id: 3,
+    id: 4,
     headerImage: trailblazerImage,
     title: "Trailblazer",
-    description: "Hardcore community members unlock Project Alpha by owning their favourite project's TrailBlazer Data NFTs.",
+    description: "Hardcore community members unlock Project Alpha by owning their favorite project's TrailBlazer Data NFTs.",
     url: "https://explorer.itheum.io/project-trailblazer",
+  },
+  {
+    id: 5,
+    headerImage: timecapsuleImage,
+    title: "Time Capsule",
+    description: "Capture, archive, and relive historic social media events through media, preserving memories for future generations.",
+    url: "https://explorer.itheum.io/timecapsule",
   },
 ];
 export const TrendingData: React.FC = () => {

@@ -17,7 +17,7 @@ export const TradeData: React.FC = () => {
         Mint Data
       </Heading>
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
-        Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
+        Connect, mint and trade your Data Streams as Data NFTs in our Data NFT Marketplace
       </Heading>
       <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
         <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">

@@ -200,7 +200,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   {address && address == nftMetadata.creator && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
-                        You are the Creator
+                        You Created this
                       </Text>
                     </Box>
                   )}
@@ -208,7 +208,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   {address && address == offer?.owner && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                        You are Owner
+                        You Own this
                       </Text>
                     </Box>
                   )}
@@ -237,7 +237,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 <>
                   <Box fontSize="sm" mt="2">
                     <Text h="10 !important" noOfLines={2}>
-                      Unlock from: {` `}
+                      Get from: {` `}
                       {
                         <>
                           {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}

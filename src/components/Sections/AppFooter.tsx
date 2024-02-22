@@ -38,6 +38,9 @@ export default function () {
           <Link fontSize="xs" href="https://itheum.com/legal/datadex/privacypolicy" isExternal>
             Privacy Policy <ExternalLinkIcon mx={1} />
           </Link>
+          <Link fontSize="xs" href="https://stats.uptimerobot.com/D8JBwIo983" isExternal>
+            Status <ExternalLinkIcon mx={1} />
+          </Link>
         </HStack>
       </Flex>
     </Box>

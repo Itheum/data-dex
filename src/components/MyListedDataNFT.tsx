@@ -16,31 +16,21 @@ import {
   PopoverTrigger,
   Skeleton,
   Text,
-  Tooltip,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import moment from "moment/moment";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, uxConfig, PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
-import { useLocalStorage } from "libs/hooks";
+import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMetadataType } from "libs/MultiversX/types";
-import {
-  convertWeiToEsdt,
-  convertToLocalString,
-  getTokenWantedRepresentation,
-  hexZero,
-  tokenDecimals,
-  shouldPreviewDataBeEnabled,
-  viewDataDisabledMessage,
-} from "libs/utils";
+import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
 import PreviewDataButton from "./PreviewDataButton";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type MyListedDataNFTProps = {
   offer: Offer;
@@ -81,9 +71,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const { loginMethod } = useGetLoginInfo();
   const ChainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
-  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const userData = useMintStore((state) => state.userData);
@@ -157,13 +145,13 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
                     {address && address == nftMetadata[index].creator && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are the Creator</Text>
+                        <Text>You Created this</Text>
                       </Badge>
                     )}
 
                     {address && address == offer.owner && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are Owner</Text>
+                        <Text>You Own this</Text>
                       </Badge>
                     )}
 
@@ -187,7 +175,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               <>
                 <Box fontSize="xs" mt="2">
                   <Text>
-                    Unlock from: {` `}
+                    Get from: {` `}
                     {printPrice(
                       convertWeiToEsdt(offer.wantedTokenAmount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
                       getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)

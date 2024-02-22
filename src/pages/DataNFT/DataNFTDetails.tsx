@@ -109,7 +109,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { pathname } = useLocation();
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
-
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
 
@@ -135,21 +134,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   });
 
   const getAddressTokenInformation = () => {
-    const apiLink = getApi(chainID);
-    const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
-
-    axios
-      .get(nftApiLink)
-      .then((res) => {
-        if (res.data.identifier == tokenId) {
-          setAddressHasNft(true);
-        }
-      })
-      .catch((err) => {
-        if (err) {
-          setAddressHasNft(false);
-        }
-      });
+    if (isMxLoggedIn) {
+      const apiLink = getApi(chainID);
+      const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
+      axios
+        .get(nftApiLink)
+        .then((res) => {
+          if (res.data.identifier == tokenId) {
+            setAddressHasNft(true);
+          }
+        })
+        .catch((err) => {
+          if (err) {
+            setAddressHasNft(false);
+          }
+        });
+    }
   };
 
   useEffect(() => {
@@ -184,6 +184,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
     }
   }, [offerId, hasPendingTransactions]);
+
   function getTokenDetails() {
     const apiLink = getApi(chainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
@@ -286,11 +287,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   };
 
   const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
-    if (tokenId && offerId) {
+    if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
       setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
     }
   }, []);
+
+  const isCreatorListing = () => {
+    return nftData.attributes?.creator === offer?.owner;
+  };
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -384,7 +390,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       {offer && address && address != offer.owner && (
                         <Box h={14}>
                           <HStack gap={5}>
-                            <Text fontSize="xl">How many to procure </Text>
+                            <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "procure"} </Text>
                             <NumberInput
                               size="md"
                               maxW={24}
@@ -424,11 +430,20 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
+                            color="#000"
+                            bgGradient={isCreatorListing() ? "linear(to-r, #47D674, #F0F261)" : "initial"}
+                            _hover={
+                              isCreatorListing()
+                                ? {
+                                    animation: "Shake 1s linear infinite",
+                                  }
+                                : {}
+                            }
                             isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                             onClick={onProcureModalOpen}>
                             <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
-                              Purchase Data
+                              {isCreatorListing() ? "Mint Data NFT" : "Buy Data NFT"}
                             </Text>
                           </Button>
                         </Tooltip>
@@ -553,7 +568,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               alignItems="center"
                               justifyContent="center">
                               <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                                You are Owner
+                                You Own this
                               </Text>
                             </Box>
                           )}
@@ -708,6 +723,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               offer={offer}
               amount={amount}
               setSessionId={setSessionId}
+              showCustomMintMsg={isCreatorListing()}
             />
           )}
         </Box>

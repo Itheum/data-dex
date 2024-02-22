@@ -15,7 +15,6 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
-  Tooltip,
   useColorMode,
   useDisclosure,
   useToast,
@@ -36,9 +35,7 @@ import {
   sleep,
   getTokenWantedRepresentation,
   tokenDecimals,
-  shouldPreviewDataBeEnabled,
   backendApi,
-  viewDataDisabledMessage,
 } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";

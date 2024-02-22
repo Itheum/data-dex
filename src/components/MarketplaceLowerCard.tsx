@@ -9,23 +9,18 @@ import {
   NumberInputStepper,
   Text,
   useDisclosure,
-  useColorMode,
   Flex,
   Box,
-  Tooltip,
 } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
-import { useLocalStorage } from "libs/hooks";
 import { DataNftMetadataType } from "libs/MultiversX/types";
-import { isValidNumericCharacter, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
+import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type MarketplaceLowerCardProps = {
   offer: Offer;
@@ -33,19 +28,17 @@ type MarketplaceLowerCardProps = {
 };
 
 const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
-  const { chainID } = useGetNetworkConfig();
-  const { loginMethod, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-  const { colorMode } = useColorMode();
+  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const isMyNft = offer.owner === address;
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
+
   return (
     <>
       <HStack justifyContent="stretch">
@@ -56,11 +49,11 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
 
       {!isMyNft ? (
         isMxLoggedIn && (
-          <HStack>
+          <HStack mt={2}>
             <Flex flexDirection="row">
               <Box>
                 <Text fontSize="md" mb="1">
-                  Amount{" "}
+                  Quantity{" "}
                 </Text>
                 <NumberInput
                   size="md"
@@ -101,7 +94,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
                 onClick={() => {
                   onProcureModalOpen();
                 }}>
-                Purchase Data
+                Buy Data NFT
               </Button>
             </Flex>
           </HStack>
