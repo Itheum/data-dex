@@ -49,7 +49,7 @@ export default function ClaimsTxTable(props: { address: string }) {
       {
         id: "amount",
         accessorFn: (row) => formatNumberRoundFloor(row.amount / Math.pow(10, 18)),
-        header: "Amount",
+        header: "Quantity",
         footer: (footerProps) => footerProps.column.id,
       },
     ],

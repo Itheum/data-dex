@@ -1,8 +1,8 @@
-import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
-import { DataNftCollectionType, Favorite, OfferType, TrendingNft } from "./types";
+import { DataNftCollectionType, Favorite, TrendingNft } from "./types";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
   try {
@@ -119,13 +119,13 @@ export async function getOffersCountFromBackendApi(chainID: string, address?: st
   }
 }
 
-export async function getOffersFromBackendApi(chainID: string, from: number, size: number, address?: string): Promise<OfferType[]> {
+export async function getOffersFromBackendApi(chainID: string, from: number, size: number, address?: string): Promise<Offer[]> {
   try {
     let url = `${backendApi(chainID)}/offers?from=${from}&size=${size}`;
     if (address) {
       url += `&address=${address}`;
     }
-    const { data } = await axios.get<OfferType[]>(url, {
+    const { data } = await axios.get<Offer[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
     return data;
@@ -137,7 +137,7 @@ export async function getOffersFromBackendApi(chainID: string, from: number, siz
 
 export async function getOfersAsCollectionFromBackendApi(chainID: string): Promise<DataNftCollectionType[]> {
   try {
-    let url = `${backendApi(chainID)}/data-nfts`;
+    const url = `${backendApi(chainID)}/data-nfts`;
 
     const { data } = await axios.get<DataNftCollectionType[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
@@ -149,10 +149,10 @@ export async function getOfersAsCollectionFromBackendApi(chainID: string): Promi
   }
 }
 
-export async function getRecentOffersFromBackendApi(chainID: string): Promise<OfferType[]> {
+export async function getRecentOffersFromBackendApi(chainID: string): Promise<Offer[]> {
   try {
     const url = `${backendApi(chainID)}/offers/recent`;
-    const { data } = await axios.get<OfferType[]>(url, {
+    const { data } = await axios.get<Offer[]>(url, {
       timeout: uxConfig.mxAPITimeoutMs,
     });
 
@@ -169,7 +169,7 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   nonces: number[],
   from?: number,
   size?: number
-): Promise<OfferType[]> {
+): Promise<Offer[]> {
   if (nonces.length === 0) {
     throw Error("getOffersByIdAndNoncesFromBackendApi: nonces must not be empty.");
   }
@@ -182,7 +182,7 @@ export async function getOffersByIdAndNoncesFromBackendApi(
     url += `&size=${size}`;
   }
 
-  const { data } = await axios.get<OfferType[]>(url, {
+  const { data } = await axios.get<Offer[]>(url, {
     timeout: uxConfig.mxAPITimeoutMs,
   });
 

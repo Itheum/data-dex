@@ -41,4 +41,5 @@ export const labels = {
   "MINT_FORM_POPUP_INFO_ROYALTY": 'The "Creator Royalty" you will earn each time a copy is re-traded in the Data NFT Marketplace',
   "ADD_FAVORITE_FAILS": "Could not add to favorites. (ER-27)",
   "REMOVE_FAVORITE_FAILS": "Could not remove from favorites. (ER-28)",
+  "ERR_MARKET_NR_OFFERS_FAIL": "Could not fetch number of marketplace offers. (ER-29)",
 };

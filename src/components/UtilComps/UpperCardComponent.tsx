@@ -28,18 +28,19 @@ import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
   imageUrl: string;
   nftMetadata: DataNftMetadataType;
-  offer: OfferType;
+  offer: Offer;
   index: number;
   marketFreezedNonces: number[];
   children?: React.ReactNode;
@@ -71,11 +72,11 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
 
   const feePrice = offer
     ? printPrice(
-        convertWeiToEsdt(offer.wanted_token_amount as BigNumber.Value, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+        convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+        getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
       )
     : "";
-  const fee = offer ? convertWeiToEsdt(offer.wanted_token_amount as BigNumber.Value, tokenDecimals(offer.wanted_token_identifier)).toNumber() : 0;
+  const fee = offer ? convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber() : 0;
 
   const isMobile = window.innerWidth <= 480;
   return (
@@ -199,7 +200,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   {address && address == nftMetadata.creator && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#00C79730">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
-                        You are the Creator
+                        You Created this
                       </Text>
                     </Box>
                   )}
@@ -207,7 +208,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                   {address && address == offer?.owner && (
                     <Box borderRadius="md" px="3" py="1" bgColor="#0ab8ff30">
                       <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                        You are Owner
+                        You Own this
                       </Text>
                     </Box>
                   )}
@@ -236,7 +237,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
                 <>
                   <Box fontSize="sm" mt="2">
                     <Text h="10 !important" noOfLines={2}>
-                      Unlock from: {` `}
+                      Get from: {` `}
                       {
                         <>
                           {feePrice} {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
@@ -259,7 +260,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             (userData.addressFrozen ||
               (userData.frozenNonces &&
                 offer &&
-                (userData.frozenNonces.includes(offer.offered_token_nonce) || marketFreezedNonces.includes(offer.offered_token_nonce))))
+                (userData.frozenNonces.includes(offer.offeredTokenNonce) || marketFreezedNonces.includes(offer.offeredTokenNonce))))
           }
         />
       </Box>

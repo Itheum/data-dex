@@ -26,7 +26,7 @@ import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import {
   convertToLocalString,
   convertEsdtToWei,
@@ -39,9 +39,10 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type MyListedDataLowerCardProps = {
-  offer: OfferType;
+  offer: Offer;
   nftMetadata: DataNftMetadataType;
 };
 
@@ -134,7 +135,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
       const price = newPrice + (newPrice * (marketRequirements.buyerTaxPercentage ?? 200)) / 10000;
 
-      const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wanted_token_identifier)).toFixed() };
+      const requestBody = { price: convertEsdtToWei(price, tokenDecimals(offer.wantedTokenIdentifier)).toFixed() };
       const response = await fetch(`${backendUrl}/updateOffer/${index}`, {
         method: "POST",
         headers: headers,
@@ -182,8 +183,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
   const fee =
     marketRequirements && offer
       ? convertWeiToEsdt(
-          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + (marketRequirements.buyerTaxPercentage as number)),
-          tokenDecimals(offer.wanted_token_identifier)
+          new BigNumber(offer.wantedTokenAmount).multipliedBy(10000).div(10000 + (marketRequirements.buyerTaxPercentage as number)),
+          tokenDecimals(offer.wantedTokenIdentifier)
         ).toNumber()
       : 0;
 
@@ -247,7 +248,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
 
     const { sessionId: sessionIdTemp } = await contract.updateOfferPrice(
       offer.index,
-      convertEsdtToWei(newListingPrice, tokenDecimals(offer.wanted_token_identifier)).toFixed(),
+      convertEsdtToWei(newListingPrice, tokenDecimals(offer.wantedTokenIdentifier)).toFixed(),
       address
     );
     if (isWebWallet) {
@@ -287,8 +288,8 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
             if (marketRequirements) {
               setNewListingPrice(
                 convertWeiToEsdt(
-                  new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + marketRequirements.buyerTaxPercentage),
-                  tokenDecimals(offer.wanted_token_identifier)
+                  new BigNumber(offer.wantedTokenAmount).multipliedBy(10000).div(10000 + marketRequirements.buyerTaxPercentage),
+                  tokenDecimals(offer.wantedTokenIdentifier)
                 ).toNumber()
               );
             } else {
@@ -452,7 +453,7 @@ const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetad
                     Current Fee per Data NFT
                   </Box>
                   <Box fontSize="md">
-                    : {fee} {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}{" "}
+                    : {fee} {getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)}{" "}
                     {fee && itheumPrice ? `(~${convertToLocalString(fee * itheumPrice, 2)} USD)` : ""}
                   </Box>
                 </Flex>
