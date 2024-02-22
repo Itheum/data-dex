@@ -22,22 +22,6 @@ export interface DataNftMetadataType {
   collection: string;
 }
 
-export interface DataNftCondensedView {
-  data_nft_id: string; // API (as id)
-  offered_token_identifier: string; // SC
-  offered_token_nonce: number; // SC
-  offer_index: number; // SC
-  offered_token_amount: string; // SC
-  quantity: number; // SC
-  wanted_token_amount: string; // SC
-  creator: string; // api
-  tokenName: string; // api
-  title: string; // api
-  nftImgUrl?: string; // api
-  royalties: number; // api,
-  feePerSFT: number; // calculation,
-}
-
 export interface MarketplaceRequirementsType {
   acceptedTokens: string[];
   acceptedPayments: string[];

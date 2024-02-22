@@ -1,10 +1,7 @@
 import { useToast } from "@chakra-ui/react";
 import { DataNftMarket, Offer } from "@itheum/sdk-mx-data-nft/out";
 import {
-  AbiRegistry,
-  SmartContract,
   Address,
-  ResultsParser,
   BigUIntValue,
   Transaction,
   ContractFunction,
@@ -12,10 +9,6 @@ import {
   TokenIdentifierValue,
   AddressValue,
   StringValue,
-  U32Value,
-  AddressType,
-  OptionalValue,
-  BooleanValue,
   ContractCallPayloadBuilder,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
@@ -23,7 +16,6 @@ import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
 import { contractsForChain, uxConfig } from "libs/config";
 import { labels } from "libs/language";
-import { getNetworkProvider } from "./api";
 import { MarketplaceRequirementsType } from "./types";
 
 export class DataNftMarketContract {
@@ -264,7 +256,7 @@ export class DataNftMarketContract {
 
   async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<Offer[]> {
     try {
-      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, userAddress);
+      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, new Address(userAddress));
 
       return pagedOffers;
     } catch (e) {
