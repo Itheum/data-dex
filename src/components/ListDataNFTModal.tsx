@@ -243,7 +243,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       const nonceDec = parseInt(nonceHex, 16);
 
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
-      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wanted_token_amount));
+      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {
         setPriceFromApi(price);
       } else {
@@ -301,13 +301,11 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
               </Box>
             </HStack>
 
-            {convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wanted_token_amount) > 0 && (
+            {convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wantedTokenAmount) > 0 && (
               <Alert status="warning" rounded="lg" mt={3} fontSize="md">
                 <AlertIcon />
-                You want to list for {offer && Number(offer.wanted_token_amount)} ITHEUM which is lower by&nbsp;
-                {(((convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wanted_token_amount)) * 100) / convertWeiToEsdt(priceFromApi).toNumber()).toFixed(
-                  2
-                )}
+                You want to list for {offer && Number(offer.wantedTokenAmount)} ITHEUM which is lower by&nbsp;
+                {(((convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wantedTokenAmount)) * 100) / convertWeiToEsdt(priceFromApi).toNumber()).toFixed(2)}
                 % than the current lowest price ({convertWeiToEsdt(priceFromApi).toNumber()} ITHEUM).
               </Alert>
             )}

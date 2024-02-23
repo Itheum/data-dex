@@ -143,10 +143,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
         });
       }
 
-      // Calcul diferenta de zile
-      // const _date = _dataNfts.map((nft) => moment(nft.creationTime).format("YYYY-MM-DD"));
-      // console.log(_date.map((date) => getLivelinessScore(moment().diff(date, "days"))));
-
       setDataNfts(_dataNfts);
     } else {
       // await sleep(4);

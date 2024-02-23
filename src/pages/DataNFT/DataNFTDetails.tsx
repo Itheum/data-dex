@@ -15,6 +15,7 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Progress,
   Spinner,
   Stack,
   Text,
@@ -25,7 +26,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -50,6 +51,7 @@ import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import {
   convertToLocalString,
   convertWeiToEsdt,
+  getLivelinessScore,
   getTokenWantedRepresentation,
   isValidNumericCharacter,
   printPrice,
@@ -58,6 +60,7 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
+import { date } from "yup";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -87,6 +90,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
+  const [livelinessScore, setLivelinessScore] = useState<number>(0);
 
   const showConnectWallet = props.showConnectWallet || false;
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
@@ -109,6 +113,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+
+  const settingLivelinessScore = async () => {
+    const bondingContract = new BondContract("devnet");
+    const periodOfBond = await bondingContract.viewBonds(["NEWDNFT-3a8caa-09"]);
+
+    const newDate = new Date();
+    const currentTimestamp = Math.floor(newDate.getTime() / 1000);
+    const difDays = (currentTimestamp - periodOfBond[0].unbound_timestamp) / 86400;
+    setLivelinessScore(Number(Math.abs(getLivelinessScore(difDays)).toFixed(2)));
+  };
 
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
@@ -155,6 +169,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
     getFavourite();
+    settingLivelinessScore();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
@@ -460,63 +475,74 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Flex>
                     </Flex>
                   </Flex>
-                  <Box
-                    border="1px solid"
-                    borderColor="#00C79740"
-                    borderRadius="2xl"
-                    mt={3}
-                    justifyContent="right"
-                    w={marketplaceDrawer ? { base: "full", md: "initial", xl: "26.3rem", "2xl": "29rem" } : { base: "full", md: "initial", xl: "inherit" }}>
-                    <Heading
-                      fontSize="20px"
-                      fontFamily="Clash-Medium"
-                      fontWeight="semibold"
-                      pl="28px"
-                      py={5}
-                      borderBottom="1px solid"
+                  <Flex flexDirection="column" gap={2}>
+                    <Flex
+                      flexDirection="column"
+                      border="1px solid"
                       borderColor="#00C79740"
-                      bgColor="#00C7970D"
-                      borderTopRadius="xl">
-                      Details
-                    </Heading>
-                    <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
-                      {!!nftData && (
-                        <>
-                          <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
-                          <Text>
-                            {`Royalty: `}
-                            {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
-                          </Text>
-                        </>
-                      )}
-                      {!!offerId && (
-                        <>
-                          <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
-                          <Text>
-                            {`Unlock Fee per NFT: `}
-                            {marketRequirements && offer ? (
-                              <>
-                                {printPrice(
-                                  convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
-                                  getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
-                                )}{" "}
-                                {itheumPrice &&
-                                convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() > 0
-                                  ? `(~${convertToLocalString(
-                                      convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() *
-                                        itheumPrice,
-                                      2
-                                    )} USD)`
-                                  : ""}
-                              </>
-                            ) : (
-                              "-"
-                            )}
-                          </Text>
-                        </>
-                      )}
+                      borderRadius="2xl"
+                      mt={3}
+                      justifyContent="right"
+                      w={marketplaceDrawer ? { base: "full", md: "initial", xl: "22.3rem", "2xl": "23rem" } : { base: "full", md: "initial", xl: "inherit" }}>
+                      <Heading
+                        fontSize="20px"
+                        fontFamily="Clash-Medium"
+                        fontWeight="semibold"
+                        pl="28px"
+                        py={5}
+                        borderBottom="1px solid"
+                        borderColor="#00C79740"
+                        bgColor="#00C7970D"
+                        borderTopRadius="xl">
+                        Details
+                      </Heading>
+                      <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
+                        {!!nftData && (
+                          <>
+                            <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
+                            <Text>
+                              {`Royalty: `}
+                              {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
+                            </Text>
+                          </>
+                        )}
+                        {!!offerId && (
+                          <>
+                            <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
+                            <Text>
+                              {`Unlock Fee per NFT: `}
+                              {marketRequirements && offer ? (
+                                <>
+                                  {printPrice(
+                                    convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+                                    getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
+                                  )}{" "}
+                                  {itheumPrice &&
+                                  convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() > 0
+                                    ? `(~${convertToLocalString(
+                                        convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() *
+                                          itheumPrice,
+                                        2
+                                      )} USD)`
+                                    : ""}
+                                </>
+                              ) : (
+                                "-"
+                              )}
+                            </Text>
+                          </>
+                        )}
+                      </Flex>
                     </Flex>
-                  </Box>
+                    <Flex flexDirection="column">
+                      <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pb="14px">
+                        Liveliness Score: {livelinessScore}
+                      </Text>
+                      <Box border="2px solid" borderColor="teal.200" borderRadius="sm">
+                        <Progress hasStripe value={livelinessScore} rounded="xs" colorScheme="teal" />
+                      </Box>
+                    </Flex>
+                  </Flex>
                 </Flex>
 
                 <Grid templateColumns="repeat(8, 1fr)" gap={3} w="full" marginTop="1.5rem !important">
