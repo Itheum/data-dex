@@ -7,6 +7,7 @@ import {
   ContractFunction,
   U64Value,
   ContractCallPayloadBuilder,
+  IAddress,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -16,7 +17,7 @@ import { getNetworkProvider } from "./api";
 
 export class ClaimsContract {
   timeout: number;
-  claimsContractAddress: string;
+  claimsContractAddress: IAddress;
   chainID: string;
   contract: SmartContract;
 
@@ -29,7 +30,7 @@ export class ClaimsContract {
     const abiRegistry = AbiRegistry.create(json);
 
     this.contract = new SmartContract({
-      address: new Address(this.claimsContractAddress),
+      address: this.claimsContractAddress,
       abi: abiRegistry,
     });
   }
@@ -105,7 +106,7 @@ export class ClaimsContract {
     const claimTransaction = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder().setFunction(new ContractFunction("claim")).addArg(new U64Value(rewardType)).build(),
-      receiver: new Address(this.claimsContractAddress),
+      receiver: this.claimsContractAddress,
       sender: new Address(sender),
       gasLimit: 6000000,
       chainID: this.chainID,
