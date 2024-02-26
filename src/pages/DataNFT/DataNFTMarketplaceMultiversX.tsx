@@ -46,11 +46,12 @@ import { getOfersAsCollectionFromBackendApi, getOffersCountFromBackendApi, getOf
 import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { DataNftCollectionType, DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftCollectionType, DataNftMetadataType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { DataNftCollectionCard } from "./DataNftCollection";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
@@ -90,7 +91,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
 
-  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+  const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const [myListedCount, setMyListedCount] = useState<number>(0);
   const [publicMarketCount, setPublicMarketCount] = useState<number>(0);
@@ -125,7 +126,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.dataNftMarketContractAddress);
+      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.contract.getContractAddress().bech32());
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, []);
@@ -154,7 +155,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       let _numberOfOffers = 0;
       if (tabState === 1) {
         // global offers
-        _numberOfOffers = await marketContract.viewNumberOfOffers();
+        _numberOfOffers = (await marketContract.viewNumberOfOffers()) ?? 0;
       } else {
         // offers of User
         _numberOfOffers = await marketContract.viewUserTotalOffers(address);
@@ -177,7 +178,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       // start loading offers
       updateLoadingOffers(true);
 
-      let _offers: OfferType[] = [];
+      let _offers: Offer[] = [];
       const start = pageIndex * pageSize;
       if (isApiUp && isMarketplaceApiUp) {
         _offers = await getOffersFromBackendApi(chainID, start, pageSize, tabState === 1 ? undefined : address);
@@ -188,7 +189,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       updateOffers(_offers);
 
       setNftMetadatasLoading(true);
-      const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
+      const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
       const _nfts = await getNftsByIds(nftIds, chainID);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
@@ -303,7 +304,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           Data NFT Marketplace
         </Heading>
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer traders
+          Explore and discover new Data NFTs direct from Data Creators and peer-to-peer data traders
         </Heading>
 
         <Box position="relative">
@@ -426,7 +427,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                           <UpperCardComponent
                             key={index}
                             nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                            imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                            imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
                             setNftImageLoaded={setOneNFTImgLoaded}
                             nftMetadata={nftMetadatas[index]}
                             offer={offer}
@@ -446,8 +447,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                               title={offer.title}
                               description={offer.description}
                               floorPrice={convertWeiToEsdt(
-                                offer.minOffer.wanted_token_amount as BigNumber.Value,
-                                tokenDecimals(offer.minOffer.wanted_token_identifier)
+                                offer.minOffer.wantedTokenAmount as BigNumber.Value,
+                                tokenDecimals(offer.minOffer.wantedTokenIdentifier)
                               ).toNumber()}
                               listed={offer.minOffer?.quantity}
                               openNftDetailsDrawer={openNftDetailsModal}
@@ -474,7 +475,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
-                          imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offered_token_identifier}-${hexZero(offer?.offered_token_nonce)}/thumbnail`}
+                          imageUrl={`https://${getApi(chainID)}/nfts/${offer?.offeredTokenIdentifier}-${hexZero(offer?.offeredTokenNonce)}/thumbnail`}
                           setNftImageLoaded={setOneNFTImgLoaded}
                           nftMetadata={nftMetadatas[index]}
                           offer={offer}
@@ -546,7 +547,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
-                  tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
+                  tokenIdProp={createNftId(offerForDrawer.offeredTokenIdentifier, offerForDrawer.offeredTokenNonce)}
                   offerIdProp={offerForDrawer.index}
                   closeDetailsView={closeDetailsView}
                 />

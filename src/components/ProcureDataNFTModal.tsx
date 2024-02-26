@@ -19,7 +19,7 @@ import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTr
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import {
   convertEsdtToWei,
   convertWeiToEsdt,
@@ -29,52 +29,46 @@ import {
   tokenDecimals,
   getTokenWantedRepresentation,
   backendApi,
+  getApiDataMarshal,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   buyerFee: number;
   nftData: DataNftMetadataType;
-  offer: OfferType;
+  offer: Offer;
   amount: number;
   setSessionId?: (e: any) => void;
+  showCustomMintMsg?: boolean;
 }
 
-export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId }: ProcureAccessModalProps) {
+export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData, offer, amount, setSessionId, showCustomMintMsg }: ProcureAccessModalProps) {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const toast = useToast();
-
   const { colorMode } = useColorMode();
-
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const marketContract = new DataNftMarketContract(chainID);
-
   const { tokenLogin, loginMethod } = useGetLoginInfo();
-
   const isWebWallet = loginMethod === "wallet";
-
   const backendUrl = backendApi(chainID);
-
   const feePrice = printPrice(
-    convertWeiToEsdt(Number(offer.wanted_token_amount) * amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-    getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+    convertWeiToEsdt(Number(offer.wantedTokenAmount) * amount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+    getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
   );
-  const fee = convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber();
+  const fee = convertWeiToEsdt(offer.wantedTokenAmount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber();
   const [readTermsChecked, setReadTermsChecked] = useState(false);
   const [liveUptimeFAIL, setLiveUptimeFAIL] = useState<boolean>(true);
   const [isLiveUptimeSuccessful, setIsLiveUptimeSuccessful] = useState<boolean>(false);
-
   const [purchaseSessionId, setPurchaseSessionId] = useState<string>("");
   const [purchaseTxStatus, setPurchaseTxStatus] = useState<boolean>(false);
-
   const trackPurchaseTxStatus = useTrackTransactionStatus({
     transactionId: purchaseSessionId,
   });
-
   const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
 
   useEffect(() => {
@@ -172,12 +166,12 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
       }
     }
 
-    const paymentAmount = new BigNumber(offer.wanted_token_amount).multipliedBy(amount);
+    const paymentAmount = new BigNumber(offer.wantedTokenAmount).multipliedBy(amount);
 
-    if (offer.wanted_token_identifier == "EGLD") {
-      marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address);
+    if (offer.wantedTokenIdentifier == "EGLD") {
+      marketContract.sendAcceptOfferEgldTransaction(offer.index, paymentAmount.toFixed(), amount, address, showCustomMintMsg);
     } else {
-      if (offer.wanted_token_nonce === 0) {
+      if (offer.wantedTokenNonce === 0) {
         //Check if we buy all quantity, use web wallet and are on that offer's details page and thus should use callback route
         const isOnOfferPage = window.location.pathname.includes("/offer-");
         const shouldUseCallbackRoute = isWebWallet && amount == offer.quantity && isOnOfferPage;
@@ -186,10 +180,11 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
         const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
-          offer.wanted_token_identifier,
+          offer.wantedTokenIdentifier,
           amount as never,
           address,
-          shouldUseCallbackRoute ? callbackRoute : undefined
+          shouldUseCallbackRoute ? callbackRoute : undefined,
+          showCustomMintMsg
         );
         setPurchaseSessionId(sessionId);
         if (isWebWallet) {
@@ -200,13 +195,14 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           setSessionId(sessionId);
         }
       } else {
-        const { sessionId } = await marketContract.sendAcceptOfferNftEsdtTransaction(
+        const { sessionId } = await marketContract.sendAcceptOfferEsdtTransaction(
           offer.index,
           paymentAmount.toFixed(),
-          offer.wanted_token_identifier,
-          offer.wanted_token_nonce,
-          amount as never,
-          address
+          offer.wantedTokenIdentifier,
+          amount,
+          address,
+          "",
+          showCustomMintMsg
         );
         setPurchaseSessionId(sessionId);
         if (isWebWallet) {
@@ -232,7 +228,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
           <ModalBody py={6}>
             <HStack spacing="5" alignItems="center">
               <Box flex="4" alignContent="center">
-                <Text fontSize="lg">Procure Access to Data NFTs</Text>
+                <Text fontSize="lg">{showCustomMintMsg ? "Mint Data NFTs" : "Procure Access to Data NFTs"}</Text>
                 <Flex mt="1">
                   <Text
                     px="15px"
@@ -264,10 +260,10 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                     <>
                       {printPrice(
                         convertWeiToEsdt(
-                          new BigNumber(offer.wanted_token_amount).multipliedBy(10000).div(10000 + buyerFee),
-                          tokenDecimals(offer.wanted_token_identifier)
+                          new BigNumber(offer.wantedTokenAmount).multipliedBy(10000).div(10000 + buyerFee),
+                          tokenDecimals(offer.wantedTokenIdentifier)
                         ).toNumber(),
-                        getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                        getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
                       )}
                     </>
                   ) : (
@@ -276,7 +272,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                 </Box>
               </Flex>
               <Flex>
-                {new BigNumber(offer.wanted_token_amount).multipliedBy(amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0 && (
+                {new BigNumber(offer.wantedTokenAmount).multipliedBy(amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0 && (
                   <Text ml="146" color="red.400" fontSize="xs" mt="1 !important">
                     Your wallet token balance is too low to proceed
                   </Text>
@@ -288,9 +284,9 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                   :{" "}
                   {buyerFee
                     ? `${buyerFee / 100}% (${convertWeiToEsdt(
-                        new BigNumber(offer.wanted_token_amount).multipliedBy(buyerFee).div(10000 + buyerFee),
-                        tokenDecimals(offer.wanted_token_identifier)
-                      ).toNumber()} ${getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)})`
+                        new BigNumber(offer.wantedTokenAmount).multipliedBy(buyerFee).div(10000 + buyerFee),
+                        tokenDecimals(offer.wantedTokenIdentifier)
+                      ).toNumber()} ${getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)})`
                     : "-"}
                 </Box>
               </Flex>
@@ -312,29 +308,29 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                 <Box>
                   {buyerFee ? (
                     <>
-                      {new BigNumber(offer.wanted_token_amount).comparedTo(0) <= 0 ? (
+                      {new BigNumber(offer.wantedTokenAmount).comparedTo(0) <= 0 ? (
                         ""
                       ) : (
                         <>
                           {" " +
                             convertWeiToEsdt(
-                              new BigNumber(offer.wanted_token_amount)
+                              new BigNumber(offer.wantedTokenAmount)
                                 .multipliedBy(amount)
                                 .multipliedBy(10000)
                                 .div(10000 + buyerFee),
-                              tokenDecimals(offer.wanted_token_identifier)
+                              tokenDecimals(offer.wantedTokenIdentifier)
                             ).toNumber() +
                             " "}
-                          {getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          {getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)}
                           {" + "}
                           {convertWeiToEsdt(
-                            new BigNumber(offer.wanted_token_amount)
+                            new BigNumber(offer.wantedTokenAmount)
                               .multipliedBy(amount)
                               .multipliedBy(buyerFee)
                               .div(10000 + buyerFee),
-                            tokenDecimals(offer.wanted_token_identifier)
+                            tokenDecimals(offer.wantedTokenIdentifier)
                           ).toNumber()}
-                          {" " + getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)}
+                          {" " + getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)}
                         </>
                       )}
                     </>
@@ -346,7 +342,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
             </Box>
 
             <DataNFTLiveUptime
-              dataMarshal={nftData.dataMarshal}
+              dataMarshal={getApiDataMarshal(chainID)}
               NFTId={nftData.id}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
@@ -375,7 +371,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
                 isDisabled={
                   !readTermsChecked ||
                   liveUptimeFAIL ||
-                  new BigNumber(offer.wanted_token_amount).multipliedBy(amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0 ||
+                  new BigNumber(offer.wantedTokenAmount).multipliedBy(amount).comparedTo(convertEsdtToWei(itheumBalance)) > 0 ||
                   !isLiveUptimeSuccessful
                 }>
                 Proceed
