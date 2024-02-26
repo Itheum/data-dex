@@ -301,11 +301,24 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
               </Box>
             </HStack>
 
-            {convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wantedTokenAmount) > 0 && (
+            {convertWeiToEsdt(priceFromApi).toNumber() -
+              (Number(offer.wantedTokenAmount) + new BigNumber(offer.wantedTokenAmount ?? 0).multipliedBy(sellerFee).div(10000).toNumber()) >
+              0 && (
               <Alert status="warning" rounded="lg" mt={3} fontSize="md">
                 <AlertIcon />
-                You want to list for {offer && Number(offer.wantedTokenAmount)} ITHEUM which is lower by&nbsp;
-                {(((convertWeiToEsdt(priceFromApi).toNumber() - Number(offer.wantedTokenAmount)) * 100) / convertWeiToEsdt(priceFromApi).toNumber()).toFixed(2)}
+                You want to list for{" "}
+                {offer && Number(offer.wantedTokenAmount) + new BigNumber(offer.wantedTokenAmount ?? 0).multipliedBy(sellerFee).div(10000).toNumber()} ITHEUM
+                which is lower by&nbsp;
+                {(
+                  ((convertWeiToEsdt(priceFromApi).toNumber() -
+                    (Number(offer.wantedTokenAmount) +
+                      BigNumber(offer.wantedTokenAmount ?? 0)
+                        .multipliedBy(sellerFee)
+                        .div(10000)
+                        .toNumber())) *
+                    100) /
+                  convertWeiToEsdt(priceFromApi).toNumber()
+                ).toFixed(2)}
                 % than the current lowest price ({convertWeiToEsdt(priceFromApi).toNumber()} ITHEUM).
               </Alert>
             )}
