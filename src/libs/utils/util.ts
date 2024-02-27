@@ -308,8 +308,8 @@ export const getTypedValueFromContract = async (chainID: string, methodForContra
   }
 };
 
-export const getLivelinessScore = (days: number) => {
-  return (100 / 90) * days;
+export const getLivelinessScore = (seconds: number, lockPeriod: number) => {
+  return (100 / lockPeriod) * seconds;
 };
 
 // export const settingLivelinessScore = async (tokenIdentifier: Array<string>) => {
@@ -358,27 +358,22 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
   });
 };
 
-export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTimestamp?: number): Promise<number | undefined> => {
+export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
   const bondingContract = new BondContract("devnet");
-  // const difDaysArray: Array<number> = [];
   try {
     if (tokenIdentifier) {
       const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = (currentTimestamp - periodOfBond[0].unbound_timestamp) / 86400;
-      // for (let i = 0; i < periodOfBond.length; i++) {
-      //   difDaysArray.push(...difDaysArray, (currentTimestamp - periodOfBond[i].unbound_timestamp) / 86400);
-      // }
-      // return difDaysArray;
-      return Number(Math.abs(getLivelinessScore(difDays)).toFixed(2));
+      const difDays = currentTimestamp - periodOfBond[0].unbound_timestamp;
+      return Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
     }
-    if (unboudTimestamp) {
-      console.log(unboudTimestamp);
+    if (unboudTimestamp && lockPeriod) {
+      // console.log(unboudTimestamp);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = (currentTimestamp - unboudTimestamp) / 86400;
-      return unboudTimestamp == -1 ? undefined : Number(Math.abs(getLivelinessScore(difDays)).toFixed(2));
+      const difDays = currentTimestamp - unboudTimestamp;
+      return difDays > 0 ? 0 : unboudTimestamp === 0 ? -1 : Number(Math.abs(getLivelinessScore(difDays, lockPeriod)).toFixed(2));
     }
   } catch (error) {
     return undefined;

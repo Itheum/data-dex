@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -33,7 +33,7 @@ import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
-import { useAccountStore } from "../../../store";
+import { useAccountStore, useMintStore } from "../../../store";
 import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -88,6 +88,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const toast = useToast();
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const mxDataNftMintContract = new DataNftMintContract(chainID);
@@ -159,7 +160,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .required("Bond Deposit is required"),
     bondingPeriod: Yup.number()
       .typeError("Bonding period must be a number.")
-      .min(3, "Minimum value of bonding period is 3 months.")
+      .min(0, "Minimum value of bonding period is 3 months.")
       .required("Bonding Period is required"),
   });
 
@@ -182,10 +183,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
-      bondingAmount: BigNumber(10)
-        .multipliedBy(10 ** 18)
-        .toNumber(),
-      bondingPeriod: 90,
+      bondingAmount: BigNumber(lockPeriod[1].amount).shiftedBy(-18).toNumber(),
+      bondingPeriod: BigNumber(lockPeriod[1].lockPeriod).dividedBy(86400).toNumber(),
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
@@ -349,13 +348,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       10,
       datasetTitle,
       datasetDescription,
-      Number(periods[0].lockPeriod),
-      BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+      Number(periods[1].lockPeriod),
+      BigNumber(periods[1].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
       {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       }
     );
-    console.log(mintObject);
+    // console.log(mintObject);
     await sleep(3);
     await refreshAccount();
 
@@ -833,6 +832,25 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Text>
         )}
       </Box>
+      <Box minH={{ base: "5rem", md: "3.5rem" }}>
+        <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" mt="5 !important" textColor="teal.200">
+          Penalties and Slashing
+        </Text>
+        <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
+          The community will be able to curate and raise concerns about Data NFTs to the Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns are
+          validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO based curation enforces positive behaviour and
+          penalises bad actors.
+        </Text>
+        <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
+          I have read and I agree to Liveliness Bonding & Penalties and Slashing Terms
+        </Checkbox>
+
+        {!readLivelinessBonding && (
+          <Text color="red.400" fontSize="sm" mt="1 !important">
+            You need to agree to Penalties and Slashed to mint
+          </Text>
+        )}
+      </Box>
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
@@ -841,7 +859,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             colorScheme="teal"
             isLoading={isMintingModalOpen}
             onClick={dataNFTSellSubmit}
-            isDisabled={!isValid || !readTermsChecked || !readAntiSpamFeeChecked}>
+            isDisabled={!isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>

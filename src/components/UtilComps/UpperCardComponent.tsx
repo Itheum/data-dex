@@ -83,7 +83,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "780px" : "700px"}
+        h={isMxLoggedIn ? "820px" : "700px"}
         mx="5 !important"
         borderWidth="0.5px"
         borderRadius="xl"
