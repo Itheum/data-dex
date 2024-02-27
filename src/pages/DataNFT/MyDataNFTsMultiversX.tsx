@@ -40,6 +40,8 @@ import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { FavoriteCards } from "./components/FavoriteCards";
+import moment from "moment";
+import { getLivelinessScore } from "../../libs/utils";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -140,6 +142,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           collection: nft.collection,
         });
       }
+
       setDataNfts(_dataNfts);
     } else {
       // await sleep(4);

@@ -25,6 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Bond, BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -47,15 +48,16 @@ import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCollectionType, DataNftMetadataType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
+import { convertWeiToEsdt, createNftId, hexZero, getBondsForOffers, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { DataNftCollectionCard } from "./DataNftCollection";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
 }
+
+export interface ExtendedOffer extends Offer, Bond {}
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { colorMode } = useColorMode();
@@ -72,7 +74,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const marketContract = new DataNftMarketContract(chainID);
 
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
-  const offers = useMarketStore((state) => state.offers);
+  const extendedOffers = useMarketStore((state) => state.offers);
 
   const updateOffers = useMarketStore((state) => state.updateOffers);
   const loadingOffers = useMarketStore((state) => state.loadingOffers);
@@ -115,10 +117,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       updateLoadingOffers(true);
-      let _offers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
+      let _groupedOffers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
 
-      _offers = _offers.filter((offer) => offer.minOffer && offer.minOffer !== null);
-      setGroupedOffers(_offers);
+      _groupedOffers = _groupedOffers.filter((offer) => offer.minOffer && offer.minOffer !== null);
+      setGroupedOffers(_groupedOffers);
 
       updateLoadingOffers(false);
     })();
@@ -186,7 +188,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
       }
 
-      updateOffers(_offers);
+      const settingExtendOffer = await getBondsForOffers(_offers);
+
+      updateOffers(settingExtendOffer);
 
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
@@ -208,7 +212,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
     if (showGroupedDataNfts) {
       setOfferForDrawer(groupedOffers[index].minOffer);
     } else {
-      setOfferForDrawer(offers[index]);
+      setOfferForDrawer(extendedOffers[index]);
     }
     onOpenDataNftDetails();
   }
@@ -412,7 +416,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
             <TabPanels>
               <TabPanel mt={2} width={"full"}>
-                {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
+                {!loadingOffers && !nftMetadatasLoading && extendedOffers.length === 0 ? (
                   <NoDataHere />
                 ) : (
                   <SimpleGrid
@@ -423,7 +427,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     mt="5 !important"
                     justifyItems={"center"}>
                     {!showGroupedDataNfts
-                      ? offers.map((offer, index) => (
+                      ? extendedOffers.map((offer, index) => (
                           <UpperCardComponent
                             key={index}
                             nftImageLoading={oneNFTImgLoaded && !loadingOffers}
@@ -434,10 +438,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             index={index}
                             marketFreezedNonces={marketFreezedNonces}
                             openNftDetailsDrawer={openNftDetailsModal}>
-                            <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
+                            <MarketplaceLowerCard index={index} nftMetadata={nftMetadatas[index]} extendedOffer={offer} />
                           </UpperCardComponent>
                         ))
-                      : Array.from(groupedOffers.entries()).map(([nonce, offer], index) => {
+                      : groupedOffers.map((offer, index) => {
                           return (
                             <DataNftCollectionCard
                               key={index}
@@ -461,7 +465,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                 )}
               </TabPanel>
               <TabPanel mt={2} width={"full"}>
-                {!loadingOffers && !nftMetadatasLoading && offers.length === 0 ? (
+                {!loadingOffers && !nftMetadatasLoading && extendedOffers.length === 0 ? (
                   <NoDataHere />
                 ) : (
                   <SimpleGrid
@@ -470,8 +474,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     mx={{ base: 0, "2xl": "24 !important" }}
                     mt="5 !important"
                     justifyItems={"center"}>
-                    {offers.length > 0 &&
-                      offers.map((offer, index) => (
+                    {extendedOffers.length > 0 &&
+                      extendedOffers.map((offer, index) => (
                         <UpperCardComponent
                           key={index}
                           nftImageLoading={oneNFTImgLoaded && !loadingOffers}
@@ -492,7 +496,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
           </Tabs>
           {
             /* show bottom pagination only if offers exist */
-            offers.length > 0 && !showGroupedDataNfts && (
+            extendedOffers.length > 0 && !showGroupedDataNfts && (
               <Flex justifyContent={{ base: "center", md: "center" }} py="5">
                 <CustomPagination
                   pageCount={showGroupedDataNfts && tabState === 1 ? 1 : pageCount}

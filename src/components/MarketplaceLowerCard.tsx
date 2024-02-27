@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Button,
   HStack,
@@ -21,13 +21,16 @@ import { DataNftMetadataType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
+import { LivelinessScore } from "./Liveliness/LivelinessScore";
+import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
 
 type MarketplaceLowerCardProps = {
-  offer: Offer;
+  extendedOffer: ExtendedOffer;
   nftMetadata: DataNftMetadataType;
+  index: number;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: offer, nftMetadata, index }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -39,17 +42,20 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
 
+  console.log(offer);
+
   return (
     <>
-      <HStack justifyContent="stretch">
+      <HStack justifyContent="stretch" pb={2}>
         <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
         <ExploreAppButton nonce={offer.offeredTokenNonce} />
       </HStack>
 
+      <LivelinessScore index={index} unboundTimestamp={offer.unbound_timestamp} lockPeriod={offer.lockPeriod} />
       {!isMyNft ? (
         isMxLoggedIn && (
-          <HStack mt={2}>
+          <HStack mt={2} flexDirection="column">
             <Flex flexDirection="row">
               <Box>
                 <Text fontSize="md" mb="1">
