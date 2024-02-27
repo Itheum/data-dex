@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -380,35 +380,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     onFail: mintTxFail,
     onCancelled: mintTxCancelled,
   });
-
-  // const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
-  //   name: getValues("tokenNameForm"),
-  //   media: imageOnIpfsUrl,
-  //   metadata: metadataOnIpfsUrl,
-  //   data_marshal: dataNFTMarshalService,
-  //   data_stream: dataNFTStreamUrlEncrypted,
-  //   data_preview: dataNFTPreviewUrl,
-  //   royalties: Math.ceil(getValues("royaltiesForm") * 100),
-  //   amount: getValues("numberOfCopiesForm"),
-  //   title: getValues("datasetTitleForm"),
-  //   description: getValues("datasetDescriptionForm"),
-  //   sender: mxAddress,
-  //   itheumToken: contractsForChain(chainID).itheumToken,
-  //   antiSpamTax: antiSpamTax,
-  // });
-  //   if (error) {
-  //     setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-  //   }
-  //
-  //   setMintSessionId(sessionId);
-  // };
-  //
-  // useTrackTransactionStatus({
-  //   transactionId: mintSessionId,
-  //   onSuccess: mintTxSuccess,
-  //   onFail: mintTxFail,
-  //   onCancelled: mintTxCancelled,
-  // });
 
   const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
     await sleep(3);

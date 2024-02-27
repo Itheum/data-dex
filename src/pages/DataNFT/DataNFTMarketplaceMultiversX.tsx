@@ -25,7 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Bond, BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
