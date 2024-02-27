@@ -84,7 +84,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   useEffect(() => {
     (async () => {
       const viewAddressFrozenNonces = await nftMinter.viewFrozenNonces();
-      console.log(viewAddressFrozenNonces);
+      // console.log(viewAddressFrozenNonces);
       setAddressFrozenNonces(viewAddressFrozenNonces);
     })();
   }, [hasPendingTransactions]);

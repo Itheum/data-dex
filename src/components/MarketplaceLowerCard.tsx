@@ -1,6 +1,8 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
+  Box,
   Button,
+  Flex,
   HStack,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -9,10 +11,7 @@ import {
   NumberInputStepper,
   Text,
   useDisclosure,
-  Flex,
-  Box,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
@@ -21,8 +20,8 @@ import { DataNftMetadataType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
-import { LivelinessScore } from "./Liveliness/LivelinessScore";
 import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
+import { LivelinessScore } from "./Liveliness/LivelinessScore";
 
 type MarketplaceLowerCardProps = {
   extendedOffer: ExtendedOffer;
@@ -42,7 +41,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
 
-  console.log(offer);
+  // console.log(offer);
 
   return (
     <>
