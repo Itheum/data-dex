@@ -5,6 +5,7 @@ import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
 import { getNetworkProvider } from "../MultiversX/api";
 import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { ExtendedOffer } from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -328,20 +329,58 @@ export const getLivelinessScore = (days: number) => {
 //   }
 // };
 
-export const settingExtendedOffer = async (offers: Offer[]) => {
+export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[]> => {
   const offersTokenIdentif = offers.map((offer) => {
     return createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce);
   });
   // console.log(offersTokenIdentif);
   const bondingContract = new BondContract("devnet");
   const bonds = await bondingContract.viewBonds(offersTokenIdentif);
-  console.log(bonds);
-  return offers.map((offer, index) => {
+  return offers.map((offer) => {
     const bond = bonds.find((bond) => bond.tokenIdentifier === offer.offeredTokenIdentifier && bond.nonce === offer.offeredTokenNonce);
     if (bond) {
       return { ...offer, ...bond };
     } else {
-      return { ...offer, bond: {} };
+      return {
+        ...offer,
+        ...{
+          bondId: 0,
+          address: "",
+          tokenIdentifier: "",
+          nonce: 0,
+          lockPeriod: 0,
+          bond_timestamp: 0,
+          unbound_timestamp: 0,
+          bond_amount: 0,
+        },
+      };
     }
   });
+};
+
+export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTimestamp?: number): Promise<number | undefined> => {
+  const bondingContract = new BondContract("devnet");
+  // const difDaysArray: Array<number> = [];
+  try {
+    if (tokenIdentifier) {
+      const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);
+      const newDate = new Date();
+      const currentTimestamp = Math.floor(newDate.getTime() / 1000);
+      const difDays = (currentTimestamp - periodOfBond[0].unbound_timestamp) / 86400;
+      // for (let i = 0; i < periodOfBond.length; i++) {
+      //   difDaysArray.push(...difDaysArray, (currentTimestamp - periodOfBond[i].unbound_timestamp) / 86400);
+      // }
+      // return difDaysArray;
+      return Number(Math.abs(getLivelinessScore(difDays)).toFixed(2));
+    }
+    if (unboudTimestamp) {
+      console.log(unboudTimestamp);
+      const newDate = new Date();
+      const currentTimestamp = Math.floor(newDate.getTime() / 1000);
+      const difDays = (currentTimestamp - unboudTimestamp) / 86400;
+      return unboudTimestamp == -1 ? undefined : Number(Math.abs(getLivelinessScore(difDays)).toFixed(2));
+    }
+  } catch (error) {
+    return undefined;
+  }
 };

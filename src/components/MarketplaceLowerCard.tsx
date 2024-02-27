@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Button,
   HStack,
@@ -18,19 +18,19 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { DataNftMetadataType } from "libs/MultiversX/types";
-import { isValidNumericCharacter } from "libs/utils";
+import { isValidNumericCharacter, settingLivelinessScore } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
 import { LivelinessScore } from "./Liveliness/LivelinessScore";
 import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
 
 type MarketplaceLowerCardProps = {
-  offer: ExtendedOffer;
+  extendedOffer: ExtendedOffer;
   nftMetadata: DataNftMetadataType;
   index: number;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata, index }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: offer, nftMetadata, index }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -41,7 +41,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const isMyNft = offer.owner === address;
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
-  console.log(offer, nftMetadata);
+
+  console.log(offer);
 
   return (
     <>
@@ -54,7 +55,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack mt={2} flexDirection="column">
-            <LivelinessScore index={index} tokenIdentifier={offer.offeredTokenIdentifier} />
+            <LivelinessScore index={index} unboundTimestamp={offer.unbound_timestamp} />
             <Flex flexDirection="row">
               <Box>
                 <Text fontSize="md" mb="1">

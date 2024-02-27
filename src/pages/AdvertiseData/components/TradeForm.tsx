@@ -34,7 +34,7 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
 import { useAccountStore } from "../../../store";
-import { SftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
@@ -182,7 +182,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
-      bondingAmount: BigNumber(1)
+      bondingAmount: BigNumber(10)
         .multipliedBy(10 ** 18)
         .toNumber(),
       bondingPeriod: 90,
@@ -335,6 +335,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataNFTStreamUrlEncrypted: string;
   }) => {
     const sft = new SftMinter("devnet");
+    const bond = new BondContract("devnet");
+
+    const periods = await bond.viewLockPeriodsWithBonds();
+
     const mintObject = await sft.mint(
       new Address(mxAddress),
       dataNFTTokenName,
@@ -345,8 +349,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       10,
       datasetTitle,
       datasetDescription,
-      bondingPeriod,
-      bondingAmount,
+      Number(periods[0].lockPeriod),
+      BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
       {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       }
