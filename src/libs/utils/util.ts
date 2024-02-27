@@ -366,7 +366,11 @@ export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTim
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
       const difDays = currentTimestamp - periodOfBond[0].unbound_timestamp;
-      return Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
+      return difDays > 0
+        ? 0
+        : periodOfBond[0].unbound_timestamp === 0
+          ? -1
+          : Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
     }
     if (unboudTimestamp && lockPeriod) {
       // console.log(unboudTimestamp);
