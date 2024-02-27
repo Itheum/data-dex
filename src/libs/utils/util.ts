@@ -4,6 +4,7 @@ import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
 import { getNetworkProvider } from "../MultiversX/api";
+import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -308,4 +309,39 @@ export const getTypedValueFromContract = async (chainID: string, methodForContra
 
 export const getLivelinessScore = (days: number) => {
   return (100 / 90) * days;
+};
+
+// export const settingLivelinessScore = async (tokenIdentifier: Array<string>) => {
+//   const bondingContract = new BondContract("devnet");
+//   const difDaysArray: Array<number> = [];
+//   try {
+//     const periodOfBond = await bondingContract.viewBonds(tokenIdentifier);
+//     const newDate = new Date();
+//     const currentTimestamp = Math.floor(newDate.getTime() / 1000);
+//     // for (let i = 0; i < periodOfBond.length; i++) {
+//     //   difDaysArray.push(...difDaysArray, (currentTimestamp - periodOfBond[i].unbound_timestamp) / 86400);
+//     // }
+//     // return difDaysArray;
+//     setLivelinessScore(Number(Math.abs(getLivelinessScore(difDays)).toFixed(2)));
+//   } catch (error) {
+//     return -1;
+//   }
+// };
+
+export const settingExtendedOffer = async (offers: Offer[]) => {
+  const offersTokenIdentif = offers.map((offer) => {
+    return createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce);
+  });
+  // console.log(offersTokenIdentif);
+  const bondingContract = new BondContract("devnet");
+  const bonds = await bondingContract.viewBonds(offersTokenIdentif);
+  console.log(bonds);
+  return offers.map((offer, index) => {
+    const bond = bonds.find((bond) => bond.tokenIdentifier === offer.offeredTokenIdentifier && bond.nonce === offer.offeredTokenNonce);
+    if (bond) {
+      return { ...offer, ...bond };
+    } else {
+      return { ...offer, bond: {} };
+    }
+  });
 };

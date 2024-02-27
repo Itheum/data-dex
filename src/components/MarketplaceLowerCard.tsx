@@ -21,13 +21,16 @@ import { DataNftMetadataType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
+import { LivelinessScore } from "./Liveliness/LivelinessScore";
+import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
 
 type MarketplaceLowerCardProps = {
-  offer: Offer;
+  offer: ExtendedOffer;
   nftMetadata: DataNftMetadataType;
+  index: number;
 };
 
-const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata }) => {
+const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadata, index }) => {
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
@@ -38,6 +41,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
   const isMyNft = offer.owner === address;
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
+  console.log(offer, nftMetadata);
 
   return (
     <>
@@ -49,7 +53,8 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ offer, nftMetadat
 
       {!isMyNft ? (
         isMxLoggedIn && (
-          <HStack mt={2}>
+          <HStack mt={2} flexDirection="column">
+            <LivelinessScore index={index} tokenIdentifier={offer.offeredTokenIdentifier} />
             <Flex flexDirection="row">
               <Box>
                 <Text fontSize="md" mb="1">

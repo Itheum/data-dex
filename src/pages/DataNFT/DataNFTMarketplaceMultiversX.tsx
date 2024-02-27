@@ -25,6 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Bond, BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -47,15 +48,16 @@ import { getApi, getNetworkProvider, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { DataNftCollectionType, DataNftMetadataType } from "libs/MultiversX/types";
-import { convertWeiToEsdt, createNftId, hexZero, sleep, tokenDecimals } from "libs/utils";
+import { convertWeiToEsdt, createNftId, hexZero, settingExtendedOffer, sleep, tokenDecimals } from "libs/utils";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { DataNftCollection } from "./DataNftCollection";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
 }
+
+export interface ExtendedOffer extends Offer, Partial<Bond> {}
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { colorMode } = useColorMode();
@@ -87,6 +89,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const [nftMetadatasLoading, setNftMetadatasLoading] = useState<boolean>(false);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const [marketFreezedNonces, setMarketFreezedNonces] = useState<number[]>([]);
+  const [extendedOffer, setExtendedOffer] = useState<Array<ExtendedOffer>>([]);
 
   const isApiUp = useMarketStore((state) => state.isApiUp);
   const isMarketplaceApiUp = useMarketStore((state) => state.isMarketplaceApiUp);
@@ -115,14 +118,35 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
       // start loading offers
       updateLoadingOffers(true);
-      let _offers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
+      let _groupedOffers: DataNftCollectionType[] = await getOfersAsCollectionFromBackendApi(chainID);
 
-      _offers = _offers.filter((offer) => offer.minOffer && offer.minOffer !== null);
-      setGroupedOffers(_offers);
+      _groupedOffers = _groupedOffers.filter((offer) => offer.minOffer && offer.minOffer !== null);
+      setGroupedOffers(_groupedOffers);
 
       updateLoadingOffers(false);
     })();
   };
+
+  useEffect(() => {
+    (async () => {
+      let _externdedOffer: Array<ExtendedOffer> = [];
+      const offersTokenIdentif = offers.map((offer) => {
+        return createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce);
+      });
+      console.log(offersTokenIdentif);
+      const bondingContract = new BondContract("devnet");
+      const bonds = await bondingContract.viewBonds(offersTokenIdentif);
+      _externdedOffer = offers.map((offer, index) => {
+        const bond = bonds.find((bond) => bond.tokenIdentifier === offer.offeredTokenIdentifier && bond.nonce === offer.offeredTokenNonce);
+        if (bond) {
+          return { ...offer, ...bond };
+        } else {
+          return { ...offer, bond: {} };
+        }
+      });
+      setExtendedOffer(_externdedOffer);
+    })();
+  }, [pageIndex, tabState]);
 
   useEffect(() => {
     (async () => {
@@ -185,6 +209,9 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       } else {
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
       }
+
+      // const settingExtendOffer = await settingExtendedOffer(_offers);
+      // setExtendedOffer(settingExtendOffer);
 
       updateOffers(_offers);
 
@@ -423,7 +450,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                             index={index}
                             marketFreezedNonces={marketFreezedNonces}
                             openNftDetailsDrawer={openNftDetailsModal}>
-                            <MarketplaceLowerCard nftMetadata={nftMetadatas[index]} offer={offer} />
+                            <MarketplaceLowerCard index={index} nftMetadata={nftMetadatas[index]} offer={offer} />
                           </UpperCardComponent>
                         ))
                       : Array.from(groupedOffers.entries()).map(([nonce, offer], index) => {

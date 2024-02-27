@@ -61,6 +61,7 @@ import {
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
 import { date } from "yup";
+import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -90,7 +91,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
-  const [livelinessScore, setLivelinessScore] = useState<number>(0);
 
   const showConnectWallet = props.showConnectWallet || false;
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
@@ -113,16 +113,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
-
-  const settingLivelinessScore = async () => {
-    const bondingContract = new BondContract("devnet");
-    const periodOfBond = await bondingContract.viewBonds(["NEWDNFT-3a8caa-09"]);
-
-    const newDate = new Date();
-    const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-    const difDays = (currentTimestamp - periodOfBond[0].unbound_timestamp) / 86400;
-    setLivelinessScore(Number(Math.abs(getLivelinessScore(difDays)).toFixed(2)));
-  };
 
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
@@ -169,7 +159,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     getAddressTokenInformation();
     getTokenHistory(tokenId ?? "");
     getFavourite();
-    settingLivelinessScore();
   }, [hasPendingTransactions]);
 
   useEffect(() => {
@@ -534,14 +523,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                       </Flex>
                     </Flex>
-                    <Flex flexDirection="column">
-                      <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pb="14px">
-                        Liveliness Score: {livelinessScore}
-                      </Text>
-                      <Box border="2px solid" borderColor="teal.200" borderRadius="sm">
-                        <Progress hasStripe value={livelinessScore} rounded="xs" colorScheme="teal" />
-                      </Box>
-                    </Flex>
+                    <LivelinessScore index={0} tokenIdentifier={tokenId ?? ""} />
                   </Flex>
                 </Flex>
 
