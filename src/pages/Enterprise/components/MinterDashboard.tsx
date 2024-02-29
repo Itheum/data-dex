@@ -3,10 +3,9 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { DataNftCollection } from "./DataNftCollection/DataNftCollection";
 import { LaunchNftMinter } from "./LaunchNftMinter";
-import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import ShortAddress from "../../../components/UtilComps/ShortAddress";
 
 export const MinterDashboard: React.FC = () => {

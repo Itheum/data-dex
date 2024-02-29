@@ -15,7 +15,6 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Progress,
   Spinner,
   Stack,
   Text,
@@ -26,7 +25,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -51,7 +50,6 @@ import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import {
   convertToLocalString,
   convertWeiToEsdt,
-  getLivelinessScore,
   getTokenWantedRepresentation,
   isValidNumericCharacter,
   printPrice,
@@ -60,7 +58,6 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
-import { date } from "yup";
 import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
 
 type DataNFTDetailsProps = {

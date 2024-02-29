@@ -1,6 +1,6 @@
 import { MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { create } from "zustand";
-import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
+import { ExtendedOffer } from "libs/types";
 
 type State = {
   itheumPrice: number;

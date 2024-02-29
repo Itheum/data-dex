@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Box, Card, CardBody, Heading, Image, Link, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
+import { getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { useAccountStore } from "../../../store";
 
 type TrendingDataCreationNftsType = {

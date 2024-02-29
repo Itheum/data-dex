@@ -22,6 +22,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -81,7 +82,7 @@ export default function HomeMultiversX({
       const claimBalanceValues = [];
       const claimBalanceDates: number[] = [];
 
-      const claims = await mxClaimsContract.getClaims(mxAddress);
+      const claims = await mxClaimsContract.getClaims(new Address(mxAddress));
 
       if (!claims.error && claims.data) {
         claims.data.forEach((claim) => {

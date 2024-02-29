@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect } from "react";
 import { BondContract, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useSearchParams } from "react-router-dom";
@@ -112,7 +113,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
 
     (async () => {
-      const _userData = await mintContract.getUserDataOut(address, contractsForChain(chainID).itheumToken);
+      const _userData = await mintContract.getUserDataOut(new Address(address), contractsForChain(chainID).itheumToken);
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);

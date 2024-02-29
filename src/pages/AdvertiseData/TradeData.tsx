@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TradeFormModal } from "./components/TradeFormModal";
 import { dataCATDemoUserData } from "../../libs/config";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 
 export const TradeData: React.FC = () => {
   const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);

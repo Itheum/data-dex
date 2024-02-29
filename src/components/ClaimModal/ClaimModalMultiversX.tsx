@@ -15,6 +15,7 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { CHAIN_TOKEN_SYMBOL } from "libs/config";
@@ -32,7 +33,7 @@ const ClaimModal = ({ isOpen, onClose, title, tag1, value1, tag2, value2, claimT
   const handleOnChainClaim = () => {
     if (mxAddress) {
       onClose();
-      mxClaimsContract.sendClaimRewardsTransaction(mxAddress, claimType - 1);
+      mxClaimsContract.sendClaimRewardsTransaction(new Address(mxAddress), claimType - 1);
     }
   };
 

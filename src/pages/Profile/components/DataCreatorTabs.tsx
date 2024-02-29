@@ -22,6 +22,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
@@ -42,7 +43,6 @@ import { createDataNftType, DataNftMetadataType, DataNftType } from "../../../li
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
   tabState: number;

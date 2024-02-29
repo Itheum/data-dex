@@ -17,11 +17,11 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { DataNftMetadataType } from "libs/MultiversX/types";
+import { ExtendedOffer } from "libs/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
-import PreviewDataButton from "./PreviewDataButton";
-import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
 import { LivelinessScore } from "./Liveliness/LivelinessScore";
+import PreviewDataButton from "./PreviewDataButton";
 
 type MarketplaceLowerCardProps = {
   extendedOffer: ExtendedOffer;
@@ -51,7 +51,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
         <ExploreAppButton nonce={offer.offeredTokenNonce} />
       </HStack>
 
-      <LivelinessScore index={index} unboundTimestamp={offer.unbound_timestamp} lockPeriod={offer.lockPeriod} />
+      <LivelinessScore index={index} unboundTimestamp={offer.unboundTimestamp} lockPeriod={offer.lockPeriod} />
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack mt={2} flexDirection="column">

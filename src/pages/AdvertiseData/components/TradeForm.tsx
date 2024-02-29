@@ -22,7 +22,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { BondContract } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import BigNumber from "bignumber.js";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -34,11 +37,6 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
-import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
-import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import BigNumber from "bignumber.js";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -91,7 +89,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   // React hook form + yup integration
   // Declaring a validation schema for the form with the validation needed
@@ -324,48 +321,24 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     return { image: _imageFile, traits: _traitsFile };
   }
 
-  const handleOnChainMint = async ({
-    imageOnIpfsUrl,
-    metadataOnIpfsUrl,
-    dataNFTStreamUrlEncrypted,
-  }: {
-    imageOnIpfsUrl: string;
-    metadataOnIpfsUrl: string;
-    dataNFTStreamUrlEncrypted: string;
-  }) => {
-    const sft = new SftMinter("devnet");
-    const bond = new BondContract("devnet");
+  const handleOnChainMint = async () => {
+    const minterContract = new DataNftMintContract(chainID);
+    const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
 
-    const periods = await bond.viewLockPeriodsWithBonds();
+    const periods = await bondContract.viewLockPeriodsWithBonds();
 
-    const mintObject = await sft.mint(
-      new Address(mxAddress),
-      dataNFTTokenName,
-      dataNFTMarshalService,
-      dataNFTStreamUrl,
-      dataNFTPreviewUrl,
-      Math.ceil(dataNFTRoyalties * 100),
-      10,
-      datasetTitle,
-      datasetDescription,
-      Number(periods[1].lockPeriod),
-      BigNumber(periods[1].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-      {
-        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
-      }
-    );
-    // console.log(mintObject);
-    await sleep(3);
-    await refreshAccount();
-
-    const { sessionId, error } = await sendTransactions({
-      transactions: mintObject,
-      transactionsDisplayInfo: {
-        processingMessage: "Minting Data NFT Collection",
-        errorMessage: "Collection minting failed :(",
-        successMessage: "Collection minted successfully!",
-      },
-      redirectAfterSign: false,
+    const { sessionId, error } = await minterContract.sendMintTransaction({
+      sender: new Address(mxAddress),
+      name: dataNFTTokenName,
+      data_marshal: dataNFTMarshalService,
+      data_stream: dataNFTStreamUrl,
+      data_preview: dataNFTPreviewUrl,
+      royalties: Math.ceil(dataNFTRoyalties * 100),
+      amount: 10,
+      title: datasetTitle,
+      description: datasetDescription,
+      lockPeriod: Number(periods[1].lockPeriod),
+      amountToSend: BigNumber(periods[1].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
     });
     if (error) {
       setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
@@ -407,15 +380,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       return;
     }
 
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
-    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
-
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
 
-    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl, dataNFTStreamUrlEncrypted });
+    handleOnChainMint();
   };
 
   const dataNFTSellSubmit = async () => {
