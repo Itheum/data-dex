@@ -331,9 +331,10 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
           tokenIdentifier: "",
           nonce: 0,
           lockPeriod: 0,
-          bond_timestamp: 0,
-          unbound_timestamp: 0,
-          bond_amount: 0,
+          bondTimestamp: 0,
+          unboundTimestamp: 0,
+          bondAmount: 0,
+          remainingAmount: 0,
         },
       };
     }
@@ -347,10 +348,10 @@ export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTim
       const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = currentTimestamp - periodOfBond[0].unbound_timestamp;
+      const difDays = currentTimestamp - periodOfBond[0].unboundTimestamp;
       return difDays > 0
         ? 0
-        : periodOfBond[0].unbound_timestamp === 0
+        : periodOfBond[0].unboundTimestamp === 0
           ? -1
           : Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
     }
