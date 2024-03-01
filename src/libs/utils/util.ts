@@ -313,6 +313,7 @@ export const getLivelinessScore = (seconds: number, lockPeriod: number) => {
 };
 
 export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[]> => {
+  if (offers.length === 0) return [];
   const offersTokenIdentif = offers.map((offer) => {
     return createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce);
   });
