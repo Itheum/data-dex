@@ -345,7 +345,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       dataNFTStreamUrl,
       dataNFTPreviewUrl,
       Math.ceil(dataNFTRoyalties * 100),
-      10,
+      dataNFTCopies,
       datasetTitle,
       datasetDescription,
       Number(periods[1].lockPeriod),

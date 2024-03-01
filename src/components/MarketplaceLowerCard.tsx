@@ -19,9 +19,9 @@ import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import { DataNftMetadataType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
+import { LivelinessScore } from "./Liveliness/LivelinessScore";
 import PreviewDataButton from "./PreviewDataButton";
 import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
-import { LivelinessScore } from "./Liveliness/LivelinessScore";
 
 type MarketplaceLowerCardProps = {
   extendedOffer: ExtendedOffer;
@@ -51,7 +51,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
         <ExploreAppButton nonce={offer.offeredTokenNonce} />
       </HStack>
 
-      <LivelinessScore index={index} unboundTimestamp={offer.unbound_timestamp} lockPeriod={offer.lockPeriod} />
+      <LivelinessScore unboundTimestamp={offer.unboundTimestamp} lockPeriod={offer.lockPeriod} />
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack mt={2} flexDirection="column">
