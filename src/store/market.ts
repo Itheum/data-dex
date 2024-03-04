@@ -1,5 +1,6 @@
 import { MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { create } from "zustand";
+import { ExtendedOffer } from "../pages/DataNFT/DataNFTMarketplaceMultiversX";
 
 type State = {
   itheumPrice: number;
@@ -9,7 +10,7 @@ type State = {
 
   isApiUp: boolean;
   isMarketplaceApiUp: boolean;
-  offers: Array<Offer>;
+  offers: Array<ExtendedOffer>;
   loadingOffers: boolean;
   pageCount: number;
 };
@@ -52,7 +53,7 @@ export const useMarketStore = create<State & Action>((set) => ({
   pageCount: 1,
   updateIsApiUp: (value: boolean) => set((state) => ({ ...state, isApiUp: value })),
   updateIsMarketplaceApiUp: (value: boolean) => set((state) => ({ ...state, isMarketplaceApiUp: value })),
-  updateOffers: (value: Array<Offer>) => set((state) => ({ ...state, offers: value })),
+  updateOffers: (value: Array<ExtendedOffer>) => set((state) => ({ ...state, offers: value })),
   updateLoadingOffers: (value: boolean) => set((state) => ({ ...state, loadingOffers: value })),
   updatePageCount: (value: number) => set((state) => ({ ...state, pageCount: value })),
 }));

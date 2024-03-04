@@ -134,24 +134,6 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
-  async sendCancelOfferTransaction(index: number, senderAddress: string) {
-    const cancelTx = this.contract.cancelOffer(new Address(senderAddress), index);
-
-    await refreshAccount();
-
-    const { sessionId, error } = await sendTransactions({
-      transactions: cancelTx,
-      transactionsDisplayInfo: {
-        processingMessage: "Cancelling offer",
-        errorMessage: "Cancelling offer failed :(",
-        successMessage: "Offer cancelled successfully",
-      },
-      redirectAfterSign: false,
-    });
-
-    return { sessionId, error };
-  }
-
   async addToMarket(addTokenCollection: string, addTokenNonce: number, addTokenQuantity: number, price: BigNumber.Value, addressOfSender: string) {
     const addToMarketTx = this.contract.addOffer(
       new Address(addressOfSender),
@@ -180,7 +162,7 @@ export class DataNftMarketContract {
   }
 
   async delistDataNft(index: number, delistAmount: number, senderAddress: string) {
-    const cancelOfferTx = this.contract.cancelOffer(new Address(senderAddress), index);
+    const cancelOfferTx = this.contract.cancelOffer(new Address(senderAddress), index, delistAmount);
 
     await refreshAccount();
 

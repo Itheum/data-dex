@@ -19,13 +19,13 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useNavigate } from "react-router-dom";
 import { TradeForm } from "./TradeForm";
 import { contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
 import { useMintStore } from "../../../store";
-import { useNavigate } from "react-router-dom";
 
 type TradeFormProps = {
   isOpen: boolean;
