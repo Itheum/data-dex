@@ -337,6 +337,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     const bond = new BondContract("devnet");
 
     const periods = await bond.viewLockPeriodsWithBonds();
+    console.log();
     const mintObject = await sft.mint(
       new Address(mxAddress),
       dataNFTTokenName,
@@ -344,7 +345,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       dataNFTStreamUrl,
       dataNFTPreviewUrl,
       Math.ceil(dataNFTRoyalties * 100),
-      dataNFTCopies,
+      Number(dataNFTCopies),
       datasetTitle,
       datasetDescription,
       Number(periods[1].lockPeriod),
