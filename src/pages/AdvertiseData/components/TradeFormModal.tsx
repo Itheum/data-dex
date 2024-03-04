@@ -19,13 +19,13 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useNavigate } from "react-router-dom";
 import { TradeForm } from "./TradeForm";
 import { contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
 import { useMintStore } from "../../../store";
-import { useNavigate } from "react-router-dom";
 
 type TradeFormProps = {
   isOpen: boolean;
@@ -238,7 +238,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "hidden" : "hidden"}
+          visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
