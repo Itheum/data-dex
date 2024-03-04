@@ -337,7 +337,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     const bond = new BondContract("devnet");
 
     const periods = await bond.viewLockPeriodsWithBonds();
-
     const mintObject = await sft.mint(
       new Address(mxAddress),
       dataNFTTokenName,
@@ -354,7 +353,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       }
     );
-    // console.log(mintObject);
+
     await sleep(3);
     await refreshAccount();
 
