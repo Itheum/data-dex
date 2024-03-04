@@ -62,10 +62,12 @@ type TradeFormProps = {
   dataNFTMarshalServiceStatus: boolean;
   userData: UserDataType | undefined;
   dataToPrefill: any;
+  closeTradeFormModal: () => void;
 };
 
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
-  const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill } = props;
+  const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
+    props;
 
   const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
@@ -223,12 +225,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         isClosable: true,
       });
     }
-
     setIsMintingModalOpen(false);
 
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
     setDataNFTImg("");
+    closeTradeFormModal();
   };
 
   function validateBaseInput() {
