@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -22,7 +22,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import BigNumber from "bignumber.js";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -34,11 +39,6 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
-import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
-import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import BigNumber from "bignumber.js";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -92,6 +92,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const mxDataNftMintContract = new DataNftMintContract(chainID);
+
+  const bond = new BondContract("devnet");
+  const [periods, setPeriods] = useState<any>([
+    { amount: "10000000000000000000", lockPeriod: 2 },
+    { amount: "10000000000000000000", lockPeriod: 900 },
+  ]);
+  useEffect(() => {
+    bond.viewLockPeriodsWithBonds().then((periodsT) => {
+      setPeriods(periodsT);
+    });
+  }, [mxAddress]);
 
   // React hook form + yup integration
   // Declaring a validation schema for the form with the validation needed
@@ -334,9 +345,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataNFTStreamUrlEncrypted: string;
   }) => {
     const sft = new SftMinter("devnet");
-    const bond = new BondContract("devnet");
-
-    const periods = await bond.viewLockPeriodsWithBonds();
 
     const mintObject = await sft.mint(
       new Address(mxAddress),
@@ -787,7 +795,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Tag>
       </Box>
 
-      {itheumBalance < antiSpamTax && (
+      {itheumBalance <
+        antiSpamTax +
+          BigNumber(periods[1].amount)
+            .dividedBy(10 ** 18)
+            .toNumber() && (
         <Text color="red.400" fontSize="sm" mt="1 !important">
           {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
         </Text>

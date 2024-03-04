@@ -65,7 +65,7 @@ const Faucet = ({ tileBoxW, tileBoxH }: any) => {
           <Spacer />
 
           <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={handleOnChainFaucet} isDisabled={isMxFaucetDisabled}>
-            <Text color={colorMode === "dark" ? "white" : "black"}>Send me 20 {CHAIN_TOKEN_SYMBOL(chainID)}</Text>
+            <Text color={colorMode === "dark" ? "white" : "black"}>Send me 120 {CHAIN_TOKEN_SYMBOL(chainID)}</Text>
           </Button>
         </Stack>
       </Stack>
