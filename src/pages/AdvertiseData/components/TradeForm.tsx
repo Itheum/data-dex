@@ -712,75 +712,79 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Box>
       </Flex>
 
-      <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
-        Liveliness Bonding
-      </Text>
-
-      <Flex flexDirection="row" gap="7" mt={2}>
-        <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
-          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-            Bonding Amount
+      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
+        <>
+          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+            Liveliness Bonding
           </Text>
 
-          <Controller
-            control={control}
-            render={({ field: { onChange } }) => (
-              <NumberInput
-                mt="3 !important"
-                size="md"
-                id="bondingAmount"
-                maxW={24}
-                step={1}
-                defaultValue={bondingAmount}
-                isDisabled
-                min={10}
-                max={maxRoyalties > 0 ? maxRoyalties : 0}
-                isValidCharacter={isValidNumericCharacter}
-                onChange={(event) => onChange(event)}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            )}
-            name="bondingAmount"
-          />
-          <Text color="gray.400" fontSize="sm" mt={"1"}>
-            Min: 10 ITHEUM
-          </Text>
-          <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
-        </FormControl>
+          <Flex flexDirection="row" gap="7" mt={2}>
+            <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
+              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                Bonding Amount
+              </Text>
 
-        <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
-          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-            Bonding Period
-          </Text>
-          <Controller
-            control={control}
-            render={({ field: { onChange } }) => (
-              <NumberInput
-                mt="3 !important"
-                size="md"
-                id="bondingPeriod"
-                maxW={24}
-                step={1}
-                defaultValue={bondingPeriod}
-                isDisabled
-                min={3}
-                isValidCharacter={isValidNumericCharacter}
-                onChange={(event) => onChange(event)}>
-                <NumberInputField />
-              </NumberInput>
-            )}
-            name="bondingPeriod"
-          />
-          <Text color="gray.400" fontSize="sm" mt={"1"}>
-            Min: 3 months
-          </Text>
-          <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
-        </FormControl>
-      </Flex>
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <NumberInput
+                    mt="3 !important"
+                    size="md"
+                    id="bondingAmount"
+                    maxW={24}
+                    step={1}
+                    defaultValue={bondingAmount}
+                    isDisabled
+                    min={10}
+                    max={maxRoyalties > 0 ? maxRoyalties : 0}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(event) => onChange(event)}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                )}
+                name="bondingAmount"
+              />
+              <Text color="gray.400" fontSize="sm" mt={"1"}>
+                Min: 10 ITHEUM
+              </Text>
+              <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
+              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                Bonding Period
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <NumberInput
+                    mt="3 !important"
+                    size="md"
+                    id="bondingPeriod"
+                    maxW={24}
+                    step={1}
+                    defaultValue={bondingPeriod}
+                    isDisabled
+                    min={3}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(event) => onChange(event)}>
+                    <NumberInputField />
+                  </NumberInput>
+                )}
+                name="bondingPeriod"
+              />
+              <Text color="gray.400" fontSize="sm" mt={"1"}>
+                Min: 3 months
+              </Text>
+              <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
+            </FormControl>
+          </Flex>
+        </>
+      )}
 
       <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important">
         Terms and Fees
@@ -840,31 +844,33 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Text>
         )}
       </Box>
-      <Box minH={{ base: "5rem", md: "3.5rem" }}>
-        <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" mt="5 !important" textColor="teal.200">
-          Penalties and Slashing
-        </Text>
-        <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
-          The community will be able to curate and raise concerns about Data NFTs to the Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns are
-          validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO based curation enforces positive behaviour and
-          penalises bad actors.
-        </Text>
-
-        {itheumBalance < antiSpamTax + bondingAmount && (
-          <Text color="red.400" fontSize="sm" mt="1 !important">
-            {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
+        <Box minH={{ base: "5rem", md: "3.5rem" }}>
+          <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" mt="5 !important" textColor="teal.200">
+            Penalties and Slashing
           </Text>
-        )}
-        <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
-          I have read and I agree to Liveliness Bonding & Penalties and Slashing Terms
-        </Checkbox>
-
-        {!readLivelinessBonding && (
-          <Text color="red.400" fontSize="sm" mt="1 !important">
-            You need to agree to Penalties and Slashed to mint
+          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
+            The community will be able to curate and raise concerns about Data NFTs to the Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns are
+            validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO based curation enforces positive behaviour and
+            penalises bad actors.
           </Text>
-        )}
-      </Box>
+
+          {itheumBalance < antiSpamTax + bondingAmount && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+            </Text>
+          )}
+          <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
+            I have read and I agree to Liveliness Bonding & Penalties and Slashing Terms
+          </Checkbox>
+
+          {!readLivelinessBonding && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              You need to agree to Penalties and Slashed to mint
+            </Text>
+          )}
+        </Box>
+      )}
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
