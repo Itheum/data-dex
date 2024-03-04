@@ -337,7 +337,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     const bond = new BondContract("devnet");
 
     const periods = await bond.viewLockPeriodsWithBonds();
-    console.log();
+
     const mintObject = await sft.mint(
       new Address(mxAddress),
       dataNFTTokenName,
