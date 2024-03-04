@@ -40,16 +40,20 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
   const updateLockPeriodForBond = useMintStore((state) => state.updateLockPeriodForBond);
-
-  const bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
+  let bondingContract: BondContract;
+  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+    bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
+  }
   const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
 
   useEffect(() => {
     (async () => {
-      const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
-      // console.log(bondingAmount);
-      updateLockPeriodForBond(bondingAmount);
+      if (bondingContract) {
+        const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
+
+        updateLockPeriodForBond(bondingAmount);
+      }
     })();
   }, []);
 
