@@ -3,14 +3,13 @@ import { Box, Flex, Progress, Text } from "@chakra-ui/react";
 import { settingLivelinessScore } from "../../libs/utils";
 
 type LivelinessScoreProp = {
-  index: number;
   tokenIdentifier?: string;
   unboundTimestamp?: number;
   lockPeriod?: number;
 };
 // not working properly
 export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
-  const { index, tokenIdentifier, unboundTimestamp, lockPeriod } = props;
+  const { tokenIdentifier, unboundTimestamp, lockPeriod } = props;
   const [livelinessScore, setLivelinessScore] = useState<number>(-1);
 
   useEffect(() => {

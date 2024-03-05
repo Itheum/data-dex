@@ -27,7 +27,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
-import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { MdFavoriteBorder, MdLockOutline, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
@@ -40,6 +40,7 @@ import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { FavoriteCards } from "./components/FavoriteCards";
+import { BondingCards } from "./components/BondingCards";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -67,7 +68,9 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   const onChangeTab = useThrottle((newTabState: number) => {
-    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : ""}`);
+    navigate(
+      `/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : newTabState === 5 ? "/bonding" : ""}`
+    );
   }, /* delay: */ 500);
 
   const walletTabs = [
@@ -93,11 +96,11 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       icon: BsClockHistory,
       isDisabled: false,
     },
-    // {
-    //   tabName: "Offers",
-    //   icon: MdOutlineLocalOffer,
-    //   isDisabled: true,
-    // },
+    {
+      tabName: "Bonding",
+      icon: MdLockOutline,
+      isDisabled: false,
+    },
   ];
 
   const getOnChainNFTs = async () => {
@@ -188,7 +191,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   <Flex
                     height={"100%"}
                     flexDirection={{ base: "column", md: "row" }}
-                    ml={{ base: "0", md: "4.7rem" }}
                     alignItems={{ base: "center", md: "center" }}
                     justify={{ md: "center" }}
                     py={3}
@@ -271,6 +273,15 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             </TabPanel>
             <TabPanel>
               <InteractionTxTable address={address} />
+            </TabPanel>
+            <TabPanel mt={2} width={"full"}>
+              {tabState === 5 ? (
+                <BondingCards />
+              ) : (
+                <Flex onClick={getOnChainNFTs}>
+                  <NoDataHere />
+                </Flex>
+              )}
             </TabPanel>
           </TabPanels>
         </Tabs>
