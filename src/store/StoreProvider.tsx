@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect } from "react";
-import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useSearchParams } from "react-router-dom";
@@ -39,8 +39,23 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
-  const marketContractSDK = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
+  const updateLockPeriodForBond = useMintStore((state) => state.updateLockPeriodForBond);
+  let bondingContract: BondContract;
+  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+    bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
+  }
+  const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
+
+  useEffect(() => {
+    (async () => {
+      if (bondingContract) {
+        const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
+
+        updateLockPeriodForBond(bondingAmount);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const accessToken = searchParams.get("accessToken");

@@ -38,10 +38,11 @@ import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
 import { getNftsByIds } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { createDataNftType, DataNftMetadataType, DataNftType, OfferType } from "../../../libs/MultiversX/types";
+import { createDataNftType, DataNftMetadataType, DataNftType } from "../../../libs/MultiversX/types";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
   tabState: number;
@@ -75,7 +76,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   // const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const [isLoadingSecond, setIsLoadingSecond] = useState<boolean>(false);
 
-  const [offerForDrawer, setOfferForDrawer] = useState<OfferType | undefined>();
+  const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
   const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
   const [myListedCount, setMyListedCount] = useState<number>(0);
 
@@ -216,7 +217,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       updateOffers(_offers);
 
       //
-      const nftIds = _offers.map((offer) => createNftId(offer.offered_token_identifier, offer.offered_token_nonce));
+      const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
       const _nfts = await getNftsByIds(nftIds, chainID);
       const _metadatas: DataNftMetadataType[] = [];
       for (let i = 0; i < _nfts.length; i++) {
@@ -372,7 +373,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
             </ModalHeader>
             <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
               <DataNFTDetails
-                tokenIdProp={createNftId(offerForDrawer.offered_token_identifier, offerForDrawer.offered_token_nonce)}
+                tokenIdProp={createNftId(offerForDrawer.offeredTokenIdentifier, offerForDrawer.offeredTokenNonce)}
                 offerIdProp={offerForDrawer.index}
                 closeDetailsView={closeListingDetailsView}
               />

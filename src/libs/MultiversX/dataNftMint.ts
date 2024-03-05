@@ -12,6 +12,7 @@ import {
   AddressValue,
   BinaryCodec,
   ContractCallPayloadBuilder,
+  IAddress,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
@@ -29,7 +30,7 @@ export class DataNftMintContract {
   chainID: string;
   contract: SmartContract;
   abiRegistry: AbiRegistry;
-  dataNftMintContractAddress: string;
+  dataNftMintContractAddress: IAddress;
 
   constructor(chainID: string) {
     this.timeout = uxConfig.mxAPITimeoutMs;
@@ -40,7 +41,7 @@ export class DataNftMintContract {
     this.abiRegistry = AbiRegistry.create(json);
 
     this.contract = new SmartContract({
-      address: new Address(this.dataNftMintContractAddress),
+      address: this.dataNftMintContractAddress,
       abi: this.abiRegistry,
     });
   }
@@ -74,7 +75,7 @@ export class DataNftMintContract {
     sender: string;
     itheumToken: string;
     antiSpamTax: number;
-    contractAddress?: string;
+    contractAddress?: IAddress;
   }) {
     let data;
     if (antiSpamTax > 0) {
@@ -112,7 +113,7 @@ export class DataNftMintContract {
     const mintTransaction = new Transaction({
       data,
       sender: new Address(sender),
-      receiver: new Address(contractAddress),
+      receiver: contractAddress,
       gasLimit: 60000000,
       chainID: this.chainID,
     });
@@ -131,7 +132,7 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number, contractAddress: string = this.dataNftMintContractAddress) {
+  async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number, contractAddress: IAddress = this.dataNftMintContractAddress) {
     const tx = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder()
@@ -139,7 +140,7 @@ export class DataNftMintContract {
         .addArg(new TokenIdentifierValue(collection)) //what token id to send
         .addArg(new U64Value(nonce)) //what token nonce to send
         .addArg(new BigUIntValue(quantity)) //how many tokens to send
-        .addArg(new AddressValue(new Address(contractAddress))) //address to send to
+        .addArg(new AddressValue(contractAddress)) //address to send to
         .addArg(new StringValue("burn")) //what method to call on the contract
         .build(),
       receiver: new Address(sender),

@@ -13,6 +13,7 @@ import { convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
 import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
+import { IAddress } from "@multiversx/sdk-core/out";
 
 export default function InteractionTxTable(props: { address: string }) {
   const { chainID } = useGetNetworkConfig();
@@ -126,8 +127,8 @@ export default function InteractionTxTable(props: { address: string }) {
 
 export const getInteractionTransactions = async (
   address: string,
-  minterSmartContractAddress: string,
-  marketSmartContractAddress: string,
+  minterSmartContractAddress: IAddress,
+  marketSmartContractAddress: IAddress,
   chainID: string,
   marketRequirements: MarketplaceRequirements
 ) => {
