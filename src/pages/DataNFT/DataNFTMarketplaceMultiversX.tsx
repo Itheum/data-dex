@@ -57,7 +57,7 @@ interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
 }
 
-export interface ExtendedOffer extends Offer, Bond {}
+export interface ExtendedOffer extends Offer, Partial<Bond> {}
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { colorMode } = useColorMode();
@@ -191,6 +191,8 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
         const settingExtendOffer = await getBondsForOffers(_offers);
 
         updateOffers(settingExtendOffer);
+      } else {
+        updateOffers(_offers);
       }
 
       setNftMetadatasLoading(true);
