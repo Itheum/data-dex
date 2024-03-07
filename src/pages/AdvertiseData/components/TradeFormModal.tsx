@@ -208,6 +208,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           </Stack>
           <TradeForm
             checkUrlReturns200={checkUrlReturns200}
+            closeTradeFormModal={onClose}
             maxSupply={maxSupply}
             maxRoyalties={maxRoyalties / 100}
             dataNFTMarshalServiceStatus={dataNFTMarshalServiceStatus}

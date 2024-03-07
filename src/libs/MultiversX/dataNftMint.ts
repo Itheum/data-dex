@@ -55,7 +55,7 @@ export class DataNftMintContract {
     description: string;
     sender: IAddress;
     contractAddress?: IAddress;
-    lockPeriod: number;
+    lockPeriod?: number;
     amountToSend: BigNumber.Value;
   }) {
     const mintTx = this.contract.mint(
@@ -68,8 +68,8 @@ export class DataNftMintContract {
       Number(amount),
       title,
       description,
-      lockPeriod,
       Number(amountToSend),
+      lockPeriod,
       {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       }

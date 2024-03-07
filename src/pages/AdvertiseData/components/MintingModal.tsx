@@ -42,7 +42,6 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
   const onClose = () => {
     setIsOpen(false);
   };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} blockScrollOnMount={false}>
       <ModalOverlay />
@@ -97,7 +96,13 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
                     }}>
                     Visit your Data NFT Wallet to see it!
                   </Button>
-                  <Button colorScheme="teal" variant="outline" onClick={closeProgressModal}>
+                  <Button
+                    colorScheme="teal"
+                    variant="outline"
+                    onClick={() => {
+                      closeProgressModal();
+                      onClose();
+                    }}>
                     Close & Return
                   </Button>
                 </HStack>
@@ -112,7 +117,15 @@ export const MintingModal: React.FC<MintingModalProps> = (props) => {
                     Process Error
                   </AlertTitle>
                   {errDataNFTStreamGeneric.message && <AlertDescription fontSize="md">{errDataNFTStreamGeneric.message}</AlertDescription>}
-                  <CloseButton position="absolute" right="8px" top="8px" onClick={() => closeProgressModal()} />
+                  <CloseButton
+                    position="absolute"
+                    right="8px"
+                    top="8px"
+                    onClick={() => {
+                      closeProgressModal();
+                      onClose();
+                    }}
+                  />
                 </Stack>
               </Alert>
             )}

@@ -185,10 +185,13 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       } else {
         _offers = await marketContract.viewPagedOffers(start, start + pageSize - 1, tabState === 1 ? "" : address);
       }
+      if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+        const settingExtendOffer = await getBondsForOffers(_offers);
 
-      const settingExtendOffer = await getBondsForOffers(_offers);
-
-      updateOffers(settingExtendOffer);
+        updateOffers(settingExtendOffer);
+      } else {
+        updateOffers(_offers);
+      }
 
       setNftMetadatasLoading(true);
       const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
