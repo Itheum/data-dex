@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getFavoritesFromBackendApi } from "../../../libs/MultiversX";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Box, Card, CardBody, Flex, Heading, Image, Link, Text, Skeleton, Stack } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
+import { getFavoritesFromBackendApi } from "../../../libs/MultiversX";
 
 type FavoriteDataCreationNftsType = {
   nonce: number;
@@ -20,7 +20,7 @@ export const FavoriteCards: React.FC = () => {
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const [dataNfts, setDataNfts] = React.useState<Array<DataNft>>([]);
 
-  const skeletonHeight = { base: "260px", md: "190px", "2xl": "220px" };
+  const skeletonHeight = { base: "160px", md: "190px", "2xl": "220px" };
 
   useEffect(() => {
     (async () => {
@@ -62,7 +62,7 @@ export const FavoriteCards: React.FC = () => {
   // console.log(dataNfts);
   return (
     <Box>
-      <Flex flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"} gap={7} ml={16}>
+      <Flex flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"} gap={7} ml={{ base: 0, md: 16 }} alignItems={"center"}>
         {favouriteItems.length === 0 ? (
           <NoDataHere />
         ) : (
@@ -75,11 +75,12 @@ export const FavoriteCards: React.FC = () => {
                 backgroundColor="none"
                 border=".01rem solid transparent"
                 borderColor="#00C79740"
-                borderRadius="0.75rem">
+                borderRadius="0.75rem"
+                width={{ base: "250px", md: "300px" }}>
                 <CardBody mb={9}>
                   <Skeleton height={skeletonHeight} isLoaded={loadedOffers} fadeDuration={1} display="flex" justifyContent={"center"}>
                     <Link to={`/datanfts/marketplace/${dataNft.tokenIdentifier}`} as={ReactRouterLink}>
-                      <Image src={dataNft.nftImgUrl} alt="Data NFT Image" borderRadius="lg" boxSize={{ base: "250px", md: "200px" }} />
+                      <Image src={dataNft.nftImgUrl} alt="Data NFT Image" borderRadius="lg" boxSize={{ base: "150px", md: "200px" }} />
                     </Link>
                   </Skeleton>
                   <Skeleton height="76px" isLoaded={loadedOffers} fadeDuration={2}>

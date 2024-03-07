@@ -1,6 +1,8 @@
 import React, { PropsWithChildren, useEffect } from "react";
-import { DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useSearchParams } from "react-router-dom";
 import {
   contractsForChain,
@@ -13,7 +15,6 @@ import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/a
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const { address } = useGetAccountInfo();
@@ -39,8 +40,19 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
+  const updateLockPeriodForBond = useMintStore((state) => state.updateLockPeriodForBond);
+
+  const bondingContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
   const marketContractSDK = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
   const mintContract = new DataNftMintContract(chainID);
+
+  useEffect(() => {
+    (async () => {
+      const bondingAmount = await bondingContract.viewLockPeriodsWithBonds();
+      // console.log(bondingAmount);
+      updateLockPeriodForBond(bondingAmount);
+    })();
+  }, []);
 
   useEffect(() => {
     const accessToken = searchParams.get("accessToken");
@@ -101,7 +113,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     })();
 
     (async () => {
-      const _userData = await mintContract.getUserDataOut(address, contractsForChain(chainID).itheumToken);
+      const _userData = await mintContract.getUserDataOut(new Address(address), contractsForChain(chainID).itheumToken);
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);

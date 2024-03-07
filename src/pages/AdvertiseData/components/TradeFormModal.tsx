@@ -19,13 +19,11 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { TradeForm } from "./TradeForm";
-import { contractsForChain } from "../../../libs/config";
-import { labels } from "../../../libs/language";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
-import { useMintStore } from "../../../store";
 import { useNavigate } from "react-router-dom";
+import { TradeForm } from "./TradeForm";
+import { labels } from "../../../libs/language";
+import { getApiDataDex, getApiDataMarshal } from "../../../libs/utils";
+import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
   isOpen: boolean;
@@ -49,8 +47,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const userData = useMintStore((state) => state.userData);
-
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   const onClose = () => {
     setIsOpen(false);
@@ -77,18 +73,25 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   }
 
   const checkUrlReturns200 = async (url: string) => {
-    const { statusCode, isError } = await makeRequest(url);
-
+    let statusCodeF, isErrorF;
     let isSuccess = false;
     let message = "";
-    if (isError) {
-      message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-    } else if (statusCode === 200) {
+    if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
+      isErrorF = false;
       isSuccess = true;
-    } else if (statusCode === 404) {
-      message = "Data Stream URL is not reachable (Status Code 404 received)";
     } else {
-      message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
+      const { statusCode, isError } = await makeRequest(url);
+      statusCodeF = statusCode;
+      isErrorF = isError;
+      if (isErrorF) {
+        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
+      } else if (statusCodeF === 200) {
+        isSuccess = true;
+      } else if (statusCodeF === 404) {
+        message = "Data Stream URL is not reachable (Status Code 404 received)";
+      } else {
+        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
+      }
     }
 
     return {
@@ -117,20 +120,17 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   useEffect(() => {
     (async () => {
-      const getMinRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMinRoyalties());
-      const getMaxRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxRoyalties());
-      const getMaxSupply = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxSupply());
-      const getAntiSpamTax = await getTypedValueFromContract(
-        chainID,
-        mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken])
-      );
+      const minRoyaltiesT = userData?.minRoyalties ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
+      const maxSupplyT = userData?.maxSupply ?? 0;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
-      setMinRoyalties(getMinRoyalty);
-      setMaxRoyalties(getMaxRoyalty);
-      setMaxSupply(getMaxSupply);
-      setAntiSpamTax(getAntiSpamTax / 10 ** 18);
+      setMinRoyalties(minRoyaltiesT);
+      setMaxRoyalties(maxRoyaltiesT);
+      setMaxSupply(maxSupplyT);
+      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
     })();
   }, []);
 

@@ -36,6 +36,7 @@ import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain, uxConfig } from "libs/config";
@@ -58,7 +59,6 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
-import PreviewDataButton from "components/PreviewDataButton";
 
 export type WalletDataNFTMxPropType = {
   hasLoaded: boolean;
@@ -133,14 +133,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       if (txData.type === "add-offer-tx") {
         addOfferBackend(
           webWalletListTxHash,
-          txData.offered_token_identifier,
-          txData.offered_token_nonce,
-          txData.offered_token_amount,
+          txData.offeredTokenIdentifier,
+          txData.offeredTokenNonce,
+          txData.offeredTokenAmount,
           txData.title,
           txData.description,
-          txData.wanted_token_identifier,
-          txData.wanted_token_nonce,
-          txData.wanted_token_amount,
+          txData.wantedTokenIdentifier,
+          txData.wantedTokenNonce,
+          txData.wantedTokenAmount,
           txData.quantity,
           txData.owner
         );
@@ -151,14 +151,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
   async function addOfferBackend(
     txHash: string,
-    offered_token_identifier: string,
-    offered_token_nonce: string,
-    offered_token_amount: string,
+    offeredTokenIdentifier: string,
+    offeredTokenNonce: string,
+    offeredTokenAmount: string,
     title: string,
     description: string,
-    wanted_token_identifier: string,
-    wanted_token_nonce: string,
-    wanted_token_amount: string,
+    wantedTokenIdentifier: string,
+    wantedTokenNonce: string,
+    wantedTokenAmount: string,
     quantity: number,
     owner: string
   ) {
@@ -206,14 +206,14 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         const requestBody = {
           index: index,
-          offered_token_identifier: offered_token_identifier,
-          offered_token_nonce: offered_token_nonce,
-          offered_token_amount: offered_token_amount,
+          offeredTokenIdentifier: offeredTokenIdentifier,
+          offeredTokenNonce: offeredTokenNonce,
+          offeredTokenAmount: offeredTokenAmount,
           title: title,
           description: description,
-          wanted_token_identifier: wanted_token_identifier,
-          wanted_token_nonce: wanted_token_nonce,
-          wanted_token_amount: wanted_token_amount,
+          wantedTokenIdentifier: wantedTokenIdentifier,
+          wantedTokenNonce: wantedTokenNonce,
+          wantedTokenAmount: wantedTokenAmount,
           quantity: quantity,
           owner: owner,
         };
@@ -589,7 +589,11 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             nftData={selectedDataNft}
             marketContract={marketContract}
             sellerFee={item.sellerFee || 0}
-            offer={{ wanted_token_identifier: contractsForChain(chainID).itheumToken, wanted_token_amount: price, wanted_token_nonce: 0 }}
+            offer={{
+              wantedTokenIdentifier: contractsForChain(chainID).itheumToken,
+              wantedTokenAmount: price.toString(),
+              wantedTokenNonce: 0,
+            }}
             amount={amount}
             setAmount={setAmount}
           />

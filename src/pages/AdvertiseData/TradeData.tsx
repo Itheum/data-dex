@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TradeFormModal } from "./components/TradeFormModal";
 import { dataCATDemoUserData } from "../../libs/config";
- import ProgramCard from "./components/ProgramCard";
- 
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
- 
+import ProgramCard from "./components/ProgramCard";
 
 export const TradeData: React.FC = () => {
   const [dataCATAcccount] = useState<Record<any, any>>(dataCATDemoUserData);
@@ -20,7 +18,7 @@ export const TradeData: React.FC = () => {
         Mint Data
       </Heading>
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
-        Connect, mint and trade your datasets as Data NFTs in our Data NFT Marketplace
+        Connect, mint and trade your Data Streams as Data NFTs in our Data NFT Marketplace
       </Heading>
       <Wrap shouldWrapChildren={true} spacing={5} display={"flex"} justifyContent={{ base: "center", md: "start" }} overflow={"unset"}>
         <Box maxW="xs" overflow="hidden" mt={5} border=".01rem solid transparent" borderColor="#00C79740" borderRadius="0.75rem">
@@ -52,7 +50,7 @@ export const TradeData: React.FC = () => {
             Supported Data CAT Programs
           </Heading>
           <Wrap shouldWrapChildren={true} spacingX={5} mt="25px !important" marginBottom="8 !important">
-             {dataCATAcccount?.programsAllocation.map((item: any) => (
+            {dataCATAcccount?.programsAllocation.map((item: any) => (
               <ProgramCard
                 key={item.program}
                 item={item}
@@ -62,7 +60,6 @@ export const TradeData: React.FC = () => {
                 isNew={true}
               />
             ))}
- 
           </Wrap>
         </>
       )}

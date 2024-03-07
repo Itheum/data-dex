@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
@@ -140,6 +140,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           collection: nft.collection,
         });
       }
+
       setDataNfts(_dataNfts);
     } else {
       // await sleep(4);
@@ -170,7 +171,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
           Data NFT Wallet
         </Heading>
         <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
-          Below are the Data NFTs you created or purchased on the current blockchain
+          Below are the Data NFTs you created or purchased from the peer-to-peer Data NFT Marketplace
         </Heading>
 
         <Tabs pt={10} index={tabState - 1}>
@@ -182,8 +183,16 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   isDisabled={tab.isDisabled}
                   p={{ base: "0", md: "initial" }}
                   _selected={{ borderBottom: "5px solid", borderBottomColor: "teal.200" }}
-                  onClick={() => onChangeTab(index + 1)}>
-                  <Flex ml={{ base: "0.5rem", md: "4.7rem" }} alignItems="center" py={3} overflow="hidden">
+                  onClick={() => onChangeTab(index + 1)}
+                  mx={"auto"}>
+                  <Flex
+                    height={"100%"}
+                    flexDirection={{ base: "column", md: "row" }}
+                    ml={{ base: "0", md: "4.7rem" }}
+                    alignItems={{ base: "center", md: "center" }}
+                    justify={{ md: "center" }}
+                    py={3}
+                    overflow="hidden">
                     <Icon as={tab.icon} mx={2} size="0.95rem" textColor={colorMode === "dark" ? "white" : "black"} />
                     <Text fontSize="lg" fontWeight="medium" color={colorMode === "dark" ? "white" : "black"} w="max-content">
                       {tab.tabName}
@@ -252,7 +261,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
               )}
             </TabPanel>
             <TabPanel mt={2} width={"full"}>
-              {tabState === 3 && dataNfts.length > 0 ? (
+              {tabState === 3 ? (
                 <FavoriteCards />
               ) : (
                 <Flex onClick={getOnChainNFTs}>

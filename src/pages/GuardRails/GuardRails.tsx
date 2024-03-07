@@ -6,10 +6,8 @@ import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { contractsForChain, historicGuardrails, upcomingGuardRails } from "../../libs/config";
-import { getNetworkProvider } from "../../libs/MultiversX/api";
+import { historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt } from "../../libs/utils";
 import { useMarketStore, useMintStore } from "../../store";
 import GuardRailSection from "./components/GuardRailSection";
 
@@ -44,57 +42,11 @@ export const GuardRails: React.FC = () => {
   }
 
   useEffect(() => {
-    (async () => {
-      const networkProvider = getNetworkProvider(chainID);
-      const interaction = mxDataNftMintContract.contract.methods.getMinRoyalties();
-      const query = interaction.check().buildQuery();
-      const queryResponse = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      if (firstValue) {
-        const value = firstValue.valueOf();
-        setMinRoyalties(value.toNumber() / 100);
-      }
-    })();
-
-    (async () => {
-      const networkProvider = getNetworkProvider(chainID);
-      const interaction = mxDataNftMintContract.contract.methods.getMaxRoyalties();
-      const query = interaction.check().buildQuery();
-      const queryResponse = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      if (firstValue) {
-        const value = firstValue.valueOf();
-        setMaxRoyalties(value.toNumber() / 100);
-      }
-    })();
-
-    (async () => {
-      const networkProvider = getNetworkProvider(chainID);
-      const interaction = mxDataNftMintContract.contract.methods.getMaxSupply();
-      const query = interaction.check().buildQuery();
-      const queryResponse = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      if (firstValue) {
-        const value = firstValue.valueOf();
-        setMaxSupply(value.toNumber());
-      }
-    })();
-
-    (async () => {
-      const networkProvider = getNetworkProvider(chainID);
-      const interaction = mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken]);
-      const query = interaction.check().buildQuery();
-      const queryResponse = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-      const { firstValue } = new ResultsParser().parseQueryResponse(queryResponse, endpointDefinition);
-      if (firstValue) {
-        const value = firstValue.valueOf();
-        setAntiSpamTax(convertWeiToEsdt(value).toNumber());
-      }
-    })();
+    setMinRoyalties(userData?.minRoyalties ?? -1);
+    setMaxRoyalties(userData?.maxRoyalties ?? -1);
+    setMaxSupply(userData?.maxSupply ?? -1);
+    setAntiSpamTax(userData?.antiSpamTaxValue ?? -1);
+    //setAntiSpamTax(convertWeiToEsdt(value).toNumber());
   }, []);
 
   useEffect(() => {

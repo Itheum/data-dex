@@ -1,13 +1,13 @@
 import React, { FC } from "react";
-import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip } from "@chakra-ui/react";
-import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
-import { useMarketStore } from "store";
-import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
-import { useLocalStorage } from "libs/hooks";
-import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip, Box, useColorMode } from "@chakra-ui/react";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
+import { useLocalStorage } from "libs/hooks";
+import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
+import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
+import { useMarketStore } from "store";
 
-type DataNftCollectionComponentProps = {
+type DataNftCollectionCardComponentProps = {
   index: number;
   nftImageLoading: boolean;
   imageUrl: string;
@@ -21,7 +21,7 @@ type DataNftCollectionComponentProps = {
   dataPreview?: string;
 };
 
-export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
+export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
   index,
   nftImageLoading,
   imageUrl,
@@ -37,6 +37,8 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const { chainID } = useGetNetworkConfig();
   const { loginMethod } = useGetLoginInfo();
+  const { colorMode } = useColorMode();
+
   return (
     <Skeleton
       transform={{ base: "scale(0.5) ", sm: "scale(0.6)", md: "scale(0.75)", xl: "scale(1)" }}
@@ -60,15 +62,24 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
         height={"450px"}
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
-          <Text fontFamily="Satoshi-Medium" lineHeight="1.2" fontWeight="medium" fontSize="28px">
-            {title}
-          </Text>
-          <Stack overflow={"hidden"} w={"100%"} h={"25%"}>
-            <Text overflow="hidden" textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
+          <Tooltip label={title}>
+            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" noOfLines={1} p={1}>
+              {title}
+            </Text>
+          </Tooltip>
+          <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
+            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="96%" pb="0.6rem">
               {description}
+              <Box
+                position="absolute"
+                bgGradient={colorMode === "dark" ? "linear(to-t, black, transparent)" : "linear(to-t, white, transparent)"}
+                h="4%"
+                w="50%"
+                top="33%"
+                zIndex="10"
+              />
             </Text>
           </Stack>
-
           <HStack>
             <Text opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
               Total supply: {supply}
@@ -94,7 +105,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             width="70%"
             height="12%">
             <Text fontFamily="Inter" lineHeight="1.6" fontWeight="medium" fontSize="14px" color="#0F0F0F">
-              View data NFT Collection
+              View Data NFT Collection
             </Text>
           </Button>
           <Tooltip label={viewDataDisabledMessage(loginMethod)} isDisabled={shouldPreviewDataBeEnabled(chainID, loginMethod, previewDataOnDevnetSession)}>
@@ -118,7 +129,13 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
             </Button>
           </Tooltip>
         </VStack>
-        <VStack position={"relative"} mt={"40%"} height={"100%"} width={"40%"}>
+        <VStack
+          cursor={"pointer"}
+          position={"relative"}
+          my={"40%"}
+          height={"40%"}
+          width={"40%"}
+          onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}>
           <Image
             position={"absolute"}
             src={imageUrl}
