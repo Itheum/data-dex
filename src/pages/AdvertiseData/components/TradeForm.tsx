@@ -111,8 +111,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   let preSchema = {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
-      .url("Data Stream must be URL")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
+      .test("is-url-or-ipns", "Data Stream URL must be a valid URL or IPNS", function (value) {
+        const websiteRegex =
+          /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/gm;
+        const ipnsRegex = /^ipns\/[a-zA-Z0-9]+$/gm;
+        return websiteRegex.test(value) || ipnsRegex.test(value);
+      })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
       })
