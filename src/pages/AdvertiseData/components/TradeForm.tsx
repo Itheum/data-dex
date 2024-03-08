@@ -239,7 +239,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   function validateBaseInput() {
-    if (!dataNFTStreamUrl.includes("https://") || !dataNFTPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
+    if (!dataNFTPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS,
         status: "error",
