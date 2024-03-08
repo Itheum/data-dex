@@ -240,9 +240,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   function validateBaseInput() {
     if (
-      !dataNFTStreamUrl.startsWith("https://") &&
-      !dataNFTStreamUrl.startsWith("ipns://") &&
-      !dataNFTPreviewUrl.startsWith("https://") &&
+      !(dataNFTStreamUrl.startsWith("https://") || dataNFTStreamUrl.startsWith("ipns://")) ||
+      !dataNFTPreviewUrl.startsWith("https://") ||
       !dataNFTMarshalService.startsWith("https://")
     ) {
       toast({
