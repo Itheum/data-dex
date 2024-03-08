@@ -48,6 +48,10 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "NEWDNFT-3a8caa",
             contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
           },
+          {
+            id: "FOOA-141164",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
+          },
         ],
       };
     }

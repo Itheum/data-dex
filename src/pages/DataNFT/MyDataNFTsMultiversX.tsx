@@ -107,6 +107,10 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       chainID
     );
 
+    console.log("--------------------");
+    console.log(onChainNfts);
+    console.log("--------------------");
+
     if (onChainNfts.length > 0) {
       const codec = new BinaryCodec();
       const json = JSON.parse(JSON.stringify(dataNftMintJson));
@@ -117,7 +121,32 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       const _dataNfts: DataNftType[] = [];
 
       for (let index = 0; index < onChainNfts.length; index++) {
-        const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
+        debugger; // eslint-disable-line
+
+        let decodedAttributes: any = {};
+
+        try {
+          decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
+        } catch (e) {
+          const genericAttributesToString = Buffer.from(onChainNfts[index].attributes, "base64").toString("ascii");
+
+          // should be like: metadata:QmPuMcE5r2JxRgvgbPogzQJRfYrAPFGJQFYpdvwyaMf9N7/1.json
+          // can call it like https://ipfs.io/ipfs/QmPuMcE5r2JxRgvgbPogzQJRfYrAPFGJQFYpdvwyaMf9N7/1.json
+
+          const ipfsDataRes = await fetch(`https://ipfs.io/ipfs/${genericAttributesToString.split("metadata:")[1]}`);
+          const nftAttributes = await ipfsDataRes.json();
+
+          decodedAttributes = {
+            data_preview_url: "",
+            data_stream_url: nftAttributes.itheum_data_stream_url,
+            data_marshal_url: "",
+            creator: "",
+            creation_time: "",
+            description: "",
+            title: "",
+          };
+        }
+
         const nft = onChainNfts[index];
 
         _dataNfts.push({
