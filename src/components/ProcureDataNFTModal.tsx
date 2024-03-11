@@ -15,6 +15,7 @@ import {
   useToast,
   useColorMode,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
@@ -32,7 +33,6 @@ import {
   getApiDataMarshal,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 export interface ProcureAccessModalProps {
   isOpen: boolean;

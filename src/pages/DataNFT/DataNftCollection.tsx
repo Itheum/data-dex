@@ -1,8 +1,8 @@
 import React, { FC } from "react";
+import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip, Box, useColorMode } from "@chakra-ui/react";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
-import { Stack, Text, HStack, VStack, Button, Image, Skeleton, Tooltip, Box, useColorMode } from "@chakra-ui/react";
 import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
 import { useMarketStore } from "store";

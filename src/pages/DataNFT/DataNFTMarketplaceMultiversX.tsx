@@ -25,7 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Bond, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { TransactionWatcher } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -56,8 +56,6 @@ import { DataNftCollectionCard } from "./DataNftCollection";
 interface PropsType {
   tabState: number; // 1 for "Public Marketplace", 2 for "My Data NFTs"
 }
-
-export interface ExtendedOffer extends Offer, Partial<Bond> {}
 
 export const Marketplace: FC<PropsType> = ({ tabState }) => {
   const { colorMode } = useColorMode();
@@ -128,7 +126,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
 
   useEffect(() => {
     (async () => {
-      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.contract.getContractAddress().bech32());
+      const _marketFreezedNonces = await mintContract.getSftsFrozenForAddress(marketContract.contract.getContractAddress());
       setMarketFreezedNonces(_marketFreezedNonces);
     })();
   }, []);

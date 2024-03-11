@@ -33,7 +33,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { MENU, contractsForChain } from "../../../libs/config";
+import { MENU } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
@@ -401,8 +401,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       await sleep(3);
       const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
         name: getValues("tokenNameForm"),
-        media: imageOnIpfsUrl,
-        metadata: metadataOnIpfsUrl,
         data_marshal: dataNFTMarshalService,
         data_stream: dataNFTStreamUrlEncrypted,
         data_preview: dataNFTPreviewUrl,
@@ -410,9 +408,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         amount: getValues("numberOfCopiesForm"),
         title: getValues("datasetTitleForm"),
         description: getValues("datasetDescriptionForm"),
-        sender: mxAddress,
-        itheumToken: contractsForChain(chainID).itheumToken,
-        antiSpamTax: antiSpamTax,
+        sender: new Address(mxAddress),
+        amountToSend: antiSpamTax,
       });
       if (error) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));

@@ -2,9 +2,9 @@ import React, { Fragment } from "react";
 import { Box, Flex, Text, useColorMode } from "@chakra-ui/react";
 import bubbleImage from "assets/img/whitelist/BubbleImage.png";
 import infographicsImage from "assets/img/whitelist/InfographicsImage.png";
-import trailblazerImage from "assets/img/whitelist/TrailblazerImage.png";
 import nftunesImage from "assets/img/whitelist/NFTuneApp.png";
 import timecapsuleImage from "assets/img/whitelist/TimeCapsuleApp.png";
+import trailblazerImage from "assets/img/whitelist/TrailblazerImage.png";
 import { TrendingDataCards } from "./components/TrendingDataCards";
 
 const cardContent = [

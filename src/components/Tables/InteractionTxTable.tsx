@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { Box, HStack, Link, Spinner, useToast } from "@chakra-ui/react";
 import { MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { IAddress } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TransactionDecoder } from "@multiversx/sdk-transaction-decoder/lib/src/transaction.decoder";
 import { ColumnDef } from "@tanstack/react-table";
@@ -13,7 +14,6 @@ import { convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
 import { DataTable } from "./Components/DataTable";
 import { InteractionsInTable, timeSince } from "./Components/tableUtils";
-import { IAddress } from "@multiversx/sdk-core/out";
 
 export default function InteractionTxTable(props: { address: string }) {
   const { chainID } = useGetNetworkConfig();

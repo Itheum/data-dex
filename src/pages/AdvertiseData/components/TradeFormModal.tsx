@@ -21,10 +21,8 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
 import { TradeForm } from "./TradeForm";
-import { contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
+import { getApiDataDex, getApiDataMarshal } from "../../../libs/utils";
 import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
@@ -49,8 +47,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const userData = useMintStore((state) => state.userData);
-
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   const onClose = () => {
     setIsOpen(false);
@@ -131,20 +127,17 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   useEffect(() => {
     (async () => {
-      const getMinRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMinRoyalties());
-      const getMaxRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxRoyalties());
-      const getMaxSupply = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxSupply());
-      const getAntiSpamTax = await getTypedValueFromContract(
-        chainID,
-        mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken])
-      );
+      const minRoyaltiesT = userData?.minRoyalties ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
+      const maxSupplyT = userData?.maxSupply ?? 0;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
-      setMinRoyalties(getMinRoyalty);
-      setMaxRoyalties(getMaxRoyalty);
-      setMaxSupply(getMaxSupply);
-      setAntiSpamTax(getAntiSpamTax / 10 ** 18);
+      setMinRoyalties(minRoyaltiesT);
+      setMaxRoyalties(maxRoyaltiesT);
+      setMaxSupply(maxSupplyT);
+      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
     })();
   }, []);
 

@@ -19,7 +19,6 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
-import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
 import { TradeData } from "../AdvertiseData/TradeData";
 import { MinterDashboard } from "../Enterprise/components/MinterDashboard";

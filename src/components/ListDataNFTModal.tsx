@@ -28,8 +28,8 @@ import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { sleep, printPrice, convertToLocalString, getTokenWantedRepresentation, backendApi, getApiDataMarshal, convertWeiToEsdt } from "libs/utils";
 import { useMarketStore } from "store";
-import { getOffersByIdAndNoncesFromBackendApi } from "../libs/MultiversX";
 import { labels } from "../libs/language";
+import { getOffersByIdAndNoncesFromBackendApi } from "../libs/MultiversX";
 
 export type ListModalProps = {
   isOpen: boolean;
