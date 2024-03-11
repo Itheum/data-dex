@@ -116,7 +116,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         const websiteRegex =
           /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/gm;
         const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
-        return websiteRegex.test(value) || ipnsRegex.test(value);
+        return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
