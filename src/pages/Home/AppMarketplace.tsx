@@ -792,7 +792,7 @@ export default function AppMarketplace(props: Props) {
                           setJoinProgress(() => ({ ...cleanSaveProgress }));
                           setDataStreamGenProgress(() => ({ ...cleanDataStreamGenProgress }));
                           props.setMenuItem(2);
-                          navigate(`/tradedata?loadDrawer=1&skipPreview=1&dm=${dataMarshalService}&ds=${encodeURIComponent(psnUserDataStream)}`);
+                          navigate(`/mintdata?loadDrawer=1&skipPreview=1&dm=${dataMarshalService}&ds=${encodeURIComponent(psnUserDataStream)}`);
                         }
                       }}>
                       Mint my Data NFT
