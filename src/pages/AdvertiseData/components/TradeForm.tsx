@@ -113,8 +113,16 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .required("Data Stream URL is required")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
       .test("is-url-or-ipns", "Data Stream URL must be a valid URL or IPNS", function (value) {
-        const websiteRegex =
-          /^((http|https):\/\/)?(www.)?(?!.*(http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/gm;
+        const websiteRegex = new RegExp(
+          "^(http|https?:\\/\\/)?" + // validate protocol
+            "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
+            "((\\d{1,3}\\.){3}\\d{1,3}))" + // validate OR ip (v4) address
+            "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // validate port and path
+            "(\\?[;&a-z\\d%_.~+=-]*)?" + // validate query string
+            "(\\#[-a-z\\d_]*)?$",
+          "i"
+        ); // validate fragment locator;
+        console.log(value, websiteRegex, websiteRegex.test(value));
         const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
         return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
