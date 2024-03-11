@@ -421,7 +421,7 @@ export default function HomeMultiversX({
         </Box>
         <Box m="auto" pt="10" pb="10" w={"100%"}>
           <Heading size="lg" fontFamily="Clash-Medium" fontWeight="semibold">
-            Data DEX 101 Guides
+            Get Started
           </Heading>
 
           <ExplainerArticles reduceGap={true} />

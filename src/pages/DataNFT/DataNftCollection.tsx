@@ -7,7 +7,7 @@ import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, shouldPreviewDataBeEnabled, viewDataDisabledMessage } from "libs/utils";
 import { useMarketStore } from "store";
 
-type DataNftCollectionComponentProps = {
+type DataNftCollectionCardComponentProps = {
   index: number;
   nftImageLoading: boolean;
   imageUrl: string;
@@ -21,7 +21,7 @@ type DataNftCollectionComponentProps = {
   dataPreview?: string;
 };
 
-export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
+export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
   index,
   nftImageLoading,
   imageUrl,
@@ -38,6 +38,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
   const { chainID } = useGetNetworkConfig();
   const { loginMethod } = useGetLoginInfo();
   const { colorMode } = useColorMode();
+
   return (
     <Skeleton
       transform={{ base: "scale(0.5) ", sm: "scale(0.6)", md: "scale(0.75)", xl: "scale(1)" }}
@@ -62,7 +63,7 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
           <Tooltip label={title}>
-            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" noOfLines={1}>
+            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" noOfLines={1} p={1}>
               {title}
             </Text>
           </Tooltip>
@@ -79,7 +80,6 @@ export const DataNftCollection: FC<DataNftCollectionComponentProps> = ({
               />
             </Text>
           </Stack>
-
           <HStack>
             <Text opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
               Total supply: {supply}

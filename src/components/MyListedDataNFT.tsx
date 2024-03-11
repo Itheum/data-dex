@@ -17,6 +17,7 @@ import {
   Skeleton,
   Text,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -25,15 +26,15 @@ import moment from "moment/moment";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { DataNftMetadataType, OfferType } from "libs/MultiversX/types";
+import { DataNftMetadataType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
 import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataNFTProps = {
-  offer: OfferType;
-  offers: Record<any, any>;
+  offer: Offer;
+  offers: Record<any, Offer>;
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
@@ -81,7 +82,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
         <Box maxW="xs" borderWidth="1px" borderRadius="lg" overflow="wrap" mb="1rem" position="relative" w="13.5rem">
           <Flex justifyContent="center" pt={5}>
             <Image
-              src={`https://${getApi(chainID)}/nfts/${offer.offered_token_identifier}-${hexZero(offer.offered_token_nonce)}/thumbnail`}
+              src={`https://${getApi(chainID)}/nfts/${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}/thumbnail`}
               alt={"item.dataPreview"}
               h={200}
               w={200}
@@ -144,13 +145,13 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                   <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap="1" my="1" height="5rem">
                     {address && address == nftMetadata[index].creator && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are the Creator</Text>
+                        <Text>You Created this</Text>
                       </Badge>
                     )}
 
                     {address && address == offer.owner && (
                       <Badge borderRadius="full" px="2" colorScheme="teal">
-                        <Text>You are Owner</Text>
+                        <Text>You Own this</Text>
                       </Badge>
                     )}
 
@@ -161,7 +162,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                 </Flex>
 
                 <Box display="flex" justifyContent="flex-start" mt="2">
-                  <Text fontSize="xs">{`Creation time:   ${moment(nftMetadata[index].creationTime).format(uxConfig.dateStr)}`}aaaa</Text>
+                  <Text fontSize="xs">{`Creation time:   ${moment(nftMetadata[index].creationTime).format(uxConfig.dateStr)}`}</Text>
                 </Box>
 
                 <Box color="gray.600" fontSize="sm">
@@ -174,10 +175,10 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
               <>
                 <Box fontSize="xs" mt="2">
                   <Text>
-                    Unlock from: {` `}
+                    Get from: {` `}
                     {printPrice(
-                      convertWeiToEsdt(offer.wanted_token_amount, tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                      getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
+                      convertWeiToEsdt(offer.wantedTokenAmount, tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+                      getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
                     )}
                   </Text>
                 </Box>
@@ -225,11 +226,11 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
                           if (marketRequirements) {
                             setNewListingPrice(
                               convertWeiToEsdt(
-                                new BigNumber(offers[index].wanted_token_amount)
+                                new BigNumber(offers[index].wantedTokenAmount)
                                   .multipliedBy(amountOfTokens[index])
                                   .multipliedBy(10000)
                                   .div(10000 + marketRequirements.buyerTaxPercentage),
-                                tokenDecimals(offers[index].wanted_token_identifier)
+                                tokenDecimals(offers[index].wantedTokenIdentifier)
                               ).toNumber()
                             );
                           } else {
@@ -247,7 +248,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
           </Flex>
 
           <FrozenOverlay
-            isVisible={userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(offer?.offered_token_nonce)))}
+            isVisible={userData && (userData?.addressFrozen || (userData?.frozenNonces && userData?.frozenNonces.includes(offer?.offeredTokenNonce)))}
           />
         </Box>
       </Flex>

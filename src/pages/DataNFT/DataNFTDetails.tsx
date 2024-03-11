@@ -15,6 +15,7 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Progress,
   Spinner,
   Stack,
   Text,
@@ -25,6 +26,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
+import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -40,17 +42,16 @@ import TokenTxTable from "components/Tables/TokenTxTable";
 import ConditionalRender from "components/UtilComps/ApiWrapper";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER, PREVIEW_DATA_ON_DEVNET_SESSION_KEY, uxConfig } from "libs/config";
-import { useLocalStorage } from "libs/hooks";
+import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { OfferType } from "libs/MultiversX/types";
 import {
   convertToLocalString,
   convertWeiToEsdt,
+  getLivelinessScore,
   getTokenWantedRepresentation,
   isValidNumericCharacter,
   printPrice,
@@ -59,6 +60,8 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
+import { date } from "yup";
+import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -97,7 +100,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketContract = new DataNftMarketContract(chainID);
 
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
-  const [offer, setOffer] = useState<OfferType | undefined>();
+  const [offer, setOffer] = useState<Offer | undefined>();
   const [totalOffers, setTotalOffers] = useState<Record<any, any>>({});
   const [amount, setAmount] = useState<number>(1);
   const [amountError, setAmountError] = useState<string>("");
@@ -107,9 +110,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
-  const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
-
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
 
@@ -185,6 +186,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       })();
     }
   }, [offerId, hasPendingTransactions]);
+
   function getTokenDetails() {
     const apiLink = getApi(chainID);
     const nftApiLink = `https://${apiLink}/nfts/${tokenId}`;
@@ -232,7 +234,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       setTotalOffers(_offers);
-      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wanted_token_amount));
+      const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {
         setPriceFromApi(price);
       } else {
@@ -287,11 +289,16 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   };
 
   const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
     if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
       setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
     }
   }, []);
+
+  const isCreatorListing = () => {
+    return nftData.attributes?.creator === offer?.owner;
+  };
 
   return (
     <Box mx={tokenIdParam ? { base: "5 !important", xl: "28 !important" } : 0}>
@@ -321,17 +328,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Box>
             )}
             <Box width={"100%"} marginY={tokenIdParam ? "20px" : "10px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
-              <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
-                <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
-                  <Image
-                    w={{ base: "210px", xl: "260px" }}
-                    h={{ base: "210px", xl: "260px" }}
-                    py={2}
-                    objectFit={"contain"}
-                    src={nftData.url}
-                    alt={"Data NFT Image"}
-                    mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
-                  />
+              <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ xl: "flex-start" }}>
+                <Flex
+                  flexDirection={{ base: "column", xl: "row" }}
+                  w="full"
+                  alignItems={{ base: "initial", md: "initial" }}
+                  justifyContent={{ xl: "space-between" }}>
+                  <Flex justifyContent={{ base: "center" }}>
+                    <Image
+                      w={{ base: "210px", xl: "260px" }}
+                      h={{ base: "210px", xl: "260px" }}
+                      py={2}
+                      objectFit={"contain"}
+                      src={nftData.url}
+                      alt={"Data NFT Image"}
+                      mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
+                    />
+                  </Flex>
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
@@ -350,7 +363,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
                         <Tooltip label={nftData.attributes?.title}>
-                          <Text fontSize={"32px"} fontFamily="Clash-Medium" noOfLines={1} fontWeight="light" lineHeight="10">
+                          <Text
+                            fontSize={{ base: "1.25rem", md: "1.5rem", xl: "1.5rem" }}
+                            fontFamily="Clash-Medium"
+                            noOfLines={1}
+                            fontWeight="light"
+                            lineHeight="10">
                             {nftData.attributes?.title}
                           </Text>
                         </Tooltip>
@@ -374,7 +392,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       <Flex direction={{ base: "column", md: "row" }} gap="3" mt={"-2 !important"} mb={pathname === marketplaceDrawer ? 0 : "25px !important"}>
                         <Text fontSize={{ base: "18px", md: "22px" }} color={"teal.200"} fontWeight={500} fontStyle={"normal"} lineHeight={"36px"}>
                           {!offer && getListingText(priceFromApi)}
-                          {offer && getListingText(Number(offer.wanted_token_amount))}
+                          {offer && getListingText(Number(offer.wantedTokenAmount))}
                         </Text>
                         {showConnectWallet && (
                           <Button fontSize={{ base: "sm", md: "md" }} onClick={() => navigate("/")}>
@@ -385,7 +403,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       {offer && address && address != offer.owner && (
                         <Box h={14}>
                           <HStack gap={5}>
-                            <Text fontSize="xl">How many to procure </Text>
+                            <Text fontSize="xl">How many to {isCreatorListing() ? "mint" : "procure"} </Text>
                             <NumberInput
                               size="md"
                               maxW={24}
@@ -420,16 +438,25 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Text>
                         </Box>
                       )}
-                      <Flex flexDirection="row" gap={3} justifyContent={{ base: "center", lg: "start" }} w="full">
+                      <Flex flexDirection="row" gap={3} justifyContent={{ lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
                             colorScheme="teal"
+                            color="#000"
+                            bgGradient={isCreatorListing() ? "linear(to-r, #47D674, #F0F261)" : "initial"}
+                            _hover={
+                              isCreatorListing()
+                                ? {
+                                    animation: "Shake 1s linear infinite",
+                                  }
+                                : {}
+                            }
                             isDisabled={hasPendingTransactions || !!amountError || isMarketPaused}
                             hidden={!isMxLoggedIn || pathname === walletDrawer || !offer || address === offer.owner}
                             onClick={onProcureModalOpen}>
                             <Text px={tokenId ? 0 : 3} fontSize={{ base: "xs", md: "sm", xl: "md" }}>
-                              Purchase Data
+                              {isCreatorListing() ? "Mint Data NFT" : "Buy Data NFT"}
                             </Text>
                           </Button>
                         </Tooltip>
@@ -448,63 +475,67 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Flex>
                     </Flex>
                   </Flex>
-                  <Box
-                    border="1px solid"
-                    borderColor="#00C79740"
-                    borderRadius="2xl"
-                    mt={3}
-                    justifyContent="right"
-                    w={marketplaceDrawer ? { base: "full", md: "initial", xl: "26.3rem", "2xl": "29rem" } : { base: "full", md: "initial", xl: "inherit" }}>
-                    <Heading
-                      fontSize="20px"
-                      fontFamily="Clash-Medium"
-                      fontWeight="semibold"
-                      pl="28px"
-                      py={5}
-                      borderBottom="1px solid"
+                  <Flex flexDirection="column" gap={2}>
+                    <Flex
+                      flexDirection="column"
+                      border="1px solid"
                       borderColor="#00C79740"
-                      bgColor="#00C7970D"
-                      borderTopRadius="xl">
-                      Details
-                    </Heading>
-                    <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
-                      {!!nftData && (
-                        <>
-                          <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
-                          <Text>
-                            {`Royalty: `}
-                            {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
-                          </Text>
-                        </>
-                      )}
-                      {!!offerId && (
-                        <>
-                          <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
-                          <Text>
-                            {`Unlock Fee per NFT: `}
-                            {marketRequirements && offer ? (
-                              <>
-                                {printPrice(
-                                  convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber(),
-                                  getTokenWantedRepresentation(offer.wanted_token_identifier, offer.wanted_token_nonce)
-                                )}{" "}
-                                {itheumPrice &&
-                                convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() > 0
-                                  ? `(~${convertToLocalString(
-                                      convertWeiToEsdt(new BigNumber(offer.wanted_token_amount), tokenDecimals(offer.wanted_token_identifier)).toNumber() *
-                                        itheumPrice,
-                                      2
-                                    )} USD)`
-                                  : ""}
-                              </>
-                            ) : (
-                              "-"
-                            )}
-                          </Text>
-                        </>
-                      )}
+                      borderRadius="2xl"
+                      mt={3}
+                      justifyContent="right"
+                      w={marketplaceDrawer ? { base: "full", md: "initial", xl: "22.3rem", "2xl": "23rem" } : { base: "full", md: "initial", xl: "inherit" }}>
+                      <Heading
+                        fontSize="20px"
+                        fontFamily="Clash-Medium"
+                        fontWeight="semibold"
+                        pl="28px"
+                        py={5}
+                        borderBottom="1px solid"
+                        borderColor="#00C79740"
+                        bgColor="#00C7970D"
+                        borderTopRadius="xl">
+                        Details
+                      </Heading>
+                      <Flex direction={"column"} gap="1" px="28px" py="14px" color={colorMode === "dark" ? "white" : "black"} fontSize="lg">
+                        {!!nftData && (
+                          <>
+                            <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
+                            <Text>
+                              {`Royalty: `}
+                              {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
+                            </Text>
+                          </>
+                        )}
+                        {!!offerId && (
+                          <>
+                            <Text>{`Listed: ${offer ? offer.quantity : "-"}`}</Text>
+                            <Text>
+                              {`Unlock Fee per NFT: `}
+                              {marketRequirements && offer ? (
+                                <>
+                                  {printPrice(
+                                    convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber(),
+                                    getTokenWantedRepresentation(offer.wantedTokenIdentifier, offer.wantedTokenNonce)
+                                  )}{" "}
+                                  {itheumPrice &&
+                                  convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() > 0
+                                    ? `(~${convertToLocalString(
+                                        convertWeiToEsdt(new BigNumber(offer.wantedTokenAmount), tokenDecimals(offer.wantedTokenIdentifier)).toNumber() *
+                                          itheumPrice,
+                                        2
+                                      )} USD)`
+                                    : ""}
+                                </>
+                              ) : (
+                                "-"
+                              )}
+                            </Text>
+                          </>
+                        )}
+                      </Flex>
                     </Flex>
-                  </Box>
+                    {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore tokenIdentifier={tokenId ?? ""} />}
+                  </Flex>
                 </Flex>
 
                 <Grid templateColumns="repeat(8, 1fr)" gap={3} w="full" marginTop="1.5rem !important">
@@ -554,7 +585,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               alignItems="center"
                               justifyContent="center">
                               <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
-                                You are Owner
+                                You Own this
                               </Text>
                             </Box>
                           )}
@@ -657,7 +688,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                   .map((to: any, index: number) => (
                                     <Fragment key={index}>
                                       <GridItem flexDirection="column" colSpan={2} fontSize="sm">
-                                        {marketRequirements && getOfferPrice(Number(to.wanted_token_amount))}
+                                        {marketRequirements && getOfferPrice(Number(to.wantedTokenAmount))}
                                       </GridItem>
                                       <GridItem flexDirection="column" colSpan={1} fontSize="sm">
                                         {to.quantity}
@@ -709,6 +740,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               offer={offer}
               amount={amount}
               setSessionId={setSessionId}
+              showCustomMintMsg={isCreatorListing()}
             />
           )}
         </Box>

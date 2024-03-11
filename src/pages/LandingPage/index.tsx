@@ -40,7 +40,7 @@ const LandingPage = () => {
                     <Text as="span" color="teal.200">
                       your data
                     </Text>{" "}
-                    in the Web3 Multiverse
+                    as Data NFTs
                   </Heading>
 
                   <Text mt="1rem">
@@ -63,7 +63,7 @@ const LandingPage = () => {
 
           <Box mx={{ base: 8, "lg": 20 }} py="10">
             <Heading as="h2" size="lg" fontFamily="Clash-Medium" textAlign={["center", "initial"]}>
-              Data DEX 101 Guides
+              Get Started
             </Heading>
 
             <ExplainerArticles />

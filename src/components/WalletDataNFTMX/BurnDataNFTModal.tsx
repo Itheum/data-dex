@@ -183,7 +183,7 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
               </Flex>
               <Flex mt="1">
                 <Text fontWeight="bold" fontSize="md" px="1">
-                  Burn Amount: &nbsp;&nbsp;
+                  Burn Quantity: &nbsp;&nbsp;
                 </Text>
                 <Text fontSize="sm" backgroundColor="blackAlpha.300" px="1">
                   {dataNftBurnAmount}
