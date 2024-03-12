@@ -58,11 +58,13 @@ export const BondingParameters: React.FC = () => {
       bondContract.setMinimumPenalty(new Address(address), formData.minimumPenaltyInPercentage);
     }
   };
-  const onSubmitMinSlashPerc = async (formData: Partial<BondingParametersFormType>) => {
+  const onSubmitMaxSlashPerc = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
   };
   const onSubmitEarlyWithdrawPenalty = async (formData: Partial<BondingParametersFormType>) => {
-    console.log(formData);
+    if (formData.earlyWithdrawPenaltyInPercentage) {
+      bondContract.setWithdrawPenalty(new Address(address), formData.earlyWithdrawPenaltyInPercentage);
+    }
   };
   const handleOnPause = async () => {
     bondContract.setContractState(new Address(address), State.Inactive);

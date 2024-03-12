@@ -4,6 +4,7 @@ import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
 import { Bond, BondContract } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { NoDataHere } from "../../components/Sections/NoDataHere";
 
 export const Bonding: React.FC = () => {
   const { address } = useGetAccountInfo();
@@ -46,11 +47,15 @@ export const Bonding: React.FC = () => {
             <Text fontSize="1.75rem" fontFamily="Clash-Medium" textColor="teal.200">
               Collection Dashboard
             </Text>
-            {contractBonds.map((bond, index) => (
-              <Fragment key={index}>
-                <CollectionDashboard bondNft={bond} />
-              </Fragment>
-            ))}
+            {contractBonds.length === 0 ? (
+              <NoDataHere />
+            ) : (
+              contractBonds.map((bond, index) => (
+                <Fragment key={index}>
+                  <CollectionDashboard bondNft={bond} />
+                </Fragment>
+              ))
+            )}
           </Flex>
         </Flex>
       </Box>
