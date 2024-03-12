@@ -5,27 +5,53 @@ import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Bond, BondContract, State } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondConfiguration, BondContract, State } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import BigNumber from "bignumber.js";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 
 type BondingParametersFormType = {
   minimumLockPeriodInSeconds: number;
   minimumSBond: number;
   minimumPenaltyInPercentage: number;
-  minimumSlashInPercentage: number;
+  maximumSlashInPercentage: number;
   earlyWithdrawPenaltyInPercentage: number;
 };
 
 export const BondingParameters: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
+  const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
+    contractState: 0,
+    bondPaymentTokenIdentifier: "",
+    lockPeriodsWithBonds: [
+      {
+        lockPeriod: 0,
+        amount: 0,
+      },
+    ],
+    minimumPenalty: 0,
+    maximumPenalty: 0,
+    withdrawPenalty: 0,
+    acceptedCallers: [""],
+  });
+
+  useEffect(() => {
+    (async () => {
+      const contractConfigurationRequest = await bondContract.viewContractConfiguration();
+      console.log(contractConfigurationRequest);
+      setContractConfiguration(contractConfigurationRequest);
+    })();
+  }, [hasPendingTransactions]);
 
   const validationSchema = Yup.object().shape({
     minimumLockPeriodInSeconds: Yup.number().required("Required"),
     minimumSBond: Yup.number().required("Required"),
     minimumPenaltyInPercentage: Yup.number().required("Required"),
-    minimumSlashInPercentage: Yup.number().required("Required"),
+    maximumSlashInPercentage: Yup.number().required("Required"),
     earlyWithdrawPenaltyInPercentage: Yup.number().required("Required"),
   });
 
@@ -34,13 +60,12 @@ export const BondingParameters: React.FC = () => {
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
   } = useForm<BondingParametersFormType>({
     defaultValues: {
       minimumLockPeriodInSeconds: 7889231,
       minimumSBond: 1000,
       minimumPenaltyInPercentage: 5,
-      minimumSlashInPercentage: 100,
+      maximumSlashInPercentage: 100,
       earlyWithdrawPenaltyInPercentage: 80,
     },
     mode: "onChange",
@@ -55,22 +80,39 @@ export const BondingParameters: React.FC = () => {
   };
   const onSubmitMinPenalty = async (formData: Partial<BondingParametersFormType>) => {
     if (formData.minimumPenaltyInPercentage) {
-      bondContract.setMinimumPenalty(new Address(address), formData.minimumPenaltyInPercentage);
+      const tx = bondContract.setMinimumPenalty(new Address(address), formData.minimumPenaltyInPercentage * 100);
+      await sendTransactions({
+        transactions: [tx],
+      });
     }
   };
   const onSubmitMaxSlashPerc = async (formData: Partial<BondingParametersFormType>) => {
-    console.log(formData);
+    if (formData.maximumSlashInPercentage) {
+      const tx = bondContract.setMaximumPenalty(new Address(address), formData.maximumSlashInPercentage * 100);
+      await sendTransactions({
+        transactions: [tx],
+      });
+    }
   };
   const onSubmitEarlyWithdrawPenalty = async (formData: Partial<BondingParametersFormType>) => {
     if (formData.earlyWithdrawPenaltyInPercentage) {
-      bondContract.setWithdrawPenalty(new Address(address), formData.earlyWithdrawPenaltyInPercentage);
+      const tx = bondContract.setWithdrawPenalty(new Address(address), formData.earlyWithdrawPenaltyInPercentage * 100);
+      await sendTransactions({
+        transactions: [tx],
+      });
     }
   };
   const handleOnPause = async () => {
-    bondContract.setContractState(new Address(address), State.Inactive);
+    const tx = bondContract.setContractState(new Address(address), State.Inactive);
+    await sendTransactions({
+      transactions: [tx],
+    });
   };
   const handleOnUnpause = async () => {
-    bondContract.setContractState(new Address(address), State.Active);
+    const tx = bondContract.setContractState(new Address(address), State.Active);
+    await sendTransactions({
+      transactions: [tx],
+    });
   };
 
   return (
@@ -91,7 +133,10 @@ export const BondingParameters: React.FC = () => {
             <GridItem w="100%" colSpan={2}>
               Minimum Lock Period In Seconds
             </GridItem>
-            <GridItem w="100%">{getValues("minimumLockPeriodInSeconds")}</GridItem>
+            <GridItem w="100%">
+              {contractConfiguration.lockPeriodsWithBonds[1] !== undefined ? contractConfiguration.lockPeriodsWithBonds[1].lockPeriod : <div>Loading</div>}
+              seconds
+            </GridItem>
             <GridItem w="100%" textAlign="right" colSpan={2}>
               <form onSubmit={handleSubmit(onSubmitMinLockPeriod)}>
                 <FormControl isInvalid={!!errors.minimumLockPeriodInSeconds} isRequired minH={"3.5rem"}>
@@ -121,7 +166,16 @@ export const BondingParameters: React.FC = () => {
             <GridItem w="100%" colSpan={2}>
               Minimum S Bond
             </GridItem>
-            <GridItem w="100%">{getValues("minimumSBond")} $ITHEUM</GridItem>
+            <GridItem w="100%">
+              {contractConfiguration.lockPeriodsWithBonds[1] !== undefined ? (
+                BigNumber(contractConfiguration.lockPeriodsWithBonds[1].amount)
+                  .dividedBy(10 ** 18)
+                  .toNumber()
+              ) : (
+                <div>Loading</div>
+              )}
+              &nbsp;$ITHEUM
+            </GridItem>
             <GridItem w="100%" textAlign="right" colSpan={2}>
               <form onSubmit={handleSubmit(onSubmitMinSlashBond)}>
                 <FormControl isInvalid={!!errors.minimumSBond} isRequired minH={"3.5rem"}>
@@ -151,7 +205,7 @@ export const BondingParameters: React.FC = () => {
             <GridItem w="100%" colSpan={2}>
               Minimum Penalty in Percentage
             </GridItem>
-            <GridItem w="100%">{getValues("minimumPenaltyInPercentage")}%</GridItem>
+            <GridItem w="100%">{contractConfiguration.minimumPenalty / 100}%</GridItem>
             <GridItem w="100%" textAlign="right" colSpan={2}>
               <form onSubmit={handleSubmit(onSubmitMinPenalty)}>
                 <FormControl isInvalid={!!errors.minimumPenaltyInPercentage} isRequired minH={"3.5rem"}>
@@ -180,33 +234,87 @@ export const BondingParameters: React.FC = () => {
           </Grid>
           <Grid templateColumns="repeat(5, 1fr)" gap={6} fontSize="1.3rem">
             <GridItem w="100%" colSpan={2}>
-              Minimum Slash In Percentage
+              Maximum Slash In Percentage
             </GridItem>
-            <GridItem w="100%">{getValues("minimumSlashInPercentage")}%</GridItem>
+            <GridItem w="100%">{contractConfiguration.maximumPenalty / 100}%</GridItem>
             <GridItem w="100%" textAlign="right" colSpan={2}>
-              <Input type="number" w="25%" mr={3} />
-              <Button>Set</Button>
+              <form onSubmit={handleSubmit(onSubmitMaxSlashPerc)}>
+                <FormControl isInvalid={!!errors.maximumSlashInPercentage} isRequired minH={"3.5rem"}>
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange } }) => (
+                      <Input
+                        mt="1 !important"
+                        id="maximumSlashInPercentage"
+                        w="25%"
+                        mr={3}
+                        type="number"
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                        }}
+                      />
+                    )}
+                    name={"maximumSlashInPercentage"}
+                  />
+                  <FormErrorMessage>{errors?.maximumSlashInPercentage?.message}</FormErrorMessage>
+
+                  <Button type="submit">Set</Button>
+                </FormControl>
+              </form>
             </GridItem>
           </Grid>
           <Grid templateColumns="repeat(5, 1fr)" gap={6} fontSize="1.3rem">
             <GridItem w="100%" colSpan={2}>
               Early Withdraw Penalty in Percentage
             </GridItem>
-            <GridItem w="100%">{getValues("earlyWithdrawPenaltyInPercentage")}%</GridItem>
+            <GridItem w="100%">{contractConfiguration.withdrawPenalty / 100}%</GridItem>
             <GridItem w="100%" textAlign="right" colSpan={2}>
-              <Input type="number" w="25%" mr={3} />
-              <Button>Set</Button>
+              <form onSubmit={handleSubmit(onSubmitEarlyWithdrawPenalty)}>
+                <FormControl isInvalid={!!errors.earlyWithdrawPenaltyInPercentage} isRequired minH={"3.5rem"}>
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange } }) => (
+                      <Input
+                        mt="1 !important"
+                        id="earlyWithdrawPenaltyInPercentage"
+                        w="25%"
+                        mr={3}
+                        type="number"
+                        onChange={(event) => {
+                          onChange(event.target.value);
+                        }}
+                      />
+                    )}
+                    name={"earlyWithdrawPenaltyInPercentage"}
+                  />
+                  <FormErrorMessage>{errors?.earlyWithdrawPenaltyInPercentage?.message}</FormErrorMessage>
+
+                  <Button type="submit">Set</Button>
+                </FormControl>
+              </form>
             </GridItem>
           </Grid>
           <Flex flexDirection="row" gap={5} py={4} roundedBottom="3xl" justifyContent="start">
             <Flex flexDirection="column">
-              <Button aria-label="UnPause contract" loadingText="Loading" variant="ghost" size="md" onClick={() => handleOnUnpause()}>
+              <Button
+                aria-label="UnPause contract"
+                loadingText="Loading"
+                variant="ghost"
+                size="md"
+                onClick={() => handleOnUnpause()}
+                isDisabled={contractConfiguration.contractState.toString() === "Active"}>
                 <AiFillPlayCircle size="lg" color="#00C797" />
               </Button>
               <Text>Unpause Minter</Text>
             </Flex>
             <Flex flexDirection="column">
-              <Button aria-label="Pause contract" loadingText="Loading" variant="ghost" size="md" onClick={() => handleOnPause}>
+              <Button
+                aria-label="Pause contract"
+                loadingText="Loading"
+                variant="ghost"
+                size="md"
+                onClick={() => handleOnPause()}
+                isDisabled={contractConfiguration.contractState.toString() === "Inactive"}>
                 <AiFillPauseCircle size="lg" color="#00C797" />
               </Button>
               <Text>Pause Minter</Text>
