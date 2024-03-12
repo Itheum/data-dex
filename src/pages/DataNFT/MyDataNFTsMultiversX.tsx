@@ -121,8 +121,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       const _dataNfts: DataNftType[] = [];
 
       for (let index = 0; index < onChainNfts.length; index++) {
-        debugger; // eslint-disable-line
-
         let decodedAttributes: any = {};
 
         try {
