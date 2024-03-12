@@ -325,17 +325,23 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               </Box>
             )}
             <Box width={"100%"} marginY={tokenIdParam ? "20px" : "10px"} border="1px solid" borderColor="#00C79740" borderRadius="xl">
-              <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ base: "center", xl: "flex-start" }}>
-                <Flex flexDirection={{ base: "column", xl: "row" }} w="full" alignItems={{ base: "center", md: "initial" }} justifyContent="space-between">
-                  <Image
-                    w={{ base: "210px", xl: "260px" }}
-                    h={{ base: "210px", xl: "260px" }}
-                    py={2}
-                    objectFit={"contain"}
-                    src={nftData.url}
-                    alt={"Data NFT Image"}
-                    mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
-                  />
+              <Stack flexDirection="column" m={5} justifyContent={{ base: "center", xl: "flex-start" }} alignItems={{ xl: "flex-start" }}>
+                <Flex
+                  flexDirection={{ base: "column", xl: "row" }}
+                  w="full"
+                  alignItems={{ base: "initial", md: "initial" }}
+                  justifyContent={{ xl: "space-between" }}>
+                  <Flex justifyContent={{ base: "center" }}>
+                    <Image
+                      w={{ base: "210px", xl: "260px" }}
+                      h={{ base: "210px", xl: "260px" }}
+                      py={2}
+                      objectFit={"contain"}
+                      src={nftData.url}
+                      alt={"Data NFT Image"}
+                      mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
+                    />
+                  </Flex>
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
@@ -354,7 +360,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
                         <Tooltip label={nftData.attributes?.title}>
-                          <Text fontSize={"32px"} fontFamily="Clash-Medium" noOfLines={1} fontWeight="light" lineHeight="10">
+                          <Text
+                            fontSize={{ base: "1.25rem", md: "1.5rem", xl: "1.5rem" }}
+                            fontFamily="Clash-Medium"
+                            noOfLines={1}
+                            fontWeight="light"
+                            lineHeight="10">
                             {nftData.attributes?.title}
                           </Text>
                         </Tooltip>
@@ -424,7 +435,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Text>
                         </Box>
                       )}
-                      <Flex flexDirection="row" gap={3} justifyContent={{ base: "center", lg: "start" }} w="full">
+                      <Flex flexDirection="row" gap={3} justifyContent={{ lg: "start" }} w="full">
                         <Tooltip colorScheme="teal" hasArrow placement="top" label="Market is paused" isDisabled={!isMarketPaused}>
                           <Button
                             size={{ base: "sm", md: "md", xl: "lg" }}
@@ -520,7 +531,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                       </Flex>
                     </Flex>
-                    <LivelinessScore index={0} tokenIdentifier={tokenId ?? ""} />
+                    {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore tokenIdentifier={tokenId ?? ""} />}
                   </Flex>
                 </Flex>
 

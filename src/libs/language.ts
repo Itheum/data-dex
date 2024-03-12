@@ -1,5 +1,6 @@
 export const labels = {
-  "ERR_URL_MISSING_HTTPS": "Some of your url inputs don't seem to be valid. For e.g. stream URLs or marshal service URLs need to have https:// in it. (ER-1)",
+  "ERR_URL_MISSING_HTTPS_OR_IPNS":
+    "Some of your url inputs don't seem to be valid. For e.g. stream URLs or marshal service URLs need to have https:// or ipns:// in it. (ER-1)",
   "ERR_DATA_MARSHAL_DOWN": "Data Marshal service is not responding. (ER-2)",
   "ERR_DATA_MARSHAL_GEN_ACCESS_FAIL": "Data Marshal responded with an unknown error trying to generate your access links. (ER-3)",
   "ERR_WALLET_SIG_GEN_MALFORMED": "Signature result from wallet was malformed. (ER-4)",
@@ -42,4 +43,5 @@ export const labels = {
   "ADD_FAVORITE_FAILS": "Could not add to favorites. (ER-27)",
   "REMOVE_FAVORITE_FAILS": "Could not remove from favorites. (ER-28)",
   "ERR_MARKET_NR_OFFERS_FAIL": "Could not fetch number of marketplace offers. (ER-29)",
+  "ERR_MINT_FORM_NOT_ENOUGH_BOND": "You have insufficient ITHEUM tokens for the Liveness Bonding. (ER-30)",
 };

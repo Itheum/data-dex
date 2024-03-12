@@ -80,7 +80,14 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
       isErrorF = false;
       isSuccess = true;
     } else {
-      const { statusCode, isError } = await makeRequest(url);
+      let urlToTest = url;
+      if (urlToTest.startsWith("ipns://")) {
+        const gateway = "https://gateway.lighthouse.storage/ipns/";
+        const ipns = url.split("ipns://")[1];
+        const ipnsUrl = `${gateway}${ipns}`;
+        urlToTest = ipnsUrl;
+      }
+      const { statusCode, isError } = await makeRequest(urlToTest);
       statusCodeF = statusCode;
       isErrorF = isError;
       if (isErrorF) {
@@ -208,6 +215,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           </Stack>
           <TradeForm
             checkUrlReturns200={checkUrlReturns200}
+            closeTradeFormModal={onClose}
             maxSupply={maxSupply}
             maxRoyalties={maxRoyalties / 100}
             dataNFTMarshalServiceStatus={dataNFTMarshalServiceStatus}
