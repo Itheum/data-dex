@@ -26,6 +26,8 @@ import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
 
+import Bridge from "pages/Bridge/Bridge";
+
 const mxLogout = logout;
 
 export const routes: RouteType[] = [
@@ -46,6 +48,11 @@ export const routes: RouteType[] = [
   },
   {
     path: "profile",
+    component: <></>,
+    authenticatedRoute: true,
+  },
+  {
+    path: "bridge",
     component: <></>,
     authenticatedRoute: true,
   },
@@ -240,6 +247,8 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     </Route>
 
                     <Route path="settings" element={<AppSettings />} />
+
+                    <Route path="bridge" element={<Bridge tabState={1} />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>
               </Box>
