@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
-import { Bond, BondContract } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import BigNumber from "bignumber.js";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { Address } from "@multiversx/sdk-core/out";
@@ -12,6 +12,7 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 
 type CollectionDashboardProps = {
   bondNft: Bond;
+  bondDataNft: Array<DataNft>;
 };
 
 type CollectionDashboardFormType = {
@@ -20,10 +21,27 @@ type CollectionDashboardFormType = {
 };
 
 export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) => {
-  const { bondNft } = props;
+  const { bondNft, bondDataNft } = props;
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
+  const [allCompensation, setAllCompensation] = useState<Compensation>({
+    compensationId: 0,
+    tokenIdentifier: "",
+    nonce: 0,
+    accumulatedAmount: 0,
+    proofAmount: 0,
+    endDate: 0,
+  });
+
+  // console.log(bondDataNft);
+
+  useEffect(() => {
+    (async () => {
+      const compensation = await bondContract.viewCompensation(bondNft.bondId);
+      setAllCompensation(compensation);
+    })();
+  }, []);
 
   const validationSchema = Yup.object().shape({
     enforceMinimumPenalty: Yup.number().required("Required"),
@@ -34,7 +52,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     control,
     formState: { errors },
     handleSubmit,
-    getValues,
     watch,
   } = useForm<CollectionDashboardFormType>({
     defaultValues: {
@@ -45,13 +62,13 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     resolver: yupResolver(validationSchema),
   });
 
+  // console.log(bondNft.tokenIdentifier + "-" + bondNft.nonce.toString(18));
   const enforceMinimumPenalty = watch("enforceMinimumPenalty");
   const endTimestampOfBond = watch("endTimestampOfBond");
 
-  const handleEnforcePenalty = async (tokenIdentifier: string, nonce: number, formData: Omit<CollectionDashboardFormType, "endTimestampOfBond">) => {
-    console.log(tokenIdentifier, nonce, formData);
-    const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 1, (formData.enforceMinimumPenalty / 100) * Number(bondNft.bondAmount));
-    tx.setGasLimit(100000000);
+  const handleEnforcePenalty = async (tokenIdentifier: string, nonce: number, enforceMinimumPenaltyForm: number) => {
+    console.log(tokenIdentifier, nonce, enforceMinimumPenaltyForm);
+    const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 1, enforceMinimumPenaltyForm * 100);
     await sendTransactions({
       transactions: [tx],
     });
@@ -59,7 +76,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
 
   const handleMaxSlashPenalty = async (tokenIdentifier: string, nonce: number) => {
     const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 2);
-    tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
     });
@@ -68,18 +84,16 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const handleWithdraw = async (tokenIdentifier: string, nonce: number) => {
     console.log("test");
     const tx = bondContract.modifyBond(new Address(address), tokenIdentifier, nonce);
-    tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
     });
   };
 
-  const handleSelfClaiming = async (tokenIdentifier: string, nonce: number, formData: Omit<CollectionDashboardFormType, "enforceMinimumPenalty">) => {
-    const formDate = new Date(formData.endTimestampOfBond);
+  const handleSelfClaiming = async (tokenIdentifier: string, nonce: number, endTimestampOfBondForm: string) => {
+    const formDate = new Date(endTimestampOfBondForm);
     const unixTimestamp = formDate.getTime() / 1000;
-    // console.log(test.getTime() / 1000);
+    console.log(endTimestampOfBondForm);
     const tx = bondContract.initiateRefund(new Address(address), tokenIdentifier, nonce, unixTimestamp);
-    tx.setGasLimit(100000000);
     await sendTransactions({
       transactions: [tx],
     });
@@ -89,7 +103,15 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     <Flex flexDirection="column" w="full" gap={5}>
       <Flex flexDirection="row" w="full" gap={5} justifyContent="space-between">
         <Box>
-          <Text fontSize="1.5rem">1. Data NFT:&nbsp;&nbsp;SonicTunes</Text>
+          {bondDataNft.map((dataNft, index) => {
+            if (dataNft.tokenIdentifier === bondNft.tokenIdentifier + "-" + bondNft.nonce.toString(16)) {
+              return (
+                <Text fontSize="1.5rem" key={index}>
+                  {dataNft.tokenName}
+                </Text>
+              );
+            }
+          })}
           <Flex flexDirection="row" gap={4}>
             <Text fontSize=".75rem" textColor="teal.200">
               {BigNumber(bondNft.bondAmount)
@@ -99,7 +121,10 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
             </Text>
             <Text fontSize=".75rem">|</Text>
             <Text fontSize=".75rem" textColor="indianred">
-              1,000 $ITHEUM Penalized{" "}
+              {BigNumber(allCompensation.accumulatedAmount)
+                .dividedBy(10 ** 18)
+                .toNumber()}
+              &nbsp;$ITHEUM Penalized
             </Text>
             <Text fontSize=".75rem">|</Text>
             <Text fontSize=".75rem" textColor="mediumpurple">

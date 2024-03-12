@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
-import { Bond, BondContract } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondContract, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 
@@ -10,14 +10,18 @@ export const Bonding: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+  const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
 
   useEffect(() => {
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
       const myBonds = contractBonds.filter((bond) => bond.address === address);
-      console.log(myBonds);
+      // console.log(myBonds);
+      const dataNfts: DataNft[] = await DataNft.createManyFromApi(myBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
       setContractBonds(myBonds);
+      setBondingDataNfts(dataNfts);
     })();
   }, []);
   return (
@@ -52,7 +56,7 @@ export const Bonding: React.FC = () => {
             ) : (
               contractBonds.map((bond, index) => (
                 <Fragment key={index}>
-                  <CollectionDashboard bondNft={bond} />
+                  <CollectionDashboard bondNft={bond} bondDataNft={bondingDataNfts} />
                 </Fragment>
               ))
             )}
