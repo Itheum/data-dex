@@ -7,6 +7,7 @@ export interface ContractsType {
   claims: IAddress;
   faucet: IAddress;
   market: IAddress;
+  bridgeHandler: IAddress;
   dataNftTokens: DataNFTToken[];
 }
 

@@ -47,6 +47,13 @@ export type ClaimsInTable = {
   amount: number;
 };
 
+export type BridgeDepositsInTable = {
+  hash: string;
+  timestamp: number;
+  status: string;
+  amount: number;
+};
+
 export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
   addMeta({ itemRank });

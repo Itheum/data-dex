@@ -203,3 +203,48 @@ export const getTokenDecimalsRequest = async (tokenIdentifier: string | undefine
     console.log("Error finding token!");
   }
 };
+
+export const getBridgeDepositTransactions = async (address: string, chainID: string) => {
+  const api = getApi(chainID);
+  const bridgeHandlerContractAddress = contractsForChain(chainID).bridgeHandler;
+  const itheumToken = contractsForChain(chainID).itheumToken as string;
+
+  try {
+    // const allTxs = `https://${api}/accounts/${address}/transactions?size=25&receiver=${claimsContractAddress}&function=claim&withOperations=true`;
+    // const allTxs = `https://${api}/transactions?sender=erd1qmsq6ej344kpn8mc9xfngjhyla3zd6lqdm4zxx6653jee6rfq3ns3fkcc7&receiver=${bridgeHandlerContractAddress}&token=${itheumToken}&function=lock&withScResults=false&withOperations=true&withLogs=false`;
+    const allTxs = `https://${api}/transactions?sender=${address}&receiver=${bridgeHandlerContractAddress}&token=${itheumToken}&function=lock&withScResults=false&withOperations=true&withLogs=false`;
+
+    const resp = await (await axios.get(allTxs, { timeout: uxConfig.mxAPITimeoutMs })).data;
+
+    const transactions = [];
+
+    for (const tx of resp) {
+      const transaction: any = {};
+      transaction["hash"] = tx["txHash"];
+      transaction["timestamp"] = parseInt(tx["timestamp"]);
+      transaction["status"] = tx["status"];
+
+      let amount = 0;
+
+      for (const op of tx["operations"]) {
+        if (op["value"]) {
+          amount += parseInt(op["value"]);
+        }
+      }
+
+      transaction["amount"] = amount;
+      transactions.push(transaction);
+    }
+
+    return {
+      transactions,
+      error: "",
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      transactions: [],
+      error: (err as Error).message,
+    };
+  }
+};

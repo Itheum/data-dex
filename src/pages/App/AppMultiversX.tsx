@@ -248,7 +248,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
                     <Route path="settings" element={<AppSettings />} />
 
-                    <Route path="bridge" element={<Bridge tabState={1} />} />
+                    <Route path="bridge" element={<Bridge />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>
               </Box>

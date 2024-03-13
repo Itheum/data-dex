@@ -7,11 +7,13 @@ import {
   faucetContractAddress_Mx_Devnet,
   dataNftMintContractAddress_Mx_Devnet,
   dataNftMarketContractAddress_Mx_Devnet,
+  bridgeHandlerContractAddress_Mx_Devnet,
   tokenContractAddress_Mx_Mainnet,
   claimsContractAddress_Mx_Mainnet,
   faucetContractAddress_Mx_Mainnet,
   dataNftMarketContractAddress_Mx_Mainnet,
   dataNftMintContractAddress_Mx_Mainnet,
+  bridgeHandlerContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
 } from "./contractAddresses";
 
@@ -23,6 +25,7 @@ export function contractsForChain(chainID: string): ContractsType {
         claims: new Address(claimsContractAddress_Mx_Devnet),
         faucet: new Address(faucetContractAddress_Mx_Devnet),
         market: new Address(dataNftMarketContractAddress_Mx_Devnet),
+        bridgeHandler: new Address(bridgeHandlerContractAddress_Mx_Devnet),
         dataNftTokens: [
           {
             id: dataNFTFTTicker_Mx_Devnet,
@@ -57,6 +60,7 @@ export function contractsForChain(chainID: string): ContractsType {
         claims: new Address(claimsContractAddress_Mx_Mainnet),
         faucet: new Address(faucetContractAddress_Mx_Mainnet),
         market: new Address(dataNftMarketContractAddress_Mx_Mainnet),
+        bridgeHandler: new Address(bridgeHandlerContractAddress_Mx_Mainnet),
         dataNftTokens: [
           {
             id: dataNFTFTTicker_Mx_Mainnet,

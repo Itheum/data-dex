@@ -1,164 +1,348 @@
-import React, { useEffect, useState } from "react";
-import { Icon } from "@chakra-ui/icons";
+import React, { useEffect, useState, useMemo } from "react";
 import {
-  CloseButton,
-  Flex,
   Heading,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
   Box,
-  useColorMode,
-  useDisclosure,
+  Flex,
+  Spinner,
+  HStack,
+  Input,
+  Link,
+  Text,
+  Button,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  CloseButton,
+  Divider,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  useToast,
 } from "@chakra-ui/react";
-import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { FaBrush } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { NoDataHere } from "components/Sections/NoDataHere";
-import useThrottle from "components/UtilComps/UseThrottle";
-import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
-import { contractsForChain } from "libs/config";
-import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
-import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import { createDataNftType, DataNftType } from "libs/MultiversX/types";
-import { useMarketStore } from "store";
+import { Address } from "@multiversx/sdk-core/out";
+import { ColumnDef } from "@tanstack/react-table";
+import ShortAddress from "components/UtilComps/ShortAddress";
+import { BridgeHandlerContract } from "libs/MultiversX/bridgeHandler";
+import { getBridgeDepositTransactions } from "libs/MultiversX/api";
+import { DataTable } from "components/Tables/Components/DataTable";
+import { BridgeDepositsInTable, timeSince } from "components/Tables/Components/tableUtils";
+import { CHAIN_TX_VIEWER, contractsForChain } from "libs/config";
+import { formatNumberRoundFloor, sleep, isValidNumericCharacter } from "libs/utils";
 
-export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
-  const { colorMode } = useColorMode();
+// CONSTANTS (should come from SC or backend)
+const MIN_BRIDGE_DEPOSIT = 10;
+const MAX_BRIDGE_DEPOSIT = 20;
+
+export default function Bridge() {
+  const toast = useToast();
   const { chainID } = useGetNetworkConfig();
-  const itheumToken = contractsForChain(chainID).itheumToken;
-  const { address } = useGetAccountInfo();
-  const navigate = useNavigate();
-
-  const marketRequirements = useMarketStore((state) => state.marketRequirements);
-  // const userData = useMintStore((state) => state.userData);
-  const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
-
-  const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
-    const _dataNfts: DataNftType[] = [];
-    for (let index = 0; index < 8; index++) {
-      _dataNfts.push(createDataNftType());
-    }
-    return _dataNfts;
-  });
-  const purchasedDataNfts: DataNftType[] = dataNfts.filter((item) => item.creator != address);
-  const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
+  const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const mxBridgeHandlerContract = new BridgeHandlerContract(chainID);
+  const [bridgeAdmin, setBridgeAdmin] = useState("");
+  const [bridgeIsPaused, setBridgeIsPaused] = useState(true);
+  const [bridgeDepositTxs, setBridgeDepositTxs] = useState<BridgeDepositsInTable[]>([]);
+  const [loadingBridgeDepositTxs, setLoadingBridgeDepositTxs] = useState(-1);
+  const [errGeneric, setErrGeneric] = useState<any>(null);
+  const [lockingDeposit, setLockingDeposit] = useState<boolean>(false);
+  const [lockDepositSessionId, setLockDepositSessionId] = useState<any>(null);
+  const [lockDepositSuccessful, setLockDepositSuccessful] = useState<any>(null);
+  const [bridgeDeposit, setBridgeDeposit] = useState(MIN_BRIDGE_DEPOSIT);
+  const [solanaDestinationAddress, setSolanaDestinationAddress] = useState<any>(null);
+  const [bridgeDepositError, setBridgeDepositError] = useState<any>(null);
 
-  const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
-  const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
+  useEffect(() => {
+    if (chainID === "D" && mxAddress && mxBridgeHandlerContract) {
+      mxBridgeHandlerContract.getAdminAddress().then((adminAddress) => {
+        if (adminAddress?.valueOf()) {
+          setBridgeAdmin(new Address(adminAddress.valueOf()).toString());
+        }
+      });
 
-  const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(
-      address,
-      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
-      chainID
-    );
+      mxBridgeHandlerContract.getIsPaused().then((isPaused) => {
+        console.log(isPaused);
+        setBridgeIsPaused(isPaused);
+      });
 
-    if (onChainNfts.length > 0) {
-      const codec = new BinaryCodec();
-      const json = JSON.parse(JSON.stringify(dataNftMintJson));
-      const abiRegistry = AbiRegistry.create(json);
-      const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
-
-      // some logic to loop through the raw onChainNFTs and build the dataNfts
-      const _dataNfts: DataNftType[] = [];
-
-      for (let index = 0; index < onChainNfts.length; index++) {
-        const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
-        const nft = onChainNfts[index];
-
-        _dataNfts.push({
-          index, // only for view & query
-          id: nft.identifier, // ID of NFT -> done
-          nftImgUrl: nft.url ? nft.url : "", // image URL of of NFT -> done
-          dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
-          dataStream: decodedAttributes["data_stream_url"].toString(), // data stream URL -> done
-          dataMarshal: decodedAttributes["data_marshal_url"].toString(), // data stream URL -> done
-          tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
-          feeInTokens: 100, // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-          creator: decodedAttributes["creator"].toString(), // initial creator of NFT
-          creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
-          supply: nft.supply ? Number(nft.supply) : 1,
-          balance: nft.balance !== undefined ? Number(nft.balance) : 1,
-          description: decodedAttributes["description"].toString(),
-          title: decodedAttributes["title"].toString(),
-          royalties: nft.royalties / 100,
-          nonce: nft.nonce,
-          collection: nft.collection,
-        });
-      }
-
-      setDataNfts(_dataNfts);
-    } else {
-      // await sleep(4);
-      setDataNfts([]);
+      fetchMyBridgeDepositTransactions();
     }
-  };
+  }, [mxAddress]);
 
   useEffect(() => {
     if (hasPendingTransactions) return;
 
-    getOnChainNFTs();
+    fetchMyBridgeDepositTransactions();
   }, [hasPendingTransactions]);
 
-  function openNftDetailsDrawer(index: number) {
-    setNftForDrawer(dataNfts[index]);
-    onOpenDataNftDetails();
-  }
+  useEffect(() => {
+    if (hasPendingTransactions) return;
+    setLockingDeposit(false);
+    fetchMyBridgeDepositTransactions();
+  }, [lockDepositSuccessful]);
+
+  const fetchMyBridgeDepositTransactions = async () => {
+    setLoadingBridgeDepositTxs(-1);
+
+    const res = await getBridgeDepositTransactions(mxAddress, chainID);
+
+    if (res.error) {
+      toast({
+        title: "Could not get your recent bridge deposit transactions from the MultiversX blockchain.",
+        status: "error",
+        isClosable: true,
+        duration: null,
+      });
+
+      setLoadingBridgeDepositTxs(-2);
+    } else {
+      setBridgeDepositTxs(res.transactions);
+      setLoadingBridgeDepositTxs(0);
+    }
+  };
+
+  const depositsTableColumns = useMemo<ColumnDef<BridgeDepositsInTable, any>[]>(
+    () => [
+      {
+        id: "hash",
+        accessorFn: (row) => row.hash,
+        cell: (cellProps) => (
+          <HStack>
+            <ShortAddress address={cellProps.getValue()} />
+            <Link
+              href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/transactions/${cellProps.getValue()}`}
+              isExternal
+              style={{ display: "flex" }}>
+              <ExternalLinkIcon />
+            </Link>
+          </HStack>
+        ),
+        header: "Deposit Hash",
+        footer: (footerProps) => footerProps.column.id,
+      },
+      {
+        id: "when",
+        accessorFn: (row) => row.timestamp,
+        header: "When",
+        cell: (cellProps) => timeSince(cellProps.getValue()),
+        footer: (footerProps) => footerProps.column.id,
+      },
+      {
+        id: "status",
+        accessorFn: (row) => row.status,
+        header: "Deposit Status",
+        cell: (cellProps) => cellProps.getValue(),
+        footer: (footerProps) => footerProps.column.id,
+      },
+      {
+        id: "tokens",
+        accessorFn: (row) => formatNumberRoundFloor(row.amount / Math.pow(10, 18)),
+        header: "Tokens",
+        footer: (footerProps) => footerProps.column.id,
+      },
+      {
+        id: "progress",
+        accessorFn: (row) => "unknown",
+        header: "Progress",
+        footer: (footerProps) => footerProps.column.id,
+      },
+    ],
+    []
+  );
+
+  const handleOnChainLock = async () => {
+    if (bridgeDeposit >= MIN_BRIDGE_DEPOSIT && bridgeDeposit <= MAX_BRIDGE_DEPOSIT && solanaDestinationAddress !== null) {
+      setLockingDeposit(true);
+
+      await sleep(3);
+
+      const { sessionId, error } = await mxBridgeHandlerContract.sendLockTransaction({
+        recipient: solanaDestinationAddress,
+        sender: mxAddress,
+        itheumToken: contractsForChain(chainID).itheumToken,
+        antiSpamTax: bridgeDeposit,
+      });
+
+      if (error) {
+        setErrGeneric(new Error(error.toString()));
+      }
+
+      setLockDepositSessionId(sessionId);
+    }
+  };
+
+  const txFail = () => {
+    setLockingDeposit(false);
+    setErrGeneric(new Error("Transaction to lock deposit has failed"));
+  };
+
+  const txCancelled = () => {
+    setLockingDeposit(false);
+    setErrGeneric(new Error("Transaction to lock deposit was cancelled"));
+  };
+
+  const txSuccess = async () => {
+    setLockDepositSuccessful(true);
+  };
+
+  useTrackTransactionStatus({
+    transactionId: lockDepositSessionId,
+    onSuccess: txSuccess,
+    onFail: txFail,
+    onCancelled: txCancelled,
+  });
+
+  const resetBridgeDepositUI = () => {
+    setErrGeneric(null);
+    setLockDepositSuccessful(false);
+    setBridgeDepositError(null);
+    setSolanaDestinationAddress(null);
+  };
 
   return (
     <>
-      <Stack>
-        <Heading size="xl" fontFamily="Clash-Medium" mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+      <Flex flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading fontSize="36px" fontFamily="Clash-Medium" mt={14} mb={3}>
           Token Bridge
         </Heading>
-        <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" px={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
+        <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light" mb={10}>
           Bridge ITHEUM tokens to external blockchains
         </Heading>
 
-        <Box>
-          {dataNfts.length > 0 ? (
-            <SimpleGrid
-              columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-              spacingY={4}
-              mx={{ base: 0, "2xl": "24 !important" }}
-              mt="5 !important"
-              justifyItems={"center"}>
-              {dataNfts.map((item, index) => (
-                <WalletDataNFTMX
-                  key={index}
-                  hasLoaded={oneNFTImgLoaded}
-                  setHasLoaded={setOneNFTImgLoaded}
-                  maxPayment={maxPaymentFeeMap[itheumToken]}
-                  sellerFee={marketRequirements ? marketRequirements.sellerTaxPercentage : 0}
-                  openNftDetailsDrawer={openNftDetailsDrawer}
-                  isProfile={false}
-                  {...item}
-                />
-              ))}
-            </SimpleGrid>
-          ) : (
-            <Flex onClick={getOnChainNFTs}>
-              <NoDataHere />
-            </Flex>
+        <Flex direction="column" w="full">
+          <Heading size="1rem" opacity=".8" fontFamily="Satoshi-Medium" mb={2}>
+            Settings
+          </Heading>
+          <Box>Bridge Admin : {bridgeAdmin}</Box>
+          <Box>Is Bridge Paused? {bridgeIsPaused.toString().toLocaleUpperCase()}</Box>
+        </Flex>
+
+        <Divider my={10} />
+
+        <Flex direction="column" w="full">
+          <Heading size="1rem" opacity=".8" fontFamily="Satoshi-Medium" mb={2}>
+            Deposit tokens for Bridging
+          </Heading>
+          {errGeneric?.message && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Bridge Deposit Error!</AlertTitle>
+              {errGeneric?.message && (
+                <Text fontSize="md">
+                  <AlertDescription>{errGeneric.message}</AlertDescription>
+                </Text>
+              )}
+              <CloseButton onClick={resetBridgeDepositUI} />
+            </Alert>
           )}
-        </Box>
-      </Stack>
+
+          {lockDepositSuccessful && (
+            <Alert status="success">
+              <AlertIcon />
+              Bridge Deposit was a success. Bridging to Solana in progress...
+              <CloseButton onClick={resetBridgeDepositUI} />
+            </Alert>
+          )}
+
+          <Box mt={5}>
+            <Input
+              maxW={350}
+              mb={2}
+              placeholder="Solana address to receive tokens"
+              id="solanaAddress"
+              defaultValue={solanaDestinationAddress}
+              value={solanaDestinationAddress}
+              onChange={(event) => setSolanaDestinationAddress(event.target.value.trim())}
+            />
+
+            <NumberInput
+              size="lg"
+              maxW={20}
+              step={1}
+              defaultValue={MIN_BRIDGE_DEPOSIT}
+              min={MIN_BRIDGE_DEPOSIT}
+              isValidCharacter={isValidNumericCharacter}
+              max={MAX_BRIDGE_DEPOSIT}
+              value={bridgeDeposit}
+              onChange={(valueString) => {
+                let error = "";
+                const valueAsNumber = Number(valueString);
+
+                if (valueAsNumber < MIN_BRIDGE_DEPOSIT) {
+                  error = "Maximum deposit allowed is" + " " + MIN_BRIDGE_DEPOSIT;
+                } else if (valueAsNumber > MAX_BRIDGE_DEPOSIT ? MAX_BRIDGE_DEPOSIT : 0) {
+                  error = "Maximum deposit allowed is" + " " + MAX_BRIDGE_DEPOSIT;
+                }
+
+                if (error !== "") {
+                  setBridgeDepositError(error);
+                } else {
+                  setBridgeDepositError(null);
+                }
+
+                if (valueAsNumber > 0) {
+                  setBridgeDeposit(valueAsNumber);
+                }
+              }}
+              keepWithinRange={false}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+
+            <Box my={2} h={5}>
+              {bridgeDepositError && (
+                <Text color="red.400" fontSize="xs">
+                  {bridgeDepositError}
+                </Text>
+              )}
+            </Box>
+
+            <Button
+              colorScheme="teal"
+              variant="outline"
+              isDisabled={lockingDeposit || bridgeDepositError !== null || solanaDestinationAddress === null}
+              onClick={() => {
+                handleOnChainLock();
+              }}>
+              Deposit Tokens
+            </Button>
+
+            <Box my={2} h={5}>
+              {lockingDeposit && (
+                <Text color="green.400" fontSize="xs">
+                  {`Depositing ${bridgeDeposit} ITHEUM tokens for bridging to your solana address of ${solanaDestinationAddress}`}
+                </Text>
+              )}
+            </Box>
+          </Box>
+        </Flex>
+
+        <Divider my={10} />
+
+        <Flex direction="column" w="full" mt={10}>
+          <Heading size="1rem" opacity=".8" fontFamily="Satoshi-Medium" mb={2}>
+            Past Deposits
+          </Heading>
+          {((loadingBridgeDepositTxs === -1 || loadingBridgeDepositTxs === -2) && (
+            <Box minH="150" alignItems="center" display="flex" justifyContent="center">
+              {loadingBridgeDepositTxs === -1 ? <Spinner size="lg" /> : <WarningTwoIcon />}
+            </Box>
+          )) || <DataTable columns={depositsTableColumns} data={bridgeDepositTxs} /> || (
+              <Box minH="150" alignItems="center" display="flex" justifyContent="center">
+                No bridge deposits yet...
+              </Box>
+            )}
+        </Flex>
+      </Flex>
     </>
   );
 }

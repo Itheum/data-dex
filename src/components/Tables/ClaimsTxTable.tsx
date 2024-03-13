@@ -77,6 +77,7 @@ export default function ClaimsTxTable(props: { address: string }) {
       setLoadingClaims(0);
     }
   };
+
   return (
     <>
       {((loadingClaims === -1 || loadingClaims === -2) && (

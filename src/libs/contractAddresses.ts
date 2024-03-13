@@ -35,6 +35,7 @@ const contracts = {
       faucetContractAddress: "erd1qqqqqqqqqqqqqpgq860z22azzx59c8xytll8jgkz5t8kk89c7yqsy2z0p3",
       dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgq7thwlde9hvc5ty7lx2j3l9tvy3wgkwu7fsxsvz9rat",
       dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqlhewm06p4c9qhq32p239hs45dvry948tfsxshx3e0l",
+      bridgeHandlerContractAddress: "erd1qqqqqqqqqqqqqpgqc7jaa49lmz7rlhk5n24hqqlfz5nxmfcjfsxs2gphdc",
     },
     mainnet: {
       itheumTokenContractAddress: "ITHEUM-df6f26",
@@ -43,6 +44,7 @@ const contracts = {
       faucetContractAddress: "",
       dataNftMintContractAddress: "erd1qqqqqqqqqqqqqpgqmuzgkurn657afd3r2aldqy2snsknwvrhc77q3lj8l6",
       dataNftMarketContractAddress: "erd1qqqqqqqqqqqqqpgqay2r64l9nhhvmaqw4qanywfd0954w2m3c77qm7drxc",
+      bridgeHandlerContractAddress: "",
     },
   },
 };
@@ -72,12 +74,16 @@ export const claimsContractAddress_Mx_Devnet = contracts.mx["devnet"].claimsCont
 export const faucetContractAddress_Mx_Devnet = contracts.mx["devnet"].faucetContractAddress;
 export const dataNftMintContractAddress_Mx_Devnet = contracts.mx["devnet"].dataNftMintContractAddress;
 export const dataNftMarketContractAddress_Mx_Devnet = contracts.mx["devnet"].dataNftMarketContractAddress;
+export const bridgeHandlerContractAddress_Mx_Devnet = contracts.mx["devnet"].bridgeHandlerContractAddress;
+
 export const tokenContractAddress_Mx_Mainnet = contracts.mx["mainnet"].itheumTokenContractAddress;
 export const dataNFTFTTicker_Mx_Mainnet = contracts.mx["mainnet"].dataNFTFTTicker;
 export const claimsContractAddress_Mx_Mainnet = contracts.mx["mainnet"].claimsContractAddress;
 export const faucetContractAddress_Mx_Mainnet = contracts.mx["mainnet"].faucetContractAddress;
 export const dataNftMintContractAddress_Mx_Mainnet = contracts.mx["mainnet"].dataNftMintContractAddress;
 export const dataNftMarketContractAddress_Mx_Mainnet = contracts.mx["mainnet"].dataNftMarketContractAddress;
+
+export const bridgeHandlerContractAddress_Mx_Mainnet = contracts.mx["mainnet"].bridgeHandlerContractAddress;
 
 // OTHER CHAIN CONTRACTS
 export const tokenContractAddress_testnetHarmony = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";

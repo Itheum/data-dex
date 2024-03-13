@@ -171,6 +171,11 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
     if (isOpen) onClose();
   };
 
+  const handleBridgeClick = () => {
+    navigate("/bridge");
+    if (isOpen) onClose();
+  };
+
   return (
     <>
       <Flex
@@ -350,6 +355,15 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                             isDisabled={hasPendingTransactions}
                             backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                             CanaryNet Dashboard
+                          </MenuItem>
+
+                          <MenuItem
+                            onClick={handleBridgeClick}
+                            fontSize="lg"
+                            fontWeight="500"
+                            isDisabled={hasPendingTransactions}
+                            backgroundColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
+                            Token Bridge
                           </MenuItem>
 
                           <MenuItem
