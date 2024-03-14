@@ -67,7 +67,11 @@ export const BondingParameters: React.FC = () => {
 
   const validationSchema = Yup.object().shape({
     minimumLockPeriodInSeconds: Yup.number().required("Required"),
-    minimumSBond: Yup.number().required("Required"),
+    minimumSBond: Yup.number()
+      .typeError("Royalties must be a number.")
+      .min(0, "Minimum value of royalties is 0%.")
+      .max(100, `Maximum value of royalties is 100%`)
+      .required("Required"),
     minimumPenaltyInPercentage: Yup.number().required("Required"),
     maximumSlashInPercentage: Yup.number().required("Required"),
     earlyWithdrawPenaltyInPercentage: Yup.number().required("Required"),
@@ -78,7 +82,6 @@ export const BondingParameters: React.FC = () => {
     control,
     formState: { errors },
     handleSubmit,
-    setValue,
   } = useForm<BondingParametersFormType>({
     defaultValues: {
       minimumLockPeriodInSeconds: 7889231,
@@ -95,7 +98,8 @@ export const BondingParameters: React.FC = () => {
     console.log(formData);
   };
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
-    if (formData.minimumLockPeriodInSeconds && formData.minimumSBond) {
+    console.log(formData);
+    if (formData.minimumLockPeriodInSeconds && formData.minimumSBond && formData.minimumSBond > 0) {
       const tx = bondContract.setPeriodsBonds(
         new Address(address),
         [formData.minimumLockPeriodInSeconds],
@@ -105,6 +109,14 @@ export const BondingParameters: React.FC = () => {
       await sendTransactions({
         transactions: [tx],
       });
+    } else {
+      if (formData.minimumLockPeriodInSeconds && formData.minimumSBond == 0) {
+        const tx = bondContract.removePeriodsBonds(new Address(address), [formData.minimumLockPeriodInSeconds]);
+        // console.log(tx);
+        await sendTransactions({
+          transactions: [tx],
+        });
+      }
     }
   };
   const onSubmitMinPenalty = async (formData: Partial<BondingParametersFormType>) => {
@@ -203,6 +215,7 @@ export const BondingParameters: React.FC = () => {
                               w="50%"
                               mr={3}
                               type="number"
+                              min={0}
                               onChange={(event) => {
                                 onChange(event.target.value);
                               }}
