@@ -37,7 +37,7 @@ import { MENU } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
-import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
+import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
 
 // Declaring the form types
@@ -122,7 +122,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             "(\\#[-a-z\\d_]*)?$",
           "i"
         ); // validate fragment locator;
-        console.log(value, websiteRegex, websiteRegex.test(value));
+        // console.log(value, websiteRegex, websiteRegex.test(value));
         const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
         return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
@@ -195,9 +195,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
   const validationSchema = Yup.object().shape(preSchema);
 
-  // Creating a date 3 months from now
-  const dateNow = new Date();
-  const withdrawDate = dateNow.setMonth(dateNow.getMonth() + 3);
+  const amountOfTime = timeUntil(lockPeriod[1].lockPeriod);
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
@@ -215,7 +213,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
       bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].amount).shiftedBy(-18).toNumber() : -1,
-      bondingPeriod: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].lockPeriod).dividedBy(86400).toNumber() : -1,
+      bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
@@ -769,7 +767,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
             <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
               <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Period
+                Bonding Period ({amountOfTime.unit})
               </Text>
               <Controller
                 control={control}
