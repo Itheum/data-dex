@@ -210,7 +210,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
   }, [pageIndex, tabState, hasPendingTransactions, hasWebWalletTx]);
 
   async function openNftDetailsModal(index: number) {
-    if (showGroupedDataNfts) {
+    if (showGroupedDataNfts && tabState === 1) {
       setOfferForDrawer(groupedOffers[index].minOffer);
     } else {
       setOfferForDrawer(extendedOffers[index]);

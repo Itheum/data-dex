@@ -285,9 +285,9 @@ export default function HomeMultiversX({
                             borderRadius="xl"
                             onClick={() => {
                               setMenuItem(2);
-                              navigate("/tradedata");
+                              navigate("/mintdata");
                             }}>
-                            <Text color={colorMode === "dark" ? "white" : "black"}>Trade My Data</Text>
+                            <Text color={colorMode === "dark" ? "white" : "black"}>Mint My Data</Text>
                           </Button>
                         </Stack>
                       </>
