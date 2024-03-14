@@ -214,9 +214,6 @@ export default function WalletDataNFTMX(item: any) {
           headers: headers,
           body: JSON.stringify(requestBody),
         });
-
-        const data = await response.json();
-        console.log("Response:", data);
       }
     } catch (error) {
       console.log("Error:", error);

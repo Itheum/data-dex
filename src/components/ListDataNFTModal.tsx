@@ -242,7 +242,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
 
-      console.log(identifier, nonceDec);
+      // console.log(identifier, nonceDec);
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {
@@ -251,7 +251,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
         setPriceFromApi(-1);
       }
     } catch (err) {
-      console.log(err as Error);
       if ((err as any).response.status === 404) {
         toast({
           title: labels.ERR_MARKET_OFFER_NOT_FOUND,
@@ -273,7 +272,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   }
 
   useEffect(() => {
-    console.log(nftData);
     getTokenHistory(nftData.tokenIdentifier);
   }, [hasPendingTransactions]);
 
