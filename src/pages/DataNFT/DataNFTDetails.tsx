@@ -59,6 +59,7 @@ import {
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
 import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
+import { IAddress } from "@multiversx/sdk-core/out";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -67,6 +68,7 @@ type DataNFTDetailsProps = {
   tokenIdProp?: string;
   offerIdProp?: number;
   closeDetailsView?: () => void;
+  creator?: string | IAddress;
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
@@ -104,13 +106,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [sessionId, setSessionId] = useState<any>();
   const [addressHasNft, setAddressHasNft] = useState<boolean>(false);
+  const [addressCreatedNft, setAddressCreatedNft] = useState<boolean>(false);
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
-
+  // console.log(props.creator);
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
@@ -132,7 +135,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     },
   });
 
-  const getAddressTokenInformation = () => {
+  const getAddressTokenInformation = async () => {
     if (isMxLoggedIn) {
       const apiLink = getApi(chainID);
       const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
@@ -148,6 +151,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             setAddressHasNft(false);
           }
         });
+      if (address === props.creator) {
+        setAddressCreatedNft(true);
+      } else {
+        setAddressCreatedNft(false);
+      }
     }
   };
 
@@ -572,7 +580,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Box>
                           {addressHasNft && (
                             <Box
-                              mr="28px"
                               borderRadius="md"
                               px="1.5"
                               py="1.5"
@@ -583,6 +590,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               justifyContent="center">
                               <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
                                 You Own this
+                              </Text>
+                            </Box>
+                          )}
+                          {addressCreatedNft && (
+                            <Box
+                              mr="28px"
+                              borderRadius="md"
+                              px="1.5"
+                              py="1.5"
+                              bgColor="#00C79730"
+                              textAlign="center"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center">
+                              <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                                You Created this
                               </Text>
                             </Box>
                           )}

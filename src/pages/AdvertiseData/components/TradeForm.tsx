@@ -737,7 +737,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           <Flex flexDirection="row" gap="7" mt={2}>
             <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
               <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Amount
+                Bonding Amount (in $ITHEUM)
               </Text>
 
               <Controller
@@ -764,9 +764,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 )}
                 name="bondingAmount"
               />
-              <Text color="gray.400" fontSize="sm" mt={"1"}>
-                Min: 10 ITHEUM
-              </Text>
               <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
             </FormControl>
 
@@ -793,9 +790,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 )}
                 name="bondingPeriod"
               />
-              <Text color="gray.400" fontSize="sm" mt={"1"}>
-                Min: 3 months
-              </Text>
               <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
             </FormControl>
           </Flex>
@@ -882,7 +876,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
           {!readLivelinessBonding && (
             <Text color="red.400" fontSize="sm" mt="1 !important">
-              You need to agree to Penalties and Slashed to mint
+              You need to agree to Penalties and Slashing terms to mint
             </Text>
           )}
         </Box>

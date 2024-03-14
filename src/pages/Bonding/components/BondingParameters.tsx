@@ -94,9 +94,6 @@ export const BondingParameters: React.FC = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmitMinLockPeriod = async (formData: Partial<BondingParametersFormType>) => {
-    console.log(formData);
-  };
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
     if (formData.minimumLockPeriodInSeconds && formData.minimumSBond && formData.minimumSBond > 0) {

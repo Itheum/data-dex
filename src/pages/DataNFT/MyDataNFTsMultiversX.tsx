@@ -300,7 +300,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Text>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
+                <DataNFTDetails creator={nftForDrawer.creator} tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
               </ModalBody>
             </ModalContent>
           </Modal>
