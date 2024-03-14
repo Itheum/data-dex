@@ -1,14 +1,13 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
+import { Bond, BondContract, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
-import { Bond, BondContract, DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 
 export const Bonding: React.FC = () => {
-  const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
@@ -19,10 +18,12 @@ export const Bonding: React.FC = () => {
   useEffect(() => {
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
-      const myBonds = contractBonds.filter((bond) => bond.address === address);
+      const pagedBonds = await bondContract.viewPagedBonds(contractBonds.length - 50, contractBonds.length - 1);
+      // console.log(pagedBonds);
+      // const myBonds = contractBonds.filter((bond) => bond.address === address);
       // console.log(myBonds);
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(myBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
-      setContractBonds(myBonds);
+      const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
+      setContractBonds(pagedBonds.reverse());
       setBondingDataNfts(dataNfts);
     })();
   }, [hasPendingTransactions]);
