@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
-import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
-import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
-import BigNumber from "bignumber.js";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { Address } from "@multiversx/sdk-core/out";
-import * as Yup from "yup";
-import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
+import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import BigNumber from "bignumber.js";
+import { Controller, useForm } from "react-hook-form";
+import * as Yup from "yup";
+import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 
 type CollectionDashboardProps = {
   bondNft: Bond;
@@ -24,6 +25,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const { bondNft, bondDataNft } = props;
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
   const [allCompensation, setAllCompensation] = useState<Compensation>({
     compensationId: 0,
@@ -41,7 +43,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       const compensation = await bondContract.viewCompensation(bondNft.bondId);
       setAllCompensation(compensation);
     })();
-  }, []);
+  }, [hasPendingTransactions]);
 
   const validationSchema = Yup.object().shape({
     enforceMinimumPenalty: Yup.number().required("Required"),

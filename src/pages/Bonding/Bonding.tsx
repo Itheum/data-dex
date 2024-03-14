@@ -5,10 +5,12 @@ import { CollectionDashboard } from "./components/CollectionDashboard";
 import { Bond, BondContract, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 
 export const Bonding: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
   DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
@@ -23,7 +25,7 @@ export const Bonding: React.FC = () => {
       setContractBonds(myBonds);
       setBondingDataNfts(dataNfts);
     })();
-  }, []);
+  }, [hasPendingTransactions]);
   return (
     <Flex as="div" flexDirection="column" mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }} gap={8}>
       <Box border="1px solid" borderColor="#00C79740" rounded="3xl" px={10} py={20} mt={5} bg="#1b1b1b50">

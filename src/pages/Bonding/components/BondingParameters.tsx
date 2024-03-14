@@ -1,5 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Flex, FormControl, FormErrorMessage, Grid, GridItem, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Grid,
+  GridItem,
+  Input,
+  Select,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
 import { Address } from "@multiversx/sdk-core/out";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
@@ -24,6 +41,7 @@ export const BondingParameters: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
+  const [onChangeMinimumLockPeriod, setOnChangeMinimumLockPeriod] = useState<number>(0);
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
     bondPaymentTokenIdentifier: "",
@@ -60,6 +78,7 @@ export const BondingParameters: React.FC = () => {
     control,
     formState: { errors },
     handleSubmit,
+    setValue,
   } = useForm<BondingParametersFormType>({
     defaultValues: {
       minimumLockPeriodInSeconds: 7889231,
@@ -75,8 +94,18 @@ export const BondingParameters: React.FC = () => {
   const onSubmitMinLockPeriod = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
   };
-  const onSubmitMinSlashBond = async (formData: Partial<BondingParametersFormType>) => {
-    console.log(formData);
+  const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
+    if (formData.minimumLockPeriodInSeconds && formData.minimumSBond) {
+      const tx = bondContract.setPeriodsBonds(
+        new Address(address),
+        [formData.minimumLockPeriodInSeconds],
+        [BigNumber(formData.minimumSBond).multipliedBy(10 ** 18)]
+      );
+      // console.log(tx);
+      await sendTransactions({
+        transactions: [tx],
+      });
+    }
   };
   const onSubmitMinPenalty = async (formData: Partial<BondingParametersFormType>) => {
     if (formData.minimumPenaltyInPercentage) {
@@ -122,83 +151,147 @@ export const BondingParameters: React.FC = () => {
           <Text fontSize="1.75rem" fontFamily="Clash-Medium" textColor="teal.200">
             Bonding Parameters
           </Text>
+
+          <Box border="1px solid" borderColor="teal.200" rounded="xl" p={5}>
+            <Tabs>
+              <TabList>
+                <Tab textColor="teal.200" fontWeight="700" fontSize="lg">
+                  Add
+                </Tab>
+                <Tab textColor="teal.200" fontWeight="700" fontSize="lg">
+                  Edit
+                </Tab>
+              </TabList>
+
+              <TabPanels>
+                <TabPanel>
+                  <form onSubmit={handleSubmit(onSetPeriodBonds)}>
+                    <Flex flexDirection="row">
+                      <FormControl isInvalid={!!errors.minimumLockPeriodInSeconds} isRequired minH={"3.5rem"}>
+                        <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                          Minimum Lock Period In Seconds
+                        </FormLabel>
+                        <Controller
+                          control={control}
+                          render={({ field: { onChange } }) => (
+                            <Input
+                              mt="1 !important"
+                              id="minimumLockPeriodInSeconds"
+                              w="50%"
+                              mr={3}
+                              type="number"
+                              onChange={(event) => {
+                                onChange(event.target.value);
+                              }}
+                            />
+                          )}
+                          name={"minimumLockPeriodInSeconds"}
+                        />
+                        <FormErrorMessage>{errors?.minimumLockPeriodInSeconds?.message}</FormErrorMessage>
+                      </FormControl>
+
+                      <FormControl isInvalid={!!errors.minimumSBond} isRequired minH={"3.5rem"}>
+                        <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                          Minimum Slashable Bond
+                        </FormLabel>
+                        <Controller
+                          control={control}
+                          render={({ field: { onChange } }) => (
+                            <Input
+                              mt="1 !important"
+                              id="minimumSBond"
+                              w="50%"
+                              mr={3}
+                              type="number"
+                              onChange={(event) => {
+                                onChange(event.target.value);
+                              }}
+                            />
+                          )}
+                          name={"minimumSBond"}
+                        />
+                        <FormErrorMessage>{errors?.minimumSBond?.message}</FormErrorMessage>
+                      </FormControl>
+                    </Flex>
+                    <Button type="submit" mt={5} colorScheme="teal">
+                      Add
+                    </Button>
+                  </form>
+                </TabPanel>
+                <TabPanel>
+                  <form onSubmit={handleSubmit(onSetPeriodBonds)}>
+                    <Flex flexDirection="row" gap={5}>
+                      <FormControl isInvalid={!!errors.minimumLockPeriodInSeconds} isRequired minH={"3.5rem"}>
+                        <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                          Minimum Lock Period In Seconds
+                        </FormLabel>
+                        <Controller
+                          control={control}
+                          render={({ field: { onChange } }) => (
+                            <Select
+                              id="minimumLockPeriodInSeconds"
+                              onChange={(event) => {
+                                onChange(event.target.value);
+                              }}>
+                              {contractConfiguration.lockPeriodsWithBonds.map((lockPeriod, index) => (
+                                <option key={index} value={lockPeriod.lockPeriod}>
+                                  {lockPeriod.lockPeriod} seconds
+                                </option>
+                              ))}
+                            </Select>
+                          )}
+                          name={"minimumLockPeriodInSeconds"}
+                        />
+                        <FormErrorMessage>{errors?.minimumLockPeriodInSeconds?.message}</FormErrorMessage>
+                      </FormControl>
+
+                      <FormControl isInvalid={!!errors.minimumSBond} isRequired minH={"3.5rem"}>
+                        <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                          Minimum Slashable Bond
+                        </FormLabel>
+                        <Controller
+                          control={control}
+                          render={({ field: { onChange } }) => (
+                            <Select
+                              id="minimumSBond"
+                              onChange={(event) => {
+                                onChange(event.target.value);
+                              }}>
+                              {contractConfiguration.lockPeriodsWithBonds.map((lockPeriod, index) => (
+                                <option
+                                  key={index}
+                                  value={BigNumber(lockPeriod.amount)
+                                    .dividedBy(10 ** 18)
+                                    .toNumber()}>
+                                  {BigNumber(lockPeriod.amount)
+                                    .dividedBy(10 ** 18)
+                                    .toNumber()}{" "}
+                                  $ITHEUM
+                                </option>
+                              ))}
+                            </Select>
+                          )}
+                          name={"minimumSBond"}
+                        />
+                        <FormErrorMessage>{errors?.minimumSBond?.message}</FormErrorMessage>
+                      </FormControl>
+                    </Flex>
+                    <Button type="submit" mt={5} colorScheme="teal">
+                      Edit
+                    </Button>
+                  </form>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+
           <Grid templateColumns="repeat(5, 1fr)" gap={6}>
             <GridItem w="100%" colSpan={2}></GridItem>
-            <GridItem w="100%">Current Value</GridItem>
-            <GridItem w="100%" textAlign="right" colSpan={2}>
+            <GridItem w="100%" textColor="teal.200">
+              Current Value
+            </GridItem>
+            <GridItem w="100%" textAlign="right" textColor="teal.200" colSpan={2}>
               New Value
-            </GridItem>
-          </Grid>
-          <Grid templateColumns="repeat(5, 1fr)" gap={6} fontSize="1.3rem">
-            <GridItem w="100%" colSpan={2}>
-              Minimum Lock Period In Seconds
-            </GridItem>
-            <GridItem w="100%">
-              {contractConfiguration.lockPeriodsWithBonds[1] !== undefined ? contractConfiguration.lockPeriodsWithBonds[1].lockPeriod : <div>Loading</div>}
-              seconds
-            </GridItem>
-            <GridItem w="100%" textAlign="right" colSpan={2}>
-              <form onSubmit={handleSubmit(onSubmitMinLockPeriod)}>
-                <FormControl isInvalid={!!errors.minimumLockPeriodInSeconds} isRequired minH={"3.5rem"}>
-                  <Controller
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        id="minimumLockPeriodInSeconds"
-                        w="25%"
-                        mr={3}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                        }}
-                      />
-                    )}
-                    name={"minimumLockPeriodInSeconds"}
-                  />
-                  <FormErrorMessage>{errors?.minimumLockPeriodInSeconds?.message}</FormErrorMessage>
-
-                  <Button type="submit">Set</Button>
-                </FormControl>
-              </form>
-            </GridItem>
-          </Grid>
-          <Grid templateColumns="repeat(5, 1fr)" gap={6} fontSize="1.3rem">
-            <GridItem w="100%" colSpan={2}>
-              Minimum S Bond
-            </GridItem>
-            <GridItem w="100%">
-              {contractConfiguration.lockPeriodsWithBonds[1] !== undefined ? (
-                BigNumber(contractConfiguration.lockPeriodsWithBonds[1].amount)
-                  .dividedBy(10 ** 18)
-                  .toNumber()
-              ) : (
-                <div>Loading</div>
-              )}
-              &nbsp;$ITHEUM
-            </GridItem>
-            <GridItem w="100%" textAlign="right" colSpan={2}>
-              <form onSubmit={handleSubmit(onSubmitMinSlashBond)}>
-                <FormControl isInvalid={!!errors.minimumSBond} isRequired minH={"3.5rem"}>
-                  <Controller
-                    control={control}
-                    render={({ field: { onChange } }) => (
-                      <Input
-                        mt="1 !important"
-                        id="minimumLockPeriodInSeconds"
-                        w="25%"
-                        mr={3}
-                        onChange={(event) => {
-                          onChange(event.target.value);
-                        }}
-                      />
-                    )}
-                    name={"minimumLockPeriodInSeconds"}
-                  />
-                  <FormErrorMessage>{errors?.minimumSBond?.message}</FormErrorMessage>
-
-                  <Button type="submit">Set</Button>
-                </FormControl>
-              </form>
             </GridItem>
           </Grid>
           <Grid templateColumns="repeat(5, 1fr)" gap={6} fontSize="1.3rem">
