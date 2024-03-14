@@ -190,9 +190,9 @@ export async function getOffersByIdAndNoncesFromBackendApi(
 }
 
 export async function getMarketRequirements(chainID: string): Promise<MarketplaceRequirements | undefined> {
-  const newMarketplace = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
+  const dataNftMarketplace = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
   try {
-    return newMarketplace.viewRequirements();
+    return dataNftMarketplace.viewRequirements();
   } catch (error) {
     console.error(error);
   }

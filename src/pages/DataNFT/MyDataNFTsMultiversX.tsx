@@ -104,8 +104,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();
-
-      setDataNfts(_dataNfts);
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance == 0 ? 1 : nft.balance }));
+      setDataNfts(_alteredDataNfts);
     })();
     setOneNFTImgLoaded(false);
   }, [hasPendingTransactions]);

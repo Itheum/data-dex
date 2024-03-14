@@ -59,24 +59,6 @@ import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
 
-// type ExtractClassTypes<T> = {
-//   [K in keyof T]: T[K] extends "id" | "hasLoaded" | "maxPayment" | "setHasLoaded" | "sellerFee" | "openNftDetailsDrawer" | "isProfile" ? never : T[K];
-// }[keyof T];
-
-// type NonMethodKeys<T> = {
-//   [K in keyof T]: T[K] extends Function ? never : K;
-// }[keyof T];
-
-// export type WalletDataNFTMxPropType = {
-//   id: number;
-//   hasLoaded: boolean;
-//   maxPayment: number;
-//   setHasLoaded: (hasLoaded: boolean) => void;
-//   sellerFee: number;
-//   openNftDetailsDrawer: (e: number) => void;
-//   isProfile?: boolean;
-// } & ExtractClassTypes<DataNft>;
-
 export default function WalletDataNFTMX(item: any) {
   const { chainID, network } = useGetNetworkConfig();
   const { loginMethod, tokenLogin } = useGetLoginInfo();
@@ -451,7 +433,7 @@ export default function WalletDataNFTMX(item: any) {
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
-              {`Balance: ${item.balance}`} <br />
+              {item.balance === 0 ? `Balance: 1` : `Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
             </Box>
