@@ -9,8 +9,8 @@ import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import axios from "axios";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { MdInfo, MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
-import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
 import { ImageTooltip } from "../../../../components/ImageTooltip";
+import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
 
 type CurateNftsProp = {
   nftMinter: NftMinter;
@@ -84,7 +84,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   useEffect(() => {
     (async () => {
       const viewAddressFrozenNonces = await nftMinter.viewFrozenNonces();
-      console.log(viewAddressFrozenNonces);
+      // console.log(viewAddressFrozenNonces);
       setAddressFrozenNonces(viewAddressFrozenNonces);
     })();
   }, [hasPendingTransactions]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -22,18 +22,23 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import BigNumber from "bignumber.js";
 import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { contractsForChain, MENU } from "../../../libs/config";
+import { MENU } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
-import { useAccountStore } from "../../../store";
+import { useAccountStore, useMintStore } from "../../../store";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -44,6 +49,8 @@ type TradeDataFormType = {
   datasetDescriptionForm: string;
   numberOfCopiesForm: number;
   royaltiesForm: number;
+  bondingAmount?: number;
+  bondingPeriod?: number;
 };
 
 type TradeFormProps = {
@@ -55,14 +62,17 @@ type TradeFormProps = {
   dataNFTMarshalServiceStatus: boolean;
   userData: UserDataType | undefined;
   dataToPrefill: any;
+  closeTradeFormModal: () => void;
 };
 
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
-  const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill } = props;
+  const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
+    props;
 
   const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);
+  const [readLivelinessBonding, setReadLivelinessBonding] = useState<boolean>(false);
   const [isMintingModalOpen, setIsMintingModalOpen] = useState<boolean>(false);
   const [errDataNFTStreamGeneric, setErrDataNFTStreamGeneric] = useState<any>(null);
   const [mintingSuccessful, setMintingSuccessful] = useState<boolean>(false);
@@ -80,17 +90,42 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const toast = useToast();
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
+  const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
-  const dataNFTMarshalService: string = "https://api.itheumcloud-stg.com/datamarshalapi/router/v1";
+  const dataNFTMarshalService: string = getApiDataMarshal(chainID);
   const mxDataNftMintContract = new DataNftMintContract(chainID);
+
+  const bond = new BondContract("devnet");
+  const [periods, setPeriods] = useState<any>([
+    { amount: "10000000000000000000", lockPeriod: 2 },
+    { amount: "10000000000000000000", lockPeriod: 900 },
+  ]);
+  useEffect(() => {
+    bond.viewLockPeriodsWithBonds().then((periodsT) => {
+      setPeriods(periodsT);
+    });
+  }, [mxAddress]);
 
   // React hook form + yup integration
   // Declaring a validation schema for the form with the validation needed
-  const validationSchema = Yup.object().shape({
+  let preSchema = {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
-      .url("Data Stream must be URL")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
+      .test("is-url-or-ipns", "Data Stream URL must be a valid URL or IPNS", function (value) {
+        const websiteRegex = new RegExp(
+          "^(http|https?:\\/\\/)?" + // validate protocol
+            "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
+            "((\\d{1,3}\\.){3}\\d{1,3}))" + // validate OR ip (v4) address
+            "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // validate port and path
+            "(\\?[;&a-z\\d%_.~+=-]*)?" + // validate query string
+            "(\\#[-a-z\\d_]*)?$",
+          "i"
+        ); // validate fragment locator;
+        console.log(value, websiteRegex, websiteRegex.test(value));
+        const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
+        return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
+      })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
       })
@@ -144,12 +179,30 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(0, "Minimum value of royalties is 0%.")
       .max(maxRoyalties, `Maximum value of royalties is ${maxRoyalties}`)
       .required("Royalties is required"),
-  });
+  };
+  const bondingPreSchema = {
+    bondingAmount: Yup.number()
+      .typeError("Bonding amount must be a number.")
+      .min(1, "Minimum value of bonding amount is 10 ITHEUM.")
+      .required("Bond Deposit is required"),
+    bondingPeriod: Yup.number()
+      .typeError("Bonding period must be a number.")
+      .min(0, "Minimum value of bonding period is 3 months.")
+      .required("Bonding Period is required"),
+  };
+  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+    preSchema = { ...preSchema, ...bondingPreSchema };
+  }
+  const validationSchema = Yup.object().shape(preSchema);
+
+  // Creating a date 3 months from now
+  const dateNow = new Date();
+  const withdrawDate = dateNow.setMonth(dateNow.getMonth() + 3);
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     getValues,
   } = useForm<TradeDataFormType>({
@@ -161,6 +214,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
+      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].amount).shiftedBy(-18).toNumber() : -1,
+      bondingPeriod: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].lockPeriod).dividedBy(86400).toNumber() : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
@@ -172,6 +227,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const datasetDescription: string = getValues("datasetDescriptionForm");
   const dataNFTCopies: number = getValues("numberOfCopiesForm");
   const dataNFTRoyalties: number = getValues("royaltiesForm");
+  const bondingAmount: number = getValues("bondingAmount") ?? -1;
+  const bondingPeriod: number = getValues("bondingPeriod") ?? -1;
 
   const closeProgressModal = () => {
     if (mintingSuccessful) {
@@ -181,18 +238,22 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         isClosable: true,
       });
     }
-
     setIsMintingModalOpen(false);
 
     setSaveProgress({ s1: 0, s2: 0, s3: 0, s4: 0 });
     setMintingSuccessful(false);
     setDataNFTImg("");
+    closeTradeFormModal();
   };
 
   function validateBaseInput() {
-    if (!dataNFTStreamUrl.includes("https://") || !dataNFTPreviewUrl.includes("https://") || !dataNFTMarshalService.includes("https://")) {
+    if (
+      !(dataNFTStreamUrl.startsWith("https://") || dataNFTStreamUrl.startsWith("ipns://")) ||
+      !dataNFTPreviewUrl.startsWith("https://") ||
+      !dataNFTMarshalService.startsWith("https://")
+    ) {
       toast({
-        title: labels.ERR_URL_MISSING_HTTPS,
+        title: labels.ERR_URL_MISSING_HTTPS_OR_IPNS,
         status: "error",
         isClosable: true,
         duration: 20000,
@@ -203,6 +264,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mintTxFail = (_foo: any) => {
     setErrDataNFTStreamGeneric(new Error("Transaction to mint Data NFT has failed"));
   };
@@ -306,27 +368,63 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     metadataOnIpfsUrl: string;
     dataNFTStreamUrlEncrypted: string;
   }) => {
-    await sleep(3);
-    const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
-      name: getValues("tokenNameForm"),
-      media: imageOnIpfsUrl,
-      metadata: metadataOnIpfsUrl,
-      data_marshal: dataNFTMarshalService,
-      data_stream: dataNFTStreamUrlEncrypted,
-      data_preview: dataNFTPreviewUrl,
-      royalties: Math.ceil(getValues("royaltiesForm") * 100),
-      amount: getValues("numberOfCopiesForm"),
-      title: getValues("datasetTitleForm"),
-      description: getValues("datasetDescriptionForm"),
-      sender: mxAddress,
-      itheumToken: contractsForChain(chainID).itheumToken,
-      antiSpamTax: antiSpamTax,
-    });
-    if (error) {
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-    }
+    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+      const sftMinter = new SftMinter("devnet");
 
-    setMintSessionId(sessionId);
+      const mintObject = await sftMinter.mint(
+        new Address(mxAddress),
+        dataNFTTokenName,
+        dataNFTMarshalService,
+        dataNFTStreamUrl,
+        dataNFTPreviewUrl,
+        Math.ceil(dataNFTRoyalties * 100),
+        Number(dataNFTCopies),
+        datasetTitle,
+        datasetDescription,
+        BigNumber(periods[1].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+        Number(periods[1].lockPeriod),
+        {
+          nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+        }
+      );
+
+      await sleep(3);
+      await refreshAccount();
+
+      const { sessionId, error } = await sendTransactions({
+        transactions: mintObject,
+        transactionsDisplayInfo: {
+          processingMessage: "Minting Data NFT Collection",
+          errorMessage: "Collection minting failed :(",
+          successMessage: "Collection minted successfully!",
+        },
+        redirectAfterSign: false,
+      });
+      if (error) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+      }
+
+      setMintSessionId(sessionId);
+    } else {
+      await sleep(3);
+      const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
+        name: getValues("tokenNameForm"),
+        data_marshal: dataNFTMarshalService,
+        data_stream: dataNFTStreamUrlEncrypted,
+        data_preview: dataNFTPreviewUrl,
+        royalties: Math.ceil(getValues("royaltiesForm") * 100),
+        amount: getValues("numberOfCopiesForm"),
+        title: getValues("datasetTitleForm"),
+        description: getValues("datasetDescriptionForm"),
+        sender: new Address(mxAddress),
+        amountToSend: antiSpamTax,
+      });
+      if (error) {
+        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+      }
+
+      setMintSessionId(sessionId);
+    }
   };
 
   useTrackTransactionStatus({
@@ -630,6 +728,80 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Box>
       </Flex>
 
+      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
+        <>
+          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+            Liveliness Bonding
+          </Text>
+
+          <Flex flexDirection="row" gap="7" mt={2}>
+            <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
+              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                Bonding Amount
+              </Text>
+
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <NumberInput
+                    mt="3 !important"
+                    size="md"
+                    id="bondingAmount"
+                    maxW={24}
+                    step={1}
+                    defaultValue={bondingAmount}
+                    isDisabled
+                    min={10}
+                    max={maxRoyalties > 0 ? maxRoyalties : 0}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(event) => onChange(event)}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                )}
+                name="bondingAmount"
+              />
+              <Text color="gray.400" fontSize="sm" mt={"1"}>
+                Min: 10 ITHEUM
+              </Text>
+              <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
+              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                Bonding Period
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <NumberInput
+                    mt="3 !important"
+                    size="md"
+                    id="bondingPeriod"
+                    maxW={24}
+                    step={1}
+                    defaultValue={bondingPeriod}
+                    isDisabled
+                    min={3}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(event) => onChange(event)}>
+                    <NumberInputField />
+                  </NumberInput>
+                )}
+                name="bondingPeriod"
+              />
+              <Text color="gray.400" fontSize="sm" mt={"1"}>
+                Min: 3 months
+              </Text>
+              <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
+            </FormControl>
+          </Flex>
+        </>
+      )}
+
       <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important">
         Terms and Fees
       </Text>
@@ -688,10 +860,42 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Text>
         )}
       </Box>
+      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
+        <Box minH={{ base: "5rem", md: "3.5rem" }}>
+          <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" mt="5 !important" textColor="teal.200">
+            Penalties and Slashing
+          </Text>
+          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
+            The community will be able to curate and raise concerns about Data NFTs to the Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns are
+            validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO based curation enforces positive behaviour and
+            penalises bad actors.
+          </Text>
+
+          {itheumBalance < antiSpamTax + bondingAmount && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+            </Text>
+          )}
+          <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
+            I have read and I agree to Liveliness Bonding & Penalties and Slashing Terms
+          </Checkbox>
+
+          {!readLivelinessBonding && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              You need to agree to Penalties and Slashed to mint
+            </Text>
+          )}
+        </Box>
+      )}
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
-          <Button mt="5" colorScheme="teal" isLoading={isMintingModalOpen} onClick={dataNFTSellSubmit}>
+          <Button
+            mt="5"
+            colorScheme="teal"
+            isLoading={isMintingModalOpen}
+            onClick={dataNFTSellSubmit}
+            isDisabled={!isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>

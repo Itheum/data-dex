@@ -21,7 +21,7 @@ export const Enterprise: React.FC = () => {
   const [viewAddressContracts, setViewAddressContracts] = useState<Array<DeployedContract>>([]);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
 
-  const [minterVersion, setMinterVersion] = useState<string>("2.0.0");
+  const [minterVersion, setMinterVersion] = useState<string>("3.0.0");
 
   const navigate = useNavigate();
   const { chainID } = useGetNetworkConfig();
@@ -173,7 +173,7 @@ export const Enterprise: React.FC = () => {
             </Text>
           </Flex>
           <Flex flexDirection="column" px={10} py={4} bg="#1b1b1b50" roundedBottom="3xl" gap={3} h={{ base: "72%", "2xl": "82%" }}>
-            <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}%</Text>
+            <Text fontSize="lg">Protocol Tax: {factoryTaxPercentage}% of Royalties</Text>
             <Text fontSize="lg">
               Protocol Treasury: <ShortAddress address={factoryTreasuryAddress?.toString()} fontSize="md" />
               <Link

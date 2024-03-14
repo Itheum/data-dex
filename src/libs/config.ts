@@ -1,3 +1,4 @@
+import { Address } from "@multiversx/sdk-core/out";
 import { ContractsType } from "libs/types";
 import {
   tokenContractAddress_Mx_Devnet,
@@ -19,29 +20,33 @@ export function contractsForChain(chainID: string): ContractsType {
     case "D": {
       return {
         itheumToken: tokenContractAddress_Mx_Devnet,
-        claims: claimsContractAddress_Mx_Devnet,
-        faucet: faucetContractAddress_Mx_Devnet,
-        market: dataNftMarketContractAddress_Mx_Devnet,
+        claims: new Address(claimsContractAddress_Mx_Devnet),
+        faucet: new Address(faucetContractAddress_Mx_Devnet),
+        market: new Address(dataNftMarketContractAddress_Mx_Devnet),
         dataNftTokens: [
           {
             id: dataNFTFTTicker_Mx_Devnet,
-            contract: dataNftMintContractAddress_Mx_Devnet,
+            contract: new Address(dataNftMintContractAddress_Mx_Devnet),
           },
           {
             id: "BIGBANG-6b34db",
-            contract: "erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqdsf80w35nqlxfd34z0cd9n60vwlkdj9a8yps3t6x4m"),
           },
           {
             id: "BETATOK-5b7317",
-            contract: "erd1qqqqqqqqqqqqqpgqjk0cxzm79qzced5sevmnn6swgp3jjch88ypsfd068q",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqjk0cxzm79qzced5sevmnn6swgp3jjch88ypsfd068q"),
           },
           {
             id: "COLNAMA-539838",
-            contract: "erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqnf8lrjy9efepss09qm3a3q9za9ahtcah8ypsnd6lqd"),
           },
           {
             id: "ALPHADATA-b3f6d0",
-            contract: "erd1qqqqqqqqqqqqqpgqcaqv55lrfjuvspgrhezvqrag4gq3qdxu8ypsx9f0ar",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqcaqv55lrfjuvspgrhezvqrag4gq3qdxu8ypsx9f0ar"),
+          },
+          {
+            id: "NEWDNFT-3a8caa",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
           },
         ],
       };
@@ -49,13 +54,13 @@ export function contractsForChain(chainID: string): ContractsType {
     case "1": {
       return {
         itheumToken: tokenContractAddress_Mx_Mainnet,
-        claims: claimsContractAddress_Mx_Mainnet,
-        faucet: faucetContractAddress_Mx_Mainnet,
-        market: dataNftMarketContractAddress_Mx_Mainnet,
+        claims: new Address(claimsContractAddress_Mx_Mainnet),
+        faucet: new Address(faucetContractAddress_Mx_Mainnet),
+        market: new Address(dataNftMarketContractAddress_Mx_Mainnet),
         dataNftTokens: [
           {
             id: dataNFTFTTicker_Mx_Mainnet,
-            contract: dataNftMintContractAddress_Mx_Mainnet,
+            contract: new Address(dataNftMintContractAddress_Mx_Mainnet),
           },
         ],
       };
@@ -318,6 +323,7 @@ export const dataCATDemoUserData = {
       "group": "custom",
       "userId": "custom-x",
       "status": "stop",
+      "chainID": "D",
       "shortId": "1",
       "type": "1",
       "fromTs": 1528448026784,
@@ -448,12 +454,14 @@ export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<
     "multiversxbubbles": [],
     "multiversxinfographics": [3],
     "nftunes": [2],
+    "timecapsule": [57],
   },
   "1": {
     "trailblazer": [1],
     "multiversxbubbles": [2],
     "multiversxinfographics": [3],
     "nftunes": [4],
+    "timecapsule": [5],
   },
 };
 
@@ -463,11 +471,13 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://test.explorer.itheum.io/nftunes",
+    "timecapsule": "https://test.explorer.itheum.io/timecapsule",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://explorer.itheum.io/nftunes",
+    "timecapsule": "https://explorer.itheum.io/timecapsule",
   },
 };

@@ -4,6 +4,8 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
+  Button,
   CloseButton,
   Drawer,
   DrawerBody,
@@ -17,11 +19,10 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useNavigate } from "react-router-dom";
 import { TradeForm } from "./TradeForm";
-import { contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
+import { getApiDataDex, getApiDataMarshal } from "../../../libs/utils";
 import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
@@ -35,6 +36,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   const { chainID } = useGetNetworkConfig();
 
+  const navigate = useNavigate();
+
   const [minRoyalties, setMinRoyalties] = useState<number>(-1);
   const [maxRoyalties, setMaxRoyalties] = useState<number>(-1);
   const [maxSupply, setMaxSupply] = useState<number>(-1);
@@ -44,8 +47,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
   const userData = useMintStore((state) => state.userData);
-
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   const onClose = () => {
     setIsOpen(false);
@@ -72,18 +73,32 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   }
 
   const checkUrlReturns200 = async (url: string) => {
-    const { statusCode, isError } = await makeRequest(url);
-
+    let statusCodeF, isErrorF;
     let isSuccess = false;
     let message = "";
-    if (isError) {
-      message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-    } else if (statusCode === 200) {
+    if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
+      isErrorF = false;
       isSuccess = true;
-    } else if (statusCode === 404) {
-      message = "Data Stream URL is not reachable (Status Code 404 received)";
     } else {
-      message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`;
+      let urlToTest = url;
+      if (urlToTest.startsWith("ipns://")) {
+        const gateway = "https://gateway.lighthouse.storage/ipns/";
+        const ipns = url.split("ipns://")[1];
+        const ipnsUrl = `${gateway}${ipns}`;
+        urlToTest = ipnsUrl;
+      }
+      const { statusCode, isError } = await makeRequest(urlToTest);
+      statusCodeF = statusCode;
+      isErrorF = isError;
+      if (isErrorF) {
+        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
+      } else if (statusCodeF === 200) {
+        isSuccess = true;
+      } else if (statusCodeF === 404) {
+        message = "Data Stream URL is not reachable (Status Code 404 received)";
+      } else {
+        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
+      }
     }
 
     return {
@@ -112,20 +127,17 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   useEffect(() => {
     (async () => {
-      const getMinRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMinRoyalties());
-      const getMaxRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxRoyalties());
-      const getMaxSupply = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxSupply());
-      const getAntiSpamTax = await getTypedValueFromContract(
-        chainID,
-        mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken])
-      );
+      const minRoyaltiesT = userData?.minRoyalties ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
+      const maxSupplyT = userData?.maxSupply ?? 0;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
-      setMinRoyalties(getMinRoyalty);
-      setMaxRoyalties(getMaxRoyalty);
-      setMaxSupply(getMaxSupply);
-      setAntiSpamTax(getAntiSpamTax / 10 ** 18);
+      setMinRoyalties(minRoyaltiesT);
+      setMaxRoyalties(maxRoyaltiesT);
+      setMaxSupply(maxSupplyT);
+      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
     })();
   }, []);
 
@@ -203,6 +215,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           </Stack>
           <TradeForm
             checkUrlReturns200={checkUrlReturns200}
+            closeTradeFormModal={onClose}
             maxSupply={maxSupply}
             maxRoyalties={maxRoyalties / 100}
             dataNFTMarshalServiceStatus={dataNFTMarshalServiceStatus}
@@ -212,6 +225,39 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             dataToPrefill={dataToPrefill}
           />
         </DrawerBody>
+        <Box
+          position="absolute"
+          top="5rem"
+          bottom="0"
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}
+          left="0"
+          right="0"
+          height="100%"
+          width="100%"
+          backgroundColor="blackAlpha.800"
+          rounded="lg"
+          visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
+          borderTop="solid .1rem"
+          borderColor="teal.200">
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
+            - You are not whitelisted -
+          </Text>
+          <Button
+            variant="solid"
+            colorScheme="teal"
+            px={7}
+            py={6}
+            rounded="lg"
+            mt={7}
+            onClick={() => {
+              navigate("/getwhitelisted");
+            }}>
+            Find out how you can get whitelisted
+          </Button>
+        </Box>
       </DrawerContent>
     </Drawer>
   );

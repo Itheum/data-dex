@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Text, Tooltip } from "@chakra-ui/react";
+import { Text, Tooltip, useToast } from "@chakra-ui/react";
 import { FaRegHeart } from "react-icons/fa";
+import { labels } from "../../libs/language";
 import { addFavoriteToBackendApi, removeFavoriteFromBackendApi } from "../../libs/MultiversX";
 
 type FavouriteType = {
@@ -14,12 +15,23 @@ type FavouriteType = {
 export const Favourite: React.FC<FavouriteType> = (props) => {
   const { chainID, tokenIdentifier, bearerToken, favouriteItems, getFavourites } = props;
 
+  const toast = useToast();
   const addFavourite = async () => {
     if (bearerToken) {
       await addFavoriteToBackendApi(chainID, tokenIdentifier, bearerToken);
       await getFavourites();
     } else {
-      console.log("Please login");
+      toast({
+        title: labels.ADD_FAVORITE_FAILS,
+        description: "Please log in to add to favourite!",
+        status: "warning",
+        position: "bottom",
+        duration: null,
+        isClosable: true,
+        containerStyle: {
+          marginTop: "1rem",
+        },
+      });
     }
   };
   const removeFavourite = async () => {
@@ -27,7 +39,17 @@ export const Favourite: React.FC<FavouriteType> = (props) => {
       await removeFavoriteFromBackendApi(chainID, tokenIdentifier, bearerToken);
       await getFavourites();
     } else {
-      console.log("Please login");
+      toast({
+        title: labels.REMOVE_FAVORITE_FAILS,
+        description: "Please log in to be able to remove from favourite!",
+        status: "warning",
+        position: "bottom",
+        duration: null,
+        isClosable: true,
+        containerStyle: {
+          marginTop: "1rem",
+        },
+      });
     }
   };
 
