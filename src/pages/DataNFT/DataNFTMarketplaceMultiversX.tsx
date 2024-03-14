@@ -552,7 +552,6 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
                 <DataNFTDetails
-                  // creator={nftMetadatas[].creator ?? ""}
                   tokenIdProp={createNftId(offerForDrawer.offeredTokenIdentifier, offerForDrawer.offeredTokenNonce)}
                   offerIdProp={offerForDrawer.index}
                   closeDetailsView={closeDetailsView}

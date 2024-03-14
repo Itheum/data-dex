@@ -26,6 +26,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -59,7 +60,6 @@ import {
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
 import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
-import { IAddress } from "@multiversx/sdk-core/out";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -68,7 +68,6 @@ type DataNFTDetailsProps = {
   tokenIdProp?: string;
   offerIdProp?: number;
   closeDetailsView?: () => void;
-  creator?: string | IAddress;
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
@@ -113,12 +112,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
-  // console.log(props.creator);
+
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
+
       setFavouriteItems(getFavourites);
     }
   };
@@ -151,11 +150,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
             setAddressHasNft(false);
           }
         });
-      if (address === props.creator) {
-        setAddressCreatedNft(true);
-      } else {
-        setAddressCreatedNft(false);
-      }
     }
   };
 
@@ -204,6 +198,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         _nftData.attributes = attributes;
         setNftData(_nftData);
         setIsLoadingDetails(false);
+
+        if (attributes.creator === address) {
+          setAddressCreatedNft(true);
+        } else {
+          setAddressCreatedNft(false);
+        }
       })
       .catch((err) => {
         if (err.response.status === 404) {
