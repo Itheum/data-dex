@@ -86,11 +86,18 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const endTimestampOfBond = watch("endTimestampOfBond");
 
   const handleEnforcePenalty = async (tokenIdentifier: string, nonce: number, enforceMinimumPenaltyForm: number) => {
-    console.log(tokenIdentifier, nonce, enforceMinimumPenaltyForm);
-    const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 1, enforceMinimumPenaltyForm * 100);
-    await sendTransactions({
-      transactions: [tx],
-    });
+    console.log(tokenIdentifier, nonce, typeof enforceMinimumPenaltyForm, enforceMinimumPenaltyForm);
+    if (enforceMinimumPenaltyForm == 5) {
+      const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 0);
+      await sendTransactions({
+        transactions: [tx],
+      });
+    } else {
+      const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 1, enforceMinimumPenaltyForm * 100);
+      await sendTransactions({
+        transactions: [tx],
+      });
+    }
   };
 
   const handleMaxSlashPenalty = async (tokenIdentifier: string, nonce: number) => {
