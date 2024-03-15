@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -35,12 +35,29 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     proofAmount: 0,
     endDate: 0,
   });
+  const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
+    contractState: 0,
+    bondPaymentTokenIdentifier: "",
+    lockPeriodsWithBonds: [
+      {
+        lockPeriod: 0,
+        amount: 0,
+      },
+    ],
+    minimumPenalty: 0,
+    maximumPenalty: 0,
+    withdrawPenalty: 0,
+    acceptedCallers: [""],
+  });
 
   // console.log(bondDataNft);
 
   useEffect(() => {
     (async () => {
       const compensation = await bondContract.viewCompensation(bondNft.bondId);
+      const contractConfigurationRequest = await bondContract.viewContractConfiguration();
+
+      setContractConfiguration(contractConfigurationRequest);
       setAllCompensation(compensation);
     })();
   }, [hasPendingTransactions]);
@@ -136,7 +153,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
               &nbsp;$ITHEUM Remaining
             </Text>
           </Flex>
-          <LivelinessScore unboundTimestamp={bondNft.unboundTimestamp} lockPeriod={90} />
+          <LivelinessScore unboundTimestamp={bondNft.unboundTimestamp} lockPeriod={bondNft.lockPeriod} />
         </Box>
         <Box>
           <Flex flexDirection="column" gap={4}>
@@ -171,16 +188,18 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                     </FormControl>
                   </form>
                 </Flex>
-                <Text fontSize=".8rem">* 500 $ITHEUM will be taken from creator</Text>
+                <Text fontSize=".8rem">* X% amount of $ITHEUM will be taken from creator</Text>
               </Flex>
               <Flex flexDirection="column" gap={4}>
-                <Text fontSize="1.1rem">Enforce Max Slash 100%</Text>
+                <Text fontSize="1.1rem">Enforce Max Slash {contractConfiguration.maximumPenalty / 100}%</Text>
                 <Flex flexDirection="row" gap={4} alignItems="center">
                   <Button colorScheme="pink" onClick={() => handleMaxSlashPenalty(bondNft.tokenIdentifier, bondNft.nonce)}>
                     Slash
                   </Button>
                 </Flex>
-                <Text fontSize=".8rem">* 10,000 $ITHEUM will be taken from creator</Text>
+                <Text fontSize=".8rem" pt={4}>
+                  * Max slash % of $ITHEUM will be taken from creator
+                </Text>
               </Flex>
             </Flex>
             <Flex flexDirection="column" alignItems="flex-start" gap={2}>
@@ -196,8 +215,8 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
               <Text fontSize="1.5rem" textColor="teal.200">
                 Compensation Self Claiming
               </Text>
-              <Text fontSize="1.1rem" textColor="mediumpurple">
-                {BigNumber(bondNft.remainingAmount)
+              <Text fontSize="1.1rem" textColor="indianred">
+                {BigNumber(allCompensation.accumulatedAmount)
                   .dividedBy(10 ** 18)
                   .toNumber()}{" "}
                 $ITHEUM To Date....

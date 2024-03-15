@@ -60,21 +60,17 @@ export const BondingParameters: React.FC = () => {
   useEffect(() => {
     (async () => {
       const contractConfigurationRequest = await bondContract.viewContractConfiguration();
-      console.log(contractConfigurationRequest);
+      // console.log(contractConfigurationRequest);
       setContractConfiguration(contractConfigurationRequest);
     })();
   }, [hasPendingTransactions]);
 
   const validationSchema = Yup.object().shape({
-    minimumLockPeriodInSeconds: Yup.number().required("Required"),
-    minimumSBond: Yup.number()
-      .typeError("Royalties must be a number.")
-      .min(0, "Minimum value of royalties is 0%.")
-      .max(100, `Maximum value of royalties is 100%`)
-      .required("Required"),
-    minimumPenaltyInPercentage: Yup.number().required("Required"),
-    maximumSlashInPercentage: Yup.number().required("Required"),
-    earlyWithdrawPenaltyInPercentage: Yup.number().required("Required"),
+    minimumLockPeriodInSeconds: Yup.number().typeError("Minimum lock period in seconds must be a number.").required("Required"),
+    minimumSBond: Yup.number().typeError("Minimum slashable bond must be a number.").min(0, "Minimum value of slashable bond is 0.").required("Required"),
+    minimumPenaltyInPercentage: Yup.number().typeError("Minimum penalty in % must be a number.").required("Required"),
+    maximumSlashInPercentage: Yup.number().typeError("Maximum Slash in % must be a number.").required("Required"),
+    earlyWithdrawPenaltyInPercentage: Yup.number().typeError("Minimum penalty in % must be a number.").required("Required"),
   });
 
   // TODO: default values get from bonding contract
@@ -84,8 +80,8 @@ export const BondingParameters: React.FC = () => {
     handleSubmit,
   } = useForm<BondingParametersFormType>({
     defaultValues: {
-      minimumLockPeriodInSeconds: 7889231,
-      minimumSBond: 1000,
+      minimumLockPeriodInSeconds: 604800,
+      minimumSBond: 10,
       minimumPenaltyInPercentage: 5,
       maximumSlashInPercentage: 100,
       earlyWithdrawPenaltyInPercentage: 80,
@@ -97,11 +93,9 @@ export const BondingParameters: React.FC = () => {
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
     if (formData.minimumLockPeriodInSeconds && formData.minimumSBond && formData.minimumSBond > 0) {
-      const tx = bondContract.setPeriodsBonds(
-        new Address(address),
-        [formData.minimumLockPeriodInSeconds],
-        [BigNumber(formData.minimumSBond).multipliedBy(10 ** 18)]
-      );
+      const tx = bondContract.addPeriodsBonds(new Address(address), [
+        { lockPeriod: formData.minimumLockPeriodInSeconds, amount: BigNumber(formData.minimumSBond).multipliedBy(10 ** 18) },
+      ]);
       // console.log(tx);
       await sendTransactions({
         transactions: [tx],

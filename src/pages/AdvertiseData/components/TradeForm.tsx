@@ -97,8 +97,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const bond = new BondContract("devnet");
   const [periods, setPeriods] = useState<any>([
-    { amount: "10000000000000000000", lockPeriod: 2 },
     { amount: "10000000000000000000", lockPeriod: 900 },
+    { amount: "10000000000000000000", lockPeriod: 2 },
   ]);
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -195,7 +195,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
   const validationSchema = Yup.object().shape(preSchema);
 
-  const amountOfTime = timeUntil(lockPeriod[1].lockPeriod);
+  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
@@ -212,7 +212,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
-      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].amount).shiftedBy(-18).toNumber() : -1,
+      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[0].amount).shiftedBy(-18).toNumber() : -1,
       bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
@@ -379,8 +379,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         Number(dataNFTCopies),
         datasetTitle,
         datasetDescription,
-        BigNumber(periods[1].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-        Number(periods[1].lockPeriod),
+        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+        Number(periods[0].lockPeriod),
         {
           nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
         }

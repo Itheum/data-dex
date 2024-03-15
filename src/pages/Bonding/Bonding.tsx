@@ -6,6 +6,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
+import BigNumber from "bignumber.js";
 
 export const Bonding: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
@@ -14,12 +15,22 @@ export const Bonding: React.FC = () => {
   DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
+  const [totalAmountBonded, setTotalAmountBonded] = useState<number>(0);
 
   useEffect(() => {
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
       const pagedBonds = await bondContract.viewPagedBonds(contractBonds.length - 50, contractBonds.length - 1);
-      // console.log(pagedBonds);
+      pagedBonds.forEach((bond) => {
+        setTotalAmountBonded(
+          (prev) =>
+            prev +
+            BigNumber(bond.bondAmount)
+              .dividedBy(10 ** 18)
+              .toNumber()
+        );
+      });
+      console.log(pagedBonds);
       // const myBonds = contractBonds.filter((bond) => bond.address === address);
       // console.log(myBonds);
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
@@ -43,7 +54,7 @@ export const Bonding: React.FC = () => {
         <Flex justifyContent="space-between" alignItems="center" px={10}>
           <Flex flexDirection="column" justifyContent="center">
             <Text fontSize="2rem" fontFamily="Clash-Medium" textColor="teal.200">
-              Total Bonded: 30,000 $ITHEUM
+              Total Bonded: {totalAmountBonded} $ITHEUM
             </Text>
           </Flex>
         </Flex>
