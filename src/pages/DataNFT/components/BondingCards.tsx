@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
-import { useMarketStore } from "../../../store";
-import { ExtendedOffer } from "../../../libs/types";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
@@ -52,6 +50,13 @@ export const BondingCards: React.FC = () => {
     return newExpiry.toDateString();
   };
 
+  const calculateRemainedAmountAfterPenalty = (remainedAmount: BigNumber, afterPenaltyAmount: BigNumber): BigNumber.Value => {
+    return remainedAmount
+      .minus(afterPenaltyAmount.multipliedBy(0.8))
+      .dividedBy(10 ** 18)
+      .toNumber();
+  };
+
   const checkIfBondIsExpired = (unboundTimestamp: number) => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     return currentTimestamp > unboundTimestamp;
@@ -100,6 +105,9 @@ export const BondingCards: React.FC = () => {
                         variant="outline"
                         textColor="indianred"
                         fontWeight="400"
+                        isDisabled={
+                          calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) <= 0
+                        }
                         onClick={() => withdrawBonds(dataNft.collection, dataNft.nonce)}>
                         Withdraw Bond
                       </Button>
@@ -137,12 +145,25 @@ export const BondingCards: React.FC = () => {
                         </Text>
                       </Flex>
                       {!checkIfBondIsExpired(contractBonds[index].unboundTimestamp) ? (
-                        <Text textColor="indianred" fontSize="sm">
-                          You can withdraw bond with 80% Penalty
-                        </Text>
+                        <>
+                          {calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) >=
+                          0 ? (
+                            <Text textColor="indianred" fontSize="sm">
+                              You can withdraw bond with 80% Penalty
+                            </Text>
+                          ) : (
+                            <Text textColor="indianred" fontSize="sm">
+                              You cant withdraw because 80% Penalty from your remaining bond is greater than your remaining bond.
+                            </Text>
+                          )}
+                        </>
                       ) : (
                         <Text textColor="teal.200" fontSize="sm">
-                          You can withdraw your full bond with no penalty
+                          You can withdraw{" "}
+                          {BigNumber(contractBonds[index].remainingAmount)
+                            .dividedBy(10 ** 18)
+                            .toNumber()}{" "}
+                          $ITHEUM with no penalty
                         </Text>
                       )}
                     </Flex>

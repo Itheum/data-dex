@@ -41,7 +41,7 @@ export const BondingParameters: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
-  const [onChangeMinimumLockPeriod, setOnChangeMinimumLockPeriod] = useState<number>(0);
+  const [onChangeMinimumLockPeriodIndex, setOnChangeMinimumLockPeriodIndex] = useState<number>(0);
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,
     bondPaymentTokenIdentifier: "",
@@ -159,10 +159,10 @@ export const BondingParameters: React.FC = () => {
             <Tabs>
               <TabList>
                 <Tab textColor="teal.200" fontWeight="700" fontSize="lg">
-                  Add
+                  Add / Remove
                 </Tab>
                 <Tab textColor="teal.200" fontWeight="700" fontSize="lg">
-                  Edit
+                  View
                 </Tab>
               </TabList>
 
@@ -234,8 +234,10 @@ export const BondingParameters: React.FC = () => {
                           render={({ field: { onChange } }) => (
                             <Select
                               id="minimumLockPeriodInSeconds"
+                              value={contractConfiguration.lockPeriodsWithBonds[onChangeMinimumLockPeriodIndex].lockPeriod}
                               onChange={(event) => {
                                 onChange(event.target.value);
+                                setOnChangeMinimumLockPeriodIndex(event.target.selectedIndex);
                               }}>
                               {contractConfiguration.lockPeriodsWithBonds.map((lockPeriod, index) => (
                                 <option key={index} value={lockPeriod.lockPeriod}>
@@ -258,8 +260,12 @@ export const BondingParameters: React.FC = () => {
                           render={({ field: { onChange } }) => (
                             <Select
                               id="minimumSBond"
+                              value={BigNumber(contractConfiguration.lockPeriodsWithBonds[onChangeMinimumLockPeriodIndex].amount)
+                                .dividedBy(10 ** 18)
+                                .toNumber()}
                               onChange={(event) => {
                                 onChange(event.target.value);
+                                setOnChangeMinimumLockPeriodIndex(event.target.selectedIndex);
                               }}>
                               {contractConfiguration.lockPeriodsWithBonds.map((lockPeriod, index) => (
                                 <option
@@ -280,9 +286,6 @@ export const BondingParameters: React.FC = () => {
                         <FormErrorMessage>{errors?.minimumSBond?.message}</FormErrorMessage>
                       </FormControl>
                     </Flex>
-                    <Button type="submit" mt={5} colorScheme="teal">
-                      Edit
-                    </Button>
                   </form>
                 </TabPanel>
               </TabPanels>
