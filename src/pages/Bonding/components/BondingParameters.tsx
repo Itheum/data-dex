@@ -234,7 +234,7 @@ export const BondingParameters: React.FC = () => {
                           render={({ field: { onChange } }) => (
                             <Select
                               id="minimumLockPeriodInSeconds"
-                              value={contractConfiguration.lockPeriodsWithBonds[onChangeMinimumLockPeriodIndex].lockPeriod}
+                              value={contractConfiguration.lockPeriodsWithBonds[onChangeMinimumLockPeriodIndex]?.lockPeriod ?? ""}
                               onChange={(event) => {
                                 onChange(event.target.value);
                                 setOnChangeMinimumLockPeriodIndex(event.target.selectedIndex);
@@ -260,7 +260,7 @@ export const BondingParameters: React.FC = () => {
                           render={({ field: { onChange } }) => (
                             <Select
                               id="minimumSBond"
-                              value={BigNumber(contractConfiguration.lockPeriodsWithBonds[onChangeMinimumLockPeriodIndex].amount)
+                              value={BigNumber(contractConfiguration.lockPeriodsWithBonds[onChangeMinimumLockPeriodIndex]?.amount ?? "")
                                 .dividedBy(10 ** 18)
                                 .toNumber()}
                               onChange={(event) => {
