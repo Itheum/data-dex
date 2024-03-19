@@ -26,6 +26,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -104,6 +105,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const { isOpen: isProcureModalOpen, onOpen: onProcureModalOpen, onClose: onProcureModalClose } = useDisclosure();
   const [sessionId, setSessionId] = useState<any>();
   const [addressHasNft, setAddressHasNft] = useState<boolean>(false);
+  const [addressCreatedNft, setAddressCreatedNft] = useState<boolean>(false);
   const marketplaceDrawer = "/datanfts/marketplace/market";
   const walletDrawer = "/datanfts/wallet";
   const { pathname } = useLocation();
@@ -115,7 +117,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
+
       setFavouriteItems(getFavourites);
     }
   };
@@ -132,7 +134,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     },
   });
 
-  const getAddressTokenInformation = () => {
+  const getAddressTokenInformation = async () => {
     if (isMxLoggedIn) {
       const apiLink = getApi(chainID);
       const nftApiLink = `https://${apiLink}/accounts/${address}/nfts/${tokenId}`;
@@ -196,6 +198,12 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         _nftData.attributes = attributes;
         setNftData(_nftData);
         setIsLoadingDetails(false);
+
+        if (attributes.creator === address) {
+          setAddressCreatedNft(true);
+        } else {
+          setAddressCreatedNft(false);
+        }
       })
       .catch((err) => {
         if (err.response.status === 404) {
@@ -572,7 +580,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Box>
                           {addressHasNft && (
                             <Box
-                              mr="28px"
                               borderRadius="md"
                               px="1.5"
                               py="1.5"
@@ -583,6 +590,22 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               justifyContent="center">
                               <Text fontSize={"sm"} fontWeight="semibold" color="#0ab8ff">
                                 You Own this
+                              </Text>
+                            </Box>
+                          )}
+                          {addressCreatedNft && (
+                            <Box
+                              mr="28px"
+                              borderRadius="md"
+                              px="1.5"
+                              py="1.5"
+                              bgColor="#00C79730"
+                              textAlign="center"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center">
+                              <Text fontSize={"sm"} fontWeight="semibold" color="#00C797">
+                                You Created this
                               </Text>
                             </Box>
                           )}
