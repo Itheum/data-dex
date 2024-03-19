@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getFavoritesFromBackendApi } from "../../../libs/MultiversX";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Box, Card, CardBody, Flex, Heading, Image, Link, Text, Skeleton, Stack } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
+import { getFavoritesFromBackendApi } from "../../../libs/MultiversX";
 
 type FavoriteDataCreationNftsType = {
   nonce: number;

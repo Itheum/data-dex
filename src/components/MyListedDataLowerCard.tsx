@@ -19,6 +19,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -39,7 +40,6 @@ import {
 } from "libs/utils";
 import { useMarketStore } from "store";
 import PreviewDataButton from "./PreviewDataButton";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type MyListedDataLowerCardProps = {
   offer: Offer;

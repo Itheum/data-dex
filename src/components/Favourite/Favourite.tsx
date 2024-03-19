@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Text, Tooltip, useToast } from "@chakra-ui/react";
+import { Text, Tooltip, useToast } from "@chakra-ui/react";
 import { FaRegHeart } from "react-icons/fa";
-import { addFavoriteToBackendApi, removeFavoriteFromBackendApi } from "../../libs/MultiversX";
 import { labels } from "../../libs/language";
+import { addFavoriteToBackendApi, removeFavoriteFromBackendApi } from "../../libs/MultiversX";
 
 type FavouriteType = {
   chainID: string;

@@ -6,8 +6,8 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
-import { TranslateBoolean } from "../../../../libs/utils";
 import ShortAddress from "../../../../components/UtilComps/ShortAddress";
+import { TranslateBoolean } from "../../../../libs/utils";
 
 type LiveSettingsProps = {
   nftMinter: NftMinter;

@@ -19,13 +19,13 @@ import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
 import { GetWhitelist } from "pages/GetWhitelist";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
-import { useAccountStore } from "store";
 import { StoreProvider } from "store/StoreProvider";
 import { TradeData } from "../AdvertiseData/TradeData";
 import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
+import { Bonding } from "../Bonding/Bonding";
 
 const mxLogout = logout;
 
@@ -229,6 +229,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="wallet/purchased" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
                       <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
+                      <Route path="wallet/bonding" element={<MyDataNFTsMx tabState={5} />} />
                       <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                       <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
@@ -240,6 +241,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
 
+                    <Route path="bonding" element={<Bonding />} />
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>
