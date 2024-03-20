@@ -29,7 +29,6 @@ export const Bonding: React.FC = () => {
   };
 
   useEffect(() => {
-    checkIfUserIsAdmin();
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
       if (contractBonds.length === 0) {
@@ -46,7 +45,6 @@ export const Bonding: React.FC = () => {
         );
       });
 
-      // console.log(pagedBonds);
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
       setContractBonds(pagedBonds.reverse());
       setBondingDataNfts(dataNfts);
