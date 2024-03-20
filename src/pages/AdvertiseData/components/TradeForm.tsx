@@ -124,8 +124,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         ); // validate fragment locator;
         // console.log(value, websiteRegex, websiteRegex.test(value));
         const ipnsRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
- 
- 
         return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
@@ -254,6 +252,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   function validateBaseInput() {
     if (
       !(dataNFTStreamUrl.startsWith("https://") || dataNFTStreamUrl.startsWith("ipns://")) ||
+      dataNFTStreamUrl.startsWith("ipfs://") ||
       !dataNFTPreviewUrl.startsWith("https://") ||
       !dataNFTMarshalService.startsWith("https://")
     ) {

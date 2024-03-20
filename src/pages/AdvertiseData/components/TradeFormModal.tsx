@@ -86,6 +86,11 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
         const ipns = url.split("ipns://")[1];
         const ipnsUrl = `${gateway}${ipns}`;
         urlToTest = ipnsUrl;
+      } else if (urlToTest.startsWith("ipfs://")) {
+        const gateway = "https://gateway.lighthouse.storage/ipfs/";
+        const ipfs = url.split("ipfs://")[1];
+        const ipfsUrl = `${gateway}${ipfs}`;
+        urlToTest = ipfsUrl;
       }
       const { statusCode, isError } = await makeRequest(urlToTest);
       statusCodeF = statusCode;
