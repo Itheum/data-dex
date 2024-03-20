@@ -87,7 +87,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
 
   const handleEnforcePenalty = async (tokenIdentifier: string, nonce: number, enforceMinimumPenaltyForm: number) => {
     console.log(tokenIdentifier, nonce, typeof enforceMinimumPenaltyForm, enforceMinimumPenaltyForm);
-    if (enforceMinimumPenaltyForm == 5) {
+    if (enforceMinimumPenaltyForm == contractConfiguration.minimumPenalty / 100) {
       const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 0);
       await sendTransactions({
         transactions: [tx],
