@@ -214,7 +214,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
-      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[0].amount).shiftedBy(-18).toNumber() : -1,
+      bondingAmount:
+        lockPeriod.length > 0
+          ? BigNumber(lockPeriod[0]?.amount)
+              .dividedBy(10 ** 18)
+              .toNumber()
+          : -1,
       bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
