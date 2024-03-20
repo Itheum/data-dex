@@ -112,7 +112,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .test("is-url-or-ipns", "Data Stream URL must be a valid URL or IPNS", function (value) {
+      .test("is-url-or-ipns", "Data Stream URL must be a valid URL, IPFS or IPNS", function (value) {
         const websiteRegex = new RegExp(
           "^(http|https?:\\/\\/)?" + // validate protocol
             "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name

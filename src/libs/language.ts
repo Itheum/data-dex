@@ -1,6 +1,6 @@
 export const labels = {
   "ERR_URL_MISSING_HTTPS_OR_IPNS":
-    "Some of your url inputs don't seem to be valid. For e.g. stream URLs or marshal service URLs need to have https:// or ipns:// in it. (ER-1)",
+    "Some of your url inputs don't seem to be valid. For e.g. stream URLs or marshal service URLs need to have https:// , ifps:// or ipns:// in it. (ER-1)",
   "ERR_DATA_MARSHAL_DOWN": "Data Marshal service is not responding. (ER-2)",
   "ERR_DATA_MARSHAL_GEN_ACCESS_FAIL": "Data Marshal responded with an unknown error trying to generate your access links. (ER-3)",
   "ERR_WALLET_SIG_GEN_MALFORMED": "Signature result from wallet was malformed. (ER-4)",
