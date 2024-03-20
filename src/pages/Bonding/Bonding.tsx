@@ -32,7 +32,6 @@ export const Bonding: React.FC = () => {
     checkIfUserIsAdmin();
     (async () => {
       const contractBonds = await bondContract.viewAllBonds();
-      console.log(contractBonds.length, Math.abs(contractBonds.length - 50), contractBonds.length - 1);
       if (contractBonds.length === 0) {
         return;
       }
