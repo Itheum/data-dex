@@ -37,7 +37,7 @@ import { MENU } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
-import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep } from "../../../libs/utils";
+import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
 
 // Declaring the form types
@@ -97,8 +97,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
   const bond = new BondContract("devnet");
   const [periods, setPeriods] = useState<any>([
-    { amount: "10000000000000000000", lockPeriod: 2 },
     { amount: "10000000000000000000", lockPeriod: 900 },
+    { amount: "10000000000000000000", lockPeriod: 2 },
   ]);
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -122,8 +122,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             "(\\#[-a-z\\d_]*)?$",
           "i"
         ); // validate fragment locator;
-        console.log(value, websiteRegex, websiteRegex.test(value));
+        // console.log(value, websiteRegex, websiteRegex.test(value));
         const ipnsRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
+ 
+ 
         return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
@@ -195,9 +197,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
   const validationSchema = Yup.object().shape(preSchema);
 
-  // Creating a date 3 months from now
-  const dateNow = new Date();
-  const withdrawDate = dateNow.setMonth(dateNow.getMonth() + 3);
+  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
 
   // Destructure the methods needed from React Hook Form useForm component
   const {
@@ -214,8 +214,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
-      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].amount).shiftedBy(-18).toNumber() : -1,
-      bondingPeriod: lockPeriod.length > 0 ? BigNumber(lockPeriod[1].lockPeriod).dividedBy(86400).toNumber() : -1,
+      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[0].amount).shiftedBy(-18).toNumber() : -1,
+      bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
     resolver: yupResolver(validationSchema), // telling to React Hook Form that we want to use yupResolver as the validation schema
@@ -381,8 +381,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         Number(dataNFTCopies),
         datasetTitle,
         datasetDescription,
-        BigNumber(periods[1].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-        Number(periods[1].lockPeriod),
+        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+        Number(periods[0].lockPeriod),
         {
           nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
         }
@@ -737,7 +737,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           <Flex flexDirection="row" gap="7" mt={2}>
             <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
               <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Amount
+                Bonding Amount (in $ITHEUM)
               </Text>
 
               <Controller
@@ -764,15 +764,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 )}
                 name="bondingAmount"
               />
-              <Text color="gray.400" fontSize="sm" mt={"1"}>
-                Min: 10 ITHEUM
-              </Text>
               <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
               <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Period
+                Bonding Period ({amountOfTime.unit})
               </Text>
               <Controller
                 control={control}
@@ -793,9 +790,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 )}
                 name="bondingPeriod"
               />
-              <Text color="gray.400" fontSize="sm" mt={"1"}>
-                Min: 3 months
-              </Text>
               <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
             </FormControl>
           </Flex>
@@ -882,7 +876,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
           {!readLivelinessBonding && (
             <Text color="red.400" fontSize="sm" mt="1 !important">
-              You need to agree to Penalties and Slashed to mint
+              You need to agree to Penalties and Slashing terms to mint
             </Text>
           )}
         </Box>
