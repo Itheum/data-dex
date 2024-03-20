@@ -123,7 +123,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           "i"
         ); // validate fragment locator;
         console.log(value, websiteRegex, websiteRegex.test(value));
-        const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
+        const ipnsRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
         return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
