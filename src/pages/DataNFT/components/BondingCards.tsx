@@ -52,7 +52,6 @@ export const BondingCards: React.FC = () => {
       });
 
       const compensation = await bondContract.viewCompensations(itemsForCompensation);
-      console.log(contractConfigurationRequest);
 
       setContractConfiguration(contractConfigurationRequest);
       setBondingOffers(dataNfts);
