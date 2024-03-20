@@ -96,7 +96,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   const getOnChainNFTs = async () => {
     const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
-      "erd1eweqykxcrhh5nps4fzktu9eftf7rxpa8xdfkypwz0k4huhl0s04sa6tqyd",
+      address,
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
       chainID
     );
