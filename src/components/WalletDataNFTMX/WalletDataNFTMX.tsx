@@ -397,7 +397,7 @@ export default function WalletDataNFTMX(item: any) {
             </Box>
 
             <Box color="#8c8f92d0" fontSize="md">
-              {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
+              {item.creationTime ? `Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}` : "Plugin Hybrid NFT"}
             </Box>
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
@@ -453,7 +453,7 @@ export default function WalletDataNFTMX(item: any) {
                 </Button>
               </Tooltip>
 
-              <PreviewDataButton previewDataURL={item.dataPreview} />
+              {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
             </HStack>
 
             <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

@@ -4,6 +4,7 @@ import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-networ
 import axios from "axios";
 import { contractsForChain, uxConfig } from "libs/config";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { getApiDataMarshal } from "libs/utils";
 
 export const getApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
@@ -108,9 +109,31 @@ export const getNftsOfACollectionForAnAddress = async (address: string, collecti
   try {
     const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
     return ownerByAddress;
-  } catch (error) {
-    console.error(error);
-    return [];
+  } catch (error1) {
+    const api = getApi(chainID);
+    const url = `https://${api}/accounts/${address}/nfts?size=10000&withSupply=true&collections=${collectionTickers.join(",")}`;
+    const { data } = await axios.get<DataNft[]>(url, {
+      timeout: uxConfig.mxAPITimeoutMs,
+    });
+    const returnedNfts = [];
+    for (const nft of data) {
+      try {
+        const nftData = DataNft.createFromApiResponseOrBulk(nft as any);
+        returnedNfts.push(nftData[0]);
+      } catch (error) {
+        const tempNft = {
+          ...nft,
+          dataStream: (nft as any)["metadata"]["itheum_data_stream_url"],
+          dataMarshal: getApiDataMarshal(chainID),
+          tokenIdentifier: (nft as any)["identifier"],
+          nftImgUrl: (nft as any)["media"][0]["url"],
+          tokenName: (nft as any)["name"],
+          creationTime: undefined,
+        };
+        returnedNfts.push(tempNft);
+      }
+    }
+    return returnedNfts as DataNft[];
   }
 };
 

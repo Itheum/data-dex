@@ -50,7 +50,7 @@ export function contractsForChain(chainID: string): ContractsType {
           },
           {
             id: "FOOA-141164",
-            contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
+            contract: new Address("erd1qqqqqqqqqqqqqpgqteqgaxcel2zjkrsm27szjlptemqk0sdpu00sp49kss"),
           },
         ],
       };

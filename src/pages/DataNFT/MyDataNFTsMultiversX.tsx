@@ -96,7 +96,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
 
   const getOnChainNFTs = async () => {
     const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
-      address,
+      "erd1eweqykxcrhh5nps4fzktu9eftf7rxpa8xdfkypwz0k4huhl0s04sa6tqyd",
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
       chainID
     );
@@ -107,7 +107,8 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();
-      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance == 0 ? 1 : nft.balance }));
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
+      console.log(_alteredDataNfts);
       setDataNfts(_alteredDataNfts);
     })();
     setOneNFTImgLoaded(false);
