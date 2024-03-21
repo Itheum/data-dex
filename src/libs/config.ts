@@ -460,24 +460,24 @@ export const whitelistWallets: Array<string> = [];
 
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
-export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
+export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
   "D": {
-    "trailblazer": [1],
+    "trailblazer": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 1 }],
     "multiversxbubbles": [],
-    "multiversxinfographics": [3],
-    "nftunes": [2],
-    "timecapsule": [57],
+    "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 3 }],
+    "nftunes": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 2 }],
+    "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
   },
   "1": {
-    "trailblazer": [1],
-    "multiversxbubbles": [2],
-    "multiversxinfographics": [3],
-    "nftunes": [4],
-    "timecapsule": [5],
+    "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
+    "multiversxbubbles": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 2 }],
+    "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 3 }],
+    "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
+    "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
   },
 };
 
-export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
+export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
   "D": {
     "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",

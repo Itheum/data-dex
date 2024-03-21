@@ -426,11 +426,12 @@ export default function WalletDataNFTMX(item: any) {
                   bgColor="#FF439D"
                   _hover={{ backgroundColor: "#FF439D70" }}
                   isDisabled={hasPendingTransactions}
+                  hidden={item.isDataNFTPH}
                   onClick={() => onBurnButtonClick(item)}>
                   Burn
                 </Button>
 
-                <ExploreAppButton nonce={item.nonce} />
+                <ExploreAppButton collection={item.collection} nonce={item.nonce} />
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>

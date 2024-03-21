@@ -108,7 +108,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     (async () => {
       const _dataNfts = await getOnChainNFTs();
       const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
-      console.log(_alteredDataNfts);
       setDataNfts(_alteredDataNfts);
     })();
     setOneNFTImgLoaded(false);

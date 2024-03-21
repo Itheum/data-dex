@@ -5,6 +5,7 @@ import axios from "axios";
 import { contractsForChain, uxConfig } from "libs/config";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { getApiDataMarshal } from "libs/utils";
+import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 
 export const getApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
@@ -106,41 +107,8 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
 
 export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<DataNft[]> => {
   DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
-  try {
-    const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
-    return ownerByAddress;
-  } catch (error1) {
-    const api = getApi(chainID);
-    const url = `https://${api}/accounts/${address}/nfts?size=10000&withSupply=true&collections=${collectionTickers.join(",")}`;
-    const { data } = await axios.get<DataNft[]>(url, {
-      timeout: uxConfig.mxAPITimeoutMs,
-    });
-    const returnedNfts = [];
-
-    for (const nft of data) {
-      try {
-        // Here, we get Data NFT-FTs or Data NFT-LEASE (Itheum Enterprise) collections as they have on-chain attributes
-        const nftData = DataNft.createFromApiResponseOrBulk(nft as any);
-        returnedNfts.push(nftData[0]);
-      } catch (error) {
-        // ... if we end up here, then it's a supported Data NFT-PH collection and they have nft metadata attributes
-        const dataNFTPH = {
-          ...nft,
-          tokenName: (nft as any)["name"],
-          nftImgUrl: (nft as any)["media"][0]["url"],
-          tokenIdentifier: (nft as any)["identifier"],
-          dataStream: (nft as any)["metadata"]["itheum_data_stream_url"], //  NFT-PH standard minimum required attribute
-          creator: (nft as any)["metadata"]["itheum_creator"], //  NFT-PH standard minimum required attribute
-          dataMarshal: (nft as any)["metadata"]["itheum_data_marshal_url"] || getApiDataMarshal(chainID),
-          creationTime: undefined,
-          isDataNFTPH: true,
-        };
-
-        returnedNfts.push(dataNFTPH);
-      }
-    }
-    return returnedNfts as DataNft[];
-  }
+  const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
+  return ownerByAddress;
 };
 
 export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<NftType[]> => {
