@@ -47,16 +47,17 @@ export default function ExploreAppButton({
             onClick={() => {
               const appNonceMappings = EXPLORER_APP_SUPPORTED_TOKENS[chainID];
 
+              let appKey = undefined;
               // find the app key id based on nonce
-              const appKey = Object.keys(appNonceMappings).find((_appKey) => {
-                console.log(
-                  appNonceMappings[_appKey].includes({ tokenIdentifier: collection, nonce: nonce }),
-                  { tokenIdentifier: collection, nonce: nonce },
-                  appNonceMappings[_appKey]
-                );
-                return appNonceMappings[_appKey].includes({ tokenIdentifier: collection, nonce: nonce });
-              });
-
+              for (const key of Object.keys(appNonceMappings)) {
+                for (const token of appNonceMappings[key]) {
+                  if (token.tokenIdentifier === collection && token.nonce === nonce) {
+                    appKey = key;
+                    break;
+                  }
+                }
+              }
+              console.log("appKey", appKey, EXPLORER_APP_FOR_TOKEN[chainID][appKey ?? ""]);
               if (appKey) {
                 if (tokenLogin && tokenLogin.nativeAuthToken) {
                   window.open(`${EXPLORER_APP_FOR_TOKEN[chainID][appKey]}/?accessToken=${tokenLogin?.nativeAuthToken}`)?.focus();
