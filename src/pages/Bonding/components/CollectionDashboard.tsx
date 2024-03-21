@@ -50,8 +50,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     acceptedCallers: [""],
   });
 
-  // console.log(bondDataNft);
-
   useEffect(() => {
     (async () => {
       const compensation = await bondContract.viewCompensation(bondNft.bondId);
@@ -81,12 +79,10 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     resolver: yupResolver(validationSchema),
   });
 
-  // console.log(bondNft.tokenIdentifier + "-" + bondNft.nonce.toString(18));
   const enforceMinimumPenalty = watch("enforceMinimumPenalty");
   const endTimestampOfBond = watch("endTimestampOfBond");
 
   const handleEnforcePenalty = async (tokenIdentifier: string, nonce: number, enforceMinimumPenaltyForm: number) => {
-    console.log(tokenIdentifier, nonce, typeof enforceMinimumPenaltyForm, enforceMinimumPenaltyForm);
     if (enforceMinimumPenaltyForm == contractConfiguration.minimumPenalty / 100) {
       const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 0);
       await sendTransactions({
@@ -108,7 +104,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   };
 
   const handleWithdraw = async (tokenIdentifier: string, nonce: number) => {
-    console.log("test");
     const tx = bondContract.modifyBond(new Address(address), tokenIdentifier, nonce);
     await sendTransactions({
       transactions: [tx],
@@ -118,7 +113,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const handleSelfClaiming = async (tokenIdentifier: string, nonce: number, endTimestampOfBondForm: string) => {
     const formDate = new Date(endTimestampOfBondForm);
     const unixTimestamp = formDate.getTime() / 1000;
-    console.log(endTimestampOfBondForm);
     const tx = bondContract.initiateRefund(new Address(address), tokenIdentifier, nonce, unixTimestamp);
     await sendTransactions({
       transactions: [tx],

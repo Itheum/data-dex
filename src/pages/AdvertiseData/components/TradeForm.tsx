@@ -122,7 +122,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             "(\\#[-a-z\\d_]*)?$",
           "i"
         ); // validate fragment locator;
-        // console.log(value, websiteRegex, websiteRegex.test(value));
         const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
         return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
       })
@@ -362,15 +361,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     return { image: _imageFile, traits: _traitsFile };
   }
 
-  const handleOnChainMint = async ({
-    imageOnIpfsUrl,
-    metadataOnIpfsUrl,
-    dataNFTStreamUrlEncrypted,
-  }: {
-    imageOnIpfsUrl: string;
-    metadataOnIpfsUrl: string;
-    dataNFTStreamUrlEncrypted: string;
-  }) => {
+  const handleOnChainMint = async ({ dataNFTStreamUrlEncrypted }: { dataNFTStreamUrlEncrypted: string }) => {
     if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
       const sftMinter = new SftMinter("devnet");
 
@@ -463,15 +454,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       return;
     }
 
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
-    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
-
     setDataNFTImg(newNFTImg);
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
 
-    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl, dataNFTStreamUrlEncrypted });
+    handleOnChainMint({ dataNFTStreamUrlEncrypted });
   };
 
   const dataNFTSellSubmit = async () => {
@@ -503,9 +491,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  // here you can make logic that you want to happen on submit (used for debugging)
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
-  }; // here you can make logic that you want to happen on submit (used for debugging)
+  };
+
+  //TODO refactor this with react form hook
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">

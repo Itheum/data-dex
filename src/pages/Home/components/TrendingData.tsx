@@ -42,15 +42,12 @@ export const TrendingData: React.FC = () => {
         _trendingData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_trendingData);
-      // console.log(dataNfts);
       const trending = getTrendingData.map((dataNft) => {
-        // console.log(dataNft);
         const ratingNfts = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);
         if (ratingNfts) {
           return { ...ratingNfts, rating: dataNft.rating };
         }
       });
-      // console.log(trending);
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
     })();
     setLoadedOffers(false);
@@ -60,7 +57,6 @@ export const TrendingData: React.FC = () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
       updateFavoriteNfts(getFavourites);
     }
   };
@@ -69,7 +65,6 @@ export const TrendingData: React.FC = () => {
     getFavourite();
   }, [favoriteNfts.length]);
 
-  // console.log(trendingDataNfts);
   return (
     <Box>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">

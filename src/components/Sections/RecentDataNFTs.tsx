@@ -122,7 +122,6 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       // get these offers metadata from the API
       const nftIds = slicedOffers.map((offer) => `${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}`);
       const dataNfts = await getNftsByIds(nftIds, chainID);
-      // console.log(dataNfts);
 
       // merge the offer data and meta data
       const _latestOffers: RecentDataNFTType[] = [];

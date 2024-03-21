@@ -41,8 +41,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
 
-  // console.log(offer);
-
   return (
     <>
       <HStack justifyContent="stretch" pb={2}>
