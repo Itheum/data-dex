@@ -48,6 +48,7 @@ import {
   backendApi,
   convertToLocalString,
   decodeNativeAuthToken,
+  getApiDataMarshal,
   isValidNumericCharacter,
   shouldPreviewDataBeEnabled,
   sleep,
@@ -245,6 +246,9 @@ export default function WalletDataNFTMX(item: any) {
           "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
         },
       };
+      if (!dataNft.dataMarshal || dataNft.dataMarshal === "") {
+        dataNft.updateDataNft({ dataMarshal: getApiDataMarshal(chainID) });
+      }
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
 
       if (!res.error) {
