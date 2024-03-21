@@ -52,6 +52,14 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "FOOA-141164",
             contract: new Address("erd1qqqqqqqqqqqqqpgqteqgaxcel2zjkrsm27szjlptemqk0sdpu00sp49kss"),
           },
+          {
+            id: "DNFTPHMA-9e2b1c",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq5hsq5z09zv3g0lsxs3y6q2x0qvlhzugpu00sevtqsw"),
+          },
+          {
+            id: "DNFTPHFAIL-e47ef0",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqtytgg5hkwakehagx9udjg6t4y8r7xufdu00s8n66xm"),
+          },
         ],
       };
     }

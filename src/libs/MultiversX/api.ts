@@ -116,21 +116,27 @@ export const getNftsOfACollectionForAnAddress = async (address: string, collecti
       timeout: uxConfig.mxAPITimeoutMs,
     });
     const returnedNfts = [];
+
     for (const nft of data) {
       try {
+        // Here, we get Data NFT-FTs or Data NFT-LEASE (Itheum Enterprise) collections as they have on-chain attributes
         const nftData = DataNft.createFromApiResponseOrBulk(nft as any);
         returnedNfts.push(nftData[0]);
       } catch (error) {
-        const tempNft = {
+        // ... if we end up here, then it's a supported Data NFT-PH collection and they have nft metadata attributes
+        const dataNFTPH = {
           ...nft,
-          dataStream: (nft as any)["metadata"]["itheum_data_stream_url"],
-          dataMarshal: getApiDataMarshal(chainID),
-          tokenIdentifier: (nft as any)["identifier"],
-          nftImgUrl: (nft as any)["media"][0]["url"],
           tokenName: (nft as any)["name"],
+          nftImgUrl: (nft as any)["media"][0]["url"],
+          tokenIdentifier: (nft as any)["identifier"],
+          dataStream: (nft as any)["metadata"]["itheum_data_stream_url"], //  NFT-PH standard minimum required attribute
+          creator: (nft as any)["metadata"]["itheum_creator"], //  NFT-PH standard minimum required attribute
+          dataMarshal: (nft as any)["metadata"]["itheum_data_marshal_url"] || getApiDataMarshal(chainID),
           creationTime: undefined,
+          isDataNFTPH: true,
         };
-        returnedNfts.push(tempNft);
+
+        returnedNfts.push(dataNFTPH);
       }
     }
     return returnedNfts as DataNft[];

@@ -388,17 +388,21 @@ export default function WalletDataNFTMX(item: any) {
             </PopoverContent>
           </Popover>
           <Box mt={1}>
-            <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
-              Creator:&nbsp;
-              <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
-                <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
-                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
-              </Flex>
-            </Box>
+            {item.creator && (
+              <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
+                Creator:&nbsp;
+                <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
+                  <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
+                  <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
+                </Flex>
+              </Box>
+            )}
 
-            <Box color="#8c8f92d0" fontSize="md">
-              {item.creationTime ? `Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}` : "Plugin Hybrid NFT"}
-            </Box>
+            {item.creationTime && (
+              <Box color="#8c8f92d0" fontSize="md">
+                Creation time: {moment(item.creationTime).format(uxConfig.dateStr)}
+              </Box>
+            )}
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
@@ -409,7 +413,7 @@ export default function WalletDataNFTMX(item: any) {
 
               <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
                 <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
-                  Fully Transferable License
+                  {item?.isDataNFTPH ? "Data NFT-PH (Plug-In Hybrid)" : "Fully Transferable License"}
                 </Text>
               </Badge>
 
