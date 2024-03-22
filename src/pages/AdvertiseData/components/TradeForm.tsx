@@ -112,7 +112,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .test("is-url-or-ipns", "Data Stream URL must be a valid URL or IPNS", function (value) {
+      .test("is-url-or-ipns", "Data Stream URL must be a valid URL, IPFS or IPNS", function (value) {
         const websiteRegex = new RegExp(
           "^(http|https?:\\/\\/)?" + // validate protocol
             "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
@@ -122,9 +122,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             "(\\#[-a-z\\d_]*)?$",
           "i"
         ); // validate fragment locator;
-        // console.log(value, websiteRegex, websiteRegex.test(value));
-        const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
-        return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
+        const ipfsIpnsUrlRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
+        return websiteRegex.test(value) || ipfsIpnsUrlRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
@@ -250,11 +249,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   function validateBaseInput() {
-    if (
-      !(dataNFTStreamUrl.startsWith("https://") || dataNFTStreamUrl.startsWith("ipns://")) ||
-      !dataNFTPreviewUrl.startsWith("https://") ||
-      !dataNFTMarshalService.startsWith("https://")
-    ) {
+    const isValidProtocol = (url: string) => {
+      return url.startsWith("https://") || url.startsWith("ipfs://") || url.startsWith("ipns://");
+    };
+
+    if (!isValidProtocol(dataNFTStreamUrl) || !dataNFTPreviewUrl.startsWith("https://") || !dataNFTMarshalService.startsWith("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS_OR_IPNS,
         status: "error",

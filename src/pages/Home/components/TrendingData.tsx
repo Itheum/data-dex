@@ -42,15 +42,12 @@ export const TrendingData: React.FC = () => {
         _trendingData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_trendingData);
-      // console.log(dataNfts);
       const trending = getTrendingData.map((dataNft) => {
-        // console.log(dataNft);
         const ratingNfts = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);
         if (ratingNfts) {
           return { ...ratingNfts, rating: dataNft.rating };
         }
       });
-      // console.log(trending);
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
     })();
     setLoadedOffers(false);
