@@ -122,8 +122,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             "(\\#[-a-z\\d_]*)?$",
           "i"
         ); // validate fragment locator;
-        const ipnsRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
-        return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
+        const ipfsIpnsUrlRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
+        return websiteRegex.test(value) || ipfsIpnsUrlRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
