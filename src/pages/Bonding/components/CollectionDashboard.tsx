@@ -50,8 +50,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     acceptedCallers: [""],
   });
 
-  // console.log(bondDataNft);
-
   useEffect(() => {
     (async () => {
       const compensation = await bondContract.viewCompensation(bondNft.bondId);
