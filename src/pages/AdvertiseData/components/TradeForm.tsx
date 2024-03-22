@@ -139,7 +139,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     dataPreviewUrlForm: Yup.string()
       .required("Data Preview URL is required")
-      .url("Data Preview must be URL")
+      .test("is-url-or-ipns", "Data Stream URL must be a valid URL, IPFS or IPNS", function (value) {
+        const websiteRegex = new RegExp(
+          "^(http|https?:\\/\\/)?" + // validate protocol
+            "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
+            "((\\d{1,3}\\.){3}\\d{1,3}))" + // validate OR ip (v4) address
+            "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // validate port and path
+            "(\\?[;&a-z\\d%_.~+=-]*)?" + // validate query string
+            "(\\#[-a-z\\d_]*)?$",
+          "i"
+        ); // validate fragment locator;
+        const ipnsRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
+        return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
+      })
       .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
       .test("is-distinct", "Data Preview URL cannot be the same as the Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
@@ -250,12 +262,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   function validateBaseInput() {
-    if (
-      !(dataNFTStreamUrl.startsWith("https://") || dataNFTStreamUrl.startsWith("ipns://")) ||
-      dataNFTStreamUrl.startsWith("ipfs://") ||
-      !dataNFTPreviewUrl.startsWith("https://") ||
-      !dataNFTMarshalService.startsWith("https://")
-    ) {
+    const isValidProtocol = (url: string) => {
+      return url.startsWith("https://") || url.startsWith("ipfs://") || url.startsWith("ipns://");
+    };
+
+    if (!isValidProtocol(dataNFTStreamUrl) || !isValidProtocol(dataNFTPreviewUrl) || !dataNFTMarshalService.startsWith("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS_OR_IPNS,
         status: "error",
