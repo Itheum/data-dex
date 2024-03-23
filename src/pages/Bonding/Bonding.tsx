@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { Bond, BondContract, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BondingParameters } from "./components/BondingParameters";
@@ -8,6 +8,12 @@ import { CollectionDashboard } from "./components/CollectionDashboard";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
+import { CompensationDashboard } from "./components/CompensationDashboard";
+
+type CompensationNftsType = {
+  nonce: number;
+  tokenIdentifier: string;
+};
 
 export const Bonding: React.FC = () => {
   const { address } = useGetAccountInfo();
@@ -17,6 +23,7 @@ export const Bonding: React.FC = () => {
   const bondContractAdminMainnet = import.meta.env.VITE_ENV_BONDING_ADMIN_MAINNET;
   const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
   DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+  const [allCompensation, setAllCompensation] = useState<Array<Compensation>>([]);
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [totalAmountBonded, setTotalAmountBonded] = useState<number>(0);
@@ -30,7 +37,11 @@ export const Bonding: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      const itemsForCompensation: Array<CompensationNftsType> = [];
       const contractBonds = await bondContract.viewAllBonds();
+      contractBonds.map((bond) => {
+        itemsForCompensation.push({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier });
+      });
       if (contractBonds.length === 0) {
         return;
       }
@@ -45,9 +56,13 @@ export const Bonding: React.FC = () => {
         );
       });
 
+      const compensation = await bondContract.viewCompensations(itemsForCompensation);
+
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
       setContractBonds(pagedBonds.reverse());
       setBondingDataNfts(dataNfts);
+      setAllCompensation(compensation.reverse());
+      // console.log(compensation);
     })();
   }, [hasPendingTransactions]);
   return (
@@ -73,7 +88,7 @@ export const Bonding: React.FC = () => {
               </Flex>
             </Flex>
           </Box>
-          <Box border="1px solid" borderColor="#00C79740" rounded="3xl" px={10} py={5} bg="#1b1b1b50">
+          <Box border="1px solid" borderColor="#00C79740" rounded="3xl" px={10} py={5} bg="#1b1b1b50" overflowY="scroll" h="70rem" mb={10}>
             <Flex justifyContent="space-between" alignItems="center" px={10}>
               <Flex flexDirection="column" justifyContent="center" w="full" gap={5}>
                 <Text fontSize="1.75rem" fontFamily="Clash-Medium" textColor="teal.200">
@@ -85,6 +100,27 @@ export const Bonding: React.FC = () => {
                   contractBonds.map((bond, index) => (
                     <Fragment key={index}>
                       <CollectionDashboard bondNft={bond} bondDataNft={bondingDataNfts} />
+                    </Fragment>
+                  ))
+                )}
+              </Flex>
+            </Flex>
+          </Box>
+          <Box border="1px solid" borderColor="#00C79740" rounded="3xl" px={10} py={5} bg="#1b1b1b50" overflowY="scroll" h="40rem" mb={10}>
+            <Flex justifyContent="space-between" alignItems="center" px={10}>
+              <Flex flexDirection="column" justifyContent="center" w="full">
+                <Text fontSize="1.75rem" fontFamily="Clash-Medium" textColor="teal.200">
+                  Compensation Module
+                </Text>
+                <Text fontSize="1.5rem" fontFamily="Clash-Regular" textColor="teal.200">
+                  Slashes and Penalties
+                </Text>
+                {allCompensation.length === 0 ? (
+                  <NoDataHere />
+                ) : (
+                  allCompensation.map((compensation, index) => (
+                    <Fragment key={index}>
+                      <CompensationDashboard compensationBondNft={compensation} bondDataNft={bondingDataNfts} />
                     </Fragment>
                   ))
                 )}

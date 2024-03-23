@@ -75,7 +75,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   } = useForm<CollectionDashboardFormType>({
     defaultValues: {
       enforceMinimumPenalty: 5,
-      endTimestampOfBond: "10",
+      endTimestampOfBond: allCompensation.endDate.toLocaleString(),
     },
     mode: "onChange",
     resolver: yupResolver(validationSchema),
@@ -106,7 +106,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       transactions: [tx],
     });
   };
-
+  console.log(new Date(allCompensation.endDate).toLocaleString());
   const handleWithdraw = async (tokenIdentifier: string, nonce: number) => {
     console.log("test");
     const tx = bondContract.modifyBond(new Address(address), tokenIdentifier, nonce);
@@ -186,7 +186,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                           name={"enforceMinimumPenalty"}
                         />
                         <FormErrorMessage>{errors?.enforceMinimumPenalty?.message}</FormErrorMessage>
-
                         <Text fontSize="1.1rem">%</Text>
                         <Button colorScheme="pink" type="submit">
                           Penalize
@@ -240,6 +239,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                             mt="1 !important"
                             id="endTimestampOfBond"
                             type="datetime-local"
+                            value={new Date(allCompensation.endDate).toUTCString()}
                             w="70%"
                             onChange={(event) => {
                               onChange(event.target.value);
