@@ -105,6 +105,16 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
         return { isSuccess: true, message: "" };
       case 404:
         return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 404 received)" };
+      case 403:
+        if (url.includes("dmf-allow-http403=1")) {
+          return {
+            isSuccess: true,
+            message:
+              "Data Stream URL is not publicly reachable (Status Code 403 received), but you can proceed as you allow this via flag : dmf-allow-http403=1",
+          };
+        } else {
+          return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 403 received)" };
+        }
       default:
         return {
           isSuccess: false,
