@@ -194,8 +194,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
   const validationSchema = Yup.object().shape(preSchema);
 
-  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
-
+  const amountOfTime = import.meta.env.VITE_ENV_NETWORK === "devnet" ? timeUntil(lockPeriod[0].lockPeriod) : { count: 0, unit: "sec" };
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
