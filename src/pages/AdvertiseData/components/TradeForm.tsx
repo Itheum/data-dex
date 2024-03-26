@@ -231,6 +231,22 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
   const bondingPeriod: number = getValues("bondingPeriod") ?? -1;
 
+  function shouldMintYourDataNftBeDisabled(
+    isValid: boolean,
+    readTermsChecked: boolean,
+    readAntiSpamFeeChecked: boolean,
+    readLivelinessBonding: boolean,
+    itheumBalance: number,
+    antiSpamTax: number,
+    bondingAmount: number
+  ): boolean | undefined {
+    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
+    } else {
+      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || itheumBalance < antiSpamTax + bondingAmount;
+    }
+  }
+
   const closeProgressModal = () => {
     if (mintingSuccessful) {
       toast({
@@ -890,7 +906,15 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             colorScheme="teal"
             isLoading={isMintingModalOpen}
             onClick={dataNFTSellSubmit}
-            isDisabled={!isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount}>
+            isDisabled={shouldMintYourDataNftBeDisabled(
+              isValid,
+              readTermsChecked,
+              readAntiSpamFeeChecked,
+              readLivelinessBonding,
+              itheumBalance,
+              antiSpamTax,
+              bondingAmount
+            )}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>
