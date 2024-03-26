@@ -46,7 +46,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const itheumToken = contractsForChain(chainID).itheumToken;
   const { address } = useGetAccountInfo();
   const navigate = useNavigate();
-  const networkKey = import.meta.env.VITE_ENV_NETWORK === "devnet";
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
