@@ -19,6 +19,7 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
@@ -33,7 +34,6 @@ import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;

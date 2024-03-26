@@ -22,7 +22,8 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import axios from "axios";
 import { BsClockHistory } from "react-icons/bs";
@@ -34,15 +35,15 @@ import ProfileCard from "components/ProfileCard";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import useThrottle from "../../../components/UtilComps/UseThrottle";
 import { labels } from "../../../libs/language";
-import { getOffersCountFromBackendApi } from "../../../libs/MultiversX";
-import { getNftsByIds } from "../../../libs/MultiversX/api";
+import { contractsForChain, getOffersCountFromBackendApi } from "../../../libs/MultiversX";
+import { getNftsByIds, getNftsOfACollectionForAnAddress } from "../../../libs/MultiversX/api";
 import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { createDataNftType, DataNftMetadataType, DataNftType } from "../../../libs/MultiversX/types";
+import { createDataNftType, DataNftMetadataType } from "../../../libs/MultiversX/types";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
 import DataNFTDetails from "../../DataNFT/DataNFTDetails";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
   tabState: number;
@@ -51,6 +52,7 @@ interface PropsType {
 export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { address } = useGetAccountInfo();
   const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const { pageNumber, profileAddress } = useParams();
@@ -77,19 +79,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
   const [isLoadingSecond, setIsLoadingSecond] = useState<boolean>(false);
 
   const [offerForDrawer, setOfferForDrawer] = useState<Offer | undefined>();
-  const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNftType | undefined>();
+  const [dataNftForDrawer, setDataNftForDrawer] = useState<DataNft | undefined>();
   const [myListedCount, setMyListedCount] = useState<number>(0);
 
   const [oneCreatedNFTImgLoaded, setOneCreatedNFTImgLoaded] = useState(false);
   const [oneListedNFTImgLoaded, setOneListedNFTImgLoaded] = useState(false);
 
-  const [dataNfts, setDataNft] = useState<DataNftType[]>(() => {
-    const _dataNfts: DataNftType[] = [];
-    for (let index = 0; index < 8; index++) {
-      _dataNfts.push(createDataNftType());
-    }
-    return _dataNfts;
-  });
+  const [dataNfts, setDataNft] = useState<Array<DataNft>>([]);
 
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
   const { isOpen: isOpenListingDetails, onOpen: onOpenListingDetails, onClose: onCloseListingDetails } = useDisclosure();
@@ -128,6 +124,15 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
     },
   ];
 
+  const getOnChainNFTs = async () => {
+    const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
+      address,
+      contractsForChain(chainID).dataNftTokens.map((v) => v.id),
+      chainID
+    );
+    return dataNfts;
+  };
+
   useEffect(() => {
     if (!profileAddress || hasPendingTransactions) return;
     if (tabState !== 1) return;
@@ -136,18 +141,13 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       try {
         // start loading offers
         setIsLoadingFirst(true);
-        setDataNft(() => {
-          const _dataNfts: DataNftType[] = [];
-          for (let index = 0; index < 8; index++) {
-            _dataNfts.push(createDataNftType());
-          }
-          return _dataNfts;
-        });
+        const _dataNfts = await getOnChainNFTs();
+        setDataNft(_dataNfts);
 
         const backendApiRoute = backendApi(chainID);
         const res = await axios.get(`${backendApiRoute}/data-nfts/${profileAddress}`);
-        const _dataNfts: DataNftType[] = res.data ? res.data.map((data: any, index: number) => ({ ...data, index })) : [];
-        setDataNft(_dataNfts);
+        const _dataNftsBE: Array<DataNft> = res.data ? res.data.map((data: any, index: number) => ({ ...data, index })) : [];
+        setDataNft(_dataNftsBE);
       } catch (err: any) {
         setDataNft([]);
         setOneCreatedNFTImgLoaded(false);
@@ -305,7 +305,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
                         tokenName={item.tokenName}
                         title={item.title}
                         description={item.description}
-                        supply={item.supply}
+                        supply={Number(item.supply)}
                         royalties={item.royalties}
                         creationTime={item.creationTime}
                         openNftDetailsDrawer={openNftDetailsModal}

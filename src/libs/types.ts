@@ -1,3 +1,4 @@
+import { Bond, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { IAddress } from "@multiversx/sdk-core/out";
 import BigNumber from "bignumber.js";
 
@@ -30,3 +31,5 @@ export interface DataNFTToken {
   id: string;
   contract: IAddress;
 }
+
+export interface ExtendedOffer extends Offer, Partial<Bond> {}

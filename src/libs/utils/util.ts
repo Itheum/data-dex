@@ -1,11 +1,11 @@
+import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
 import { OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
 import { getNetworkProvider } from "../MultiversX/api";
-import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
-import { ExtendedOffer } from "pages/DataNFT/DataNFTMarketplaceMultiversX";
+import { ExtendedOffer } from "libs/types";
 
 export const qsParams = () => {
   const urlSearchParams = new URLSearchParams(window.location.search);
@@ -320,7 +320,7 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
   const bondingContract = new BondContract("devnet");
   const bonds = await bondingContract.viewBonds(offersTokenIdentif);
   return offers.map((offer) => {
-    const bond = bonds.find((bond) => bond.tokenIdentifier === offer.offeredTokenIdentifier && bond.nonce === offer.offeredTokenNonce);
+    const bond = bonds.find((bondT) => bondT.tokenIdentifier === offer.offeredTokenIdentifier && bondT.nonce === offer.offeredTokenNonce);
     if (bond) {
       return { ...offer, ...bond };
     } else {
@@ -357,7 +357,6 @@ export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTim
           : Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
     }
     if (unboudTimestamp && lockPeriod) {
-      // console.log(unboudTimestamp);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
       const difDays = currentTimestamp - unboudTimestamp;
@@ -367,3 +366,23 @@ export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTim
     return undefined;
   }
 };
+
+export function timeUntil(lockPeriod: number): { count: number; unit: string } {
+  const seconds = lockPeriod;
+
+  const intervals = [
+    { seconds: 3153600000, unit: "century" },
+    { seconds: 31536000, unit: "year" },
+    { seconds: 2592000, unit: "month" },
+    { seconds: 86400, unit: "day" },
+    { seconds: 3600, unit: "hour" },
+    { seconds: 60, unit: "minute" },
+    { seconds: 1, unit: "second" },
+  ];
+  const interval = intervals.find((i) => i.seconds <= seconds) ?? intervals[0];
+
+  const count = Math.floor(seconds / interval!.seconds);
+  const unit = count === 1 ? interval!.unit : interval!.unit + "s";
+
+  return { count, unit };
+}

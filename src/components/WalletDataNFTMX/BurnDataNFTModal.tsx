@@ -6,6 +6,7 @@ import { Stack, HStack, Text, Box, Flex } from "@chakra-ui/layout";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody } from "@chakra-ui/modal";
 import { NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper } from "@chakra-ui/number-input";
 import { useToast } from "@chakra-ui/toast";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
@@ -82,7 +83,7 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
     }
 
     mintContract.sendBurnTransaction(
-      address,
+      new Address(address),
       selectedDataNft.collection,
       selectedDataNft.nonce,
       dataNftBurnAmount,

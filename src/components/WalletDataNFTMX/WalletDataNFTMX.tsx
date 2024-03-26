@@ -44,7 +44,6 @@ import { useLocalStorage } from "libs/hooks";
 import { labels } from "libs/language";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftType } from "libs/MultiversX/types";
 import {
   backendApi,
   convertToLocalString,
@@ -60,16 +59,7 @@ import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
 
-export type WalletDataNFTMxPropType = {
-  hasLoaded: boolean;
-  maxPayment: number;
-  setHasLoaded: (hasLoaded: boolean) => void;
-  sellerFee: number;
-  openNftDetailsDrawer: (e: number) => void;
-  isProfile?: boolean;
-} & DataNftType;
-
-export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
+export default function WalletDataNFTMX(item: any) {
   const { chainID, network } = useGetNetworkConfig();
   const { loginMethod, tokenLogin } = useGetLoginInfo();
   const { colorMode } = useColorMode();
@@ -90,7 +80,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   });
   const [errUnlockAccessGeneric, setErrUnlockAccessGeneric] = useState<string>("");
   const marketContract = new DataNftMarketContract(chainID);
-  const [selectedDataNft, setSelectedDataNft] = useState<DataNftType | undefined>();
+  const [selectedDataNft, setSelectedDataNft] = useState<DataNft | undefined>();
   const { isOpen: isBurnNFTOpen, onOpen: onBurnNFTOpen, onClose: onBurnNFTClose } = useDisclosure();
   const { isOpen: isListNFTOpen, onOpen: onListNFTOpen, onClose: onListNFTClose } = useDisclosure();
   const [amount, setAmount] = useState(1);
@@ -100,7 +90,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
   const [previewDataOnDevnetSession] = useLocalStorage(PREVIEW_DATA_ON_DEVNET_SESSION_KEY, null);
   const [webWalletListTxHash, setWebWalletListTxHash] = useState("");
   const maxListLimit = import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_LIST_LIMIT_PER_SFT) : 0;
-  const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, item.balance) : item.balance;
+  const maxListNumber = maxListLimit > 0 ? Math.min(maxListLimit, Number(item.balance)) : item.balance;
   const backendUrl = backendApi(chainID);
   const { signedTransactionsArray, hasSignedTransactions } = useGetSignedTransactions();
 
@@ -147,6 +137,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
       }
       sessionStorage.removeItem("web-wallet-tx");
     }
+    item.setHasLoaded(false);
   }, [webWalletListTxHash]);
 
   async function addOfferBackend(
@@ -223,9 +214,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
           headers: headers,
           body: JSON.stringify(requestBody),
         });
-
-        const data = await response.json();
-        console.log("Response:", data);
       }
     } catch (error) {
       console.log("Error:", error);
@@ -284,12 +272,12 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
     onAccessProgressModalClose();
   };
 
-  const onBurnButtonClick = (nft: DataNftType) => {
+  const onBurnButtonClick = (nft: DataNft) => {
     setSelectedDataNft(nft);
     onBurnNFTOpen();
   };
 
-  const onListButtonClick = (nft: DataNftType) => {
+  const onListButtonClick = (nft: DataNft) => {
     if (isMarketPaused) {
       toast({
         title: "Marketplace is paused",
@@ -321,7 +309,6 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
         w="275px"
         h={item.isProfile === true ? "660px" : "840px"}
         mx="3 !important"
-        key={item.id}
         border="1px solid transparent"
         borderColor="#00C79740"
         borderRadius="16px"
@@ -337,7 +324,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
             mt={6}
             borderRadius="32px"
             onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.index)}
+            onClick={() => item.openNftDetailsDrawer(item.id)}
           />
           <motion.button
             style={{
@@ -357,7 +344,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               opacity: 0,
             }}
             onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.index)}
+            onClick={() => item.openNftDetailsDrawer(item.id)}
             whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
             <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
               <Text as="p" mt={1} fontWeight="400" textColor="white">
@@ -369,7 +356,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.tokenIdentifier}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
@@ -382,7 +369,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
 
                 <Flex flexGrow="1">
                   <Text fontSize="md" color="#929497" noOfLines={2} w="100%" h="10">
-                    {transformDescription(item.description)}
+                    {item.description && transformDescription(item.description)}
                   </Text>
                 </Flex>
               </div>
@@ -395,7 +382,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               <PopoverCloseButton />
               <PopoverBody>
                 <Text fontSize="md" mt="1" color="#929497">
-                  {transformDescription(item.description)}
+                  {item.description && transformDescription(item.description)}
                 </Text>
               </PopoverBody>
             </PopoverContent>
@@ -443,7 +430,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
-              {`Balance: ${item.balance}`} <br />
+              {item.balance === 0 ? `Balance: 1` : `Balance: ${item.balance}`} <br />
               {`Total supply: ${item.supply}`} <br />
               {`Royalty: ${convertToLocalString(item.royalties * 100)}%`}
             </Box>
@@ -480,7 +467,7 @@ export default function WalletDataNFTMX(item: WalletDataNFTMxPropType) {
                 step={1}
                 defaultValue={1}
                 min={1}
-                max={maxListNumber}
+                max={Number(maxListNumber)}
                 isValidCharacter={isValidNumericCharacter}
                 value={amount}
                 onChange={(value) => {

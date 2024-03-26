@@ -21,10 +21,8 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useNavigate } from "react-router-dom";
 import { TradeForm } from "./TradeForm";
-import { contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
-import { getApiDataDex, getApiDataMarshal, getTypedValueFromContract } from "../../../libs/utils";
+import { getApiDataDex, getApiDataMarshal } from "../../../libs/utils";
 import { useMintStore } from "../../../store";
 
 type TradeFormProps = {
@@ -50,8 +48,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   const userData = useMintStore((state) => state.userData);
 
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
-
   const onClose = () => {
     setIsOpen(false);
   };
@@ -76,32 +72,45 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     });
   }
 
+  function convertToHttpUrl(url: string): string {
+    const gateway = "https://gateway.lighthouse.storage";
+
+    if (url.startsWith("ipns://")) {
+      const ipns = url.split("ipns://")[1];
+      return `${gateway}/ipns/${ipns}`;
+    } else if (url.startsWith("ipfs://")) {
+      const ipfs = url.split("ipfs://")[1];
+      return `${gateway}/ipfs/${ipfs}`;
+    }
+    return url;
+  }
+
   const checkUrlReturns200 = async (url: string) => {
-    let statusCodeF, isErrorF;
-    let isSuccess = false;
-    let message = "";
     if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
-      isErrorF = false;
-      isSuccess = true;
-    } else {
-      const { statusCode, isError } = await makeRequest(url);
-      statusCodeF = statusCode;
-      isErrorF = isError;
-      if (isErrorF) {
-        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-      } else if (statusCodeF === 200) {
-        isSuccess = true;
-      } else if (statusCodeF === 404) {
-        message = "Data Stream URL is not reachable (Status Code 404 received)";
-      } else {
-        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
-      }
+      return { isSuccess: true, message: "" };
     }
 
-    return {
-      isSuccess,
-      message,
-    };
+    const urlToTest = convertToHttpUrl(url);
+    const { statusCode, isError } = await makeRequest(urlToTest);
+
+    if (isError) {
+      return {
+        isSuccess: false,
+        message: "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)",
+      };
+    }
+
+    switch (statusCode) {
+      case 200:
+        return { isSuccess: true, message: "" };
+      case 404:
+        return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 404 received)" };
+      default:
+        return {
+          isSuccess: false,
+          message: `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`,
+        };
+    }
   };
 
   const onChangeDataNFTMarshalService = (value: string) => {
@@ -124,20 +133,17 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
 
   useEffect(() => {
     (async () => {
-      const getMinRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMinRoyalties());
-      const getMaxRoyalty = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxRoyalties());
-      const getMaxSupply = await getTypedValueFromContract(chainID, mxDataNftMintContract.contract.methods.getMaxSupply());
-      const getAntiSpamTax = await getTypedValueFromContract(
-        chainID,
-        mxDataNftMintContract.contract.methods.getAntiSpamTax([contractsForChain(chainID).itheumToken])
-      );
+      const minRoyaltiesT = userData?.minRoyalties ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
+      const maxSupplyT = userData?.maxSupply ?? 0;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
 
       onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
       onChangeDataNFTImageGenService();
-      setMinRoyalties(getMinRoyalty);
-      setMaxRoyalties(getMaxRoyalty);
-      setMaxSupply(getMaxSupply);
-      setAntiSpamTax(getAntiSpamTax / 10 ** 18);
+      setMinRoyalties(minRoyaltiesT);
+      setMaxRoyalties(maxRoyaltiesT);
+      setMaxSupply(maxSupplyT);
+      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
     })();
   }, []);
 

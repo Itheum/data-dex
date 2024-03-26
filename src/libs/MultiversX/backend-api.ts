@@ -1,4 +1,4 @@
-import { MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNftMarket, MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
 import { uxConfig } from ".";
@@ -190,11 +190,9 @@ export async function getOffersByIdAndNoncesFromBackendApi(
 }
 
 export async function getMarketRequirements(chainID: string): Promise<MarketplaceRequirements | undefined> {
+  const dataNftMarketplace = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
   try {
-    const url = `${backendApi(chainID)}/marketplace-requirements`;
-    const { data } = await axios.get<MarketplaceRequirements>(url);
-
-    return data;
+    return dataNftMarketplace.viewRequirements();
   } catch (error) {
     console.error(error);
   }

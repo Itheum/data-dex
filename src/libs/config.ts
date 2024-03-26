@@ -1,3 +1,4 @@
+import { Address } from "@multiversx/sdk-core/out";
 import { ContractsType } from "libs/types";
 import {
   tokenContractAddress_Mx_Devnet,
@@ -13,7 +14,6 @@ import {
   dataNftMintContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
 } from "./contractAddresses";
-import { Address } from "@multiversx/sdk-core/out";
 
 export function contractsForChain(chainID: string): ContractsType {
   switch (chainID) {
