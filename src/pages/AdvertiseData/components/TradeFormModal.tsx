@@ -255,8 +255,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           width="100%"
           backgroundColor="blackAlpha.800"
           rounded="lg"
-          //visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
-          visibility={"hidden"}
+          visibility={userData?.contractWhitelistEnabled && !userData.userWhitelistedForMint ? "visible" : "hidden"}
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
