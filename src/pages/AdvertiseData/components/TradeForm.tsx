@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
+import { Address, BigUIntValue, ContractCallPayloadBuilder, ContractFunction, StringValue, Transaction } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -33,12 +33,13 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { MENU } from "../../../libs/config";
+import { MENU, contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
-import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
+import { convertEsdtToWei, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
+import { title } from "process";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -424,7 +425,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setMintSessionId(sessionId);
     } else {
       await sleep(3);
-      const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
+      console.log({
         name: getValues("tokenNameForm"),
         data_marshal: dataNFTMarshalService,
         data_stream: dataNFTStreamUrlEncrypted,
@@ -436,11 +437,43 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         sender: new Address(mxAddress),
         amountToSend: antiSpamTax,
       });
+      const data = new ContractCallPayloadBuilder()
+        .setFunction(new ContractFunction("ESDTTransfer"))
+        .addArg(new StringValue(contractsForChain(chainID).itheumToken))
+        .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
+        .addArg(new StringValue("mint"))
+        .addArg(new StringValue(getValues("tokenNameForm")))
+        .addArg(new StringValue(imageOnIpfsUrl))
+        .addArg(new StringValue(metadataOnIpfsUrl))
+        .addArg(new StringValue(dataNFTMarshalService))
+        .addArg(new StringValue(dataNFTStreamUrlEncrypted))
+        .addArg(new StringValue(dataNFTPreviewUrl))
+        .addArg(new BigUIntValue(Math.ceil(getValues("royaltiesForm") * 100)))
+        .addArg(new BigUIntValue(getValues("numberOfCopiesForm")))
+        .addArg(new StringValue(getValues("datasetTitleForm")))
+        .addArg(new StringValue(getValues("datasetDescriptionForm")))
+        .build();
+      const mintTransaction = new Transaction({
+        data,
+        sender: new Address(mxAddress),
+        receiver: contractsForChain(chainID).dataNftTokens[0].contract || "",
+        gasLimit: 60000000,
+        chainID: chainID,
+      });
+      await refreshAccount();
+      const { sessionId, error } = await sendTransactions({
+        transactions: mintTransaction,
+        transactionsDisplayInfo: {
+          processingMessage: "Minting Data NFT Collection",
+          errorMessage: "Collection minting failed :(",
+          successMessage: "Collection minted successfully!",
+        },
+        redirectAfterSign: false,
+      });
+      setMintSessionId(sessionId);
       if (error) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
       }
-
-      setMintSessionId(sessionId);
     }
   };
 
