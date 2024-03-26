@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Box, Button, Heading, Spacer, Stack, Text, useColorMode } from "@chakra-ui/react";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -18,7 +19,7 @@ const Faucet = ({ tileBoxW, tileBoxH }: any) => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
     if (chainID === "D" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
-      mxFaucetContract.getFaucetTime(mxAddress).then((lastUsedTime) => {
+      mxFaucetContract.getFaucetTime(new Address(mxAddress)).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
         if (lastUsedTime + 120000 > timeNow) {
@@ -47,7 +48,7 @@ const Faucet = ({ tileBoxW, tileBoxH }: any) => {
   const mxFaucetContract = new FaucetContract(chainID);
   const handleOnChainFaucet = async () => {
     if (mxAddress) {
-      mxFaucetContract.sendActivateFaucetTransaction(mxAddress);
+      mxFaucetContract.sendActivateFaucetTransaction(new Address(mxAddress));
     }
   };
 

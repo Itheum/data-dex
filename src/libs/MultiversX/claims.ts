@@ -1,7 +1,6 @@
 import {
   AbiRegistry,
   SmartContract,
-  Address,
   ResultsParser,
   Transaction,
   ContractFunction,
@@ -35,8 +34,8 @@ export class ClaimsContract {
     });
   }
 
-  async getClaims(address: string) {
-    const interaction = this.contract.methods.viewClaimWithDate([new Address(address)]);
+  async getClaims(address: IAddress) {
+    const interaction = this.contract.methods.viewClaimWithDate([address]);
     const query = interaction.buildQuery();
     const result: any[] = [];
 
@@ -102,12 +101,12 @@ export class ClaimsContract {
     }
   }
 
-  async sendClaimRewardsTransaction(sender: string, rewardType: number) {
+  async sendClaimRewardsTransaction(sender: IAddress, rewardType: number) {
     const claimTransaction = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder().setFunction(new ContractFunction("claim")).addArg(new U64Value(rewardType)).build(),
       receiver: this.claimsContractAddress,
-      sender: new Address(sender),
+      sender: sender,
       gasLimit: 6000000,
       chainID: this.chainID,
     });

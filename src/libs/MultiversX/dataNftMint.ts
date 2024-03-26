@@ -1,8 +1,5 @@
+import { DataNft, SftMinter } from "@itheum/sdk-mx-data-nft/out";
 import {
-  AbiRegistry,
-  SmartContract,
-  Address,
-  ResultsParser,
   Transaction,
   ContractFunction,
   BigUIntValue,
@@ -10,46 +7,33 @@ import {
   TokenIdentifierValue,
   U64Value,
   AddressValue,
-  BinaryCodec,
   ContractCallPayloadBuilder,
   IAddress,
 } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
+import BigNumber from "bignumber.js";
 import { uxConfig } from "libs/config";
-import { convertEsdtToWei } from "libs/utils";
-import jsonData from "./ABIs/datanftmint.abi.json";
-import { getNetworkProvider } from "./api";
+import { sleep } from "libs/utils";
 import { DataNftMetadataType, UserDataType } from "./types";
 import { contractsForChain } from "../config";
 
 export class DataNftMintContract {
-  timeout: number;
-  dataNftMarketContractAddress: any;
-  chainID: string;
-  contract: SmartContract;
-  abiRegistry: AbiRegistry;
-  dataNftMintContractAddress: IAddress;
+  contract: SftMinter;
+  itheumToken: string;
 
   constructor(chainID: string) {
-    this.timeout = uxConfig.mxAPITimeoutMs;
-    this.dataNftMintContractAddress = contractsForChain(chainID).dataNftTokens[0].contract || "";
-    this.chainID = chainID;
-
-    const json = JSON.parse(JSON.stringify(jsonData));
-    this.abiRegistry = AbiRegistry.create(json);
-
-    this.contract = new SmartContract({
-      address: this.dataNftMintContractAddress,
-      abi: this.abiRegistry,
-    });
+    let env = "devnet";
+    if (chainID === "1") {
+      env = "mainnet";
+    }
+    this.contract = new SftMinter(env, uxConfig.mxAPITimeoutMs);
+    this.itheumToken = contractsForChain(chainID).itheumToken as unknown as string; // TODO: check if working without last part
   }
 
   async sendMintTransaction({
     name,
-    media,
-    metadata,
     data_marshal,
     data_stream,
     data_preview,
@@ -58,70 +42,44 @@ export class DataNftMintContract {
     title,
     description,
     sender,
-    itheumToken,
-    antiSpamTax,
-    contractAddress = this.dataNftMintContractAddress,
+    lockPeriod,
+    amountToSend,
   }: {
     name: string;
-    media: string;
-    metadata: string;
     data_marshal: string;
     data_stream: string;
     data_preview: string;
     royalties: number;
-    amount: number;
+    amount: BigNumber.Value;
     title: string;
     description: string;
-    sender: string;
-    itheumToken: string;
-    antiSpamTax: number;
+    sender: IAddress;
     contractAddress?: IAddress;
+    lockPeriod?: number;
+    amountToSend: BigNumber.Value;
   }) {
-    let data;
-    if (antiSpamTax > 0) {
-      data = new ContractCallPayloadBuilder()
-        .setFunction(new ContractFunction("ESDTTransfer"))
-        .addArg(new StringValue(itheumToken))
-        .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
-        .addArg(new StringValue("mint"))
-        .addArg(new StringValue(name))
-        .addArg(new StringValue(media))
-        .addArg(new StringValue(metadata))
-        .addArg(new StringValue(data_marshal))
-        .addArg(new StringValue(data_stream))
-        .addArg(new StringValue(data_preview))
-        .addArg(new BigUIntValue(royalties))
-        .addArg(new BigUIntValue(amount))
-        .addArg(new StringValue(title))
-        .addArg(new StringValue(description))
-        .build();
-    } else {
-      data = new ContractCallPayloadBuilder()
-        .setFunction(new ContractFunction("mint"))
-        .addArg(new StringValue(name))
-        .addArg(new StringValue(media))
-        .addArg(new StringValue(data_marshal))
-        .addArg(new StringValue(data_stream))
-        .addArg(new StringValue(data_preview))
-        .addArg(new BigUIntValue(royalties))
-        .addArg(new BigUIntValue(amount))
-        .addArg(new StringValue(title))
-        .addArg(new StringValue(description))
-        .build();
-    }
+    const mintTx = this.contract.mint(
+      sender,
+      name,
+      data_marshal,
+      data_stream,
+      data_preview,
+      royalties,
+      Number(amount),
+      title,
+      description,
+      Number(amountToSend),
+      lockPeriod,
+      {
+        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+      }
+    );
 
-    const mintTransaction = new Transaction({
-      data,
-      sender: new Address(sender),
-      receiver: contractAddress,
-      gasLimit: 60000000,
-      chainID: this.chainID,
-    });
-
+    await sleep(3);
     await refreshAccount();
 
     const { sessionId, error } = await sendTransactions({
-      transactions: mintTransaction,
+      transactions: mintTx,
       transactionsDisplayInfo: {
         processingMessage: "Minting Data NFT Collection",
         errorMessage: "Collection minting failed :(",
@@ -132,7 +90,14 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  async sendBurnTransaction(sender: string, collection: string, nonce: number, quantity: number, contractAddress: IAddress = this.dataNftMintContractAddress) {
+  //TODO
+  async sendBurnTransaction(
+    sender: IAddress,
+    collection: string,
+    nonce: number,
+    quantity: number,
+    contractAddress: IAddress = this.contract.getContractAddress()
+  ) {
     const tx = new Transaction({
       value: 0,
       data: new ContractCallPayloadBuilder()
@@ -143,10 +108,10 @@ export class DataNftMintContract {
         .addArg(new AddressValue(contractAddress)) //address to send to
         .addArg(new StringValue("burn")) //what method to call on the contract
         .build(),
-      receiver: new Address(sender),
-      sender: new Address(sender),
+      receiver: sender,
+      sender: sender,
       gasLimit: 12_000_000,
-      chainID: this.chainID,
+      chainID: this.contract.chainID,
     });
     await refreshAccount();
     await sendTransactions({
@@ -160,43 +125,13 @@ export class DataNftMintContract {
     });
   }
 
-  async getUserDataOut(address: string, spamTaxTokenId: string): Promise<UserDataType | undefined> {
-    const interaction = this.contract.methods.getUserDataOut([address, spamTaxTokenId]);
-    const query = interaction.buildQuery();
-
+  async getUserDataOut(address: IAddress, spamTaxTokenId: string): Promise<UserDataType | undefined> {
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const userData = await this.contract.viewMinterRequirements(address, spamTaxTokenId);
+      userData.lastUserMintTime *= 1000;
+      userData.mintTimeLimit *= 1000;
 
-      const res = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-
-      const { firstValue, returnCode } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (returnCode && returnCode.isSuccess() && firstValue) {
-        const userData = firstValue.valueOf();
-        const returnData: UserDataType = {
-          antiSpamTaxValue: userData.anti_spam_tax_value.toNumber(),
-          addressFrozen: userData.frozen,
-          frozenNonces: userData.frozen_nonces.map((v: any) => v.toNumber()),
-          contractPaused: userData.is_paused,
-          userWhitelistedForMint: userData.is_whitelisted,
-          lastUserMintTime: userData.last_mint_time * 1000,
-          maxRoyalties: userData.max_royalties.toNumber(),
-          maxSupply: userData.max_supply.toNumber(),
-          minRoyalties: userData.min_royalties.toNumber(),
-          mintTimeLimit: userData.mint_time_limit * 1000,
-          numberOfMintsForUser: userData.minted_per_user.toNumber(),
-          totalNumberOfMints: userData.total_minted.toNumber(),
-          contractWhitelistEnabled: userData.whitelist_enabled,
-        };
-
-        return returnData;
-      } else {
-        const nonOKErr = new Error("getUserDataOut returnCode returned a non OK value");
-        console.error(nonOKErr);
-
-        return undefined;
-      }
+      return userData;
     } catch (error) {
       console.error(error);
 
@@ -205,21 +140,20 @@ export class DataNftMintContract {
   }
 
   decodeNftAttributes(nft: NftType, index?: number): DataNftMetadataType {
-    const dataNftAttributes = this.abiRegistry.getStruct("DataNftAttributes");
-    const decodedAttributes = new BinaryCodec().decodeTopLevel(Buffer.from(nft.attributes, "base64"), dataNftAttributes).valueOf();
+    const decodedAttributes = DataNft.decodeAttributes(nft.attributes);
     const dataNFT: DataNftMetadataType = {
       index: index || 0, // only for view & query
       id: nft.identifier, // ID of NFT -> done
       nftImgUrl: nft.url, // image URL of of NFT -> done
-      dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
-      dataStream: decodedAttributes["data_stream_url"].toString(), // data stream URL -> done
-      dataMarshal: decodedAttributes["data_marshal_url"].toString(), // data stream URL -> done
+      dataPreview: decodedAttributes.dataPreview || "", // preview URL for NFT data stream -> done
+      dataStream: decodedAttributes.dataStream || "", // data stream URL -> done
+      dataMarshal: decodedAttributes.dataMarshal || "", // data stream URL -> done
       tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
-      creator: decodedAttributes["creator"].toString(), // initial creator of NFT
-      creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
+      creator: decodedAttributes.creator || "", // initial creator of NFT
+      creationTime: decodedAttributes.creationTime || new Date(1970), // initial creation time of NFT
       supply: nft.supply ? Number(nft.supply) : 1,
-      description: decodedAttributes["description"].toString(),
-      title: decodedAttributes["title"].toString(),
+      description: decodedAttributes.description || "",
+      title: decodedAttributes.title || "",
       royalties: nft.royalties ? nft.royalties / 100 : 0,
       nonce: nft.nonce,
       collection: nft.collection,
@@ -229,27 +163,11 @@ export class DataNftMintContract {
     return dataNFT;
   }
 
-  async getSftsFrozenForAddress(targetAddress: string): Promise<number[]> {
+  async getSftsFrozenForAddress(targetAddress: IAddress): Promise<number[]> {
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
+      const frozenSfts = await this.contract.viewAddressFrozenNonces(targetAddress);
 
-      const interaction = this.contract.methods.getSftsFrozenForAddress([new Address(targetAddress)]);
-      const query = interaction.buildQuery();
-      const res = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-
-      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (returnCode && returnCode.isSuccess() && firstValue) {
-        const values = firstValue.valueOf();
-        const decoded = values.map((value: any) => value.toNumber());
-
-        return decoded;
-      } else {
-        console.error(returnMessage);
-
-        return [];
-      }
+      return frozenSfts;
     } catch (error) {
       console.error(error);
 
@@ -259,25 +177,8 @@ export class DataNftMintContract {
 
   async getWhiteList(): Promise<string[]> {
     try {
-      const networkProvider = getNetworkProvider(this.chainID);
-
-      const interaction = this.contract.methods.getWhiteList();
-      const query = interaction.buildQuery();
-      const res = await networkProvider.queryContract(query);
-      const endpointDefinition = interaction.getEndpoint();
-
-      const { firstValue, returnCode, returnMessage } = new ResultsParser().parseQueryResponse(res, endpointDefinition);
-
-      if (returnCode && returnCode.isSuccess() && firstValue) {
-        const values = firstValue.valueOf();
-        const decoded = values.map((value: any) => value.toString());
-
-        return decoded;
-      } else {
-        console.error(returnMessage);
-
-        return [];
-      }
+      const whitelist = await this.contract.viewWhitelist();
+      return whitelist;
     } catch (error) {
       console.error(error);
 

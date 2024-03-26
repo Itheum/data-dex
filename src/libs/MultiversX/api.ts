@@ -3,6 +3,7 @@ import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
 import { contractsForChain, uxConfig } from "libs/config";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 export const getApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
@@ -102,15 +103,11 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
   }
 };
 
-export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<NftType[]> => {
-  const api = getApi(chainID);
+export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<DataNft[]> => {
+  DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
   try {
-    const url = `https://${api}/accounts/${address}/nfts?size=10000&collections=${collectionTickers.join()}&withSupply=true`;
-    const { data } = await axios.get<NftType[]>(url, {
-      timeout: uxConfig.mxAPITimeoutMs,
-    });
-
-    return data;
+    const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
+    return ownerByAddress;
   } catch (error) {
     console.error(error);
     return [];
