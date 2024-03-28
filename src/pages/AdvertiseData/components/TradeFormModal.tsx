@@ -72,39 +72,55 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     });
   }
 
+  function convertToHttpUrl(url: string): string {
+    const gateway = "https://gateway.lighthouse.storage";
+
+    if (url.startsWith("ipns://")) {
+      const ipns = url.split("ipns://")[1];
+      return `${gateway}/ipns/${ipns}`;
+    } else if (url.startsWith("ipfs://")) {
+      const ipfs = url.split("ipfs://")[1];
+      return `${gateway}/ipfs/${ipfs}`;
+    }
+    return url;
+  }
+
   const checkUrlReturns200 = async (url: string) => {
-    let statusCodeF, isErrorF;
-    let isSuccess = false;
-    let message = "";
     if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
-      isErrorF = false;
-      isSuccess = true;
-    } else {
-      let urlToTest = url;
-      if (urlToTest.startsWith("ipns://")) {
-        const gateway = "https://gateway.lighthouse.storage/ipns/";
-        const ipns = url.split("ipns://")[1];
-        const ipnsUrl = `${gateway}${ipns}`;
-        urlToTest = ipnsUrl;
-      }
-      const { statusCode, isError } = await makeRequest(urlToTest);
-      statusCodeF = statusCode;
-      isErrorF = isError;
-      if (isErrorF) {
-        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-      } else if (statusCodeF === 200) {
-        isSuccess = true;
-      } else if (statusCodeF === 404) {
-        message = "Data Stream URL is not reachable (Status Code 404 received)";
-      } else {
-        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
-      }
+      return { isSuccess: true, message: "" };
     }
 
-    return {
-      isSuccess,
-      message,
-    };
+    const urlToTest = convertToHttpUrl(url);
+    const { statusCode, isError } = await makeRequest(urlToTest);
+
+    if (isError) {
+      return {
+        isSuccess: false,
+        message: "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)",
+      };
+    }
+
+    switch (statusCode) {
+      case 200:
+        return { isSuccess: true, message: "" };
+      case 404:
+        return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 404 received)" };
+      case 403:
+        if (url.includes("dmf-allow-http403=1")) {
+          return {
+            isSuccess: true,
+            message:
+              "Data Stream URL is not publicly reachable (Status Code 403 received), but you can proceed as you allow this via flag : dmf-allow-http403=1",
+          };
+        } else {
+          return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 403 received)" };
+        }
+      default:
+        return {
+          isSuccess: false,
+          message: `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`,
+        };
+    }
   };
 
   const onChangeDataNFTMarshalService = (value: string) => {

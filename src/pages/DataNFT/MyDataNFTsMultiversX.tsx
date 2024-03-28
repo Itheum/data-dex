@@ -21,25 +21,24 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AbiRegistry, BinaryCodec } from "@multiversx/sdk-core/out";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { BsClockHistory } from "react-icons/bs";
 import { FaBrush } from "react-icons/fa";
-import { MdFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { MdFavoriteBorder, MdLockOutline, MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { NoDataHere } from "components/Sections/NoDataHere";
 import InteractionTxTable from "components/Tables/InteractionTxTable";
 import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
-import dataNftMintJson from "libs/MultiversX/ABIs/datanftmint.abi.json";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import { createDataNftType, DataNftType } from "libs/MultiversX/types";
 import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { useMarketStore } from "store";
 import { FavoriteCards } from "./components/FavoriteCards";
+import { BondingCards } from "./components/BondingCards";
 
 export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const { colorMode } = useColorMode();
@@ -49,25 +48,20 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
   const navigate = useNavigate();
 
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
-  // const userData = useMintStore((state) => state.userData);
   const maxPaymentFeeMap = useMarketStore((state) => state.maxPaymentFeeMap);
 
-  const [dataNfts, setDataNfts] = useState<DataNftType[]>(() => {
-    const _dataNfts: DataNftType[] = [];
-    for (let index = 0; index < 8; index++) {
-      _dataNfts.push(createDataNftType());
-    }
-    return _dataNfts;
-  });
-  const purchasedDataNfts: DataNftType[] = dataNfts.filter((item) => item.creator != address);
+  const [dataNfts, setDataNfts] = useState<Array<DataNft>>([]);
+  const purchasedDataNfts: DataNft[] = dataNfts.filter((item) => item.creator != address);
   const [oneNFTImgLoaded, setOneNFTImgLoaded] = useState(false);
   const { hasPendingTransactions } = useGetPendingTransactions();
 
-  const [nftForDrawer, setNftForDrawer] = useState<DataNftType | undefined>();
+  const [nftForDrawer, setNftForDrawer] = useState<DataNft | undefined>();
   const { isOpen: isOpenDataNftDetails, onOpen: onOpenDataNftDetails, onClose: onCloseDataNftDetails } = useDisclosure();
 
   const onChangeTab = useThrottle((newTabState: number) => {
-    navigate(`/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : ""}`);
+    navigate(
+      `/datanfts/wallet${newTabState === 2 ? "/purchased" : newTabState === 4 ? "/activity" : newTabState === 3 ? "/favorite" : newTabState === 5 ? "/bonding" : ""}`
+    );
   }, /* delay: */ 500);
 
   const walletTabs = [
@@ -93,65 +87,31 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       icon: BsClockHistory,
       isDisabled: false,
     },
+    // TODO when bonding is ready just remove the comment
     // {
-    //   tabName: "Offers",
-    //   icon: MdOutlineLocalOffer,
-    //   isDisabled: true,
+    //   tabName: "Bonding",
+    //   icon: MdLockOutline,
+    //   isDisabled: false,
     // },
   ];
 
   const getOnChainNFTs = async () => {
-    const onChainNfts = await getNftsOfACollectionForAnAddress(
+    const dataNfts: DataNft[] = await getNftsOfACollectionForAnAddress(
       address,
       contractsForChain(chainID).dataNftTokens.map((v) => v.id),
       chainID
     );
-
-    if (onChainNfts.length > 0) {
-      const codec = new BinaryCodec();
-      const json = JSON.parse(JSON.stringify(dataNftMintJson));
-      const abiRegistry = AbiRegistry.create(json);
-      const dataNftAttributes = abiRegistry.getStruct("DataNftAttributes");
-
-      // some logic to loop through the raw onChainNFTs and build the dataNfts
-      const _dataNfts: DataNftType[] = [];
-
-      for (let index = 0; index < onChainNfts.length; index++) {
-        const decodedAttributes = codec.decodeTopLevel(Buffer.from(onChainNfts[index].attributes, "base64"), dataNftAttributes).valueOf();
-        const nft = onChainNfts[index];
-
-        _dataNfts.push({
-          index, // only for view & query
-          id: nft.identifier, // ID of NFT -> done
-          nftImgUrl: nft.url ? nft.url : "", // image URL of of NFT -> done
-          dataPreview: decodedAttributes["data_preview_url"].toString(), // preview URL for NFT data stream -> done
-          dataStream: decodedAttributes["data_stream_url"].toString(), // data stream URL -> done
-          dataMarshal: decodedAttributes["data_marshal_url"].toString(), // data stream URL -> done
-          tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
-          feeInTokens: 100, // how much in ITHEUM tokens => should not appear here as it's in the wallet, not on the market
-          creator: decodedAttributes["creator"].toString(), // initial creator of NFT
-          creationTime: new Date(Number(decodedAttributes["creation_time"]) * 1000), // initial creation time of NFT
-          supply: nft.supply ? Number(nft.supply) : 1,
-          balance: nft.balance !== undefined ? Number(nft.balance) : 1,
-          description: decodedAttributes["description"].toString(),
-          title: decodedAttributes["title"].toString(),
-          royalties: nft.royalties / 100,
-          nonce: nft.nonce,
-          collection: nft.collection,
-        });
-      }
-
-      setDataNfts(_dataNfts);
-    } else {
-      // await sleep(4);
-      setDataNfts([]);
-    }
+    return dataNfts;
   };
 
   useEffect(() => {
     if (hasPendingTransactions) return;
-
-    getOnChainNFTs();
+    (async () => {
+      const _dataNfts = await getOnChainNFTs();
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance == 0 ? 1 : nft.balance }));
+      setDataNfts(_alteredDataNfts);
+    })();
+    setOneNFTImgLoaded(false);
   }, [hasPendingTransactions]);
 
   function openNftDetailsDrawer(index: number) {
@@ -188,7 +148,6 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   <Flex
                     height={"100%"}
                     flexDirection={{ base: "column", md: "row" }}
-                    ml={{ base: "0", md: "4.7rem" }}
                     alignItems={{ base: "center", md: "center" }}
                     justify={{ md: "center" }}
                     py={3}
@@ -217,6 +176,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   {dataNfts.map((item, index) => (
                     <WalletDataNFTMX
                       key={index}
+                      id={index}
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
@@ -244,6 +204,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                   {purchasedDataNfts.map((item, index) => (
                     <WalletDataNFTMX
                       key={index}
+                      id={index}
                       hasLoaded={oneNFTImgLoaded}
                       setHasLoaded={setOneNFTImgLoaded}
                       maxPayment={maxPaymentFeeMap[itheumToken]}
@@ -272,6 +233,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
+            {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
+              <TabPanel mt={2} width={"full"}>
+                {tabState === 5 ? (
+                  <BondingCards />
+                ) : (
+                  <Flex onClick={getOnChainNFTs}>
+                    <NoDataHere />
+                  </Flex>
+                )}
+              </TabPanel>
+            )}
           </TabPanels>
         </Tabs>
       </Stack>
@@ -289,7 +261,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
                 </Text>
               </ModalHeader>
               <ModalBody bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
-                <DataNFTDetails tokenIdProp={nftForDrawer.id} closeDetailsView={closeDetailsView} />
+                <DataNFTDetails tokenIdProp={nftForDrawer.tokenIdentifier} closeDetailsView={closeDetailsView} />
               </ModalBody>
             </ModalContent>
           </Modal>

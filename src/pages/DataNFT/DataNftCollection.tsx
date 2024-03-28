@@ -72,7 +72,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
               {description}
               <Box
                 position="absolute"
-                bgGradient={colorMode === "dark" ? "linear(to-t, black, transparent)" : "linear(to-t, white, transparent)"}
+                bgGradient={colorMode === "dark" ? "linear(to-t, bgDark, transparent)" : "linear(to-t, bgWhite, transparent)"}
                 h="4%"
                 w="50%"
                 top="33%"

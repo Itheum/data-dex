@@ -242,6 +242,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
 
+      // console.log(identifier, nonceDec);
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {
@@ -271,7 +272,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   }
 
   useEffect(() => {
-    getTokenHistory(nftData.id);
+    getTokenHistory(nftData.tokenIdentifier);
   }, [hasPendingTransactions]);
 
   return (
@@ -409,7 +410,7 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
 
             <DataNFTLiveUptime
               dataMarshal={getApiDataMarshal(chainID)}
-              NFTId={nftData.id}
+              NFTId={nftData.tokenIdentifier}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}

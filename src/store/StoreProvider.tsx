@@ -118,7 +118,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
     (async () => {
       const _userData = await mintContract.getUserDataOut(new Address(address), contractsForChain(chainID).itheumToken);
-      console.log("userData", _userData);
+      // console.log("userData", _userData);
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);
