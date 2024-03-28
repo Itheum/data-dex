@@ -33,10 +33,8 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
   const tokenIdentifier = viewContractConfig.tokenIdentifier;
 
   const pageCount = Math.ceil(nftCount / paginationSizeNft);
-  // console.log(pageCount);
 
   DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
-  // console.log(createDataNfts);
   const getCreatedDataNftsFromAPI = async () => {
     setHasRequestLoaded(false);
     const apiLink = getApi(chainID);
@@ -70,26 +68,17 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     });
   };
 
-  // const frozenNoncesAddresses = async () => {
-  //   // const viewAddressFrozenNonces = await nftMinter.viewAddressFrozenNonces(new Address(address));
-  //   // console.log(viewAddressFrozenNonces);
-  //   // setAddressFrozenNonces(viewAddressFrozenNonces);
-  // };
-
   useEffect(() => {
     getCreatedDataNftsFromAPI();
-    // console.log(paginationFromNft);
   }, [paginationFromNft]);
 
   useEffect(() => {
     (async () => {
       const viewAddressFrozenNonces = await nftMinter.viewFrozenNonces();
-      // console.log(viewAddressFrozenNonces);
       setAddressFrozenNonces(viewAddressFrozenNonces);
     })();
   }, [hasPendingTransactions]);
 
-  // console.log(addressFrozenNonces);
   return (
     <Box as="div" flexDirection="column" border="1px solid" borderColor="#00C79740" rounded="3xl" w={{ base: "auto", xl: "100%" }} mb={4}>
       <Flex bgColor="#00C7970D" roundedTop="3xl" alignItems="center">
@@ -137,13 +126,8 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
               px={0}
               isDisabled={nftCount < 1 || pageCount === 1 || !hasRequestLoaded}
               onClick={() => {
-                // if (paginationFromNft) {
                 setPaginationFromNft(paginationFromNft + paginationSizeNft);
                 setCurrentPage(currentPage + 1);
-                // console.log(paginationFromNft);
-                // } else {
-                //   return;
-                // }
               }}>
               <MdOutlineNavigateNext size="1.5rem" />
             </Button>

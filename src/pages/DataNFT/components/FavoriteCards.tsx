@@ -54,12 +54,10 @@ export const FavoriteCards: React.FC = () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
       setFavouriteItems(getFavourites);
     }
   };
 
-  // console.log(dataNfts);
   return (
     <Box>
       <Flex flexDirection={{ base: "column", md: "row" }} flexWrap={"wrap"} gap={7} ml={{ base: 0, md: 16 }} alignItems={"center"}>

@@ -35,11 +35,9 @@ import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
 import { MENU, contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
-import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { convertEsdtToWei, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
-import { title } from "process";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -94,7 +92,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
 
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
 
   const bond = new BondContract("devnet");
   const [periods, setPeriods] = useState<any>([
@@ -425,18 +422,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setMintSessionId(sessionId);
     } else {
       await sleep(3);
-      console.log({
-        name: getValues("tokenNameForm"),
-        data_marshal: dataNFTMarshalService,
-        data_stream: dataNFTStreamUrlEncrypted,
-        data_preview: dataNFTPreviewUrl,
-        royalties: Math.ceil(getValues("royaltiesForm") * 100),
-        amount: getValues("numberOfCopiesForm"),
-        title: getValues("datasetTitleForm"),
-        description: getValues("datasetDescriptionForm"),
-        sender: new Address(mxAddress),
-        amountToSend: antiSpamTax,
-      });
       const data = new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("ESDTTransfer"))
         .addArg(new StringValue(contractsForChain(chainID).itheumToken))
@@ -550,9 +535,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  // here you can make logic that you want to happen on submit (used for debugging)
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
-  }; // here you can make logic that you want to happen on submit (used for debugging)
+  };
+
+  //TODO refactor this with react form hook
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">

@@ -12,7 +12,6 @@ interface GuardRailSectionProps {
 
 const GuardRailSection: React.FC<GuardRailSectionProps> = (props) => {
   const { value, title, acceptedTokens, badgeColor } = props;
-  // console.log(acceptedTokens);
   const badgeColorsArray = ["#00C79726", "#FFFFFF26", "#0F0F0F20"];
   const badgeColorString: string = badgeColorsArray[badgeColor];
   return (
