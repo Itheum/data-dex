@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 import BigNumber from "bignumber.js";
@@ -23,14 +23,28 @@ export const BondingCards: React.FC = () => {
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [allCompensation, setAllCompensation] = useState<Array<Compensation>>([]);
+  const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
+    contractState: 0,
+    bondPaymentTokenIdentifier: "",
+    lockPeriodsWithBonds: [
+      {
+        lockPeriod: 0,
+        amount: 0,
+      },
+    ],
+    minimumPenalty: 0,
+    maximumPenalty: 0,
+    withdrawPenalty: 0,
+    acceptedCallers: [""],
+  });
 
-  // console.log(bondingOffers, contractBonds);
   useEffect(() => {
     (async () => {
       const itemsForCompensation: Array<CompensationNftsType> = [];
+      const contractConfigurationRequest = await bondContract.viewContractConfiguration();
 
-      const contractBonds = await bondContract.viewAllBonds();
-      const myBonds = contractBonds.filter((bond) => bond.address === address);
+      const contractBondsReq = await bondContract.viewAllBonds();
+      const myBonds = contractBondsReq.filter((bond) => bond.address === address);
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(myBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
 
       myBonds.map((bond) => {
@@ -39,6 +53,7 @@ export const BondingCards: React.FC = () => {
 
       const compensation = await bondContract.viewCompensations(itemsForCompensation);
 
+      setContractConfiguration(contractConfigurationRequest);
       setBondingOffers(dataNfts);
       setContractBonds(myBonds.reverse());
       setAllCompensation(compensation.reverse());
@@ -52,7 +67,7 @@ export const BondingCards: React.FC = () => {
 
   const calculateRemainedAmountAfterPenalty = (remainedAmount: BigNumber, afterPenaltyAmount: BigNumber): BigNumber.Value => {
     return remainedAmount
-      .minus(afterPenaltyAmount.multipliedBy(0.8))
+      .minus(afterPenaltyAmount.multipliedBy(contractConfiguration.withdrawPenalty / 10000))
       .dividedBy(10 ** 18)
       .toNumber();
   };
@@ -149,11 +164,11 @@ export const BondingCards: React.FC = () => {
                           {calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) >=
                           0 ? (
                             <Text textColor="indianred" fontSize="sm">
-                              You can withdraw bond with 80% Penalty
+                              You can withdraw bond with {contractConfiguration.withdrawPenalty / 100}% Penalty
                             </Text>
                           ) : (
                             <Text textColor="indianred" fontSize="sm">
-                              You cant withdraw because 80% Penalty from your remaining bond is greater than your remaining bond.
+                              You cant withdraw because {contractConfiguration.withdrawPenalty / 100}% Penalty is greater than your remaining bond.
                             </Text>
                           )}
                         </>

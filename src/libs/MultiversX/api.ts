@@ -5,7 +5,6 @@ import axios from "axios";
 import { contractsForChain, uxConfig } from "libs/config";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { getApiDataMarshal } from "libs/utils";
-import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 
 export const getApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
@@ -107,8 +106,13 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
 
 export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<DataNft[]> => {
   DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
-  const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
-  return ownerByAddress;
+  try {
+    const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
+    return ownerByAddress;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 export const getNftsByIds = async (nftIds: string[], chainID: string): Promise<NftType[]> => {

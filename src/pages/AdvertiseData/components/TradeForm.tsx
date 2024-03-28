@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
+import { Address, BigUIntValue, ContractCallPayloadBuilder, ContractFunction, StringValue, Transaction } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -33,12 +33,13 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { MENU } from "../../../libs/config";
+import { MENU, contractsForChain } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { UserDataType } from "../../../libs/MultiversX/types";
-import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
+import { convertEsdtToWei, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
+import { title } from "process";
 
 // Declaring the form types
 type TradeDataFormType = {
@@ -112,7 +113,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .test("is-url-or-ipns", "Data Stream URL must be a valid URL or IPNS", function (value) {
+      .test("is-url-or-ipns", "Data Stream URL must be a valid URL, IPFS or IPNS", function (value) {
         const websiteRegex = new RegExp(
           "^(http|https?:\\/\\/)?" + // validate protocol
             "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
@@ -122,9 +123,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             "(\\#[-a-z\\d_]*)?$",
           "i"
         ); // validate fragment locator;
-        // console.log(value, websiteRegex, websiteRegex.test(value));
-        const ipnsRegex = /^ipns:\/\/[a-zA-Z0-9]+$/gm;
-        return websiteRegex.test(value) || ipnsRegex.test(value.split("?")[0]);
+        const ipfsIpnsUrlRegex = /^(ipfs|ipns):\/\/[a-zA-Z0-9]+$/gm;
+        return websiteRegex.test(value) || ipfsIpnsUrlRegex.test(value.split("?")[0]);
       })
       .test("is-distinct", "Data Stream URL cannot be the same as the Data Preview URL", function (value) {
         return value !== this.parent.dataPreviewUrlForm;
@@ -195,8 +195,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   }
   const validationSchema = Yup.object().shape(preSchema);
 
-  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
-
+  const amountOfTime = import.meta.env.VITE_ENV_NETWORK === "devnet" ? timeUntil(lockPeriod[0].lockPeriod) : { count: 0, unit: "sec" };
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
@@ -212,7 +211,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
-      bondingAmount: lockPeriod.length > 0 ? BigNumber(lockPeriod[0].amount).shiftedBy(-18).toNumber() : -1,
+      bondingAmount:
+        lockPeriod.length > 0
+          ? BigNumber(lockPeriod[0]?.amount)
+              .dividedBy(10 ** 18)
+              .toNumber()
+          : -1,
       bondingPeriod: lockPeriod.length > 0 ? amountOfTime.count : -1,
     }, // declaring default values for inputs not necessary to declare
     mode: "onChange", // mode stay for when the validation should be applied
@@ -227,6 +231,22 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const dataNFTRoyalties: number = getValues("royaltiesForm");
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
   const bondingPeriod: number = getValues("bondingPeriod") ?? -1;
+
+  function shouldMintYourDataNftBeDisabled(
+    isValid: boolean,
+    readTermsChecked: boolean,
+    readAntiSpamFeeChecked: boolean,
+    readLivelinessBonding: boolean,
+    itheumBalance: number,
+    antiSpamTax: number,
+    bondingAmount: number
+  ): boolean | undefined {
+    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
+      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
+    } else {
+      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || itheumBalance < antiSpamTax + bondingAmount;
+    }
+  }
 
   const closeProgressModal = () => {
     if (mintingSuccessful) {
@@ -245,11 +265,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   function validateBaseInput() {
-    if (
-      !(dataNFTStreamUrl.startsWith("https://") || dataNFTStreamUrl.startsWith("ipns://")) ||
-      !dataNFTPreviewUrl.startsWith("https://") ||
-      !dataNFTMarshalService.startsWith("https://")
-    ) {
+    const isValidProtocol = (url: string) => {
+      return url.startsWith("https://") || url.startsWith("ipfs://") || url.startsWith("ipns://");
+    };
+
+    if (!isValidProtocol(dataNFTStreamUrl) || !dataNFTPreviewUrl.startsWith("https://") || !dataNFTMarshalService.startsWith("https://")) {
       toast({
         title: labels.ERR_URL_MISSING_HTTPS_OR_IPNS,
         status: "error",
@@ -405,7 +425,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setMintSessionId(sessionId);
     } else {
       await sleep(3);
-      const { sessionId, error } = await mxDataNftMintContract.sendMintTransaction({
+      console.log({
         name: getValues("tokenNameForm"),
         data_marshal: dataNFTMarshalService,
         data_stream: dataNFTStreamUrlEncrypted,
@@ -417,11 +437,43 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         sender: new Address(mxAddress),
         amountToSend: antiSpamTax,
       });
+      const data = new ContractCallPayloadBuilder()
+        .setFunction(new ContractFunction("ESDTTransfer"))
+        .addArg(new StringValue(contractsForChain(chainID).itheumToken))
+        .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
+        .addArg(new StringValue("mint"))
+        .addArg(new StringValue(getValues("tokenNameForm")))
+        .addArg(new StringValue(imageOnIpfsUrl))
+        .addArg(new StringValue(metadataOnIpfsUrl))
+        .addArg(new StringValue(dataNFTMarshalService))
+        .addArg(new StringValue(dataNFTStreamUrlEncrypted))
+        .addArg(new StringValue(dataNFTPreviewUrl))
+        .addArg(new BigUIntValue(Math.ceil(getValues("royaltiesForm") * 100)))
+        .addArg(new BigUIntValue(getValues("numberOfCopiesForm")))
+        .addArg(new StringValue(getValues("datasetTitleForm")))
+        .addArg(new StringValue(getValues("datasetDescriptionForm")))
+        .build();
+      const mintTransaction = new Transaction({
+        data,
+        sender: new Address(mxAddress),
+        receiver: contractsForChain(chainID).dataNftTokens[0].contract || "",
+        gasLimit: 60000000,
+        chainID: chainID,
+      });
+      await refreshAccount();
+      const { sessionId, error } = await sendTransactions({
+        transactions: mintTransaction,
+        transactionsDisplayInfo: {
+          processingMessage: "Minting Data NFT Collection",
+          errorMessage: "Collection minting failed :(",
+          successMessage: "Collection minted successfully!",
+        },
+        redirectAfterSign: false,
+      });
+      setMintSessionId(sessionId);
       if (error) {
         setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
       }
-
-      setMintSessionId(sessionId);
     }
   };
 
@@ -887,7 +939,15 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             colorScheme="teal"
             isLoading={isMintingModalOpen}
             onClick={dataNFTSellSubmit}
-            isDisabled={!isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount}>
+            isDisabled={shouldMintYourDataNftBeDisabled(
+              isValid,
+              readTermsChecked,
+              readAntiSpamFeeChecked,
+              readLivelinessBonding,
+              itheumBalance,
+              antiSpamTax,
+              bondingAmount
+            )}>
             Mint Your Data NFT
           </Button>
         </ChainSupportedInput>
