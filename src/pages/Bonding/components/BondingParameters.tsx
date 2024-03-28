@@ -60,7 +60,6 @@ export const BondingParameters: React.FC = () => {
   useEffect(() => {
     (async () => {
       const contractConfigurationRequest = await bondContract.viewContractConfiguration();
-      // console.log(contractConfigurationRequest);
       setContractConfiguration(contractConfigurationRequest);
     })();
   }, [hasPendingTransactions]);
@@ -91,19 +90,16 @@ export const BondingParameters: React.FC = () => {
   });
 
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
-    console.log(formData);
     if (formData.minimumLockPeriodInSeconds && formData.minimumSBond && formData.minimumSBond > 0) {
       const tx = bondContract.addPeriodsBonds(new Address(address), [
         { lockPeriod: formData.minimumLockPeriodInSeconds, amount: BigNumber(formData.minimumSBond).multipliedBy(10 ** 18) },
       ]);
-      // console.log(tx);
       await sendTransactions({
         transactions: [tx],
       });
     } else {
       if (formData.minimumLockPeriodInSeconds && formData.minimumSBond == 0) {
         const tx = bondContract.removePeriodsBonds(new Address(address), [formData.minimumLockPeriodInSeconds]);
-        // console.log(tx);
         await sendTransactions({
           transactions: [tx],
         });

@@ -301,7 +301,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       });
     }
   }, []);
-  console.log(nftMetadatas, offerForDrawer?.index);
+  
   return (
     <>
       <Stack>
