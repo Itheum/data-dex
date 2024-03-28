@@ -422,18 +422,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       setMintSessionId(sessionId);
     } else {
       await sleep(3);
-      console.log({
-        name: getValues("tokenNameForm"),
-        data_marshal: dataNFTMarshalService,
-        data_stream: dataNFTStreamUrlEncrypted,
-        data_preview: dataNFTPreviewUrl,
-        royalties: Math.ceil(getValues("royaltiesForm") * 100),
-        amount: getValues("numberOfCopiesForm"),
-        title: getValues("datasetTitleForm"),
-        description: getValues("datasetDescriptionForm"),
-        sender: new Address(mxAddress),
-        amountToSend: antiSpamTax,
-      });
       const data = new ContractCallPayloadBuilder()
         .setFunction(new ContractFunction("ESDTTransfer"))
         .addArg(new StringValue(contractsForChain(chainID).itheumToken))

@@ -68,12 +68,6 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
     });
   };
 
-  // const frozenNoncesAddresses = async () => {
-  //   // const viewAddressFrozenNonces = await nftMinter.viewAddressFrozenNonces(new Address(address));
-  //   // console.log(viewAddressFrozenNonces);
-  //   // setAddressFrozenNonces(viewAddressFrozenNonces);
-  // };
-
   useEffect(() => {
     getCreatedDataNftsFromAPI();
   }, [paginationFromNft]);
