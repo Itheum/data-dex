@@ -110,7 +110,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .test("is-url-or-ipns", "Data Stream URL must be a valid URL, IPFS or IPNS", function (value) {
+      .test("is-url-or-ipns", "Data Stream URL must be a valid HTTPS, IPFS or IPNS URL", function (value) {
         const websiteRegex = new RegExp(
           "^(http|https?:\\/\\/)?" + // validate protocol
             "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
@@ -136,7 +136,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     dataPreviewUrlForm: Yup.string()
       .required("Data Preview URL is required")
-      .url("Data Preview must be URL")
+      .url("Data Preview must be valid URL")
       .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
       .test("is-distinct", "Data Preview URL cannot be the same as the Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
@@ -561,9 +561,17 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       </Flex>
 
       <Flex flexDirection={"column"}>
-        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={3}>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={2}>
           Data Asset Detail
         </Text>
+        <Link
+          color="teal.500"
+          fontSize="md"
+          mb={7}
+          href="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
+          isExternal>
+          Where can I store or host my Data Assets? <ExternalLinkIcon mx="2px" />
+        </Link>
 
         <Flex flexDirection="row" gap="7">
           <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
@@ -585,7 +593,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
               name={"dataStreamUrlForm"}
             />
-            <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors?.dataStreamUrlForm?.message} </FormErrorMessage>
           </FormControl>
 
           <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
@@ -610,14 +618,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
 
             {currDataCATSellObj && (
-              <Link fontSize="sm" href={dataNFTPreviewUrl} isExternal>
+              <Link color="teal.500" fontSize="sm" href={dataNFTPreviewUrl} isExternal>
                 View Preview Data <ExternalLinkIcon mx="2px" />
               </Link>
             )}
           </FormControl>
         </Flex>
 
-        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "5" }}>
           Data Marshal Url
         </Text>
 
@@ -862,6 +870,16 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
             </FormControl>
           </Flex>
+
+          <Box mb={7}>
+            <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
+              Need help, support or sponsorship for the Liveliness{" "}
+              <Text fontWeight="bold" as="span">
+                Bonding Amount
+              </Text>
+              ? Become a Verified Creator <ExternalLinkIcon mx="2px" />
+            </Link>
+          </Box>
 
           <Box minH={{ base: "5rem", md: "3.5rem" }}>
             <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" textColor="teal.200">
