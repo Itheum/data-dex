@@ -14,7 +14,7 @@ import {
 } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, decodeNativeAuthToken, tokenDecimals } from "libs/utils";
+import { convertWeiToEsdt, decodeNativeAuthToken, sleep, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
@@ -50,6 +50,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   }
   const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
+  DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
 
   useEffect(() => {
     (async () => {
@@ -65,7 +66,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
       return;
     }
-
+    // setTimeout(() => {
     (async () => {
       // get the bitz game data nft details
       const bitzGameDataNFT = await DataNft.createFromApi(GET_BITZ_TOKEN);
@@ -90,7 +91,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
         };
 
         const getBitzGameResult = await viewDataJSONCore(viewDataArgs, bitzGameDataNFT);
-        // console.log("getBitzGameResult", getBitzGameResult);
         if (getBitzGameResult) {
           updateBitzBalance(getBitzGameResult.data.gamePlayResult.bitsScoreBeforePlay);
         }
@@ -99,7 +99,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
         updateBitzBalance(-1);
       }
     })();
-  }, [address, tokenLogin, bitzBalance]);
+    // }, 3000);
+  }, [address, tokenLogin]);
 
   useEffect(() => {
     const accessToken = searchParams.get("accessToken");

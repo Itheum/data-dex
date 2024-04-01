@@ -458,6 +458,7 @@ export type app_token = {
 };
 
 export const GET_BITZ_TOKEN: app_token = IS_DEVNET ? { tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 } : { tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 };
+export const BIT_GAME_WINDOW_HOURS = "3";
 
 export async function viewDataJSONCore(viewDataArgs: any, requiredDataNFT: DataNft) {
   try {
