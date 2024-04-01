@@ -398,7 +398,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
                         Data Widget. Top LEADERBOARD climbers get special perks and drops!
                       </Text>
-                      <a href={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`} target="_blank" rel="noreferrer">
+                      <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
                         <Button
                           variant="outline"
                           borderColor="#38bdf8"
@@ -407,7 +407,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                           Get {`<BiTz>`}
                         </Button>
-                      </a>
+                      </Link>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
@@ -516,10 +516,10 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                               {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`}{" "}
                               game Data Widget. Top LEADERBOARD climbers get special perks and drops!
                             </Text>
-                            <a
-                              href={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
-                              target="_blank"
-                              rel="noreferrer">
+                            <Link
+                              as={ReactRouterLink}
+                              isExternal
+                              to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
                               <Button
                                 variant="outline"
                                 borderColor="#38bdf8"
@@ -528,7 +528,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                                 _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                                 Get {`<BiTz>`}
                               </Button>
-                            </a>
+                            </Link>
                           </PopoverBody>
                         </PopoverContent>
                       </Popover>

@@ -8,6 +8,8 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, Modal
 import { Spinner } from "@chakra-ui/spinner";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { EXPLORER_APP_FOR_NONCE } from "../../libs/config";
+import { Link } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 type DatastreamModalPropType = {
   isOpen: boolean;
@@ -40,10 +42,10 @@ export default function AccessDataStreamModal(props: DatastreamModalPropType) {
 
             <HStack>
               {unlockAccessProgress.s3 === 2 ? (
-                <a
-                  href={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  as={ReactRouterLink}
+                  isExternal
+                  to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
                   style={{ width: "100%" }}>
                   <Button
                     variant="outline"
@@ -53,7 +55,7 @@ export default function AccessDataStreamModal(props: DatastreamModalPropType) {
                     _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                     Play BiTz Game
                   </Button>
-                </a>
+                </Link>
               ) : (
                 <></>
               )}
