@@ -37,9 +37,9 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
+import { LuFlaskRound } from "react-icons/lu";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
@@ -130,6 +130,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
+  const bitzBalance = useAccountStore((state) => state.bitzBalance);
+  console.log("info: bitzBalance", bitzBalance);
 
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
@@ -365,21 +367,16 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"/"}>
-                  <IconButton
-                    display={{ base: "none", md: "inline-flex" }}
-                    size={{ md: "md", xl: "md", "2xl": "lg" }}
-                    p="2 !important"
-                    color="teal.200"
-                    icon={<AiFillHome fontSize={"1.4rem"} />}
-                    aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(menuItemsMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(menuItemsMap.get(MENU.LANDING)?.path)}
-                    onClick={() => {
-                      navigateToDiscover(MENU.LANDING);
-                    }}
-                  />
-                </Link>
+                <Button
+                  display={{ base: "none", md: "inline-flex" }}
+                  size={{ md: "md", xl: "md", "2xl": "lg" }}
+                  p="2 !important"
+                  rightIcon={<LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />}
+                  onClick={() => {
+                    navigateToDiscover(MENU.LANDING);
+                  }}>
+                  {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                </Button>
               </>
             )}
             {onShowConnectWalletModal && !isMxLoggedIn && (
