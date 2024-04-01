@@ -455,6 +455,7 @@ export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<
     "multiversxinfographics": [3],
     "nftunes": [2],
     "timecapsule": [57],
+    "bitzgame": [198],
   },
   "1": {
     "trailblazer": [1],
@@ -462,6 +463,7 @@ export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<
     "multiversxinfographics": [3],
     "nftunes": [4],
     "timecapsule": [5],
+    "bitzgame": [7],
   },
 };
 
@@ -472,6 +474,7 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://test.explorer.itheum.io/nftunes",
     "timecapsule": "https://test.explorer.itheum.io/timecapsule",
+    "bitzgame": "https://test.explorer.itheum.io/getbitz",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
@@ -479,5 +482,6 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://explorer.itheum.io/nftunes",
     "timecapsule": "https://explorer.itheum.io/timecapsule",
+    "bitzgame": "https://explorer.itheum.io/getbitz",
   },
 };
