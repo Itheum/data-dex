@@ -27,6 +27,11 @@ import {
   MenuItem,
   MenuItemOption,
   MenuList,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
   Spinner,
   Stack,
   Text,
@@ -37,9 +42,9 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
+import { LuFlaskRound } from "react-icons/lu";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
@@ -49,7 +54,7 @@ import ClaimsHistory from "components/ClaimsHistory";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_NONCE } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 
@@ -122,7 +127,7 @@ const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, setColorMode } = useColorMode();
@@ -130,6 +135,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
+  const bitzBalance = useAccountStore((state) => state.bitzBalance);
 
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
@@ -365,21 +371,49 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"/"}>
-                  <IconButton
-                    display={{ base: "none", md: "inline-flex" }}
-                    size={{ md: "md", xl: "md", "2xl": "lg" }}
-                    p="2 !important"
-                    color="teal.200"
-                    icon={<AiFillHome fontSize={"1.4rem"} />}
-                    aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(menuItemsMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(menuItemsMap.get(MENU.LANDING)?.path)}
-                    onClick={() => {
-                      navigateToDiscover(MENU.LANDING);
-                    }}
-                  />
-                </Link>
+                <Popover>
+                  <PopoverTrigger>
+                    <Button
+                      display={{ base: "none", md: "inline-flex" }}
+                      size={{ md: "md", xl: "md", "2xl": "lg" }}
+                      p="2 !important"
+                      rightIcon={<LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />}
+                      onClick={() => {
+                        navigateToDiscover(MENU.LANDING);
+                      }}>
+                      {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent backgroundColor="bgDark" w="25rem">
+                    <PopoverCloseButton />
+                    <PopoverBody pt={5} justifyContent="center" alignItems="center" w="full">
+                      <Flex w="full" justifyContent="center" alignItems="center" py={4}>
+                        <Box shadow="#38bdf8" boxShadow="inset 0 2px 4px 0 #38bdf8" w="3.5rem" h="3.5rem" rounded="lg">
+                          <Flex w="full" justifyContent="center" alignItems="center" h="3.5rem">
+                            <LuFlaskRound fontSize={"1.7rem"} fill="#38bdf8" />
+                          </Flex>
+                        </Box>
+                      </Flex>
+                      <Text textAlign="center" fontFamily="Clash-Medium" fontSize="2xl">
+                        What is {`<BiTz>`} XP?
+                      </Text>
+                      <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
+                        {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
+                        Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                      </Text>
+                      <Link as={ReactRouterLink} to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
+                        <Button
+                          variant="outline"
+                          borderColor="#38bdf8"
+                          rounded="full"
+                          w="full"
+                          _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
+                          Get {`<BiTz>`}
+                        </Button>
+                      </Link>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
               </>
             )}
             {onShowConnectWalletModal && !isMxLoggedIn && (
