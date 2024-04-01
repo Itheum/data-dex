@@ -377,10 +377,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       display={{ base: "none", md: "inline-flex" }}
                       size={{ md: "md", xl: "md", "2xl": "lg" }}
                       p="2 !important"
-                      rightIcon={<LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />}
-                      onClick={() => {
-                        navigateToDiscover(MENU.LANDING);
-                      }}>
+                      rightIcon={<LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />}>
                       {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
                     </Button>
                   </PopoverTrigger>
@@ -401,7 +398,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
                         Data Widget. Top LEADERBOARD climbers get special perks and drops!
                       </Text>
-                      <Link as={ReactRouterLink} to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
+                      <a href={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`} target="_blank" rel="noreferrer">
                         <Button
                           variant="outline"
                           borderColor="#38bdf8"
@@ -410,7 +407,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
                           Get {`<BiTz>`}
                         </Button>
-                      </Link>
+                      </a>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
@@ -494,6 +491,48 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
                         <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                       </Text>
+
+                      <Popover>
+                        <PopoverTrigger>
+                          <Flex px={4} pb={1.5}>
+                            <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+                            {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                          </Flex>
+                        </PopoverTrigger>
+                        <PopoverContent backgroundColor="bgDark" w="18rem">
+                          <PopoverCloseButton />
+                          <PopoverBody pt={5} justifyContent="center" alignItems="center" w="full">
+                            <Flex w="full" justifyContent="center" alignItems="center" py={4}>
+                              <Box shadow="#38bdf8" boxShadow="inset 0 2px 4px 0 #38bdf8" w="3.5rem" h="3.5rem" rounded="lg">
+                                <Flex w="full" justifyContent="center" alignItems="center" h="3.5rem">
+                                  <LuFlaskRound fontSize={"1.7rem"} fill="#38bdf8" />
+                                </Flex>
+                              </Box>
+                            </Flex>
+                            <Text textAlign="center" fontFamily="Clash-Medium" fontSize="2xl">
+                              What is {`<BiTz>`} XP?
+                            </Text>
+                            <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
+                              {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`}{" "}
+                              game Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                            </Text>
+                            <a
+                              href={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
+                              target="_blank"
+                              rel="noreferrer">
+                              <Button
+                                variant="outline"
+                                borderColor="#38bdf8"
+                                rounded="full"
+                                w="full"
+                                _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
+                                Get {`<BiTz>`}
+                              </Button>
+                            </a>
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
+
                       <hr />
                       <List>
                         <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>
