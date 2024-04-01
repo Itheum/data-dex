@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Badge, Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
+import { Box, Button, Heading, Image, Stack, Text, useColorMode, Wrap } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { TradeFormModal } from "./components/TradeFormModal";
 import { dataCATDemoUserData } from "../../libs/config";
@@ -15,7 +15,7 @@ export const TradeData: React.FC = () => {
   return (
     <Stack mt={10} mx={{ base: 10, lg: 24 }} textAlign={{ base: "center", lg: "start" }}>
       <Heading size="xl" fontFamily="Clash-Medium">
-        Mint Data
+        Mint Data NFTs
       </Heading>
       <Heading size="1rem" opacity=".7" fontFamily="Satoshi-Medium" fontWeight="light">
         Connect, mint and trade your Data Streams as Data NFTs in our Data NFT Marketplace
@@ -27,7 +27,7 @@ export const TradeData: React.FC = () => {
           <Box p="6">
             <Box display="flex" alignItems="baseline">
               <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
-                Any Data Stream as Data NFT-FT
+                Any Data Stream as a Data NFT-FT
               </Box>
             </Box>
             <Button
@@ -39,7 +39,7 @@ export const TradeData: React.FC = () => {
                 setIsDrawerOpen(!isDrawerOpen);
                 setPrefilledData(null);
               }}>
-              <Text color={colorMode === "dark" ? "white" : "black"}>Advertise Data</Text>
+              <Text color={colorMode === "dark" ? "white" : "black"}>Mint Data NFT</Text>
             </Button>
           </Box>
         </Box>

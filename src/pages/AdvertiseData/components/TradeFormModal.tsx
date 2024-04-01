@@ -185,9 +185,9 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               !dataNFTImgGenServiceValid ||
               (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
               (!!userData && userData.contractPaused)) && (
-              <Alert status="error">
+              <Alert status="error" mb={5}>
                 <Stack>
-                  <AlertTitle fontSize="md" mb={2}>
+                  <AlertTitle fontSize="md" mb={5}>
                     <AlertIcon display="inline-block" />
                     <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
                       Uptime Errors
@@ -210,7 +210,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             )}
 
             {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
-              <Alert status="error">
+              <Alert status="error" mb={5}>
                 <Stack>
                   <AlertTitle fontSize="md" mb={2}>
                     <AlertIcon display="inline-block" />
