@@ -381,7 +381,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent backgroundColor="bgDark" w="25rem">
+                  <PopoverContent backgroundColor={colorMode === "dark" ? "bgDark" : "white"} w="25rem">
                     <PopoverCloseButton />
                     <PopoverBody pt={5} justifyContent="center" alignItems="center" w="full">
                       <Flex w="full" justifyContent="center" alignItems="center" py={4}>
