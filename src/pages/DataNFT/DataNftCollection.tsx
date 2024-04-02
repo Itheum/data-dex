@@ -63,7 +63,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
           <Tooltip label={title}>
-            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" noOfLines={1} p={1}>
+            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" h="1.75rem" noOfLines={1} p={1}>
               {title}
             </Text>
           </Tooltip>
