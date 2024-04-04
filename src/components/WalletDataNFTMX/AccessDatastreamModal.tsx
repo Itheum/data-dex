@@ -5,11 +5,11 @@ import { CloseButton } from "@chakra-ui/close-button";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Stack, HStack, Text } from "@chakra-ui/layout";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody } from "@chakra-ui/modal";
+import { Link } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
 import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { EXPLORER_APP_FOR_NONCE } from "../../libs/config";
-import { Link } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { EXPLORER_APP_FOR_TOKEN } from "../../libs/config";
 
 type DatastreamModalPropType = {
   isOpen: boolean;
@@ -45,7 +45,7 @@ export default function AccessDataStreamModal(props: DatastreamModalPropType) {
                 <Link
                   as={ReactRouterLink}
                   isExternal
-                  to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
+                  to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
                   style={{ width: "100%" }}>
                   <Button
                     variant="outline"
