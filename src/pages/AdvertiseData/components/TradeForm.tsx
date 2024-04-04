@@ -138,14 +138,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
       .test("is-distinct", "Data Preview URL cannot be the same as the Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
-      })
-      .test("is-200", "Data Stream URL must be public", async function (value: string) {
-        const { isSuccess, message } = await checkUrlReturns200(value);
-        if (!isSuccess) {
-          return this.createError({ message });
-        }
-        return true;
       }),
+    // .test("is-200", "Data Stream URL must be public", async function (value: string) {
+    //   const { isSuccess, message } = await checkUrlReturns200(value);
+    //   if (!isSuccess) {
+    //     return this.createError({ message });
+    //   }
+    //   return true;
+    // }),
 
     tokenNameForm: Yup.string()
       .required("Token name is required")
