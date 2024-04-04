@@ -46,7 +46,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
       <HStack justifyContent="stretch" pb={2}>
         <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
-        <ExploreAppButton nonce={offer.offeredTokenNonce} />
+        <ExploreAppButton collection={offer.offeredTokenIdentifier} nonce={offer.offeredTokenNonce} />
       </HStack>
 
       {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore unbondTimestamp={offer.unbondTimestamp} lockPeriod={offer.lockPeriod} />}
