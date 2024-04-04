@@ -49,38 +49,20 @@ export const Bonding: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const _contractBonds = await bondContract.viewAllBonds();
-      if (_contractBonds.length === 0) {
+      const allContractBonds = await bondContract.viewAllBonds();
+      if (allContractBonds.length === 0) {
         return;
       }
-      _contractBonds.forEach((bond) => {
-        setTotalAmountBonded(
-          (prev) =>
-            prev +
-            BigNumber(bond.bondAmount)
-              .dividedBy(10 ** 18)
-              .toNumber()
-        );
+      const pagedBonds = await bondContract.viewPagedBonds(Math.max(0, allContractBonds.length - 50), allContractBonds.length - 1);
+      let _totalAmountBonded = 0;
+      pagedBonds.forEach((bond) => {
+        _totalAmountBonded += BigNumber(bond.bondAmount)
+          .dividedBy(10 ** 18)
+          .toNumber();
       });
-      setPageCount(Math.ceil(_contractBonds.length / pageSize));
-      //console.log("ALL BONDS:", _contractBonds);
-
-      //const pagedBonds = await bondContract.viewPagedBonds(Math.max(0, contractBonds.length - 50), contractBonds.length);
-      //console.log("PAGED ", pagedBonds);
-      // pagedBonds.forEach((bond) => {
-      //   setTotalAmountBonded(
-      //     (prev) =>
-      //       prev +
-      //       BigNumber(bond.bondAmount)
-      //         .dividedBy(10 ** 18)
-      //         .toNumber()
-      //   );
-      // });
-
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(
-        _contractBonds.reverse().map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier }))
-      );
-      setContractBonds(_contractBonds);
+      setTotalAmountBonded(_totalAmountBonded);
+      const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
+      setContractBonds(pagedBonds.reverse());
       setBondingDataNfts(dataNfts);
     })();
   }, [hasPendingTransactions]);

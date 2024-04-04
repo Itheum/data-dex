@@ -158,7 +158,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
               &nbsp;$ITHEUM Remaining
             </Text>
           </Flex>
-          <LivelinessScore unboundTimestamp={bondNft.unboundTimestamp} lockPeriod={bondNft.lockPeriod} />
+          <LivelinessScore unbondTimestamp={bondNft.unbondTimestamp} lockPeriod={bondNft.lockPeriod} />
         </Box>
         <Box>
           <Flex flexDirection="column" gap={4}>

@@ -1,34 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { Box, Flex, Progress, Text } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Box, Flex, Progress, Text, Link } from "@chakra-ui/react";
 import { settingLivelinessScore } from "../../libs/utils";
 
 type LivelinessScoreProp = {
   tokenIdentifier?: string;
-  unboundTimestamp?: number;
+  unbondTimestamp?: number;
   lockPeriod?: number;
 };
 
 export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
-  const { tokenIdentifier, unboundTimestamp, lockPeriod } = props;
+  const { tokenIdentifier, unbondTimestamp, lockPeriod } = props;
   const [livelinessScore, setLivelinessScore] = useState<number>(-1);
 
   useEffect(() => {
     (async () => {
-      const livelinessScore = await settingLivelinessScore(tokenIdentifier, unboundTimestamp, lockPeriod);
+      const livelinessScore = await settingLivelinessScore(tokenIdentifier, unbondTimestamp, lockPeriod);
       setLivelinessScore(livelinessScore ?? -1);
     })();
-  }, [tokenIdentifier, unboundTimestamp]);
+  }, [tokenIdentifier, unbondTimestamp]);
+
   return (
     <>
       {livelinessScore === -1 ? (
-        <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pt={3} pb={4} textColor="indianred">
-          No liveliness score available.
-        </Text>
+        <Flex flexDirection="column">
+          <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pt={2} pb={1} textColor="indianred">
+            <Link
+              fontSize="md"
+              href="https://docs.itheum.io/product-docs/protocol/itheum-life-liveliness-and-reputation-signalling/data-creator-bonding/liveliness-score-states#liveliness-score-unavailable"
+              isExternal>
+              Liveliness Score Unavailable <ExternalLinkIcon mx="2px" />
+            </Link>
+          </Text>
+          <Box border="1px solid" borderColor="indianred" borderRadius="sm">
+            <Progress hasStripe value={0} rounded="xs" colorScheme="red" />
+          </Box>
+        </Flex>
       ) : livelinessScore !== 0 ? (
         <Flex flexDirection="column">
-          <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pb="14px">
-            Liveliness Score: {livelinessScore}
-          </Text>
+          <Link
+            fontSize="md"
+            href="https://docs.itheum.io/product-docs/protocol/itheum-life-liveliness-and-reputation-signalling/data-creator-bonding/liveliness-score-states#active-liveliness-score"
+            isExternal>
+            <Text fontSize="md" fontWeight="light" display="flex" justifyContent="flex-start" pb="14px">
+              Liveliness Score: {livelinessScore} <ExternalLinkIcon mx="2px" />
+            </Text>
+          </Link>
           <Box border="1px solid" borderColor="teal.200" borderRadius="sm">
             <Progress hasStripe value={livelinessScore} rounded="xs" colorScheme="teal" />
           </Box>
@@ -36,10 +53,15 @@ export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
       ) : (
         <Flex flexDirection="column">
           <Text fontSize="lg" fontWeight="light" display="flex" justifyContent="flex-start" pt={2} pb={1} textColor="indianred">
-            Liveliness score expired.
+            <Link
+              fontSize="md"
+              href="https://docs.itheum.io/product-docs/protocol/itheum-life-liveliness-and-reputation-signalling/data-creator-bonding/liveliness-score-states#liveliness-score-expired"
+              isExternal>
+              Liveliness Score Expired <ExternalLinkIcon mx="2px" />
+            </Link>
           </Text>
           <Box border="1px solid" borderColor="indianred" borderRadius="sm">
-            <Progress hasStripe value={livelinessScore} rounded="xs" colorScheme="red" />
+            <Progress hasStripe isIndeterminate value={livelinessScore} rounded="xs" colorScheme="red" />
           </Box>
         </Flex>
       )}

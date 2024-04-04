@@ -232,15 +232,17 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
-            <TabPanel mt={2} width={"full"}>
-              {tabState === 5 ? (
-                <BondingCards />
-              ) : (
-                <Flex onClick={getOnChainNFTs}>
-                  <NoDataHere />
-                </Flex>
-              )}
-            </TabPanel>
+            {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
+              <TabPanel mt={2} width={"full"}>
+                {tabState === 5 ? (
+                  <BondingCards />
+                ) : (
+                  <Flex onClick={getOnChainNFTs}>
+                    <NoDataHere />
+                  </Flex>
+                )}
+              </TabPanel>
+            )}
           </TabPanels>
         </Tabs>
       </Stack>
