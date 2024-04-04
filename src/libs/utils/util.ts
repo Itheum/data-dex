@@ -333,7 +333,7 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
           nonce: 0,
           lockPeriod: 0,
           bondTimestamp: 0,
-          unboundTimestamp: 0,
+          unbondTimestamp: 0,
           bondAmount: 0,
           remainingAmount: 0,
         },
@@ -342,25 +342,25 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
   });
 };
 
-export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
+export const settingLivelinessScore = async (tokenIdentifier?: string, unbondTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
   const bondingContract = new BondContract("devnet");
   try {
     if (tokenIdentifier) {
       const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = currentTimestamp - periodOfBond[0].unboundTimestamp;
+      const difDays = currentTimestamp - periodOfBond[0].unbondTimestamp;
       return difDays > 0
         ? 0
-        : periodOfBond[0].unboundTimestamp === 0
+        : periodOfBond[0].unbondTimestamp === 0
           ? -1
           : Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
     }
-    if (unboudTimestamp && lockPeriod) {
+    if (unbondTimestamp && lockPeriod) {
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = currentTimestamp - unboudTimestamp;
-      return difDays > 0 ? 0 : unboudTimestamp === 0 ? -1 : Number(Math.abs(getLivelinessScore(difDays, lockPeriod)).toFixed(2));
+      const difDays = currentTimestamp - unbondTimestamp;
+      return difDays > 0 ? 0 : unbondTimestamp === 0 ? -1 : Number(Math.abs(getLivelinessScore(difDays, lockPeriod)).toFixed(2));
     }
   } catch (error) {
     return undefined;

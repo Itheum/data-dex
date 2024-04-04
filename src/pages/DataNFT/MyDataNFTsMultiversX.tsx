@@ -87,12 +87,11 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       icon: BsClockHistory,
       isDisabled: false,
     },
-    // TODO when bonding is ready just remove the comment
-    // {
-    //   tabName: "Bonding",
-    //   icon: MdLockOutline,
-    //   isDisabled: false,
-    // },
+    {
+      tabName: "Bonding",
+      icon: MdLockOutline,
+      isDisabled: false,
+    },
   ];
 
   const getOnChainNFTs = async () => {
