@@ -43,8 +43,8 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
-import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { LuFlaskRound } from "react-icons/lu";
+import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link as ReactRouterLink, useLocation, useNavigate } from "react-router-dom";
@@ -54,7 +54,7 @@ import ClaimsHistory from "components/ClaimsHistory";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_NONCE } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 
@@ -121,8 +121,6 @@ const exploreRouterMenu = [
     ],
   },
 ];
-
-const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
 
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -398,7 +396,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                         {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
                         Data Widget. Top LEADERBOARD climbers get special perks and drops!
                       </Text>
-                      <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
+                      <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
                         <Button
                           variant="outline"
                           borderColor="#38bdf8"
@@ -519,7 +517,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                             <Link
                               as={ReactRouterLink}
                               isExternal
-                              to={`${EXPLORER_APP_FOR_NONCE[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
+                              to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
                               <Button
                                 variant="outline"
                                 borderColor="#38bdf8"
