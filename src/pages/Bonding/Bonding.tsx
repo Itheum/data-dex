@@ -30,21 +30,18 @@ export const Bonding: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const contractBonds = await bondContract.viewAllBonds();
-      if (contractBonds.length === 0) {
+      const allContractBonds = await bondContract.viewAllBonds();
+      if (allContractBonds.length === 0) {
         return;
       }
-      const pagedBonds = await bondContract.viewPagedBonds(Math.max(0, contractBonds.length - 50), contractBonds.length - 1);
+      const pagedBonds = await bondContract.viewPagedBonds(Math.max(0, allContractBonds.length - 50), allContractBonds.length - 1);
+      let _totalAmountBonded = 0;
       pagedBonds.forEach((bond) => {
-        setTotalAmountBonded(
-          (prev) =>
-            prev +
-            BigNumber(bond.bondAmount)
-              .dividedBy(10 ** 18)
-              .toNumber()
-        );
+        _totalAmountBonded += BigNumber(bond.bondAmount)
+          .dividedBy(10 ** 18)
+          .toNumber();
       });
-
+      setTotalAmountBonded(_totalAmountBonded);
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
       setContractBonds(pagedBonds.reverse());
       setBondingDataNfts(dataNfts);
