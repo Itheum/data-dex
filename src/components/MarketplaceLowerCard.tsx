@@ -49,7 +49,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
         <ExploreAppButton nonce={offer.offeredTokenNonce} />
       </HStack>
 
-      {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore unboundTimestamp={offer.unboundTimestamp} lockPeriod={offer.lockPeriod} />}
+      {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore unbondTimestamp={offer.unbondTimestamp} lockPeriod={offer.lockPeriod} />}
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack mt={2} flexDirection="column">

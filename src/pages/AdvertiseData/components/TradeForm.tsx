@@ -790,7 +790,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <Text fontWeight="bold" as="span">
               Bonding Period
             </Text>
-            , you can withdraw your full
+            , you can withdraw your full&nbsp;
             <Text fontWeight="bold" as="span">
               Bonding Amount
             </Text>{" "}
