@@ -85,22 +85,19 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     s4: 0,
   });
   const [mintSessionId, setMintSessionId] = useState<any>(null);
-
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { address: mxAddress } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
-
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
-  const mxDataNftMintContract = new DataNftMintContract(chainID);
-
   const bond = new BondContract("devnet");
   const [periods, setPeriods] = useState<any>([
     { amount: "10000000000000000000", lockPeriod: 900 },
     { amount: "10000000000000000000", lockPeriod: 2 },
   ]);
+
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
       setPeriods(periodsT);
@@ -113,7 +110,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     dataStreamUrlForm: Yup.string()
       .required("Data Stream URL is required")
       .notOneOf(["https://drive.google.com"], `Data Stream URL doesn't accept Google Drive URLs`)
-      .test("is-url-or-ipns", "Data Stream URL must be a valid URL, IPFS or IPNS", function (value) {
+      .test("is-url-or-ipns", "Data Stream URL must be a valid HTTPS, IPFS or IPNS URL", function (value) {
         const websiteRegex = new RegExp(
           "^(http|https?:\\/\\/)?" + // validate protocol
             "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
@@ -139,18 +136,18 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     dataPreviewUrlForm: Yup.string()
       .required("Data Preview URL is required")
-      .url("Data Preview must be URL")
+      .url("Data Preview must be valid URL")
       .notOneOf(["https://drive.google.com"], `Data Preview URL doesn't accept Google Drive URLs`)
       .test("is-distinct", "Data Preview URL cannot be the same as the Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
-      })
-      .test("is-200", "Data Stream URL must be public", async function (value: string) {
-        const { isSuccess, message } = await checkUrlReturns200(value);
-        if (!isSuccess) {
-          return this.createError({ message });
-        }
-        return true;
       }),
+    // .test("is-200", "Data Stream URL must be public", async function (value: string) {
+    //   const { isSuccess, message } = await checkUrlReturns200(value);
+    //   if (!isSuccess) {
+    //     return this.createError({ message });
+    //   }
+    //   return true;
+    // }),
 
     tokenNameForm: Yup.string()
       .required("Token name is required")
@@ -190,11 +187,12 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(0, "Minimum value of bonding period is 3 months.")
       .required("Bonding Period is required"),
   };
+
   if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
     preSchema = { ...preSchema, ...bondingPreSchema };
   }
-  const validationSchema = Yup.object().shape(preSchema);
 
+  const validationSchema = Yup.object().shape(preSchema);
   const amountOfTime = import.meta.env.VITE_ENV_NETWORK === "devnet" ? timeUntil(lockPeriod[0].lockPeriod) : { count: 0, unit: "sec" };
   // Destructure the methods needed from React Hook Form useForm component
   const {
@@ -553,24 +551,27 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
   }; // here you can make logic that you want to happen on submit (used for debugging)
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">
-        <Text fontSize="xl" color="red.400">
-          *
-        </Text>
-        <Text color="teal.200" fontSize="lg">
-          &nbsp;required fields
+        <Text fontSize="md" color="red.400">
+          * &nbsp;Required fields
         </Text>
       </Flex>
-      <Text fontSize="lg" color="teal.200" mt="0 !important">
-        + hover on an item&apos;s title to learn more
-      </Text>
 
-      <Flex flexDirection={"column"} gap="3">
-        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+      <Flex flexDirection={"column"}>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={2}>
           Data Asset Detail
         </Text>
+        <Link
+          color="teal.500"
+          fontSize="md"
+          mb={7}
+          href="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
+          isExternal>
+          Where can I store or host my Data Assets? <ExternalLinkIcon mx="2px" />
+        </Link>
 
         <Flex flexDirection="row" gap="7">
           <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
@@ -592,7 +593,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               )}
               name={"dataStreamUrlForm"}
             />
-            <FormErrorMessage>{errors?.dataStreamUrlForm?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors?.dataStreamUrlForm?.message} </FormErrorMessage>
           </FormControl>
 
           <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
@@ -617,14 +618,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
 
             {currDataCATSellObj && (
-              <Link fontSize="sm" href={dataNFTPreviewUrl} isExternal>
+              <Link color="teal.500" fontSize="sm" href={dataNFTPreviewUrl} isExternal>
                 View Preview Data <ExternalLinkIcon mx="2px" />
               </Link>
             )}
           </FormControl>
         </Flex>
 
-        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "5" }}>
           Data Marshal Url
         </Text>
 
@@ -637,7 +638,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         )}
       </Flex>
 
-      <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+      <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={3}>
         NFT Token Metadata
       </Text>
 
@@ -784,10 +785,36 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             Liveliness Bonding
           </Text>
 
+          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+            Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream. You will
+            need to lock the below{" "}
+            <Text fontWeight="bold" as="span">
+              Bonding Amount{" "}
+            </Text>
+            for the required{" "}
+            <Text fontWeight="bold" as="span">
+              Bonding Period.{" "}
+            </Text>
+            Your Liveliness Bond is bound by some{" "}
+            <Text fontWeight="bold" as="span">
+              Penalties and Slashing Terms
+            </Text>{" "}
+            as detailed below. At the end of the{" "}
+            <Text fontWeight="bold" as="span">
+              Bonding Period
+            </Text>
+            , you can withdraw your full
+            <Text fontWeight="bold" as="span">
+              Bonding Amount
+            </Text>{" "}
+            OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the Liveliness
+            Bond.
+          </Text>
+
           <Flex flexDirection="row" gap="7" mt={2}>
             <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
               <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Amount (in $ITHEUM)
+                Bonding Amount (in ITHEUM)
               </Text>
 
               <Controller
@@ -843,99 +870,139 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
             </FormControl>
           </Flex>
+
+          <Box mb={7}>
+            <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
+              Need help, support or sponsorship for the Liveliness{" "}
+              <Text fontWeight="bold" as="span">
+                Bonding Amount
+              </Text>
+              ? Become a Verified Creator <ExternalLinkIcon mx="2px" />
+            </Link>
+          </Box>
+
+          <Box minH={{ base: "5rem", md: "3.5rem" }}>
+            <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" textColor="teal.200">
+              Penalties and Slashing
+            </Text>
+            <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
+              If you break your Liveliness Bond before the{" "}
+              <Text fontWeight="bold" as="span">
+                Bonding Period
+              </Text>
+              , you will be penalized by losing a portion (or all) of your{" "}
+              <Text fontWeight="bold" as="span">
+                Bonding Amount
+              </Text>
+              . The community will also be able to curate and raise concerns about Data NFTs to Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns
+              are validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO-based curation enforces positive behavior
+              penalizes bad actors and protects Data Consumers.
+            </Text>
+
+            {itheumBalance < antiSpamTax + bondingAmount && (
+              <Text color="red.400" fontSize="sm" mt="1 !important">
+                {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+              </Text>
+            )}
+
+            <Flex mt="3 !important">
+              <Button
+                colorScheme="teal"
+                borderRadius="12px"
+                variant="outline"
+                size="sm"
+                onClick={() => window.open("https://docs.itheum.io/product-docs/legal/ecosystem-tools-terms/liveliness-bonding-penalties-and-slashing-terms")}>
+                <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
+                  Read Liveliness Bonding: Penalties and Slashing Terms
+                </Text>
+              </Button>
+            </Flex>
+
+            <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
+              I have read and I agree to Liveliness Bonding: Penalties and Slashing Terms
+            </Checkbox>
+
+            {!readLivelinessBonding && (
+              <Text color="red.400" fontSize="sm" mt="1 !important">
+                You need to agree to Liveliness Bonding: Penalties and Slashing Terms to proceed with your mint.
+              </Text>
+            )}
+          </Box>
         </>
       )}
 
-      <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="2 !important">
-        Terms and Fees
-      </Text>
-
-      <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="4 !important">
-        Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the
-        data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online.
-        Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there are other conditions
-        too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use before proceeding.
-      </Text>
-      <Flex mt="3 !important">
-        <Button colorScheme="teal" borderRadius="12px" variant="outline" size="md" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
-          <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
-            Read Terms of Use
-          </Text>
-        </Button>
-      </Flex>
-      <Box minH={"3.5rem"}>
-        <Checkbox size="md" mt="2 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
-          I have read and I agree to the Terms of Use
-        </Checkbox>
-
-        {!readTermsChecked && (
-          <Text color="red.400" fontSize="sm" mt="1 !important" minH={"20px"}>
-            Please read and agree to terms of use.
-          </Text>
-        )}
-      </Box>
-
-      <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="8 !important">
-        An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically
-        adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
-      </Text>
-
-      <Box mt="3 !important">
-        <Tag variant="solid" bgColor="#00C7971A" borderRadius="sm">
-          <Text px={2} py={2} color="teal.200" fontWeight="500">
-            Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens{" "}
-          </Text>
-        </Tag>
-      </Box>
-
-      {itheumBalance < antiSpamTax && (
-        <Text color="red.400" fontSize="sm" mt="1 !important">
-          {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
+      <>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="50px !important">
+          Minting Terms of Use
         </Text>
-      )}
-      <Box minH={{ base: "5rem", md: "3.5rem" }}>
-        <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
-          I accept the deduction of the anti-spam minting fee from my wallet
-        </Checkbox>
 
-        {!readAntiSpamFeeChecked && (
-          <Text color="red.400" fontSize="sm" mt="1 !important">
-            You need to agree to anti-spam deduction to mint
-          </Text>
-        )}
-      </Box>
-      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
-        <Box minH={{ base: "5rem", md: "3.5rem" }}>
-          <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" mt="5 !important" textColor="teal.200">
-            Penalties and Slashing
-          </Text>
-          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
-            The community will be able to curate and raise concerns about Data NFTs to the Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns are
-            validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO based curation enforces positive behaviour and
-            penalises bad actors.
-          </Text>
-
-          {itheumBalance < antiSpamTax + bondingAmount && (
-            <Text color="red.400" fontSize="sm" mt="1 !important">
-              {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+        <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+          Minting a Data NFT and putting it for trade on the Data DEX means you have to agree to some strict “terms of use”, as an example, you agree that the
+          data is free of any illegal material and that it does not breach any copyright laws. You also agree to make sure the Data Stream URL is always online.
+          Given it&apos;s an NFT, you also have limitations like not being able to update the title, description, royalty, etc. But there are other conditions
+          too. Take some time to read these “terms of use” before you proceed and it&apos;s critical you understand the terms of use before proceeding.
+        </Text>
+        <Flex mt="3 !important">
+          <Button colorScheme="teal" borderRadius="12px" variant="outline" size="sm" onClick={() => window.open("https://itheum.com/legal/datadex/termsofuse")}>
+            <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
+              Read Minting Terms of Use
             </Text>
-          )}
-          <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
-            I have read and I agree to Liveliness Bonding & Penalties and Slashing Terms
+          </Button>
+        </Flex>
+        <Box minH={"3.5rem"}>
+          <Checkbox size="md" mt="2 !important" isChecked={readTermsChecked} onChange={(e) => setReadTermsChecked(e.target.checked)}>
+            I have read and I agree to the Terms of Use
           </Checkbox>
 
-          {!readLivelinessBonding && (
-            <Text color="red.400" fontSize="sm" mt="1 !important">
-              You need to agree to Penalties and Slashing terms to mint
+          {!readTermsChecked && (
+            <Text color="red.400" fontSize="sm" mt="1 !important" minH={"20px"}>
+              Please read and agree to Terms of Use to proceed with your mint.
             </Text>
           )}
         </Box>
-      )}
+      </>
+
+      <>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="50px !important">
+          Anti-Spam Fee
+        </Text>
+
+        <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+          An “anti-spam fee” is required to ensure that the Data DEX does not get impacted by spam datasets created by bad actors. This fee will be dynamically
+          adjusted by the protocol based on ongoing dataset curation discovery by the Itheum DAO.
+        </Text>
+
+        <Box mt="3 !important">
+          <Tag variant="solid" bgColor="#00C7971A" borderRadius="sm">
+            <Text px={2} py={2} color="teal.200" fontWeight="500">
+              Anti-Spam Fee is currently {antiSpamTax < 0 ? "?" : antiSpamTax} ITHEUM tokens{" "}
+            </Text>
+          </Tag>
+        </Box>
+
+        {itheumBalance < antiSpamTax && (
+          <Text color="red.400" fontSize="sm" mt="1 !important">
+            {labels.ERR_MINT_FORM_NOT_ENOUGH_TAX}
+          </Text>
+        )}
+
+        <Box minH={{ base: "5rem", md: "3.5rem" }}>
+          <Checkbox size="md" mt="3 !important" isChecked={readAntiSpamFeeChecked} onChange={(e) => setReadAntiSpamFeeChecked(e.target.checked)}>
+            I accept the deduction of the Anti-Spam Minting Fee from my wallet.
+          </Checkbox>
+
+          {!readAntiSpamFeeChecked && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              You need to agree to Anti-Spam Minting deduction to proceed with your mint.
+            </Text>
+          )}
+        </Box>
+      </>
 
       <Flex>
         <ChainSupportedInput feature={MENU.SELL}>
           <Button
-            mt="5"
+            mt="10"
             colorScheme="teal"
             isLoading={isMintingModalOpen}
             onClick={dataNFTSellSubmit}
@@ -952,6 +1019,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Button>
         </ChainSupportedInput>
       </Flex>
+
       <MintingModal
         isOpen={isMintingModalOpen}
         setIsOpen={setIsMintingModalOpen}

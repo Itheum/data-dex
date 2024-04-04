@@ -251,6 +251,14 @@ export default function WalletDataNFTMX(item: any) {
       }
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
 
+      console.log(nonce, res.error?.includes("403") && (nonce === 7 || nonce === 198));
+      if (res.error?.includes("403") && (nonce === 7 || nonce === 198)) {
+        setUnlockAccessProgress((prevProgress) => ({
+          ...prevProgress,
+          s3: 2, // 2 means is bitz game
+        }));
+      }
+
       if (!res.error) {
         const link = document.createElement("a");
         link.target = "_blank";
@@ -266,7 +274,12 @@ export default function WalletDataNFTMX(item: any) {
         s3: 1,
       }));
     } catch (e: any) {
-      setErrUnlockAccessGeneric(e.toString());
+      console.log(e);
+      if (e.includes("403") && (nonce === 7 || nonce === 198)) {
+        return;
+      } else {
+        setErrUnlockAccessGeneric(e.toString());
+      }
     }
   }
 

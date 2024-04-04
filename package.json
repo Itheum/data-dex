@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.13.3",
+  "version": "1.13.6",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.1.1",
