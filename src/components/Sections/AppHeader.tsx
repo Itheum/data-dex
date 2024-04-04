@@ -57,6 +57,7 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_NONCE } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
+import Countdown from "components/CountDown";
 
 const exploreRouterMenu = [
   {
@@ -136,6 +137,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const bitzBalance = useAccountStore((state) => state.bitzBalance);
+  const cooldown = useAccountStore((state) => state.cooldown);
 
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
@@ -405,7 +407,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           rounded="full"
                           w="full"
                           _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
-                          Get {`<BiTz>`}
+                          <span>
+                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim your {`<BiTz>`}</span>}
+                          </span>
                         </Button>
                       </Link>
                     </PopoverBody>
