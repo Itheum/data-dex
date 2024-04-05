@@ -194,7 +194,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       .get(nftApiLink)
       .then((res) => {
         const _nftData = parseDataNft(res.data);
-        console.log(_nftData, "ASDSADASDA");
         setNftData(_nftData);
         setIsLoadingDetails(false);
 

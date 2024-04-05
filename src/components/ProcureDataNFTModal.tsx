@@ -70,8 +70,6 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
   });
   const { hasSignedTransactions, signedTransactionsArray } = useGetSignedTransactions();
 
-  console.log(nftData);
-
   useEffect(() => {
     if (!isWebWallet) return;
     if (!hasSignedTransactions) return;
