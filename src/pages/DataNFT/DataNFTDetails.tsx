@@ -196,6 +196,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       .get(nftApiLink)
       .then((res) => {
         const _nftData = parseDataNft(res.data);
+        console.log(_nftData, "ASDSADASDA");
         setNftData(_nftData);
         setIsLoadingDetails(false);
 
@@ -353,13 +354,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
-                        <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
-                          {nftData.identifier}
+                        <Link href={`${chainExplorer}/nfts/${nftData.tokenIdentifier}`} isExternal>
+                          {nftData.tokenIdentifier}
                           <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
                         <Favourite
                           chainID={chainID}
-                          tokenIdentifier={nftData.identifier}
+                          tokenIdentifier={nftData.tokenIdentifier}
                           bearerToken={tokenLogin?.nativeAuthToken}
                           favouriteItems={favouriteItems}
                           getFavourites={getFavourite}
@@ -608,11 +609,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </Text>
                             </Box>
                           )}
-                          <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                            <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
-                              {nftData.isDataNFTPH ? "Data NFT-PH (Plug-In Hybrid)" : "Fully Transferable License"}
-                            </Text>
-                          </Badge>
+                          {nftData.isDataNFTPH && (
+                            <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                              <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                                Data NFT-PH (Plug-In Hybrid)
+                              </Text>
+                            </Badge>
+                          )}
                         </Flex>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
