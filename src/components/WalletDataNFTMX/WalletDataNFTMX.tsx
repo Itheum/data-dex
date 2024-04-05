@@ -48,6 +48,7 @@ import {
   backendApi,
   convertToLocalString,
   decodeNativeAuthToken,
+  getApiDataMarshal,
   isValidNumericCharacter,
   shouldPreviewDataBeEnabled,
   sleep,
@@ -245,6 +246,9 @@ export default function WalletDataNFTMX(item: any) {
           "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
         },
       };
+      if (!dataNft.dataMarshal || dataNft.dataMarshal === "") {
+        dataNft.updateDataNft({ dataMarshal: getApiDataMarshal(chainID) });
+      }
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
 
       console.log(nonce, res.error?.includes("403") && (nonce === 7 || nonce === 198));
@@ -401,17 +405,21 @@ export default function WalletDataNFTMX(item: any) {
             </PopoverContent>
           </Popover>
           <Box mt={1}>
-            <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
-              Creator:&nbsp;
-              <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
-                <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
-                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
-              </Flex>
-            </Box>
+            {item.creator && (
+              <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
+                Creator:&nbsp;
+                <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
+                  <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
+                  <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
+                </Flex>
+              </Box>
+            )}
 
-            <Box color="#8c8f92d0" fontSize="md">
-              {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
-            </Box>
+            {item.creationTime && (
+              <Box color="#8c8f92d0" fontSize="md">
+                Creation time: {moment(item.creationTime).format(uxConfig.dateStr)}
+              </Box>
+            )}
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
@@ -420,11 +428,13 @@ export default function WalletDataNFTMX(item: any) {
                 </Text>
               </Badge>
 
-              <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
-                  Fully Transferable License
-                </Text>
-              </Badge>
+              {item?.isDataNFTPH && (
+                <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                  <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                    Data NFT-PH (Plug-In Hybrid)
+                  </Text>
+                </Badge>
+              )}
 
               <HStack mt="1">
                 <Button
@@ -435,11 +445,12 @@ export default function WalletDataNFTMX(item: any) {
                   bgColor="#FF439D"
                   _hover={{ backgroundColor: "#FF439D70" }}
                   isDisabled={hasPendingTransactions}
+                  hidden={item.isDataNFTPH}
                   onClick={() => onBurnButtonClick(item)}>
                   Burn
                 </Button>
 
-                <ExploreAppButton nonce={item.nonce} />
+                <ExploreAppButton collection={item.collection} nonce={item.nonce} />
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
@@ -466,7 +477,7 @@ export default function WalletDataNFTMX(item: any) {
                 </Button>
               </Tooltip>
 
-              <PreviewDataButton previewDataURL={item.dataPreview} />
+              {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
             </HStack>
 
             <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

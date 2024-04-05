@@ -5,20 +5,20 @@ import { settingLivelinessScore } from "../../libs/utils";
 
 type LivelinessScoreProp = {
   tokenIdentifier?: string;
-  unboundTimestamp?: number;
+  unbondTimestamp?: number;
   lockPeriod?: number;
 };
 
 export const LivelinessScore: React.FC<LivelinessScoreProp> = (props) => {
-  const { tokenIdentifier, unboundTimestamp, lockPeriod } = props;
+  const { tokenIdentifier, unbondTimestamp, lockPeriod } = props;
   const [livelinessScore, setLivelinessScore] = useState<number>(-1);
 
   useEffect(() => {
     (async () => {
-      const livelinessScore = await settingLivelinessScore(tokenIdentifier, unboundTimestamp, lockPeriod);
+      const livelinessScore = await settingLivelinessScore(tokenIdentifier, unbondTimestamp, lockPeriod);
       setLivelinessScore(livelinessScore ?? -1);
     })();
-  }, [tokenIdentifier, unboundTimestamp]);
+  }, [tokenIdentifier, unbondTimestamp]);
 
   return (
     <>

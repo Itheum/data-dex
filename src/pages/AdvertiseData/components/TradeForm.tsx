@@ -187,13 +187,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(0, "Minimum value of bonding period is 3 months.")
       .required("Bonding Period is required"),
   };
-
-  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-    preSchema = { ...preSchema, ...bondingPreSchema };
-  }
+  preSchema = { ...preSchema, ...bondingPreSchema };
 
   const validationSchema = Yup.object().shape(preSchema);
-  const amountOfTime = import.meta.env.VITE_ENV_NETWORK === "devnet" ? timeUntil(lockPeriod[0].lockPeriod) : { count: 0, unit: "sec" };
+  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
@@ -239,11 +236,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     antiSpamTax: number,
     bondingAmount: number
   ): boolean | undefined {
-    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
-    } else {
-      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || itheumBalance < antiSpamTax + bondingAmount;
-    }
+    return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
   }
 
   const closeProgressModal = () => {
@@ -384,95 +377,42 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     metadataOnIpfsUrl: string;
     dataNFTStreamUrlEncrypted: string;
   }) => {
-    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-      const sftMinter = new SftMinter("devnet");
+    const sftMinter = new SftMinter("devnet");
 
-      const mintObject = await sftMinter.mint(
-        new Address(mxAddress),
-        dataNFTTokenName,
-        dataNFTMarshalService,
-        dataNFTStreamUrl,
-        dataNFTPreviewUrl,
-        Math.ceil(dataNFTRoyalties * 100),
-        Number(dataNFTCopies),
-        datasetTitle,
-        datasetDescription,
-        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-        Number(periods[0].lockPeriod),
-        {
-          nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
-        }
-      );
-
-      await sleep(3);
-      await refreshAccount();
-
-      const { sessionId, error } = await sendTransactions({
-        transactions: mintObject,
-        transactionsDisplayInfo: {
-          processingMessage: "Minting Data NFT Collection",
-          errorMessage: "Collection minting failed :(",
-          successMessage: "Collection minted successfully!",
-        },
-        redirectAfterSign: false,
-      });
-      if (error) {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
+    const mintObject = await sftMinter.mint(
+      new Address(mxAddress),
+      dataNFTTokenName,
+      dataNFTMarshalService,
+      dataNFTStreamUrl,
+      dataNFTPreviewUrl,
+      Math.ceil(dataNFTRoyalties * 100),
+      Number(dataNFTCopies),
+      datasetTitle,
+      datasetDescription,
+      BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+      Number(periods[0].lockPeriod),
+      {
+        nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       }
+    );
 
-      setMintSessionId(sessionId);
-    } else {
-      await sleep(3);
-      console.log({
-        name: getValues("tokenNameForm"),
-        data_marshal: dataNFTMarshalService,
-        data_stream: dataNFTStreamUrlEncrypted,
-        data_preview: dataNFTPreviewUrl,
-        royalties: Math.ceil(getValues("royaltiesForm") * 100),
-        amount: getValues("numberOfCopiesForm"),
-        title: getValues("datasetTitleForm"),
-        description: getValues("datasetDescriptionForm"),
-        sender: new Address(mxAddress),
-        amountToSend: antiSpamTax,
-      });
-      const data = new ContractCallPayloadBuilder()
-        .setFunction(new ContractFunction("ESDTTransfer"))
-        .addArg(new StringValue(contractsForChain(chainID).itheumToken))
-        .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
-        .addArg(new StringValue("mint"))
-        .addArg(new StringValue(getValues("tokenNameForm")))
-        .addArg(new StringValue(imageOnIpfsUrl))
-        .addArg(new StringValue(metadataOnIpfsUrl))
-        .addArg(new StringValue(dataNFTMarshalService))
-        .addArg(new StringValue(dataNFTStreamUrlEncrypted))
-        .addArg(new StringValue(dataNFTPreviewUrl))
-        .addArg(new BigUIntValue(Math.ceil(getValues("royaltiesForm") * 100)))
-        .addArg(new BigUIntValue(getValues("numberOfCopiesForm")))
-        .addArg(new StringValue(getValues("datasetTitleForm")))
-        .addArg(new StringValue(getValues("datasetDescriptionForm")))
-        .build();
-      const mintTransaction = new Transaction({
-        data,
-        sender: new Address(mxAddress),
-        receiver: contractsForChain(chainID).dataNftTokens[0].contract || "",
-        gasLimit: 60000000,
-        chainID: chainID,
-      });
-      await refreshAccount();
-      const { sessionId, error } = await sendTransactions({
-        transactions: mintTransaction,
-        transactionsDisplayInfo: {
-          processingMessage: "Minting Data NFT Collection",
-          errorMessage: "Collection minting failed :(",
-          successMessage: "Collection minted successfully!",
-        },
-        redirectAfterSign: false,
-      });
-      setMintSessionId(sessionId);
-      if (error) {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-      }
+    await sleep(3);
+    await refreshAccount();
+
+    const { sessionId, error } = await sendTransactions({
+      transactions: mintObject,
+      transactionsDisplayInfo: {
+        processingMessage: "Minting Data NFT Collection",
+        errorMessage: "Collection minting failed :(",
+        successMessage: "Collection minted successfully!",
+      },
+      redirectAfterSign: false,
+    });
+    if (error) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
     }
+
+    setMintSessionId(sessionId);
   };
 
   useTrackTransactionStatus({
@@ -779,157 +719,154 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Box>
       </Flex>
 
-      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
-        <>
-          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
-            Liveliness Bonding
-          </Text>
+      <>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+          Liveliness Bonding
+        </Text>
 
-          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-            Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream. You will
-            need to lock the below{" "}
-            <Text fontWeight="bold" as="span">
-              Bonding Amount{" "}
+        <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+          Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream. You will
+          need to lock the below{" "}
+          <Text fontWeight="bold" as="span">
+            Bonding Amount{" "}
+          </Text>
+          for the required{" "}
+          <Text fontWeight="bold" as="span">
+            Bonding Period.{" "}
+          </Text>
+          Your Liveliness Bond is bound by some{" "}
+          <Text fontWeight="bold" as="span">
+            Penalties and Slashing Terms
+          </Text>{" "}
+          as detailed below. At the end of the{" "}
+          <Text fontWeight="bold" as="span">
+            Bonding Period
+          </Text>
+          , you can withdraw your full&nbsp;
+          <Text fontWeight="bold" as="span">
+            Bonding Amount
+          </Text>{" "}
+          OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the Liveliness Bond.
+        </Text>
+
+        <Flex flexDirection="row" gap="7" mt={2}>
+          <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
+            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+              Bonding Amount (in ITHEUM)
             </Text>
-            for the required{" "}
-            <Text fontWeight="bold" as="span">
-              Bonding Period.{" "}
+
+            <Controller
+              control={control}
+              render={({ field: { onChange } }) => (
+                <NumberInput
+                  mt="3 !important"
+                  size="md"
+                  id="bondingAmount"
+                  maxW={24}
+                  step={1}
+                  defaultValue={bondingAmount}
+                  isDisabled
+                  min={10}
+                  max={maxRoyalties > 0 ? maxRoyalties : 0}
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={(event) => onChange(event)}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              )}
+              name="bondingAmount"
+            />
+            <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
+            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+              Bonding Period ({amountOfTime.unit})
             </Text>
-            Your Liveliness Bond is bound by some{" "}
+            <Controller
+              control={control}
+              render={({ field: { onChange } }) => (
+                <NumberInput
+                  mt="3 !important"
+                  size="md"
+                  id="bondingPeriod"
+                  maxW={24}
+                  step={1}
+                  defaultValue={bondingPeriod}
+                  isDisabled
+                  min={3}
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={(event) => onChange(event)}>
+                  <NumberInputField />
+                </NumberInput>
+              )}
+              name="bondingPeriod"
+            />
+            <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
+          </FormControl>
+        </Flex>
+
+        <Box mb={7}>
+          <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
+            Need help, support or sponsorship for the Liveliness{" "}
             <Text fontWeight="bold" as="span">
-              Penalties and Slashing Terms
-            </Text>{" "}
-            as detailed below. At the end of the{" "}
+              Bonding Amount
+            </Text>
+            ? Become a Verified Creator <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+
+        <Box minH={{ base: "5rem", md: "3.5rem" }}>
+          <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" textColor="teal.200">
+            Penalties and Slashing
+          </Text>
+          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
+            If you break your Liveliness Bond before the{" "}
             <Text fontWeight="bold" as="span">
               Bonding Period
             </Text>
-            , you can withdraw your full
+            , you will be penalized by losing a portion (or all) of your{" "}
             <Text fontWeight="bold" as="span">
               Bonding Amount
-            </Text>{" "}
-            OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the Liveliness
-            Bond.
+            </Text>
+            . The community will also be able to curate and raise concerns about Data NFTs to Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns
+            are validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO-based curation enforces positive behavior
+            penalizes bad actors and protects Data Consumers.
           </Text>
 
-          <Flex flexDirection="row" gap="7" mt={2}>
-            <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
-              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Amount (in ITHEUM)
-              </Text>
+          {itheumBalance < antiSpamTax + bondingAmount && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+            </Text>
+          )}
 
-              <Controller
-                control={control}
-                render={({ field: { onChange } }) => (
-                  <NumberInput
-                    mt="3 !important"
-                    size="md"
-                    id="bondingAmount"
-                    maxW={24}
-                    step={1}
-                    defaultValue={bondingAmount}
-                    isDisabled
-                    min={10}
-                    max={maxRoyalties > 0 ? maxRoyalties : 0}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(event) => onChange(event)}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                )}
-                name="bondingAmount"
-              />
-              <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
-              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Period ({amountOfTime.unit})
+          <Flex mt="3 !important">
+            <Button
+              colorScheme="teal"
+              borderRadius="12px"
+              variant="outline"
+              size="sm"
+              onClick={() => window.open("https://docs.itheum.io/product-docs/legal/ecosystem-tools-terms/liveliness-bonding-penalties-and-slashing-terms")}>
+              <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
+                Read Liveliness Bonding: Penalties and Slashing Terms
               </Text>
-              <Controller
-                control={control}
-                render={({ field: { onChange } }) => (
-                  <NumberInput
-                    mt="3 !important"
-                    size="md"
-                    id="bondingPeriod"
-                    maxW={24}
-                    step={1}
-                    defaultValue={bondingPeriod}
-                    isDisabled
-                    min={3}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(event) => onChange(event)}>
-                    <NumberInputField />
-                  </NumberInput>
-                )}
-                name="bondingPeriod"
-              />
-              <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
-            </FormControl>
+            </Button>
           </Flex>
 
-          <Box mb={7}>
-            <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
-              Need help, support or sponsorship for the Liveliness{" "}
-              <Text fontWeight="bold" as="span">
-                Bonding Amount
-              </Text>
-              ? Become a Verified Creator <ExternalLinkIcon mx="2px" />
-            </Link>
-          </Box>
+          <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
+            I have read and I agree to Liveliness Bonding: Penalties and Slashing Terms
+          </Checkbox>
 
-          <Box minH={{ base: "5rem", md: "3.5rem" }}>
-            <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" textColor="teal.200">
-              Penalties and Slashing
+          {!readLivelinessBonding && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              You need to agree to Liveliness Bonding: Penalties and Slashing Terms to proceed with your mint.
             </Text>
-            <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
-              If you break your Liveliness Bond before the{" "}
-              <Text fontWeight="bold" as="span">
-                Bonding Period
-              </Text>
-              , you will be penalized by losing a portion (or all) of your{" "}
-              <Text fontWeight="bold" as="span">
-                Bonding Amount
-              </Text>
-              . The community will also be able to curate and raise concerns about Data NFTs to Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns
-              are validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO-based curation enforces positive behavior
-              penalizes bad actors and protects Data Consumers.
-            </Text>
-
-            {itheumBalance < antiSpamTax + bondingAmount && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
-              </Text>
-            )}
-
-            <Flex mt="3 !important">
-              <Button
-                colorScheme="teal"
-                borderRadius="12px"
-                variant="outline"
-                size="sm"
-                onClick={() => window.open("https://docs.itheum.io/product-docs/legal/ecosystem-tools-terms/liveliness-bonding-penalties-and-slashing-terms")}>
-                <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
-                  Read Liveliness Bonding: Penalties and Slashing Terms
-                </Text>
-              </Button>
-            </Flex>
-
-            <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
-              I have read and I agree to Liveliness Bonding: Penalties and Slashing Terms
-            </Checkbox>
-
-            {!readLivelinessBonding && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                You need to agree to Liveliness Bonding: Penalties and Slashing Terms to proceed with your mint.
-              </Text>
-            )}
-          </Box>
-        </>
-      )}
+          )}
+        </Box>
+      </>
 
       <>
         <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="50px !important">

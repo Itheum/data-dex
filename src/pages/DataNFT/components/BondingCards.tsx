@@ -60,8 +60,8 @@ export const BondingCards: React.FC = () => {
     })();
   }, [hasPendingTransactions]);
 
-  const calculateNewPeriodAfterNewBond = (unboundTimestamp: number, lockPeriod: number) => {
-    const newExpiry = new Date((unboundTimestamp + lockPeriod) * 1000);
+  const calculateNewPeriodAfterNewBond = (unbondTimestamp: number, lockPeriod: number) => {
+    const newExpiry = new Date((unbondTimestamp + lockPeriod) * 1000);
     return newExpiry.toDateString();
   };
 
@@ -72,9 +72,9 @@ export const BondingCards: React.FC = () => {
       .toNumber();
   };
 
-  const checkIfBondIsExpired = (unboundTimestamp: number) => {
+  const checkIfBondIsExpired = (unbondTimestamp: number) => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    return currentTimestamp > unboundTimestamp;
+    return currentTimestamp > unbondTimestamp;
   };
 
   const renewBond = async (tokenIdentifier: string, nonce: number) => {
@@ -106,22 +106,23 @@ export const BondingCards: React.FC = () => {
                   <Text fontFamily="Clash-Medium" pb={3}>
                     {dataNft.tokenName}
                   </Text>
-                  <LivelinessScore key={index} unboundTimestamp={contractBonds[index].unboundTimestamp} lockPeriod={contractBonds[index].lockPeriod} />
+                  <LivelinessScore key={index} unbondTimestamp={contractBonds[index].unbondTimestamp} lockPeriod={contractBonds[index].lockPeriod} />
                   <Flex gap={4} pt={3} alignItems="center">
                     <Button colorScheme="teal" px={6} onClick={() => renewBond(dataNft.collection, dataNft.nonce)}>
                       Renew Bond
                     </Button>
-                    <Text>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBonds[index].unboundTimestamp, contractBonds[index].lockPeriod)}`}</Text>
+                    <Text>{`New expiry will be ${calculateNewPeriodAfterNewBond(contractBonds[index].unbondTimestamp, contractBonds[index].lockPeriod)}`}</Text>
                   </Flex>
                   <Flex gap={4} pt={3} alignItems="center">
-                    {!checkIfBondIsExpired(contractBonds[index].unboundTimestamp) ? (
+                    {!checkIfBondIsExpired(contractBonds[index].unbondTimestamp) ? (
                       <Button
                         colorScheme="red"
                         variant="outline"
                         textColor="indianred"
                         fontWeight="400"
                         isDisabled={
-                          calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) <= 0
+                          calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) <=
+                          new BigNumber(0)
                         }
                         onClick={() => withdrawBonds(dataNft.collection, dataNft.nonce)}>
                         Withdraw Bond
@@ -159,10 +160,10 @@ export const BondingCards: React.FC = () => {
                           &nbsp;$ITHEUM Remaining
                         </Text>
                       </Flex>
-                      {!checkIfBondIsExpired(contractBonds[index].unboundTimestamp) ? (
+                      {!checkIfBondIsExpired(contractBonds[index].unbondTimestamp) ? (
                         <>
                           {calculateRemainedAmountAfterPenalty(BigNumber(contractBonds[index].remainingAmount), BigNumber(contractBonds[index].bondAmount)) >=
-                          0 ? (
+                          new BigNumber(0) ? (
                             <Text textColor="indianred" fontSize="sm">
                               You can withdraw bond with {contractConfiguration.withdrawPenalty / 100}% Penalty
                             </Text>
