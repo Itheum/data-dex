@@ -430,7 +430,7 @@ export default function WalletDataNFTMX(item: any) {
 
               <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
                 <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
-                  {item?.isDataNFTPH ? "Data NFT-PH (Plug-In Hybrid)" : "Fully Transferable License"}
+                  {item?.isDataNFTPH && "Data NFT-PH (Plug-In Hybrid)"}
                 </Text>
               </Badge>
 
