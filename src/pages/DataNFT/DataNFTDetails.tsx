@@ -28,7 +28,6 @@ import {
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
-import { IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -49,7 +48,6 @@ import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import {
   convertToLocalString,
   convertWeiToEsdt,
@@ -688,7 +686,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             )}
                           </>
                           {}
-                          <Text color={"teal.200"}>{nftData.identifier}</Text>
+                          <Text color={"teal.200"}>{nftData.tokenIdentifier}</Text>
                         </Heading>
                         <Box flex="1" overflowY="scroll" h="18.6rem" px="28px" py="14px">
                           {totalOffers.length === 0 ||
@@ -722,13 +720,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                       </GridItem>
                                       <GridItem colSpan={1}>
                                         {tokenId && pathname?.includes(tokenId) ? (
-                                          <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                          <a href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
                                           </a>
                                         ) : (
-                                          <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                          <a target="_blank" href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
