@@ -538,7 +538,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                       </Flex>
                     </Flex>
-                    {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore tokenIdentifier={tokenId ?? ""} />}
+                    <LivelinessScore tokenIdentifier={tokenId ?? ""} />
                   </Flex>
                 </Flex>
 

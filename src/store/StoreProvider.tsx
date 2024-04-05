@@ -44,10 +44,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
   const updateLockPeriodForBond = useMintStore((state) => state.updateLockPeriodForBond);
-  let bondingContract: BondContract;
-  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-    bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
-  }
+  const bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
   const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
   DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
