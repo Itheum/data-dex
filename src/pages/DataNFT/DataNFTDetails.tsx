@@ -28,7 +28,6 @@ import {
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
-import { IAddress } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -49,7 +48,6 @@ import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import {
   convertToLocalString,
   convertWeiToEsdt,
@@ -353,13 +351,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
-                        <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
-                          {nftData.identifier}
+                        <Link href={`${chainExplorer}/nfts/${nftData.tokenIdentifier}`} isExternal>
+                          {nftData.tokenIdentifier}
                           <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
                         <Favourite
                           chainID={chainID}
-                          tokenIdentifier={nftData.identifier}
+                          tokenIdentifier={nftData.tokenIdentifier}
                           bearerToken={tokenLogin?.nativeAuthToken}
                           favouriteItems={favouriteItems}
                           getFavourites={getFavourite}
@@ -608,11 +606,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </Text>
                             </Box>
                           )}
-                          <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                            <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
-                              {nftData.isDataNFTPH ? "Data NFT-PH (Plug-In Hybrid)" : "Fully Transferable License"}
-                            </Text>
-                          </Badge>
+                          {nftData.isDataNFTPH && (
+                            <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                              <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                                Data NFT-PH (Plug-In Hybrid)
+                              </Text>
+                            </Badge>
+                          )}
                         </Flex>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
@@ -685,7 +685,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             )}
                           </>
                           {}
-                          <Text color={"teal.200"}>{nftData.identifier}</Text>
+                          <Text color={"teal.200"}>{nftData.tokenIdentifier}</Text>
                         </Heading>
                         <Box flex="1" overflowY="scroll" h="18.6rem" px="28px" py="14px">
                           {totalOffers.length === 0 ||
@@ -719,13 +719,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                       </GridItem>
                                       <GridItem colSpan={1}>
                                         {tokenId && pathname?.includes(tokenId) ? (
-                                          <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                          <a href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
                                           </a>
                                         ) : (
-                                          <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                          <a target="_blank" href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>

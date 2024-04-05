@@ -1,36 +1,35 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Text,
-  Image,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  HStack,
-  Flex,
   Button,
   Checkbox,
   Divider,
-  useToast,
+  Flex,
+  HStack,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Text,
   useColorMode,
+  useToast,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import BigNumber from "bignumber.js";
 import DataNFTLiveUptime from "components/UtilComps/DataNFTLiveUptime";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMetadataType } from "libs/MultiversX/types";
 import {
-  convertEsdtToWei,
-  convertWeiToEsdt,
-  sleep,
-  printPrice,
-  convertToLocalString,
-  tokenDecimals,
-  getTokenWantedRepresentation,
   backendApi,
+  convertEsdtToWei,
+  convertToLocalString,
+  convertWeiToEsdt,
   getApiDataMarshal,
+  getTokenWantedRepresentation,
+  printPrice,
+  sleep,
+  tokenDecimals,
 } from "libs/utils";
 import { useAccountStore, useMarketStore } from "store";
 
@@ -38,7 +37,7 @@ export interface ProcureAccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   buyerFee: number;
-  nftData: DataNftMetadataType;
+  nftData: Partial<DataNft>;
   offer: Offer;
   amount: number;
   setSessionId?: (e: any) => void;
@@ -343,7 +342,7 @@ export default function ProcureDataNFTModal({ isOpen, onClose, buyerFee, nftData
 
             <DataNFTLiveUptime
               dataMarshal={getApiDataMarshal(chainID)}
-              NFTId={nftData.id}
+              NFTId={nftData.tokenIdentifier ?? ""}
               handleFlagAsFailed={(hasFailed: boolean) => setLiveUptimeFAIL(hasFailed)}
               isLiveUptimeSuccessful={isLiveUptimeSuccessful}
               setIsLiveUptimeSuccessful={setIsLiveUptimeSuccessful}
