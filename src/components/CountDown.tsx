@@ -41,8 +41,8 @@ const Countdown: React.FC<CountdownProps> = ({ unixTime }) => {
         <span> Claim your {`<BiTz>`}</span>
       ) : (
         <Text>
-          Play again in {timeLeft.hours > 0 ? (timeLeft.hours + timeLeft.hours === 1 ? " Hour " : " Hours ") : ""}
-          {timeLeft.minutes > 0 ? timeLeft.minutes + " Min : " : ""} {timeLeft.seconds} Sec
+          Play again in {timeLeft.hours > 0 ? <>{`${timeLeft.hours} ${timeLeft.hours === 1 ? " Hour " : " Hours "}`}</> : ""}
+          {timeLeft.minutes > 0 ? timeLeft.minutes + " Min " : ""} {timeLeft.seconds} Sec
         </Text>
       )}
     </Box>
