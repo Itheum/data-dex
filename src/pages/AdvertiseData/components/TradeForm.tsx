@@ -45,7 +45,7 @@ type TradeDataFormType = {
   tokenNameForm: string;
   datasetTitleForm: string;
   datasetDescriptionForm: string;
-  bonusNFTMediaImgUrlForm: string;
+  extraAssets?: string;
   numberOfCopiesForm: number;
   royaltiesForm: number;
   bondingAmount?: number;
@@ -165,12 +165,14 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(10, "Dataset description must have at least 10 characters.")
       .max(400, "Dataset description must have maximum of 400 characters."),
 
-    bonusNFTMediaImgUrlForm: Yup.string()
-      .required("Bonus NFT Img URL is required (or type 'NA' to skip this)")
-      .test("is-ipfs", "Bonus NFT Img URL must be a valid IPFS URL", function (value) {
-        const ipfsUrlRegex = /^(ipfs):\/\/[a-zA-Z0-9]+$/gm;
-        return value ? ipfsUrlRegex.test(value.split("?")[0]) || value === "NA" : false;
-      }),
+    /* extraAssets: Yup.array().of(Yup.string().test("is-ipfs", "Bonus NFT Img URL must be a valid IPFS URL", function (value) {
+      const ipfsUrlRegex = /^(ipfs):\/\/[a-zA-Z0-9]+$/gm;
+      return value ? ipfsUrlRegex.test(value.split("?")[0]) || value === "NA" : false;
+    })),*/
+    extraAssets: Yup.string().test("is-ipfs", "Bonus NFT Img URL must be a valid IPFS URL", function (value) {
+      const ipfsUrlRegex = /^(ipfs):\/\/[a-zA-Z0-9]+$/gm;
+      return value ? ipfsUrlRegex.test(value.split("?")[0]) || value === "NA" : false;
+    }),
 
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
@@ -211,7 +213,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       tokenNameForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "").substring(0, 15) ?? "",
       datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
-      bonusNFTMediaImgUrlForm: dataToPrefill?.additionalInformation.bonusNFTMediaImgUrl ?? "",
+      extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
       bondingAmount:
@@ -230,7 +232,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const dataNFTTokenName: string = getValues("tokenNameForm");
   const datasetTitle: string = getValues("datasetTitleForm");
   const datasetDescription: string = getValues("datasetDescriptionForm");
-  const bonusNFTMediaImgUrl: string = getValues("bonusNFTMediaImgUrlForm");
+  const extraAssets: string = getValues("extraAssets") ?? "";
   const dataNFTCopies: number = getValues("numberOfCopiesForm");
   const dataNFTRoyalties: number = getValues("royaltiesForm");
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
@@ -351,10 +353,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     const optionalSDKMintCallFields: Record<string, any> = {
       nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+      extraAssets: [],
     };
 
-    if (bonusNFTMediaImgUrl && bonusNFTMediaImgUrl.trim() !== "" && bonusNFTMediaImgUrl.trim().toUpperCase() !== "NA") {
-      optionalSDKMintCallFields["bonusNFTMediaImgUrl"] = bonusNFTMediaImgUrl.trim();
+    if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+      optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
     }
 
     const mintObject = await sftMinter.mint(
@@ -677,7 +680,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
           </Box>
         </Flex>
 
-        <FormControl isInvalid={!!errors.bonusNFTMediaImgUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
+        <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
           <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
             Bonus IPFS NFT Media Image URL (ipfs://CID or {"'NA'"} to skip it)
           </FormLabel>
@@ -690,13 +693,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 placeholder="e.g. ipfs://CID"
                 id="bonusNFTMediaImgUrlForm"
                 isDisabled={!!currDataCATSellObj}
-                defaultValue={bonusNFTMediaImgUrl}
+                defaultValue={extraAssets}
                 onChange={(event) => onChange(event.target.value)}
               />
             )}
-            name="bonusNFTMediaImgUrlForm"
+            name="extraAssets"
           />
-          <FormErrorMessage>{errors?.bonusNFTMediaImgUrlForm?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
         </FormControl>
       </>
 
