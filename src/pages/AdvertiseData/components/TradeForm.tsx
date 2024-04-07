@@ -32,7 +32,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { MENU } from "../../../libs/config";
+import { IS_DEVNET, MENU } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { UserDataType } from "../../../libs/MultiversX/types";
 import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
@@ -90,7 +90,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { chainID } = useGetNetworkConfig();
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
-  const bond = new BondContract(chainID === "1" ? "mainnet" : "devnet");
+  const bond = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [periods, setPeriods] = useState<any>([
     { amount: "10000000000000000000", lockPeriod: 900 },
     { amount: "10000000000000000000", lockPeriod: 2 },
@@ -349,7 +349,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   };
 
   const handleOnChainMint = async () => {
-    const sftMinter = new SftMinter(chainID === "1" ? "mainnet" : "devnet");
+    const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
 
     const optionalSDKMintCallFields: Record<string, any> = {
       nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
@@ -682,7 +682,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
           <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
-            Bonus IPFS NFT Media Image URL (ipfs://CID or {"'NA'"} to skip it)
+            Bonus IPFS NFT Media Image URL (ipfs://CID)
           </FormLabel>
 
           <Controller

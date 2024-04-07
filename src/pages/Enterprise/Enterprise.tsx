@@ -8,7 +8,7 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { useNavigate } from "react-router-dom";
 import { gtagGo } from "libs/utils";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
-import { CHAIN_TX_VIEWER } from "../../libs/config";
+import { CHAIN_TX_VIEWER, IS_DEVNET } from "../../libs/config";
 
 export const Enterprise: React.FC = () => {
   const [isAddressWhitelisted, setAddressWhitelisted] = useState<boolean>(false);
@@ -27,7 +27,7 @@ export const Enterprise: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const factory = new Factory("devnet");
+  const factory = new Factory(IS_DEVNET ? "devnet" : "mainnet");
 
   const deployNewMinter = async (senderAddress: IAddress, version: string) => {
     // console.log(factory);

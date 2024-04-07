@@ -5,6 +5,7 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useParams } from "react-router-dom";
+import { IS_DEVNET } from "libs/config";
 import { DataNftCollection } from "./DataNftCollection/DataNftCollection";
 import { LaunchNftMinter } from "./LaunchNftMinter";
 import ShortAddress from "../../../components/UtilComps/ShortAddress";
@@ -13,18 +14,13 @@ export const MinterDashboard: React.FC = () => {
   const [viewContractConfig, setViewContractConfig] = useState<ContractConfiguration>();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { minterAddress } = useParams();
-  const { chainID } = useGetNetworkConfig();
 
-  const nftMinter = new NftMinter(chainID === "1" ? "mainnet" : "devnet", new Address(minterAddress));
-  // console.log(viewContractConfig);
+  const nftMinter = new NftMinter(IS_DEVNET ? "devnet" : "mainnet", new Address(minterAddress));
   useEffect(() => {
     (async () => {
-      // const getMinterRequirements = await nftMinter.viewMinterRequirements(new Address(address));
-      // setViewMinterRequirements(getMinterRequirements);
       try {
         const getContractConfig = await nftMinter.viewContractConfiguration();
         setViewContractConfig(getContractConfig);
-        // console.log(getContractConfig);
       } catch (error) {
         setViewContractConfig({
           tokenIdentifier: "",
