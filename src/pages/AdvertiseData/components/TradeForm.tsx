@@ -165,14 +165,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(10, "Dataset description must have at least 10 characters.")
       .max(400, "Dataset description must have maximum of 400 characters."),
 
-    /* extraAssets: Yup.array().of(Yup.string().test("is-ipfs", "Bonus NFT Img URL must be a valid IPFS URL", function (value) {
-      const ipfsUrlRegex = /^(ipfs):\/\/[a-zA-Z0-9]+$/gm;
-      return value ? ipfsUrlRegex.test(value.split("?")[0]) || value === "NA" : false;
-    })),*/
-    extraAssets: Yup.string().test("is-ipfs", "Bonus NFT Img URL must be a valid IPFS URL", function (value) {
-      const ipfsUrlRegex = /^(ipfs):\/\/[a-zA-Z0-9]+$/gm;
-      return value ? ipfsUrlRegex.test(value.split("?")[0]) || value === "NA" : false;
-    }),
+    extraAssets: Yup.string().optional().url("Extra asset URL must be a valid URL"),
 
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
@@ -682,7 +675,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
           <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
-            Bonus IPFS NFT Media Image URL (ipfs://CID)
+            Extra asset URL
           </FormLabel>
 
           <Controller
@@ -690,7 +683,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             render={({ field: { onChange } }) => (
               <Input
                 mt="1 !important"
-                placeholder="e.g. ipfs://CID"
+                placeholder="e.g. https://ipfs.io/ipfs/CID"
                 id="bonusNFTMediaImgUrlForm"
                 isDisabled={!!currDataCATSellObj}
                 defaultValue={extraAssets}
