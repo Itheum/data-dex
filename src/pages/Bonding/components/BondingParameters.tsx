@@ -17,16 +17,17 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { BondConfiguration, BondContract, State } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import BigNumber from "bignumber.js";
+import { Controller, useForm } from "react-hook-form";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Bond, BondConfiguration, BondContract, State } from "@itheum/sdk-mx-data-nft/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import BigNumber from "bignumber.js";
-import { sendTransactions } from "@multiversx/sdk-dapp/services";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { IS_DEVNET } from "libs/config";
 
 type BondingParametersFormType = {
   minimumLockPeriodInSeconds: number;
@@ -38,9 +39,8 @@ type BondingParametersFormType = {
 
 export const BondingParameters: React.FC = () => {
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
+  const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [onChangeMinimumLockPeriodIndex, setOnChangeMinimumLockPeriodIndex] = useState<number>(0);
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
     contractState: 0,

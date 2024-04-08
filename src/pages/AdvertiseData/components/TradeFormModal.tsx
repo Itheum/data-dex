@@ -33,11 +33,7 @@ type TradeFormProps = {
 export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const { isOpen, setIsOpen, dataToPrefill } = props;
   const { colorMode } = useColorMode();
-
   const { chainID } = useGetNetworkConfig();
-
-  const navigate = useNavigate();
-
   const [minRoyalties, setMinRoyalties] = useState<number>(-1);
   const [maxRoyalties, setMaxRoyalties] = useState<number>(-1);
   const [maxSupply, setMaxSupply] = useState<number>(-1);
@@ -46,7 +42,24 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [, setDataNFTMarshalService] = useState<string>("");
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
+  const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
+
+  useEffect(() => {
+    (async () => {
+      const minRoyaltiesT = userData?.minRoyalties ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
+      const maxSupplyT = userData?.maxSupply ?? 0;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
+
+      onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
+      onChangeDataNFTImageGenService();
+      setMinRoyalties(minRoyaltiesT);
+      setMaxRoyalties(maxRoyaltiesT);
+      setMaxSupply(maxSupplyT);
+      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
+    })();
+  }, []);
 
   const onClose = () => {
     setIsOpen(false);
@@ -140,22 +153,6 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
       setDataNFTImgGenService(isSuccess);
     });
   };
-
-  useEffect(() => {
-    (async () => {
-      const minRoyaltiesT = userData?.minRoyalties ?? 0;
-      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
-      const maxSupplyT = userData?.maxSupply ?? 0;
-      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
-
-      onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
-      onChangeDataNFTImageGenService();
-      setMinRoyalties(minRoyaltiesT);
-      setMaxRoyalties(maxRoyaltiesT);
-      setMaxSupply(maxSupplyT);
-      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
-    })();
-  }, []);
 
   return (
     <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false}>
