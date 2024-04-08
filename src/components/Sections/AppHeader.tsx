@@ -58,7 +58,7 @@ import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_F
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
 import Countdown from "components/CountDown";
-
+import { BsDot } from "react-icons/bs";
 const exploreRouterMenu = [
   {
     sectionId: "MainSections",
@@ -373,12 +373,47 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 </Box>
                 <Popover>
                   <PopoverTrigger>
-                    <Button
-                      display={{ base: "none", md: "inline-flex" }}
-                      size={{ md: "md", xl: "md", "2xl": "lg" }}
-                      p="2 !important"
-                      rightIcon={<LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />}>
+                    <Button display={{ base: "none", md: "inline-flex" }} size={{ md: "md", xl: "md", "2xl": "lg" }} p="2 !important">
                       {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                      <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+                      {cooldown <= 0 && (
+                        <>
+                          {" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-15px"
+                            top="-15px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="15px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"></Box>{" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-8px"
+                            top="-18px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="15px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                            style={{ animationDelay: "0.5s" }}></Box>{" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-12px"
+                            top="-25px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="55px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                            style={{ animationDelay: "1s" }}></Box>{" "}
+                        </>
+                      )}
+                      {/* <BsDot color="#38bdf8" size={"55px"} animation="ping 1s cubic-bezier(0, 0, 0.2, 1) infinite" /> */}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent backgroundColor={colorMode === "dark" ? "bgDark" : "white"} w="25rem">
