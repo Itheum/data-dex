@@ -9,6 +9,7 @@ import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import axios from "axios";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { MdInfo, MdNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
+import { IS_DEVNET } from "libs/config";
 import { ImageTooltip } from "../../../../components/ImageTooltip";
 import { getApi, getExplorer } from "../../../../libs/MultiversX/api";
 
@@ -34,7 +35,7 @@ export const CurateNfts: React.FC<CurateNftsProp> = (props) => {
 
   const pageCount = Math.ceil(nftCount / paginationSizeNft);
 
-  DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
   const getCreatedDataNftsFromAPI = async () => {
     setHasRequestLoaded(false);
     const apiLink = getApi(chainID);

@@ -4,7 +4,7 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useSearchParams } from "react-router-dom";
-import { GET_BITZ_TOKEN, viewDataJSONCore } from "libs/config";
+import { GET_BITZ_TOKEN, IS_DEVNET, viewDataJSONCore } from "libs/config";
 import {
   contractsForChain,
   getFavoritesFromBackendApi,
@@ -47,7 +47,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
   const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
-  DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
   useEffect(() => {
     (async () => {
