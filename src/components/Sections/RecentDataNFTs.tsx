@@ -70,7 +70,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   };
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(IS_DEVNET ? "devent" : "mainnet");
+    DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
     try {
       const isApiUp = await getHealthCheckFromBackendApi(chainID);
