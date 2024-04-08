@@ -22,7 +22,7 @@ import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { NativeAuthConfigType } from "@multiversx/sdk-dapp/types";
 import { ExtensionLoginButton, LedgerLoginButton, WalletConnectLoginButton, WebWalletLoginButton } from "@multiversx/sdk-dapp/UI";
 import { useLocation, useNavigate } from "react-router-dom";
-import { WALLETS } from "libs/config";
+import { IS_DEVNET, WALLETS } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { getApi } from "libs/MultiversX/api";
 import { walletConnectV2ProjectId } from "libs/mxConstants";
@@ -154,7 +154,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
                         <WebWalletLoginButton
                           loginButtonText={"Google (xAlias)"}
                           buttonClassName="auth_button"
-                          customWalletAddress={import.meta.env.VITE_ENV_NETWORK === "mainnet" ? "https://xalias.com" : "https://devnet.xalias.com"}
+                          customWalletAddress={IS_DEVNET ? "https://devnet.xalias.com" : "https://xalias.com"}
                           {...commonProps}></WebWalletLoginButton>
                       </WrapItem>
                     </Wrap>

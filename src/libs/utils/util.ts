@@ -2,7 +2,7 @@ import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
-import { OPENSEA_CHAIN_NAMES } from "libs/config";
+import { IS_DEVNET, OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
 import { getNetworkProvider } from "../MultiversX/api";
 import { ExtendedOffer } from "libs/types";
@@ -317,7 +317,7 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
   const offersTokenIdentif = offers.map((offer) => {
     return createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce);
   });
-  const bondingContract = new BondContract("devnet");
+  const bondingContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const bonds = await bondingContract.viewBonds(offersTokenIdentif);
   return offers.map((offer) => {
     const bond = bonds.find((bondT) => bondT.tokenIdentifier === offer.offeredTokenIdentifier && bondT.nonce === offer.offeredTokenNonce);
@@ -343,7 +343,7 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
 };
 
 export const settingLivelinessScore = async (tokenIdentifier?: string, unbondTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
-  const bondingContract = new BondContract("devnet");
+  const bondingContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   try {
     if (tokenIdentifier) {
       const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);

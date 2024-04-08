@@ -1,4 +1,6 @@
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
+import { EnvironmentsEnum } from "@multiversx/sdk-dapp/types";
 import { BlobDataType, ContractsType, ExtendedViewDataReturnType } from "libs/types";
 import {
   tokenContractAddress_Mx_Devnet,
@@ -14,8 +16,6 @@ import {
   dataNftMintContractAddress_Mx_Mainnet,
   dataNFTFTTicker_Mx_Mainnet,
 } from "./contractAddresses";
-import { EnvironmentsEnum } from "@multiversx/sdk-dapp/types";
-import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 export function contractsForChain(chainID: string): ContractsType {
   switch (chainID) {
