@@ -522,17 +522,46 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <AccordionItem key={menu.sectionId}>
                   {() => (
                     <>
-                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
-                        My Address Quick Copy
-                      </Text>
-                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
-                      </Text>
-
                       <Popover>
                         <PopoverTrigger>
-                          <Flex px={4} pb={1.5}>
-                            <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+                          <Flex px={4} pb={1.5} position={"relative"} w={"100px"} mt={3}>
+                            {cooldown <= 0 && (
+                              <>
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-20px"
+                                  top="-16px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="15px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"></Box>{" "}
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-25px"
+                                  top="-18px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="15px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                                  style={{ animationDelay: "0.5s" }}></Box>{" "}
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-23px"
+                                  top="-25px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="55px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                                  style={{ animationDelay: "1s" }}></Box>{" "}
+                              </>
+                            )}
+                            <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />{" "}
                             {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
                           </Flex>
                         </PopoverTrigger>
@@ -569,6 +598,12 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           </PopoverBody>
                         </PopoverContent>
                       </Popover>
+                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4}>
+                        My Address Quick Copy
+                      </Text>
+                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                      </Text>
 
                       <hr />
                       <List>
