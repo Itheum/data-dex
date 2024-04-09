@@ -18,7 +18,6 @@ export const LiveSettings: React.FC<LiveSettingsProps> = (props) => {
 
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  // console.log(viewContractConfig);
   const unPauseContract = async (senderAddress: IAddress) => {
     await sendTransactions({
       transactions: [nftMinter.unpauseContract(senderAddress)],

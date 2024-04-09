@@ -5,7 +5,7 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
-import { getFavoritesFromBackendApi, getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
+import { IS_DEVNET, getFavoritesFromBackendApi, getHealthCheckFromBackendApi, getRecentOffersFromBackendApi } from "libs/MultiversX";
 import { getApi, getNftsByIds } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
 import { RecentDataNFTType } from "libs/types";
@@ -70,7 +70,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
   };
 
   const apiWrapper = async () => {
-    DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+    DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
     try {
       const isApiUp = await getHealthCheckFromBackendApi(chainID);
@@ -122,7 +122,6 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
       // get these offers metadata from the API
       const nftIds = slicedOffers.map((offer) => `${offer.offeredTokenIdentifier}-${hexZero(offer.offeredTokenNonce)}`);
       const dataNfts = await getNftsByIds(nftIds, chainID);
-      // console.log(dataNfts);
 
       // merge the offer data and meta data
       const _latestOffers: RecentDataNFTType[] = [];

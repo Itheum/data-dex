@@ -3,12 +3,13 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
+import { IS_DEVNET } from "libs/config";
 import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
 
 type CollectionDashboardProps = {
@@ -24,9 +25,8 @@ type CollectionDashboardFormType = {
 export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) => {
   const { bondNft, bondDataNft } = props;
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
+  const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [allCompensation, setAllCompensation] = useState<Compensation>({
     compensationId: 0,
     tokenIdentifier: "",
@@ -49,8 +49,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     withdrawPenalty: 0,
     acceptedCallers: [""],
   });
-
-  // console.log(bondDataNft);
 
   useEffect(() => {
     (async () => {
@@ -81,7 +79,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     resolver: yupResolver(validationSchema),
   });
 
-  // console.log(bondNft.tokenIdentifier + "-" + bondNft.nonce.toString(18));
   const enforceMinimumPenalty = watch("enforceMinimumPenalty");
   const endTimestampOfBond = watch("endTimestampOfBond");
 
@@ -160,7 +157,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
               &nbsp;$ITHEUM Remaining
             </Text>
           </Flex>
-          <LivelinessScore unboundTimestamp={bondNft.unboundTimestamp} lockPeriod={bondNft.lockPeriod} />
+          <LivelinessScore unbondTimestamp={bondNft.unbondTimestamp} lockPeriod={bondNft.lockPeriod} />
         </Box>
         <Box>
           <Flex flexDirection="column" gap={4}>

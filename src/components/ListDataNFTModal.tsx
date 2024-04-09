@@ -71,7 +71,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
 
   const [listTxSessionId, setListTxSessionId] = useState<string>("");
-  const [listTxStatus, setListTxStatus] = useState<boolean>(false);
   const [listTxHash, setListTxHash] = useState<string>("");
 
   const trackTransactionStatus = useTrackTransactionStatus({
@@ -87,15 +86,11 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
   }, [pendingTransactions]);
 
   useEffect(() => {
-    setListTxStatus(trackTransactionStatus.isSuccessful ? true : false);
-  }, [trackTransactionStatus]);
-
-  useEffect(() => {
-    if (listTxStatus && !isWebWallet) {
+    if (trackTransactionStatus.isSuccessful && !isWebWallet) {
       addOfferBackend();
       setAmount(1);
     }
-  }, [listTxStatus]);
+  }, [trackTransactionStatus]);
 
   async function addOfferBackend(
     txHash = listTxHash,
@@ -242,7 +237,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
 
-      // console.log(identifier, nonceDec);
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {

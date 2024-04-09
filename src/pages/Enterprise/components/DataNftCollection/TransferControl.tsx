@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Flex, FormControl, FormErrorMessage, FormLabe
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address, IAddress } from "@multiversx/sdk-core/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import * as Yup from "yup";
 import dataDexLogo from "assets/img/enterprise/dataDexLogo.png";
 import xoxnoLogo from "assets/img/enterprise/xoxnoLogo.png";
+import { IS_DEVNET } from "libs/config";
 import ShortAddress from "../../../../components/UtilComps/ShortAddress";
 
 type TransferControlFormType = {
@@ -29,7 +30,6 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
 
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
 
   const validationSchema = Yup.object().shape({
     addressToSetRoleForTransfer: Yup.string().required("You have to enter the address to allow!"),
@@ -91,7 +91,7 @@ export const TransferControl: React.FC<TransferControlProps> = (props) => {
     const dataDexMainnet = "erd1qqqqqqqqqqqqqpgqay2r64l9nhhvmaqw4qanywfd0954w2m3c77qm7drxc";
     const xoxnoDevnet = "erd1qqqqqqqqqqqqqpgql0dnz6n5hpuw8cptlt00khd0nn4ja8eadsfq2xrqw4";
     const xoxnoMainnet = "erd1qqqqqqqqqqqqqpgq6wegs2xkypfpync8mn2sa5cmpqjlvrhwz5nqgepyg8";
-    if (chainID === "D") {
+    if (IS_DEVNET) {
       if (marketplace === "dataDex") {
         setTransferRole(dataDexDevnet);
       } else {

@@ -87,12 +87,11 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
       icon: BsClockHistory,
       isDisabled: false,
     },
-    // TODO when bonding is ready just remove the comment
-    // {
-    //   tabName: "Bonding",
-    //   icon: MdLockOutline,
-    //   isDisabled: false,
-    // },
+    {
+      tabName: "Bonding",
+      icon: MdLockOutline,
+      isDisabled: false,
+    },
   ];
 
   const getOnChainNFTs = async () => {
@@ -108,7 +107,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();
-      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance == 0 ? 1 : nft.balance }));
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
       setDataNfts(_alteredDataNfts);
     })();
     setOneNFTImgLoaded(false);
@@ -233,17 +232,15 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
             <TabPanel>
               <InteractionTxTable address={address} />
             </TabPanel>
-            {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
-              <TabPanel mt={2} width={"full"}>
-                {tabState === 5 ? (
-                  <BondingCards />
-                ) : (
-                  <Flex onClick={getOnChainNFTs}>
-                    <NoDataHere />
-                  </Flex>
-                )}
-              </TabPanel>
-            )}
+            <TabPanel mt={2} width={"full"}>
+              {tabState === 5 ? (
+                <BondingCards />
+              ) : (
+                <Flex onClick={getOnChainNFTs}>
+                  <NoDataHere />
+                </Flex>
+              )}
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Stack>
