@@ -3,6 +3,9 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { Bond, BondContract, DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import BigNumber from "bignumber.js";
+import { useNavigate } from "react-router-dom";
+import { IS_DEVNET } from "libs/config";
 import { BondingParameters } from "./components/BondingParameters";
 import { CollectionDashboard } from "./components/CollectionDashboard";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
@@ -17,8 +20,8 @@ export const Bonding: React.FC = () => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContractAdminDevnet = import.meta.env.VITE_ENV_BONDING_ADMIN_DEVNET;
   const bondContractAdminMainnet = import.meta.env.VITE_ENV_BONDING_ADMIN_MAINNET;
-  const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
-  DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+  const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [totalAmountBonded, setTotalAmountBonded] = useState<number>(0);
@@ -41,10 +44,9 @@ export const Bonding: React.FC = () => {
   });
 
   const checkIfUserIsAdmin = () => {
-    //return true;
-    if ((address && chainID === "D" && address === bondContractAdminDevnet) || (address && chainID === "1" && address === bondContractAdminMainnet)) {
-      return true;
-    }
+    if (!address) return false;
+    const adminAddress = IS_DEVNET ? bondContractAdminDevnet : bondContractAdminMainnet;
+    return address === adminAddress;
   };
 
   useEffect(() => {
