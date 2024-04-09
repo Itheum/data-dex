@@ -413,7 +413,6 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                             style={{ animationDelay: "1s" }}></Box>{" "}
                         </>
                       )}
-                      {/* <BsDot color="#38bdf8" size={"55px"} animation="ping 1s cubic-bezier(0, 0, 0.2, 1) infinite" /> */}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent backgroundColor={colorMode === "dark" ? "bgDark" : "white"} w="25rem">
