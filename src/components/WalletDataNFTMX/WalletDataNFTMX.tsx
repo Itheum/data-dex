@@ -251,7 +251,6 @@ export default function WalletDataNFTMX(item: any) {
       }
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
 
-      console.log(nonce, res.error?.includes("403") && (nonce === 7 || nonce === 198));
       if (res.error?.includes("403") && (nonce === 7 || nonce === 198)) {
         setUnlockAccessProgress((prevProgress) => ({
           ...prevProgress,
