@@ -1,7 +1,6 @@
 import React from "react";
 import { Badge, Box, Flex, Text } from "@chakra-ui/react";
 import { auto } from "@popperjs/core";
-import { i } from "@chakra-ui/toast/dist/toast.types-24f022fd";
 
 interface GuardRailSectionProps {
   value?: any;
@@ -12,7 +11,6 @@ interface GuardRailSectionProps {
 
 const GuardRailSection: React.FC<GuardRailSectionProps> = (props) => {
   const { value, title, acceptedTokens, badgeColor } = props;
-  // console.log(acceptedTokens);
   const badgeColorsArray = ["#00C79726", "#FFFFFF26", "#0F0F0F20"];
   const badgeColorString: string = badgeColorsArray[badgeColor];
   return (

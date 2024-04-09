@@ -30,7 +30,6 @@ export const Enterprise: React.FC = () => {
   const factory = new Factory(IS_DEVNET ? "devnet" : "mainnet");
 
   const deployNewMinter = async (senderAddress: IAddress, version: string) => {
-    // console.log(factory);
     await sendTransactions({
       transactions: [factory.deployContract(senderAddress, version)],
     });

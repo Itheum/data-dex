@@ -57,7 +57,6 @@ export const TrendingData: React.FC = () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
       updateFavoriteNfts(getFavourites);
     }
   };
@@ -66,7 +65,6 @@ export const TrendingData: React.FC = () => {
     getFavourite();
   }, [favoriteNfts.length]);
 
-  // console.log(trendingDataNfts);
   return (
     <Box>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">
