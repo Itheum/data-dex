@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { ArrowBackIcon, ArrowForwardIcon, CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
@@ -9,8 +9,6 @@ import {
   GridItem,
   Heading,
   HStack,
-  IconButton,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
