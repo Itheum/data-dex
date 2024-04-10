@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
@@ -9,6 +9,7 @@ import {
   GridItem,
   Heading,
   HStack,
+  IconButton,
   Image,
   Link,
   NumberDecrementStepper,
@@ -36,6 +37,7 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
@@ -85,6 +87,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const [nftData, setNftData] = useState<any>({});
+  const [imagesToShow, setImagesToShow] = useState<string[]>([""]);
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -195,6 +198,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       .then((res) => {
         const _nftData = parseDataNft(res.data);
         setNftData(_nftData);
+        const imagesToShowT = [_nftData.nftImgUrl];
+        if (_nftData.extraAssets && _nftData.extraAssets.length > 0) {
+          imagesToShowT.push(..._nftData.extraAssets);
+        }
+        setImagesToShow(imagesToShowT);
         setIsLoadingDetails(false);
 
         if (_nftData.creator === address) {
@@ -337,17 +345,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Flex justifyContent={{ base: "center" }}>
-                    <Image
-                      w={{ base: "210px", xl: "260px" }}
-                      h={{ base: "210px", xl: "260px" }}
-                      py={2}
-                      objectFit={"contain"}
-                      src={nftData.nftImgUrl}
-                      alt={"Data NFT Image"}
-                      mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
-                    />
-                  </Flex>
+                  <ImageSlider imageUrls={[nftData.nftImgUrl, ...nftData.extraAssets]} autoSlide />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
