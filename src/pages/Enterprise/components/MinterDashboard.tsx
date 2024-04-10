@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { ContractConfiguration, NftMinter } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
+import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { useParams } from "react-router-dom";
+import { IS_DEVNET } from "libs/config";
 import { DataNftCollection } from "./DataNftCollection/DataNftCollection";
 import { LaunchNftMinter } from "./LaunchNftMinter";
 import ShortAddress from "../../../components/UtilComps/ShortAddress";
 
 export const MinterDashboard: React.FC = () => {
   const [viewContractConfig, setViewContractConfig] = useState<ContractConfiguration>();
-
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { minterAddress } = useParams();
 
-  const nftMinter = new NftMinter("devnet", new Address(minterAddress));
+  const nftMinter = new NftMinter(IS_DEVNET ? "devnet" : "mainnet", new Address(minterAddress));
   useEffect(() => {
     (async () => {
       try {

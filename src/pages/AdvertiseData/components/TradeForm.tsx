@@ -23,20 +23,19 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import { Address, BigUIntValue, ContractCallPayloadBuilder, ContractFunction, StringValue, Transaction } from "@multiversx/sdk-core/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
-import { File, NFTStorage } from "nft.storage";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { MintingModal } from "./MintingModal";
 import ChainSupportedInput from "../../../components/UtilComps/ChainSupportedInput";
-import { MENU, contractsForChain } from "../../../libs/config";
+import { IS_DEVNET, MENU } from "../../../libs/config";
 import { labels } from "../../../libs/language";
 import { UserDataType } from "../../../libs/MultiversX/types";
-import { convertEsdtToWei, getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
+import { getApiDataDex, getApiDataMarshal, isValidNumericCharacter, sleep, timeUntil } from "../../../libs/utils";
 import { useAccountStore, useMintStore } from "../../../store";
 
 // Declaring the form types
@@ -46,6 +45,7 @@ type TradeDataFormType = {
   tokenNameForm: string;
   datasetTitleForm: string;
   datasetDescriptionForm: string;
+  extraAssets?: string;
   numberOfCopiesForm: number;
   royaltiesForm: number;
   bondingAmount?: number;
@@ -90,7 +90,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { chainID } = useGetNetworkConfig();
   const lockPeriod = useMintStore((state) => state.lockPeriodForBond);
   const dataNFTMarshalService: string = getApiDataMarshal(chainID);
-  const bond = new BondContract("devnet");
+  const bond = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [periods, setPeriods] = useState<any>([
     { amount: "10000000000000000000", lockPeriod: 900 },
     { amount: "10000000000000000000", lockPeriod: 2 },
@@ -139,6 +139,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .test("is-distinct", "Data Preview URL cannot be the same as the Data Stream URL", function (value) {
         return value !== this.parent.dataStreamUrlForm;
       }),
+    //// NOTE: We disabled this uptime check for Data Preview URLs on Apr 24, as a lot of data preview urls are public up don't allow for "CORs" (so it used to fail)
     // .test("is-200", "Data Stream URL must be public", async function (value: string) {
     //   const { isSuccess, message } = await checkUrlReturns200(value);
     //   if (!isSuccess) {
@@ -158,10 +159,13 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters are allowed")
       .min(10, "Dataset title must have at least 10 characters.")
       .max(60, "Dataset title must have maximum of 60 characters."),
+
     datasetDescriptionForm: Yup.string()
       .required("Dataset description is required")
       .min(10, "Dataset description must have at least 10 characters.")
       .max(400, "Dataset description must have maximum of 400 characters."),
+
+    extraAssets: Yup.string().optional().url("Extra asset URL must be a valid URL"),
 
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
@@ -185,13 +189,10 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       .min(0, "Minimum value of bonding period is 3 months.")
       .required("Bonding Period is required"),
   };
-
-  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-    preSchema = { ...preSchema, ...bondingPreSchema };
-  }
+  preSchema = { ...preSchema, ...bondingPreSchema };
 
   const validationSchema = Yup.object().shape(preSchema);
-  const amountOfTime = import.meta.env.VITE_ENV_NETWORK === "devnet" ? timeUntil(lockPeriod[0].lockPeriod) : { count: 0, unit: "sec" };
+  const amountOfTime = timeUntil(lockPeriod[0].lockPeriod);
   // Destructure the methods needed from React Hook Form useForm component
   const {
     control,
@@ -205,6 +206,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       tokenNameForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "").substring(0, 15) ?? "",
       datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
+      extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
       bondingAmount:
@@ -223,6 +225,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const dataNFTTokenName: string = getValues("tokenNameForm");
   const datasetTitle: string = getValues("datasetTitleForm");
   const datasetDescription: string = getValues("datasetDescriptionForm");
+  const extraAssets: string = getValues("extraAssets") ?? "";
   const dataNFTCopies: number = getValues("numberOfCopiesForm");
   const dataNFTRoyalties: number = getValues("royaltiesForm");
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
@@ -237,11 +240,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     antiSpamTax: number,
     bondingAmount: number
   ): boolean | undefined {
-    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
-    } else {
-      return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || itheumBalance < antiSpamTax + bondingAmount;
-    }
+    return !isValid || !readTermsChecked || !readAntiSpamFeeChecked || !readLivelinessBonding || itheumBalance < antiSpamTax + bondingAmount;
   }
 
   const closeProgressModal = () => {
@@ -320,6 +319,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     };
 
     try {
+      // we actually don't need to encrypt here as the SDK mint method does it, but lets keep it for now (@TODO remove once we fully user the SDK in Data DEX)
       const res = await fetch(`${getApiDataMarshal(chainID)}/generate_V2`, requestOptions);
       const data = await res.json();
 
@@ -328,7 +328,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
         buildUniqueImage({
           dataNFTHash: data.messageHash,
-          dataNFTStreamUrlEncrypted: data.encryptedMessage,
         });
       } else {
         if (data.success === false) {
@@ -342,123 +341,50 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
-  function createIpfsMetadata(traits: string) {
-    const metadata = {
-      description: `${getValues("datasetTitleForm")} : ${getValues("datasetDescriptionForm")}`,
-      attributes: [] as object[],
+  const handleOnChainMint = async () => {
+    const sftMinter = new SftMinter(IS_DEVNET ? "devnet" : "mainnet");
+
+    const optionalSDKMintCallFields: Record<string, any> = {
+      nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
+      extraAssets: [],
     };
 
-    const attributes = traits.split(",").filter((element) => element.trim() !== "");
-    const metadataAttributes = [];
-
-    for (const attribute of attributes) {
-      const [key, value] = attribute.split(":");
-      const trait = { trait_type: key.trim(), value: value.trim() };
-      metadataAttributes.push(trait);
+    if (extraAssets && extraAssets.trim() !== "" && extraAssets.trim().toUpperCase() !== "NA") {
+      optionalSDKMintCallFields["extraAssets"] = [extraAssets.trim()];
     }
 
-    metadataAttributes.push({ trait_type: "Data Preview URL", value: dataNFTPreviewUrl });
-    metadataAttributes.push({ trait_type: "Creator", value: mxAddress });
-    metadata.attributes = metadataAttributes;
+    const mintObject = await sftMinter.mint(
+      new Address(mxAddress),
+      dataNFTTokenName,
+      dataNFTMarshalService,
+      dataNFTStreamUrl,
+      dataNFTPreviewUrl,
+      Math.ceil(dataNFTRoyalties * 100),
+      Number(dataNFTCopies),
+      datasetTitle,
+      datasetDescription,
+      BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
+      Number(periods[0].lockPeriod),
+      optionalSDKMintCallFields
+    );
 
-    return metadata;
-  }
+    await sleep(3);
+    await refreshAccount();
 
-  async function createFileFromUrl(url: string) {
-    const res = await fetch(url);
-    const data = await res.blob();
-    const _imageFile = new File([data], "image.png", { type: "image/png" });
-    const traits = createIpfsMetadata(res.headers.get("x-nft-traits") || "");
-    const _traitsFile = new File([JSON.stringify(traits)], "metadata.json", { type: "application/json" });
-    return { image: _imageFile, traits: _traitsFile };
-  }
-
-  const handleOnChainMint = async ({
-    imageOnIpfsUrl,
-    metadataOnIpfsUrl,
-    dataNFTStreamUrlEncrypted,
-  }: {
-    imageOnIpfsUrl: string;
-    metadataOnIpfsUrl: string;
-    dataNFTStreamUrlEncrypted: string;
-  }) => {
-    if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-      const sftMinter = new SftMinter("devnet");
-
-      const mintObject = await sftMinter.mint(
-        new Address(mxAddress),
-        dataNFTTokenName,
-        dataNFTMarshalService,
-        dataNFTStreamUrl,
-        dataNFTPreviewUrl,
-        Math.ceil(dataNFTRoyalties * 100),
-        Number(dataNFTCopies),
-        datasetTitle,
-        datasetDescription,
-        BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
-        Number(periods[0].lockPeriod),
-        {
-          nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
-        }
-      );
-
-      await sleep(3);
-      await refreshAccount();
-
-      const { sessionId, error } = await sendTransactions({
-        transactions: mintObject,
-        transactionsDisplayInfo: {
-          processingMessage: "Minting Data NFT Collection",
-          errorMessage: "Collection minting failed :(",
-          successMessage: "Collection minted successfully!",
-        },
-        redirectAfterSign: false,
-      });
-      if (error) {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-      }
-
-      setMintSessionId(sessionId);
-    } else {
-      await sleep(3);
-      const data = new ContractCallPayloadBuilder()
-        .setFunction(new ContractFunction("ESDTTransfer"))
-        .addArg(new StringValue(contractsForChain(chainID).itheumToken))
-        .addArg(new BigUIntValue(convertEsdtToWei(antiSpamTax)))
-        .addArg(new StringValue("mint"))
-        .addArg(new StringValue(getValues("tokenNameForm")))
-        .addArg(new StringValue(imageOnIpfsUrl))
-        .addArg(new StringValue(metadataOnIpfsUrl))
-        .addArg(new StringValue(dataNFTMarshalService))
-        .addArg(new StringValue(dataNFTStreamUrlEncrypted))
-        .addArg(new StringValue(dataNFTPreviewUrl))
-        .addArg(new BigUIntValue(Math.ceil(getValues("royaltiesForm") * 100)))
-        .addArg(new BigUIntValue(getValues("numberOfCopiesForm")))
-        .addArg(new StringValue(getValues("datasetTitleForm")))
-        .addArg(new StringValue(getValues("datasetDescriptionForm")))
-        .build();
-      const mintTransaction = new Transaction({
-        data,
-        sender: new Address(mxAddress),
-        receiver: contractsForChain(chainID).dataNftTokens[0].contract || "",
-        gasLimit: 60000000,
-        chainID: chainID,
-      });
-      await refreshAccount();
-      const { sessionId, error } = await sendTransactions({
-        transactions: mintTransaction,
-        transactionsDisplayInfo: {
-          processingMessage: "Minting Data NFT Collection",
-          errorMessage: "Collection minting failed :(",
-          successMessage: "Collection minted successfully!",
-        },
-        redirectAfterSign: false,
-      });
-      setMintSessionId(sessionId);
-      if (error) {
-        setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
-      }
+    const { sessionId, error } = await sendTransactions({
+      transactions: mintObject,
+      transactionsDisplayInfo: {
+        processingMessage: "Minting Data NFT Collection",
+        errorMessage: "Collection minting failed :(",
+        successMessage: "Collection minted successfully!",
+      },
+      redirectAfterSign: false,
+    });
+    if (error) {
+      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_NO_TX));
     }
+
+    setMintSessionId(sessionId);
   };
 
   useTrackTransactionStatus({
@@ -468,41 +394,20 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     onCancelled: mintTxCancelled,
   });
 
-  const buildUniqueImage = async ({ dataNFTHash, dataNFTStreamUrlEncrypted }: { dataNFTHash: any; dataNFTStreamUrlEncrypted: any }) => {
+  const buildUniqueImage = async ({ dataNFTHash }: { dataNFTHash: any }) => {
     await sleep(3);
+
+    // we don't need this as the Data NFT SDK makes it, but to show the image in the UI here, let's do this anyway for now
+    // ...  (@TODO remove once we fully user the SDK in Data DEX)
     const newNFTImg = `${getApiDataDex(chainID)}/v1/generateNFTArt?hash=${dataNFTHash}`;
 
     setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s2: 1 }));
-
-    let res;
-
-    try {
-      // catch IPFS error
-      const { image, traits } = await createFileFromUrl(newNFTImg);
-      const nftstorage = new NFTStorage({
-        token: import.meta.env.VITE_ENV_NFT_STORAGE_KEY || "",
-      });
-
-      res = await nftstorage.storeDirectory([image, traits]);
-    } catch (e) {
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_AND_STORAGE_CATCH_HIT));
-      return;
-    }
-
-    if (!res) {
-      setErrDataNFTStreamGeneric(new Error(labels.ERR_MINT_FORM_NFT_IMG_GEN_ISSUE));
-      return;
-    }
-
-    const imageOnIpfsUrl = `https://ipfs.io/ipfs/${res}/image.png`;
-    const metadataOnIpfsUrl = `https://ipfs.io/ipfs/${res}/metadata.json`;
-
     setDataNFTImg(newNFTImg);
-    setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
     await sleep(3);
+    setSaveProgress((prevSaveProgress) => ({ ...prevSaveProgress, s3: 1 }));
 
-    handleOnChainMint({ imageOnIpfsUrl, metadataOnIpfsUrl, dataNFTStreamUrlEncrypted });
+    handleOnChainMint();
   };
 
   const dataNFTSellSubmit = async () => {
@@ -547,23 +452,95 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Text>
       </Flex>
 
-      <Flex flexDirection={"column"}>
-        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={2}>
-          Data Asset Detail
-        </Text>
-        <Link
-          color="teal.500"
-          fontSize="md"
-          mb={7}
-          href="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
-          isExternal>
-          Where can I store or host my Data Assets? <ExternalLinkIcon mx="2px" />
-        </Link>
+      <>
+        <Flex flexDirection={"column"}>
+          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={2}>
+            Data Asset Detail
+          </Text>
+          <Link
+            color="teal.500"
+            fontSize="md"
+            mb={7}
+            href="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
+            isExternal>
+            Where can I store or host my Data Assets? <ExternalLinkIcon mx="2px" />
+          </Link>
 
-        <Flex flexDirection="row" gap="7">
-          <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
-            <FormLabel fontWeight="bold" fontSize="md">
-              Data Stream URL
+          <Flex flexDirection="row" gap="7">
+            <FormControl isInvalid={!!errors.dataStreamUrlForm} isRequired minH={"6.25rem"}>
+              <FormLabel fontWeight="bold" fontSize="md">
+                Data Stream URL
+              </FormLabel>
+
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <Input
+                    mt="1 !important"
+                    placeholder="e.g. https://mydomain.com/my_hosted_file.json"
+                    id="dataStreamUrlForm"
+                    isDisabled={!!currDataCATSellObj}
+                    defaultValue={dataNFTStreamUrl}
+                    onChange={(event) => onChange(event.target.value)}
+                  />
+                )}
+                name={"dataStreamUrlForm"}
+              />
+              <FormErrorMessage>{errors?.dataStreamUrlForm?.message} </FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
+              <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+                Data Preview URL
+              </FormLabel>
+
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <Input
+                    mt="1 !important"
+                    placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
+                    id="dataPreviewUrlForm"
+                    isDisabled={!!currDataCATSellObj}
+                    defaultValue={dataNFTPreviewUrl}
+                    onChange={(event) => onChange(event.target.value)}
+                  />
+                )}
+                name="dataPreviewUrlForm"
+              />
+              <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
+
+              {currDataCATSellObj && (
+                <Link color="teal.500" fontSize="sm" href={dataNFTPreviewUrl} isExternal>
+                  View Preview Data <ExternalLinkIcon mx="2px" />
+                </Link>
+              )}
+            </FormControl>
+          </Flex>
+
+          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "5" }}>
+            Data Marshal Url
+          </Text>
+
+          <Input mt="1 !important" value={dataNFTMarshalService} disabled />
+
+          {!!dataNFTMarshalServiceStatus && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              {dataNFTMarshalServiceStatus}
+            </Text>
+          )}
+        </Flex>
+      </>
+
+      <>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={3}>
+          NFT Token Metadata
+        </Text>
+
+        <Flex flexDirection="row" gap="7" mt={2}>
+          <FormControl isInvalid={!!errors.tokenNameForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
+            <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+              Token Name (Short Title)
             </FormLabel>
 
             <Controller
@@ -571,21 +548,20 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               render={({ field: { onChange } }) => (
                 <Input
                   mt="1 !important"
-                  placeholder="e.g. https://mydomain.com/my_hosted_file.json"
-                  id="dataStreamUrlForm"
-                  isDisabled={!!currDataCATSellObj}
-                  defaultValue={dataNFTStreamUrl}
+                  placeholder="Between 3 and 20 alphanumeric characters only"
+                  id="tokenNameForm"
+                  defaultValue={dataNFTTokenName}
                   onChange={(event) => onChange(event.target.value)}
                 />
               )}
-              name={"dataStreamUrlForm"}
+              name={"tokenNameForm"}
             />
-            <FormErrorMessage>{errors?.dataStreamUrlForm?.message} </FormErrorMessage>
+            <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.dataPreviewUrlForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
-            <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
-              Data Preview URL
+          <FormControl isInvalid={!!errors.datasetTitleForm} isRequired minH={"6.25rem"}>
+            <FormLabel fontWeight="bold" fontSize="md">
+              Dataset Title
             </FormLabel>
 
             <Controller
@@ -593,215 +569,44 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
               render={({ field: { onChange } }) => (
                 <Input
                   mt="1 !important"
-                  placeholder="e.g. https://mydomain.com/my_hosted_file_preview.json"
-                  id="dataPreviewUrlForm"
-                  isDisabled={!!currDataCATSellObj}
-                  defaultValue={dataNFTPreviewUrl}
+                  placeholder="Between 10 and 60 alphanumeric characters only"
+                  id="datasetTitleForm"
+                  defaultValue={datasetTitle}
                   onChange={(event) => onChange(event.target.value)}
                 />
               )}
-              name="dataPreviewUrlForm"
+              name="datasetTitleForm"
             />
-            <FormErrorMessage>{errors?.dataPreviewUrlForm?.message}</FormErrorMessage>
-
-            {currDataCATSellObj && (
-              <Link color="teal.500" fontSize="sm" href={dataNFTPreviewUrl} isExternal>
-                View Preview Data <ExternalLinkIcon mx="2px" />
-              </Link>
-            )}
+            <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
           </FormControl>
         </Flex>
 
-        <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "5" }}>
-          Data Marshal Url
-        </Text>
-
-        <Input mt="1 !important" value={dataNFTMarshalService} disabled />
-
-        {!!dataNFTMarshalServiceStatus && (
-          <Text color="red.400" fontSize="sm" mt="1 !important">
-            {dataNFTMarshalServiceStatus}
-          </Text>
-        )}
-      </Flex>
-
-      <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important" mb={3}>
-        NFT Token Metadata
-      </Text>
-
-      <Flex flexDirection="row" gap="7" mt={2}>
-        <FormControl isInvalid={!!errors.tokenNameForm} isRequired minH={{ base: "7rem", md: "6.25rem" }}>
-          <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
-            Token Name (Short Title)
-          </FormLabel>
-
-          <Controller
-            control={control}
-            render={({ field: { onChange } }) => (
-              <Input
-                mt="1 !important"
-                placeholder="Between 3 and 20 alphanumeric characters only"
-                id="tokenNameForm"
-                defaultValue={dataNFTTokenName}
-                onChange={(event) => onChange(event.target.value)}
-              />
-            )}
-            name={"tokenNameForm"}
-          />
-          <FormErrorMessage>{errors?.tokenNameForm?.message}</FormErrorMessage>
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.datasetTitleForm} isRequired minH={"6.25rem"}>
-          <FormLabel fontWeight="bold" fontSize="md">
-            Dataset Title
-          </FormLabel>
-
-          <Controller
-            control={control}
-            render={({ field: { onChange } }) => (
-              <Input
-                mt="1 !important"
-                placeholder="Between 10 and 60 alphanumeric characters only"
-                id="datasetTitleForm"
-                defaultValue={datasetTitle}
-                onChange={(event) => onChange(event.target.value)}
-              />
-            )}
-            name="datasetTitleForm"
-          />
-          <FormErrorMessage>{errors?.datasetTitleForm?.message}</FormErrorMessage>
-        </FormControl>
-      </Flex>
-
-      <Flex flexDirection="row" gap={7}>
-        <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxW={"48%"}>
-          <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }} noOfLines={1}>
-            Dataset Description
-          </FormLabel>
-
-          <Controller
-            control={control}
-            render={({ field: { onChange } }) => (
-              <Textarea
-                mt="1 !important"
-                h={"70%"}
-                placeholder="Between 10 and 400 characters only. URL allowed."
-                id={"datasetDescriptionForm"}
-                defaultValue={datasetDescription}
-                onChange={(event) => onChange(event.target.value)}
-              />
-            )}
-            name="datasetDescriptionForm"
-          />
-          <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
-        </FormControl>
-        <Box display="flex" flexDirection="column">
-          <FormControl isInvalid={!!errors.numberOfCopiesForm} minH={{ base: "9.75rem", md: "8.25rem" }}>
-            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-              Number of copies
-            </Text>
+        <Flex flexDirection="row" gap={7}>
+          <FormControl isInvalid={!!errors.datasetDescriptionForm} isRequired maxW={"48%"}>
+            <FormLabel fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }} noOfLines={1}>
+              Dataset Description
+            </FormLabel>
 
             <Controller
               control={control}
               render={({ field: { onChange } }) => (
-                <NumberInput
-                  mt="3 !important"
-                  size="md"
-                  id="numberOfCopiesForm"
-                  maxW={24}
-                  step={1}
-                  defaultValue={dataNFTCopies}
-                  min={1}
-                  max={maxSupply > 0 ? maxSupply : 1}
-                  isValidCharacter={isValidNumericCharacter}
-                  onChange={(event) => onChange(event)}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                <Textarea
+                  mt="1 !important"
+                  h={"70%"}
+                  placeholder="Between 10 and 400 characters only. URL allowed."
+                  id={"datasetDescriptionForm"}
+                  defaultValue={datasetDescription}
+                  onChange={(event) => onChange(event.target.value)}
+                />
               )}
-              name="numberOfCopiesForm"
+              name="datasetDescriptionForm"
             />
-            <Text color="gray.400" fontSize="sm" mt={"1"}>
-              Limit the quantity to increase value (rarity) - Suggested: less than {maxSupply}
-            </Text>
-            <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors?.datasetDescriptionForm?.message}</FormErrorMessage>
           </FormControl>
-
-          <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
-            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-              Royalties
-            </Text>
-
-            <Controller
-              control={control}
-              render={({ field: { onChange } }) => (
-                <NumberInput
-                  mt="3 !important"
-                  size="md"
-                  id="royaltiesForm"
-                  maxW={24}
-                  step={1}
-                  defaultValue={dataNFTRoyalties}
-                  min={minRoyalties > 0 ? minRoyalties : 0}
-                  max={maxRoyalties > 0 ? maxRoyalties : 0}
-                  isValidCharacter={isValidNumericCharacter}
-                  onChange={(event) => onChange(event)}>
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              )}
-              name="royaltiesForm"
-            />
-            <Text color="gray.400" fontSize="sm" mt={"1"}>
-              Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
-            </Text>
-            <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
-          </FormControl>
-        </Box>
-      </Flex>
-
-      {import.meta.env.VITE_ENV_NETWORK === "devnet" && (
-        <>
-          <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
-            Liveliness Bonding
-          </Text>
-
-          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
-            Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream. You will
-            need to lock the below{" "}
-            <Text fontWeight="bold" as="span">
-              Bonding Amount{" "}
-            </Text>
-            for the required{" "}
-            <Text fontWeight="bold" as="span">
-              Bonding Period.{" "}
-            </Text>
-            Your Liveliness Bond is bound by some{" "}
-            <Text fontWeight="bold" as="span">
-              Penalties and Slashing Terms
-            </Text>{" "}
-            as detailed below. At the end of the{" "}
-            <Text fontWeight="bold" as="span">
-              Bonding Period
-            </Text>
-            , you can withdraw your full&nbsp;
-            <Text fontWeight="bold" as="span">
-              Bonding Amount
-            </Text>{" "}
-            OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the Liveliness
-            Bond.
-          </Text>
-
-          <Flex flexDirection="row" gap="7" mt={2}>
-            <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
+          <Box display="flex" flexDirection="column">
+            <FormControl isInvalid={!!errors.numberOfCopiesForm} minH={{ base: "9.75rem", md: "8.25rem" }}>
               <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Amount (in ITHEUM)
+                Number of copies
               </Text>
 
               <Controller
@@ -810,12 +615,45 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                   <NumberInput
                     mt="3 !important"
                     size="md"
-                    id="bondingAmount"
+                    id="numberOfCopiesForm"
                     maxW={24}
                     step={1}
-                    defaultValue={bondingAmount}
-                    isDisabled
-                    min={10}
+                    defaultValue={dataNFTCopies}
+                    min={1}
+                    max={maxSupply > 0 ? maxSupply : 1}
+                    isValidCharacter={isValidNumericCharacter}
+                    onChange={(event) => onChange(event)}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                )}
+                name="numberOfCopiesForm"
+              />
+              <Text color="gray.400" fontSize="sm" mt={"1"}>
+                Limit the quantity to increase value (rarity) - Suggested: less than {maxSupply}
+              </Text>
+              <FormErrorMessage>{errors?.numberOfCopiesForm?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.royaltiesForm} minH={"8.5rem"}>
+              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+                Royalties
+              </Text>
+
+              <Controller
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <NumberInput
+                    mt="3 !important"
+                    size="md"
+                    id="royaltiesForm"
+                    maxW={24}
+                    step={1}
+                    defaultValue={dataNFTRoyalties}
+                    min={minRoyalties > 0 ? minRoyalties : 0}
                     max={maxRoyalties > 0 ? maxRoyalties : 0}
                     isValidCharacter={isValidNumericCharacter}
                     onChange={(event) => onChange(event)}>
@@ -826,97 +664,187 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                     </NumberInputStepper>
                   </NumberInput>
                 )}
-                name="bondingAmount"
+                name="royaltiesForm"
               />
-              <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
-              <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
-                Bonding Period ({amountOfTime.unit})
+              <Text color="gray.400" fontSize="sm" mt={"1"}>
+                Min: {minRoyalties >= 0 ? minRoyalties : "-"}%, Max: {maxRoyalties >= 0 ? maxRoyalties : "-"}%
               </Text>
-              <Controller
-                control={control}
-                render={({ field: { onChange } }) => (
-                  <NumberInput
-                    mt="3 !important"
-                    size="md"
-                    id="bondingPeriod"
-                    maxW={24}
-                    step={1}
-                    defaultValue={bondingPeriod}
-                    isDisabled
-                    min={3}
-                    isValidCharacter={isValidNumericCharacter}
-                    onChange={(event) => onChange(event)}>
-                    <NumberInputField />
-                  </NumberInput>
-                )}
-                name="bondingPeriod"
-              />
-              <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
+              <FormErrorMessage>{errors?.royaltiesForm?.message}</FormErrorMessage>
             </FormControl>
+          </Box>
+        </Flex>
+
+        <FormControl isInvalid={!!errors.extraAssets} minH={{ base: "7rem", md: "6.25rem" }}>
+          <FormLabel fontWeight="bold" fontSize="md" noOfLines={1}>
+            Extra asset URL
+          </FormLabel>
+
+          <Controller
+            control={control}
+            render={({ field: { onChange } }) => (
+              <Input
+                mt="1 !important"
+                placeholder="e.g. https://ipfs.io/ipfs/CID"
+                id="bonusNFTMediaImgUrlForm"
+                isDisabled={!!currDataCATSellObj}
+                defaultValue={extraAssets}
+                onChange={(event) => onChange(event.target.value)}
+              />
+            )}
+            name="extraAssets"
+          />
+          <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
+        </FormControl>
+      </>
+
+      <>
+        <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="8 !important">
+          Liveliness Bonding
+        </Text>
+
+        <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="3 !important">
+          Bonding ITHEUM tokens proves your {"Liveliness"} and gives Data Consumers confidence that you will maintain the Data {`NFT's`} Data Stream. You will
+          need to lock the below{" "}
+          <Text fontWeight="bold" as="span">
+            Bonding Amount{" "}
+          </Text>
+          for the required{" "}
+          <Text fontWeight="bold" as="span">
+            Bonding Period.{" "}
+          </Text>
+          Your Liveliness Bond is bound by some{" "}
+          <Text fontWeight="bold" as="span">
+            Penalties and Slashing Terms
+          </Text>{" "}
+          as detailed below. At the end of the{" "}
+          <Text fontWeight="bold" as="span">
+            Bonding Period
+          </Text>
+          , you can withdraw your full&nbsp;
+          <Text fontWeight="bold" as="span">
+            Bonding Amount
+          </Text>{" "}
+          OR if you want to continue to signal to Data Consumers that you will maintain the Data {`NFT’s`} Data Stream, you can {`"renew"`} the Liveliness Bond.
+        </Text>
+
+        <Flex flexDirection="row" gap="7" mt={2}>
+          <FormControl isInvalid={!!errors.bondingAmount} minH={"8.5rem"}>
+            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+              Bonding Amount (in ITHEUM)
+            </Text>
+
+            <Controller
+              control={control}
+              render={({ field: { onChange } }) => (
+                <NumberInput
+                  mt="3 !important"
+                  size="md"
+                  id="bondingAmount"
+                  maxW={24}
+                  step={1}
+                  defaultValue={bondingAmount}
+                  isDisabled
+                  min={10}
+                  max={maxRoyalties > 0 ? maxRoyalties : 0}
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={(event) => onChange(event)}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              )}
+              name="bondingAmount"
+            />
+            <FormErrorMessage>{errors?.bondingAmount?.message}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.bondingPeriod} minH={"8.5rem"}>
+            <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+              Bonding Period ({amountOfTime.unit})
+            </Text>
+            <Controller
+              control={control}
+              render={({ field: { onChange } }) => (
+                <NumberInput
+                  mt="3 !important"
+                  size="md"
+                  id="bondingPeriod"
+                  maxW={24}
+                  step={1}
+                  defaultValue={bondingPeriod}
+                  isDisabled
+                  min={3}
+                  isValidCharacter={isValidNumericCharacter}
+                  onChange={(event) => onChange(event)}>
+                  <NumberInputField />
+                </NumberInput>
+              )}
+              name="bondingPeriod"
+            />
+            <FormErrorMessage>{errors?.bondingPeriod?.message}</FormErrorMessage>
+          </FormControl>
+        </Flex>
+
+        <Box mb={7}>
+          <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
+            Need help, support or sponsorship for the Liveliness{" "}
+            <Text fontWeight="bold" as="span">
+              Bonding Amount
+            </Text>
+            ? Become a Verified Creator <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+
+        <Box minH={{ base: "5rem", md: "3.5rem" }}>
+          <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" textColor="teal.200">
+            Penalties and Slashing
+          </Text>
+          <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
+            If you break your Liveliness Bond before the{" "}
+            <Text fontWeight="bold" as="span">
+              Bonding Period
+            </Text>
+            , you will be penalized by losing a portion (or all) of your{" "}
+            <Text fontWeight="bold" as="span">
+              Bonding Amount
+            </Text>
+            . The community will also be able to curate and raise concerns about Data NFTs to Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns
+            are validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO-based curation enforces positive behavior
+            penalizes bad actors and protects Data Consumers.
+          </Text>
+
+          {itheumBalance < antiSpamTax + bondingAmount && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
+            </Text>
+          )}
+
+          <Flex mt="3 !important">
+            <Button
+              colorScheme="teal"
+              borderRadius="12px"
+              variant="outline"
+              size="sm"
+              onClick={() => window.open("https://docs.itheum.io/product-docs/legal/ecosystem-tools-terms/liveliness-bonding-penalties-and-slashing-terms")}>
+              <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
+                Read Liveliness Bonding: Penalties and Slashing Terms
+              </Text>
+            </Button>
           </Flex>
 
-          <Box mb={7}>
-            <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
-              Need help, support or sponsorship for the Liveliness{" "}
-              <Text fontWeight="bold" as="span">
-                Bonding Amount
-              </Text>
-              ? Become a Verified Creator <ExternalLinkIcon mx="2px" />
-            </Link>
-          </Box>
+          <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
+            I have read and I agree to Liveliness Bonding: Penalties and Slashing Terms
+          </Checkbox>
 
-          <Box minH={{ base: "5rem", md: "3.5rem" }}>
-            <Text fontSize="xl" fontWeight="500" lineHeight="22.4px" textColor="teal.200">
-              Penalties and Slashing
+          {!readLivelinessBonding && (
+            <Text color="red.400" fontSize="sm" mt="1 !important">
+              You need to agree to Liveliness Bonding: Penalties and Slashing Terms to proceed with your mint.
             </Text>
-            <Text fontSize="md" fontWeight="500" lineHeight="22.4px" mt="2 !important">
-              If you break your Liveliness Bond before the{" "}
-              <Text fontWeight="bold" as="span">
-                Bonding Period
-              </Text>
-              , you will be penalized by losing a portion (or all) of your{" "}
-              <Text fontWeight="bold" as="span">
-                Bonding Amount
-              </Text>
-              . The community will also be able to curate and raise concerns about Data NFTs to Itheum’s curation DAO; Itheum Trailblazer DAO. If these concerns
-              are validated by the DAO, the DAO may enforce penalties or slash against your Data NFT bonds. This DAO-based curation enforces positive behavior
-              penalizes bad actors and protects Data Consumers.
-            </Text>
-
-            {itheumBalance < antiSpamTax + bondingAmount && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                {labels.ERR_MINT_FORM_NOT_ENOUGH_BOND}
-              </Text>
-            )}
-
-            <Flex mt="3 !important">
-              <Button
-                colorScheme="teal"
-                borderRadius="12px"
-                variant="outline"
-                size="sm"
-                onClick={() => window.open("https://docs.itheum.io/product-docs/legal/ecosystem-tools-terms/liveliness-bonding-penalties-and-slashing-terms")}>
-                <Text color={colorMode === "dark" ? "bgWhite" : "black"} px={2}>
-                  Read Liveliness Bonding: Penalties and Slashing Terms
-                </Text>
-              </Button>
-            </Flex>
-
-            <Checkbox size="md" mt="3 !important" isChecked={readLivelinessBonding} onChange={(e) => setReadLivelinessBonding(e.target.checked)}>
-              I have read and I agree to Liveliness Bonding: Penalties and Slashing Terms
-            </Checkbox>
-
-            {!readLivelinessBonding && (
-              <Text color="red.400" fontSize="sm" mt="1 !important">
-                You need to agree to Liveliness Bonding: Penalties and Slashing Terms to proceed with your mint.
-              </Text>
-            )}
-          </Box>
-        </>
-      )}
+          )}
+        </Box>
+      </>
 
       <>
         <Text fontWeight="500" color="teal.200" lineHeight="38.4px" fontSize="24px" mt="50px !important">

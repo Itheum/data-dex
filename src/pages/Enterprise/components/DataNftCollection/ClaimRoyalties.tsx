@@ -7,6 +7,7 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import axios from "axios";
 import { MdInfo } from "react-icons/md";
 import { useParams } from "react-router-dom";
+import { IS_DEVNET } from "libs/config";
 import { tokenContractAddress_Mx_Devnet, tokenContractAddress_Mx_Mainnet } from "libs/contractAddresses";
 import { ImageTooltip } from "../../../../components/ImageTooltip";
 import { getApi } from "../../../../libs/MultiversX/api";
@@ -42,11 +43,11 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
     if (getClaimsDatadex.data !== undefined) {
       const ithRoyaltiesFromDataDex: number = getClaimsDatadex?.data[3].amount;
       const ithRoyaltiesOutsideDataDex = viewAddressToken.find((item: Record<any, any>) => {
-        return item.identifier === (chainID === "D" ? tokenContractAddress_Mx_Devnet : tokenContractAddress_Mx_Mainnet);
+        return item.identifier === (IS_DEVNET ? tokenContractAddress_Mx_Devnet : tokenContractAddress_Mx_Mainnet);
       });
       const ithRoyaltiesOutsideDataDexAmount: number = ithRoyaltiesOutsideDataDex?.amount;
 
-      if (chainID === "D") {
+      if (IS_DEVNET) {
         setClaimObject([
           {
             tokenIdentifier: tokenContractAddress_Mx_Devnet,

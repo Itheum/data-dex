@@ -6,7 +6,7 @@ import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
 import { NoDataHere } from "../../../components/Sections/NoDataHere";
-import { getFavoritesFromBackendApi } from "../../../libs/MultiversX";
+import { IS_DEVNET, getFavoritesFromBackendApi } from "../../../libs/MultiversX";
 
 type FavoriteDataCreationNftsType = {
   nonce: number;
@@ -24,7 +24,7 @@ export const FavoriteCards: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
       if (tokenLogin?.nativeAuthToken) {
         const bearerToken = tokenLogin.nativeAuthToken;
         const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);

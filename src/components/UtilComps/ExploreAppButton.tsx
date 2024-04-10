@@ -57,7 +57,7 @@ export default function ExploreAppButton({
                   }
                 }
               }
-              console.log("appKey", appKey, EXPLORER_APP_FOR_TOKEN[chainID][appKey ?? ""]);
+
               if (appKey) {
                 if (tokenLogin && tokenLogin.nativeAuthToken) {
                   window.open(`${EXPLORER_APP_FOR_TOKEN[chainID][appKey]}/?accessToken=${tokenLogin?.nativeAuthToken}`)?.focus();

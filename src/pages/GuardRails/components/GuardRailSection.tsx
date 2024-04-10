@@ -1,7 +1,6 @@
 import React from "react";
 import { Badge, Box, Flex, Text } from "@chakra-ui/react";
 import { auto } from "@popperjs/core";
-import { i } from "@chakra-ui/toast/dist/toast.types-24f022fd";
 
 interface GuardRailSectionProps {
   value?: any;
