@@ -9,7 +9,6 @@ import {
   GridItem,
   Heading,
   HStack,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -36,6 +35,7 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
@@ -291,6 +291,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -337,17 +338,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Flex justifyContent={{ base: "center" }}>
-                    <Image
-                      w={{ base: "210px", xl: "260px" }}
-                      h={{ base: "210px", xl: "260px" }}
-                      py={2}
-                      objectFit={"contain"}
-                      src={nftData.nftImgUrl}
-                      alt={"Data NFT Image"}
-                      mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
-                    />
-                  </Flex>
+                  <ImageSlider imageUrls={[nftData.nftImgUrl, ...nftData.extraAssets]} autoSlide />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
