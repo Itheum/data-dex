@@ -57,7 +57,8 @@ import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
-
+import Countdown from "components/CountDown";
+import { BsDot } from "react-icons/bs";
 const exploreRouterMenu = [
   {
     sectionId: "MainSections",
@@ -134,6 +135,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
   const bitzBalance = useAccountStore((state) => state.bitzBalance);
+  const cooldown = useAccountStore((state) => state.cooldown);
 
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
@@ -371,12 +373,46 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 </Box>
                 <Popover>
                   <PopoverTrigger>
-                    <Button
-                      display={{ base: "none", md: "inline-flex" }}
-                      size={{ md: "md", xl: "md", "2xl": "lg" }}
-                      p="2 !important"
-                      rightIcon={<LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />}>
+                    <Button display={{ base: "none", md: "inline-flex" }} size={{ md: "md", xl: "md", "2xl": "lg" }} p="2 !important">
                       {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                      <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+                      {cooldown <= 0 && (
+                        <>
+                          {" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-15px"
+                            top="-15px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="15px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"></Box>{" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-8px"
+                            top="-18px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="15px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                            style={{ animationDelay: "0.5s" }}></Box>{" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-12px"
+                            top="-25px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="55px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                            style={{ animationDelay: "1s" }}></Box>{" "}
+                        </>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent backgroundColor={colorMode === "dark" ? "bgDark" : "white"} w="25rem">
@@ -403,7 +439,9 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           rounded="full"
                           w="full"
                           _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
-                          Get {`<BiTz>`}
+                          <span>
+                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim your {`<BiTz>`}</span>}
+                          </span>
                         </Button>
                       </Link>
                     </PopoverBody>
@@ -483,17 +521,46 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <AccordionItem key={menu.sectionId}>
                   {() => (
                     <>
-                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
-                        My Address Quick Copy
-                      </Text>
-                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
-                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
-                      </Text>
-
                       <Popover>
                         <PopoverTrigger>
-                          <Flex px={4} pb={1.5}>
-                            <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+                          <Flex px={4} pb={1.5} position={"relative"} w={"100px"} mt={3}>
+                            {cooldown <= 0 && (
+                              <>
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-20px"
+                                  top="-16px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="15px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"></Box>{" "}
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-25px"
+                                  top="-18px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="15px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                                  style={{ animationDelay: "0.5s" }}></Box>{" "}
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-23px"
+                                  top="-25px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="55px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                                  style={{ animationDelay: "1s" }}></Box>{" "}
+                              </>
+                            )}
+                            <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />{" "}
                             {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
                           </Flex>
                         </PopoverTrigger>
@@ -530,6 +597,12 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                           </PopoverBody>
                         </PopoverContent>
                       </Popover>
+                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4}>
+                        My Address Quick Copy
+                      </Text>
+                      <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
+                        <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
+                      </Text>
 
                       <hr />
                       <List>

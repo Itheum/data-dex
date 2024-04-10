@@ -30,7 +30,7 @@ export class DataNftMarketContract {
       env = "mainnet";
     }
     this.contract = new DataNftMarket(env, uxConfig.mxAPITimeoutMs);
-    this.itheumToken = contractsForChain(chainID).itheumToken as unknown as string; // TODO: check if working without last part
+    this.itheumToken = contractsForChain(chainID).itheumToken;
   }
 
   async sendAcceptOfferEsdtTransaction(
@@ -68,6 +68,7 @@ export class DataNftMarketContract {
     return { sessionId, error };
   }
 
+  ///TODO refactor to use Sdk when we are accepting NFT/SFT as payment
   async sendAcceptOfferNftEsdtTransaction(
     index: number,
     paymentAmount: string,

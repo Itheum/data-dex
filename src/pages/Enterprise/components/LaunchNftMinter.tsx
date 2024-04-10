@@ -62,7 +62,6 @@ export const LaunchNftMinter: React.FC<LaunchNftMinterProps> = (props) => {
   });
 
   const onSubmit = async (formData: LaunchNftMinterFormType) => {
-    // console.log(formData);
     if (!formData.requireMintTax) {
       const txWhenRequireMintIsFalse = nftMinter.initializeContract(
         formData.senderAddress,

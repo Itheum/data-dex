@@ -41,8 +41,6 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
 
-  // console.log(offer);
-
   return (
     <>
       <HStack justifyContent="stretch" pb={2}>
@@ -51,7 +49,7 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
         <ExploreAppButton collection={offer.offeredTokenIdentifier} nonce={offer.offeredTokenNonce} />
       </HStack>
 
-      {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore unbondTimestamp={offer.unbondTimestamp} lockPeriod={offer.lockPeriod} />}
+      <LivelinessScore unbondTimestamp={offer.unbondTimestamp} lockPeriod={offer.lockPeriod} />
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack mt={2} flexDirection="column">

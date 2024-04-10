@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
-import { NoDataHere } from "../../../components/Sections/NoDataHere";
 import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
-import BigNumber from "bignumber.js";
 import { Address } from "@multiversx/sdk-core/out";
+import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import BigNumber from "bignumber.js";
+import { IS_DEVNET } from "libs/config";
+import { LivelinessScore } from "../../../components/Liveliness/LivelinessScore";
+import { NoDataHere } from "../../../components/Sections/NoDataHere";
 
 type CompensationNftsType = {
   nonce: number;
@@ -16,10 +17,9 @@ type CompensationNftsType = {
 
 export const BondingCards: React.FC = () => {
   const { address } = useGetAccountInfo();
-  const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const bondContract = new BondContract(chainID === "D" ? "devnet" : "mainnet");
-  DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+  const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
   const [bondingOffers, setBondingOffers] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [allCompensation, setAllCompensation] = useState<Array<Compensation>>([]);

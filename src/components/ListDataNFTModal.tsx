@@ -237,7 +237,6 @@ export default function ListDataNFTModal({ isOpen, onClose, sellerFee, nftData, 
       const nonceHex = inputString?.split("-")[2];
       const nonceDec = parseInt(nonceHex, 16);
 
-      // console.log(identifier, nonceDec);
       const _offers = await getOffersByIdAndNoncesFromBackendApi(chainID, identifier, [nonceDec]);
       const price = Math.min(..._offers.map((offerArg: any) => offerArg.wantedTokenAmount));
       if (price !== Infinity) {
