@@ -87,7 +87,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const isApiUp = useMarketStore((state) => state.isApiUp);
 
   const [nftData, setNftData] = useState<any>({});
-  const [imagesToShow, setImagesToShow] = useState<string[]>([""]);
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -198,11 +197,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
       .then((res) => {
         const _nftData = parseDataNft(res.data);
         setNftData(_nftData);
-        const imagesToShowT = [_nftData.nftImgUrl];
-        if (_nftData.extraAssets && _nftData.extraAssets.length > 0) {
-          imagesToShowT.push(..._nftData.extraAssets);
-        }
-        setImagesToShow(imagesToShowT);
         setIsLoadingDetails(false);
 
         if (_nftData.creator === address) {
@@ -299,6 +293,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
