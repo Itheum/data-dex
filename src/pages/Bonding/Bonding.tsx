@@ -14,7 +14,7 @@ export const Bonding: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
-  const bondContractAdminEnv = import.meta.env.VITE_ENV_BONDING_ADMIN_DEVNET;
+  const bondContractAdminDevnet = import.meta.env.VITE_ENV_BONDING_ADMIN_DEVNET;
   const bondContractAdminMainnet = import.meta.env.VITE_ENV_BONDING_ADMIN_MAINNET;
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
@@ -24,7 +24,7 @@ export const Bonding: React.FC = () => {
   const navigate = useNavigate();
 
   const checkIfUserIsAdmin = () => {
-    const splittedAddresses = bondContractAdminEnv.split(",");
+    const splittedAddresses = bondContractAdminDevnet.split(",");
     if (!address) return false;
     const adminAddress: any = IS_DEVNET ? splittedAddresses : bondContractAdminMainnet;
     return adminAddress.includes(address) || address === adminAddress;
