@@ -30,6 +30,8 @@ export const Bonding: React.FC = () => {
     return adminAddress.includes(address) || address === adminAddress;
   };
 
+  // console.log()
+
   useEffect(() => {
     (async () => {
       const allContractBonds = await bondContract.viewAllBonds();
