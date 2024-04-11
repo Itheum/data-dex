@@ -24,7 +24,7 @@ export const Bonding: React.FC = () => {
   const navigate = useNavigate();
 
   const checkIfUserIsAdmin = () => {
-    const splittedAddresses = bondContractAdminDevnet.split(",");
+    const splittedAddresses = bondContractAdminDevnet.split(", ");
     if (!address) return false;
     const adminAddress: any = IS_DEVNET ? splittedAddresses : bondContractAdminMainnet;
     console.log(adminAddress.includes(address), address, adminAddress, address === adminAddress);
