@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { Flex, IconButton, Image } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
-import { set } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSpring } from "framer-motion";
 
 interface ImageSliderProps {
   imageUrls: string[];
@@ -46,7 +46,32 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, autoSlide = false,
         <Image
           as={motion.img}
           initial={{ opacity: 0.1 }}
-          animate={{ opacity: 1, transition: { duration: 0.5 } }}
+          animate={{
+            opacity: 1,
+            rotateY: [0, 180],
+            transition: { duration: 0.5 },
+          }}
+          style={{ transformStyle: "preserve-3d" }}
+          exit={{ opacity: 0.1 }}
+          key={imageIndex}
+          w={{ base: "210px", xl: "260px" }}
+          h={{ base: "210px", xl: "260px" }}
+          borderRadius={"44px"}
+          py={2}
+          objectFit={"contain"}
+          src={imageUrls[imageIndex]}
+          alt={"Data NFT Image"}
+          mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
+        />
+        <Image
+          as={motion.img}
+          initial={{ opacity: 0.1 }}
+          animate={{
+            opacity: 1,
+            rotateY: [0, 180],
+            transition: { duration: 0.5 },
+          }}
+          style={{ transformStyle: "preserve-3d" }}
           exit={{ opacity: 0.1 }}
           key={imageIndex}
           w={{ base: "210px", xl: "260px" }}

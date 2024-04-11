@@ -60,6 +60,10 @@ import {
 import { useMarketStore } from "store";
 import { Favourite } from "../../components/Favourite/Favourite";
 import { LivelinessScore } from "../../components/Liveliness/LivelinessScore";
+import { CardFlip } from "components/CardFlip3DAnimation";
+import img1 from "../../assets/img/astar-icon.png";
+import img2 from "../../assets/img/logo-sml-d.png";
+import img3 from "../../assets/img/mx-logo.png";
 
 type DataNFTDetailsProps = {
   owner?: string;
@@ -338,7 +342,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <ImageSlider imageUrls={[nftData.nftImgUrl, ...nftData.extraAssets]} autoSlide />
+                  {/* <ImageSlider imageUrls={[nftData.nftImgUrl, ...nftData.extraAssets]} autoSlide /> */}
+                  <CardFlip imageUrls={[nftData.nftImgUrl, img1, img2, img3, ...nftData.extraAssets]} />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
