@@ -504,7 +504,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
                             <Text>
                               {`Royalty: `}
-                              {!isNaN(nftData.royalties) ? `${convertToLocalString(nftData.royalties)}%` : "-"}
+                              {!isNaN(nftData.royalties) ? `${convertToLocalString(nftData.royalties * 100)}%` : "-"}
                             </Text>
                           </>
                         )}
