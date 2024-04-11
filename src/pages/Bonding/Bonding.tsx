@@ -15,7 +15,6 @@ export const Bonding: React.FC = () => {
   const { chainID } = useGetNetworkConfig();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContractAdminEnv = import.meta.env.VITE_ENV_BONDING_ADMIN_DEVNET;
-  const bondContractAdminDevnet: [] = [];
   const bondContractAdminMainnet = import.meta.env.VITE_ENV_BONDING_ADMIN_MAINNET;
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
