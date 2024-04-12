@@ -56,6 +56,7 @@ export const BondingParameters: React.FC = () => {
     withdrawPenalty: 0,
     acceptedCallers: [""],
   });
+  const [constructedDeeplinkURL, setConstructedDeeplinkURL] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -72,7 +73,6 @@ export const BondingParameters: React.FC = () => {
     earlyWithdrawPenaltyInPercentage: Yup.number().typeError("Minimum penalty in % must be a number.").required("Required"),
   });
 
-  // TODO: default values get from bonding contract
   const {
     control,
     formState: { errors },
@@ -88,6 +88,12 @@ export const BondingParameters: React.FC = () => {
     mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
+
+  const deeplinkUrl = (newEarlyWithdrawalValue: number) => {
+    return setConstructedDeeplinkURL(
+      `https://devnet.peerme.io/itheum-dao/propose?title=Set%20Withdrawal%20Penaltiy&description=This%20is%20to%20propose%20a%20change%20in%20the%20Early%20Withdrawal%20Penalty%20from%20${contractConfiguration.withdrawPenalty / 100}%20to%20${newEarlyWithdrawalValue}&xdestination=erd1qqqqqqqqqqqqqpgqhlyaj872kyh620zsfew64l2k4djerw2tfsxsmrxlan&xendpoint=setWithdrawPenalty&xarguments%5B0%5D=${newEarlyWithdrawalValue * 100}`
+    );
+  };
 
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
@@ -379,6 +385,7 @@ export const BondingParameters: React.FC = () => {
                         type="number"
                         onChange={(event) => {
                           onChange(event.target.value);
+                          deeplinkUrl(Number(event.target.value));
                         }}
                       />
                     )}
@@ -387,6 +394,11 @@ export const BondingParameters: React.FC = () => {
                   <FormErrorMessage>{errors?.earlyWithdrawPenaltyInPercentage?.message}</FormErrorMessage>
 
                   <Button type="submit">Set</Button>
+                  <a href={constructedDeeplinkURL} target="_blank" rel="noreferrer">
+                    <Button type="button" ml={2}>
+                      Propose
+                    </Button>
+                  </a>
                 </FormControl>
               </form>
             </GridItem>
