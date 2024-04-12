@@ -34,6 +34,7 @@ import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
+import ImageSlider from "components/ImageSlider";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -59,7 +60,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
   openNftDetailsDrawer,
 }) => {
   const { colorMode } = useColorMode();
-
   // Multiversx API
   const { address } = useGetAccountInfo();
   const { chainID } = useGetNetworkConfig();
@@ -83,29 +83,28 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "820px" : "760px"}
+        h={isMxLoggedIn ? "850px" : "790px"}
         mx="5 !important"
         borderWidth="0.5px"
         borderRadius="xl"
         borderColor="#00C79740"
         position="relative"
         mb="1.5rem">
-        <Container justifyContent="center" mt={"0"} position={"relative"}>
-          <Image
-            position={"absolute"}
-            src={imageUrl}
-            alt={"item.dataPreview"}
-            h={236}
-            w={236}
-            zIndex={5}
-            mt={6}
-            marginInlineStart={"0.2rem"}
-            borderRadius="32px"
-            onLoad={() => setNftImageLoaded(true)}
-            onError={({ currentTarget }) => {
-              currentTarget.src = DEFAULT_NFT_IMAGE;
-            }}
-          />
+        <Container justifyContent="center" mt={"0"} h={"300px"} position={"relative"}>
+          <Box position={"absolute"} style={{ marginTop: "1.5rem" }}>
+            <ImageSlider
+              imageUrls={nftMetadata?.extraAssets ? [imageUrl, ...nftMetadata.extraAssets] : [imageUrl]}
+              autoSlide
+              imageHeight="236px"
+              imageWidth="236px"
+              autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+              onLoad={() => setNftImageLoaded(true)}
+              onError={({ currentTarget }) => {
+                currentTarget.src = DEFAULT_NFT_IMAGE;
+              }}
+            />{" "}
+          </Box>
+
           <motion.button
             style={{
               position: "absolute",
@@ -116,8 +115,8 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
               left: "0",
               height: "236px",
               width: "236px",
-              marginInlineStart: "1.2rem",
-              marginInlineEnd: "1.2rem",
+              marginInlineStart: "1rem",
+              marginInlineEnd: "1rem",
               marginTop: "1.5rem",
               borderRadius: "32px",
               cursor: "pointer",
@@ -146,7 +145,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             </Text>
           </motion.button>
         </Container>
-        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} mt={"100%"} direction="column" justify="space-between">
+        <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
           {nftMetadata && (
             <>
               <Text fontSize="md" color="#929497">

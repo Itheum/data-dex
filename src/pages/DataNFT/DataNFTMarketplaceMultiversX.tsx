@@ -193,8 +193,10 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
       const _nfts = await getNftsByIds(nftIds, chainID);
       const _metadatas: DataNftMetadataType[] = [];
+
       for (let i = 0; i < _nfts.length; i++) {
-        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
+        const _extraAssets = _nfts[i].media?.map((media) => media.url).slice(1) || undefined;
+        _metadatas.push({ ...mintContract.decodeNftAttributes(_nfts[i], i), extraAssets: _extraAssets });
       }
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
@@ -254,7 +256,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     matches = matches.map((match) => match.slice(1, -1));
                   }
                 } catch (e) {
-                  console.log(e);
+                  console.error(e);
                 }
                 if (matches) {
                   const title =

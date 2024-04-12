@@ -342,8 +342,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  {/* <ImageSlider imageUrls={[nftData.nftImgUrl, ...nftData.extraAssets]} autoSlide /> */}
-                  <CardFlip imageUrls={[nftData.nftImgUrl, img1, img2, img3, ...nftData.extraAssets]} />
+                  <ImageSlider imageUrls={[nftData.nftImgUrl, ...nftData.extraAssets]} autoSlide />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
