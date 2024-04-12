@@ -195,8 +195,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       const _metadatas: DataNftMetadataType[] = [];
 
       for (let i = 0; i < _nfts.length; i++) {
-        const _extraAssets = _nfts[i].media?.map((media) => media.url).slice(1) || undefined;
-        _metadatas.push({ ...mintContract.decodeNftAttributes(_nfts[i], i), extraAssets: _extraAssets });
+        _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
       }
       setNftMetadatas(_metadatas);
       setNftMetadatasLoading(false);
