@@ -28,6 +28,7 @@ import { Controller, useForm } from "react-hook-form";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
 import { IS_DEVNET } from "libs/config";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 
 type BondingParametersFormType = {
   minimumLockPeriodInSeconds: number;
@@ -40,6 +41,7 @@ type BondingParametersFormType = {
 export const BondingParameters: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+  const { tokenLogin } = useGetLoginInfo();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [onChangeMinimumLockPeriodIndex, setOnChangeMinimumLockPeriodIndex] = useState<number>(0);
   const [contractConfiguration, setContractConfiguration] = useState<BondConfiguration>({
@@ -91,7 +93,7 @@ export const BondingParameters: React.FC = () => {
 
   const deeplinkUrl = (newEarlyWithdrawalValue: number) => {
     return setConstructedDeeplinkURL(
-      `https://devnet.peerme.io/itheum-dao/propose?title=Set%20Withdrawal%20Penaltiy&description=This%20is%20to%20propose%20a%20change%20in%20the%20Early%20Withdrawal%20Penalty%20from%20${contractConfiguration.withdrawPenalty / 100}%20to%20${newEarlyWithdrawalValue}&xdestination=erd1qqqqqqqqqqqqqpgqhlyaj872kyh620zsfew64l2k4djerw2tfsxsmrxlan&xendpoint=setWithdrawPenalty&xarguments%5B0%5D=${newEarlyWithdrawalValue * 100}`
+      `https://devnet.peerme.io/itheum-dao/propose?title=Set+Withdrawal+Penaltiy&description=This+is+to+propose+a+change+in+the+Early+Withdrawal+Penalty+from+${contractConfiguration.withdrawPenalty / 100}+to+${newEarlyWithdrawalValue}&actions%5B%5D=%7B%22xdestination%22%3A%22erd1qqqqqqqqqqqqqpgqhlyaj872kyh620zsfew64l2k4djerw2tfsxsmrxlan%22%2C%22xendpoint%22%3A%22setWithdrawPenalty%22%2C%22xvalue%22%3A%220%22%2C%22xargs%22%3A%5B${newEarlyWithdrawalValue * 100}%5D%2C%22xpayments%22%3A%5B%5D%7D`
     );
   };
 
