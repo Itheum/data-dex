@@ -3,9 +3,7 @@ import React, { Dispatch, FC, SetStateAction } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Container,
   Flex,
-  Image,
   Link,
   Popover,
   PopoverArrow,
@@ -23,18 +21,16 @@ import { Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
-import { motion } from "framer-motion";
 import moment from "moment/moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import ImageSlider from "components/ImageSlider";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { DataNftMetadataType } from "libs/MultiversX/types";
-import { DEFAULT_NFT_IMAGE } from "libs/mxConstants";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
-import ImageSlider from "components/ImageSlider";
 
 type UpperCardComponentProps = {
   nftImageLoading: boolean;
@@ -78,7 +74,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber() : 0;
 
-  const isMobile = window.innerWidth <= 480;
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
@@ -90,61 +85,16 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         borderColor="#00C79740"
         position="relative"
         mb="1.5rem">
-        <Container justifyContent="center" mt={"0"} h={"300px"} position={"relative"}>
-          <Box position={"absolute"} style={{ marginTop: "1.5rem" }}>
-            <ImageSlider
-              imageUrls={nftMetadata?.extraAssets ? [imageUrl, ...nftMetadata.extraAssets] : [imageUrl]}
-              autoSlide
-              imageHeight="236px"
-              imageWidth="236px"
-              autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
-              onLoad={() => setNftImageLoaded(true)}
-              onError={({ currentTarget }) => {
-                currentTarget.src = DEFAULT_NFT_IMAGE;
-              }}
-            />{" "}
-          </Box>
+        <ImageSlider
+          imageUrls={nftMetadata?.extraAssets ? [imageUrl, ...nftMetadata.extraAssets] : [imageUrl]}
+          autoSlide
+          imageHeight="236px"
+          imageWidth="236px"
+          autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+          onLoad={() => setNftImageLoaded(true)}
+          openNftDetailsDrawer={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
+        />
 
-          <motion.button
-            style={{
-              position: "absolute",
-              zIndex: "10",
-              top: "0",
-              bottom: "0",
-              right: "0",
-              left: "0",
-              height: "236px",
-              width: "236px",
-              marginInlineStart: "1rem",
-              marginInlineEnd: "1rem",
-              marginTop: "1.5rem",
-              borderRadius: "32px",
-              cursor: "pointer",
-              opacity: 0,
-            }}
-            onLoad={() => setNftImageLoaded(true)}
-            onClick={() => openNftDetailsDrawer && openNftDetailsDrawer(index)}
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null; // prevents looping
-            }}
-            whileInView={
-              isMobile
-                ? {
-                    opacity: 1,
-                    backdropFilter: "blur(1px)",
-                    backgroundColor: "#1b1b1ba0",
-                  }
-                : undefined
-            }
-            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}
-            transition={isMobile ? { duration: 1.2 } : { duration: 0.3 }}>
-            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400" textColor="white">
-                Details
-              </Text>
-            </Text>
-          </motion.button>
-        </Container>
         <Flex h={address ? "28rem" : "18rem"} mx={6} my={3} direction="column" justify="space-between">
           {nftMetadata && (
             <>
@@ -250,7 +200,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
             </>
           )}
         </Flex>
-
         <FrozenOverlay
           isVisible={
             marketFreezedNonces &&

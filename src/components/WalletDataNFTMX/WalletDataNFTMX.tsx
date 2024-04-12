@@ -4,10 +4,8 @@ import {
   Badge,
   Box,
   Button,
-  Container,
   Flex,
   HStack,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -32,11 +30,11 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useGetSignedTransactions } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
-import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -60,10 +58,8 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
-import ImageSlider from "components/ImageSlider";
 
 export default function WalletDataNFTMX(item: any) {
-  console.log(item);
   const { chainID, network } = useGetNetworkConfig();
   const { loginMethod, tokenLogin } = useGetLoginInfo();
   const { colorMode } = useColorMode();
@@ -333,58 +329,15 @@ export default function WalletDataNFTMX(item: any) {
         borderRadius="16px"
         mb="1rem"
         position="relative">
-        <Container justifyContent="center" mt={"0"} h={"290px"} position={"relative"}>
-          <Box position={"absolute"} style={{ marginTop: "1.5rem" }}>
-            <ImageSlider
-              imageUrls={item?.extraAssets ? [item.nftImgUrl, ...item.extraAssets] : [item.nftImgUrl]}
-              autoSlide
-              imageHeight="236px"
-              imageWidth="236px"
-              autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
-              onLoad={() => item.setHasLoaded(true)}
-              // onError={({ currentTarget }) => {
-              //   currentTarget.src = DEFAULT_NFT_IMAGE;
-              // }}
-            />{" "}
-            {/* <Image
-            src={item.nftImgUrl}
-            alt={item.dataPreview}
-            h={236}
-            w={236}
-            mx={6}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-          /> */}
-          </Box>
-          <motion.button
-            style={{
-              position: "absolute",
-              zIndex: "1",
-              top: "0",
-              bottom: "0",
-              right: "0",
-              left: "0",
-              height: "236px",
-              width: "236px",
-              marginInlineStart: "1rem",
-              marginInlineEnd: "1rem",
-              marginTop: "1.5rem",
-              borderRadius: "32px",
-              cursor: "pointer",
-              opacity: 0,
-            }}
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
-            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400" textColor="white">
-                Details
-              </Text>
-            </Text>
-          </motion.button>
-        </Container>
+        <ImageSlider
+          imageUrls={item?.extraAssets ? [item.nftImgUrl, ...item.extraAssets] : [item.nftImgUrl]}
+          autoSlide
+          imageHeight="236px"
+          imageWidth="236px"
+          autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+          onLoad={() => item.setHasLoaded(true)}
+          openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
+        />
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
