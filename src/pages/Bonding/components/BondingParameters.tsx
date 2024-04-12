@@ -29,6 +29,8 @@ import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
 import { IS_DEVNET } from "libs/config";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
+import { ProposalDeepLinkBuilder } from "@peerme/sdk";
+import { timeUntil } from "../../../libs/utils";
 
 type BondingParametersFormType = {
   minimumLockPeriodInSeconds: number;
@@ -79,6 +81,9 @@ export const BondingParameters: React.FC = () => {
     control,
     formState: { errors },
     handleSubmit,
+    watch,
+    getFieldState,
+    formState,
   } = useForm<BondingParametersFormType>({
     defaultValues: {
       minimumLockPeriodInSeconds: 604800,
@@ -91,11 +96,47 @@ export const BondingParameters: React.FC = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const deeplinkUrl = (newEarlyWithdrawalValue: number) => {
-    return setConstructedDeeplinkURL(
-      `https://devnet.peerme.io/itheum-dao/propose?title=Set+Withdrawal+Penaltiy&description=This+is+to+propose+a+change+in+the+Early+Withdrawal+Penalty+from+${contractConfiguration.withdrawPenalty / 100}+to+${newEarlyWithdrawalValue}&actions%5B%5D=%7B%22xdestination%22%3A%22erd1qqqqqqqqqqqqqpgqhlyaj872kyh620zsfew64l2k4djerw2tfsxsmrxlan%22%2C%22xendpoint%22%3A%22setWithdrawPenalty%22%2C%22xvalue%22%3A%220%22%2C%22xargs%22%3A%5B${newEarlyWithdrawalValue * 100}%5D%2C%22xpayments%22%3A%5B%5D%7D`
-    );
+  const minLockPeriod = watch("minimumLockPeriodInSeconds");
+  const minSBond = watch("minimumSBond");
+
+  const { isDirty: isMinLockPeriodTouched } = getFieldState("minimumLockPeriodInSeconds");
+  const { isDirty: isMinAmountTouched } = getFieldState("minimumSBond");
+
+  const earlyWithdrawalDeeplinkUrl = (newEarlyWithdrawalValue: number) => {
+    const url = new ProposalDeepLinkBuilder("itheum-dao", { network: IS_DEVNET ? "devnet" : "mainnet" })
+      .authenticate(tokenLogin?.nativeAuthToken ?? "")
+      .setTitle("Set Withdrawal Penaltiy")
+      .setDescription(
+        `This is to propose a change in the Early Withdrawal Penalty from ${contractConfiguration.withdrawPenalty / 100} to ${newEarlyWithdrawalValue}`
+      )
+      .addAction(bondContract.getContractAddress().bech32(), "setWithdrawPenalty", 0, [newEarlyWithdrawalValue * 100], [])
+      .build();
+    return setConstructedDeeplinkURL(url);
   };
+
+  const addBondDeeplinkUrl = (addNewPeriodBond: { bondPeriod: number; bondAmount: BigNumber.Value }) => {
+    const period = addNewPeriodBond.bondPeriod;
+    const amount = addNewPeriodBond.bondAmount;
+    const amountOfTimeBefore = timeUntil(contractConfiguration.lockPeriodsWithBonds[0].lockPeriod);
+    const amountOfTimeAfter = timeUntil(period);
+    const url = new ProposalDeepLinkBuilder("itheum-dao", { network: IS_DEVNET ? "devnet" : "mainnet" })
+      .authenticate(tokenLogin?.nativeAuthToken ?? "")
+      .setTitle("Set New Period Bond")
+      .setDescription(
+        `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
+      )
+      .addAction(bondContract.getContractAddress().bech32(), "addPeriodsBonds", 0, [period, BigNumber(amount).toNumber()], [])
+      .build();
+    // console.log(url);
+    setConstructedDeeplinkURL(url);
+    return window.open(url, "_blank");
+  };
+
+  // const earlyWithdrawalDeeplinkUrl = (newEarlyWithdrawalValue: number) => {
+  //   return setConstructedDeeplinkURL(
+  //     `https://devnet.peerme.io/itheum-dao/propose?title=Set+Withdrawal+Penaltiy&description=This+is+to+propose+a+change+in+the+Early+Withdrawal+Penalty+from+${contractConfiguration.withdrawPenalty / 100}+to+${newEarlyWithdrawalValue}&actions%5B%5D=%7B%22xdestination%22%3A%22erd1qqqqqqqqqqqqqpgqhlyaj872kyh620zsfew64l2k4djerw2tfsxsmrxlan%22%2C%22xendpoint%22%3A%22setWithdrawPenalty%22%2C%22xvalue%22%3A%220%22%2C%22xargs%22%3A%5B${newEarlyWithdrawalValue * 100}%5D%2C%22xpayments%22%3A%5B%5D%7D`
+  //   );
+  // };
 
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
@@ -224,6 +265,15 @@ export const BondingParameters: React.FC = () => {
                     </Flex>
                     <Button type="submit" mt={5} colorScheme="teal">
                       Add
+                    </Button>
+                    <Button
+                      type="button"
+                      mt={5}
+                      ml={3}
+                      colorScheme="teal"
+                      isDisabled={!isMinLockPeriodTouched || !isMinAmountTouched}
+                      onClick={() => addBondDeeplinkUrl({ bondAmount: minSBond, bondPeriod: minLockPeriod })}>
+                      Proposal
                     </Button>
                   </form>
                 </TabPanel>
@@ -387,7 +437,7 @@ export const BondingParameters: React.FC = () => {
                         type="number"
                         onChange={(event) => {
                           onChange(event.target.value);
-                          deeplinkUrl(Number(event.target.value));
+                          earlyWithdrawalDeeplinkUrl(Number(event.target.value));
                         }}
                       />
                     )}
