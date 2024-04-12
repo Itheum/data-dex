@@ -4,6 +4,7 @@ import {
   Badge,
   Box,
   Button,
+  Container,
   Flex,
   HStack,
   Image,
@@ -59,8 +60,10 @@ import { useMarketStore, useMintStore } from "store";
 import AccessDataStreamModal from "./AccessDatastreamModal";
 import BurnDataNFTModal from "./BurnDataNFTModal";
 import ListDataNFTModal from "../ListDataNFTModal";
+import ImageSlider from "components/ImageSlider";
 
 export default function WalletDataNFTMX(item: any) {
+  console.log(item);
   const { chainID, network } = useGetNetworkConfig();
   const { loginMethod, tokenLogin } = useGetLoginInfo();
   const { colorMode } = useColorMode();
@@ -217,7 +220,7 @@ export default function WalletDataNFTMX(item: any) {
         });
       }
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
     }
   }
 
@@ -273,7 +276,7 @@ export default function WalletDataNFTMX(item: any) {
         s3: 1,
       }));
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       if (e.includes("403") && (nonce === 7 || nonce === 198)) {
         return;
       } else {
@@ -323,15 +326,27 @@ export default function WalletDataNFTMX(item: any) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h={item.isProfile === true ? "660px" : "840px"}
+        h={item.isProfile === true ? "660px" : "870px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"
         borderRadius="16px"
         mb="1rem"
         position="relative">
-        <Flex justifyContent="center">
-          <Image
+        <Container justifyContent="center" mt={"0"} h={"290px"} position={"relative"}>
+          <Box position={"absolute"} style={{ marginTop: "1.5rem" }}>
+            <ImageSlider
+              imageUrls={item?.extraAssets ? [item.nftImgUrl, ...item.extraAssets] : [item.nftImgUrl]}
+              autoSlide
+              imageHeight="236px"
+              imageWidth="236px"
+              autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+              onLoad={() => item.setHasLoaded(true)}
+              // onError={({ currentTarget }) => {
+              //   currentTarget.src = DEFAULT_NFT_IMAGE;
+              // }}
+            />{" "}
+            {/* <Image
             src={item.nftImgUrl}
             alt={item.dataPreview}
             h={236}
@@ -341,7 +356,8 @@ export default function WalletDataNFTMX(item: any) {
             borderRadius="32px"
             onLoad={() => item.setHasLoaded(true)}
             onClick={() => item.openNftDetailsDrawer(item.id)}
-          />
+          /> */}
+          </Box>
           <motion.button
             style={{
               position: "absolute",
@@ -352,8 +368,8 @@ export default function WalletDataNFTMX(item: any) {
               left: "0",
               height: "236px",
               width: "236px",
-              marginInlineStart: "1.2rem",
-              marginInlineEnd: "1.2rem",
+              marginInlineStart: "1rem",
+              marginInlineEnd: "1rem",
               marginTop: "1.5rem",
               borderRadius: "32px",
               cursor: "pointer",
@@ -368,7 +384,7 @@ export default function WalletDataNFTMX(item: any) {
               </Text>
             </Text>
           </motion.button>
-        </Flex>
+        </Container>
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
