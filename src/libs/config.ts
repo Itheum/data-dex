@@ -66,6 +66,10 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "OASISMUSIC-9b3433",
             contract: new Address("erd1qqqqqqqqqqqqqpgqtflnfdc4826zefus0r7pum8ux9k0kfmeu00sc5lndk"),
           },
+          {
+            id: "OASMUSICPL-47b186",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq30mwjcjmy7l7p4v0ytf2pmcmj95u9l8xu00sku2n5h"),
+          },
         ],
       };
     }
