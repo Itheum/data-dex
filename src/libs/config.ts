@@ -62,6 +62,10 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "DNFTPHFAIL-e47ef0",
             contract: new Address("erd1qqqqqqqqqqqqqpgqtytgg5hkwakehagx9udjg6t4y8r7xufdu00s8n66xm"),
           },
+          {
+            id: "OASISMUSIC-9b3433",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqtflnfdc4826zefus0r7pum8ux9k0kfmeu00sc5lndk"),
+          },
         ],
       };
     }
