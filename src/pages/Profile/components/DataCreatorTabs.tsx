@@ -42,7 +42,7 @@ import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { createDataNftType, DataNftMetadataType } from "../../../libs/MultiversX/types";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
-import DataNFTDetails from "../../DataNFT/DataNFTDetails";
+import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 
 interface PropsType {
