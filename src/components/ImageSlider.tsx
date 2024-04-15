@@ -50,7 +50,7 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
 
   return (
     <Container justifyContent="center" mt={"0"} h={"290px"} position={"relative"}>
-      <Box position={"absolute"} style={{ marginTop: "1.5rem" }}>
+      <Box style={{ marginTop: "1.5rem" }} alignItems={"center"} justifyContent={"center"}>
         <Flex justifyContent={{ base: "center" }} alignItems={"center"} flexDirection="column">
           <Flex justifyContent="center">
             <Card3DAnimation onClick={() => goToNextImage(true)}>
@@ -129,9 +129,8 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
             left: "0",
             height: "236px",
             width: "236px",
-            marginInlineStart: "1rem",
+            marginInlineStart: "1.2rem",
             marginInlineEnd: "1rem",
-            marginTop: "1.5rem",
             borderRadius: "32px",
             cursor: "pointer",
             opacity: 0,
