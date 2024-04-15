@@ -90,7 +90,6 @@ export const BondingParameters: React.FC = () => {
   });
 
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
-    console.log(formData);
     if (formData.minimumLockPeriodInSeconds && formData.minimumSBond && formData.minimumSBond > 0) {
       const tx = bondContract.addPeriodsBonds(new Address(address), [
         { lockPeriod: formData.minimumLockPeriodInSeconds, amount: BigNumber(formData.minimumSBond).multipliedBy(10 ** 18) },

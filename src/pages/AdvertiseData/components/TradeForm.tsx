@@ -439,10 +439,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  // here you can make logic that you want to happen on submit (used for debugging)
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
+    //TODO refactor this with react form hook
   }; // here you can make logic that you want to happen on submit (used for debugging)
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">

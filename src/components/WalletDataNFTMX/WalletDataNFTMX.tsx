@@ -6,7 +6,6 @@ import {
   Button,
   Flex,
   HStack,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -31,11 +30,11 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useGetSignedTransactions } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
-import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -217,7 +216,7 @@ export default function WalletDataNFTMX(item: any) {
         });
       }
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
     }
   }
 
@@ -273,7 +272,7 @@ export default function WalletDataNFTMX(item: any) {
         s3: 1,
       }));
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       if (e.includes("403") && (nonce === 7 || nonce === 198)) {
         return;
       } else {
@@ -323,52 +322,22 @@ export default function WalletDataNFTMX(item: any) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h={item.isProfile === true ? "660px" : "840px"}
+        h={item.isProfile === true ? "660px" : "870px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"
         borderRadius="16px"
         mb="1rem"
         position="relative">
-        <Flex justifyContent="center">
-          <Image
-            src={item.nftImgUrl}
-            alt={item.dataPreview}
-            h={236}
-            w={236}
-            mx={6}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-          />
-          <motion.button
-            style={{
-              position: "absolute",
-              zIndex: "1",
-              top: "0",
-              bottom: "0",
-              right: "0",
-              left: "0",
-              height: "236px",
-              width: "236px",
-              marginInlineStart: "1.2rem",
-              marginInlineEnd: "1.2rem",
-              marginTop: "1.5rem",
-              borderRadius: "32px",
-              cursor: "pointer",
-              opacity: 0,
-            }}
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
-            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400" textColor="white">
-                Details
-              </Text>
-            </Text>
-          </motion.button>
-        </Flex>
+        <ImageSlider
+          imageUrls={item?.extraAssets ? [item.nftImgUrl, ...item.extraAssets] : [item.nftImgUrl]}
+          autoSlide
+          imageHeight="236px"
+          imageWidth="236px"
+          autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+          onLoad={() => item.setHasLoaded(true)}
+          openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
+        />
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
