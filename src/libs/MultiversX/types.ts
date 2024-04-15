@@ -7,6 +7,7 @@ export interface DataNftMetadataType {
   index: number;
   id: string;
   nftImgUrl?: string;
+  extraAssets?: string[];
   dataPreview: string;
   dataStream: string;
   dataMarshal: string;

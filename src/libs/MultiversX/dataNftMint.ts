@@ -115,6 +115,7 @@ export class DataNftMintContract {
       index: index || 0, // only for view & query
       id: nft.identifier, // ID of NFT -> done
       nftImgUrl: nft.url, // image URL of of NFT -> done
+      extraAssets: nft.media?.map((media) => media.url).slice(1) || [], // extra assets URL of NFT -> done
       dataPreview: decodedAttributes.dataPreview || "", // preview URL for NFT data stream -> done
       dataStream: decodedAttributes.dataStream || "", // data stream URL -> done
       dataMarshal: decodedAttributes.dataMarshal || "", // data stream URL -> done

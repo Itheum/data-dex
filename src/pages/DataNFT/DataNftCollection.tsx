@@ -63,13 +63,15 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
         padding={"32px"}>
         <VStack height={"100%"} justifyContent="flex-start" alignItems="flex-start" width={"60%"} gap={"8px"}>
           <Tooltip label={title}>
-            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" h="1.75rem" noOfLines={1} p={1}>
+            <Text fontFamily="Satoshi-Medium" lineHeight="1" fontWeight="medium" fontSize="22px" h="1.75rem" noOfLines={1} py={1}>
               {title}
             </Text>
           </Tooltip>
           <Stack overflow={"hidden"} _hover={{ overflowY: "auto" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} w={"100%"} h={"25%"}>
-            <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="96%" pb="0.6rem">
-              {description}
+            <Box>
+              <Text textOverflow="ellipsis" opacity=".7" fontFamily="Satoshi-Regular" maxWidth="96%" pb="0.6rem">
+                {description}{" "}
+              </Text>
               <Box
                 position="absolute"
                 bgGradient={colorMode === "dark" ? "linear(to-t, bgDark, transparent)" : "linear(to-t, bgWhite, transparent)"}
@@ -78,7 +80,7 @@ export const DataNftCollectionCard: FC<DataNftCollectionCardComponentProps> = ({
                 top="33%"
                 zIndex="10"
               />
-            </Text>
+            </Box>
           </Stack>
           <HStack>
             <Text opacity=".7" fontFamily="Satoshi-Regular" maxWidth="100%">
