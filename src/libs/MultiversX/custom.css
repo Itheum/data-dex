@@ -361,6 +361,18 @@ body {
   }
 }
 
+@keyframes ping {
+  0% {
+    transform: scale(0.1);
+    opacity: 1;
+  }
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
 @keyframes Shake {
   10%,
   90% {
