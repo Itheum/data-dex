@@ -193,6 +193,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       const nftIds = _offers.map((offer) => createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce));
       const _nfts = await getNftsByIds(nftIds, chainID);
       const _metadatas: DataNftMetadataType[] = [];
+
       for (let i = 0; i < _nfts.length; i++) {
         _metadatas.push(mintContract.decodeNftAttributes(_nfts[i], i));
       }
@@ -254,7 +255,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
                     matches = matches.map((match) => match.slice(1, -1));
                   }
                 } catch (e) {
-                  console.log(e);
+                  console.error(e);
                 }
                 if (matches) {
                   const title =
