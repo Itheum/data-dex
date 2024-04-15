@@ -119,7 +119,7 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
-  GETWHITELISTED: 18,
+  GETVERIFIED: 18,
   DATACAT: 19,
   PROFILE: 20,
   GUARDRAILS: 21,
@@ -144,7 +144,7 @@ export const PATHS = {
   personaldataproof: [13, [0]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
-  getwhitelisted: [18, [-1]],
+  getverified: [18, [-1]],
 };
 
 export const CHAINS = {
