@@ -376,7 +376,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                     <Button display={{ base: "none", md: "inline-flex" }} size={{ md: "md", xl: "md", "2xl": "lg" }} p="2 !important">
                       {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
                       <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
-                      {cooldown <= 0 && (
+                      {cooldown <= 0 && cooldown != -2 && (
                         <>
                           {" "}
                           <Box
@@ -524,7 +524,7 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                       <Popover>
                         <PopoverTrigger>
                           <Flex px={4} pb={1.5} position={"relative"} w={"100px"} mt={3}>
-                            {cooldown <= 0 && (
+                            {cooldown <= 0 && cooldown != -2 && (
                               <>
                                 <Box
                                   position={"absolute"}
