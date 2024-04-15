@@ -1,15 +1,5 @@
 import { DataNft, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import {
-  Transaction,
-  ContractFunction,
-  BigUIntValue,
-  StringValue,
-  TokenIdentifierValue,
-  U64Value,
-  AddressValue,
-  ContractCallPayloadBuilder,
-  IAddress,
-} from "@multiversx/sdk-core/out";
+import { IAddress } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
@@ -90,39 +80,19 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  //TODO
-  async sendBurnTransaction(
-    sender: IAddress,
-    collection: string,
-    nonce: number,
-    quantity: number,
-    contractAddress: IAddress = this.contract.getContractAddress()
-  ) {
-    const tx = new Transaction({
-      value: 0,
-      data: new ContractCallPayloadBuilder()
-        .setFunction(new ContractFunction("ESDTNFTTransfer")) //method
-        .addArg(new TokenIdentifierValue(collection)) //what token id to send
-        .addArg(new U64Value(nonce)) //what token nonce to send
-        .addArg(new BigUIntValue(quantity)) //how many tokens to send
-        .addArg(new AddressValue(contractAddress)) //address to send to
-        .addArg(new StringValue("burn")) //what method to call on the contract
-        .build(),
-      receiver: sender,
-      sender: sender,
-      gasLimit: 12_000_000,
-      chainID: this.contract.chainID,
-    });
+  async sendBurnTransaction(sender: IAddress, collection: string, nonce: number, quantity: number) {
+    const burnTx = this.contract.burn(sender, nonce, quantity, collection);
     await refreshAccount();
-    await sendTransactions({
-      transactions: tx,
+    const { sessionId, error } = await sendTransactions({
+      transactions: burnTx,
       transactionsDisplayInfo: {
-        processingMessage: "Burning Data NFT",
-        errorMessage: "Burning Data NFT failed :(",
-        successMessage: "Data NFT burnt",
+        processingMessage: "Burning Data NFTs",
+        errorMessage: "Burning Data NFTs failed :(",
+        successMessage: "Data NFTs burned successfully!",
       },
       redirectAfterSign: false,
     });
+    return { sessionId, error };
   }
 
   async getUserDataOut(address: IAddress, spamTaxTokenId: string): Promise<UserDataType | undefined> {

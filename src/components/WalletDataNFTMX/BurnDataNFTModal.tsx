@@ -6,18 +6,18 @@ import { Stack, HStack, Text, Box, Flex } from "@chakra-ui/layout";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody } from "@chakra-ui/modal";
 import { NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper } from "@chakra-ui/number-input";
 import { useToast } from "@chakra-ui/toast";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { contractsForChain } from "libs/config";
 import { labels } from "libs/language";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { DataNftType } from "libs/MultiversX/types";
 import { isValidNumericCharacter } from "libs/utils";
 
 type BurnDataNFTModalPropType = {
   isOpen: boolean;
   onClose: () => void;
-  selectedDataNft: DataNftType;
+  selectedDataNft: DataNft;
 };
 
 export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
@@ -27,17 +27,20 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
   const [burnNFTModalState, setBurnNFTModalState] = useState(1); // 1 and 2
   const [dataNftBurnAmountError, setDataNftBurnAmountError] = useState("");
   const mintContract = new DataNftMintContract(chainID);
-  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(selectedDataNft.balance);
   const toast = useToast();
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
+
+  const selectedDataNftBalance = Number(selectedDataNft.balance);
+  const selectedDataNftSupply = Number(selectedDataNft.supply);
+  const [dataNftBurnAmount, setDataNftBurnAmount] = useState(selectedDataNftBalance);
 
   const onChangeDataNftBurnAmount = (valueAsString: string) => {
     let error = "";
     const valueAsNumber = Number(valueAsString);
     if (valueAsNumber < 1) {
       error = "Burn amount cannot be zero or negative";
-    } else if (selectedDataNft && valueAsNumber > Number(selectedDataNft.balance)) {
+    } else if (selectedDataNft && valueAsNumber > selectedDataNftBalance) {
       error = "Data NFT balance exceeded";
     }
 
@@ -112,11 +115,11 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
                 </Box>
                 <Box flex="1.9" alignContent="center">
                   <Text color="orange.300" fontSize="sm">
-                    You have ownership of {selectedDataNft.balance} Data NFTs (out of a total of {selectedDataNft.supply}). You can burn these{" "}
-                    {selectedDataNft.balance} Data NFTs and remove them from your wallet.
-                    {selectedDataNft.supply - selectedDataNft.balance > 0 &&
-                      ` The remaining ${selectedDataNft.supply - selectedDataNft.balance} ${
-                        selectedDataNft.supply - selectedDataNft.balance > 1 ? "are" : "is"
+                    You have ownership of {selectedDataNftBalance} Data NFTs (out of a total of {selectedDataNftSupply}). You can burn these{" "}
+                    {selectedDataNftBalance} Data NFTs and remove them from your wallet.
+                    {selectedDataNftSupply - selectedDataNftBalance > 0 &&
+                      ` The remaining ${selectedDataNftSupply - selectedDataNftBalance} ${
+                        selectedDataNftSupply - selectedDataNftBalance > 1 ? "are" : "is"
                       } not under your ownership.`}
                   </Text>
                 </Box>
@@ -135,9 +138,9 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
                   size="sm"
                   maxW="24"
                   step={1}
-                  defaultValue={selectedDataNft.balance}
+                  defaultValue={selectedDataNftBalance}
                   min={1}
-                  max={selectedDataNft.balance}
+                  max={selectedDataNftBalance}
                   isValidCharacter={isValidNumericCharacter}
                   value={dataNftBurnAmount}
                   onChange={onChangeDataNftBurnAmount}
