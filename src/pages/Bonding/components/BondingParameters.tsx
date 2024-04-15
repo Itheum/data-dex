@@ -114,7 +114,7 @@ export const BondingParameters: React.FC = () => {
     return setConstructedDeeplinkURL(url);
   };
 
-  const addBondDeeplinkUrl = (addNewPeriodBond: { bondPeriod: number; bondAmount: BigNumber.Value }) => {
+  const addBondDeeplinkUrl = (addNewPeriodBond: { bondPeriod: number; bondAmount: number }) => {
     const period = addNewPeriodBond.bondPeriod;
     const amount = addNewPeriodBond.bondAmount;
     const amountOfTimeBefore = timeUntil(contractConfiguration.lockPeriodsWithBonds[0].lockPeriod);
@@ -125,7 +125,7 @@ export const BondingParameters: React.FC = () => {
       .setDescription(
         `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
       )
-      .addAction(bondContract.getContractAddress().bech32(), "addPeriodsBonds", 0, [period, BigNumber(amount).toNumber()], [])
+      .addAction(bondContract.getContractAddress().bech32(), "addPeriodsBonds", 0, [period, BigInt(amount) * BigInt("1000000000000000000")], [])
       .build();
     // console.log(url);
     setConstructedDeeplinkURL(url);
