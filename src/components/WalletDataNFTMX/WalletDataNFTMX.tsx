@@ -317,7 +317,6 @@ export default function WalletDataNFTMX(item: any) {
       return "Free";
     }
   };
-
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
@@ -330,7 +329,7 @@ export default function WalletDataNFTMX(item: any) {
         mb="1rem"
         position="relative">
         <ImageSlider
-          imageUrls={item?.extraAssets ? [item.nftImgUrl, ...item.extraAssets] : [item.nftImgUrl]}
+          imageUrls={item.media?.map((mediaObj: any) => mediaObj.url) ?? [item.nftImgUrl]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"

@@ -129,6 +129,7 @@ export class DataNftMintContract {
       nonce: nft.nonce,
       collection: nft.collection,
       balance: 0,
+      media: nft.media || [],
     };
 
     return dataNFT;
