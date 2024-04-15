@@ -81,38 +81,58 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
                     }}
                   />
                 </motion.div>
-                <motion.div
-                  initial={{ rotateY: 180 }}
-                  animate={{ rotateY: makeFlip ? 0 : 180 }}
-                  transition={spring}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    opacity: makeFlip ? 1 : 0,
-                    backfaceVisibility: "hidden",
-                    position: "absolute",
-                  }}
-                  onAnimationComplete={() => {
-                    setImageIndex(nextImageIndex);
-                  }}>
-                  <Image
-                    w={imageWidth}
-                    h={imageHeight}
-                    borderRadius={"32px"}
-                    src={imageUrls[nextImageIndex]}
-                    onLoad={onLoad}
-                    onError={({ currentTarget }) => {
-                      currentTarget.src = DEFAULT_NFT_IMAGE;
+                {makeFlip && (
+                  <motion.div
+                    initial={{ rotateY: 180 }}
+                    animate={{
+                      rotateY: makeFlip ? 0 : 180,
                     }}
-                  />
-                </motion.div>
+                    transition={spring}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      opacity: makeFlip ? 1 : 0,
+                      backfaceVisibility: "hidden",
+                      position: "absolute",
+                    }}
+                    onAnimationComplete={() => {
+                      setImageIndex(nextImageIndex);
+                    }}>
+                    <Image
+                      w={imageWidth}
+                      h={imageHeight}
+                      borderRadius={"32px"}
+                      src={imageUrls[nextImageIndex]}
+                      onLoad={onLoad}
+                      onError={({ currentTarget }) => {
+                        currentTarget.src = DEFAULT_NFT_IMAGE;
+                      }}
+                    />
+                  </motion.div>
+                )}
               </div>
             </Card3DAnimation>
           </Flex>
           {imageUrls.length > 1 && (
             <Flex justifyContent="center" my={2}>
-              <IconButton colorScheme={"teal"} mx={3} aria-label="Previous image" size="sm" icon={<ArrowBackIcon />} onClick={() => goToPreviousImage(true)} />
-              <IconButton colorScheme={"teal"} mx={3} aria-label="Next image" size="sm" icon={<ArrowForwardIcon />} onClick={() => goToNextImage(true)} />
+              <IconButton
+                isDisabled={makeFlip}
+                colorScheme={"teal"}
+                mx={3}
+                aria-label="Previous image"
+                size="sm"
+                icon={<ArrowBackIcon />}
+                onClick={() => goToPreviousImage(true)}
+              />
+              <IconButton
+                isDisabled={makeFlip}
+                colorScheme={"teal"}
+                mx={3}
+                aria-label="Next image"
+                size="sm"
+                icon={<ArrowForwardIcon />}
+                onClick={() => goToNextImage(true)}
+              />
             </Flex>
           )}
         </Flex>
