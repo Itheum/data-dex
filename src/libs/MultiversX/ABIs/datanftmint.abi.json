@@ -1,19 +1,19 @@
 {
   "buildInfo": {
     "rustc": {
-      "version": "1.71.0-nightly",
-      "commitHash": "a2b1646c597329d0a25efa3889b66650f65de1de",
-      "commitDate": "2023-05-25",
+      "version": "1.76.0-nightly",
+      "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+      "commitDate": "2023-12-10",
       "channel": "Nightly",
-      "short": "rustc 1.71.0-nightly (a2b1646c5 2023-05-25)"
+      "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
     },
     "contractCrate": {
       "name": "datanftmint",
-      "version": "2.0.0"
+      "version": "3.0.0"
     },
     "framework": {
       "name": "multiversx-sc",
-      "version": "0.45.1"
+      "version": "0.47.5"
     }
   },
   "name": "DataNftMint",
@@ -22,6 +22,12 @@
     "outputs": []
   },
   "endpoints": [
+    {
+      "name": "upgrade",
+      "mutability": "mutable",
+      "inputs": [],
+      "outputs": []
+    },
     {
       "name": "initializeContract",
       "onlyOwner": true,
@@ -106,6 +112,15 @@
         {
           "name": "description",
           "type": "bytes"
+        },
+        {
+          "name": "lock_period_sec",
+          "type": "u64"
+        },
+        {
+          "name": "extra_assets",
+          "type": "variadic<bytes>",
+          "multi_arg": true
         }
       ],
       "outputs": [
@@ -145,6 +160,17 @@
       "outputs": []
     },
     {
+      "name": "setWhiteListEnabled",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "is_enabled",
+          "type": "bool"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "name": "setAntiSpamTax",
       "mutability": "mutable",
       "inputs": [
@@ -155,17 +181,6 @@
         {
           "name": "tax",
           "type": "BigUint"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "name": "setWhiteListEnabled",
-      "mutability": "mutable",
-      "inputs": [
-        {
-          "name": "is_enabled",
-          "type": "bool"
         }
       ],
       "outputs": []
@@ -239,6 +254,18 @@
       "inputs": [
         {
           "name": "administrator",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "setBondContractAddress",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "bond_contract_address",
           "type": "Address"
         }
       ],
@@ -494,6 +521,16 @@
       ]
     },
     {
+      "name": "getBondContractAddress",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
       "name": "getUserDataOut",
       "mutability": "readonly",
       "inputs": [
@@ -591,6 +628,48 @@
         {
           "name": "address",
           "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "get_bond_amount_for_lock_period",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "lock_period",
+          "type": "u64"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "BigUint"
+        }
+      ]
+    },
+    {
+      "name": "send_bond",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "original_caller",
+          "type": "Address"
+        },
+        {
+          "name": "token_identifier",
+          "type": "TokenIdentifier"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        },
+        {
+          "name": "lock_period",
+          "type": "u64"
+        },
+        {
+          "name": "payment",
+          "type": "EgldOrEsdtTokenPayment"
         }
       ],
       "outputs": []
@@ -884,11 +963,31 @@
           "name": "price",
           "type": "BigUint",
           "indexed": true
+        },
+        {
+          "name": "bond_amount",
+          "type": "BigUint",
+          "indexed": true
+        },
+        {
+          "name": "extra_assets",
+          "type": "List<bytes>",
+          "indexed": true
         }
       ]
     },
     {
       "identifier": "setWithdrawalAddress",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address",
+          "indexed": true
+        }
+      ]
+    },
+    {
+      "identifier": "setBondContractAddress",
       "inputs": [
         {
           "name": "address",
@@ -951,6 +1050,23 @@
         {
           "name": "description",
           "type": "bytes"
+        }
+      ]
+    },
+    "EgldOrEsdtTokenPayment": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "token_identifier",
+          "type": "EgldOrEsdtTokenIdentifier"
+        },
+        {
+          "name": "token_nonce",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "BigUint"
         }
       ]
     },
