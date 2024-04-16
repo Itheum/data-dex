@@ -48,7 +48,6 @@ const ImageSlider: React.FC<ImageSliderProps> = (props) => {
     setSwitchedImageManually(autoSwitch);
   }
 
-  console.log("imageUrls", imageUrls);
   return (
     <Container justifyContent="center" mt={"0"} h={"290px"} position={"relative"}>
       <Box style={{ marginTop: "1.5rem" }} alignItems={"center"} justifyContent={"center"}>
