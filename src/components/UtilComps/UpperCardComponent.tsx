@@ -17,7 +17,7 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import BigNumber from "bignumber.js";
@@ -27,7 +27,6 @@ import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
 import ImageSlider from "components/ImageSlider";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
-import { DataNftMetadataType } from "libs/MultiversX/types";
 import { convertToLocalString, convertWeiToEsdt, getTokenWantedRepresentation, printPrice, tokenDecimals, transformDescription } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import ShortAddress from "./ShortAddress";
@@ -36,7 +35,7 @@ type UpperCardComponentProps = {
   nftImageLoading: boolean;
   setNftImageLoaded: Dispatch<SetStateAction<boolean>>;
   imageUrl: string;
-  nftMetadata: DataNftMetadataType;
+  nftMetadata: DataNft;
   offer: Offer;
   index: number;
   marketFreezedNonces: number[];
@@ -77,7 +76,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
         w="275px"
-        h={isMxLoggedIn ? "850px" : "790px"}
+        h={isMxLoggedIn ? "880px" : "800px"}
         mx="5 !important"
         borderWidth="0.5px"
         borderRadius="xl"
@@ -85,7 +84,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         position="relative"
         mb="1.5rem">
         <ImageSlider
-          imageUrls={nftMetadata?.media?.map((mediaObj) => mediaObj.url) ?? [imageUrl]}
+          imageUrls={nftMetadata?.media?.map((mediaObj: any) => mediaObj.url) ?? [imageUrl]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"
@@ -98,7 +97,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
           {nftMetadata && (
             <>
               <Text fontSize="md" color="#929497">
-                <Link href={`${ChainExplorer}/nfts/${nftMetadata.id}`} isExternal>
+                <Link href={`${ChainExplorer}/nfts/${nftMetadata.tokenIdentifier}`} isExternal>
                   {nftMetadata.tokenName} <ExternalLinkIcon mx="2px" />
                 </Link>
               </Text>
