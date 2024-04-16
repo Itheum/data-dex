@@ -85,13 +85,7 @@ export default function BurnDataNFTModal(props: BurnDataNFTModalPropType) {
       return;
     }
 
-    mintContract.sendBurnTransaction(
-      new Address(address),
-      selectedDataNft.collection,
-      selectedDataNft.nonce,
-      dataNftBurnAmount,
-      contractsForChain(chainID).dataNftTokens.find((t) => t.id === selectedDataNft.collection)?.contract
-    );
+    mintContract.sendBurnTransaction(new Address(address), selectedDataNft.collection, selectedDataNft.nonce, dataNftBurnAmount);
 
     onClose();
   };

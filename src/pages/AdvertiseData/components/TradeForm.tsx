@@ -788,7 +788,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Flex>
 
         <Box mb={7}>
-          <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
+          <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverified" isExternal>
             Need help, support or sponsorship for the Liveliness{" "}
             <Text fontWeight="bold" as="span">
               Bonding Amount

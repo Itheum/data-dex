@@ -73,7 +73,6 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
       )
     : "";
   const fee = offer ? convertWeiToEsdt(offer.wantedTokenAmount as BigNumber.Value, tokenDecimals(offer.wantedTokenIdentifier)).toNumber() : 0;
-
   return (
     <Skeleton fitContent={true} isLoaded={nftImageLoading} borderRadius="lg" display={"flex"} alignItems={"center"} justifyContent={"center"}>
       <Box
@@ -86,7 +85,7 @@ const UpperCardComponent: FC<UpperCardComponentProps> = ({
         position="relative"
         mb="1.5rem">
         <ImageSlider
-          imageUrls={nftMetadata?.extraAssets ? [imageUrl, ...nftMetadata.extraAssets] : [imageUrl]}
+          imageUrls={nftMetadata?.media?.map((mediaObj) => mediaObj.url) ?? [imageUrl]}
           autoSlide
           imageHeight="236px"
           imageWidth="236px"

@@ -21,6 +21,13 @@ export interface DataNftMetadataType {
   royalties: number;
   nonce: number;
   collection: string;
+  media?: {
+    url: string;
+    originalUrl: string;
+    thumbnailUrl: string;
+    fileType: string;
+    fileSize: number;
+  }[];
 }
 
 export interface MarketplaceRequirementsType {

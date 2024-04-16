@@ -298,6 +298,7 @@ export const Marketplace: FC<PropsType> = ({ tabState }) => {
       });
     }
   }, []);
+
   return (
     <>
       <Stack>
