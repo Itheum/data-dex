@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
-import { ResultsParser } from "@multiversx/sdk-core/out";
+import { Box, Flex, Heading, Stack, Tag, TagLabel, TagLeftIcon, Text, useColorMode } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { FaWallet } from "react-icons/fa";
 import { GuardRailsCards } from "./components/guardRailsCards";
+import GuardRailSection from "./components/GuardRailSection";
 import { NoDataHere } from "../../components/Sections/NoDataHere";
 import ShortAddress from "../../components/UtilComps/ShortAddress";
 import { historicGuardrails, upcomingGuardRails } from "../../libs/config";
 import { DataNftMintContract } from "../../libs/MultiversX/dataNftMint";
 import { useMarketStore, useMintStore } from "../../store";
-import GuardRailSection from "./components/GuardRailSection";
 
 export const GuardRails: React.FC = () => {
   const [whitelistedAddresses, setWhitelistedAddresses] = useState<string[]>([]);
@@ -77,7 +76,7 @@ export const GuardRails: React.FC = () => {
             Active Guardrails
           </Text>
           <Stack textAlign="start">
-             <GuardRailSection
+            <GuardRailSection
               value={marketRequirements.buyerTaxPercentage ? `${(marketRequirements.buyerTaxPercentage / 100).toFixed(2)} %` : "-"}
               title={"Buyer fee"}
               badgeColor={0}
@@ -118,7 +117,6 @@ export const GuardRails: React.FC = () => {
             <GuardRailSection value={marketRequirements.acceptedPayments ?? "-"} title={"Accepted payments"} badgeColor={0} />
 
             <GuardRailSection acceptedTokens={marketRequirements.acceptedTokens} title={"Accepted tokens"} badgeColor={0} />
- 
           </Stack>
         </Box>
         <GuardRailsCards items={historyGuardrails} title="Historic Guardrails" badgeColor="#E2AEEA1A" textColor="#E2AEEA" />

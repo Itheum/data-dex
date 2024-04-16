@@ -61,7 +61,7 @@ export const LandingPage: React.FC = () => {
               }}
               href="https://share-eu1.hsforms.com/1h2V8AgnkQJKp3tstayTsEAf5yjc"
               isExternal>
-              Get Whitelisted Today
+              Get Verified Today
             </Button>
           </Box>
 
