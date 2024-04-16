@@ -321,7 +321,7 @@ export default function WalletDataNFTMX(item: any) {
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h={item.isProfile === true ? "660px" : "870px"}
+        h={item.isProfile === true ? "660px" : "900px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"

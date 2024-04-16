@@ -519,6 +519,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 2 }],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
+    "bobergameroom": [],
   },
   "1": {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
@@ -527,6 +528,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
+    "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
   },
 };
 
