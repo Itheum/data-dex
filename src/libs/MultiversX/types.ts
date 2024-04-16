@@ -3,33 +3,6 @@ import { Offer } from "@itheum/sdk-mx-data-nft/out";
 export type RecordStringNumberType = Record<string, number>;
 export type RecordStringStringType = Record<string, string>;
 
-export interface DataNftMetadataType {
-  index: number;
-  id: string;
-  nftImgUrl?: string;
-  extraAssets?: string[];
-  dataPreview: string;
-  dataStream: string;
-  dataMarshal: string;
-  tokenName: string;
-  creator: string;
-  creationTime: Date;
-  supply: number;
-  balance: number;
-  description: string;
-  title: string;
-  royalties: number;
-  nonce: number;
-  collection: string;
-  media?: {
-    url: string;
-    originalUrl: string;
-    thumbnailUrl: string;
-    fileType: string;
-    fileSize: number;
-  }[];
-}
-
 export interface MarketplaceRequirementsType {
   acceptedTokens: string[];
   acceptedPayments: string[];
