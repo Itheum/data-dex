@@ -540,6 +540,7 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "nftunes": "https://test.explorer.itheum.io/nftunes",
     "timecapsule": "https://test.explorer.itheum.io/timecapsule",
     "bitzgame": "https://test.explorer.itheum.io/getbitz",
+    "bobergameroom": "https://test.explorer.itheum.io/bobergameroom",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
@@ -548,5 +549,6 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "nftunes": "https://explorer.itheum.io/nftunes",
     "timecapsule": "https://explorer.itheum.io/timecapsule",
     "bitzgame": "https://explorer.itheum.io/getbitz",
+    "bobergameroom": "https://explorer.itheum.io/bobergameroom",
   },
 };
