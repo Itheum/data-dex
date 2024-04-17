@@ -62,6 +62,14 @@ export function contractsForChain(chainID: string): ContractsType {
             id: "DNFTPHFAIL-e47ef0",
             contract: new Address("erd1qqqqqqqqqqqqqpgqtytgg5hkwakehagx9udjg6t4y8r7xufdu00s8n66xm"),
           },
+          {
+            id: "OASISMUSIC-9b3433",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqtflnfdc4826zefus0r7pum8ux9k0kfmeu00sc5lndk"),
+          },
+          {
+            id: "OASMUSICPL-47b186",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq30mwjcjmy7l7p4v0ytf2pmcmj95u9l8xu00sku2n5h"),
+          },
         ],
       };
     }
@@ -119,7 +127,7 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
-  GETWHITELISTED: 18,
+  GETVERIFIED: 18,
   DATACAT: 19,
   PROFILE: 20,
   GUARDRAILS: 21,
@@ -144,7 +152,7 @@ export const PATHS = {
   personaldataproof: [13, [0]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
-  getwhitelisted: [18, [-1]],
+  getverified: [18, [-1]],
 };
 
 export const CHAINS = {
@@ -511,6 +519,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 2 }],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
+    "bobergameroom": [],
   },
   "1": {
     "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
@@ -519,6 +528,7 @@ export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
     "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
     "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
     "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
+    "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
   },
 };
 
