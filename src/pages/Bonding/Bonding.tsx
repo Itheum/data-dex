@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { Bond, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { useGetAccountInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import BigNumber from "bignumber.js";
 import { useNavigate, useParams } from "react-router-dom";
@@ -28,6 +28,7 @@ export const Bonding: React.FC = () => {
   const [bondingDataNfts, setBondingDataNfts] = useState<Array<DataNft>>([]);
   const [contractBonds, setContractBonds] = useState<Bond[]>([]);
   const [totalAmountBondedForThisPage, setTotalAmountBondedForThisPage] = useState<number>(0);
+  const [allCompensation, setAllCompensation] = useState<Compensation[]>([]);
   const navigate = useNavigate();
 
   // pagination
@@ -47,9 +48,10 @@ export const Bonding: React.FC = () => {
   });
 
   const checkIfUserIsAdmin = () => {
+    const splittedAddresses = bondContractAdminDevnet.split(",").map((wallet: string) => wallet.trim());
     if (!address) return false;
-    const adminAddress = IS_DEVNET ? bondContractAdminDevnet : bondContractAdminMainnet;
-    return address === adminAddress;
+    const adminAddress: any = IS_DEVNET ? splittedAddresses : bondContractAdminMainnet;
+    return adminAddress.includes(address) || address === adminAddress;
   };
 
   useEffect(() => {
@@ -83,7 +85,6 @@ export const Bonding: React.FC = () => {
       setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
       setContractBonds(pagedBonds.reverse());
 
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(pagedBonds.map((bond) => ({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier })));
       setBondingDataNfts(dataNfts);
       setAllCompensation(compensation.reverse());
       // console.log(compensation);

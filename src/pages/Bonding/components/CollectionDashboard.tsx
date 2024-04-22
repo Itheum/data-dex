@@ -102,7 +102,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       transactions: [tx],
     });
   };
-  console.log(new Date(allCompensation.endDate).toLocaleString());
+  // console.log(new Date(allCompensation.endDate).toLocaleString());
   const handleWithdraw = async (tokenIdentifier: string, nonce: number) => {
     const tx = bondContract.modifyBond(new Address(address), tokenIdentifier, nonce);
     await sendTransactions({
