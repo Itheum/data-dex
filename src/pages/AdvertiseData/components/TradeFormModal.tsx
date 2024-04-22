@@ -33,11 +33,7 @@ type TradeFormProps = {
 export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const { isOpen, setIsOpen, dataToPrefill } = props;
   const { colorMode } = useColorMode();
-
   const { chainID } = useGetNetworkConfig();
-
-  const navigate = useNavigate();
-
   const [minRoyalties, setMinRoyalties] = useState<number>(-1);
   const [maxRoyalties, setMaxRoyalties] = useState<number>(-1);
   const [maxSupply, setMaxSupply] = useState<number>(-1);
@@ -46,7 +42,24 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   const [, setDataNFTMarshalService] = useState<string>("");
   const [dataNFTImgGenServiceValid, setDataNFTImgGenService] = useState(false);
 
+  const navigate = useNavigate();
   const userData = useMintStore((state) => state.userData);
+
+  useEffect(() => {
+    (async () => {
+      const minRoyaltiesT = userData?.minRoyalties ?? 0;
+      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
+      const maxSupplyT = userData?.maxSupply ?? 0;
+      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
+
+      onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
+      onChangeDataNFTImageGenService();
+      setMinRoyalties(minRoyaltiesT);
+      setMaxRoyalties(maxRoyaltiesT);
+      setMaxSupply(maxSupplyT);
+      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
+    })();
+  }, []);
 
   const onClose = () => {
     setIsOpen(false);
@@ -72,39 +85,55 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     });
   }
 
+  function convertToHttpUrl(url: string): string {
+    const gateway = "https://gateway.lighthouse.storage";
+
+    if (url.startsWith("ipns://")) {
+      const ipns = url.split("ipns://")[1];
+      return `${gateway}/ipns/${ipns}`;
+    } else if (url.startsWith("ipfs://")) {
+      const ipfs = url.split("ipfs://")[1];
+      return `${gateway}/ipfs/${ipfs}`;
+    }
+    return url;
+  }
+
   const checkUrlReturns200 = async (url: string) => {
-    let statusCodeF, isErrorF;
-    let isSuccess = false;
-    let message = "";
     if (url.includes("dmf-dnslink=1") && url.includes("dmf-http=1")) {
-      isErrorF = false;
-      isSuccess = true;
-    } else {
-      let urlToTest = url;
-      if (urlToTest.startsWith("ipns://")) {
-        const gateway = "https://gateway.lighthouse.storage/ipns/";
-        const ipns = url.split("ipns://")[1];
-        const ipnsUrl = `${gateway}${ipns}`;
-        urlToTest = ipnsUrl;
-      }
-      const { statusCode, isError } = await makeRequest(urlToTest);
-      statusCodeF = statusCode;
-      isErrorF = isError;
-      if (isErrorF) {
-        message = "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)";
-      } else if (statusCodeF === 200) {
-        isSuccess = true;
-      } else if (statusCodeF === 404) {
-        message = "Data Stream URL is not reachable (Status Code 404 received)";
-      } else {
-        message = `Data Stream URL must be a publicly accessible url (Status Code ${statusCodeF} received)`;
-      }
+      return { isSuccess: true, message: "" };
     }
 
-    return {
-      isSuccess,
-      message,
-    };
+    const urlToTest = convertToHttpUrl(url);
+    const { statusCode, isError } = await makeRequest(urlToTest);
+
+    if (isError) {
+      return {
+        isSuccess: false,
+        message: "Data Stream URL is not appropriate for minting into Data NFT (Unknown Error)",
+      };
+    }
+
+    switch (statusCode) {
+      case 200:
+        return { isSuccess: true, message: "" };
+      case 404:
+        return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 404 received)" };
+      case 403:
+        if (url.includes("dmf-allow-http403=1")) {
+          return {
+            isSuccess: true,
+            message:
+              "Data Stream URL is not publicly reachable (Status Code 403 received), but you can proceed as you allow this via flag : dmf-allow-http403=1",
+          };
+        } else {
+          return { isSuccess: false, message: "Data Stream URL is not reachable (Status Code 403 received)" };
+        }
+      default:
+        return {
+          isSuccess: false,
+          message: `Data Stream URL must be a publicly accessible url (Status Code ${statusCode} received)`,
+        };
+    }
   };
 
   const onChangeDataNFTMarshalService = (value: string) => {
@@ -125,24 +154,8 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
     });
   };
 
-  useEffect(() => {
-    (async () => {
-      const minRoyaltiesT = userData?.minRoyalties ?? 0;
-      const maxRoyaltiesT = userData?.maxRoyalties ?? 0;
-      const maxSupplyT = userData?.maxSupply ?? 0;
-      const antiSpamTaxT = userData?.antiSpamTaxValue ?? 0;
-
-      onChangeDataNFTMarshalService(getApiDataMarshal(chainID));
-      onChangeDataNFTImageGenService();
-      setMinRoyalties(minRoyaltiesT);
-      setMaxRoyalties(maxRoyaltiesT);
-      setMaxSupply(maxSupplyT);
-      setAntiSpamTax(antiSpamTaxT / 10 ** 18);
-    })();
-  }, []);
-
   return (
-    <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false}>
+    <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
       <DrawerOverlay backdropFilter="blur(10px)" />
       <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
         <DrawerHeader>
@@ -169,9 +182,9 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               !dataNFTImgGenServiceValid ||
               (!!userData && userData.contractWhitelistEnabled && !userData.userWhitelistedForMint) ||
               (!!userData && userData.contractPaused)) && (
-              <Alert status="error">
+              <Alert status="error" mb={5}>
                 <Stack>
-                  <AlertTitle fontSize="md" mb={2}>
+                  <AlertTitle fontSize="md" mb={5}>
                     <AlertIcon display="inline-block" />
                     <Text display="inline-block" lineHeight="2" style={{ verticalAlign: "middle" }}>
                       Uptime Errors
@@ -194,7 +207,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             )}
 
             {!!userData && Date.now() < userData.lastUserMintTime + userData.mintTimeLimit && (
-              <Alert status="error">
+              <Alert status="error" mb={5}>
                 <Stack>
                   <AlertTitle fontSize="md" mb={2}>
                     <AlertIcon display="inline-block" />
@@ -253,7 +266,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             rounded="lg"
             mt={7}
             onClick={() => {
-              navigate("/getwhitelisted");
+              navigate("/getverified");
             }}>
             Find out how you can get whitelisted
           </Button>

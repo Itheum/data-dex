@@ -65,7 +65,6 @@ export const WhitelistControl: React.FC<WhitelistControlProps> = (props) => {
     });
   };
 
-  // console.log(viewWhitelistedAddress.length);
   const onSubmit = (data: WhitelistControlFormType) => {
     addWhitelist(data.addressToWhitelist);
   };

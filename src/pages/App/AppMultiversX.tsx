@@ -16,16 +16,16 @@ import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
 import DataNFTMarketplaceMultiversX from "pages/DataNFT/DataNFTMarketplaceMultiversX";
 import DataNFTs from "pages/DataNFT/DataNFTs";
 import MyDataNFTsMx from "pages/DataNFT/MyDataNFTsMultiversX";
-import { GetWhitelist } from "pages/GetWhitelist";
+import { GetVerified } from "pages/GetVerified";
 import HomeMultiversX from "pages/Home/HomeMultiversX";
 import LandingPage from "pages/LandingPage";
 import { StoreProvider } from "store/StoreProvider";
 import { TradeData } from "../AdvertiseData/TradeData";
+import { Bonding } from "../Bonding/Bonding";
 import { MinterDashboard } from "../Enterprise/components/MinterDashboard";
 import { Enterprise } from "../Enterprise/Enterprise";
 import { GuardRails } from "../GuardRails/GuardRails";
 import { Profile } from "../Profile/Profile";
-import { Bonding } from "../Bonding/Bonding";
 
 const mxLogout = logout;
 
@@ -160,7 +160,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
 
   let bodyMinHeightLg = "1000px";
 
-  if (menuItem === MENU.GETWHITELISTED) {
+  if (menuItem === MENU.GETVERIFIED) {
     // whitelist page we need to reset this of bg looks bad
     bodyMinHeightLg = "lg";
   }
@@ -185,8 +185,8 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
 
-                    <Route path="getwhitelisted" element={<Outlet />}>
-                      <Route path="" element={<GetWhitelist />} />
+                    <Route path="getverified" element={<Outlet />}>
+                      <Route path="" element={<GetVerified />} />
                     </Route>
 
                     <Route path="guardrails" element={<Outlet />}>
@@ -240,14 +240,12 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
-
-                    <Route path="bonding" element={<Bonding />} />
+                    <Route path="bonding/" element={<Bonding />} />
+                    <Route path="bonding/:pageNumber" element={<Bonding />} />
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>
               </Box>
-
-              {/* App Footer */}
               <AppFooter />
             </Flex>
           </Container>

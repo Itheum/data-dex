@@ -1,7 +1,7 @@
 import { DataNftMarket, MarketplaceRequirements, Offer } from "@itheum/sdk-mx-data-nft/out";
 import axios from "axios";
 import { backendApi } from "libs/utils";
-import { uxConfig } from ".";
+import { IS_DEVNET, uxConfig } from ".";
 import { DataNftCollectionType, Favorite, TrendingNft } from "./types";
 
 export async function getHealthCheckFromBackendApi(chainID: string): Promise<boolean> {
@@ -190,7 +190,7 @@ export async function getOffersByIdAndNoncesFromBackendApi(
 }
 
 export async function getMarketRequirements(chainID: string): Promise<MarketplaceRequirements | undefined> {
-  const dataNftMarketplace = new DataNftMarket(chainID === "D" ? "devnet" : "mainnet");
+  const dataNftMarketplace = new DataNftMarket(IS_DEVNET ? "devnet" : "mainnet");
   try {
     return dataNftMarketplace.viewRequirements();
   } catch (error) {

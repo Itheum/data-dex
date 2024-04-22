@@ -27,6 +27,11 @@ import {
   MenuItem,
   MenuItemOption,
   MenuList,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
   Spinner,
   Stack,
   Text,
@@ -37,8 +42,8 @@ import {
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { AiFillHome } from "react-icons/ai";
 import { FaStore, FaUserCheck, FaLaptop } from "react-icons/fa";
+import { LuFlaskRound } from "react-icons/lu";
 import { MdAccountBalanceWallet, MdDarkMode, MdMenu, MdPerson, MdSpaceDashboard } from "react-icons/md";
 import { RiExchangeFill } from "react-icons/ri";
 import { TiArrowSortedDown } from "react-icons/ti";
@@ -49,10 +54,11 @@ import ClaimsHistory from "components/ClaimsHistory";
 import InteractionsHistory from "components/Tables/InteractionHistory";
 import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponent";
 import ShortAddress from "components/UtilComps/ShortAddress";
-import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, CHAINS, MENU, BIT_GAME_WINDOW_HOURS, EXPLORER_APP_FOR_TOKEN } from "libs/config";
 import { formatNumberRoundFloor } from "libs/utils";
 import { useAccountStore } from "store";
-
+import Countdown from "components/CountDown";
+import { BsDot } from "react-icons/bs";
 const exploreRouterMenu = [
   {
     sectionId: "MainSections",
@@ -104,10 +110,10 @@ const exploreRouterMenu = [
         isHidden: false,
       },
       {
-        menuEnum: MENU.GETWHITELISTED,
-        path: "/getwhitelisted",
-        label: "Get Whitelisted to Mint Data NFTs",
-        shortLbl: "Get Whitelisted",
+        menuEnum: MENU.GETVERIFIED,
+        path: "/getverified",
+        label: "Get Verified as a Data Creator",
+        shortLbl: "Get Verified",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,
         needToBeLoggedOut: true,
@@ -117,12 +123,10 @@ const exploreRouterMenu = [
   },
 ];
 
-const menuItemsMap: Map<number, any> = new Map(exploreRouterMenu[0].sectionItems.map((row) => [row.menuEnum, row]));
-
 const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { onShowConnectWalletModal?: any; setMenuItem: any; handleLogout: any }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainID } = useGetNetworkConfig();
-  const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
+  const { isLoggedIn: isMxLoggedIn, tokenLogin } = useGetLoginInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address: mxAddress } = useGetAccountInfo();
   const { colorMode, setColorMode } = useColorMode();
@@ -130,6 +134,8 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
 
   const [mxShowClaimsHistory, setMxShowClaimsHistory] = useState(false);
   const [mxShowInteractionsHistory, setMxInteractionsHistory] = useState(false);
+  const bitzBalance = useAccountStore((state) => state.bitzBalance);
+  const cooldown = useAccountStore((state) => state.cooldown);
 
   const connectBtnTitle = useBreakpointValue({ base: "Connect Wallet", md: "Connect MultiversX Wallet" });
 
@@ -365,21 +371,82 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                     </Menu>
                   ))}
                 </Box>
-                <Link as={ReactRouterLink} to={"/"}>
-                  <IconButton
-                    display={{ base: "none", md: "inline-flex" }}
-                    size={{ md: "md", xl: "md", "2xl": "lg" }}
-                    p="2 !important"
-                    color="teal.200"
-                    icon={<AiFillHome fontSize={"1.4rem"} />}
-                    aria-label={"Back to home"}
-                    isDisabled={isMenuItemSelected(menuItemsMap.get(MENU.LANDING)?.path) || hasPendingTransactions}
-                    _disabled={menuButtonDisabledStyle(menuItemsMap.get(MENU.LANDING)?.path)}
-                    onClick={() => {
-                      navigateToDiscover(MENU.LANDING);
-                    }}
-                  />
-                </Link>
+                <Popover>
+                  <PopoverTrigger>
+                    <Button display={{ base: "none", md: "inline-flex" }} size={{ md: "md", xl: "md", "2xl": "lg" }} p="2 !important">
+                      {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                      <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />
+                      {cooldown <= 0 && cooldown != -2 && (
+                        <>
+                          {" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-15px"
+                            top="-15px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="15px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"></Box>{" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-8px"
+                            top="-18px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="15px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                            style={{ animationDelay: "0.5s" }}></Box>{" "}
+                          <Box
+                            position={"absolute"}
+                            w={"full"}
+                            h={"full"}
+                            right="-12px"
+                            top="-25px"
+                            as={BsDot}
+                            color="#38bdf8"
+                            size="55px"
+                            animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                            style={{ animationDelay: "1s" }}></Box>{" "}
+                        </>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent backgroundColor={colorMode === "dark" ? "bgDark" : "white"} w="25rem">
+                    <PopoverCloseButton />
+                    <PopoverBody pt={5} justifyContent="center" alignItems="center" w="full">
+                      <Flex w="full" justifyContent="center" alignItems="center" py={4}>
+                        <Box shadow="#38bdf8" boxShadow="inset 0 2px 4px 0 #38bdf8" w="3.5rem" h="3.5rem" rounded="lg">
+                          <Flex w="full" justifyContent="center" alignItems="center" h="3.5rem">
+                            <LuFlaskRound fontSize={"1.7rem"} fill="#38bdf8" />
+                          </Flex>
+                        </Box>
+                      </Flex>
+                      <Text textAlign="center" fontFamily="Clash-Medium" fontSize="2xl">
+                        What is {`<BiTz>`} XP?
+                      </Text>
+                      <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
+                        {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`} game
+                        Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                      </Text>
+                      <Link as={ReactRouterLink} isExternal to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
+                        <Button
+                          variant="outline"
+                          borderColor="#38bdf8"
+                          rounded="full"
+                          w="full"
+                          _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
+                          <span>
+                            {cooldown === -2 ? <span>...</span> : cooldown > 0 ? <Countdown unixTime={cooldown} /> : <span> Claim your {`<BiTz>`}</span>}
+                          </span>
+                        </Button>
+                      </Link>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
               </>
             )}
             {onShowConnectWalletModal && !isMxLoggedIn && (
@@ -454,12 +521,89 @@ const AppHeader = ({ onShowConnectWalletModal, setMenuItem, handleLogout }: { on
                 <AccordionItem key={menu.sectionId}>
                   {() => (
                     <>
-                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4} mt={2}>
+                      <Popover>
+                        <PopoverTrigger>
+                          <Flex px={4} pb={1.5} position={"relative"} w={"100px"} mt={3}>
+                            {cooldown <= 0 && cooldown != -2 && (
+                              <>
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-20px"
+                                  top="-16px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="15px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"></Box>{" "}
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-25px"
+                                  top="-18px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="15px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                                  style={{ animationDelay: "0.5s" }}></Box>{" "}
+                                <Box
+                                  position={"absolute"}
+                                  w={"full"}
+                                  h={"full"}
+                                  left="-23px"
+                                  top="-25px"
+                                  as={BsDot}
+                                  color="#38bdf8"
+                                  size="55px"
+                                  animation="ping 2s cubic-bezier(0, 0, 0.2, 1) infinite"
+                                  style={{ animationDelay: "1s" }}></Box>{" "}
+                              </>
+                            )}
+                            <LuFlaskRound fontSize={"1.4rem"} fill="#38bdf8" />{" "}
+                            {bitzBalance === -2 ? <span>...</span> : <>{bitzBalance === -1 ? <div>0</div> : <div>{bitzBalance}</div>}</>}
+                          </Flex>
+                        </PopoverTrigger>
+                        <PopoverContent backgroundColor="bgDark" w="18rem">
+                          <PopoverCloseButton />
+                          <PopoverBody pt={5} justifyContent="center" alignItems="center" w="full">
+                            <Flex w="full" justifyContent="center" alignItems="center" py={4}>
+                              <Box shadow="#38bdf8" boxShadow="inset 0 2px 4px 0 #38bdf8" w="3.5rem" h="3.5rem" rounded="lg">
+                                <Flex w="full" justifyContent="center" alignItems="center" h="3.5rem">
+                                  <LuFlaskRound fontSize={"1.7rem"} fill="#38bdf8" />
+                                </Flex>
+                              </Box>
+                            </Flex>
+                            <Text textAlign="center" fontFamily="Clash-Medium" fontSize="2xl">
+                              What is {`<BiTz>`} XP?
+                            </Text>
+                            <Text fontSize="md" lineHeight="1.5rem" fontFamily="Satoshi-Regular" py={4} px={3}>
+                              {`<BiTz>`} are Itheum Protocol XP. {`<BiTz>`} can be collected every {BIT_GAME_WINDOW_HOURS} hours by playing the Get {`<BiTz>`}{" "}
+                              game Data Widget. Top LEADERBOARD climbers get special perks and drops!
+                            </Text>
+                            <Link
+                              as={ReactRouterLink}
+                              isExternal
+                              to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}>
+                              <Button
+                                variant="outline"
+                                borderColor="#38bdf8"
+                                rounded="full"
+                                w="full"
+                                _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
+                                Get {`<BiTz>`}
+                              </Button>
+                            </Link>
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
+                      <Text as={"header"} fontWeight="700" fontSize="md" ml={4}>
                         My Address Quick Copy
                       </Text>
                       <Text as={"div"} m={"2 !important"} pl={8} color="teal.200" fontWeight={"bold"}>
                         <ShortAddress address={mxAddress} fontSize="md" marginLeftSet="-20px" isCopyAddress={true} />
                       </Text>
+
                       <hr />
                       <List>
                         <Link as={ReactRouterLink} to={`/profile/${mxAddress}`} style={{ textDecoration: "none" }}>

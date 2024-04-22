@@ -5,7 +5,7 @@ import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Favourite } from "../../../components/Favourite/Favourite";
-import { getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
+import { IS_DEVNET, getFavoritesFromBackendApi, getTrendingFromBackendApi } from "../../../libs/MultiversX";
 import { useAccountStore } from "../../../store";
 
 type TrendingDataCreationNftsType = {
@@ -30,7 +30,7 @@ export const TrendingData: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      DataNft.setNetworkConfig(chainID === "1" ? "mainnet" : "devnet");
+      DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
       const getTrendingData = await getTrendingFromBackendApi(chainID);
       const _trendingData: Array<TrendingDataCreationNftsType> = [];
       setLoadedOffers(true);
@@ -42,15 +42,12 @@ export const TrendingData: React.FC = () => {
         _trendingData.push({ nonce: nonce, tokenIdentifier: tokenIdentifier });
       });
       const dataNfts: DataNft[] = await DataNft.createManyFromApi(_trendingData);
-      // console.log(dataNfts);
       const trending = getTrendingData.map((dataNft) => {
-        // console.log(dataNft);
         const ratingNfts = dataNfts.find((nft) => nft.tokenIdentifier === dataNft.tokenIdentifier);
         if (ratingNfts) {
           return { ...ratingNfts, rating: dataNft.rating };
         }
       });
-      // console.log(trending);
       setTrendingDataNfts(trending as TrendingDataNftsType[]);
     })();
     setLoadedOffers(false);
@@ -60,7 +57,6 @@ export const TrendingData: React.FC = () => {
     if (tokenLogin?.nativeAuthToken) {
       const bearerToken = tokenLogin?.nativeAuthToken;
       const getFavourites = await getFavoritesFromBackendApi(chainID, bearerToken);
-      // console.log(getFavourites);
       updateFavoriteNfts(getFavourites);
     }
   };
@@ -69,7 +65,6 @@ export const TrendingData: React.FC = () => {
     getFavourite();
   }, [favoriteNfts.length]);
 
-  // console.log(trendingDataNfts);
   return (
     <Box>
       <Heading as="h2" size="lg" fontWeight="bold" mb="1rem">

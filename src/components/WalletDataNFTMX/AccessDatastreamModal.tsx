@@ -5,7 +5,11 @@ import { CloseButton } from "@chakra-ui/close-button";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Stack, HStack, Text } from "@chakra-ui/layout";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody } from "@chakra-ui/modal";
+import { Link } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
+import { useGetLoginInfo, useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
+import { Link as ReactRouterLink } from "react-router-dom";
+import { EXPLORER_APP_FOR_TOKEN } from "../../libs/config";
 
 type DatastreamModalPropType = {
   isOpen: boolean;
@@ -16,6 +20,8 @@ type DatastreamModalPropType = {
 
 export default function AccessDataStreamModal(props: DatastreamModalPropType) {
   const { isOpen, onClose, unlockAccessProgress, errorMessage } = props;
+  const { chainID } = useGetNetworkConfig();
+  const { tokenLogin } = useGetLoginInfo();
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay backdropFilter="blur(10px)" />
@@ -32,6 +38,27 @@ export default function AccessDataStreamModal(props: DatastreamModalPropType) {
             <HStack>
               {(!unlockAccessProgress.s3 && <Spinner size="md" />) || <CheckCircleIcon w={6} h={6} />}
               <Text>Verifying data access rights to unlock Data Stream</Text>
+            </HStack>
+
+            <HStack>
+              {unlockAccessProgress.s3 === 2 ? (
+                <Link
+                  as={ReactRouterLink}
+                  isExternal
+                  to={`${EXPLORER_APP_FOR_TOKEN[chainID]["bitzgame"]}/?accessToken=${tokenLogin?.nativeAuthToken}`}
+                  style={{ width: "100%" }}>
+                  <Button
+                    variant="outline"
+                    borderColor="#38bdf8"
+                    rounded="full"
+                    w="full"
+                    _hover={{ backgroundImage: "linear-gradient(345deg, #171717, #38bdf8)" }}>
+                    Play BiTz Game
+                  </Button>
+                </Link>
+              ) : (
+                <></>
+              )}
             </HStack>
 
             {errorMessage && (

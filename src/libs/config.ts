@@ -1,5 +1,7 @@
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
-import { ContractsType } from "libs/types";
+import { EnvironmentsEnum } from "@multiversx/sdk-dapp/types";
+import { BlobDataType, ContractsType, ExtendedViewDataReturnType } from "libs/types";
 import {
   tokenContractAddress_Mx_Devnet,
   dataNFTFTTicker_Mx_Devnet,
@@ -47,6 +49,26 @@ export function contractsForChain(chainID: string): ContractsType {
           {
             id: "NEWDNFT-3a8caa",
             contract: new Address("erd1qqqqqqqqqqqqqpgq69lkfnnzgvqpjzze690rl4lmqtmvnccsw3wqhvsacl"),
+          },
+          {
+            id: "FOOA-141164",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqteqgaxcel2zjkrsm27szjlptemqk0sdpu00sp49kss"),
+          },
+          {
+            id: "DNFTPHMA-9e2b1c",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq5hsq5z09zv3g0lsxs3y6q2x0qvlhzugpu00sevtqsw"),
+          },
+          {
+            id: "DNFTPHFAIL-e47ef0",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqtytgg5hkwakehagx9udjg6t4y8r7xufdu00s8n66xm"),
+          },
+          {
+            id: "OASISMUSIC-9b3433",
+            contract: new Address("erd1qqqqqqqqqqqqqpgqtflnfdc4826zefus0r7pum8ux9k0kfmeu00sc5lndk"),
+          },
+          {
+            id: "OASMUSICPL-47b186",
+            contract: new Address("erd1qqqqqqqqqqqqqpgq30mwjcjmy7l7p4v0ytf2pmcmj95u9l8xu00sku2n5h"),
           },
         ],
       };
@@ -105,7 +127,7 @@ export const MENU = {
   CLAIMS: 15,
   LANDING: 16,
   NFTDETAILS: 17,
-  GETWHITELISTED: 18,
+  GETVERIFIED: 18,
   DATACAT: 19,
   PROFILE: 20,
   GUARDRAILS: 21,
@@ -130,7 +152,7 @@ export const PATHS = {
   personaldataproof: [13, [0]],
   nftdetails: [17, [4]],
   offer: [17, [4]],
-  getwhitelisted: [18, [-1]],
+  getverified: [18, [-1]],
 };
 
 export const CHAINS = {
@@ -448,30 +470,77 @@ export const whitelistWallets: Array<string> = [];
 
 export const PREVIEW_DATA_ON_DEVNET_SESSION_KEY = "itm-preview-data-on-devnet";
 
-export const EXPLORER_APP_SUPPORTED_NONCES: Record<string, Record<string, Array<number>>> = {
+export const IS_DEVNET = import.meta.env.VITE_ENV_NETWORK && import.meta.env.VITE_ENV_NETWORK === EnvironmentsEnum.devnet;
+
+export type app_token = {
+  tokenIdentifier: string;
+  nonce: number;
+};
+
+export const GET_BITZ_TOKEN: app_token = IS_DEVNET ? { tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 } : { tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 };
+export const BIT_GAME_WINDOW_HOURS = "3";
+
+export async function viewDataJSONCore(viewDataArgs: any, requiredDataNFT: DataNft) {
+  try {
+    const res: any = await requiredDataNFT.viewDataViaMVXNativeAuth(viewDataArgs);
+
+    const blobDataType = BlobDataType.TEXT;
+
+    if (!res.error) {
+      if (res.contentType.search("application/json") >= 0) {
+        res.data = JSON.parse(await (res.data as Blob).text());
+      }
+
+      const viewDataJSONPayload: ExtendedViewDataReturnType = {
+        ...res,
+        blobDataType,
+      };
+
+      return viewDataJSONPayload;
+    } else {
+      console.log("viewDataJSONCore threw catch error");
+      console.error(res.error);
+
+      return undefined;
+    }
+  } catch (err) {
+    console.log("viewDataJSONCore threw catch error");
+    console.error(err);
+
+    return undefined;
+  }
+}
+
+export const EXPLORER_APP_SUPPORTED_TOKENS: any = {
   "D": {
-    "trailblazer": [1],
+    "trailblazer": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 1 }],
     "multiversxbubbles": [],
-    "multiversxinfographics": [3],
-    "nftunes": [2],
-    "timecapsule": [57],
+    "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 3 }],
+    "nftunes": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 2 }],
+    "timecapsule": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 57 }],
+    "bitzgame": [{ tokenIdentifier: "DATANFTFT-e0b917", nonce: 198 }],
+    "bobergameroom": [],
   },
   "1": {
-    "trailblazer": [1],
-    "multiversxbubbles": [2],
-    "multiversxinfographics": [3],
-    "nftunes": [4],
-    "timecapsule": [5],
+    "trailblazer": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 1 }],
+    "multiversxbubbles": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 2 }],
+    "multiversxinfographics": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 3 }],
+    "nftunes": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 4 }],
+    "timecapsule": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 5 }],
+    "bitzgame": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 7 }],
+    "bobergameroom": [{ tokenIdentifier: "DATANFTFT-e936d4", nonce: 8 }],
   },
 };
 
-export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
+export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
   "D": {
     "trailblazer": "https://test.explorer.itheum.io/project-trailblazer",
     "multiversxbubbles": "https://test.explorer.itheum.io/multiversx-bubbles",
     "multiversxinfographics": "https://test.explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://test.explorer.itheum.io/nftunes",
     "timecapsule": "https://test.explorer.itheum.io/timecapsule",
+    "bitzgame": "https://test.explorer.itheum.io/getbitz",
+    "bobergameroom": "https://test.explorer.itheum.io/bobergameroom",
   },
   "1": {
     "trailblazer": "https://explorer.itheum.io/project-trailblazer",
@@ -479,5 +548,7 @@ export const EXPLORER_APP_FOR_NONCE: Record<string, Record<string, string>> = {
     "multiversxinfographics": "https://explorer.itheum.io/multiversx-infographics",
     "nftunes": "https://explorer.itheum.io/nftunes",
     "timecapsule": "https://explorer.itheum.io/timecapsule",
+    "bitzgame": "https://explorer.itheum.io/getbitz",
+    "bobergameroom": "https://explorer.itheum.io/bobergameroom",
   },
 };

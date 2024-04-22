@@ -1,9 +1,10 @@
 import React, { PropsWithChildren, useEffect } from "react";
-import { BondContract, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, DataNft, DataNftMarket, MarketplaceRequirements } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useSearchParams } from "react-router-dom";
+import { GET_BITZ_TOKEN, IS_DEVNET, viewDataJSONCore } from "libs/config";
 import {
   contractsForChain,
   getFavoritesFromBackendApi,
@@ -13,7 +14,7 @@ import {
 } from "libs/MultiversX";
 import { getAccountTokenFromApi, getItheumPriceFromApi } from "libs/MultiversX/api";
 import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
-import { convertWeiToEsdt, tokenDecimals } from "libs/utils";
+import { computeRemainingCooldown, convertWeiToEsdt, decodeNativeAuthToken, sleep, tokenDecimals } from "libs/utils";
 import { useAccountStore, useMarketStore, useMintStore } from "store";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
@@ -28,6 +29,8 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   const updateItheumBalance = useAccountStore((state) => state.updateItheumBalance);
   const updateAccessToken = useAccountStore((state) => state.updateAccessToken);
   const updateFavoriteNfts = useAccountStore((state) => state.updateFavoriteNfts);
+  const updateBitzBalance = useAccountStore((state) => state.updateBitzBalance);
+  const updateCooldown = useAccountStore((state) => state.updateCooldown);
 
   // MARKET STORE
   const updateMarketRequirements = useMarketStore((state) => state.updateMarketRequirements);
@@ -41,12 +44,10 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   // MINT STORE
   const updateUserData = useMintStore((state) => state.updateUserData);
   const updateLockPeriodForBond = useMintStore((state) => state.updateLockPeriodForBond);
-  let bondingContract: BondContract;
-  if (import.meta.env.VITE_ENV_NETWORK === "devnet") {
-    bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
-  }
+  const bondingContract = new BondContract(import.meta.env.VITE_ENV_NETWORK);
   const marketContractSDK = new DataNftMarket(import.meta.env.VITE_ENV_NETWORK);
   const mintContract = new DataNftMintContract(chainID);
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
 
   useEffect(() => {
     (async () => {
@@ -57,6 +58,53 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!address || !(tokenLogin && tokenLogin.nativeAuthToken)) {
+      return;
+    }
+    // setTimeout(() => {
+    (async () => {
+      // get the bitz game data nft details
+      const bitzGameDataNFT = await DataNft.createFromApi(GET_BITZ_TOKEN);
+
+      // does the logged in user actually OWN the bitz game data nft
+      const _myDataNfts = await DataNft.ownedByAddress(address);
+      const hasRequiredDataNFT = _myDataNfts.find((dNft) => bitzGameDataNFT.nonce === dNft.nonce);
+      const hasGameDataNFT = hasRequiredDataNFT ? true : false;
+
+      // only get the bitz balance if the user owns the token
+      if (hasGameDataNFT) {
+        console.log("info: user OWNs the bitz score data nft, so get balance");
+
+        const viewDataArgs = {
+          mvxNativeAuthOrigins: [decodeNativeAuthToken(tokenLogin.nativeAuthToken || "").origin],
+          mvxNativeAuthMaxExpirySeconds: 3600,
+          fwdHeaderMapLookup: {
+            "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
+            "dmf-custom-only-state": "1",
+          },
+          fwdHeaderKeys: "authorization, dmf-custom-only-state",
+        };
+
+        const getBitzGameResult = await viewDataJSONCore(viewDataArgs, bitzGameDataNFT);
+        if (getBitzGameResult) {
+          updateBitzBalance(getBitzGameResult.data.gamePlayResult.bitsScoreBeforePlay);
+          updateCooldown(
+            computeRemainingCooldown(
+              Math.max(getBitzGameResult.data.gamePlayResult.lastPlayedAndCommitted, getBitzGameResult.data.gamePlayResult.lastPlayedBeforeThisPlay),
+              getBitzGameResult.data.gamePlayResult.configCanPlayEveryMSecs
+            )
+          );
+        }
+      } else {
+        console.log("info: user does NOT OWN the bitz score data nft");
+        updateBitzBalance(-1);
+        updateCooldown(-1);
+      }
+    })();
+    // }, 3000);
+  }, [address, tokenLogin]);
 
   useEffect(() => {
     const accessToken = searchParams.get("accessToken");
@@ -118,7 +166,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
 
     (async () => {
       const _userData = await mintContract.getUserDataOut(new Address(address), contractsForChain(chainID).itheumToken);
-      // console.log("userData", _userData);
       updateUserData(_userData);
     })();
   }, [address, hasPendingTransactions]);

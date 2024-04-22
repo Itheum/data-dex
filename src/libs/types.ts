@@ -1,4 +1,4 @@
-import { Bond, Offer } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, Offer, ViewDataReturnType } from "@itheum/sdk-mx-data-nft/out";
 import { IAddress } from "@multiversx/sdk-core/out";
 import BigNumber from "bignumber.js";
 
@@ -33,3 +33,16 @@ export interface DataNFTToken {
 }
 
 export interface ExtendedOffer extends Offer, Partial<Bond> {}
+
+export enum BlobDataType {
+  TEXT,
+  IMAGE,
+  AUDIO,
+  SVG,
+  PDF,
+  VIDEO,
+}
+
+export interface ExtendedViewDataReturnType extends ViewDataReturnType {
+  blobDataType: BlobDataType;
+}

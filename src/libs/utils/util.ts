@@ -2,7 +2,7 @@ import { BondContract, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { Interaction, ResultsParser } from "@multiversx/sdk-core/out";
 import { numberToPaddedHex } from "@multiversx/sdk-core/out/utils.codec";
 import BigNumber from "bignumber.js";
-import { OPENSEA_CHAIN_NAMES } from "libs/config";
+import { IS_DEVNET, OPENSEA_CHAIN_NAMES } from "libs/config";
 import { convertToLocalString } from "./number";
 import { getNetworkProvider } from "../MultiversX/api";
 import { ExtendedOffer } from "libs/types";
@@ -317,7 +317,7 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
   const offersTokenIdentif = offers.map((offer) => {
     return createNftId(offer.offeredTokenIdentifier, offer.offeredTokenNonce);
   });
-  const bondingContract = new BondContract("devnet");
+  const bondingContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const bonds = await bondingContract.viewBonds(offersTokenIdentif);
   return offers.map((offer) => {
     const bond = bonds.find((bondT) => bondT.tokenIdentifier === offer.offeredTokenIdentifier && bondT.nonce === offer.offeredTokenNonce);
@@ -333,7 +333,7 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
           nonce: 0,
           lockPeriod: 0,
           bondTimestamp: 0,
-          unboundTimestamp: 0,
+          unbondTimestamp: 0,
           bondAmount: 0,
           remainingAmount: 0,
         },
@@ -342,25 +342,25 @@ export const getBondsForOffers = async (offers: Offer[]): Promise<ExtendedOffer[
   });
 };
 
-export const settingLivelinessScore = async (tokenIdentifier?: string, unboudTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
-  const bondingContract = new BondContract("devnet");
+export const settingLivelinessScore = async (tokenIdentifier?: string, unbondTimestamp?: number, lockPeriod?: number): Promise<number | undefined> => {
+  const bondingContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   try {
     if (tokenIdentifier) {
       const periodOfBond = await bondingContract.viewBonds([tokenIdentifier]);
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = currentTimestamp - periodOfBond[0].unboundTimestamp;
+      const difDays = currentTimestamp - periodOfBond[0].unbondTimestamp;
       return difDays > 0
         ? 0
-        : periodOfBond[0].unboundTimestamp === 0
+        : periodOfBond[0].unbondTimestamp === 0
           ? -1
           : Number(Math.abs(getLivelinessScore(difDays, periodOfBond[0].lockPeriod)).toFixed(2));
     }
-    if (unboudTimestamp && lockPeriod) {
+    if (unbondTimestamp && lockPeriod) {
       const newDate = new Date();
       const currentTimestamp = Math.floor(newDate.getTime() / 1000);
-      const difDays = currentTimestamp - unboudTimestamp;
-      return difDays > 0 ? 0 : unboudTimestamp === 0 ? -1 : Number(Math.abs(getLivelinessScore(difDays, lockPeriod)).toFixed(2));
+      const difDays = currentTimestamp - unbondTimestamp;
+      return difDays > 0 ? 0 : unbondTimestamp === 0 ? -1 : Number(Math.abs(getLivelinessScore(difDays, lockPeriod)).toFixed(2));
     }
   } catch (error) {
     return undefined;
@@ -386,3 +386,10 @@ export function timeUntil(lockPeriod: number): { count: number; unit: string } {
 
   return { count, unit };
 }
+
+export const computeRemainingCooldown = (startTime: number, cooldown: number) => {
+  const timePassedFromLastPlay = Date.now() - startTime;
+  const _cooldown = cooldown - timePassedFromLastPlay;
+
+  return _cooldown > 0 ? _cooldown + Date.now() : 0;
+};

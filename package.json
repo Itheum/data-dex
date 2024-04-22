@@ -1,6 +1,6 @@
 {
   "name": "data-dex",
-  "version": "1.13.0",
+  "version": "1.14.1",
   "description": "The Itheum Data DEX enables you to trade your data using web3 tech",
   "dependencies": {
     "@chakra-ui/icons": "2.1.1",
@@ -8,10 +8,10 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.0",
     "@hookform/resolvers": "3.3.4",
-    "@itheum/sdk-mx-data-nft": "3.0.0-alpha.3",
+    "@itheum/sdk-mx-data-nft": "3.2.0-alpha.2",
     "@itheum/sdk-mx-enterprise": "0.2.0",
     "@multiversx/sdk-core": "12.19.0",
-    "@multiversx/sdk-dapp": "2.28.7",
+    "@multiversx/sdk-dapp": "2.28.8",
     "@multiversx/sdk-native-auth-client": "1.0.7",
     "@multiversx/sdk-network-providers": "2.3.0",
     "@sentry/react": "7.103.0",
@@ -23,7 +23,6 @@
     "framer-motion": "11.0.6",
     "mime": "4.0.1",
     "moment": "2.30.1",
-    "nft.storage": "7.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.50.1",
@@ -59,15 +58,15 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "18.19.20",
-    "@types/react": "18.2.60",
-    "@types/react-dom": "18.2.19",
+    "@types/node": "18.19.31",
+    "@types/react": "18.2.79",
+    "@types/react-dom": "18.2.25",
     "@types/react-router-dom": "5.3.3",
-    "@typescript-eslint/eslint-plugin": "7.1.0",
-    "@typescript-eslint/parser": "7.1.0",
+    "@typescript-eslint/eslint-plugin": "7.7.0",
+    "@typescript-eslint/parser": "7.7.0",
     "@vitejs/plugin-basic-ssl": "1.1.0",
     "@vitejs/plugin-react": "4.2.1",
-    "@vitest/coverage-v8": "1.3.1",
+    "@vitest/coverage-v8": "1.5.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-react-app": "7.0.1",
@@ -76,22 +75,22 @@
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-prettier": "5.1.3",
     "eslint-plugin-promise": "6.1.1",
-    "eslint-plugin-react": "7.33.2",
+    "eslint-plugin-react": "7.34.1",
     "eslint-plugin-react-hooks": "4.6.0",
     "jsdom": "24.0.0",
     "prettier": "3.2.5",
     "react-error-overlay": "6.0.11",
     "typescript": "4.9.5",
-    "vite": "5.1.4",
+    "vite": "5.2.9",
     "vite-plugin-node-polyfills": "0.21.0",
     "vite-plugin-svgr": "4.2.0",
-    "vite-tsconfig-paths": "4.3.1",
-    "vitest": "1.3.1"
+    "vite-tsconfig-paths": "4.3.2",
+    "vitest": "1.5.0"
   },
   "resolutions": {
     "**/*/nth-check": "2.0.1"
   },
   "engines": {
-    "node": "18.19.1"
+    "node": "18.20.2"
   }
 }

@@ -12,11 +12,11 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
-import { DataNftMetadataType } from "libs/MultiversX/types";
 import { ExtendedOffer } from "libs/types";
 import { isValidNumericCharacter } from "libs/utils";
 import { useMarketStore } from "store";
@@ -25,7 +25,7 @@ import PreviewDataButton from "./PreviewDataButton";
 
 type MarketplaceLowerCardProps = {
   extendedOffer: ExtendedOffer;
-  nftMetadata: DataNftMetadataType;
+  nftMetadata: DataNft;
   index: number;
 };
 
@@ -41,17 +41,15 @@ const MarketplaceLowerCard: FC<MarketplaceLowerCardProps> = ({ extendedOffer: of
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer.quantity;
 
-  // console.log(offer);
-
   return (
     <>
       <HStack justifyContent="stretch" pb={2}>
         <PreviewDataButton previewDataURL={nftMetadata.dataPreview} />
 
-        <ExploreAppButton nonce={offer.offeredTokenNonce} />
+        <ExploreAppButton collection={offer.offeredTokenIdentifier} nonce={offer.offeredTokenNonce} />
       </HStack>
 
-      {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore unboundTimestamp={offer.unboundTimestamp} lockPeriod={offer.lockPeriod} />}
+      <LivelinessScore unbondTimestamp={offer.unbondTimestamp} lockPeriod={offer.lockPeriod} />
       {!isMyNft ? (
         isMxLoggedIn && (
           <HStack mt={2} flexDirection="column">

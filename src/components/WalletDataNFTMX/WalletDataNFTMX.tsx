@@ -6,7 +6,6 @@ import {
   Button,
   Flex,
   HStack,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -31,11 +30,11 @@ import {
 import { DataNft } from "@itheum/sdk-mx-data-nft/out";
 import { useGetAccountInfo, useGetLoginInfo, useGetNetworkConfig, useGetPendingTransactions, useGetSignedTransactions } from "@multiversx/sdk-dapp/hooks";
 import axios from "axios";
-import { motion } from "framer-motion";
 import moment from "moment";
 import { MdOutlineInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import FrozenOverlay from "components/FrozenOverlay";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ExploreAppButton from "components/UtilComps/ExploreAppButton";
 import ShortAddress from "components/UtilComps/ShortAddress";
@@ -48,6 +47,7 @@ import {
   backendApi,
   convertToLocalString,
   decodeNativeAuthToken,
+  getApiDataMarshal,
   isValidNumericCharacter,
   shouldPreviewDataBeEnabled,
   sleep,
@@ -216,7 +216,7 @@ export default function WalletDataNFTMX(item: any) {
         });
       }
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
     }
   }
 
@@ -245,7 +245,17 @@ export default function WalletDataNFTMX(item: any) {
           "authorization": `Bearer ${tokenLogin.nativeAuthToken}`,
         },
       };
+      if (!dataNft.dataMarshal || dataNft.dataMarshal === "") {
+        dataNft.updateDataNft({ dataMarshal: getApiDataMarshal(chainID) });
+      }
       const res = await dataNft.viewDataViaMVXNativeAuth(arg);
+
+      if (res.error?.includes("403") && (nonce === 7 || nonce === 198)) {
+        setUnlockAccessProgress((prevProgress) => ({
+          ...prevProgress,
+          s3: 2, // 2 means is bitz game
+        }));
+      }
 
       if (!res.error) {
         const link = document.createElement("a");
@@ -262,7 +272,12 @@ export default function WalletDataNFTMX(item: any) {
         s3: 1,
       }));
     } catch (e: any) {
-      setErrUnlockAccessGeneric(e.toString());
+      console.error(e);
+      if (e.includes("403") && (nonce === 7 || nonce === 198)) {
+        return;
+      } else {
+        setErrUnlockAccessGeneric(e.toString());
+      }
     }
   }
 
@@ -302,61 +317,30 @@ export default function WalletDataNFTMX(item: any) {
       return "Free";
     }
   };
-
   return (
     <Skeleton fitContent={true} isLoaded={item.hasLoaded} borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
       <Box
         w="275px"
-        h={item.isProfile === true ? "660px" : "840px"}
+        h={item.isProfile === true ? "660px" : "900px"}
         mx="3 !important"
         border="1px solid transparent"
         borderColor="#00C79740"
         borderRadius="16px"
         mb="1rem"
         position="relative">
-        <Flex justifyContent="center">
-          <Image
-            src={item.nftImgUrl}
-            alt={item.dataPreview}
-            h={236}
-            w={236}
-            mx={6}
-            mt={6}
-            borderRadius="32px"
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-          />
-          <motion.button
-            style={{
-              position: "absolute",
-              zIndex: "1",
-              top: "0",
-              bottom: "0",
-              right: "0",
-              left: "0",
-              height: "236px",
-              width: "236px",
-              marginInlineStart: "1.2rem",
-              marginInlineEnd: "1.2rem",
-              marginTop: "1.5rem",
-              borderRadius: "32px",
-              cursor: "pointer",
-              opacity: 0,
-            }}
-            onLoad={() => item.setHasLoaded(true)}
-            onClick={() => item.openNftDetailsDrawer(item.id)}
-            whileHover={{ opacity: 1, backdropFilter: "blur(1px)", backgroundColor: "#1b1b1ba0" }}>
-            <Text as="div" border="1px solid" borderColor="teal.400" borderRadius="5px" variant="outline" w={20} h={8} textAlign="center" mx="20">
-              <Text as="p" mt={1} fontWeight="400" textColor="white">
-                Details
-              </Text>
-            </Text>
-          </motion.button>
-        </Flex>
+        <ImageSlider
+          imageUrls={item.media?.map((mediaObj: any) => mediaObj.url) ?? [item.nftImgUrl]}
+          autoSlide
+          imageHeight="236px"
+          imageWidth="236px"
+          autoSlideInterval={Math.floor(Math.random() * 6000 + 6000)} // random number between 6 and 12 seconds
+          onLoad={() => item.setHasLoaded(true)}
+          openNftDetailsDrawer={() => item.openNftDetailsDrawer(item.id)}
+        />
 
         <Flex h="28rem" mx={6} my={3} direction="column" justify={item.isProfile === true ? "initial" : "space-between"}>
           <Text fontSize="md" color="#929497">
-            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.id}`} isExternal>
+            <Link href={`${CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER]}/nfts/${item.tokenIdentifier}`} isExternal>
               {item.tokenName} <ExternalLinkIcon mx="2px" />
             </Link>
           </Text>
@@ -388,17 +372,21 @@ export default function WalletDataNFTMX(item: any) {
             </PopoverContent>
           </Popover>
           <Box mt={1}>
-            <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
-              Creator:&nbsp;
-              <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
-                <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
-                <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
-              </Flex>
-            </Box>
+            {item.creator && (
+              <Box color="#8c8f92d0" fontSize="md" display="flex" alignItems="center">
+                Creator:&nbsp;
+                <Flex alignItems="center" onClick={() => navigate(`/profile/${item.creator}`)}>
+                  <ShortAddress address={item.creator} fontSize="lg" tooltipLabel="Profile" />
+                  <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797" }} fontSize="lg" />
+                </Flex>
+              </Box>
+            )}
 
-            <Box color="#8c8f92d0" fontSize="md">
-              {`Creation time: ${moment(item.creationTime).format(uxConfig.dateStr)}`}
-            </Box>
+            {item.creationTime && (
+              <Box color="#8c8f92d0" fontSize="md">
+                Creation time: {moment(item.creationTime).format(uxConfig.dateStr)}
+              </Box>
+            )}
 
             <Stack display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" my="2" height="7rem">
               <Badge borderRadius="md" px="3" py="1" mt="1" colorScheme="teal">
@@ -407,11 +395,13 @@ export default function WalletDataNFTMX(item: any) {
                 </Text>
               </Badge>
 
-              <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
-                <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
-                  Fully Transferable License
-                </Text>
-              </Badge>
+              {item?.isDataNFTPH && (
+                <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                  <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                    Data NFT-PH (Plug-In Hybrid)
+                  </Text>
+                </Badge>
+              )}
 
               <HStack mt="1">
                 <Button
@@ -422,11 +412,12 @@ export default function WalletDataNFTMX(item: any) {
                   bgColor="#FF439D"
                   _hover={{ backgroundColor: "#FF439D70" }}
                   isDisabled={hasPendingTransactions}
+                  hidden={item.isDataNFTPH}
                   onClick={() => onBurnButtonClick(item)}>
                   Burn
                 </Button>
 
-                <ExploreAppButton nonce={item.nonce} />
+                <ExploreAppButton collection={item.collection} nonce={item.nonce} />
               </HStack>
             </Stack>
             <Box color="#8c8f92d0" fontSize="md" fontWeight="normal" my={2}>
@@ -453,7 +444,7 @@ export default function WalletDataNFTMX(item: any) {
                 </Button>
               </Tooltip>
 
-              <PreviewDataButton previewDataURL={item.dataPreview} />
+              {item.dataPreview && <PreviewDataButton previewDataURL={item.dataPreview} />}
             </HStack>
 
             <Flex mt="7" display={item.isProfile === true ? "none" : "flex"} flexDirection="row" justifyContent="space-between" alignItems="center" maxH={10}>

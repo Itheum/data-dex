@@ -35,7 +35,7 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
+import DataNFTDetails from "./DataNFTDetails";
 import { useMarketStore } from "store";
 import { FavoriteCards } from "./components/FavoriteCards";
 import { BondingCards } from "./components/BondingCards";
@@ -107,7 +107,7 @@ export default function MyDataNFTsMx({ tabState }: { tabState: number }) {
     if (hasPendingTransactions) return;
     (async () => {
       const _dataNfts = await getOnChainNFTs();
-      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance == 0 ? 1 : nft.balance }));
+      const _alteredDataNfts = _dataNfts.map((nft) => new DataNft({ ...nft, balance: nft.balance ? nft.balance : 1 }));
       setDataNfts(_alteredDataNfts);
     })();
     setOneNFTImgLoaded(false);

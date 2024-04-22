@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
+  Badge,
   Box,
   Button,
   Flex,
@@ -8,7 +9,6 @@ import {
   GridItem,
   Heading,
   HStack,
-  Image,
   Link,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -26,7 +26,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Offer } from "@itheum/sdk-mx-data-nft/out";
-import { IAddress } from "@multiversx/sdk-core/out";
+import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 import { useGetAccountInfo, useGetNetworkConfig, useGetPendingTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import axios from "axios";
@@ -35,6 +35,7 @@ import moment from "moment";
 import { FaStore } from "react-icons/fa";
 import { MdOutlineInfo } from "react-icons/md";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import ImageSlider from "components/ImageSlider";
 import PreviewDataButton from "components/PreviewDataButton";
 import ProcureDataNFTModal from "components/ProcureDataNFTModal";
 import { NoDataHere } from "components/Sections/NoDataHere";
@@ -47,7 +48,6 @@ import { labels } from "libs/language";
 import { getFavoritesFromBackendApi, getOffersByIdAndNoncesFromBackendApi } from "libs/MultiversX";
 import { getApi } from "libs/MultiversX/api";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMintContract } from "libs/MultiversX/dataNftMint";
 import {
   convertToLocalString,
   convertWeiToEsdt,
@@ -193,13 +193,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     axios
       .get(nftApiLink)
       .then((res) => {
-        const _nftData = res.data;
-        const attributes = new DataNftMintContract(chainID).decodeNftAttributes(_nftData);
-        _nftData.attributes = attributes;
+        const _nftData = parseDataNft(res.data);
         setNftData(_nftData);
         setIsLoadingDetails(false);
 
-        if (attributes.creator === address) {
+        if (_nftData.creator === address) {
           setAddressCreatedNft(true);
         } else {
           setAddressCreatedNft(false);
@@ -293,6 +291,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -302,7 +301,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   }, []);
 
   const isCreatorListing = () => {
-    return nftData.attributes?.creator === offer?.owner;
+    return nftData.creator === offer?.owner;
   };
 
   return (
@@ -339,27 +338,17 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   w="full"
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
-                  <Flex justifyContent={{ base: "center" }}>
-                    <Image
-                      w={{ base: "210px", xl: "260px" }}
-                      h={{ base: "210px", xl: "260px" }}
-                      py={2}
-                      objectFit={"contain"}
-                      src={nftData.url}
-                      alt={"Data NFT Image"}
-                      mr={pathname === marketplaceDrawer ? 0 : { base: 0, lg: 0 }}
-                    />
-                  </Flex>
+                  <ImageSlider imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide />
                   <Flex mr={2}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
-                        <Link href={`${chainExplorer}/nfts/${nftData.identifier}`} isExternal>
-                          {nftData.identifier}
+                        <Link href={`${chainExplorer}/nfts/${nftData.tokenIdentifier}`} isExternal>
+                          {nftData.tokenIdentifier}
                           <ExternalLinkIcon ml="6px" mb="1" fontSize={{ base: "md", lg: "xl" }} color="teal.200" />
                         </Link>
                         <Favourite
                           chainID={chainID}
-                          tokenIdentifier={nftData.identifier}
+                          tokenIdentifier={nftData.tokenIdentifier}
                           bearerToken={tokenLogin?.nativeAuthToken}
                           favouriteItems={favouriteItems}
                           getFavourites={getFavourite}
@@ -367,14 +356,14 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Box>
 
                       <Flex direction="row" alignItems="center" gap="3" w={{ base: "initial", xl: "25rem" }}>
-                        <Tooltip label={nftData.attributes?.title}>
+                        <Tooltip label={nftData.title}>
                           <Text
                             fontSize={{ base: "1.25rem", md: "1.5rem", xl: "1.5rem" }}
                             fontFamily="Clash-Medium"
                             noOfLines={1}
                             fontWeight="light"
                             lineHeight="10">
-                            {nftData.attributes?.title}
+                            {nftData.title}
                           </Text>
                         </Tooltip>
                         {!!offerId && (
@@ -466,12 +455,11 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           </Button>
                         </Tooltip>
 
-                        <PreviewDataButton
-                          previewDataURL={nftData.attributes.dataPreview}
-                          buttonSize={{ base: "sm", md: "md", xl: "lg" }}
-                          buttonWidth="unset"
-                        />
+                        {nftData.dataPreview && (
+                          <PreviewDataButton previewDataURL={nftData.dataPreview} buttonSize={{ base: "sm", md: "md", xl: "lg" }} buttonWidth="unset" />
+                        )}
                         <ExploreAppButton
+                          collection={nftData.collection}
                           nonce={nftData.nonce}
                           size={{ base: "sm", md: "md", xl: "lg" }}
                           w={{ base: "auto", xl: "5rem" }}
@@ -507,7 +495,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             <Text>{`Total supply: ${nftData.supply ? nftData.supply : 1}`}</Text>
                             <Text>
                               {`Royalty: `}
-                              {!isNaN(nftData.royalties) ? `${convertToLocalString(Math.round(nftData.royalties * 100) / 100)}%` : "-"}
+                              {!isNaN(nftData.royalties) ? `${convertToLocalString(nftData.royalties * 100)}%` : "-"}
                             </Text>
                           </>
                         )}
@@ -539,7 +527,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                         )}
                       </Flex>
                     </Flex>
-                    {import.meta.env.VITE_ENV_NETWORK === "devnet" && <LivelinessScore tokenIdentifier={tokenId ?? ""} />}
+                    <LivelinessScore tokenIdentifier={tokenId ?? ""} />
                   </Flex>
                 </Flex>
 
@@ -560,7 +548,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Heading>
                       <Flex flexDirection="column" h="18.6rem" justifyContent="space-between">
                         <Text fontSize={"16px"} px="28px" py="14px" h="inherit" overflow={"auto"} scrollBehavior="auto" mb={2}>
-                          {transformDescription(nftData.attributes?.description)}
+                          {transformDescription(nftData.description)}
                         </Text>
                         <Flex flexDirection="row" gap={3}>
                           <Box
@@ -609,6 +597,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                               </Text>
                             </Box>
                           )}
+                          {nftData.isDataNFTPH && (
+                            <Badge borderRadius="md" px="3" py="1" bgColor="#E2AEEA30">
+                              <Text fontSize={"sm"} fontWeight="semibold" color={colorMode === "dark" ? "#E2AEEA" : "#af82b5"}>
+                                Data NFT-PH (Plug-In Hybrid)
+                              </Text>
+                            </Badge>
+                          )}
                         </Flex>
                         <Flex direction={{ base: "column", md: "row" }} gap={2} px="28px" mt="3" justifyContent="space-between">
                           <Box color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light" display="flex">
@@ -618,9 +613,9 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                 if (props.closeDetailsView) {
                                   props.closeDetailsView();
                                 }
-                                navigate(`/profile/${nftData.attributes?.creator}`);
+                                navigate(`/profile/${nftData.creator}`);
                               }}>
-                              <ShortAddress address={nftData.attributes?.creator} fontSize="lg" tooltipLabel="Profile" />
+                              <ShortAddress address={nftData.creator} fontSize="lg" tooltipLabel="Profile" />
                               <MdOutlineInfo style={{ marginLeft: "5px", color: "#00c797", marginTop: "4px" }} fontSize="lg" />
                             </Flex>
                           </Box>
@@ -641,7 +636,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                           )}
                           <Box display="flex" justifyContent="flex-start" pb="14px">
                             <Text color={colorMode === "dark" ? "white" : "black"} fontSize="lg" fontWeight="light">{`Creation time: ${moment(
-                              nftData.attributes?.creationTime
+                              nftData.creationTime
                             ).format(uxConfig.dateStr)}`}</Text>
                           </Box>
                         </Flex>
@@ -681,7 +676,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                             )}
                           </>
                           {}
-                          <Text color={"teal.200"}>{nftData.identifier}</Text>
+                          <Text color={"teal.200"}>{nftData.tokenIdentifier}</Text>
                         </Heading>
                         <Box flex="1" overflowY="scroll" h="18.6rem" px="28px" py="14px">
                           {totalOffers.length === 0 ||
@@ -715,13 +710,13 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                                       </GridItem>
                                       <GridItem colSpan={1}>
                                         {tokenId && pathname?.includes(tokenId) ? (
-                                          <a href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                          <a href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
                                           </a>
                                         ) : (
-                                          <a target="_blank" href={handleButtonClick(to.index, nftData.identifier)} rel="noopener noreferrer">
+                                          <a target="_blank" href={handleButtonClick(to.index, nftData.tokenIdentifier)} rel="noopener noreferrer">
                                             <Button w="full" colorScheme="teal" variant="outline" size="sm">
                                               {window.innerWidth > 500 ? "View Offer" : "View"}
                                             </Button>
@@ -756,7 +751,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
               isOpen={isProcureModalOpen}
               onClose={onProcureModalClose}
               buyerFee={marketRequirements.buyerTaxPercentage || 0}
-              nftData={nftData.attributes}
+              nftData={nftData}
               offer={offer}
               amount={amount}
               setSessionId={setSessionId}
