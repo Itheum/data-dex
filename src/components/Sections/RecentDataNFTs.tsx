@@ -27,8 +27,8 @@ for (let i = 0; i < 10; i++) {
     wantedTokenIdentifier: "",
     wantedTokenNonce: 0,
     wantedTokenAmount: 0,
-    creator: new Address(),
-    owner: new Address(),
+    creator: new Address(""),
+    owner: new Address(""),
     tokenName: "",
     title: "",
     nftImgUrl: "",
@@ -133,7 +133,7 @@ const RecentDataNFTs = ({ headingText, headingSize }: { headingText: string; hea
           const _nftMetaData = DataNft.decodeAttributes(_nft.attributes);
 
           _latestOffers.push({
-            creator: new Address(_nftMetaData.creator),
+            creator: new Address(_nftMetaData.creator ?? ""),
             owner: new Address(offer.owner),
             offeredTokenIdentifier: offer.offeredTokenIdentifier,
             offeredTokenNonce: offer.offeredTokenNonce,

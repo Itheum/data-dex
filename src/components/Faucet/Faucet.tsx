@@ -5,7 +5,7 @@ import { Address } from "@multiversx/sdk-core/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
-import { CHAIN_TOKEN_SYMBOL } from "libs/config";
+import { CHAIN_TOKEN_SYMBOL, IS_DEVNET } from "libs/config";
 import { FaucetContract } from "libs/MultiversX/faucet";
 
 const Faucet = ({ tileBoxW, tileBoxH }: any) => {
@@ -18,7 +18,7 @@ const Faucet = ({ tileBoxW, tileBoxH }: any) => {
   useEffect(() => {
     // hasPendingTransactions will fire with false during init and then move from true to false each time a TX is done...
     // ... so if it's 'false' we need check and prevent faucet from being used too often
-    if (chainID === "D" && mxAddress && mxFaucetContract && !hasPendingTransactions) {
+    if (IS_DEVNET && mxAddress && mxFaucetContract && !hasPendingTransactions) {
       mxFaucetContract.getFaucetTime(new Address(mxAddress)).then((lastUsedTime) => {
         const timeNow = new Date().getTime();
 
