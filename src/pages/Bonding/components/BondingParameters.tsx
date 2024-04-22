@@ -127,16 +127,9 @@ export const BondingParameters: React.FC = () => {
       )
       .addAction(bondContract.getContractAddress().bech32(), "addPeriodsBonds", 0, [period, BigInt(amount) * BigInt("1000000000000000000")], [])
       .build();
-    // console.log(url);
     setConstructedDeeplinkURL(url);
     return window.open(url, "_blank");
   };
-
-  // const earlyWithdrawalDeeplinkUrl = (newEarlyWithdrawalValue: number) => {
-  //   return setConstructedDeeplinkURL(
-  //     `https://devnet.peerme.io/itheum-dao/propose?title=Set+Withdrawal+Penaltiy&description=This+is+to+propose+a+change+in+the+Early+Withdrawal+Penalty+from+${contractConfiguration.withdrawPenalty / 100}+to+${newEarlyWithdrawalValue}&actions%5B%5D=%7B%22xdestination%22%3A%22erd1qqqqqqqqqqqqqpgqhlyaj872kyh620zsfew64l2k4djerw2tfsxsmrxlan%22%2C%22xendpoint%22%3A%22setWithdrawPenalty%22%2C%22xvalue%22%3A%220%22%2C%22xargs%22%3A%5B${newEarlyWithdrawalValue * 100}%5D%2C%22xpayments%22%3A%5B%5D%7D`
-  //   );
-  // };
 
   const onSetPeriodBonds = async (formData: Partial<BondingParametersFormType>) => {
     console.log(formData);
