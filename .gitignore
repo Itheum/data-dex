@@ -141,3 +141,5 @@ NOTES.md
 .eslintrc
 
 .vscode
+
+package-lock.json
