@@ -137,7 +137,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                           <img src={dataNft.nftImgUrl} width="15%" />
                         </Box>
                       </Flex>
-                      <Text fontSize="1.20rem" fontWeight="600">
+                      <Text fontSize="1.20rem" fontWeight="600" pt={3}>
                         Blacklist Load Window
                       </Text>
                       <form onSubmit={handleSubmit(() => handleInitiateBlacklistLoad(compensationBondNft.compensationId))}>
