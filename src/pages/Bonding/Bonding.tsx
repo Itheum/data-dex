@@ -41,9 +41,11 @@ export const Bonding: React.FC = () => {
   });
 
   const checkIfUserIsAdmin = () => {
+    const splittedAddresses = bondContractAdminDevnet.split(",").map((wallet: string) => wallet.trim());
+    console.log(splittedAddresses);
     if (!address) return false;
-    const adminAddress = IS_DEVNET ? bondContractAdminDevnet : bondContractAdminMainnet;
-    return address === adminAddress;
+    const adminAddress: any = IS_DEVNET ? splittedAddresses : bondContractAdminMainnet;
+    return adminAddress.includes(address) || address === adminAddress;
   };
 
   useEffect(() => {
