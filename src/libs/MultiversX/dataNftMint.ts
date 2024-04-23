@@ -1,23 +1,14 @@
 import { DataNft, SftMinter } from "@itheum/sdk-mx-data-nft/out";
-import {
-  Transaction,
-  ContractFunction,
-  BigUIntValue,
-  StringValue,
-  TokenIdentifierValue,
-  U64Value,
-  AddressValue,
-  ContractCallPayloadBuilder,
-  IAddress,
-} from "@multiversx/sdk-core/out";
+import { IAddress } from "@multiversx/sdk-core/out";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import { NftType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { refreshAccount } from "@multiversx/sdk-dapp/utils/account";
 import BigNumber from "bignumber.js";
 import { uxConfig } from "libs/config";
 import { sleep } from "libs/utils";
-import { DataNftMetadataType, UserDataType } from "./types";
+import { UserDataType } from "./types";
 import { contractsForChain } from "../config";
+import { parseDataNft } from "@itheum/sdk-mx-data-nft/out/common/utils";
 
 export class DataNftMintContract {
   contract: SftMinter;
@@ -90,39 +81,19 @@ export class DataNftMintContract {
     return { sessionId, error };
   }
 
-  //TODO
-  async sendBurnTransaction(
-    sender: IAddress,
-    collection: string,
-    nonce: number,
-    quantity: number,
-    contractAddress: IAddress = this.contract.getContractAddress()
-  ) {
-    const tx = new Transaction({
-      value: 0,
-      data: new ContractCallPayloadBuilder()
-        .setFunction(new ContractFunction("ESDTNFTTransfer")) //method
-        .addArg(new TokenIdentifierValue(collection)) //what token id to send
-        .addArg(new U64Value(nonce)) //what token nonce to send
-        .addArg(new BigUIntValue(quantity)) //how many tokens to send
-        .addArg(new AddressValue(contractAddress)) //address to send to
-        .addArg(new StringValue("burn")) //what method to call on the contract
-        .build(),
-      receiver: sender,
-      sender: sender,
-      gasLimit: 12_000_000,
-      chainID: this.contract.chainID,
-    });
+  async sendBurnTransaction(sender: IAddress, collection: string, nonce: number, quantity: number) {
+    const burnTx = this.contract.burn(sender, nonce, quantity, collection);
     await refreshAccount();
-    await sendTransactions({
-      transactions: tx,
+    const { sessionId, error } = await sendTransactions({
+      transactions: burnTx,
       transactionsDisplayInfo: {
-        processingMessage: "Burning Data NFT",
-        errorMessage: "Burning Data NFT failed :(",
-        successMessage: "Data NFT burnt",
+        processingMessage: "Burning Data NFTs",
+        errorMessage: "Burning Data NFTs failed :(",
+        successMessage: "Data NFTs burned successfully!",
       },
       redirectAfterSign: false,
     });
+    return { sessionId, error };
   }
 
   async getUserDataOut(address: IAddress, spamTaxTokenId: string): Promise<UserDataType | undefined> {
@@ -139,28 +110,9 @@ export class DataNftMintContract {
     }
   }
 
-  decodeNftAttributes(nft: NftType, index?: number): DataNftMetadataType {
-    const decodedAttributes = DataNft.decodeAttributes(nft.attributes);
-    const dataNFT: DataNftMetadataType = {
-      index: index || 0, // only for view & query
-      id: nft.identifier, // ID of NFT -> done
-      nftImgUrl: nft.url, // image URL of of NFT -> done
-      dataPreview: decodedAttributes.dataPreview || "", // preview URL for NFT data stream -> done
-      dataStream: decodedAttributes.dataStream || "", // data stream URL -> done
-      dataMarshal: decodedAttributes.dataMarshal || "", // data stream URL -> done
-      tokenName: nft.name, // is this different to NFT ID? -> yes, name can be chosen by the user
-      creator: decodedAttributes.creator || "", // initial creator of NFT
-      creationTime: decodedAttributes.creationTime || new Date(1970), // initial creation time of NFT
-      supply: nft.supply ? Number(nft.supply) : 1,
-      description: decodedAttributes.description || "",
-      title: decodedAttributes.title || "",
-      royalties: nft.royalties ? nft.royalties / 100 : 0,
-      nonce: nft.nonce,
-      collection: nft.collection,
-      balance: 0,
-    };
-
-    return dataNFT;
+  decodeNftAttributes(nft: NftType): DataNft {
+    const dataNft = parseDataNft(nft);
+    return dataNft;
   }
 
   async getSftsFrozenForAddress(targetAddress: IAddress): Promise<number[]> {

@@ -439,10 +439,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     }
   };
 
+  // here you can make logic that you want to happen on submit (used for debugging)
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
+    //TODO refactor this with react form hook
   }; // here you can make logic that you want to happen on submit (used for debugging)
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">
@@ -787,7 +788,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         </Flex>
 
         <Box mb={7}>
-          <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverifed" isExternal>
+          <Link color="teal.500" fontSize="md" href="https://datadex.itheum.io/getverified" isExternal>
             Need help, support or sponsorship for the Liveliness{" "}
             <Text fontWeight="bold" as="span">
               Bonding Amount

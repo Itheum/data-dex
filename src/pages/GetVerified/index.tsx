@@ -6,7 +6,7 @@ import { Testimonials } from "./Testimonials/Testimonials";
 import { TrendingData } from "./TrendingData/TrendingData";
 import { UseCases } from "./UseCases/UseCases";
 
-export const GetWhitelist: React.FC = () => {
+export const GetVerified: React.FC = () => {
   return (
     <Flex w="full" h="full" flexDirection="column">
       <LandingPage />

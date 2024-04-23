@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Bond, BondConfiguration, BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Bond, BondConfiguration, BondContract, Compensation, DataNft, createTokenIdentifier } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -83,7 +83,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const endTimestampOfBond = watch("endTimestampOfBond");
 
   const handleEnforcePenalty = async (tokenIdentifier: string, nonce: number, enforceMinimumPenaltyForm: number) => {
-    console.log(tokenIdentifier, nonce, typeof enforceMinimumPenaltyForm, enforceMinimumPenaltyForm);
     if (enforceMinimumPenaltyForm == contractConfiguration.minimumPenalty / 100) {
       const tx = bondContract.sanction(new Address(address), tokenIdentifier, nonce, 0);
       await sendTransactions({
@@ -105,7 +104,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   };
 
   const handleWithdraw = async (tokenIdentifier: string, nonce: number) => {
-    console.log("test");
     const tx = bondContract.modifyBond(new Address(address), tokenIdentifier, nonce);
     await sendTransactions({
       transactions: [tx],
@@ -115,7 +113,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   const handleSelfClaiming = async (tokenIdentifier: string, nonce: number, endTimestampOfBondForm: string) => {
     const formDate = new Date(endTimestampOfBondForm);
     const unixTimestamp = formDate.getTime() / 1000;
-    console.log(endTimestampOfBondForm);
     const tx = bondContract.initiateRefund(new Address(address), tokenIdentifier, nonce, unixTimestamp);
     await sendTransactions({
       transactions: [tx],
@@ -127,7 +124,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       <Flex flexDirection="row" w="full" gap={5} justifyContent="space-between">
         <Box>
           {bondDataNft.map((dataNft, index) => {
-            if (dataNft.tokenIdentifier === bondNft.tokenIdentifier + "-" + bondNft.nonce.toString(16)) {
+            if (dataNft.tokenIdentifier === createTokenIdentifier(bondNft.tokenIdentifier, bondNft.nonce)) {
               return (
                 <Text fontSize="1.5rem" key={index}>
                   {dataNft.tokenName}

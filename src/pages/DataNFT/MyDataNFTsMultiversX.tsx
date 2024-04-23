@@ -35,7 +35,7 @@ import useThrottle from "components/UtilComps/UseThrottle";
 import WalletDataNFTMX from "components/WalletDataNFTMX/WalletDataNFTMX";
 import { contractsForChain } from "libs/config";
 import { getNftsOfACollectionForAnAddress } from "libs/MultiversX/api";
-import DataNFTDetails from "pages/DataNFT/DataNFTDetails";
+import DataNFTDetails from "./DataNFTDetails";
 import { useMarketStore } from "store";
 import { FavoriteCards } from "./components/FavoriteCards";
 import { BondingCards } from "./components/BondingCards";

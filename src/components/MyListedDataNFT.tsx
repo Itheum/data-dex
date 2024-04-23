@@ -17,7 +17,7 @@ import {
   Skeleton,
   Text,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -26,7 +26,6 @@ import moment from "moment/moment";
 import ShortAddress from "components/UtilComps/ShortAddress";
 import { CHAIN_TX_VIEWER, uxConfig } from "libs/config";
 import { getApi } from "libs/MultiversX/api";
-import { DataNftMetadataType } from "libs/MultiversX/types";
 import { convertWeiToEsdt, convertToLocalString, getTokenWantedRepresentation, hexZero, tokenDecimals } from "libs/utils";
 import { useMarketStore, useMintStore } from "store";
 import FrozenOverlay from "./FrozenOverlay";
@@ -38,7 +37,7 @@ type MyListedDataNFTProps = {
   nftImageLoading: boolean;
   setNftImageLoading: Dispatch<SetStateAction<boolean>>;
   nftMetadataLoading: boolean;
-  nftMetadata: DataNftMetadataType[];
+  nftMetadata: DataNft[];
   printPrice: (price: number, token: string) => string;
   setDelistAmount: Dispatch<SetStateAction<number>>;
   setDelistModalState: Dispatch<SetStateAction<number>>;
@@ -95,7 +94,7 @@ const MyListedDataNFT: FC<MyListedDataNFTProps> = (props) => {
             {!nftMetadataLoading && nftMetadata[index] && (
               <>
                 <Text fontSize="xs">
-                  <Link href={`${ChainExplorer}/nfts/${nftMetadata[index].id}`} isExternal>
+                  <Link href={`${ChainExplorer}/nfts/${nftMetadata[index].tokenIdentifier}`} isExternal>
                     {nftMetadata[index].tokenName} <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Text>
