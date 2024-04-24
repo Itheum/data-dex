@@ -552,5 +552,3 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "bobergameroom": "https://explorer.itheum.io/bobergameroom",
   },
 };
-
-export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trailblazer-dao";
