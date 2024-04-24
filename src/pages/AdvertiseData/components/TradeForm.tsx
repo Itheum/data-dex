@@ -365,7 +365,6 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescription,
       BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
       Number(periods[0].lockPeriod),
-      0,
       optionalSDKMintCallFields
     );
 
