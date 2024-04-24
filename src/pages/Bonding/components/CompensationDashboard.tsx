@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { Address } from "@multiversx/sdk-core/out";
+import { Address, AddressValue, ContractCallPayloadBuilder, ContractFunction, Transaction, U64Value } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
@@ -18,29 +18,18 @@ type CompensationDashboardProps = {
 
 type CompensationDashboardFormType = {
   compensationEndDate: Date;
-  blacklistAddresses: Array<string>;
+  blacklistAddresses: string;
 };
 
 export const CompensationDashboard: React.FC<CompensationDashboardProps> = (props) => {
   const { compensationBondNft, bondDataNft } = props;
   const { address } = useGetAccountInfo();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
-  // console.log(compensationBondNft);
 
   const validationSchema = Yup.object().shape({
     compensationEndDate: Yup.date().required("Required"),
-    blacklistAddresses: Yup.array().required("Required"),
+    blacklistAddresses: Yup.string().required("Required"),
   });
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const compensation = await bondContract.viewCompensation(bondNft.bondId);
-  //     const contractConfigurationRequest = await bondContract.viewContractConfiguration();
-  //
-  //     setContractConfiguration(contractConfigurationRequest);
-  //     setAllCompensation(compensation);
-  //   })();
-  // }, [hasPendingTransactions]);
 
   const {
     control,
@@ -50,7 +39,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   } = useForm<CompensationDashboardFormType>({
     defaultValues: {
       compensationEndDate: new Date(),
-      blacklistAddresses: [],
+      blacklistAddresses: "",
     },
     mode: "onChange",
     resolver: yupResolver(validationSchema),
@@ -67,12 +56,15 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
     });
   };
 
-  const handleInitiateBlacklistLoad = async (compensationId: number) => {
-    // const tx = bondContract.(new Address(address), tokenIdentifier, nonce, timestampDate);
-    // await sendTransactions({
-    //   transactions: [tx],
-    // });
-    console.log(compensationId);
+  const handleInitiateBlacklistLoad = async (compensationId: number, addresses: string) => {
+    const splittedAddresses = addresses.split(",").map((address: string) => new Address(address.trim()));
+
+    console.log(typeof compensationId, splittedAddresses);
+    const tx = bondContract.setBlacklist(new Address(address), compensationId, splittedAddresses);
+    await sendTransactions({
+      transactions: [tx],
+    });
+    // console.log(compensationId, splittedAddresses);
   };
 
   return (
@@ -140,7 +132,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                       <Text fontSize="1.20rem" fontWeight="600" pt={3}>
                         Blacklist Load Window
                       </Text>
-                      <form onSubmit={handleSubmit(() => handleInitiateBlacklistLoad(compensationBondNft.compensationId))}>
+                      <form onSubmit={handleSubmit(() => handleInitiateBlacklistLoad(compensationBondNft.compensationId, blacklistAddresses))}>
                         <FormControl isInvalid={!!errors.blacklistAddresses} isRequired minH={"3.5rem"}>
                           <Flex flexDirection="row" alignItems="center" gap={3}>
                             <Controller
@@ -149,7 +141,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                                 <Input
                                   mt="1 !important"
                                   id="blacklistAddresses"
-                                  type="datetime-local"
+                                  type="text"
                                   w="40%"
                                   onChange={(event) => {
                                     onChange(event.target.value);
@@ -158,11 +150,11 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                               )}
                               name={"blacklistAddresses"}
                             />
-                            <FormErrorMessage>{errors?.blacklistAddresses?.message}</FormErrorMessage>
                             <Button colorScheme="teal" type="submit">
                               Load
                             </Button>
                           </Flex>
+                          <FormErrorMessage>{errors?.blacklistAddresses?.message}</FormErrorMessage>
                         </FormControl>
                       </form>
                     </Flex>
