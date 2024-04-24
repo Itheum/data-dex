@@ -540,3 +540,5 @@ export const EXPLORER_APP_FOR_TOKEN: Record<string, Record<string, string>> = {
     "bitzgame": "https://explorer.itheum.io/getbitz",
   },
 };
+
+export const PEERME_TEAM_NAME: string = IS_DEVNET ? "itheum-dao" : "itheum-trailblazer-dao";
