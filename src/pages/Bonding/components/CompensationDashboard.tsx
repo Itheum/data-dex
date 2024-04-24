@@ -10,6 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import ShortAddress from "../../../components/UtilComps/ShortAddress";
 import { IS_DEVNET } from "../../../libs/config";
+import { ProposalButton } from "../../../components/ProposalButton";
 
 type CompensationDashboardProps = {
   compensationBondNft: Compensation;
@@ -25,6 +26,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   const { compensationBondNft, bondDataNft } = props;
   const { address } = useGetAccountInfo();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
+  const isMultiSig = import.meta.env.VITE_MULTISIG_STATE;
 
   const validationSchema = Yup.object().shape({
     compensationEndDate: Yup.date().required("Required"),
@@ -76,20 +78,29 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
               return (
                 <Flex flexDirection="column" key={index}>
                   <Flex justifyContent="space-between" py={10}>
-                    <Flex flexDirection="column">
+                    <Flex flexDirection="column" w="50%">
                       <Text fontSize="1.5rem">{dataNft.tokenName}</Text>
                       <Text fontSize="1.1rem">
                         Creator: <ShortAddress address={dataNft.creator} fontSize="1.1rem" />
                       </Text>
-                      <Text fontSize="1.4rem" fontWeight="600" textColor="indianred">
-                        {BigNumber(compensationBondNft.accumulatedAmount)
-                          .dividedBy(10 ** 18)
-                          .toNumber()}{" "}
-                        $ITHEUM Penalties can be claimed
-                      </Text>
-                      <Text fontSize="1.4rem" fontWeight="600" textColor="teal.200">
-                        Compensation claiming is live
-                      </Text>
+                      {compensationBondNft.endDate * 1000 === 0 ? (
+                        <></>
+                      ) : (
+                        <>
+                          {new Date().getTime() < new Date(compensationBondNft.endDate).getTime() ? (
+                            <Text fontSize="1.4rem" fontWeight="600" textColor="indianred">
+                              {BigNumber(compensationBondNft.accumulatedAmount)
+                                .dividedBy(10 ** 18)
+                                .toNumber()}{" "}
+                              $ITHEUM Penalties can be claimed
+                            </Text>
+                          ) : (
+                            <Text fontSize="1.4rem" fontWeight="600" textColor="teal.200">
+                              Compensation claiming is live
+                            </Text>
+                          )}
+                        </>
+                      )}
                     </Flex>
                     <Flex flexDirection="column">
                       <Text fontSize="1.35rem" fontWeight="600" pb={2}>
@@ -115,9 +126,19 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                               name={"compensationEndDate"}
                             />
                             <FormErrorMessage>{errors?.compensationEndDate?.message}</FormErrorMessage>
-                            <Button colorScheme="teal" type="submit">
-                              Set
-                            </Button>
+                            {isMultiSig === "false" ? (
+                              <Button colorScheme="teal" type="submit">
+                                Set
+                              </Button>
+                            ) : (
+                              <ProposalButton
+                                proposalTitle={"Set Compensation End Data"}
+                                proposalDescription={`This is a propose to change the Compensation Date to ${new Date(compensationEndDate).toDateString()}`}
+                                contractAddress={bondContract.getContractAddress().bech32()}
+                                endpoint={"initiateRefund"}
+                                proposalArguments={[dataNft.tokenIdentifier, dataNft.nonce, new Date(compensationEndDate).getTime() / 1000]}
+                              />
+                            )}
                           </Flex>
                         </FormControl>
                       </form>
