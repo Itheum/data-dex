@@ -37,7 +37,7 @@ import ChainSupportedComponent from "components/UtilComps/ChainSupportedComponen
 import { CLAIM_TYPES, MENU, uxConfig } from "libs/config";
 import { ClaimsContract } from "libs/MultiversX/claims";
 import { formatNumberToShort } from "libs/utils";
-import AppMarketplace from "pages/Home/AppMarketplace";
+import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 
 export default function HomeMultiversX({

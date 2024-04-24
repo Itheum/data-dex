@@ -155,7 +155,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
   };
 
   return (
-    <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false}>
+    <Drawer onClose={onClose} isOpen={isOpen} size="xl" closeOnEsc={true} closeOnOverlayClick={false} blockScrollOnMount={false}>
       <DrawerOverlay backdropFilter="blur(10px)" />
       <DrawerContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
         <DrawerHeader>
@@ -266,7 +266,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             rounded="lg"
             mt={7}
             onClick={() => {
-              navigate("/getwhitelisted");
+              navigate("/getverified");
             }}>
             Find out how you can get whitelisted
           </Button>

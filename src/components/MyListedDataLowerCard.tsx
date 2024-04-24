@@ -19,7 +19,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Offer } from "@itheum/sdk-mx-data-nft/out";
+import { DataNft, Offer } from "@itheum/sdk-mx-data-nft/out";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo, useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions, useGetSignedTransactions, useTrackTransactionStatus } from "@multiversx/sdk-dapp/hooks/transactions";
@@ -27,7 +27,6 @@ import BigNumber from "bignumber.js";
 import { PREVIEW_DATA_ON_DEVNET_SESSION_KEY, contractsForChain } from "libs/config";
 import { useLocalStorage } from "libs/hooks";
 import { DataNftMarketContract } from "libs/MultiversX/dataNftMarket";
-import { DataNftMetadataType } from "libs/MultiversX/types";
 import {
   convertToLocalString,
   convertEsdtToWei,
@@ -43,7 +42,7 @@ import PreviewDataButton from "./PreviewDataButton";
 
 type MyListedDataLowerCardProps = {
   offer: Offer;
-  nftMetadata: DataNftMetadataType;
+  nftMetadata: DataNft;
 };
 
 const MyListedDataLowerCard: FC<MyListedDataLowerCardProps> = ({ offer, nftMetadata }) => {

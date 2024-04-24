@@ -3,7 +3,7 @@ import { AccountType } from "@multiversx/sdk-dapp/types";
 import { NftType, TokenType } from "@multiversx/sdk-dapp/types/tokens.types";
 import { ApiNetworkProvider, ProxyNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import axios from "axios";
-import { contractsForChain, uxConfig } from "libs/config";
+import { IS_DEVNET, contractsForChain, uxConfig } from "libs/config";
 
 export const getApi = (chainID: string) => {
   const envKey = chainID === "1" ? "VITE_ENV_API_MAINNET_KEY" : "VITE_ENV_API_DEVNET_KEY";
@@ -104,7 +104,7 @@ export const getClaimTransactions = async (address: string, chainID: string) => 
 };
 
 export const getNftsOfACollectionForAnAddress = async (address: string, collectionTickers: string[], chainID: string): Promise<DataNft[]> => {
-  DataNft.setNetworkConfig(chainID === "D" ? "devnet" : "mainnet");
+  DataNft.setNetworkConfig(IS_DEVNET ? "devnet" : "mainnet");
   try {
     const ownerByAddress = await DataNft.ownedByAddress(address, collectionTickers);
     return ownerByAddress;
