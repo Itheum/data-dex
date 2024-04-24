@@ -27,7 +27,7 @@ import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
-import { IS_DEVNET } from "libs/config";
+import { IS_DEVNET, PEERME_TEAM_NAME } from "libs/config";
 import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { ProposalDeepLinkBuilder } from "@peerme/sdk";
 import { timeUntil } from "../../../libs/utils";
@@ -103,7 +103,7 @@ export const BondingParameters: React.FC = () => {
   const { isDirty: isMinAmountTouched } = getFieldState("minimumSBond");
 
   const earlyWithdrawalDeeplinkUrl = (newEarlyWithdrawalValue: number) => {
-    const url = new ProposalDeepLinkBuilder("itheum-dao", { network: IS_DEVNET ? "devnet" : "mainnet" })
+    const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
       .authenticate(tokenLogin?.nativeAuthToken ?? "")
       .setTitle("Set Withdrawal Penaltiy")
       .setDescription(
@@ -119,7 +119,7 @@ export const BondingParameters: React.FC = () => {
     const amount = addNewPeriodBond.bondAmount;
     const amountOfTimeBefore = timeUntil(contractConfiguration.lockPeriodsWithBonds[0].lockPeriod);
     const amountOfTimeAfter = timeUntil(period);
-    const url = new ProposalDeepLinkBuilder("itheum-dao", { network: IS_DEVNET ? "devnet" : "mainnet" })
+    const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
       .authenticate(tokenLogin?.nativeAuthToken ?? "")
       .setTitle("Set New Period Bond")
       .setDescription(
