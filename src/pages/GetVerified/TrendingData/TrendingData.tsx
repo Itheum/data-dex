@@ -5,18 +5,34 @@ import infographicsImage from "assets/img/whitelist/InfographicsImage.png";
 import nftunesImage from "assets/img/whitelist/NFTuneApp.png";
 import timecapsuleImage from "assets/img/whitelist/TimeCapsuleApp.png";
 import trailblazerImage from "assets/img/whitelist/TrailblazerImage.png";
+import bobberRoomImage from "assets/img/whitelist/BobberRoom.png";
+import bitzxpImage from "assets/img/whitelist/BitzXP.png";
 import { TrendingDataCards } from "./components/TrendingDataCards";
 
 const cardContent = [
   {
     id: 1,
+    headerImage: bitzxpImage,
+    title: "Itheum <BiTz> XP System",
+    description: "Consider yourself a Itheum OG and data ownership pioneer? Open this app to get <BiTz> points, <BiTz> points are like Data Ownership OG XP.",
+    url: "https://explorer.itheum.io/getbitz",
+  },
+  {
+    id: 2,
+    headerImage: bobberRoomImage,
+    title: "Bober Game Room",
+    description: "A meme game built into a Data NFT! Annoying memes are flooding the forest! Use your trusty water cannon to blast them away!",
+    url: "https://explorer.itheum.io/bobergameroom",
+  },
+  {
+    id: 3,
     headerImage: nftunesImage,
     title: "NF-Tunes",
     description: "Empowering Indie musicians to engage with a fresh fan community and discover alternative avenues for music distribution",
     url: "https://explorer.itheum.io/nftunes",
   },
   {
-    id: 2,
+    id: 4,
     headerImage: infographicsImage,
     title: "MultiversX Infographics",
     description:
@@ -24,7 +40,7 @@ const cardContent = [
     url: "https://explorer.itheum.io/multiversx-infographics",
   },
   {
-    id: 3,
+    id: 5,
     headerImage: bubbleImage,
     title: "MultiversX ESDT Bubbles",
     description:
@@ -32,14 +48,14 @@ const cardContent = [
     url: "https://explorer.itheum.io/multiversx-bubbles",
   },
   {
-    id: 4,
+    id: 6,
     headerImage: trailblazerImage,
     title: "Trailblazer",
     description: "Hardcore community members unlock Project Alpha by owning their favorite project's TrailBlazer Data NFTs.",
     url: "https://explorer.itheum.io/project-trailblazer",
   },
   {
-    id: 5,
+    id: 7,
     headerImage: timecapsuleImage,
     title: "Time Capsule",
     description: "Capture, archive, and relive historic social media events through media, preserving memories for future generations.",

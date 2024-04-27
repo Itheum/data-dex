@@ -73,6 +73,7 @@ const LandingPage = () => {
             <Heading as="h2" fontFamily="Clash-Medium" size="lg" textAlign={["center", "initial"]}>
               Featured Articles
             </Heading>
+
             <RecentArticles />
           </Box>
         </Box>

@@ -112,7 +112,7 @@ const exploreRouterMenu = [
       {
         menuEnum: MENU.GETVERIFIED,
         path: "/getverified",
-        label: "Get Verified as a Data Creator",
+        label: "Become a Verified Data Creator",
         shortLbl: "Get Verified",
         Icon: FaUserCheck,
         needToBeLoggedIn: false,

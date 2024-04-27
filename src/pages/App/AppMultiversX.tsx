@@ -200,18 +200,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                     </Route>
                     {/*{routing}*/}
 
-                    <Route
-                      path="dashboard"
-                      element={
-                        <HomeMultiversX
-                          key={rfKeys.tools}
-                          setMenuItem={setMenuItem}
-                          dataCATAccount={dataCATAccount}
-                          loadingDataCATAccount={loadingDataCATAccount}
-                          onDataCATAccount={linkOrRefreshDataDATAccount}
-                        />
-                      }
-                    />
+                    <Route path="dashboard" element={<HomeMultiversX key={rfKeys.tools} setMenuItem={setMenuItem} />} />
 
                     <Route path="mintdata" element={<TradeData />} />
                     {isMxLoggedIn ? (
