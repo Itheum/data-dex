@@ -121,7 +121,7 @@ export const BondingParameters: React.FC = () => {
     const amountOfTimeAfter = timeUntil(period);
     const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
       .authenticate(tokenLogin?.nativeAuthToken ?? "")
-      .setTitle("Set New Period Bond")
+      .setTitle(amount != 0 ? "Set New Period Bond" : "Delete Period Bond")
       .setDescription(
         amount != 0
           ? `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
