@@ -123,9 +123,17 @@ export const BondingParameters: React.FC = () => {
       .authenticate(tokenLogin?.nativeAuthToken ?? "")
       .setTitle("Set New Period Bond")
       .setDescription(
-        `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
+        amount != 0
+          ? `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
+          : `This is to propose deleting the period ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit}`
       )
-      .addAction(bondContract.getContractAddress().bech32(), "addPeriodsBonds", 0, [period, BigInt(amount) * BigInt("1000000000000000000")], [])
+      .addAction(
+        bondContract.getContractAddress().bech32(),
+        amount != 0 ? "addPeriodsBonds" : "removePeriodsBonds",
+        0,
+        amount != 0 ? [period, BigInt(amount) * BigInt("1000000000000000000")] : [period],
+        []
+      )
       .build();
     setConstructedDeeplinkURL(url);
     return window.open(url, "_blank");
