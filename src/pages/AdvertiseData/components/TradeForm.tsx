@@ -95,6 +95,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     { amount: "10000000000000000000", lockPeriod: 900 },
     { amount: "10000000000000000000", lockPeriod: 2 },
   ]);
+  const [previousDataNFTStreamUrl, setPreviousDataNFTStreamUrl] = useState<string>("");
+  const [wasPreviousCheck200StreamSuccess, setWasPreviousCheck200StreamSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     bond.viewLockPeriodsWithBonds().then((periodsT) => {
@@ -125,11 +127,18 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
         return value !== this.parent.dataPreviewUrlForm;
       })
       .test("is-200", "Data Stream URL must be public", async function (value: string) {
-        const { isSuccess, message } = await checkUrlReturns200(value);
-        if (!isSuccess) {
-          return this.createError({ message });
+        if (previousDataNFTStreamUrl !== value) {
+          const { isSuccess, message } = await checkUrlReturns200(value);
+          setPreviousDataNFTStreamUrl(value);
+          setWasPreviousCheck200StreamSuccess(isSuccess);
+          if (!isSuccess) {
+            return this.createError({ message });
+          } else {
+            return true;
+          }
+        } else {
+          return wasPreviousCheck200StreamSuccess;
         }
-        return true;
       }),
 
     dataPreviewUrlForm: Yup.string()
