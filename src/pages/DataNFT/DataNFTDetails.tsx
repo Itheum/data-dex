@@ -71,32 +71,27 @@ type DataNFTDetailsProps = {
 };
 
 export default function DataNFTDetails(props: DataNFTDetailsProps) {
+  const toast = useToast();
+  const navigate = useNavigate();
   const { chainID } = useGetNetworkConfig();
   const { tokenLogin, isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
   const { colorMode } = useColorMode();
   const { tokenId: tokenIdParam, offerId: offerIdParam } = useParams();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { address } = useGetAccountInfo();
-  const toast = useToast();
-
   const marketRequirements = useMarketStore((state) => state.marketRequirements);
   const itheumPrice = useMarketStore((state) => state.itheumPrice);
   const isMarketPaused = useMarketStore((state) => state.isMarketPaused);
   const isApiUp = useMarketStore((state) => state.isApiUp);
-
   const [nftData, setNftData] = useState<any>({});
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(true);
   const [isLoadingPrice, setIsLoadingPrice] = useState<boolean>(true);
-  const navigate = useNavigate();
   const [priceFromApi, setPriceFromApi] = useState<number>(0);
-
   const showConnectWallet = props.showConnectWallet || false;
   const tokenId = props.tokenIdProp || tokenIdParam; // priority 1 is tokenIdProp
   const offerId = props.offerIdProp || offerIdParam?.split("-")[1];
-
   const chainExplorer = CHAIN_TX_VIEWER[chainID as keyof typeof CHAIN_TX_VIEWER];
   const marketContract = new DataNftMarketContract(chainID);
-
   const { onCopy } = useClipboard(`${window.location.protocol + "//" + window.location.host}/datanfts/marketplace/${tokenId}/offer-${offerId}`);
   const [offer, setOffer] = useState<Offer | undefined>();
   const [totalOffers, setTotalOffers] = useState<Record<any, any>>({});
@@ -112,6 +107,47 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
   const [favouriteItems, setFavouriteItems] = React.useState<Array<string>>([]);
   const maxBuyLimit = import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT ? Number(import.meta.env.VITE_MAX_BUY_LIMIT_PER_SFT) : 0;
   const maxBuyNumber = offer && maxBuyLimit > 0 ? Math.min(maxBuyLimit, offer.quantity) : offer?.quantity;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
+      setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
+    }
+  }, []);
+
+  useEffect(() => {
+    getTokenDetails();
+    getAddressTokenInformation();
+    getTokenHistory(tokenId ?? "");
+    getFavourite();
+  }, [hasPendingTransactions]);
+
+  useEffect(() => {
+    if (offerId != null && !sessionId) {
+      // if sessionId exists, it means the offer is going to be sold out by user
+      (async () => {
+        const _offer = await marketContract.viewOffer(Number(offerId));
+        if (_offer === null || _offer === undefined) {
+          if (!toast.isActive("ER-24")) {
+            toast({
+              id: "ER-24",
+              title: labels.ERR_MARKET_OFFER_NOT_FOUND,
+              description: "We are showing Data NFT Details and other available offers below",
+              status: "warning",
+              position: "top",
+              duration: null,
+              isClosable: true,
+              containerStyle: {
+                marginTop: "1rem",
+              },
+            });
+          }
+        }
+        setOffer(_offer);
+      })();
+    }
+  }, [offerId, hasPendingTransactions]);
 
   const getFavourite = async () => {
     if (tokenLogin?.nativeAuthToken) {
@@ -152,39 +188,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
         });
     }
   };
-
-  useEffect(() => {
-    getTokenDetails();
-    getAddressTokenInformation();
-    getTokenHistory(tokenId ?? "");
-    getFavourite();
-  }, [hasPendingTransactions]);
-
-  useEffect(() => {
-    if (offerId != null && !sessionId) {
-      // if sessionId exists, it means the offer is going to be sold out by user
-      (async () => {
-        const _offer = await marketContract.viewOffer(Number(offerId));
-        if (_offer === null || _offer === undefined) {
-          if (!toast.isActive("ER-24")) {
-            toast({
-              id: "ER-24",
-              title: labels.ERR_MARKET_OFFER_NOT_FOUND,
-              description: "We are showing Data NFT Details and other available offers below",
-              status: "warning",
-              position: "top",
-              duration: null,
-              isClosable: true,
-              containerStyle: {
-                marginTop: "1rem",
-              },
-            });
-          }
-        }
-        setOffer(_offer);
-      })();
-    }
-  }, [offerId, hasPendingTransactions]);
 
   function getTokenDetails() {
     const apiLink = getApi(chainID);
@@ -291,15 +294,6 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
     return `/datanfts/marketplace/${identifier}/offer-${offerArg}`;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    if (tokenId && offerId && location.pathname === "/datanfts/marketplace/market") {
-      setSearchParams({ tokenId: tokenId, offerId: String(offerId) });
-    }
-  }, []);
-
   const isCreatorListing = () => {
     return nftData.creator === offer?.owner;
   };
@@ -339,7 +333,8 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                   alignItems={{ base: "initial", md: "initial" }}
                   justifyContent={{ xl: "space-between" }}>
                   <ImageSlider imageUrls={nftData.media?.map((mediaObj: any) => mediaObj.url) ?? [nftData.nftImgUrl]} autoSlide />
-                  <Flex mr={2}>
+
+                  <Flex mr={tokenIdParam ? "75px" : "30px"}>
                     <Flex flexDirection="column" ml={5} h="250px" justifyContent="space-evenly">
                       <Box display="flex" gap={3} color={colorMode === "dark" ? "white" : "black"} fontSize={{ base: "md", md: "lg", xl: "xl" }}>
                         <Link href={`${chainExplorer}/nfts/${nftData.tokenIdentifier}`} isExternal>
@@ -468,6 +463,7 @@ export default function DataNFTDetails(props: DataNFTDetailsProps) {
                       </Flex>
                     </Flex>
                   </Flex>
+
                   <Flex flexDirection="column" gap={2}>
                     <Flex
                       flexDirection="column"

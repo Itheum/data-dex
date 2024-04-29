@@ -12,6 +12,7 @@ type TrendingDataCardsProps = {
 export const TrendingDataCards: React.FC<TrendingDataCardsProps> = (props) => {
   const { id, headerImage, title, description, url } = props;
   const { colorMode } = useColorMode();
+
   return (
     <Card
       direction={{ base: "column", sm: "row" }}

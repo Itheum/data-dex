@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Badge,
   Box,
   Button,
@@ -29,6 +25,7 @@ import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactio
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import myNFMe from "assets/img/my-nfme.png";
+import illustration from "assets/img/whitelist/getWhitelist.png";
 import ClaimModalMx from "components/ClaimModal/ClaimModalMultiversX";
 import Faucet from "components/Faucet/Faucet";
 import ExplainerArticles from "components/Sections/ExplainerArticles";
@@ -40,31 +37,19 @@ import { formatNumberToShort } from "libs/utils";
 import AppMarketplace from "pages/Home/components/AppMarketplace";
 import { TrendingData } from "./components/TrendingData";
 
-export default function HomeMultiversX({
-  setMenuItem,
-  dataCATAccount,
-  loadingDataCATAccount,
-  onDataCATAccount,
-}: {
-  setMenuItem: any;
-  dataCATAccount: any;
-  loadingDataCATAccount: boolean;
-  onDataCATAccount: any;
-}) {
+export default function HomeMultiversX({ setMenuItem }: { setMenuItem: any }) {
   const { colorMode } = useColorMode();
   const toast = useToast();
   const { chainID } = useGetNetworkConfig();
   const { address: mxAddress } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { isLoggedIn: isMxLoggedIn } = useGetLoginInfo();
-
   const [isOnChainInteractionDisabled, setIsOnChainInteractionDisabled] = useState(false);
   const [claimsBalances, setClaimsBalances] = useState({
     claimBalanceValues: ["-1", "-1", "-1", "-1"], // -1 is loading, -2 is error
     claimBalanceDates: [0, 0, 0, 0],
   });
   const [claimContractPauseValue, setClaimContractPauseValue] = useState(false);
-
   const navigate = useNavigate();
   const mxClaimsContract = new ClaimsContract(chainID);
 
@@ -222,85 +207,39 @@ export default function HomeMultiversX({
       <Stack mx={{ base: 5, lg: 24 }}>
         <Box m={heroGridMargin} pt="20" pb="10" w={"100%"}>
           <SimpleGrid columns={{ base: 1, md: 2, xl: 3, "2xl": 4 }} spacing={10}>
-            <ChainSupportedComponent feature={MENU.DATACAT}>
-              <Box w={[tileBoxW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
-                <Stack p="5" alignItems={{ base: "center", xl: "start" }}>
-                  {!dataCATAccount && (
-                    <Heading size="md" fontFamily="Clash-Medium" pb={2}>
-                      Linked Data CAT Accounts
-                    </Heading>
-                  )}
+            <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+              <Stack p="5" h={"439px"} borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
+                <Box
+                  className="bounce-hero-img"
+                  h="100%"
+                  w="100%"
+                  bgPosition="50% 30%"
+                  bgImage={illustration}
+                  bgSize="230px"
+                  backgroundRepeat="no-repeat"></Box>
+                <Spacer />
 
-                  {(loadingDataCATAccount && (
-                    <Flex justifyContent="center" alignItems="center" textAlign="center" h="350px" w="full">
-                      <Spinner speed="0.64s" color="teal.200" label="Fetching Data" />
-                    </Flex>
-                  )) ||
-                    (!dataCATAccount && (
-                      <Stack h={tileBoxH}>
-                        <Alert borderRadius="lg" bgColor={colorMode === "dark" ? "#68686850" : "#68686815"} overflowY={{ base: "scroll", lg: "hidden" }}>
-                          <Flex direction="column">
-                            <Box>
-                              <AlertTitle fontSize="md" mt={{ base: 0, md: 0, xl: 0, "2xl": 0 }}>
-                                <AlertIcon pb={{ base: 1, "2xl": 2 }} mt={1} color="#ED5D5D" />{" "}
-                                <Flex direction="row">
-                                  <Text color="#ED5D5D">Sorry! You don&apos;t seem to have a linked Data CAT account</Text>
-                                </Flex>
-                              </AlertTitle>
-                              <AlertDescription fontSize="1rem" color={colorMode === "dark" ? "#FFFFFFBF" : "#868686bf"} pb="2" fontWeight="300">
-                                But don&apos;t fret; you can still test the Data DEX by temporarily linking to a test account below.
-                              </AlertDescription>
-                            </Box>
-                          </Flex>
-                        </Alert>
-
-                        <Spacer />
-                        <Button colorScheme="teal" size="lg" variant="outline" borderRadius="xl" onClick={() => onDataCATAccount(true)}>
-                          <Text color={colorMode === "dark" ? "white" : "black"}>Load Test Data</Text>
-                        </Button>
-                      </Stack>
-                    )) || (
-                      <>
-                        <Stack h="395px" w="full">
-                          <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "left" }}>
-                            Welcome {`${dataCATAccount.firstName} ${dataCATAccount.lastName}`}
-                          </Heading>
-                          <Text fontSize="md" mb="4 !important" textAlign={{ base: "center", xl: "left" }} color="#929497">
-                            You have data available to trade from the following programs
-                          </Text>
-                          {dataCATAccount.programsAllocation.map((item: any) => (
-                            <Stack direction="row" key={item.program}>
-                              <Badge borderRadius="full" px="2" colorScheme="teal">
-                                {dataCATAccount.additionalInformation?.programName}
-                              </Badge>
-                            </Stack>
-                          ))}
-
-                          <Spacer />
-
-                          <Button
-                            colorScheme="teal"
-                            size="lg"
-                            variant="outline"
-                            borderRadius="xl"
-                            onClick={() => {
-                              setMenuItem(2);
-                              navigate("/mintdata");
-                            }}>
-                            <Text color={colorMode === "dark" ? "white" : "black"}>Mint My Data</Text>
-                          </Button>
-                        </Stack>
-                      </>
-                    )}
-                </Stack>
-              </Box>
-            </ChainSupportedComponent>
+                <Flex w="full" justifyContent="center">
+                  <Button
+                    mt="3"
+                    size="lg"
+                    colorScheme="teal"
+                    variant="outline"
+                    borderRadius="xl"
+                    onClick={() => {
+                      navigate("/mintdata");
+                    }}>
+                    <Text color={colorMode === "dark" ? "white" : "black"}>Mint Your Data as a Data NFT</Text>
+                  </Button>
+                </Flex>
+              </Stack>
+            </Box>
 
             <ChainSupportedComponent feature={MENU.FAUCET}>
               <Faucet tileBoxW={tileBoxW} tileBoxH={tileBoxH}></Faucet>
             </ChainSupportedComponent>
 
-            <Box w={[tileBoxW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+            <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
               <Stack p="5" h={"430px"} bgImage={myNFMe} bgSize="cover" bgPosition="top" borderRadius="lg" alignItems={{ base: "center", xl: "start" }}>
                 <Heading size="md" fontFamily="Clash-Medium" pb={2}>
                   NFMe ID Avatar
@@ -318,7 +257,7 @@ export default function HomeMultiversX({
             </Box>
 
             <ChainSupportedComponent feature={MENU.CLAIMS}>
-              <Box w={[tileBoxW, "initial"]} backgroundColor="none" border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
+              <Box w={[tileBoxW, "initial"]} border="1px solid transparent" borderColor="#00C79740" borderRadius="16px">
                 <Stack p="5" h={"430px"} minW={claimsStackMinW}>
                   <Heading size="md" fontFamily="Clash-Medium" pb={2} textAlign={{ base: "center", xl: "start" }}>
                     My Claims
