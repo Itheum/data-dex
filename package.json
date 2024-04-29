@@ -14,6 +14,7 @@
     "@multiversx/sdk-dapp": "2.31.3",
     "@multiversx/sdk-native-auth-client": "1.0.8",
     "@multiversx/sdk-network-providers": "2.4.3",
+    "@peerme/sdk": "0.2.1",
     "@sentry/react": "7.110.1",
     "@tanstack/match-sorter-utils": "8.15.1",
     "@tanstack/react-table": "8.16.0",
