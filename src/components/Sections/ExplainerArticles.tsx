@@ -6,27 +6,51 @@ const ExplainerArticles = ({ reduceGap }: { reduceGap?: boolean }) => {
   return (
     <Flex flexWrap="wrap" gap={reduceGap ? 2 : 5} backgroundColor="none" justifyContent="space-between">
       <ArticleCard
+        imgTitle="Setting Up Your Wallets"
+        title="Simple step-by-step guide to setting up your wallets"
+        link="https://docs.itheum.io/product-docs/guides/supported-wallets"
+      />
+
+      <ArticleCard
+        imgTitle="How can I mint a Data NFT"
+        title="Guide on how to bond ITHEUM tokens and mint a Data NFT"
+        link="https://docs.itheum.io/product-docs/product/data-dex/minting-a-data-nft"
+      />
+
+      <ArticleCard
+        imgTitle="Store your Data NFT's Data"
+        title="Options on where you can store your Data NFT's data"
+        link="https://docs.itheum.io/product-docs/integrators/data-streams-guides/data-asset-storage-options"
+      />
+
+      <ArticleCard
         imgTitle="How to Purchase a Data NFT"
-        title="Simple Step-by-Step Guide to Owning Data NFTs"
+        title="Simple step-by-step guide to owning Data NFTs"
         link="https://docs.itheum.io/product-docs/product/data-nft-marketplace/purchasing-a-data-nft"
       />
 
       <ArticleCard
         imgTitle="How to List a Data NFT for Trading"
-        title="Quick Guide to Listing Your Data NFTs for Trading"
+        title="Quick guide to listing your Data NFTs for trading"
         link="https://docs.itheum.io/product-docs/product/data-nft-marketplace/listing-a-data-nft"
       />
 
       <ArticleCard
-        imgTitle="The Trailblazer Data NFT"
-        title="Comprehensive User Guide to Trailblazer Data NFTs"
-        link="https://docs.itheum.io/product-docs/guides/trailblazer-guide"
+        imgTitle="Bonding and Liveliness"
+        title="What is the role of Creator Bonding and Liveliness"
+        link="https://docs.itheum.io/product-docs/protocol/itheum-life-liveliness-and-reputation-signalling"
       />
 
       <ArticleCard
-        imgTitle="Setting Up Your Wallets"
-        title="Simple Step-by-Step Guide to Setting Up Your Wallets for Access"
-        link="https://docs.itheum.io/product-docs/guides/supported-wallets"
+        imgTitle="Itheum BiTz XP System"
+        title="Boost your engagement with the Itheum BiTz XP System"
+        link="https://docs.itheum.io/product-docs/protocol/itheum-life-liveliness-and-reputation-signalling/less-than-bitz-greater-than-xp-system"
+      />
+
+      <ArticleCard
+        imgTitle="The Trailblazer Quests Data NFT"
+        title="User guide to Trailblazer quests Data NFTs"
+        link="https://docs.itheum.io/product-docs/guides/trailblazer-guide"
       />
     </Flex>
   );
@@ -34,7 +58,7 @@ const ExplainerArticles = ({ reduceGap }: { reduceGap?: boolean }) => {
 
 function ArticleCard({ imgTitle, title, link }: { imgTitle: string; title: string; link: string }) {
   return (
-    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", lg: "390px", xl: "290px", "2xl": "315px" }}>
+    <Card variant="outline" backgroundColor="none" border="none" w={{ base: "265px", lg: "390px", xl: "290px", "2xl": "315px" }} margin="auto">
       <CardBody>
         <Box>
           <Link href={link} isExternal>
