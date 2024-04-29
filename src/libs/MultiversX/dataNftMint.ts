@@ -61,7 +61,6 @@ export class DataNftMintContract {
       description,
       Number(amountToSend),
       lockPeriod,
-      0,
       {
         nftStorageToken: import.meta.env.VITE_ENV_NFT_STORAGE_KEY,
       }

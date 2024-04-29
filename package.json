@@ -8,7 +8,7 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@hookform/resolvers": "3.3.4",
-    "@itheum/sdk-mx-data-nft": "3.3.0-alpha.2",
+    "@itheum/sdk-mx-data-nft": "3.2.0-alpha.2",
     "@itheum/sdk-mx-enterprise": "0.2.0",
     "@multiversx/sdk-core": "13.0.1",
     "@multiversx/sdk-dapp": "2.31.3",
