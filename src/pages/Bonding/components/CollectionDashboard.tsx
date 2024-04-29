@@ -233,7 +233,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                             mt="1 !important"
                             id="endTimestampOfBond"
                             type="datetime-local"
-                            value={new Date(allCompensation.endDate).toUTCString()}
                             w="70%"
                             onChange={(event) => {
                               onChange(event.target.value);

@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
-import { Address, AddressValue, ContractCallPayloadBuilder, ContractFunction, Transaction, U64Value } from "@multiversx/sdk-core/out";
+import { BondContract, Compensation, createTokenIdentifier, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
@@ -24,6 +24,7 @@ type CompensationDashboardFormType = {
 
 export const CompensationDashboard: React.FC<CompensationDashboardProps> = (props) => {
   const { compensationBondNft, bondDataNft } = props;
+  console.log(compensationBondNft, bondDataNft);
   const { address } = useGetAccountInfo();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const isMultiSig = import.meta.env.VITE_MULTISIG_STATE;
@@ -41,7 +42,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   } = useForm<CompensationDashboardFormType>({
     defaultValues: {
       compensationEndDate: new Date(),
-      blacklistAddresses: "",
+      blacklistAddresses: "erd",
     },
     mode: "onChange",
     resolver: yupResolver(validationSchema),
@@ -74,7 +75,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
       <Flex flexDirection="row" gap={5}>
         <Box w="full">
           {bondDataNft.map((dataNft, index) => {
-            if (dataNft.tokenIdentifier === compensationBondNft.tokenIdentifier + "-" + compensationBondNft.nonce.toString(16)) {
+            if (dataNft.tokenIdentifier === createTokenIdentifier(compensationBondNft.tokenIdentifier, compensationBondNft.nonce)) {
               return (
                 <Flex flexDirection="column" key={index}>
                   <Flex justifyContent="space-between" py={10}>
@@ -107,7 +108,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                         Compensation End Date:{" "}
                         {compensationBondNft.endDate * 1000 !== 0 ? new Date(compensationBondNft.endDate * 1000).toDateString() : "Not Set"}
                       </Text>
-                      <form onSubmit={handleSubmit(() => handleInitiateRefund(dataNft.tokenIdentifier, dataNft.nonce, compensationEndDate))}>
+                      <form onSubmit={handleSubmit(() => handleInitiateRefund(dataNft.collection, dataNft.nonce, compensationEndDate))}>
                         <FormControl isInvalid={!!errors.compensationEndDate} isRequired minH={"3.5rem"}>
                           <Flex flexDirection="row" alignItems="center" gap={3}>
                             <Controller

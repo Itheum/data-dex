@@ -242,7 +242,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
                     <Route path="bonding/" element={<Bonding />} />
-                    <Route path="bonding/:pageNumber" element={<Bonding />} />
+                    <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
+                      <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
+                    </Route>
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>
