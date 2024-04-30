@@ -105,7 +105,7 @@ export const BondingParameters: React.FC = () => {
   const earlyWithdrawalDeeplinkUrl = (newEarlyWithdrawalValue: number) => {
     const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
       .authenticate(tokenLogin?.nativeAuthToken ?? "")
-      .setTitle("Set Withdrawal Penaltiy")
+      .setTitle("Set Withdrawal Penalty")
       .setDescription(
         `This is to propose a change in the Early Withdrawal Penalty from ${contractConfiguration.withdrawPenalty / 100} to ${newEarlyWithdrawalValue}`
       )
@@ -117,14 +117,13 @@ export const BondingParameters: React.FC = () => {
   const addBondDeeplinkUrl = (addNewPeriodBond: { bondPeriod: number; bondAmount: number }) => {
     const period = addNewPeriodBond.bondPeriod;
     const amount = addNewPeriodBond.bondAmount;
-    const amountOfTimeBefore = timeUntil(contractConfiguration.lockPeriodsWithBonds[0].lockPeriod);
     const amountOfTimeAfter = timeUntil(period);
     const url = new ProposalDeepLinkBuilder(PEERME_TEAM_NAME, { network: IS_DEVNET ? "devnet" : "mainnet" })
       .authenticate(tokenLogin?.nativeAuthToken ?? "")
       .setTitle(amount != 0 ? "Set New Period Bond" : "Delete Period Bond")
       .setDescription(
         amount != 0
-          ? `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
+          ? `This is to propose a bonding period of ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
           : `This is to propose deleting the period ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit}`
       )
       .addAction(
