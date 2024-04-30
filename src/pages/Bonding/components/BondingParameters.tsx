@@ -123,11 +123,7 @@ export const BondingParameters: React.FC = () => {
       .setTitle(amount != 0 ? "Set New Period Bond" : "Delete Period Bond")
       .setDescription(
         amount != 0
-<<<<<<< HEAD
-          ? `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
-=======
           ? `This is to propose a bonding period of ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
->>>>>>> stg
           : `This is to propose deleting the period ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit}`
       )
       .addAction(

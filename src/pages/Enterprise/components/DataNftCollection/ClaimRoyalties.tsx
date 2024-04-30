@@ -36,7 +36,7 @@ export const ClaimRoyalties: React.FC<ClaimRoyaltiesProps> = (props) => {
     const { data: externalTokenData } = await axios.get(urlForExternalToken);
     const { data: egldBalance } = await axios.get(egldAccountBalance);
     // request for claims portal
-    const getClaimsDatadex = await mxClaimsContract.getClaims(new Address(minterAddress));
+    const getClaimsDatadex = await mxClaimsContract.getClaims(new Address(minterAddress ?? ""));
     setAddressToken(externalTokenData);
 
     // setting the data from claims portal into claim object + adding egld balance

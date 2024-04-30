@@ -240,7 +240,7 @@ export class DataNftMarketContract {
 
   async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<Offer[]> {
     try {
-      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, new Address(userAddress));
+      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, new Address(userAddress ?? ""));
 
       return pagedOffers;
     } catch (e) {
