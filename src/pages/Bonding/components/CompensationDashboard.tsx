@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Button, Flex, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BondContract, Compensation, createTokenIdentifier, DataNft } from "@itheum/sdk-mx-data-nft/out";
@@ -11,6 +11,7 @@ import * as Yup from "yup";
 import ShortAddress from "../../../components/UtilComps/ShortAddress";
 import { IS_DEVNET } from "../../../libs/config";
 import { ProposalButton } from "../../../components/ProposalButton";
+import { BlacklistModal } from "./BlacklistModal";
 
 type CompensationDashboardProps = {
   compensationBondNft: Compensation;
@@ -24,10 +25,11 @@ type CompensationDashboardFormType = {
 
 export const CompensationDashboard: React.FC<CompensationDashboardProps> = (props) => {
   const { compensationBondNft, bondDataNft } = props;
-  console.log(compensationBondNft, bondDataNft);
   const { address } = useGetAccountInfo();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const isMultiSig = import.meta.env.VITE_MULTISIG_STATE;
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [addressRefund, setAddressRefund] = React.useState<Record<any, any>>({});
 
   const validationSchema = Yup.object().shape({
     compensationEndDate: Yup.date().required("Required"),
@@ -51,6 +53,15 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   const compensationEndDate = watch("compensationEndDate");
   const blacklistAddresses = watch("blacklistAddresses");
 
+  useEffect(() => {
+    (async () => {
+      if (compensationBondNft.endDate === 0) return;
+      const data = await bondContract.viewAddressRefundForCompensation(new Address(address), compensationBondNft.tokenIdentifier, compensationBondNft.nonce);
+      setAddressRefund(data);
+      // console.log(data && data.refund?.compensationId === compensationBondNft.compensationId);
+    })();
+  }, []);
+
   const handleInitiateRefund = async (tokenIdentifier: string, nonce: number, timestamp: Date) => {
     const timestampDate = new Date(timestamp).getTime() / 1000;
     const tx = bondContract.initiateRefund(new Address(address), tokenIdentifier, nonce, timestampDate);
@@ -60,14 +71,18 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   };
 
   const handleInitiateBlacklistLoad = async (compensationId: number, addresses: string) => {
-    const splittedAddresses = addresses.split(",").map((address: string) => new Address(address.trim()));
+    const splittedAddresses = addresses.split(",").map((addressModified: string) => new Address(addressModified.trim()));
 
-    console.log(typeof compensationId, splittedAddresses);
+    // console.log(typeof compensationId, splittedAddresses);
     const tx = bondContract.setBlacklist(new Address(address), compensationId, splittedAddresses);
     await sendTransactions({
       transactions: [tx],
     });
     // console.log(compensationId, splittedAddresses);
+  };
+
+  const handleOpenBlacklistModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
   return (
@@ -103,7 +118,7 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                         </>
                       )}
                     </Flex>
-                    <Flex flexDirection="column">
+                    <Flex flexDirection="column" w="50%">
                       <Text fontSize="1.35rem" fontWeight="600" pb={2}>
                         Compensation End Date:{" "}
                         {compensationBondNft.endDate * 1000 !== 0 ? new Date(compensationBondNft.endDate * 1000).toDateString() : "Not Set"}
@@ -146,10 +161,20 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                       <Text fontSize="1.20rem" fontWeight="600">
                         Deposited Data NFT&apos;s for Claiming Compensation
                       </Text>
-                      <Flex alignItems="center">
-                        <Box pt={4}>
-                          <img src={dataNft.nftImgUrl} width="15%" />
-                        </Box>
+                      <Flex alignItems="center" gap={6} pt={3} w="full">
+                        <img src={dataNft.nftImgUrl} width="15%" />
+                        <Flex flexDirection="column" w="full">
+                          {addressRefund && addressRefund.refund?.compensationId === compensationBondNft.compensationId ? (
+                            <Flex gap={1} h="5rem" overflowY="scroll">
+                              <Text>
+                                Depositor: <ShortAddress address={addressRefund.refund.address} fontSize="1rem" /> |
+                              </Text>
+                              <Text>Amount: {addressRefund.refund.proofOfRefund.amount} </Text>
+                            </Flex>
+                          ) : (
+                            <></>
+                          )}
+                        </Flex>
                       </Flex>
                       <Text fontSize="1.20rem" fontWeight="600" pt={3}>
                         Blacklist Load Window
@@ -175,12 +200,16 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
                             <Button colorScheme="teal" type="submit">
                               Load
                             </Button>
+                            <Button colorScheme="teal" variant="outline" onClick={handleOpenBlacklistModal}>
+                              View Blacklist
+                            </Button>
                           </Flex>
                           <FormErrorMessage>{errors?.blacklistAddresses?.message}</FormErrorMessage>
                         </FormControl>
                       </form>
                     </Flex>
                   </Flex>
+                  <BlacklistModal isModalOpen={isModalOpen} onModalClose={handleOpenBlacklistModal} compensationId={compensationBondNft.compensationId} />
                 </Flex>
               );
             }

@@ -24,8 +24,7 @@ export const CompensationCards: React.FC = () => {
     const currentTime = new Date().getTime();
     const endDateInMs = endDate * 1000;
     const differenceInMs = currentTime - endDateInMs;
-    // console.log(differenceInMs, currentTime, endDateInMs);
-    return differenceInMs >= 86400000 || differenceInMs < 0;
+    return differenceInMs <= 86400000 || endDate === 0;
   };
 
   useEffect(() => {
@@ -60,6 +59,13 @@ export const CompensationCards: React.FC = () => {
     });
   };
 
+  const handleClaim = async (tokenIdentifier: string, nonce: number) => {
+    const tx = bondContract.claimRefund(new Address(address), tokenIdentifier, nonce);
+    await sendTransactions({
+      transactions: [tx],
+    });
+  };
+
   console.log(compensation);
   console.log(compensationDataNft);
   return (
@@ -68,36 +74,36 @@ export const CompensationCards: React.FC = () => {
         {compensation.length === 0 ? (
           <Text>No compensation available</Text>
         ) : (
-          <Flex flexDirection="column" gap={6} w="full">
+          <Flex flexDirection="column" gap={6} w="full" px={14}>
             {compensation.map((comp, index) => {
               return (
-                <Flex key={index} w="full" gap={6}>
+                <Flex key={index} w="full" flexDirection={{ base: "column", md: "row" }} alignItems="center" gap={6}>
                   <img src={compensationDataNft[index].nftImgUrl} alt="NFT" width="150rem" height="150rem" />
                   <Flex flexDirection="column" gap={1}>
                     <Text fontSize="2xl">You have some $ITHEUM compensation to claim on this Data NFT!</Text>
-                    <Flex gap={2}>
+                    <Flex gap={2} alignItems="center">
                       <Text fontSize="2xl">Token Name:</Text>
-                      <Text fontSize="2xl" textColor="teal.200">
+                      <Text fontSize="xl" textColor="teal.200">
                         {compensationDataNft[index].tokenName}
                       </Text>
                     </Flex>
-                    <Flex gap={2}>
+                    <Flex gap={2} alignItems="center">
                       <Text fontSize="2xl">Supply:</Text>
-                      <Text fontSize="2xl" textColor="teal.200">
+                      <Text fontSize="xl" textColor="teal.200">
                         {Number(compensationDataNft[index].supply)}
                       </Text>
                     </Flex>
                     {comp.endDate === 0 ? (
                       <Text fontSize="2xl">No date for deposit set yet</Text>
                     ) : (
-                      <Flex gap={2}>
+                      <Flex gap={2} alignItems="center">
                         <Text fontSize="2xl">Deposit this Data NFT before: </Text>
-                        <Text fontSize="2xl" textColor="teal.200">
+                        <Text fontSize="xl" textColor="teal.200">
                           {new Date(comp.endDate * 1000).toLocaleString()}
                         </Text>
                       </Flex>
                     )}
-                    <Flex gap={3}>
+                    <Flex gap={3} flexDirection={{ base: "column", md: "row" }}>
                       <Button
                         variant="outline"
                         colorScheme="teal"
@@ -107,7 +113,11 @@ export const CompensationCards: React.FC = () => {
                         }>
                         Deposit all Data Nft to Claim $ITHEUM
                       </Button>
-                      <Button variant="outline" colorScheme="teal" isDisabled={checkIf24HHasPassed(comp.endDate)}>
+                      <Button
+                        variant="outline"
+                        colorScheme="teal"
+                        isDisabled={checkIf24HHasPassed(comp.endDate)}
+                        onClick={() => handleClaim(compensationDataNft[index].collection, compensationDataNft[index].nonce)}>
                         Claim back your Data NFT + 38 $ITHEUM
                       </Button>
                     </Flex>
