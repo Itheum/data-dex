@@ -25,7 +25,7 @@ export const BlacklistModal: React.FC<BlacklistModalProps> = (props) => {
       const data = await bondContract.viewCompensationBlacklist(compensationId);
       setBlacklistAddresses(data);
     })();
-  }, []);
+  }, [isModalOpen]);
 
   return (
     <>

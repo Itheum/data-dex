@@ -43,6 +43,7 @@ import { DataNftMarketContract } from "../../../libs/MultiversX/dataNftMarket";
 import { DataNftMintContract } from "../../../libs/MultiversX/dataNftMint";
 import { backendApi, createNftId, sleep } from "../../../libs/utils";
 import { useMarketStore } from "../../../store";
+import { Address } from "@multiversx/sdk-core/out";
 
 interface PropsType {
   tabState: number;
@@ -212,7 +213,7 @@ export const DataCreatorTabs: React.FC<PropsType> = ({ tabState }) => {
       // start loading offers
       setIsLoadingSecond(true);
 
-      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, profileAddress);
+      const _offers = await marketContract.viewPagedOffers(pageIndex * pageSize, (pageIndex + 1) * pageSize - 1, new Address(profileAddress));
       updateOffers(_offers);
 
       //

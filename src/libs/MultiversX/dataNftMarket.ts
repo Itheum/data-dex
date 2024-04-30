@@ -144,6 +144,7 @@ export class DataNftMarketContract {
       this.itheumToken,
       0,
       new BigNumber(price).multipliedBy(10 ** 18),
+      0,
       0
     );
 
@@ -238,9 +239,9 @@ export class DataNftMarketContract {
     }
   }
 
-  async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: string): Promise<Offer[]> {
+  async viewPagedOffers(startIndex: number, stopIndex: number, userAddress?: Address): Promise<Offer[]> {
     try {
-      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, new Address(userAddress));
+      const pagedOffers = await this.contract.viewPagedOffers(startIndex, stopIndex, userAddress);
 
       return pagedOffers;
     } catch (e) {
