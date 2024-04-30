@@ -15,7 +15,7 @@ export const MinterDashboard: React.FC = () => {
   const { hasPendingTransactions } = useGetPendingTransactions();
   const { minterAddress } = useParams();
 
-  const nftMinter = new NftMinter(IS_DEVNET ? "devnet" : "mainnet", new Address(minterAddress));
+  const nftMinter = new NftMinter(IS_DEVNET ? "devnet" : "mainnet", new Address(minterAddress ?? ""));
   useEffect(() => {
     (async () => {
       try {

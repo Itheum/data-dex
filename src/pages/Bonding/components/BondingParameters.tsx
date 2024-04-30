@@ -21,15 +21,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { BondConfiguration, BondContract, State } from "@itheum/sdk-mx-data-nft/out";
 import { Address } from "@multiversx/sdk-core/out";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
+import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
 import { useGetPendingTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
 import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { ProposalDeepLinkBuilder } from "@peerme/sdk";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 import * as Yup from "yup";
 import { IS_DEVNET, PEERME_TEAM_NAME } from "libs/config";
-import { useGetLoginInfo } from "@multiversx/sdk-dapp/hooks/account";
-import { ProposalDeepLinkBuilder } from "@peerme/sdk";
 import { timeUntil } from "../../../libs/utils";
 
 type BondingParametersFormType = {
@@ -123,11 +123,7 @@ export const BondingParameters: React.FC = () => {
       .setTitle(amount != 0 ? "Set New Period Bond" : "Delete Period Bond")
       .setDescription(
         amount != 0
-<<<<<<< HEAD
-          ? `This is to propose a change in the Period Bond from ${amountOfTimeBefore.count} ${amountOfTimeBefore.unit} second and ${BigNumber(contractConfiguration.lockPeriodsWithBonds[0].amount).dividedBy(10 ** 18)} ITHEUM to  ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
-=======
           ? `This is to propose a bonding period of ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit} and ${amount} ITHEUM `
->>>>>>> stg
           : `This is to propose deleting the period ${amountOfTimeAfter.count} ${amountOfTimeAfter.unit}`
       )
       .addAction(
