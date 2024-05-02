@@ -74,7 +74,7 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
-
+  console.log(userData);
   const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);
@@ -725,7 +725,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 id="slider"
                 defaultValue={donatePercentage}
                 min={0}
-                max={100}
+                max={userData && userData?.maxDonationPecentage / 100}
                 colorScheme="teal"
                 onChange={(v) => onChange(v)}
                 onMouseEnter={() => setShowTooltip(true)}
@@ -736,8 +736,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
                 <SliderMark value={50} mt="1" ml="-2.5" fontSize="sm">
                   50%
                 </SliderMark>
-                <SliderMark value={75} mt="1" ml="-2.5" fontSize="sm">
-                  75%
+                <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
+                  {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
                 </SliderMark>
                 <SliderTrack>
                   <SliderFilledTrack />
@@ -750,7 +750,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             name="donatePercentage"
           />
           <Text color="gray.400" fontSize="sm" mt={"1"}>
-            Min: 0%, Max: 100%
+            Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
           </Text>
           <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
         </FormControl>

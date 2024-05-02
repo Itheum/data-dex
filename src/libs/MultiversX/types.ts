@@ -75,6 +75,7 @@ export interface UserDataType {
   contractPaused: boolean;
   userWhitelistedForMint: boolean;
   lastUserMintTime: number;
+  maxDonationPecentage: number;
   maxRoyalties: number;
   maxSupply: number;
   minRoyalties: number;
