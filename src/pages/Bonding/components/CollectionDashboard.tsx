@@ -119,6 +119,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     });
   };
 
+  // console.log(bondNft);
   return (
     <Flex flexDirection="column" w="full" gap={5}>
       <Flex flexDirection="row" w="full" gap={5} justifyContent="space-between">

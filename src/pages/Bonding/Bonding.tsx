@@ -97,7 +97,7 @@ export const Bonding: React.FC = () => {
       setTotalAmountBondedForThisPage(_totalAmountBondedForThisPage);
       setContractBonds(pagedBonds);
       // console.log(pagedBonds, dataNfts);
-      setBondingDataNfts(dataNfts.reverse());
+      setBondingDataNfts(dataNfts);
     })();
   }, [hasPendingTransactions, bondingPageIndex]);
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BondContract, Compensation, DataNft } from "@itheum/sdk-mx-data-nft/out";
+import { BondContract, Compensation, DataNft, Refund } from "@itheum/sdk-mx-data-nft/out";
 import { IS_DEVNET } from "../../../libs/config";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks";
 import { Button, Flex, Text } from "@chakra-ui/react";
@@ -13,12 +13,18 @@ type CompensationNftsType = {
   tokenIdentifier: string;
 };
 
+type ArrayTest = {
+  compensation: Compensation;
+  dataNft: DataNft;
+};
+
 export const CompensationCards: React.FC = () => {
   const { address } = useGetAccountInfo();
   const { hasPendingTransactions } = useGetPendingTransactions();
   const bondContract = new BondContract(IS_DEVNET ? "devnet" : "mainnet");
   const [compensation, setCompensation] = useState<Array<Compensation>>([]);
-  const [compensationDataNft, setCompensationDataNft] = useState<Array<DataNft>>([]);
+  const [compensationDataNft, setCompensationDataNft] = useState<Array<ArrayTest>>([]);
+  const [compensationRefund, setCompensationRefund] = useState<Record<any, any>>({});
 
   const checkIf24HHasPassed = (endDate: number) => {
     const currentTime = new Date().getTime();
@@ -31,7 +37,8 @@ export const CompensationCards: React.FC = () => {
     (async () => {
       const itemsForCompensation: Array<CompensationNftsType> = [];
       const contractBonds = await bondContract.viewAllBonds();
-      console.log("contractBonds", contractBonds);
+      const dataNfts: DataNft[] = await DataNft.ownedByAddress(address, ["DATANFTFT-e0b917"]);
+      // console.log("contractBonds", dataNfts);
       contractBonds.map((bond) => {
         if (bond.address !== address) return;
         itemsForCompensation.push({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier });
@@ -40,13 +47,21 @@ export const CompensationCards: React.FC = () => {
         return;
       }
       const _compensation = await bondContract.viewCompensations(itemsForCompensation);
-      console.log(compensation);
-      const dataNfts: DataNft[] = await DataNft.createManyFromApi(
-        _compensation.map((_comp) => ({ nonce: _comp.nonce, tokenIdentifier: _comp.tokenIdentifier }))
-      );
+      // console.log(itemsForCompensation);
+
+      const filteredData2 = [];
+      for (const compensation of _compensation) {
+        const filteredData = dataNfts.find((dataNft) => dataNft.nonce === compensation.nonce);
+        if (filteredData) {
+          filteredData2.push({ compensation: compensation, dataNft: filteredData });
+        }
+      }
+
+      const data = await bondContract.viewAddressRefundForCompensation(new Address(address), "DATANFTFT-e0b917", 267);
 
       setCompensation(_compensation.reverse());
-      setCompensationDataNft(dataNfts);
+      setCompensationDataNft(filteredData2.reverse());
+      setCompensationRefund(data);
       // console.log("compensation", new Date().getTime());
     })();
   }, [hasPendingTransactions]);
@@ -66,8 +81,9 @@ export const CompensationCards: React.FC = () => {
     });
   };
 
-  console.log(compensation);
+  // console.log(compensation);
   console.log(compensationDataNft);
+  // console.log(compensationRefund);
   return (
     <>
       <Flex>
@@ -75,31 +91,31 @@ export const CompensationCards: React.FC = () => {
           <Text>No compensation available</Text>
         ) : (
           <Flex flexDirection="column" gap={6} w="full" px={14}>
-            {compensation.map((comp, index) => {
+            {compensationDataNft.map((comp, index) => {
               return (
                 <Flex key={index} w="full" flexDirection={{ base: "column", md: "row" }} alignItems="center" gap={6}>
-                  <img src={compensationDataNft[index].nftImgUrl} alt="NFT" width="150rem" height="150rem" />
+                  <img src={comp.dataNft.nftImgUrl} alt="NFT" width="150rem" height="150rem" />
                   <Flex flexDirection="column" gap={1}>
                     <Text fontSize="2xl">You have some $ITHEUM compensation to claim on this Data NFT!</Text>
                     <Flex gap={2} alignItems="center">
                       <Text fontSize="2xl">Token Name:</Text>
                       <Text fontSize="xl" textColor="teal.200">
-                        {compensationDataNft[index].tokenName}
+                        {comp.dataNft.tokenName}
                       </Text>
                     </Flex>
                     <Flex gap={2} alignItems="center">
                       <Text fontSize="2xl">Supply:</Text>
                       <Text fontSize="xl" textColor="teal.200">
-                        {Number(compensationDataNft[index].supply)}
+                        {Number(comp.dataNft.balance)}
                       </Text>
                     </Flex>
-                    {comp.endDate === 0 ? (
+                    {comp.compensation.endDate === 0 ? (
                       <Text fontSize="2xl">No date for deposit set yet</Text>
                     ) : (
                       <Flex gap={2} alignItems="center">
                         <Text fontSize="2xl">Deposit this Data NFT before: </Text>
                         <Text fontSize="xl" textColor="teal.200">
-                          {new Date(comp.endDate * 1000).toLocaleString()}
+                          {new Date(comp.compensation.endDate * 1000).toLocaleString()}
                         </Text>
                       </Flex>
                     )}
@@ -107,18 +123,24 @@ export const CompensationCards: React.FC = () => {
                       <Button
                         variant="outline"
                         colorScheme="teal"
-                        isDisabled={comp.endDate * 1000 + 86400 < new Date().getTime()}
-                        onClick={() =>
-                          handleDeposit(compensationDataNft[index].collection, compensationDataNft[index].nonce, compensationDataNft[index].supply)
-                        }>
+                        isDisabled={comp.compensation.endDate * 1000 + 86400 < new Date().getTime()}
+                        onClick={() => handleDeposit(comp.dataNft.collection, comp.dataNft.nonce, comp.dataNft.balance)}>
                         Deposit all Data Nft to Claim $ITHEUM
                       </Button>
                       <Button
                         variant="outline"
                         colorScheme="teal"
-                        isDisabled={checkIf24HHasPassed(comp.endDate)}
-                        onClick={() => handleClaim(compensationDataNft[index].collection, compensationDataNft[index].nonce)}>
-                        Claim back your Data NFT + 38 $ITHEUM
+                        isDisabled={checkIf24HHasPassed(comp.compensation.endDate) || Number(comp.compensation.accumulatedAmount) === 0}
+                        onClick={() => handleClaim(comp.dataNft.collection, comp.dataNft.nonce)}>
+                        Claim back your Data NFT +&nbsp;
+                        {Number(comp.compensation.accumulatedAmount) !== 0 && Number(comp.compensation.proofAmount) !== 0
+                          ? (BigNumber(comp.compensation.accumulatedAmount)
+                              .dividedBy(10 ** 18)
+                              .toNumber() /
+                              Number(comp.compensation.proofAmount)) *
+                            Number(compensationRefund.refund?.proofOfRefund.amount)
+                          : 0}
+                        &nbsp;$ITHEUM
                       </Button>
                     </Flex>
                   </Flex>
