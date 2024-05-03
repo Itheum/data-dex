@@ -59,7 +59,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
       setMaxSupply(maxSupplyT);
       setAntiSpamTax(antiSpamTaxT / 10 ** 18);
     })();
-  }, []);
+  }, [isOpen]);
 
   const onClose = () => {
     setIsOpen(false);
@@ -269,6 +269,39 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
               navigate("/getverified");
             }}>
             Find out how you can get whitelisted
+          </Button>
+        </Box>
+        <Box
+          position="absolute"
+          top="5rem"
+          bottom="0"
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}
+          left="0"
+          right="0"
+          height="100%"
+          width="100%"
+          backgroundColor="blackAlpha.800"
+          rounded="lg"
+          visibility={userData === null || userData === undefined ? "visible" : "hidden"}
+          borderTop="solid .1rem"
+          borderColor="teal.200">
+          <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
+            - Fetching minting requirements failed, please refresh the page to try again. -
+          </Text>
+          <Button
+            variant="solid"
+            colorScheme="teal"
+            px={7}
+            py={6}
+            rounded="lg"
+            mt={7}
+            onClick={() => {
+              window.location.reload();
+            }}>
+            Refresh Data DEX
           </Button>
         </Box>
       </DrawerContent>

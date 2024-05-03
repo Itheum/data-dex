@@ -189,7 +189,7 @@ export async function getOffersByIdAndNoncesFromBackendApi(
   return data;
 }
 
-export async function getMarketRequirements(chainID: string): Promise<MarketplaceRequirements | undefined> {
+export async function getMarketRequirements(): Promise<MarketplaceRequirements | undefined> {
   const dataNftMarketplace = new DataNftMarket(IS_DEVNET ? "devnet" : "mainnet");
   try {
     return dataNftMarketplace.viewRequirements();

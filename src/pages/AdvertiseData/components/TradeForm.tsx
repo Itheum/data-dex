@@ -15,9 +15,15 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
   Tag,
   Text,
   Textarea,
+  Tooltip,
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
@@ -46,6 +52,7 @@ type TradeDataFormType = {
   datasetTitleForm: string;
   datasetDescriptionForm: string;
   extraAssets?: string;
+  donatePercentage?: number;
   numberOfCopiesForm: number;
   royaltiesForm: number;
   bondingAmount?: number;
@@ -82,6 +89,8 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
     s3: 0,
     s4: 0,
   });
+
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [mintSessionId, setMintSessionId] = useState<any>(null);
   const itheumBalance = useAccountStore((state) => state.itheumBalance);
   const { colorMode } = useColorMode();
@@ -167,6 +176,11 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
 
     extraAssets: Yup.string().optional().url("Extra asset URL must be a valid URL"),
 
+    donatePercentage: Yup.number()
+      .optional()
+      .min(0, "Donate percentage must be a number between 0 and 100")
+      .max(100, "Donate percentage must be a number between 0 and 100"),
+
     numberOfCopiesForm: Yup.number()
       .typeError("Number of copies must be a number.")
       .min(1, "Minimum number of copies should be 1 or greater.")
@@ -207,6 +221,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetTitleForm: dataToPrefill?.additionalInformation.programName.replaceAll(" ", "") ?? "",
       datasetDescriptionForm: dataToPrefill?.additionalInformation.description ?? "",
       extraAssets: dataToPrefill?.additionalInformation.extraAssets ?? "",
+      donatePercentage: 0,
       numberOfCopiesForm: 1,
       royaltiesForm: 0,
       bondingAmount:
@@ -226,6 +241,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const datasetTitle: string = getValues("datasetTitleForm");
   const datasetDescription: string = getValues("datasetDescriptionForm");
   const extraAssets: string = getValues("extraAssets") ?? "";
+  const donatePercentage: number = getValues("donatePercentage") ?? 0;
   const dataNFTCopies: number = getValues("numberOfCopiesForm");
   const dataNFTRoyalties: number = getValues("royaltiesForm");
   const bondingAmount: number = getValues("bondingAmount") ?? -1;
@@ -365,7 +381,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
       datasetDescription,
       BigNumber(periods[0].amount).toNumber() + new BigNumber(antiSpamTax).multipliedBy(10 ** 18).toNumber(),
       Number(periods[0].lockPeriod),
-      0,
+      donatePercentage * 100,
       optionalSDKMintCallFields
     );
 
@@ -444,7 +460,7 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const onSubmit = (data: TradeDataFormType) => {
     console.log(data);
     //TODO refactor this with react form hook
-  }; // here you can make logic that you want to happen on submit (used for debugging)
+  };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex flexDirection="row">
@@ -695,6 +711,48 @@ export const TradeForm: React.FC<TradeFormProps> = (props) => {
             name="extraAssets"
           />
           <FormErrorMessage>{errors?.extraAssets?.message}</FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.donatePercentage} minH={"8.5rem"}>
+          <Text fontWeight="bold" fontSize="md" mt={{ base: "1", md: "4" }}>
+            Donate Percentage
+          </Text>
+
+          <Controller
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <Slider
+                id="slider"
+                defaultValue={donatePercentage}
+                min={0}
+                max={userData && userData?.maxDonationPecentage / 100}
+                colorScheme="teal"
+                onChange={(v) => onChange(v)}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}>
+                <SliderMark value={25} mt="1" ml="-2.5" fontSize="sm">
+                  25%
+                </SliderMark>
+                <SliderMark value={50} mt="1" ml="-2.5" fontSize="sm">
+                  50%
+                </SliderMark>
+                <SliderMark value={(userData && userData?.maxDonationPecentage / 100) ?? 0} mt="1" ml="-2.5" fontSize="sm">
+                  {(userData && userData?.maxDonationPecentage / 100) ?? 0}%
+                </SliderMark>
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <Tooltip hasArrow bg="teal.500" color="white" placement="top" isOpen={showTooltip} label={`${value}%`}>
+                  <SliderThumb />
+                </Tooltip>
+              </Slider>
+            )}
+            name="donatePercentage"
+          />
+          <Text color="gray.400" fontSize="sm" mt={"1"}>
+            Min: 0%, Max: {userData && userData?.maxDonationPecentage / 100}%
+          </Text>
+          <FormErrorMessage>{errors?.donatePercentage?.message}</FormErrorMessage>
         </FormControl>
       </>
 
