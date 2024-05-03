@@ -53,10 +53,6 @@ export const CompensationCards: React.FC = () => {
           compPairsT.push(compNftPair);
         }
       }
-      console.log(
-        compPairsT.filter((pair) => pair.compensation.endDate > 0),
-        refundObjT
-      );
       setCompensationRefund(refundObjT);
       setCompensationPairs(compPairsT);
     })();
