@@ -73,7 +73,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
   } = useForm<CollectionDashboardFormType>({
     defaultValues: {
       enforceMinimumPenalty: 5,
-      endTimestampOfBond: "10",
+      endTimestampOfBond: allCompensation.endDate.toLocaleString(),
     },
     mode: "onChange",
     resolver: yupResolver(validationSchema),
@@ -180,7 +180,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
                           name={"enforceMinimumPenalty"}
                         />
                         <FormErrorMessage>{errors?.enforceMinimumPenalty?.message}</FormErrorMessage>
-
                         <Text fontSize="1.1rem">%</Text>
                         <Button colorScheme="pink" type="submit">
                           Penalize

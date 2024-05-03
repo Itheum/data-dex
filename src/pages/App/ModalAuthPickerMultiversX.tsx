@@ -16,6 +16,7 @@ import {
   useDisclosure,
   WrapItem,
   useBreakpointValue,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useGetNetworkConfig } from "@multiversx/sdk-dapp/hooks";
 import { useGetAccountInfo } from "@multiversx/sdk-dapp/hooks/account";
@@ -36,6 +37,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
   const [, setWalletUsedSession] = useLocalStorage("itm-wallet-used", null);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     async function cleanOutRemoteXPortalAppWalletDisconnect() {
@@ -96,7 +98,7 @@ function ModalAuthPickerMx({ resetLaunchMode }: { resetLaunchMode: any }) {
       {!mxAddress && isProgressModalOpen && (
         <Modal isCentered size={modelSize} isOpen={isProgressModalOpen} onClose={handleProgressModalClose} closeOnEsc={false} closeOnOverlayClick={false}>
           <ModalOverlay backdropFilter="blur(10px)" />
-          <ModalContent>
+          <ModalContent bgColor={colorMode === "dark" ? "#181818" : "bgWhite"}>
             <ModalCloseButton />
             <ModalHeader mt={5}>
               Select a{" "}

@@ -219,6 +219,7 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="wallet/activity" element={<MyDataNFTsMx tabState={4} />} />
                       <Route path="wallet/favorite" element={<MyDataNFTsMx tabState={3} />} />
                       <Route path="wallet/bonding" element={<MyDataNFTsMx tabState={5} />} />
+                      <Route path="wallet/compensation" element={<MyDataNFTsMx tabState={6} />} />
                       <Route path="wallet/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={1} />} />
                       <Route path="wallet/purchased/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={2} />} />
                       <Route path="wallet/activity/:nftId/:dataNonce" element={<MyDataNFTsMx tabState={4} />} />
@@ -230,7 +231,9 @@ function App({ onShowConnectWalletModal }: { onShowConnectWalletModal: any }) {
                       <Route path="marketplace/my/:pageNumber" element={<DataNFTMarketplaceMultiversX tabState={2} />} />
                     </Route>
                     <Route path="bonding/" element={<Bonding />} />
-                    <Route path="bonding/:pageNumber" element={<Bonding />} />
+                    <Route path="bonding/:bondingPageNumber" element={<Bonding />}>
+                      <Route path="compensation/:compensationPageNumber" element={<Bonding />} />
+                    </Route>
                     <Route path="settings" element={<AppSettings />} />
                   </Routes>
                 </AuthenticatedRoutesWrapper>

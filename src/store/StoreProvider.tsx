@@ -126,15 +126,13 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     (async () => {
       let _marketRequirements: MarketplaceRequirements | undefined;
-      _marketRequirements = await getMarketRequirements(chainID);
+      _marketRequirements = await getMarketRequirements();
       if (_marketRequirements) {
         updateMarketRequirements(_marketRequirements);
       } else {
         _marketRequirements = await marketContractSDK.viewRequirements();
         updateMarketRequirements(_marketRequirements);
       }
-
-      // const _marketRequirements = await marketContract.viewRequirements();
 
       const _maxPaymentFeeMap: Record<string, number> = {};
       if (_marketRequirements) {
