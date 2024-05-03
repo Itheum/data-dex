@@ -38,7 +38,7 @@ export const CompensationCards: React.FC = () => {
       const itemsForCompensation: Array<CompensationNftsType> = [];
       const contractBonds = await bondContract.viewAllBonds();
       const dataNfts: DataNft[] = await DataNft.ownedByAddress(address, ["DATANFTFT-e0b917"]);
-      // console.log("contractBonds", dataNfts);
+
       contractBonds.map((bond) => {
         if (bond.address !== address) return;
         itemsForCompensation.push({ nonce: bond.nonce, tokenIdentifier: bond.tokenIdentifier });
@@ -47,7 +47,6 @@ export const CompensationCards: React.FC = () => {
         return;
       }
       const _compensation = await bondContract.viewCompensations(itemsForCompensation);
-      // console.log(itemsForCompensation);
 
       const filteredData2 = [];
       for (const compensation of _compensation) {
@@ -62,7 +61,6 @@ export const CompensationCards: React.FC = () => {
       setCompensation(_compensation.reverse());
       setCompensationDataNft(filteredData2.reverse());
       setCompensationRefund(data);
-      // console.log("compensation", new Date().getTime());
     })();
   }, [hasPendingTransactions]);
 
@@ -81,9 +79,6 @@ export const CompensationCards: React.FC = () => {
     });
   };
 
-  // console.log(compensation);
-  console.log(compensationDataNft);
-  // console.log(compensationRefund);
   return (
     <>
       <Flex>

@@ -102,7 +102,7 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
       transactions: [tx],
     });
   };
-  // console.log(new Date(allCompensation.endDate).toLocaleString());
+
   const handleWithdraw = async (tokenIdentifier: string, nonce: number) => {
     const tx = bondContract.modifyBond(new Address(address), tokenIdentifier, nonce);
     await sendTransactions({
@@ -119,7 +119,6 @@ export const CollectionDashboard: React.FC<CollectionDashboardProps> = (props) =
     });
   };
 
-  // console.log(bondNft);
   return (
     <Flex flexDirection="column" w="full" gap={5}>
       <Flex flexDirection="row" w="full" gap={5} justifyContent="space-between">

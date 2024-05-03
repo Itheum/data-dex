@@ -74,7 +74,7 @@ type TradeFormProps = {
 export const TradeForm: React.FC<TradeFormProps> = (props) => {
   const { checkUrlReturns200, maxSupply, minRoyalties, maxRoyalties, antiSpamTax, dataNFTMarshalServiceStatus, userData, dataToPrefill, closeTradeFormModal } =
     props;
-  console.log(userData);
+
   const [currDataCATSellObj] = useState<any>(dataToPrefill ?? null);
   const [readTermsChecked, setReadTermsChecked] = useState<boolean>(false);
   const [readAntiSpamFeeChecked, setReadAntiSpamFeeChecked] = useState<boolean>(false);

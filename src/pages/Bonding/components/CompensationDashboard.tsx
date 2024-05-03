@@ -8,10 +8,10 @@ import { sendTransactions } from "@multiversx/sdk-dapp/services";
 import BigNumber from "bignumber.js";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
+import { BlacklistModal } from "./BlacklistModal";
+import { ProposalButton } from "../../../components/ProposalButton";
 import ShortAddress from "../../../components/UtilComps/ShortAddress";
 import { IS_DEVNET } from "../../../libs/config";
-import { ProposalButton } from "../../../components/ProposalButton";
-import { BlacklistModal } from "./BlacklistModal";
 
 type CompensationDashboardProps = {
   compensationBondNft: Compensation;
@@ -58,7 +58,6 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
       if (compensationBondNft.endDate === 0) return;
       const data = await bondContract.viewAddressRefundForCompensation(new Address(address), compensationBondNft.tokenIdentifier, compensationBondNft.nonce);
       setAddressRefund(data);
-      // console.log(data && data.refund?.compensationId === compensationBondNft.compensationId);
     })();
   }, []);
 
@@ -73,12 +72,10 @@ export const CompensationDashboard: React.FC<CompensationDashboardProps> = (prop
   const handleInitiateBlacklistLoad = async (compensationId: number, addresses: string) => {
     const splittedAddresses = addresses.split(",").map((addressModified: string) => new Address(addressModified.trim()));
 
-    // console.log(typeof compensationId, splittedAddresses);
     const tx = bondContract.setBlacklist(new Address(address), compensationId, splittedAddresses);
     await sendTransactions({
       transactions: [tx],
     });
-    // console.log(compensationId, splittedAddresses);
   };
 
   const handleOpenBlacklistModal = () => {

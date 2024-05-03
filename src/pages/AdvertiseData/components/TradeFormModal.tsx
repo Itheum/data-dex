@@ -289,7 +289,7 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
           borderTop="solid .1rem"
           borderColor="teal.200">
           <Text fontSize="24px" fontWeight="500" lineHeight="38px" textAlign="center" textColor="teal.200" px="2">
-            - Api fetch failed please retry in a few minutes. -
+            - Fetching minting requirements failed, please refresh the page to try again. -
           </Text>
           <Button
             variant="solid"
@@ -299,9 +299,9 @@ export const TradeFormModal: React.FC<TradeFormProps> = (props) => {
             rounded="lg"
             mt={7}
             onClick={() => {
-              navigate("/getverified");
+              window.location.reload();
             }}>
-            Find out how you can get whitelisted
+            Refresh Data DEX
           </Button>
         </Box>
       </DrawerContent>
