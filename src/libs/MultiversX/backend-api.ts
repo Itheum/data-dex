@@ -122,9 +122,7 @@ export async function updateAddressBoughtOfferToBackendApi(chainID: string, offe
     const url = `${backendApi(chainID)}/updateAddressBoughtOffer/${offerId}`;
     const { data } = await axios.post<any>(
       url,
-      {
-        offerData: { quantity: amount },
-      },
+      { quantity: amount },
       {
         timeout: uxConfig.mxAPITimeoutMs,
         headers: {
